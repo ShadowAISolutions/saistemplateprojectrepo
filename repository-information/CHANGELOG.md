@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 56/100`
+`Sections: 57/100`
 
 ## [Unreleased]
+
+## [v02.14r] — 2026-03-02 06:43:07 PM EST
+
+### Changed
+- Bumped repository version from v02.13r to v02.14r
 
 ## [v02.13r] — 2026-03-02 12:55:00 PM EST
 
