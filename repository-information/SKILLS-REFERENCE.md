@@ -58,5 +58,6 @@ The system reminder at the top of each Claude Code session lists all currently a
 - **Custom skills**: create `.claude/skills/<name>/SKILL.md` — plain name, no prefix
 - **Imported skills**: create `.claude/skills/imported--<name>/SKILL.md` — `imported--` prefix distinguishes from custom
 - **Never duplicate bundled skills locally** — add repo-specific guidance as a `.claude/rules/` file instead
+- **Imported skills are frozen** — never modify an imported skill's content (only location pointers may be updated). This preserves the ability to trace which skill produces which behavior. If changes are needed, create a custom skill or add a `.claude/rules/` file instead. *Rule: see `.claude/rules/behavioral-rules.md` — "Imported Skills — Do Not Modify"*
 
 Developed by: ShadowAISolutions

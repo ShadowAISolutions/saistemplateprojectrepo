@@ -139,6 +139,13 @@ When adding, moving, or reorganizing `##` sections in CLAUDE.md, follow the atte
 - **Never repurpose or restructure an existing user-created system** — if the user created a file, section, or workflow for a specific purpose, do not assume a new feature replaces it just because they seem related. A new feature that overlaps with an existing user concept must be built as a **separate, additional** system — not merged into or substituted for the original. The user's original system retains its identity and purpose until the user explicitly says otherwise. Example: if the user has a "Reminders for Developer" system and asks for a "session context" feature, these are two distinct things — do not fold one into the other
 - **The general principle**: when something belongs to the user (they wrote it, they requested it be tracked), do not unilaterally close, complete, alter, rename, or repurpose it. Ask first
 
+## Imported Skills — Do Not Modify
+- **Imported skills** (`.claude/skills/imported--*/SKILL.md`) must **never** be edited — their content is frozen as-imported so the developer can always distinguish which skill is producing which behavior
+- The only permitted change to an imported skill is updating a **location pointer** (e.g. a file path or URL reference that changed due to a repo restructure) — the skill's logic, instructions, and prompts must remain untouched
+- **Custom skills** (`.claude/skills/*/SKILL.md` without the `imported--` prefix) can be freely created, edited, and deleted as needed
+- If an imported skill needs behavioral changes, create a **custom skill** with the desired behavior instead — or add a `.claude/rules/` file that layers repo-specific guidance on top of the imported skill's base behavior
+- This rule applies regardless of who requests the change — even if the user asks to "fix" or "improve" an imported skill, flag that it's imported and recommend the alternatives above. Only proceed with direct modification if the user explicitly overrides after understanding the tradeoff
+
 ## Provenance Markers
 - This repo contains hidden provenance markers that identify ShadowAISolutions as the original author
 - These markers are embedded across multiple file types and are intentionally not documented in detail
