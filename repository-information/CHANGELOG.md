@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
 
 ## [Unreleased]
+
+## [v02.65r] — 2026-03-04 05:37:43 PM EST
+
+### Changed
+- Improved Copy Claude Config prompt to specify source files (gas-template.html, gas-template.gs, gas-template.config.json), and instruct Claude to register new projects in the GAS Projects table and update ARCHITECTURE.md, README.md, and STATUS.md
+
+#### `gas-template.html` — v01.24w
+
+##### Changed
+- Copy Claude Config prompt now specifies exactly which files to copy from and which docs to update when creating a new project
 
 ## [v02.64r] — 2026-03-04 05:31:19 PM EST
 

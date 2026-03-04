@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templatehtml.changelog-archive.md](gas-templatehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.24w] — 2026-03-04 05:37:43 PM EST — v02.65r
+
+### Changed
+- Copy Claude Config prompt now specifies exactly which files to copy from and which docs to update when creating a new project
 
 ## [v01.23w] — 2026-03-04 05:31:19 PM EST — v02.64r
 

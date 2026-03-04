@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.23w">
+  <meta name="build-version" content="v01.24w">
   <title>GAS Integration Status</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -1517,7 +1517,7 @@
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '"\n'
         + '}';
 
-      var prompt = 'Update ' + filePath + ' config — sync these values into the config.json, .gs file, and embedding HTML page. If the file path does not exist yet in the repo, create the new page ecosystem for it, mirroring the gas-template ecosystem (HTML page, .gs file, config.json, version files, changelogs, and all tracking files):\n\n';
+      var prompt = 'Update ' + filePath + ' config — sync these values into the config.json, .gs file, and embedding HTML page. If the file path does not exist yet in the repo, create the full page ecosystem for it by copying from the gas-template ecosystem: HTML page (from gas-template.html), .gs file (from gas-template.gs), config.json (from gas-template.config.json), version files, changelogs, and all tracking files. Register the new project in the GAS Projects table and update ARCHITECTURE.md, README.md, and STATUS.md:\n\n';
 
       navigator.clipboard.writeText(prompt + json).then(function() {
         showToast('Config + prompt copied to clipboard');
