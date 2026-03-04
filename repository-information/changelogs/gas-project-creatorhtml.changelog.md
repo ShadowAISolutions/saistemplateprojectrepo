@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
 
 ## [Unreleased]
+
+## [v01.26w] — 2026-03-04 06:32:59 PM EST — v02.68r
+
+### Changed
+- Copy Claude Config prompt now creates new projects from the GAS template instead of copying from this page
 
 ## [v01.25w] — 2026-03-04 06:19:05 PM EST — v02.67r
 

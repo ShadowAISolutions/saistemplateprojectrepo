@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
 
 ## [Unreleased]
+
+## [v02.68r] — 2026-03-04 06:32:59 PM EST
+
+### Added
+- Created new GAS template ecosystem: `GasTemplate.html` (GAS-enabled HTML template), `gas-template.gs` (GAS template script with placeholders), `gas-template.config.json` (template config)
+- Created supporting files: version files, changelogs, and changelog archives for the new GAS template
+
+### Changed
+- Updated gas-project-creator "Copy Claude Config" prompt to reference new GAS template files instead of its own files as the copy source
+- Updated `gas-project-creator-code.js.txt` to serve template GAS code (placeholder values) instead of gas-project-creator's own code
+
+#### `gas-project-creator.html` — v01.26w
+
+##### Changed
+- Copy Claude Config prompt now directs Claude to copy from the GAS template ecosystem when creating new projects
 
 ## [v02.67r] — 2026-03-04 06:19:05 PM EST
 

@@ -107,9 +107,9 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 
 GAS-enabled HTML pages include a "Copy Code.gs" button that lets users copy the full `.gs` source to their clipboard. All pages fetch from a **single shared deployment copy**: `live-site-pages/gas-project-creator-code.js.txt`.
 
-**Single source**: `gas-project-creator-code.js.txt` is a verbatim copy of `googleAppsScripts/GasProjectCreator/gas-project-creator.gs` — the canonical template with placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, etc.). Each HTML page's config form fields do find-and-replace on the copied code before it reaches the clipboard, so users get their values injected automatically.
+**Single source**: `gas-project-creator-code.js.txt` is a verbatim copy of `googleAppsScripts/GasTemplate/gas-template.gs` — the GAS template with placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, etc.). Each HTML page's config form fields do find-and-replace on the copied code before it reaches the clipboard, so users get their values injected automatically.
 
-**Mandatory sync rule**: whenever `gas-project-creator.gs` is modified, `gas-project-creator-code.js.txt` must be updated to match. Simply copy the `.gs` file to the `.js.txt` path.
+**Mandatory sync rule**: whenever `gas-template.gs` (the template) is modified, `gas-project-creator-code.js.txt` must be updated to match. Simply copy the `.gs` file to the `.js.txt` path.
 
 **Why this exists**: the HTML pages are served from GitHub Pages (`live-site-pages/`), but the `.gs` files live in `googleAppsScripts/` which is not part of the deployed site. The `.js.txt` file bridges this gap — it's deployed alongside the HTML so the browser `fetch()` can access it.
 

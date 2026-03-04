@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-04 06:19:05 PM EST` · Repo version: `v02.67r`
+Last updated: `2026-03-04 06:32:59 PM EST` · Repo version: `v02.68r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -163,9 +163,11 @@ htmltemplateautoupdate/
 │   ├── gas-project-creatorhtml.changelog.txt # Deployed changelog for popup
 │   ├── gas-project-creator-code.js.txt # Shared GAS template source for all Copy Code.gs buttons
 │   └── sounds/                 # Audio feedback files
-├── live-site-templates/        # Template for new pages
-│   ├── HtmlTemplateAutoUpdate.html           # Template HTML page
-│   └── HtmlTemplateAutoUpdatehtml.version.txt # Template version file (frozen at v01.00w)
+├── live-site-templates/        # Templates for new pages
+│   ├── HtmlTemplateAutoUpdate.html           # Template HTML page (no GAS)
+│   ├── HtmlTemplateAutoUpdatehtml.version.txt # Template version file (frozen at v01.00w)
+│   ├── GasTemplate.html                      # GAS-enabled template HTML page
+│   └── GasTemplatehtml.version.txt           # GAS template version file (frozen at v01.00w)
 ├── googleAppsScripts/          # Google Apps Script projects
 │   ├── Index/                 # GAS for live-site-pages/index.html
 │   │   ├── index.gs           # Self-updating GAS web app
@@ -179,7 +181,11 @@ htmltemplateautoupdate/
 │   │   ├── gas-project-creator.gs      # GAS project creator web app
 │   │   ├── gas-project-creator.config.json  # Project config (source of truth)
 │   │   └── gas-project-creatorgs.version.txt  # GAS version file (mirrors VERSION var)
-│   └── HtmlTemplateAutoUpdate/  # GAS template for new projects
+│   ├── GasTemplate/             # GAS template for new projects (used by gas-project-creator)
+│   │   ├── gas-template.gs      # Template GAS web app (placeholder values)
+│   │   ├── gas-template.config.json  # Template config (placeholders)
+│   │   └── gas-templategs.version.txt  # Template GAS version file
+│   └── HtmlTemplateAutoUpdate/  # Original GAS template (base for GasTemplate)
 │       ├── HtmlTemplateAutoUpdate.gs           # Template GAS web app
 │       ├── HtmlTemplateAutoUpdate.config.json  # Template config (placeholders)
 │       └── HtmlTemplateAutoUpdategs.version.txt  # Template GAS version file
@@ -243,6 +249,10 @@ htmltemplateautoupdate/
 │   │   ├── gas-project-creatorhtml.changelog-archive.md  # Older changelog sections (rotated)
 │   │   ├── gas-project-creatorgs.changelog.md            # User-facing changelog for GAS Project Creator GAS
 │   │   ├── gas-project-creatorgs.changelog-archive.md    # Older changelog sections (rotated)
+│   │   ├── GasTemplatehtml.changelog.md          # GAS template page changelog
+│   │   ├── GasTemplatehtml.changelog-archive.md  # GAS template page changelog archive
+│   │   ├── GasTemplategs.changelog.md            # GAS template GAS changelog
+│   │   ├── GasTemplategs.changelog-archive.md    # GAS template GAS changelog archive
 │   │   ├── HtmlTemplateAutoUpdatehtml.changelog.md          # Template page changelog
 │   │   ├── HtmlTemplateAutoUpdatehtml.changelog-archive.md  # Template page changelog archive
 │   │   ├── HtmlTemplateAutoUpdategs.changelog.md            # Template GAS changelog

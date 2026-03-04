@@ -77,6 +77,8 @@ graph TB
             GAS_GASTPL_CFG["gas-project-creator.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
             GAS_TPL["googleAppsScripts/HtmlTemplateAutoUpdate/\nHtmlTemplateAutoUpdate.gs\n(template)"]
             GAS_TPL_CFG["HtmlTemplateAutoUpdate.config.json\n(template placeholders)"]
+            GAS_NEWTPL["googleAppsScripts/GasTemplate/\ngas-template.gs\n(GAS template)"]
+            GAS_NEWTPL_CFG["gas-template.config.json\n(GAS template placeholders)"]
         end
 
         subgraph "GAS Self-Update Loop"
@@ -93,6 +95,8 @@ graph TB
         subgraph "Template Files"
             TPL["HtmlTemplateAutoUpdate.html\n(template — never bumped)"]
             TPL_VER["HtmlTemplateAutoUpdatehtml.version.txt"]
+            GAS_TPL_PAGE["GasTemplate.html\n(GAS template — never bumped)"]
+            GAS_TPL_PAGE_VER["GasTemplatehtml.version.txt"]
         end
 
         subgraph "Project Config"
@@ -113,13 +117,15 @@ graph TB
     TPL -.->|"copy to create\nnew pages"| INDEX
     TPL -.->|"copy to create\nnew pages"| TEST
     TPL -.->|"copy to create\nnew pages"| SOCCER
-    TPL -.->|"copy to create\nnew pages"| GASTPL_PAGE
-    GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_INDEX
-    GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_TEST
-    GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_GASTPL
-    GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_CFG
-    GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_TEST_CFG
-    GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_GASTPL_CFG
+    GAS_TPL_PAGE -.->|"copy to create\nnew GAS pages"| GASTPL_PAGE
+    GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_INDEX
+    GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_TEST
+    GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_GASTPL
+    GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_CFG
+    GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_TEST_CFG
+    GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_GASTPL_CFG
+    GAS_TPL -.->|"original base\ntemplate"| GAS_NEWTPL
+    GAS_TPL_CFG -.->|"original base\ntemplate"| GAS_NEWTPL_CFG
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_INDEX
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| INDEX
     GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TEST
@@ -152,6 +158,9 @@ graph TB
     style GAS_TPL_CFG fill:#ffe082,color:#000
     style GAS_GASTPL fill:#ff7043,color:#fff
     style GAS_GASTPL_CFG fill:#ffe082,color:#000
+    style GAS_NEWTPL fill:#ffa726,color:#000
+    style GAS_NEWTPL_CFG fill:#ffe082,color:#000
+    style GAS_TPL_PAGE fill:#ffa726,color:#000
     style GAS_APP fill:#42a5f5,color:#fff
     style CLAUDE_MD fill:#ce93d8,color:#000
     style RULES fill:#ce93d8,color:#000
