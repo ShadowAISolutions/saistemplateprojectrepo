@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testhtml.changelog-archive.md](gas-testhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-03-04 12:31:14 PM EST — v02.47r
+
+### Added
+- Input fields for all project configuration variables — you can now edit Version, GitHub Owner, GitHub Repo, GitHub Branch, File Path, Embedding URL, and Splash Logo URL before copying Code.gs
+- All fields prefilled with current defaults and remembered between visits
 
 ## [v01.12w] — 2026-03-04 12:22:18 PM EST — v02.46r
 

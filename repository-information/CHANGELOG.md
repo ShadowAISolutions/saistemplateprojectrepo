@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v02.47r] — 2026-03-04 12:31:14 PM EST
+
+### Added
+- Added input fields for all 12 project configuration variables in GAS Template and GAS Test setup wizards — Version, GitHub Owner, GitHub Repo, GitHub Branch, File Path, Embedding URL, and Splash Logo URL now have editable fields alongside the existing Title, Deployment ID, Spreadsheet ID, Sheet Name, and Sound File ID
+- All new fields are prefilled with current defaults from `gas-template-code.js.txt` and persist via localStorage
+- Copy Code.gs, Copy Config, Apply, and Clear all handle the full set of 12 variables
+
+#### `gas-template.html` — v01.13w
+
+##### Added
+- Input fields for Version, GitHub Owner, GitHub Repo, GitHub Branch, File Path, Embedding URL, and Splash Logo URL in the setup wizard
+- All fields prefilled with current template defaults and saved/restored via localStorage
+
+#### `gas-test.html` — v01.13w
+
+##### Added
+- Input fields for Version, GitHub Owner, GitHub Repo, GitHub Branch, File Path, Embedding URL, and Splash Logo URL in the setup wizard
+- All fields prefilled with current template defaults and saved/restored via localStorage
 
 ## [v02.46r] — 2026-03-04 12:22:18 PM EST
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.12w">
+  <meta name="build-version" content="v01.13w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -675,8 +675,33 @@
           <div class="step-note">These values are baked into the code when you copy &mdash; this should be the last thing you do</div>
           <div class="step-input">
             <label for="cfg-title">Title</label>
-            <div class="input-row"><input type="text" id="cfg-title" placeholder="My GAS Project"><button class="field-clear" onclick="clearField('cfg-title','gas-test-title')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-title" placeholder="My GAS Project" value="Attempt 40"><button class="field-clear" onclick="clearField('cfg-title','gas-test-title')" title="Clear">&times;</button></div>
             <span class="field-hint">Shown in browser tab and GAS UI</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-version">Version</label>
+            <div class="input-row"><input type="text" id="cfg-version" placeholder="01.00" value="01.03"><button class="field-clear" onclick="clearField('cfg-version','gas-test-version')" title="Clear">&times;</button></div>
+            <span class="field-hint">GAS script version number (e.g. 01.03)</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-github-owner">GitHub Owner</label>
+            <div class="input-row"><input type="text" id="cfg-github-owner" placeholder="YourGitHubUsername" value="ShadowAISolutions"><button class="field-clear" onclick="clearField('cfg-github-owner','gas-test-github-owner')" title="Clear">&times;</button></div>
+            <span class="field-hint">GitHub org or username that owns the repo</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-github-repo">GitHub Repo</label>
+            <div class="input-row"><input type="text" id="cfg-github-repo" placeholder="my-gas-project" value="gas-self-update-test"><button class="field-clear" onclick="clearField('cfg-github-repo','gas-test-github-repo')" title="Clear">&times;</button></div>
+            <span class="field-hint">Repository name containing Code.gs</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-github-branch">GitHub Branch</label>
+            <div class="input-row"><input type="text" id="cfg-github-branch" placeholder="main" value="main"><button class="field-clear" onclick="clearField('cfg-github-branch','gas-test-github-branch')" title="Clear">&times;</button></div>
+            <span class="field-hint">Branch to pull Code.gs updates from</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-file-path">File Path</label>
+            <div class="input-row"><input type="text" id="cfg-file-path" placeholder="Code.gs" value="Code.gs"><button class="field-clear" onclick="clearField('cfg-file-path','gas-test-file-path')" title="Clear">&times;</button></div>
+            <span class="field-hint">Path to the .gs file in the repo</span>
           </div>
           <div class="step-input">
             <label for="cfg-deployment-id">Deployment ID</label>
@@ -697,6 +722,16 @@
             <label for="cfg-sound-id">Sound File ID <em>(optional)</em></label>
             <div class="input-row"><input type="text" id="cfg-sound-id" placeholder="1bzVp6wp..."><button class="field-clear" onclick="clearField('cfg-sound-id','gas-test-sound-file-id')" title="Clear">&times;</button></div>
             <span class="field-hint">Google Drive file ID for notification sound</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-embedding-url">Embedding URL <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-embedding-url" placeholder="https://yoursite.com/page" value="https://www.shadowaisolutions.com/test"><button class="field-clear" onclick="clearField('cfg-embedding-url','gas-test-embedding-url')" title="Clear">&times;</button></div>
+            <span class="field-hint">External page that hosts this GAS app in an iframe</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-splash-logo">Splash Logo URL <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS%20Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo','gas-test-splash-logo')" title="Clear">&times;</button></div>
+            <span class="field-hint">Logo shown on the GAS splash screen</span>
           </div>
           <div class="pre-wrap" style="margin-top:8px"><button class="btn-copy-json" onclick="copyGsCode(this)">Copy Code.gs</button></div>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
@@ -1283,15 +1318,29 @@
         var code = _gsCode;
         // Inject config values from form fields into the code
         var title = (document.getElementById('cfg-title') || {}).value || '';
+        var version = (document.getElementById('cfg-version') || {}).value || '';
+        var ghOwner = (document.getElementById('cfg-github-owner') || {}).value || '';
+        var ghRepo = (document.getElementById('cfg-github-repo') || {}).value || '';
+        var ghBranch = (document.getElementById('cfg-github-branch') || {}).value || '';
+        var filePath = (document.getElementById('cfg-file-path') || {}).value || '';
         var deployId = (document.getElementById('cfg-deployment-id') || {}).value || '';
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         var sheetName = (document.getElementById('cfg-sheet-name') || {}).value || '';
         var soundId = (document.getElementById('cfg-sound-id') || {}).value || '';
+        var embedUrl = (document.getElementById('cfg-embedding-url') || {}).value || '';
+        var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
         if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
+        if (version.trim()) code = code.replace(/var VERSION\s*=\s*"[^"]*"/, 'var VERSION = "' + version.trim() + '"');
+        if (ghOwner.trim()) code = code.replace(/var GITHUB_OWNER\s*=\s*"[^"]*"/, 'var GITHUB_OWNER  = "' + ghOwner.trim() + '"');
+        if (ghRepo.trim()) code = code.replace(/var GITHUB_REPO\s*=\s*"[^"]*"/, 'var GITHUB_REPO   = "' + ghRepo.trim() + '"');
+        if (ghBranch.trim()) code = code.replace(/var GITHUB_BRANCH\s*=\s*"[^"]*"/, 'var GITHUB_BRANCH = "' + ghBranch.trim() + '"');
+        if (filePath.trim()) code = code.replace(/var FILE_PATH\s*=\s*"[^"]*"/, 'var FILE_PATH     = "' + filePath.trim() + '"');
         if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
         if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
-        if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
+        if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
         if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
+        if (embedUrl.trim()) code = code.replace(/var EMBEDDING_URL\s*=\s*"[^"]*"/, 'var EMBEDDING_URL = "' + embedUrl.trim() + '"');
+        if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
         navigator.clipboard.writeText(code).then(function() {
           btn.textContent = 'Copied!';
           setTimeout(function() { btn.textContent = 'Copy Code.gs'; }, 1500);
@@ -1311,17 +1360,31 @@
     // ── Config Management ──────────────────────────────────────────
     function applyConfig() {
       var title = document.getElementById('cfg-title').value.trim();
+      var version = document.getElementById('cfg-version').value.trim();
+      var ghOwner = document.getElementById('cfg-github-owner').value.trim();
+      var ghRepo = document.getElementById('cfg-github-repo').value.trim();
+      var ghBranch = document.getElementById('cfg-github-branch').value.trim();
+      var filePath = document.getElementById('cfg-file-path').value.trim();
       var deployId = document.getElementById('cfg-deployment-id').value.trim();
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim();
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
       var soundId = document.getElementById('cfg-sound-id').value.trim();
+      var embedUrl = document.getElementById('cfg-embedding-url').value.trim();
+      var splashLogo = document.getElementById('cfg-splash-logo').value.trim();
 
       // Save to localStorage
       localStorage.setItem('gas-test-title', title);
+      localStorage.setItem('gas-test-version', version);
+      localStorage.setItem('gas-test-github-owner', ghOwner);
+      localStorage.setItem('gas-test-github-repo', ghRepo);
+      localStorage.setItem('gas-test-github-branch', ghBranch);
+      localStorage.setItem('gas-test-file-path', filePath);
       localStorage.setItem('gas-test-deployment-id', deployId);
       localStorage.setItem('gas-test-spreadsheet-id', sheetId);
       localStorage.setItem('gas-test-sheet-name', sheetName);
       localStorage.setItem('gas-test-sound-file-id', soundId);
+      localStorage.setItem('gas-test-embedding-url', embedUrl);
+      localStorage.setItem('gas-test-splash-logo', splashLogo);
 
       // Update page title
       if (title) document.title = title;
@@ -1363,17 +1426,31 @@
 
     function showConfig() {
       var title = document.getElementById('cfg-title').value.trim() || 'YOUR_PROJECT_TITLE';
+      var version = document.getElementById('cfg-version').value.trim() || '01.00';
+      var ghOwner = document.getElementById('cfg-github-owner').value.trim() || 'YOUR_GITHUB_OWNER';
+      var ghRepo = document.getElementById('cfg-github-repo').value.trim() || 'YOUR_GITHUB_REPO';
+      var ghBranch = document.getElementById('cfg-github-branch').value.trim() || 'main';
+      var filePath = document.getElementById('cfg-file-path').value.trim() || 'Code.gs';
       var deployId = document.getElementById('cfg-deployment-id').value.trim() || 'YOUR_DEPLOYMENT_ID';
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || 'YOUR_SPREADSHEET_ID';
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
       var soundId = document.getElementById('cfg-sound-id').value.trim() || '';
+      var embedUrl = document.getElementById('cfg-embedding-url').value.trim() || '';
+      var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || '';
 
       var json = '{\n'
         + '  "TITLE": "' + title + '",\n'
+        + '  "VERSION": "' + version + '",\n'
+        + '  "GITHUB_OWNER": "' + ghOwner + '",\n'
+        + '  "GITHUB_REPO": "' + ghRepo + '",\n'
+        + '  "GITHUB_BRANCH": "' + ghBranch + '",\n'
+        + '  "FILE_PATH": "' + filePath + '",\n'
         + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
         + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
         + '  "SHEET_NAME": "' + sheetName + '",\n'
-        + '  "SOUND_FILE_ID": "' + soundId + '"\n'
+        + '  "SOUND_FILE_ID": "' + soundId + '",\n'
+        + '  "EMBEDDING_URL": "' + embedUrl + '",\n'
+        + '  "SPLASH_LOGO_URL": "' + splashLogo + '"\n'
         + '}';
 
       var output = document.getElementById('config-output');
@@ -1400,7 +1477,8 @@
 
     function clearField(inputId, storageKey) {
       var el = document.getElementById(inputId);
-      if (el) el.value = inputId === 'cfg-sheet-name' ? 'Live_Sheet' : '';
+      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-file-path':'Code.gs','cfg-version':'01.00'};
+      if (el) el.value = defaults[inputId] || '';
       localStorage.removeItem(storageKey);
       var statusMap = {
         'gas-test-deployment-id': 'local-deploy',
@@ -1416,16 +1494,30 @@
 
     function clearConfig() {
       localStorage.removeItem('gas-test-title');
+      localStorage.removeItem('gas-test-version');
+      localStorage.removeItem('gas-test-github-owner');
+      localStorage.removeItem('gas-test-github-repo');
+      localStorage.removeItem('gas-test-github-branch');
+      localStorage.removeItem('gas-test-file-path');
       localStorage.removeItem('gas-test-deployment-id');
       localStorage.removeItem('gas-test-spreadsheet-id');
       localStorage.removeItem('gas-test-sheet-name');
       localStorage.removeItem('gas-test-sound-file-id');
+      localStorage.removeItem('gas-test-embedding-url');
+      localStorage.removeItem('gas-test-splash-logo');
 
       document.getElementById('cfg-title').value = '';
+      document.getElementById('cfg-version').value = '01.00';
+      document.getElementById('cfg-github-owner').value = '';
+      document.getElementById('cfg-github-repo').value = '';
+      document.getElementById('cfg-github-branch').value = 'main';
+      document.getElementById('cfg-file-path').value = 'Code.gs';
       document.getElementById('cfg-deployment-id').value = '';
       document.getElementById('cfg-spreadsheet-id').value = '';
       document.getElementById('cfg-sheet-name').value = 'Live_Sheet';
       document.getElementById('cfg-sound-id').value = '';
+      document.getElementById('cfg-embedding-url').value = '';
+      document.getElementById('cfg-splash-logo').value = '';
       document.getElementById('config-output').style.display = 'none';
       document.getElementById('saved-badge').style.display = 'none';
 
@@ -1464,16 +1556,30 @@
     // ── Load saved config on page load ──────────────────────────────
     (function() {
       var savedTitle = localStorage.getItem('gas-test-title') || '';
+      var savedVersion = localStorage.getItem('gas-test-version') || '';
+      var savedGhOwner = localStorage.getItem('gas-test-github-owner') || '';
+      var savedGhRepo = localStorage.getItem('gas-test-github-repo') || '';
+      var savedGhBranch = localStorage.getItem('gas-test-github-branch') || '';
+      var savedFilePath = localStorage.getItem('gas-test-file-path') || '';
       var savedDeploy = localStorage.getItem('gas-test-deployment-id') || '';
       var savedSheet = localStorage.getItem('gas-test-spreadsheet-id') || '';
       var savedSheetName = localStorage.getItem('gas-test-sheet-name') || '';
       var savedSound = localStorage.getItem('gas-test-sound-file-id') || '';
+      var savedEmbedUrl = localStorage.getItem('gas-test-embedding-url') || '';
+      var savedSplashLogo = localStorage.getItem('gas-test-splash-logo') || '';
 
       if (savedTitle) document.getElementById('cfg-title').value = savedTitle;
+      if (savedVersion) document.getElementById('cfg-version').value = savedVersion;
+      if (savedGhOwner) document.getElementById('cfg-github-owner').value = savedGhOwner;
+      if (savedGhRepo) document.getElementById('cfg-github-repo').value = savedGhRepo;
+      if (savedGhBranch) document.getElementById('cfg-github-branch').value = savedGhBranch;
+      if (savedFilePath) document.getElementById('cfg-file-path').value = savedFilePath;
       if (savedDeploy) document.getElementById('cfg-deployment-id').value = savedDeploy;
       if (savedSheet) document.getElementById('cfg-spreadsheet-id').value = savedSheet;
       if (savedSheetName) document.getElementById('cfg-sheet-name').value = savedSheetName;
       if (savedSound) document.getElementById('cfg-sound-id').value = savedSound;
+      if (savedEmbedUrl) document.getElementById('cfg-embedding-url').value = savedEmbedUrl;
+      if (savedSplashLogo) document.getElementById('cfg-splash-logo').value = savedSplashLogo;
 
       var hasSaved = savedTitle || savedDeploy || savedSheet || savedSound;
       if (hasSaved) {
