@@ -3,9 +3,21 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templategs.changelog-archive.md](gas-templategs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [01.05g] — 2026-03-04 11:04:37 AM EST — v02.39r
+
+### Added
+- Test Sound, Test Beep, and Test Vibrate buttons for audio and haptic feedback testing
+- "Did it redirect?" and "Is this awesome?" interactive radio button groups
+- Decorative SVG tree graphic
+- Sound playback with detailed error feedback (loading, server error, play rejected, audio error)
+- Vibration test with browser support detection
+
+### Changed
+- Sound preload now shows server errors instead of failing silently
 
 ## [01.04g] — 2026-03-04 10:48:27 AM EST — v02.38r
 

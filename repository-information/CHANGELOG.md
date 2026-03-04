@@ -3,9 +3,42 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v02.39r] — 2026-03-04 11:04:37 AM EST
+
+### Added
+- Test Sound (Drive), Test Beep (Old), and Test Vibrate buttons to GAS web app for audio and haptic feedback testing
+- "Did it redirect?" and "Is this awesome?" radio button groups to GAS web app
+- Decorative SVG tree graphic to GAS web app
+- `playReadySound()` function with detailed error handling for Drive-hosted notification sounds
+- `testVibrate()` function with browser support detection
+
+### Changed
+- Sound preload now captures and displays server errors via `_soundError` variable instead of silently swallowing failures
+- Added "Reference Implementation Fidelity" rule to prevent future feature omissions when matching reference files
+
+#### `gas-template.gs` — 01.05g
+##### Added
+- Test Sound, Test Beep, and Test Vibrate buttons for audio and haptic feedback testing
+- "Did it redirect?" and "Is this awesome?" radio button groups
+- Decorative SVG tree graphic
+- Sound playback function with detailed error handling and status feedback
+- Vibration test function with browser support detection
+##### Changed
+- Sound preload now shows server errors instead of failing silently
+
+#### `gas-test.gs` — 01.05g
+##### Added
+- Test Sound, Test Beep, and Test Vibrate buttons for audio and haptic feedback testing
+- "Did it redirect?" and "Is this awesome?" radio button groups
+- Decorative SVG tree graphic
+- Sound playback function with detailed error handling and status feedback
+- Vibration test function with browser support detection
+##### Changed
+- Sound preload now shows server errors instead of failing silently
 
 ## [v02.38r] — 2026-03-04 10:48:27 AM EST
 

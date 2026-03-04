@@ -118,6 +118,16 @@ GAS-enabled HTML pages (gas-template.html, gas-test.html) include a "Copy Code.g
 
 **When adding a new GAS project** that needs a Copy Code.gs button: create the corresponding `-code.js.txt` file in `live-site-pages/` and add it to this table.
 
+## Reference Implementation Fidelity
+
+When the user says to make a GAS file (or any file) match a reference implementation — whether it's `RND_GAS_AND_WEBSITE/Code.gs`, another `.gs` file, or any other reference — **include ALL features from the reference**. Never skip, omit, or filter features based on assumptions about what is "R&D-only", "test-only", or "not production-ready". The user decides what belongs; Claude replicates faithfully.
+
+- **Copy everything**: UI elements (buttons, radio inputs, SVGs, decorative elements), client-side functions (sound, vibrate, visual feedback), server-side functions, error handling patterns — all of it
+- **Adapt only config values**: replace hardcoded IDs, URLs, and project-specific config with the target file's own config variables (DEPLOYMENT_ID, SPREADSHEET_ID, TITLE, etc.)
+- **When in doubt, include it**: if unsure whether a feature belongs, include it. The user can always ask to remove something later — but silently omitting features forces them to notice and re-request, which wastes time and erodes trust
+- **This is especially critical on template repos**: template repos exist to provide the full feature set. Stripping features defeats the purpose
+- **No "cleanup" filtering**: do not treat reference matching as an opportunity to "clean up" or "simplify". Matching means matching — every element, every function, every visual component
+
 ## GAS UI Layout Awareness
 
 GAS UI elements (iframe panels, toggle buttons, status indicators, overlays) are **guests** inside the host HTML page. They must defer to the host page's existing layout — the HTML page should never need to accommodate GAS elements. When making changes to GAS-related UI on any HTML page:

@@ -106,7 +106,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.04g";
+var VERSION = "01.05g";
 var TITLE = "GAS Integration Status";                               // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -174,13 +174,73 @@ function doGet() {
         <iframe id="sheet-frame" src="" frameborder="0"></iframe>
       </div>
 
+      <div style="margin-top: 10px; font-size: 14px; color: #333;">
+        <span style="font-weight: bold;">Did it redirect?</span>
+        <label style="margin-left: 10px;"><input type="radio" name="redirected" value="yes"> Yes</label>
+        <label style="margin-left: 10px;"><input type="radio" name="redirected" value="no"> No</label>
+      </div>
+      <div style="margin-top: 10px;">
+        <button onclick="playReadySound()" style="background:#1565c0;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;">🔊 Test Sound (Drive)</button>
+        <button onclick="playBeep()" style="background:#6a1b9a;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;margin-left:6px;">🔔 Test Beep (Old)</button>
+        <button onclick="testVibrate()" style="background:#2e7d32;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;margin-left:6px;">📳 Test Vibrate</button>
+      </div>
+      <div style="margin-top: 10px; font-size: 14px; color: #333;">
+        <span style="font-weight: bold;">Is this awesome?</span>
+        <label style="margin-left: 10px;"><input type="radio" name="awesome" value="yes"> Yes</label>
+        <label style="margin-left: 10px;"><input type="radio" name="awesome" value="no"> No</label>
+      </div>
+
+      <div style="margin-top: 30px; text-align: center;">
+        <svg width="200" height="260" viewBox="0 0 200 260">
+          <!-- trunk -->
+          <rect x="85" y="170" width="30" height="70" rx="4" fill="#8B5E3C"/>
+          <rect x="88" y="170" width="6" height="70" rx="2" fill="#A0714F" opacity="0.5"/>
+          <!-- tree layers (bottom to top) -->
+          <polygon points="100,10 30,100 170,100" fill="#2E7D32"/>
+          <polygon points="100,50 20,150 180,150" fill="#388E3C"/>
+          <polygon points="100,90 10,190 190,190" fill="#43A047"/>
+          <!-- ground -->
+          <ellipse cx="100" cy="242" rx="70" ry="10" fill="#5D4037" opacity="0.3"/>
+        </svg>
+      </div>
+
       <script>
-        // Pre-load Drive sound from server on page load (if configured)
+        // Pre-load Drive sound from server on page load
         var _soundDataUrl = null;
+        var _soundError = null;
         google.script.run
           .withSuccessHandler(function(dataUrl) { _soundDataUrl = dataUrl; })
-          .withFailureHandler(function() {})
+          .withFailureHandler(function(err) { _soundError = err.message; })
           .getSoundBase64();
+
+        function playReadySound() {
+          var status = document.getElementById('result');
+          if (_soundError) {
+            status.style.background = '#ffebee';
+            status.textContent = 'Server error loading sound: ' + _soundError;
+            return;
+          }
+          if (!_soundDataUrl) {
+            status.style.background = '#fff3e0';
+            status.textContent = 'Sound still loading from server...';
+            return;
+          }
+          status.style.background = '#fff3e0';
+          status.textContent = 'Playing... (length: ' + _soundDataUrl.length + ')';
+          try {
+            var audio = new Audio(_soundDataUrl);
+            audio.play().then(function() {
+              status.style.background = '#e8f5e9';
+              status.textContent = 'Drive sound playing (length: ' + _soundDataUrl.length + ')';
+            }).catch(function(e) {
+              status.style.background = '#ffebee';
+              status.textContent = 'Play rejected: ' + e.message;
+            });
+          } catch(e) {
+            status.style.background = '#ffebee';
+            status.textContent = 'Audio error: ' + e.message;
+          }
+        }
 
         function playBeep() {
           try {
@@ -194,6 +254,18 @@ function doGet() {
             osc.start();
             osc.stop(ctx.currentTime + 0.15);
           } catch(e) {}
+        }
+
+        function testVibrate() {
+          var status = document.getElementById('result');
+          if (navigator.vibrate) {
+            navigator.vibrate(200);
+            status.style.background = '#e8f5e9';
+            status.textContent = 'Vibrate triggered (200ms)';
+          } else {
+            status.style.background = '#ffebee';
+            status.textContent = 'navigator.vibrate not supported on this device/browser';
+          }
         }
 
         function applyData(data) {
