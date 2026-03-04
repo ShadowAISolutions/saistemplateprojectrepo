@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v02.53r] — 2026-03-04 01:26:42 PM EST
+
+### Added
+- "Bootstrap & Circular Dependency Reasoning" rule in behavioral-rules.md to catch chicken-and-egg logic in future explanations
+- Two-step deployment instructions (Deploy #1 and Deploy #2) on GAS Test and GAS Template pages explaining the bootstrap flow
+
+#### `gas-test.html` — v01.19w
+
+##### Added
+- Deploy #1 and Deploy #2 steps in setup instructions explaining the two-deploy bootstrap and why it's needed
+
+#### `gas-template.html` — v01.14w
+
+##### Added
+- Deploy #1 and Deploy #2 steps in setup instructions explaining the two-deploy bootstrap and why it's needed
 
 ## [v02.52r] — 2026-03-04 01:15:40 PM EST
 

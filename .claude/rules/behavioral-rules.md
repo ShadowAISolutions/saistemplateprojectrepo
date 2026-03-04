@@ -133,6 +133,15 @@ When adding, moving, or reorganizing `##` sections in CLAUDE.md, follow the atte
 - **Never pass along a synthesized conclusion as confirmed** just because it sounds reasonable. If the gap between what the sources say and what the summary concludes requires inference, say so explicitly
 - When in doubt, default to: *"Based on search results, this appears to be the case, but I wasn't able to find direct confirmation — treat this as an untested inference"*
 
+## Bootstrap & Circular Dependency Reasoning
+- When explaining or reasoning about any system that **creates its own prerequisites** (bootstrap flows, self-update mechanisms, chicken-and-egg dependencies), **trace the full dependency chain before asserting the number of steps**. Specifically:
+  - Identify every value or artifact the system needs to function (IDs, tokens, URLs, config values)
+  - For each one, determine: does it exist before the first run, or is it *produced by* a run? If produced by a run, the system cannot use it until a subsequent run — that's a multi-step bootstrap
+  - Count the actual manual touches required, not the idealized steady-state flow
+- **Common pattern**: a system that deploys itself needs a deployment ID to target its own deployment, but the ID doesn't exist until after the first deploy → two manual steps minimum (deploy to get the ID, then update the code with the ID)
+- This applies beyond deployment: any self-referential system (self-updating scripts, auto-config tools, CI pipelines that modify their own config) may have bootstrap steps that the steady-state description hides. Always surface them when explaining setup to the user
+- **The test**: before saying "just one step" or "fully automatic after X", ask: "does this system need any output from its own execution as input?" If yes, there's a bootstrap gap
+
 ## User-Owned Content — Do Not Override
 - **Reminders, to-do items, and other user-created notes are the user's property** — never mark them as completed, remove them, or modify their meaning without explicit user approval, even if the current task appears to fulfill them
 - The fact that a task *relates to* a reminder does not mean it *satisfies* the reminder. The user may have had a broader or different intent than what was implemented. Only the user decides when their own notes are resolved

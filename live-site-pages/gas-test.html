@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.18w">
+  <meta name="build-version" content="v01.19w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -672,8 +672,9 @@
           </details>
         </li>
         <li>Enable the Apps Script API at <code>script.google.com/home/usersettings</code></li>
-        <li>Deploy as a Web app
+        <li><strong>Deploy #1</strong> &mdash; Create the Web app deployment
           <div class="step-note">Deploy &rarr; New deployment &rarr; Select type: Web app &rarr; Execute as: Me &rarr; Who has access: Anyone</div>
+          <div class="step-note" style="margin-top:6px">Copy the <strong>Deployment ID</strong> (starts with <code>AKfycb...</code>). You&rsquo;ll need it for the config below.</div>
         </li>
         <li>Set <code>GITHUB_TOKEN</code> in Script Properties
           <div class="step-note">Project Settings &rarr; Script Properties &rarr; Add: Key = <code>GITHUB_TOKEN</code>, Value = your fine-grained personal access token</div>
@@ -684,8 +685,8 @@
         <li><em>(Optional)</em> If using an installable trigger for sheet caching:
           <div class="step-note">Apps Script editor &rarr; Triggers &rarr; + Add Trigger &rarr; Function: <code>onEditWriteB1ToCache</code>, Event source: From spreadsheet, Event type: On edit</div>
         </li>
-        <li>Fill in your project values below and copy the configured <code>Code.gs</code>
-          <div class="step-note">These values are baked into the code when you copy &mdash; this should be the last thing you do</div>
+        <li>Fill in your project values below (paste the Deployment ID from step 7) and copy the configured <code>Code.gs</code>
+          <div class="step-note">Paste this code into your Apps Script project, replacing the existing code</div>
           <div class="step-input">
             <label for="cfg-deployment-id">Deployment ID <em style="color:#f85149">(required)</em></label>
             <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-deployment-id','gas-test-deployment-id')" title="Clear">&times;</button></div>
@@ -751,6 +752,10 @@
           </div>
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
+        </li>
+        <li><strong>Deploy #2</strong> &mdash; Update the deployment with the new code
+          <div class="step-note">Deploy &rarr; Manage deployments &rarr; Edit (pencil icon) &rarr; Version: New version &rarr; Deploy</div>
+          <div class="step-note" style="margin-top:6px"><strong>Why two deploys?</strong> Deploy #1 creates the deployment URL and gives you the Deployment ID. But the code you pasted in step 11 needs that ID to auto-update itself. Deploy #2 pushes the code (now containing the real Deployment ID) to the live deployment. After this, all future updates are automatic &mdash; pushes to GitHub trigger the GAS to pull and redeploy itself.</div>
         </li>
       </ol>
     </div>

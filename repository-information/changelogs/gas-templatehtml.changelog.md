@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templatehtml.changelog-archive.md](gas-templatehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-03-04 01:26:42 PM EST — v02.53r
+
+### Added
+- Setup instructions now explain the two-deploy bootstrap: Deploy #1 creates the deployment URL, Deploy #2 activates auto-updates
 
 ## [v01.13w] — 2026-03-04 12:31:14 PM EST — v02.47r
 
