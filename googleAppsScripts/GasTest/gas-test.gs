@@ -106,7 +106,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.06g";
+var VERSION = "01.07g";
 var TITLE = "GAS Test Dashboard";                                    // ← gas-test.config.json
 
 // GitHub config — where to pull code from

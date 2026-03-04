@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testhtml.changelog-archive.md](gas-testhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.16w] — 2026-03-04 01:01:33 PM EST — v02.50r
+
+### Changed
+- Default version field updated to match the latest GAS script version
 
 ## [v01.15w] — 2026-03-04 12:55:33 PM EST — v02.49r
 

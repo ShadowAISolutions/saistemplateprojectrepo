@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.15w">
+  <meta name="build-version" content="v01.16w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -726,7 +726,7 @@
           </div>
           <div class="step-input">
             <label for="cfg-version">Version</label>
-            <div class="input-row"><input type="text" id="cfg-version" placeholder="01.00" value="01.06g"><button class="field-clear" onclick="clearField('cfg-version','gas-test-version')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-version" placeholder="01.00" value="01.07g"><button class="field-clear" onclick="clearField('cfg-version','gas-test-version')" title="Clear">&times;</button></div>
             <span class="field-hint">GAS script version number (e.g. 01.03)</span>
           </div>
           <div class="step-input">
@@ -1481,7 +1481,7 @@
 
     function showConfig() {
       var title = document.getElementById('cfg-title').value.trim() || 'GAS Test Dashboard';
-      var version = document.getElementById('cfg-version').value.trim() || '01.06g';
+      var version = document.getElementById('cfg-version').value.trim() || '01.07g';
       var ghOwner = document.getElementById('cfg-github-owner').value.trim() || 'ShadowAISolutions';
       var ghRepo = document.getElementById('cfg-github-repo').value.trim() || 'htmltemplateautoupdate';
       var ghBranch = document.getElementById('cfg-github-branch').value.trim() || 'main';
@@ -1532,7 +1532,7 @@
 
     function clearField(inputId, storageKey) {
       var el = document.getElementById(inputId);
-      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-file-path':'googleAppsScripts/GasTest/gas-test.gs','cfg-version':'01.06g'};
+      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-file-path':'googleAppsScripts/GasTest/gas-test.gs','cfg-version':'01.07g'};
       if (el) el.value = defaults[inputId] || '';
       localStorage.removeItem(storageKey);
       var statusMap = {
@@ -1563,7 +1563,7 @@
       localStorage.removeItem('gas-test-splash-logo');
 
       document.getElementById('cfg-title').value = 'GAS Test Dashboard';
-      document.getElementById('cfg-version').value = '01.06g';
+      document.getElementById('cfg-version').value = '01.07g';
       document.getElementById('cfg-github-owner').value = 'ShadowAISolutions';
       document.getElementById('cfg-github-repo').value = 'htmltemplateautoupdate';
       document.getElementById('cfg-github-branch').value = 'main';
