@@ -7,8 +7,8 @@
 | Landing Page | `live-site-pages/index.html` | v01.17w | *(deploy to activate)* | Active |
 | Test Page | `live-site-pages/test.html` | v01.18w | *(deploy to activate)* | Active |
 | Soccer Ball | `live-site-pages/soccer-ball.html` | v01.01w | *(deploy to activate)* | Active |
-| GAS Template | `live-site-pages/gas-template.html` | v01.03w | *(deploy to activate)* | Active |
-| GAS Test | `live-site-pages/gas-test.html` | v01.02w | *(deploy to activate)* | Active |
+| GAS Template | `live-site-pages/gas-template.html` | v01.04w | *(deploy to activate)* | Active |
+| GAS Test | `live-site-pages/gas-test.html` | v01.03w | *(deploy to activate)* | Active |
 
 ## GAS Projects
 

@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testhtml.changelog-archive.md](gas-testhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.03w] — 2026-03-03 10:42:39 PM EST — v02.22r
+
+### Changed
+- Copy button on the JSON manifest block for one-click clipboard copy
+- GCP Console link added for users who need to set up a new project
+- Detailed GITHUB_TOKEN creation walkthrough and note that the same token works across all your GAS projects
 
 ## [v01.02w] — 2026-03-03 10:27:04 PM EST — v02.21r
 

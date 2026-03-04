@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v02.22r] — 2026-03-03 10:42:39 PM EST
+
+### Changed
+- Step 2 (manifest JSON): added a "Copy" button to copy the `appsscript.json` contents to clipboard
+- Step 3 (GCP project): added link to Google Cloud Console for users who need to create a new project
+- Step 9 (GITHUB_TOKEN): expanded with full instructions on creating a fine-grained PAT and note that the same token works across multiple projects
+
+#### `gas-template.html` — v01.04w
+##### Changed
+- Copy button on JSON manifest block for one-click clipboard copy
+- GCP Console link added to step 3 for new users
+- Detailed GITHUB_TOKEN creation walkthrough and reuse guidance in step 9
+
+#### `gas-test.html` — v01.03w
+##### Changed
+- Copy button on JSON manifest block for one-click clipboard copy
+- GCP Console link added to step 3 for new users
+- Detailed GITHUB_TOKEN creation walkthrough and reuse guidance in step 9
 
 ## [v02.21r] — 2026-03-03 10:27:04 PM EST
 

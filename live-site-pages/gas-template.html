@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.03w">
+  <meta name="build-version" content="v01.04w">
   <title>GAS Integration Status</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -337,6 +337,23 @@
       font-size: 11px;
       color: #484f58;
     }
+    .pre-wrap {
+      position: relative;
+    }
+    .pre-wrap .btn-copy-json {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      color: #8b949e;
+      font: 11px/1 'SFMono-Regular', Consolas, monospace;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .pre-wrap .btn-copy-json:hover { color: #58a6ff; border-color: #58a6ff; }
   </style>
 </head>
 <body>
@@ -426,7 +443,7 @@
       <ol>
         <li>Create a new Apps Script project at <code>script.google.com</code> and paste your <code>.gs</code> file contents</li>
         <li>In Project Settings, enable <strong>Show appsscript.json manifest file</strong> and set its contents to:
-<pre>{
+<div class="pre-wrap"><button class="btn-copy-json" onclick="copyManifest(this)">Copy</button><pre id="manifest-json">{
   "timeZone": "America/New_York",
   "runtimeVersion": "V8",
   "dependencies": {},
@@ -442,9 +459,9 @@
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/script.send_mail"
   ]
-}</pre>
+}</pre></div>
         </li>
-        <li>Create or use a GCP project where you have <strong>Owner</strong> access</li>
+        <li>Create or use a GCP project where you have <strong>Owner</strong> access. If you don't have one, create a new project at <a href="https://console.cloud.google.com/home/" target="_blank" rel="noopener" style="color:#58a6ff">console.cloud.google.com</a></li>
         <li>Enable the <strong>Apps Script API</strong> in your GCP project
           <div class="step-note">APIs &amp; Services &rarr; Library &rarr; search "Apps Script API" &rarr; Enable</div>
         </li>
@@ -468,7 +485,9 @@
           </div>
         </li>
         <li>Set <code>GITHUB_TOKEN</code> in Script Properties
-          <div class="step-note">Project Settings &rarr; Script Properties &rarr; Add: Key = <code>GITHUB_TOKEN</code>, Value = your <code>github_pat_...</code> fine-grained token with "Public repositories" read-only access</div>
+          <div class="step-note">Project Settings &rarr; Script Properties &rarr; Add: Key = <code>GITHUB_TOKEN</code>, Value = your fine-grained personal access token</div>
+          <div class="step-note" style="margin-top:6px"><strong>To create a token:</strong> GitHub.com &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens &rarr; Generate new token. Under "Repository access" select <strong>Public repositories (read-only)</strong>. No additional permissions are needed. Copy the <code>github_pat_...</code> value.</div>
+          <div class="step-note"><strong>Reuse across projects:</strong> The same token works for all your GAS projects &mdash; you don't need a new one per repo. Just paste the same token into each project's Script Properties.</div>
         </li>
         <li>Run any function from the Apps Script editor to trigger the initial <strong>OAuth authorization</strong> prompt</li>
         <li><em>(Optional)</em> If using Google Sheets: create a spreadsheet and enter the details below
@@ -966,6 +985,15 @@
       } else {
         setStatus('audio', 'red', 'missing', 'Unavailable');
       }
+    }
+
+    // ── Copy Manifest JSON ─────────────────────────────────────────
+    function copyManifest(btn) {
+      var text = document.getElementById('manifest-json').textContent;
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+      });
     }
 
     // ── Config Management ──────────────────────────────────────────
