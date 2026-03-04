@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v02.18r] — 2026-03-03 09:53:51 PM EST
+
+### Added
+- Interactive configuration form on GAS Template status page — input GAS project variables directly in the browser and test the GAS iframe connection without editing repo files
+- localStorage persistence for configuration values — saved settings restore automatically on page load
+- Copy Config button generates exportable config.json content for easy transfer to the repository
+
+#### `gas-template.html` — v01.01w
+##### Added
+- Interactive configuration form — input GAS project variables (Title, Deployment ID, Spreadsheet ID, Sheet Name, Sound File ID) directly on the status page
+- Apply button saves settings to browser storage for instant GAS iframe testing without editing repo files
+- Copy Config button generates exportable config.json content for easy transfer to the repository
+- Clear button removes saved settings and resets the dashboard to default state
+- Previously saved settings automatically restore on page load
 
 ## [v02.17r] — 2026-03-03 09:40:29 PM EST
 

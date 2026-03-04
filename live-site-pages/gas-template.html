@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.00w">
+  <meta name="build-version" content="v01.01w">
   <title>GAS Integration Status</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -161,6 +161,113 @@
       text-align: center;
       margin-top: 16px;
     }
+    /* ── Config Form ───────────────────────────────────────── */
+    .config-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .config-field label {
+      font-size: 12px;
+      color: #8b949e;
+      font-weight: 500;
+    }
+    .config-field input {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #c9d1d9;
+      font: 13px/1.4 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .config-field input:focus {
+      border-color: #58a6ff;
+    }
+    .config-field input::placeholder {
+      color: #484f58;
+    }
+    .config-field .field-hint {
+      font-size: 11px;
+      color: #484f58;
+    }
+    .config-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .config-actions button {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-apply {
+      background: #238636;
+      color: #fff;
+      border-color: #2ea043 !important;
+    }
+    .btn-apply:hover { background: #2ea043; }
+    .btn-copy {
+      background: #21262d;
+      color: #c9d1d9;
+    }
+    .btn-copy:hover { background: #30363d; }
+    .btn-clear {
+      background: #21262d;
+      color: #f85149;
+    }
+    .btn-clear:hover { background: #30363d; }
+    .config-toast {
+      text-align: center;
+      font-size: 12px;
+      color: #3fb950;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .config-toast.show { opacity: 1; }
+    .config-output {
+      display: none;
+      margin-top: 12px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      font: 12px/1.5 'SFMono-Regular', Consolas, monospace;
+      color: #c9d1d9;
+      white-space: pre;
+      overflow-x: auto;
+      position: relative;
+    }
+    .config-output .copy-overlay {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: #238636;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .config-output .copy-overlay:hover { background: #2ea043; }
+    .saved-badge {
+      display: inline-block;
+      font-size: 10px;
+      color: #3fb950;
+      background: rgba(63,185,80,0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -243,8 +350,49 @@
       <span class="status-value neutral" id="val-gas-sound">&#8212;</span>
     </div>
 
+    <div class="divider"></div>
+    <div class="section-header">Configuration <span id="saved-badge" class="saved-badge" style="display:none">localStorage</span></div>
+
+    <div class="config-field">
+      <label for="cfg-title">Title</label>
+      <input type="text" id="cfg-title" placeholder="My GAS Project">
+      <span class="field-hint">Shown in browser tab and GAS UI</span>
+    </div>
+
+    <div class="config-field">
+      <label for="cfg-deployment-id">Deployment ID</label>
+      <input type="text" id="cfg-deployment-id" placeholder="AKfycbw...">
+      <span class="field-hint">From Apps Script: Deploy &rarr; Manage deployments</span>
+    </div>
+
+    <div class="config-field">
+      <label for="cfg-spreadsheet-id">Spreadsheet ID <span style="color:#484f58">(optional)</span></label>
+      <input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi...">
+      <span class="field-hint">Google Sheets ID for version tracking</span>
+    </div>
+
+    <div class="config-field">
+      <label for="cfg-sheet-name">Sheet Name <span style="color:#484f58">(optional)</span></label>
+      <input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet">
+      <span class="field-hint">Tab name in the spreadsheet</span>
+    </div>
+
+    <div class="config-field">
+      <label for="cfg-sound-id">Sound File ID <span style="color:#484f58">(optional)</span></label>
+      <input type="text" id="cfg-sound-id" placeholder="1bzVp6wp...">
+      <span class="field-hint">Google Drive file ID for notification sound</span>
+    </div>
+
+    <div class="config-actions">
+      <button class="btn-apply" onclick="applyConfig()">Apply</button>
+      <button class="btn-copy" onclick="showConfig()">Copy Config</button>
+      <button class="btn-clear" onclick="clearConfig()">Clear</button>
+    </div>
+    <div class="config-toast" id="config-toast"></div>
+    <div class="config-output" id="config-output"></div>
+
     <div class="footer-note">
-      Configure variables in <code>gas-template.config.json</code> to connect GAS
+      Values saved in browser localStorage for instant testing &mdash; use Copy Config to export for your repo
     </div>
   </div>
   <!-- GAS 1fr4m3 injected dynamically by script -->
@@ -509,18 +657,41 @@
       checkForUpdate();
     })();
 
-    (function() {
-      var _e = '';
-      if (!_e) return;
-      var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return; }
-      if (!_u) return;
-      // cr34t3 1fr4m3
+    // ── GAS iframe creation (supports hardcoded _e and localStorage override) ──
+    function createGasIframe(deploymentId) {
+      // Remove existing iframe if present
+      var existing = document.getElementById('gas-app');
+      if (existing) existing.remove();
+      if (!deploymentId || deploymentId === 'YOUR_DEPLOYMENT_ID') return false;
+      var url = 'https://script.google.com/macros/s/' + deploymentId + '/exec';
+      var _e = btoa(url.split('').reverse().join(''));
+      var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return false; }
+      if (!_u) return false;
       var f = document.createElement(atob('aWZyYW1l'));
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
       window._r = _u;
       f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
       document.body.appendChild(f);
+      return true;
+    }
+
+    // Try hardcoded _e first, then localStorage
+    (function() {
+      var _e = '';
+      var savedDeploy = localStorage.getItem('gas-tpl-deployment-id');
+      if (_e) {
+        var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return; }
+        if (!_u) return;
+        var f = document.createElement(atob('aWZyYW1l'));
+        f.id = 'gas-app';
+        f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
+        window._r = _u;
+        f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
+        document.body.appendChild(f);
+      } else if (savedDeploy && savedDeploy !== 'YOUR_DEPLOYMENT_ID') {
+        createGasIframe(savedDeploy);
+      }
     })();
 
     // GAS auto-reload — listen for postMessage from the GAS 1fr4m3 after deploy
@@ -684,20 +855,166 @@
       }
     }
 
+    // ── Config Management ──────────────────────────────────────────
+    function applyConfig() {
+      var title = document.getElementById('cfg-title').value.trim();
+      var deployId = document.getElementById('cfg-deployment-id').value.trim();
+      var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim();
+      var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
+      var soundId = document.getElementById('cfg-sound-id').value.trim();
+
+      // Save to localStorage
+      localStorage.setItem('gas-tpl-title', title);
+      localStorage.setItem('gas-tpl-deployment-id', deployId);
+      localStorage.setItem('gas-tpl-spreadsheet-id', sheetId);
+      localStorage.setItem('gas-tpl-sheet-name', sheetName);
+      localStorage.setItem('gas-tpl-sound-file-id', soundId);
+
+      // Update page title
+      if (title) document.title = title;
+
+      // Create/update GAS iframe
+      if (deployId && deployId !== 'YOUR_DEPLOYMENT_ID') {
+        var created = createGasIframe(deployId);
+        if (created) {
+          setStatus('deployment', 'green', 'ok', 'Configured');
+          setStatus('gas-conn', 'gray', 'neutral', 'Connecting...');
+          // Timeout for GAS response
+          setTimeout(function() {
+            var connVal = document.getElementById('val-gas-conn');
+            if (connVal && (connVal.textContent === 'Connecting...' || connVal.textContent === 'Waiting...')) {
+              setStatus('gas-conn', 'yellow', 'warn', 'No response');
+            }
+          }, 10000);
+        }
+      } else {
+        setStatus('deployment', 'red', 'missing', 'Not set');
+        setStatus('gas-conn', 'red', 'missing', 'No iframe');
+      }
+
+      // Update title status
+      if (title && title !== 'CHANGE THIS PROJECT TITLE TEMPLATE') {
+        setStatus('title', 'green', 'ok', title);
+      }
+
+      // Show saved badge
+      document.getElementById('saved-badge').style.display = 'inline-block';
+      showToast('Configuration saved to localStorage');
+    }
+
+    function showConfig() {
+      var title = document.getElementById('cfg-title').value.trim() || 'YOUR_PROJECT_TITLE';
+      var deployId = document.getElementById('cfg-deployment-id').value.trim() || 'YOUR_DEPLOYMENT_ID';
+      var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || 'YOUR_SPREADSHEET_ID';
+      var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
+      var soundId = document.getElementById('cfg-sound-id').value.trim() || '';
+
+      var json = '{\n'
+        + '  "TITLE": "' + title + '",\n'
+        + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
+        + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
+        + '  "SHEET_NAME": "' + sheetName + '",\n'
+        + '  "SOUND_FILE_ID": "' + soundId + '"\n'
+        + '}';
+
+      var output = document.getElementById('config-output');
+      output.style.display = 'block';
+      output.innerHTML = '<span class="copy-overlay" onclick="copyConfigJson()">Copy</span>' + json;
+    }
+
+    function copyConfigJson() {
+      var output = document.getElementById('config-output');
+      // Extract just the JSON text (skip the copy overlay element)
+      var json = output.textContent.replace('Copy', '').trim();
+      navigator.clipboard.writeText(json).then(function() {
+        showToast('config.json copied to clipboard');
+      }).catch(function() {
+        // Fallback: select text
+        var range = document.createRange();
+        range.selectNodeContents(output);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        showToast('Select and copy manually (Ctrl+C)');
+      });
+    }
+
+    function clearConfig() {
+      localStorage.removeItem('gas-tpl-title');
+      localStorage.removeItem('gas-tpl-deployment-id');
+      localStorage.removeItem('gas-tpl-spreadsheet-id');
+      localStorage.removeItem('gas-tpl-sheet-name');
+      localStorage.removeItem('gas-tpl-sound-file-id');
+
+      document.getElementById('cfg-title').value = '';
+      document.getElementById('cfg-deployment-id').value = '';
+      document.getElementById('cfg-spreadsheet-id').value = '';
+      document.getElementById('cfg-sheet-name').value = 'Live_Sheet';
+      document.getElementById('cfg-sound-id').value = '';
+      document.getElementById('config-output').style.display = 'none';
+      document.getElementById('saved-badge').style.display = 'none';
+
+      // Remove iframe
+      var existing = document.getElementById('gas-app');
+      if (existing) existing.remove();
+
+      // Reset dashboard
+      setStatus('deployment', 'red', 'missing', 'Not set');
+      setStatus('gas-conn', 'red', 'missing', 'No iframe');
+      setStatus('gas-version', 'gray', 'neutral', '\u2014');
+      setStatus('gas-github', 'gray', 'neutral', '\u2014');
+      setStatus('gas-sheet', 'gray', 'neutral', '\u2014');
+      setStatus('gas-sound', 'gray', 'neutral', '\u2014');
+      document.title = 'GAS Integration Status';
+      setStatus('title', 'green', 'ok', 'GAS Integration Status');
+
+      showToast('Configuration cleared');
+    }
+
+    function showToast(msg) {
+      var toast = document.getElementById('config-toast');
+      toast.textContent = msg;
+      toast.className = 'config-toast show';
+      setTimeout(function() { toast.className = 'config-toast'; }, 2500);
+    }
+
+    // ── Load saved config on page load ──────────────────────────────
+    (function() {
+      var savedTitle = localStorage.getItem('gas-tpl-title') || '';
+      var savedDeploy = localStorage.getItem('gas-tpl-deployment-id') || '';
+      var savedSheet = localStorage.getItem('gas-tpl-spreadsheet-id') || '';
+      var savedSheetName = localStorage.getItem('gas-tpl-sheet-name') || '';
+      var savedSound = localStorage.getItem('gas-tpl-sound-file-id') || '';
+
+      if (savedTitle) document.getElementById('cfg-title').value = savedTitle;
+      if (savedDeploy) document.getElementById('cfg-deployment-id').value = savedDeploy;
+      if (savedSheet) document.getElementById('cfg-spreadsheet-id').value = savedSheet;
+      if (savedSheetName) document.getElementById('cfg-sheet-name').value = savedSheetName;
+      if (savedSound) document.getElementById('cfg-sound-id').value = savedSound;
+
+      var hasSaved = savedTitle || savedDeploy || savedSheet || savedSound;
+      if (hasSaved) {
+        document.getElementById('saved-badge').style.display = 'inline-block';
+        if (savedTitle) document.title = savedTitle;
+      }
+    })();
+
     // Initial HTML layer checks
     (function() {
-      // Deployment ID check — is _e set?
-      var gasIIFE = document.querySelector('script');
-      var hasDeployment = false;
-      // Check by looking at whether the gas-app iframe exists after a short delay
+      // Deployment ID check — is _e set or localStorage has deployment?
       setTimeout(function() {
         var gasFrame = document.getElementById('gas-app');
         if (gasFrame) {
           setStatus('deployment', 'green', 'ok', 'Configured');
-          hasDeployment = true;
+          // Timeout for GAS response
+          setTimeout(function() {
+            var connVal = document.getElementById('val-gas-conn');
+            if (connVal && (connVal.textContent === 'Waiting...' || connVal.textContent === 'Connecting...')) {
+              setStatus('gas-conn', 'yellow', 'warn', 'No response');
+            }
+          }, 10000);
         } else {
           setStatus('deployment', 'red', 'missing', 'Not set');
-          // GAS layer won't connect without deployment ID
           setStatus('gas-conn', 'red', 'missing', 'No iframe');
           setStatus('gas-version', 'gray', 'neutral', '\u2014');
           setStatus('gas-github', 'gray', 'neutral', '\u2014');
@@ -708,7 +1025,9 @@
 
       // Title check
       var title = document.title;
-      if (title && title !== 'CHANGE THIS PROJECT TITLE TEMPLATE') {
+      if (title && title !== 'CHANGE THIS PROJECT TITLE TEMPLATE' && title !== 'GAS Integration Status') {
+        setStatus('title', 'green', 'ok', title);
+      } else if (title === 'GAS Integration Status') {
         setStatus('title', 'green', 'ok', title);
       } else {
         setStatus('title', 'yellow', 'warn', 'Default');
@@ -726,16 +1045,6 @@
 
       // Audio
       updateDashboardAudio();
-
-      // GAS connection timeout — if no gas-status received in 10s, mark as timeout
-      if (hasDeployment) {
-        setTimeout(function() {
-          var connVal = document.getElementById('val-gas-conn');
-          if (connVal && connVal.textContent === 'Waiting...') {
-            setStatus('gas-conn', 'yellow', 'warn', 'No response');
-          }
-        }, 10000);
-      }
     })();
   </script>
 </body>
