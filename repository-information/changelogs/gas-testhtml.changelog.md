@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testhtml.changelog-archive.md](gas-testhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.21w] — 2026-03-04 01:50:56 PM EST — v02.55r
+
+### Changed
+- Setup steps reordered: API enablement and GCP setup now come before creating the Apps Script project
 
 ## [v01.20w] — 2026-03-04 01:39:56 PM EST — v02.54r
 

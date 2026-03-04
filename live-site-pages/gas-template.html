@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.15w">
+  <meta name="build-version" content="v01.16w">
   <title>GAS Integration Status</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -621,6 +621,11 @@
 
     <div class="setup-steps">
       <ol>
+        <li>Enable the Apps Script API at <code>script.google.com/home/usersettings</code></li>
+        <li>Create or use a GCP project where you have <strong>Owner</strong> access. If you don't have one, create a new project at <a href="https://console.cloud.google.com/home/" target="_blank" rel="noopener" style="color:#58a6ff">console.cloud.google.com</a></li>
+        <li>Enable the <strong>Apps Script API</strong> in your GCP project
+          <div class="step-note">APIs &amp; Services &rarr; Library &rarr; search "Apps Script API" &rarr; Enable</div>
+        </li>
         <li>Create a new Apps Script project at <code>script.google.com</code></li>
         <li>In Project Settings, enable <strong>Show appsscript.json manifest file</strong> and set its contents to:
 <div class="pre-wrap"><button class="btn-copy-json" onclick="copyManifest(this)">Copy</button><pre id="manifest-json">{
@@ -640,10 +645,6 @@
     "https://www.googleapis.com/auth/script.send_mail"
   ]
 }</pre></div>
-        </li>
-        <li>Create or use a GCP project where you have <strong>Owner</strong> access. If you don't have one, create a new project at <a href="https://console.cloud.google.com/home/" target="_blank" rel="noopener" style="color:#58a6ff">console.cloud.google.com</a></li>
-        <li>Enable the <strong>Apps Script API</strong> in your GCP project
-          <div class="step-note">APIs &amp; Services &rarr; Library &rarr; search "Apps Script API" &rarr; Enable</div>
         </li>
         <li>Link the GCP project in Apps Script
           <div class="step-note">Project Settings &rarr; Google Cloud Platform (GCP) Project &rarr; Change project</div>
@@ -678,7 +679,6 @@
             </div>
           </details>
         </li>
-        <li>Enable the Apps Script API at <code>script.google.com/home/usersettings</code></li>
         <li>Set <code>GITHUB_TOKEN</code> in Script Properties
           <div class="step-note">Project Settings &rarr; Script Properties &rarr; Add: Key = <code>GITHUB_TOKEN</code>, Value = your fine-grained personal access token</div>
           <div class="step-note" style="margin-top:6px"><strong>To create a token:</strong> GitHub.com &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens &rarr; Generate new token. Under "Repository access" select <strong>Public repositories (read-only)</strong>. No additional permissions are needed. Copy the <code>github_pat_...</code> value.</div>
