@@ -8,7 +8,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ## [Unreleased]
 
 ### Added
-- Spreadsheet Data section now visible when opening the GAS web app directly — shows sheet name, current version (A1), live value (B1), and pushed version (C1)
+- Interactive embedded Google Sheets preview in the GAS web app — view and edit the connected spreadsheet directly without leaving the page
 
 ## [v01.11w] — 2026-03-04 10:09:15 AM EST — v02.33r
 

@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v02.37r] — 2026-03-04 10:34:53 AM EST
+
+### Changed
+- Replaced read-only spreadsheet cell values with an interactive embedded Google Sheets iframe in the GAS web app — you can now view and edit the spreadsheet directly from the web app
+- Added "Open in Google Sheets" link below the embedded spreadsheet
+
+#### `gas-template.gs` — 01.03g
+##### Changed
+- Spreadsheet section now shows a live, editable Google Sheets embed instead of read-only cell values
+
+#### `gas-test.gs` — 01.03g
+##### Changed
+- Spreadsheet section now shows a live, editable Google Sheets embed instead of read-only cell values
 
 ## [v02.36r] — 2026-03-04 10:30:27 AM EST
 

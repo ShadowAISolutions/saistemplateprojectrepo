@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.02g";
+var VERSION = "01.03g";
 var TITLE = "GAS Integration Status";                               // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -130,12 +130,11 @@ function doGet() {
         button:hover { background: #bf360c; }
         #result { margin-top: 8px; padding: 8px 15px; border-radius: 8px; font-size: 13px; }
         #versionCount { margin-top: 6px; font-size: 12px; color: #888; }
-        #sheetSection { display: none; margin-top: 18px; width: 90%; max-width: 420px; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 16px; background: #fafafa; }
+        #sheetSection { display: none; margin-top: 18px; width: 95%; max-width: 700px; }
         #sheetSection h3 { margin: 0 0 8px 0; font-size: 15px; color: #333; }
-        .sheet-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; border-bottom: 1px solid #eee; }
-        .sheet-row:last-child { border-bottom: none; }
-        .sheet-label { color: #666; font-weight: bold; }
-        .sheet-val { color: #222; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #sheetSection iframe { width: 100%; height: 300px; border: 1px solid #e0e0e0; border-radius: 8px; }
+        #sheetSection a { display: inline-block; margin-top: 6px; font-size: 13px; color: #1a73e8; text-decoration: none; }
+        #sheetSection a:hover { text-decoration: underline; }
       </style>
     </head>
     <body>
@@ -149,11 +148,9 @@ function doGet() {
       <div id="result"></div>
       <div id="versionCount"></div>
       <div id="sheetSection">
-        <h3>&#128202; Spreadsheet Data</h3>
-        <div class="sheet-row"><span class="sheet-label">Sheet:</span> <span class="sheet-val" id="sd-sheet">—</span></div>
-        <div class="sheet-row"><span class="sheet-label">A1 (Current Version):</span> <span class="sheet-val" id="sd-a1">—</span></div>
-        <div class="sheet-row"><span class="sheet-label">B1 (Live Value):</span> <span class="sheet-val" id="sd-b1">—</span></div>
-        <div class="sheet-row"><span class="sheet-label">C1 (Pushed Version):</span> <span class="sheet-val" id="sd-c1">—</span></div>
+        <h3>&#128202; Spreadsheet</h3>
+        <iframe id="sheet-frame" src="" frameborder="0"></iframe>
+        <a id="sheet-open-link" href="#" target="_blank" rel="noopener">Open in Google Sheets &#8599;</a>
       </div>
 
       <script>
@@ -188,13 +185,14 @@ function doGet() {
               }
             }
           }
-          // Populate spreadsheet data section if available
-          if (data.sheetData && !data.sheetData.error) {
+          // Show embedded spreadsheet if configured
+          if (data.spreadsheetId) {
             document.getElementById('sheetSection').style.display = 'block';
-            document.getElementById('sd-sheet').textContent = data.sheetData.sheetName || '—';
-            document.getElementById('sd-a1').textContent = data.sheetData.a1 || '—';
-            document.getElementById('sd-b1').textContent = data.sheetData.b1 || '—';
-            document.getElementById('sd-c1').textContent = data.sheetData.c1 || '—';
+            var frame = document.getElementById('sheet-frame');
+            if (!frame.src || frame.src === '') {
+              frame.src = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit?rm=minimal';
+            }
+            document.getElementById('sheet-open-link').href = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit';
           }
           // Report config status to embedding page
           try {
@@ -213,8 +211,6 @@ function doGet() {
         function pollB1FromCache() {
           google.script.run
             .withSuccessHandler(function(val) {
-              var b1El = document.getElementById('sd-b1');
-              if (b1El && val) b1El.textContent = val;
               try { window.top.postMessage({type: 'gas-b1', value: val}, '*'); } catch(e) {}
               try { window.parent.postMessage({type: 'gas-b1', value: val}, '*'); } catch(e) {}
             })
