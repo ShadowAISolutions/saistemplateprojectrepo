@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v02.40r] — 2026-03-04 11:09:05 AM EST
+
+### Changed
+- Reinforced `TEMPLATE_DEPLOY` check in chat-bookends.md URL display rules — added explicit "check TEMPLATE_DEPLOY first" warning to prevent incorrectly showing "no live site deployed" when `TEMPLATE_DEPLOY` = `On`
+
+### Removed
+- Removed incorrect "Reference Implementation Fidelity" rule from gas-scripts.md (was not the requested reinforcement)
 
 ## [v02.39r] — 2026-03-04 11:04:37 AM EST
 
