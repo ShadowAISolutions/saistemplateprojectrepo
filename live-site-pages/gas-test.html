@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.13w">
+  <meta name="build-version" content="v01.14w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -675,12 +675,12 @@
           <div class="step-note">These values are baked into the code when you copy &mdash; this should be the last thing you do</div>
           <div class="step-input">
             <label for="cfg-title">Title</label>
-            <div class="input-row"><input type="text" id="cfg-title" placeholder="My GAS Project" value="Attempt 40"><button class="field-clear" onclick="clearField('cfg-title','gas-test-title')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-title" placeholder="My GAS Project" value="GAS Test Dashboard"><button class="field-clear" onclick="clearField('cfg-title','gas-test-title')" title="Clear">&times;</button></div>
             <span class="field-hint">Shown in browser tab and GAS UI</span>
           </div>
           <div class="step-input">
             <label for="cfg-version">Version</label>
-            <div class="input-row"><input type="text" id="cfg-version" placeholder="01.00" value="01.03"><button class="field-clear" onclick="clearField('cfg-version','gas-test-version')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-version" placeholder="01.00" value="01.06g"><button class="field-clear" onclick="clearField('cfg-version','gas-test-version')" title="Clear">&times;</button></div>
             <span class="field-hint">GAS script version number (e.g. 01.03)</span>
           </div>
           <div class="step-input">
@@ -690,17 +690,17 @@
           </div>
           <div class="step-input">
             <label for="cfg-github-repo">GitHub Repo</label>
-            <div class="input-row"><input type="text" id="cfg-github-repo" placeholder="my-gas-project" value="gas-self-update-test"><button class="field-clear" onclick="clearField('cfg-github-repo','gas-test-github-repo')" title="Clear">&times;</button></div>
-            <span class="field-hint">Repository name containing Code.gs</span>
+            <div class="input-row"><input type="text" id="cfg-github-repo" placeholder="my-gas-project" value="htmltemplateautoupdate"><button class="field-clear" onclick="clearField('cfg-github-repo','gas-test-github-repo')" title="Clear">&times;</button></div>
+            <span class="field-hint">Repository name containing the .gs file</span>
           </div>
           <div class="step-input">
             <label for="cfg-github-branch">GitHub Branch</label>
             <div class="input-row"><input type="text" id="cfg-github-branch" placeholder="main" value="main"><button class="field-clear" onclick="clearField('cfg-github-branch','gas-test-github-branch')" title="Clear">&times;</button></div>
-            <span class="field-hint">Branch to pull Code.gs updates from</span>
+            <span class="field-hint">Branch to pull .gs updates from</span>
           </div>
           <div class="step-input">
             <label for="cfg-file-path">File Path</label>
-            <div class="input-row"><input type="text" id="cfg-file-path" placeholder="Code.gs" value="Code.gs"><button class="field-clear" onclick="clearField('cfg-file-path','gas-test-file-path')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-file-path" placeholder="Code.gs" value="googleAppsScripts/GasTest/gas-test.gs"><button class="field-clear" onclick="clearField('cfg-file-path','gas-test-file-path')" title="Clear">&times;</button></div>
             <span class="field-hint">Path to the .gs file in the repo</span>
           </div>
           <div class="step-input">
@@ -725,7 +725,7 @@
           </div>
           <div class="step-input">
             <label for="cfg-embedding-url">Embedding URL <em>(optional)</em></label>
-            <div class="input-row"><input type="text" id="cfg-embedding-url" placeholder="https://yoursite.com/page" value="https://www.shadowaisolutions.com/test"><button class="field-clear" onclick="clearField('cfg-embedding-url','gas-test-embedding-url')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-embedding-url" placeholder="https://yoursite.com/page" value="https://shadowaisolutions.github.io/htmltemplateautoupdate/gas-test.html"><button class="field-clear" onclick="clearField('cfg-embedding-url','gas-test-embedding-url')" title="Clear">&times;</button></div>
             <span class="field-hint">External page that hosts this GAS app in an iframe</span>
           </div>
           <div class="step-input">
@@ -1425,12 +1425,12 @@
     }
 
     function showConfig() {
-      var title = document.getElementById('cfg-title').value.trim() || 'YOUR_PROJECT_TITLE';
-      var version = document.getElementById('cfg-version').value.trim() || '01.00';
-      var ghOwner = document.getElementById('cfg-github-owner').value.trim() || 'YOUR_GITHUB_OWNER';
-      var ghRepo = document.getElementById('cfg-github-repo').value.trim() || 'YOUR_GITHUB_REPO';
+      var title = document.getElementById('cfg-title').value.trim() || 'GAS Test Dashboard';
+      var version = document.getElementById('cfg-version').value.trim() || '01.06g';
+      var ghOwner = document.getElementById('cfg-github-owner').value.trim() || 'ShadowAISolutions';
+      var ghRepo = document.getElementById('cfg-github-repo').value.trim() || 'htmltemplateautoupdate';
       var ghBranch = document.getElementById('cfg-github-branch').value.trim() || 'main';
-      var filePath = document.getElementById('cfg-file-path').value.trim() || 'Code.gs';
+      var filePath = document.getElementById('cfg-file-path').value.trim() || 'googleAppsScripts/GasTest/gas-test.gs';
       var deployId = document.getElementById('cfg-deployment-id').value.trim() || 'YOUR_DEPLOYMENT_ID';
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || 'YOUR_SPREADSHEET_ID';
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
@@ -1477,7 +1477,7 @@
 
     function clearField(inputId, storageKey) {
       var el = document.getElementById(inputId);
-      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-file-path':'Code.gs','cfg-version':'01.00'};
+      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-file-path':'googleAppsScripts/GasTest/gas-test.gs','cfg-version':'01.06g'};
       if (el) el.value = defaults[inputId] || '';
       localStorage.removeItem(storageKey);
       var statusMap = {
@@ -1506,18 +1506,18 @@
       localStorage.removeItem('gas-test-embedding-url');
       localStorage.removeItem('gas-test-splash-logo');
 
-      document.getElementById('cfg-title').value = '';
-      document.getElementById('cfg-version').value = '01.00';
-      document.getElementById('cfg-github-owner').value = '';
-      document.getElementById('cfg-github-repo').value = '';
+      document.getElementById('cfg-title').value = 'GAS Test Dashboard';
+      document.getElementById('cfg-version').value = '01.06g';
+      document.getElementById('cfg-github-owner').value = 'ShadowAISolutions';
+      document.getElementById('cfg-github-repo').value = 'htmltemplateautoupdate';
       document.getElementById('cfg-github-branch').value = 'main';
-      document.getElementById('cfg-file-path').value = 'Code.gs';
+      document.getElementById('cfg-file-path').value = 'googleAppsScripts/GasTest/gas-test.gs';
       document.getElementById('cfg-deployment-id').value = '';
       document.getElementById('cfg-spreadsheet-id').value = '';
       document.getElementById('cfg-sheet-name').value = 'Live_Sheet';
       document.getElementById('cfg-sound-id').value = '';
-      document.getElementById('cfg-embedding-url').value = '';
-      document.getElementById('cfg-splash-logo').value = '';
+      document.getElementById('cfg-embedding-url').value = 'https://shadowaisolutions.github.io/htmltemplateautoupdate/gas-test.html';
+      document.getElementById('cfg-splash-logo').value = 'https://www.shadowaisolutions.com/SAIS%20Logo.png';
       document.getElementById('config-output').style.display = 'none';
       document.getElementById('saved-badge').style.display = 'none';
 

@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v02.48r] — 2026-03-04 12:43:18 PM EST
+
+### Changed
+- Replaced stale placeholder defaults in GAS Test config form with accurate values matching the actual project — title, version, repo name, file path, and embedding URL now reflect the real configuration
+
+#### `gas-test.html` — v01.14w
+
+##### Changed
+- Config form now shows correct project values by default instead of outdated placeholders
 
 ## [v02.47r] — 2026-03-04 12:31:14 PM EST
 
