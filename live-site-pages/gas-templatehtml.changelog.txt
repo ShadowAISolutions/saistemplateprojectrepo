@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templatehtml.changelog-archive.md](gas-templatehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05w] — 2026-03-04 07:50:45 AM EST — v02.23r
+
+### Added
+- "Copy Code.gs" button at step 1 — one-click copy of the full GAS source code to paste into the Apps Script editor
 
 ## [v01.04w] — 2026-03-03 10:42:39 PM EST — v02.22r
 

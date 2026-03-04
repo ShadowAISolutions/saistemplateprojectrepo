@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v02.23r] — 2026-03-04 07:50:45 AM EST
+
+### Added
+- "Copy Code.gs" button at step 1 on both GAS Template and GAS Test pages — fetches the associated `.gs` source from a co-deployed text file and copies to clipboard
+- Deployable `.gs` source files (`gas-template-code.js.txt`, `gas-test-code.js.txt`) in `live-site-pages/` so the Copy button works from GitHub Pages without hitting authenticated GitHub API endpoints
+
+#### `gas-template.html` — v01.05w
+##### Added
+- "Copy Code.gs" button at step 1 — one-click copy of the full `gas-template.gs` source code for pasting into the Apps Script editor
+
+#### `gas-test.html` — v01.04w
+##### Added
+- "Copy Code.gs" button at step 1 — one-click copy of the full `gas-test.gs` source code for pasting into the Apps Script editor
 
 ## [v02.22r] — 2026-03-03 10:42:39 PM EST
 

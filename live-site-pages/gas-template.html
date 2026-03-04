@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <title>GAS Integration Status</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -441,7 +441,10 @@
 
     <div class="setup-steps">
       <ol>
-        <li>Create a new Apps Script project at <code>script.google.com</code> and paste your <code>.gs</code> file contents</li>
+        <li>Create a new Apps Script project at <code>script.google.com</code> and paste the <code>Code.gs</code> contents
+          <div class="pre-wrap" style="margin-top:8px"><button class="btn-copy-json" onclick="copyGsCode(this)">Copy Code.gs</button></div>
+          <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
+        </li>
         <li>In Project Settings, enable <strong>Show appsscript.json manifest file</strong> and set its contents to:
 <div class="pre-wrap"><button class="btn-copy-json" onclick="copyManifest(this)">Copy</button><pre id="manifest-json">{
   "timeZone": "America/New_York",
@@ -995,6 +998,22 @@
         setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
       });
     }
+
+    // ── Copy Code.gs ─────────────────────────────────────────────
+    (function() {
+      var _gsCode = null;
+      fetch('gas-template-code.js.txt')
+        .then(function(r) { return r.text(); })
+        .then(function(t) { _gsCode = t; })
+        .catch(function() {});
+      window.copyGsCode = function(btn) {
+        if (!_gsCode) { btn.textContent = 'Loading...'; return; }
+        navigator.clipboard.writeText(_gsCode).then(function() {
+          btn.textContent = 'Copied!';
+          setTimeout(function() { btn.textContent = 'Copy Code.gs'; }, 1500);
+        });
+      };
+    })();
 
     // ── Config Management ──────────────────────────────────────────
     function applyConfig() {

@@ -48,9 +48,11 @@ graph TB
             GASTPL_PAGE["gas-template.html"]
             GASTPL_VERTXT["gas-templatehtml.version.txt"]
             GASTPL_CL["gas-templatehtml.changelog.txt"]
+            GASTPL_CODE["gas-template-code.js.txt"]
             GASTEST_PAGE["gas-test.html"]
             GASTEST_VERTXT["gas-testhtml.version.txt"]
             GASTEST_CL["gas-testhtml.changelog.txt"]
+            GASTEST_CODE["gas-test-code.js.txt"]
             SND1["sounds/Website_Ready_Voice_1.mp3"]
             SND2["sounds/Code_Ready_Voice_1.mp3"]
         end
