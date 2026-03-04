@@ -106,7 +106,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.05g";
+var VERSION = "01.06g";
 var TITLE = "GAS Integration Status";                               // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -153,7 +153,8 @@ function doGet() {
         #sheet-container h3 { text-align: center; color: #333; margin: 0 0 4px 0; }
         #token-info { position: absolute; right: -170px; top: 0; font-size: 11px; color: #666; text-align: left; line-height: 1.6; white-space: nowrap; }
         #token-info div { margin-bottom: 2px; }
-        #sheet-container iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
+        #sheet-container .open-sheet-btn { display: inline-block; background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; text-decoration: none; margin-top: 8px; }
+        #sheet-container .open-sheet-btn:hover { background: #1557b0; }
       </style>
     </head>
     <body>
@@ -171,7 +172,7 @@ function doGet() {
         <h3 id="sheet-name">...</h3>
         <div id="token-info">...</div>
         <div id="live-b1" style="font-size: 20px; font-weight: bold; color: #333; margin-bottom: 4px; text-align: center;">...</div>
-        <iframe id="sheet-frame" src="" frameborder="0"></iframe>
+        <a id="sheet-open-btn" class="open-sheet-btn" href="#" target="_blank" rel="noopener" style="display:none">📊 Open in Google Sheets</a>
       </div>
 
       <div style="margin-top: 10px; font-size: 14px; color: #333;">
@@ -284,10 +285,9 @@ function doGet() {
             var container = document.getElementById('sheet-container');
             container.style.display = 'block';
             document.getElementById('sheet-name').textContent = data.sheetName || 'Spreadsheet';
-            var frame = document.getElementById('sheet-frame');
-            if (!frame.src || frame.src === '') {
-              frame.src = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit?rm=minimal';
-            }
+            var btn = document.getElementById('sheet-open-btn');
+            btn.href = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit';
+            btn.style.display = 'inline-block';
           }
         }
 

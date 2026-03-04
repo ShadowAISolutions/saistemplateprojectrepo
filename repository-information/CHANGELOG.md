@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v02.41r] — 2026-03-04 11:28:22 AM EST
+
+### Fixed
+- Fixed blank Google Sheets iframe in GAS web app — Google Sheets `/edit?rm=minimal` loads blank when nested inside a GAS sandbox iframe embedded on GitHub Pages due to cross-origin X-Frame-Options/CSP restrictions
+
+### Changed
+- Replaced non-functional embedded Sheets iframe with a styled "Open in Google Sheets" button that opens the spreadsheet in a new tab for editing
+- Live spreadsheet data (B1, A1, C1 values) continues to display inline via `google.script.run` polling — unaffected by the iframe removal
+
+#### `gas-test.gs` — 01.06g
+
+##### Fixed
+- Replaced broken embedded Google Sheets iframe with "Open in Google Sheets" button
+
+#### `gas-template.gs` — 01.06g
+
+##### Fixed
+- Same fix applied — replaced broken embedded Google Sheets iframe with "Open in Google Sheets" button
 
 ## [v02.40r] — 2026-03-04 11:09:05 AM EST
 

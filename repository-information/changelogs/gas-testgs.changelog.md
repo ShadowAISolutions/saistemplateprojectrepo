@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testgs.changelog-archive.md](gas-testgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [01.06g] — 2026-03-04 11:28:22 AM EST — v02.41r
+
+### Fixed
+- Spreadsheet now opens reliably in a new tab instead of showing a blank embedded outline
 
 ## [01.05g] — 2026-03-04 11:04:37 AM EST — v02.39r
 
