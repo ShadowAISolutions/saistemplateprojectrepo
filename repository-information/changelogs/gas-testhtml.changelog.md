@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testhtml.changelog-archive.md](gas-testhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-03-04 01:06:51 PM EST — v02.51r
+
+### Changed
+- Copy Config now copies both a prompt and the JSON — paste it directly to Claude and it knows what to do
 
 ## [v01.16w] — 2026-03-04 01:01:33 PM EST — v02.50r
 

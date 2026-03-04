@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.16w">
+  <meta name="build-version" content="v01.17w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -1508,17 +1508,19 @@
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '"\n'
         + '}';
 
+      var prompt = 'Update ' + filePath + ' config — sync these values into the config.json, .gs file, and embedding HTML page:\n\n';
+
       var output = document.getElementById('config-output');
       output.style.display = 'block';
+      output.dataset.copyText = prompt + json;
       output.innerHTML = '<span class="copy-overlay" onclick="copyConfigJson()">Copy</span>' + json;
     }
 
     function copyConfigJson() {
       var output = document.getElementById('config-output');
-      // Extract just the JSON text (skip the copy overlay element)
-      var json = output.textContent.replace('Copy', '').trim();
-      navigator.clipboard.writeText(json).then(function() {
-        showToast('config.json copied to clipboard');
+      var text = output.dataset.copyText || output.textContent.replace('Copy', '').trim();
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('Config + prompt copied to clipboard');
       }).catch(function() {
         // Fallback: select text
         var range = document.createRange();

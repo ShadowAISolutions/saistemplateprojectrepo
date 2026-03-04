@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v02.51r] — 2026-03-04 01:06:51 PM EST
+
+### Changed
+- Copy Config button now includes a Claude-friendly instruction prompt so the full output can be pasted directly to Claude for config sync
+
+#### `gas-test.html` — v01.17w
+
+##### Changed
+- Copy Config output now includes a prompt instructing Claude to sync the values into config.json, .gs file, and embedding HTML
 
 ## [v02.50r] — 2026-03-04 01:01:33 PM EST
 
