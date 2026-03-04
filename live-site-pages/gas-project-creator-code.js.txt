@@ -1,41 +1,136 @@
 // =============================================
 // SELF-UPDATING GOOGLE APPS SCRIPT FROM GITHUB
 // =============================================
-
+//
+// WHAT THIS IS
+// ------------
+// A Google Apps Script web app that pulls its own source code from
+// a GitHub repository and redeploys itself. GitHub is the source of
+// truth — this file (gas-project-creator.gs) is the ONLY file you need to edit.
+//
+// There are TWO ways updates reach the live web app:
+//   1. AUTOMATIC: Push to a claude/* branch → GitHub Action merges to
+//      main → calls doPost(action=deploy) → GAS pulls + deploys itself
+//   2. MANUAL: Click "Pull Latest" in the web app UI
+//
+// PAGE RELOAD (EMBEDDING SOLUTION)
+// ---------------------------------
+// The GAS sandbox iframe blocks programmatic navigation from async
+// callbacks. Solution: embed the web app as a full-screen iframe on
+// a GitHub Pages page. After deploy, the GAS client sends:
+//   window.top.postMessage({type:'gas-reload', version: ...}, '*')
+// The embedding page catches this and reloads itself.
+//
+// ARCHITECTURE — DYNAMIC LOADER PATTERN
+// ---------------------------------------
+// - doGet() serves a STATIC HTML shell (never changes)
+// - All visible content is fetched at runtime via getAppData()
+// - getAppData() returns {version, title} → applyData() updates DOM
+// - After a pull, getAppData() runs on the NEW server code
+// - This bypasses Google's aggressive server-side HTML caching
+//
+// AUTO-DEPLOY FLOW (push → live in ~30 seconds)
+// -----------------------------------------------
+//   1. Claude Code pushes to claude/* branch
+//   2. GitHub Action merges to main
+//   3. GitHub Action calls doPost(action=deploy)
+//   4. doPost() calls pullAndDeployFromGitHub() directly
+//   5. GAS pulls new code from GitHub, overwrites project, deploys
+//   6. postMessage tells the embedding page to reload
+//   7. App shows new version — zero manual clicks
+//
+// FALLBACK: If doPost deploy fails or is unavailable, the client-side
+// auto-pull on page load will catch up on the next page visit.
+//
+// VERSION LIMIT MANAGEMENT (200 VERSION CAP)
+// --------------------------------------------
+// Apps Script has a hard 200 version limit. The API does NOT support
+// deleting versions. When 180+ is reached, a warning appears.
+// Manually clean up: Apps Script editor → Project History → Bulk delete
+//
+// SETUP STEPS
+// -----------
+// 1. Create an Apps Script project, paste this code
+// 2. Enable "Show appsscript.json" in Project Settings, set contents:
+//    {
+//      "timeZone": "America/New_York",
+//      "runtimeVersion": "V8",
+//      "dependencies": {},
+//      "webapp": {
+//        "executeAs": "USER_DEPLOYING",
+//        "access": "ANYONE_ANONYMOUS"
+//      },
+//      "exceptionLogging": "STACKDRIVER",
+//      "oauthScopes": [
+//        "https://www.googleapis.com/auth/script.projects",
+//        "https://www.googleapis.com/auth/script.external_request",
+//        "https://www.googleapis.com/auth/script.deployments",
+//        "https://www.googleapis.com/auth/spreadsheets",
+//        "https://www.googleapis.com/auth/script.send_mail"
+//      ]
+//    }
+// 3. Create or use a GCP project where you have Owner access
+// 4. Enable Apps Script API in GCP project (APIs & Services → Library)
+// 5. Link GCP project in Apps Script (Project Settings → Change project)
+// 6. Enable Apps Script API at script.google.com/home/usersettings
+// 7. Deploy as Web app (Deploy → New deployment → Web app → Anyone)
+// 8. Copy Deployment ID into DEPLOYMENT_ID below
+// 9. Set GITHUB_TOKEN in Script Properties:
+//      Key: GITHUB_TOKEN   Value: github_pat_... token
+//      (fine-grained token with "Public repositories" read-only access)
+// 10. Run any function from editor to trigger OAuth authorization
+// 11. If using Google Sheets: create spreadsheet, copy ID into SPREADSHEET_ID
+// 12. If using installable trigger for sheet caching:
+//      Apps Script editor → Triggers → + Add Trigger →
+//      Function: onEditWriteB1ToCache, Event source: From spreadsheet,
+//      Event type: On edit
+//
+// IMPORTANT — AUTO-INCREMENT VERSION ON EVERY COMMIT:
+//   Whenever Claude Code edits this file, it MUST increment VERSION
+//   by 0.01 (e.g. "01.00g" → "01.01g").
+//
+// IMPORTANT — KEEP THIS OVERVIEW UP TO DATE:
+//   Whenever you make structural changes (new functions, new integrations,
+//   new config variables), update the relevant section of this overview
+//   IN THE SAME COMMIT.
+//
 // =============================================
-// PROJECT CONFIGURATION — EDIT THESE VALUES
-// =============================================
-// All unique project-specific variables in one place.
-// Change these when setting up a new project.
 
-var VERSION = "01.03";
-var TITLE = "Attempt 40";
+// ── PROJECT CONFIG ────────────────────────────────────────────────
+// gas-project-creator.config.json (same directory) is the SINGLE SOURCE OF TRUTH for
+// project-unique values: TITLE, DEPLOYMENT_ID, SPREADSHEET_ID,
+// SHEET_NAME, SOUND_FILE_ID. Edit config.json; the Pre-Commit
+// Checklist syncs the values here and to the embedding HTML page.
+//
+// VERSION and repo-derived values (GITHUB_OWNER, GITHUB_REPO,
+// FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
+// in this file — they are NOT in config.json.
 
-// GitHub repository settings (for pulling code updates)
+var VERSION = "01.08g";
+var TITLE = "GAS Integration Status";                               // ← gas-project-creator.config.json
+
+// GitHub config — where to pull code from
 var GITHUB_OWNER  = "ShadowAISolutions";
-var GITHUB_REPO   = "gas-self-update-test";
+var GITHUB_REPO   = "htmltemplateautoupdate";
 var GITHUB_BRANCH = "main";
-var FILE_PATH     = "Code.gs";
+var FILE_PATH     = "googleAppsScripts/GasTemplate/gas-project-creator.gs";
 
 // Apps Script deployment ID (from Deploy → Manage deployments)
-var DEPLOYMENT_ID = "AKfycbwkKbU1fJ-bsVUi9ZQ8d3MVdT2FfTsG14h52R1K_bsreaL7RgmkC4JJrMtwiq5VZEYX-g";
+var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";                           // ← gas-project-creator.config.json
 
-// Google Spreadsheet settings
-var SPREADSHEET_ID = "11bgXlf8renF2MUwRAs9QXQjhrv3AxJu5b66u0QLTAeI";
-var SHEET_NAME     = "Live_Sheet";
+// Google Sheets config (optional — for version tracking)
+var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";                         // ← gas-project-creator.config.json
+var SHEET_NAME     = "Live_Sheet";                                  // ← gas-project-creator.config.json
 
-// Google Drive sound file ID (for deploy notification sound)
-var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
+// Sound config (optional — Google Drive file ID for notification sound)
+var SOUND_FILE_ID = "";                                             // ← gas-project-creator.config.json
 
-// Embedding page URL (external page that hosts this app in an iframe)
-var EMBEDDING_URL = "https://www.shadowaisolutions.com/test";
+// Embedding page URL — the GitHub Pages page that iframes this GAS app
+var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/gas-project-creator.html";
 
-// Splash screen logo URL
+// Logo shown on the splash screen
 var SPLASH_LOGO_URL = "https://www.shadowaisolutions.com/SAIS%20Logo.png";
-
-// =============================================
-// END OF PROJECT CONFIGURATION
-// =============================================
+// ──────────────────────────────────────────────────────────────────
 
 function doGet() {
   var html = `
@@ -54,11 +149,12 @@ function doGet() {
                  border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px; }
         button:hover { background: #bf360c; }
         #result { margin-top: 8px; padding: 8px 15px; border-radius: 8px; font-size: 13px; }
-        #sheet-container { margin-top: 10px; width: 90%; max-width: 600px; position: relative; }
+        #sheet-container { display: none; margin-top: 10px; width: 90%; max-width: 600px; position: relative; }
         #sheet-container h3 { text-align: center; color: #333; margin: 0 0 4px 0; }
         #token-info { position: absolute; right: -170px; top: 0; font-size: 11px; color: #666; text-align: left; line-height: 1.6; white-space: nowrap; }
         #token-info div { margin-bottom: 2px; }
-        #sheet-container iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
+        #sheet-container .open-sheet-btn { display: inline-block; background: #1a73e8; color: white; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; text-decoration: none; margin-top: 8px; }
+        #sheet-container .open-sheet-btn:hover { background: #1557b0; }
       </style>
     </head>
     <body>
@@ -66,17 +162,17 @@ function doGet() {
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">...</h1>
       <div id="version">...</div>
       <button onclick="checkForUpdates()">🔄 Pull Latest from GitHub</button>
-      <form id="redirect-form" method="GET" action="${EMBEDDING_URL}" target="_top" style="display:inline;">
+      <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
         <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
       </form>
       <div id="result"></div>
       <div id="versionCount" style="margin-top: 6px; font-size: 12px; color: #888;"></div>
 
       <div id="sheet-container">
-        <h3>Live_Sheet</h3>
+        <h3 id="sheet-name">...</h3>
         <div id="token-info">...</div>
         <div id="live-b1" style="font-size: 20px; font-weight: bold; color: #333; margin-bottom: 4px; text-align: center;">...</div>
-        <iframe src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal"></iframe>
+        <a id="sheet-open-btn" class="open-sheet-btn" href="#" target="_blank" rel="noopener" style="display:none">📊 Open in Google Sheets</a>
       </div>
 
       <div style="margin-top: 10px; font-size: 14px; color: #333;">
@@ -147,7 +243,6 @@ function doGet() {
           }
         }
 
-        // Exact v1.67 beep code (AudioContext) — restored unchanged
         function playBeep() {
           try {
             var ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -185,11 +280,28 @@ function doGet() {
               }
             }
           }
+          // Show spreadsheet section if configured
+          if (data.spreadsheetId) {
+            var container = document.getElementById('sheet-container');
+            container.style.display = 'block';
+            document.getElementById('sheet-name').textContent = data.sheetName || 'Spreadsheet';
+            var btn = document.getElementById('sheet-open-btn');
+            btn.href = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit';
+            btn.style.display = 'inline-block';
+          }
         }
 
         google.script.run
           .withSuccessHandler(function(data) { applyData(data); })
           .getAppData();
+
+        // Report config status to embedding page dashboard
+        google.script.run
+          .withSuccessHandler(function(status) {
+            try { window.top.postMessage({type: 'gas-status', config: status}, '*'); } catch(e) {}
+            try { window.parent.postMessage({type: 'gas-status', config: status}, '*'); } catch(e) {}
+          })
+          .getGasStatus();
 
         // Poll cell B1 from cache every 15s (cache is updated by onEditWriteB1ToCache trigger)
         function pollB1FromCache() {
@@ -243,7 +355,7 @@ function doGet() {
         pollQuotaAndLimits();
         setInterval(pollQuotaAndLimits, 60000);
 
-        // Dark blue splash screen — fade out after 1 second
+        // Splash screen — fade out after 1 second
         setTimeout(function() {
           var splash = document.getElementById('splash');
           splash.style.opacity = '0';
@@ -259,14 +371,12 @@ function doGet() {
               document.getElementById('result').style.background = '#e8f5e9';
               document.getElementById('result').innerHTML = '✅ ' + msg;
               if (!wasUpdated) {
-                // Already up to date — just refresh data, no redirect
                 setTimeout(function() { document.getElementById('result').innerHTML = ''; }, 2000);
                 return;
               }
               // New version deployed — update dynamic content and highlight reload button
               setTimeout(function() {
-                google.script.run.writeVersionToSheetA1();
-                google.script.run.writeVersionToSheetC1();
+                google.script.run.writeVersionToSheet();
                 google.script.run
                   .withSuccessHandler(function(data) {
                     applyData(data);
@@ -275,8 +385,6 @@ function doGet() {
                     btn.style.background = '#d32f2f';
                     btn.textContent = '⚠️ Update Available — Reload Page';
                     // Tell parent/top page (if embedded) to reload
-                    // GAS double-iframes: your page > Google wrapper > sandbox (this code)
-                    // So window.parent = Google wrapper, window.top = your page
                     var reloadMsg = {type: 'gas-reload', version: data.version};
                     if (_soundDataUrl) reloadMsg.soundDataUrl = _soundDataUrl;
                     try { window.top.postMessage(reloadMsg, '*'); } catch(e) {}
@@ -296,31 +404,41 @@ function doGet() {
     </html>
   `;
   return HtmlService.createHtmlOutput(html)
-    .setTitle("Claude GitHub")
+    .setTitle(TITLE)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-// POST endpoint — called by GitHub Action after merging to main.
-// Writes a value to cell C1 of Live_Sheet.
-// Usage: curl -L -X POST "WEB_APP_URL" -d "action=writeC1&value=v1.09"
 function doPost(e) {
   var action = (e && e.parameter && e.parameter.action) || "";
+
+  if (action === "deploy") {
+    var result = pullAndDeployFromGitHub();
+    return ContentService.createTextOutput(result);
+  }
+
   if (action === "writeC1") {
     var value = (e.parameter.value) || "";
-    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
-    sheet.getRange("C1").setValue(value + " — " + new Date().toLocaleString());
-    // Signal to the web app client that a new version is available
+    if (SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID") {
+      try {
+        var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+        var sheet = ss.getSheetByName(SHEET_NAME);
+        if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+        sheet.getRange("C1").setValue(value + " — " + new Date().toLocaleString());
+      } catch(e) {}
+    }
     CacheService.getScriptCache().put("pushed_version", value, 3600);
     return ContentService.createTextOutput("OK");
   }
+
   return ContentService.createTextOutput("Unknown action");
 }
 
 function getAppData() {
   var data = { version: "v" + VERSION, title: TITLE };
-  // Always show version count — read from cache first, fall back to live API call
+  data.spreadsheetId = (SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID") ? SPREADSHEET_ID : "";
+  data.sheetName = SHEET_NAME;
+
+  // Version count with caching
   var cache = CacheService.getScriptCache();
   var vStatus = cache.get("version_count_status");
   if (!vStatus) {
@@ -339,7 +457,7 @@ function getAppData() {
         vPageToken = vListData.nextPageToken || null;
       } while (vPageToken);
       vStatus = totalVersions + "/200 versions";
-      if (totalVersions >= 180) vStatus += " — APPROACHING LIMIT! Manually delete old versions in Apps Script editor: Project History > Bulk delete versions";
+      if (totalVersions >= 180) vStatus += " — APPROACHING LIMIT!";
       cache.put("version_count_status", vStatus, 21600);
     } catch(e) {
       vStatus = "Unable to check version count";
@@ -350,12 +468,17 @@ function getAppData() {
 }
 
 function getSoundBase64() {
+  if (!SOUND_FILE_ID || SOUND_FILE_ID === "") return null;
   var url = "https://drive.google.com/uc?export=download&id=" + SOUND_FILE_ID;
   var response = UrlFetchApp.fetch(url, { followRedirects: true });
   var blob = response.getBlob();
   var base64 = Utilities.base64Encode(blob.getBytes());
   var contentType = blob.getContentType() || "audio/mpeg";
   return "data:" + contentType + ";base64," + base64;
+}
+
+function readPushedVersionFromCache() {
+  return CacheService.getScriptCache().get("pushed_version") || "";
 }
 
 function fetchGitHubQuotaAndLimits() {
@@ -396,22 +519,20 @@ function fetchGitHubQuotaAndLimits() {
   return result;
 }
 
-function readPushedVersionFromCache() {
-  return CacheService.getScriptCache().get("pushed_version") || "";
-}
-
 function readB1FromCacheOrSheet() {
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return "";
   var cache = CacheService.getScriptCache();
   var cached = cache.get("live_b1");
   if (cached !== null) return cached;
-
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) return "";
-  var val = sheet.getRange("B1").getValue();
-  var result = val !== null && val !== undefined ? String(val) : "";
-  cache.put("live_b1", result, 21600);
-  return result;
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return "";
+    var val = sheet.getRange("B1").getValue();
+    var result = val !== null && val !== undefined ? String(val) : "";
+    cache.put("live_b1", result, 21600);
+    return result;
+  } catch(e) { return ""; }
 }
 
 // Installable onEdit trigger. Writes B1 value to CacheService when edited.
@@ -427,28 +548,53 @@ function onEditWriteB1ToCache(e) {
   CacheService.getScriptCache().put("live_b1", result, 21600);
 }
 
-function writeVersionToSheetA1() {
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
+function getGasStatus() {
+  var status = {};
+  status.version = "v" + VERSION;
+
+  // Check if GITHUB_TOKEN is set in script properties
+  var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
+  status.hasGithub = !!(GITHUB_TOKEN && GITHUB_TOKEN !== "");
+
+  // Check if SPREADSHEET_ID is configured
+  status.hasSpreadsheet = !!(SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID");
+  if (status.hasSpreadsheet) {
+    status.spreadsheetId = SPREADSHEET_ID;
+    // Read sheet data
+    try {
+      var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      var sheet = ss.getSheetByName(SHEET_NAME);
+      if (sheet) {
+        status.sheetData = {
+          a1: String(sheet.getRange("A1").getValue() || ""),
+          b1: String(sheet.getRange("B1").getValue() || ""),
+          c1: String(sheet.getRange("C1").getValue() || "")
+        };
+      } else {
+        status.sheetData = { error: "Sheet '" + SHEET_NAME + "' not found" };
+      }
+    } catch(e) {
+      status.sheetData = { error: e.message };
+    }
   }
-  sheet.getRange("A1").setValue("v" + VERSION + " — " + new Date().toLocaleString());
+
+  // Check if SOUND_FILE_ID is configured
+  status.hasSound = !!(SOUND_FILE_ID && SOUND_FILE_ID !== "");
+
+  return status;
 }
 
-function writeVersionToSheetC1() {
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-  }
-  sheet.getRange("C1").setValue("v" + VERSION + " — " + new Date().toLocaleString());
+function writeVersionToSheet() {
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+    sheet.getRange("A1").setValue("v" + VERSION + " — " + new Date().toLocaleString());
+  } catch(e) {}
 }
 
 function pullAndDeployFromGitHub() {
-  // GitHub token stored in Script Properties (not in source code for security)
-  // Set it in Apps Script editor: Project Settings → Script Properties → Add
-  //   Key: GITHUB_TOKEN   Value: your github_pat_... token
   var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
 
   var apiUrl = "https://api.github.com/repos/"
@@ -460,16 +606,12 @@ function pullAndDeployFromGitHub() {
     fetchHeaders["Authorization"] = "token " + GITHUB_TOKEN;
   }
 
-  var response = UrlFetchApp.fetch(apiUrl, {
-    headers: fetchHeaders
-  });
+  var response = UrlFetchApp.fetch(apiUrl, { headers: fetchHeaders });
   var newCode = response.getContentText();
 
-  // Extract VERSION from the pulled code
   var versionMatch = newCode.match(/var VERSION\s*=\s*"([^"]+)"/);
   var pulledVersion = versionMatch ? versionMatch[1] : null;
 
-  // If the pulled version matches what's already running, skip deployment
   if (pulledVersion && pulledVersion === VERSION) {
     return "Already up to date (v" + VERSION + ")";
   }
@@ -520,9 +662,6 @@ function pullAndDeployFromGitHub() {
     })
   });
 
-  // Count total versions so user knows when to manually clean up.
-  // NOTE: Apps Script API does NOT support deleting versions or deployments automatically.
-  // Versions/deployments must be deleted manually via the Apps Script editor UI.
   var cleanupInfo = "";
   try {
     var totalVersions = 0;
@@ -534,19 +673,19 @@ function pullAndDeployFromGitHub() {
         headers: { "Authorization": "Bearer " + ScriptApp.getOAuthToken() }
       });
       var vListData = JSON.parse(vListResp.getContentText());
-      if (vListData.versions) {
-        totalVersions += vListData.versions.length;
-      }
+      if (vListData.versions) totalVersions += vListData.versions.length;
       vPageToken = vListData.nextPageToken || null;
     } while (vPageToken);
-
     cleanupInfo = " | " + totalVersions + "/200 versions";
     var versionStatus = totalVersions + "/200 versions";
-    if (totalVersions >= 180) versionStatus += " — APPROACHING LIMIT! Manually delete old versions in Apps Script editor: Project History > Bulk delete versions";
+    if (totalVersions >= 180) versionStatus += " — APPROACHING LIMIT!";
     CacheService.getScriptCache().put("version_count_status", versionStatus, 21600);
   } catch(cleanupErr) {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
 
+  CacheService.getScriptCache().put("pushed_version", "v" + pulledVersion, 3600);
+
   return "Updated to v" + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }
+// Developed by: ShadowAISolutions

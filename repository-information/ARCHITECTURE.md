@@ -45,10 +45,10 @@ graph TB
             SOCCER["soccer-ball.html"]
             SOCCER_VERTXT["soccer-ballhtml.version.txt"]
             SOCCER_CL["soccer-ballhtml.changelog.txt"]
-            GASTPL_PAGE["gas-template.html"]
-            GASTPL_VERTXT["gas-templatehtml.version.txt"]
-            GASTPL_CL["gas-templatehtml.changelog.txt"]
-            GASTPL_CODE["gas-template-code.js.txt"]
+            GASTPL_PAGE["gas-project-creator.html"]
+            GASTPL_VERTXT["gas-project-creatorhtml.version.txt"]
+            GASTPL_CL["gas-project-creatorhtml.changelog.txt"]
+            GASTPL_CODE["gas-project-creator-code.js.txt"]
             SND1["sounds/Website_Ready_Voice_1.mp3"]
             SND2["sounds/Code_Ready_Voice_1.mp3"]
         end
@@ -73,8 +73,8 @@ graph TB
             GAS_CFG["index.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
             GAS_TEST["googleAppsScripts/Test/test.gs"]
             GAS_TEST_CFG["test.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
-            GAS_GASTPL["googleAppsScripts/GasTemplate/gas-template.gs"]
-            GAS_GASTPL_CFG["gas-template.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
+            GAS_GASTPL["googleAppsScripts/GasProjectCreator/gas-project-creator.gs"]
+            GAS_GASTPL_CFG["gas-project-creator.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
             GAS_TPL["googleAppsScripts/HtmlTemplateAutoUpdate/\nHtmlTemplateAutoUpdate.gs\n(template)"]
             GAS_TPL_CFG["HtmlTemplateAutoUpdate.config.json\n(template placeholders)"]
         end
@@ -133,7 +133,7 @@ graph TB
     GAS_POSTMSG -.->|"tells embedding\npage to reload"| BROWSER
     GAS_INDEX -.->|"source of truth\nfor GAS app\n(index.gs)"| GAS_PULL
     GAS_TEST -.->|"source of truth\nfor GAS app\n(test.gs)"| GAS_PULL
-    GAS_GASTPL -.->|"source of truth\nfor GAS app\n(gas-template.gs)"| GAS_PULL
+    GAS_GASTPL -.->|"source of truth\nfor GAS app\n(gas-project-creator.gs)"| GAS_PULL
     GAS_DEPLOY -.->|"curl POST\naction=deploy"| GAS_APP
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE

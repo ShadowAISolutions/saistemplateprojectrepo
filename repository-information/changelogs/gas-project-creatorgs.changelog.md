@@ -1,11 +1,16 @@
-# Changelog — GAS Template (Google Apps Script)
+# Changelog — GAS Project Creator (Google Apps Script)
 
 All notable user-facing changes to this script are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templategs.changelog-archive.md](gas-templategs.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorgs.changelog-archive.md](gas-project-creatorgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [01.08g] — 2026-03-04 06:19:05 PM EST — v02.67r
+
+### Changed
+- Script renamed from gas-template to gas-project-creator
 
 ## [01.07g] — 2026-03-04 05:47:54 PM EST — v02.66r
 

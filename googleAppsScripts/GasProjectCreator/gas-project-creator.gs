@@ -6,7 +6,7 @@
 // ------------
 // A Google Apps Script web app that pulls its own source code from
 // a GitHub repository and redeploys itself. GitHub is the source of
-// truth — this file (gas-template.gs) is the ONLY file you need to edit.
+// truth — this file (gas-project-creator.gs) is the ONLY file you need to edit.
 //
 // There are TWO ways updates reach the live web app:
 //   1. AUTOMATIC: Push to a claude/* branch → GitHub Action merges to
@@ -97,7 +97,7 @@
 // =============================================
 
 // ── PROJECT CONFIG ────────────────────────────────────────────────
-// gas-template.config.json (same directory) is the SINGLE SOURCE OF TRUTH for
+// gas-project-creator.config.json (same directory) is the SINGLE SOURCE OF TRUTH for
 // project-unique values: TITLE, DEPLOYMENT_ID, SPREADSHEET_ID,
 // SHEET_NAME, SOUND_FILE_ID. Edit config.json; the Pre-Commit
 // Checklist syncs the values here and to the embedding HTML page.
@@ -106,27 +106,27 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.07g";
-var TITLE = "GAS Integration Status";                               // ← gas-template.config.json
+var VERSION = "01.08g";
+var TITLE = "GAS Integration Status";                               // ← gas-project-creator.config.json
 
 // GitHub config — where to pull code from
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "htmltemplateautoupdate";
 var GITHUB_BRANCH = "main";
-var FILE_PATH     = "googleAppsScripts/GasTemplate/gas-template.gs";
+var FILE_PATH     = "googleAppsScripts/GasTemplate/gas-project-creator.gs";
 
 // Apps Script deployment ID (from Deploy → Manage deployments)
-var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";                           // ← gas-template.config.json
+var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";                           // ← gas-project-creator.config.json
 
 // Google Sheets config (optional — for version tracking)
-var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";                         // ← gas-template.config.json
-var SHEET_NAME     = "Live_Sheet";                                  // ← gas-template.config.json
+var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";                         // ← gas-project-creator.config.json
+var SHEET_NAME     = "Live_Sheet";                                  // ← gas-project-creator.config.json
 
 // Sound config (optional — Google Drive file ID for notification sound)
-var SOUND_FILE_ID = "";                                             // ← gas-template.config.json
+var SOUND_FILE_ID = "";                                             // ← gas-project-creator.config.json
 
 // Embedding page URL — the GitHub Pages page that iframes this GAS app
-var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/gas-template.html";
+var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/gas-project-creator.html";
 
 // Logo shown on the splash screen
 var SPLASH_LOGO_URL = "https://www.shadowaisolutions.com/SAIS%20Logo.png";

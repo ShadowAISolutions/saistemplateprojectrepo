@@ -1,11 +1,16 @@
-# Changelog — GAS Template Page
+# Changelog — GAS Project Creator Page
 
 All notable user-facing changes to this page are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templatehtml.changelog-archive.md](gas-templatehtml.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v01.25w] — 2026-03-04 06:19:05 PM EST — v02.67r
+
+### Changed
+- Page renamed from GAS Template to GAS Project Creator
 
 ## [v01.24w] — 2026-03-04 05:37:43 PM EST — v02.65r
 
@@ -32,8 +37,54 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 - Copy Code.gs button restyled as full-width action button with disabled state
 - Form default values updated to reflect actual template repo paths
 
+## [v01.20w] — 2026-03-04 02:33:28 PM EST — v02.59r
+
+### Fixed
+- Setup steps now numbered correctly — group labels no longer consume step numbers
+
+## [v01.19w] — 2026-03-04 02:20:46 PM EST — v02.58r
+
+### Fixed
+- Setup steps now numbered correctly starting from 1 — group labels no longer consume a step number
+
+## [v01.18w] — 2026-03-04 02:11:49 PM EST — v02.57r
+
+### Added
+- Setup steps now grouped with subtle section labels: Google Account Setup, New Apps Script Project, GAS Project Settings, GAS Editor, GAS Triggers
+
+## [v01.17w] — 2026-03-04 01:59:45 PM EST — v02.56r
+
+### Changed
+- Manifest setup split into two steps: enable the toggle first, set the JSON contents later after GITHUB_TOKEN
+
+## [v01.16w] — 2026-03-04 01:50:56 PM EST — v02.55r
+
+### Changed
+- Setup steps reordered: API enablement and GCP setup now come before creating the Apps Script project
+
+## [v01.15w] — 2026-03-04 01:39:56 PM EST — v02.54r
+
+### Changed
+- Setup steps reordered for logical flow: set GITHUB_TOKEN first, then Deploy #1, paste Code.gs, authorize OAuth, then Deploy #2 to finalize
+
+## [v01.14w] — 2026-03-04 01:26:42 PM EST — v02.53r
+
+### Added
+- Setup instructions now explain the two-deploy bootstrap: Deploy #1 creates the deployment URL, Deploy #2 activates auto-updates
+
+## [v01.13w] — 2026-03-04 12:31:14 PM EST — v02.47r
+
+### Added
+- Input fields for all project configuration variables — you can now edit Version, GitHub Owner, GitHub Repo, GitHub Branch, File Path, Embedding URL, and Splash Logo URL before copying Code.gs
+- All fields prefilled with current defaults and remembered between visits
+
+## [v01.12w] — 2026-03-04 12:22:18 PM EST — v02.46r
+
 ### Added
 - Interactive embedded Google Sheets preview in the GAS web app — view and edit the connected spreadsheet directly without leaving the page
+
+### Changed
+- Setup steps reordered so entering project variables (Title, Deployment ID, Spreadsheet ID, Sheet Name, Sound File ID) and copying the code is the last step — complete all infrastructure setup first, then fill in config values when you have all the information
 
 ## [v01.11w] — 2026-03-04 10:09:15 AM EST — v02.33r
 

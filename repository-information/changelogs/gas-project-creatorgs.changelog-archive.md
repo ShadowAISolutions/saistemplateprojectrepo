@@ -1,6 +1,6 @@
-# Changelog Archive — GAS Template (Google Apps Script)
+# Changelog Archive — GAS Project Creator (Google Apps Script)
 
-Older version sections rotated from [gas-templategs.changelog.md](gas-templategs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [gas-project-creatorgs.changelog.md](gas-project-creatorgs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

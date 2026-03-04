@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 57/100`
+`Sections: 58/100`
 
 ## [Unreleased]
+
+## [v02.67r] — 2026-03-04 06:19:05 PM EST
+
+### Changed
+- Renamed gas-template environment to gas-project-creator — all files, references, localStorage keys, documentation, and architecture diagrams updated
+
+#### `gas-project-creator.html` — v01.25w
+
+##### Changed
+- Page renamed from gas-template to gas-project-creator with all internal references updated
+
+#### `gas-project-creator.gs` — 01.08g
+
+##### Changed
+- Script renamed from gas-template to gas-project-creator with all file paths and references updated
 
 ## [v02.66r] — 2026-03-04 05:47:54 PM EST
 
