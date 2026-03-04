@@ -48,6 +48,9 @@ graph TB
             GASTPL_PAGE["gas-template.html"]
             GASTPL_VERTXT["gas-templatehtml.version.txt"]
             GASTPL_CL["gas-templatehtml.changelog.txt"]
+            GASTEST_PAGE["gas-test.html"]
+            GASTEST_VERTXT["gas-testhtml.version.txt"]
+            GASTEST_CL["gas-testhtml.changelog.txt"]
             SND1["sounds/Website_Ready_Voice_1.mp3"]
             SND2["sounds/Code_Ready_Voice_1.mp3"]
         end
@@ -74,6 +77,8 @@ graph TB
             GAS_TEST_CFG["test.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
             GAS_GASTPL["googleAppsScripts/GasTemplate/gas-template.gs"]
             GAS_GASTPL_CFG["gas-template.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
+            GAS_GASTEST["googleAppsScripts/GasTest/gas-test.gs"]
+            GAS_GASTEST_CFG["gas-test.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
             GAS_TPL["googleAppsScripts/HtmlTemplateAutoUpdate/\nHtmlTemplateAutoUpdate.gs\n(template)"]
             GAS_TPL_CFG["HtmlTemplateAutoUpdate.config.json\n(template placeholders)"]
         end
@@ -113,26 +118,33 @@ graph TB
     TPL -.->|"copy to create\nnew pages"| TEST
     TPL -.->|"copy to create\nnew pages"| SOCCER
     TPL -.->|"copy to create\nnew pages"| GASTPL_PAGE
+    TPL -.->|"copy to create\nnew pages"| GASTEST_PAGE
     GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_INDEX
     GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_TEST
     GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_GASTPL
+    GAS_TPL -.->|"copy to create\nnew GAS projects"| GAS_GASTEST
     GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_CFG
     GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_TEST_CFG
     GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_GASTPL_CFG
+    GAS_TPL_CFG -.->|"copy to create\nnew configs"| GAS_GASTEST_CFG
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_INDEX
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| INDEX
     GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TEST
     GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| TEST
     GAS_GASTPL_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_GASTPL
     GAS_GASTPL_CFG -.->|"syncs to\n(Pre-Commit #15)"| GASTPL_PAGE
+    GAS_GASTEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_GASTEST
+    GAS_GASTEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| GASTEST_PAGE
     LIVE -.->|"serves"| BROWSER
     INDEX -.->|"iframes"| GAS_APP
     TEST -.->|"iframes"| GAS_APP
     GASTPL_PAGE -.->|"iframes"| GAS_APP
+    GASTEST_PAGE -.->|"iframes"| GAS_APP
     GAS_POSTMSG -.->|"tells embedding\npage to reload"| BROWSER
     GAS_INDEX -.->|"source of truth\nfor GAS app\n(index.gs)"| GAS_PULL
     GAS_TEST -.->|"source of truth\nfor GAS app\n(test.gs)"| GAS_PULL
     GAS_GASTPL -.->|"source of truth\nfor GAS app\n(gas-template.gs)"| GAS_PULL
+    GAS_GASTEST -.->|"source of truth\nfor GAS app\n(gas-test.gs)"| GAS_PULL
     GAS_DEPLOY -.->|"curl POST\naction=deploy"| GAS_APP
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
@@ -151,6 +163,8 @@ graph TB
     style GAS_TPL_CFG fill:#ffe082,color:#000
     style GAS_GASTPL fill:#ff7043,color:#fff
     style GAS_GASTPL_CFG fill:#ffe082,color:#000
+    style GAS_GASTEST fill:#ff7043,color:#fff
+    style GAS_GASTEST_CFG fill:#ffe082,color:#000
     style GAS_APP fill:#42a5f5,color:#fff
     style CLAUDE_MD fill:#ce93d8,color:#000
     style RULES fill:#ce93d8,color:#000

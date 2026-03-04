@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v02.19r] — 2026-03-03 10:09:44 PM EST
+
+### Added
+- New GAS Test page (`gas-test.html`) — test instance of the GAS template for trying out configuration before modifying the template itself
+- New GAS project `GasTest` with `.gs` file, config.json, and all tracking files (changelogs, version files)
+- GAS Test page uses separate `gas-test-` localStorage keys so it doesn't conflict with the template page
+
+#### `gas-test.html` — v01.00w
+##### Added
+- Test instance of the GAS integration status dashboard — identical functionality to gas-template with separate localStorage namespace
+
+#### `gas-test.gs` — 01.00g
+##### Added
+- Test instance of the GAS template script — pulls from and deploys to GasTest directory
 
 ## [v02.18r] — 2026-03-03 09:53:51 PM EST
 
