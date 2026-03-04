@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templategs.changelog-archive.md](gas-templategs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [01.04g] — 2026-03-04 10:48:27 AM EST — v02.38r
+
+### Added
+- Live quotas sidebar showing GitHub rate limit, email quota, and service estimates
+- Live B1 cell value display above the spreadsheet embed, updating every 15 seconds
+
+### Changed
+- Spreadsheet section now shows sheet name dynamically and includes live B1 value alongside the embed
 
 ## [01.03g] — 2026-03-04 10:34:53 AM EST — v02.37r
 

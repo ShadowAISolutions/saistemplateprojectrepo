@@ -39,6 +39,15 @@
 //   6. postMessage tells the embedding page to reload
 //   7. App shows new version — zero manual clicks
 //
+// FALLBACK: If doPost deploy fails or is unavailable, the client-side
+// auto-pull on page load will catch up on the next page visit.
+//
+// VERSION LIMIT MANAGEMENT (200 VERSION CAP)
+// --------------------------------------------
+// Apps Script has a hard 200 version limit. The API does NOT support
+// deleting versions. When 180+ is reached, a warning appears.
+// Manually clean up: Apps Script editor → Project History → Bulk delete
+//
 // SETUP STEPS
 // -----------
 // 1. Create an Apps Script project, paste this code
@@ -68,11 +77,22 @@
 // 8. Copy Deployment ID into DEPLOYMENT_ID below
 // 9. Set GITHUB_TOKEN in Script Properties:
 //      Key: GITHUB_TOKEN   Value: github_pat_... token
+//      (fine-grained token with "Public repositories" read-only access)
 // 10. Run any function from editor to trigger OAuth authorization
+// 11. If using Google Sheets: create spreadsheet, copy ID into SPREADSHEET_ID
+// 12. If using installable trigger for sheet caching:
+//      Apps Script editor → Triggers → + Add Trigger →
+//      Function: onEditWriteB1ToCache, Event source: From spreadsheet,
+//      Event type: On edit
 //
 // IMPORTANT — AUTO-INCREMENT VERSION ON EVERY COMMIT:
 //   Whenever Claude Code edits this file, it MUST increment VERSION
 //   by 0.01 (e.g. "01.00g" → "01.01g").
+//
+// IMPORTANT — KEEP THIS OVERVIEW UP TO DATE:
+//   Whenever you make structural changes (new functions, new integrations,
+//   new config variables), update the relevant section of this overview
+//   IN THE SAME COMMIT.
 //
 // =============================================
 
@@ -86,7 +106,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.03g";
+var VERSION = "01.04g";
 var TITLE = "GAS Test Dashboard";                                    // ← gas-test.config.json
 
 // GitHub config — where to pull code from
@@ -121,7 +141,7 @@ function doGet() {
       <meta http-equiv="Expires" content="0">
       <style>
         html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; display: flex; flex-direction: column; align-items: center; padding: 20px 0; box-sizing: border-box; }
+        body { font-family: Arial; display: flex; flex-direction: column; align-items: center; padding: 10px 0; box-sizing: border-box; }
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d47a1; z-index: 9999; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center; }
         #splash img { max-width: 500px; max-height: 500px; }
         #version { font-size: 80px; font-weight: bold; color: #e65100; line-height: 1; }
@@ -129,31 +149,33 @@ function doGet() {
                  border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px; }
         button:hover { background: #bf360c; }
         #result { margin-top: 8px; padding: 8px 15px; border-radius: 8px; font-size: 13px; }
-        #versionCount { margin-top: 6px; font-size: 12px; color: #888; }
-        #sheetSection { display: none; margin-top: 18px; width: 95%; max-width: 700px; }
-        #sheetSection h3 { margin: 0 0 8px 0; font-size: 15px; color: #333; }
-        #sheetSection iframe { width: 100%; height: 300px; border: 1px solid #e0e0e0; border-radius: 8px; }
-        #sheetSection a { display: inline-block; margin-top: 6px; font-size: 13px; color: #1a73e8; text-decoration: none; }
-        #sheetSection a:hover { text-decoration: underline; }
+        #sheet-container { display: none; margin-top: 10px; width: 90%; max-width: 600px; position: relative; }
+        #sheet-container h3 { text-align: center; color: #333; margin: 0 0 4px 0; }
+        #token-info { position: absolute; right: -170px; top: 0; font-size: 11px; color: #666; text-align: left; line-height: 1.6; white-space: nowrap; }
+        #token-info div { margin-bottom: 2px; }
+        #sheet-container iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
       </style>
     </head>
     <body>
       <div id="splash"><img src="${SPLASH_LOGO_URL}" alt=""></div>
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">...</h1>
       <div id="version">...</div>
-      <button onclick="checkForUpdates()">&#128260; Pull Latest from GitHub</button>
+      <button onclick="checkForUpdates()">🔄 Pull Latest from GitHub</button>
       <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
-        <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">&#128260; Reload Page</button>
+        <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
       </form>
       <div id="result"></div>
-      <div id="versionCount"></div>
-      <div id="sheetSection">
-        <h3>&#128202; Spreadsheet</h3>
+      <div id="versionCount" style="margin-top: 6px; font-size: 12px; color: #888;"></div>
+
+      <div id="sheet-container">
+        <h3 id="sheet-name">...</h3>
+        <div id="token-info">...</div>
+        <div id="live-b1" style="font-size: 20px; font-weight: bold; color: #333; margin-bottom: 4px; text-align: center;">...</div>
         <iframe id="sheet-frame" src="" frameborder="0"></iframe>
-        <a id="sheet-open-link" href="#" target="_blank" rel="noopener">Open in Google Sheets &#8599;</a>
       </div>
 
       <script>
+        // Pre-load Drive sound from server on page load (if configured)
         var _soundDataUrl = null;
         google.script.run
           .withSuccessHandler(function(dataUrl) { _soundDataUrl = dataUrl; })
@@ -185,40 +207,35 @@ function doGet() {
               }
             }
           }
-          // Show embedded spreadsheet if configured
+          // Show spreadsheet section if configured
           if (data.spreadsheetId) {
-            document.getElementById('sheetSection').style.display = 'block';
+            var container = document.getElementById('sheet-container');
+            container.style.display = 'block';
+            document.getElementById('sheet-name').textContent = data.sheetName || 'Spreadsheet';
             var frame = document.getElementById('sheet-frame');
             if (!frame.src || frame.src === '') {
               frame.src = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit?rm=minimal';
             }
-            document.getElementById('sheet-open-link').href = 'https://docs.google.com/spreadsheets/d/' + data.spreadsheetId + '/edit';
           }
-          // Report config status to embedding page
-          try {
-            window.top.postMessage({type: 'gas-status', config: data}, '*');
-          } catch(e) {}
-          try {
-            window.parent.postMessage({type: 'gas-status', config: data}, '*');
-          } catch(e) {}
         }
 
         google.script.run
           .withSuccessHandler(function(data) { applyData(data); })
           .getAppData();
 
-        // Poll cell B1 from cache every 15s and report to embedding page
+        // Poll cell B1 from cache every 15s (cache is updated by onEditWriteB1ToCache trigger)
         function pollB1FromCache() {
           google.script.run
             .withSuccessHandler(function(val) {
-              try { window.top.postMessage({type: 'gas-b1', value: val}, '*'); } catch(e) {}
-              try { window.parent.postMessage({type: 'gas-b1', value: val}, '*'); } catch(e) {}
+              document.getElementById('live-b1').textContent = val;
             })
             .readB1FromCacheOrSheet();
         }
         pollB1FromCache();
         setInterval(pollB1FromCache, 15000);
 
+        // Poll for new pushed version every 15s (set by doPost via GitHub Action)
+        // If a new version was pushed, auto-pull without user intervention
         var _autoPulling = false;
         function pollPushedVersionFromCache() {
           if (_autoPulling) return;
@@ -236,8 +253,29 @@ function doGet() {
         }
         setInterval(pollPushedVersionFromCache, 15000);
 
+        // Auto-pull from GitHub on every page load
         checkForUpdates();
 
+        // Poll token/quota usage (on load + every 60s)
+        function pollQuotaAndLimits() {
+          google.script.run
+            .withSuccessHandler(function(t) {
+              document.getElementById('token-info').innerHTML =
+                '<div style="font-weight:bold;color:#1b5e20;margin-bottom:3px;">Live Quotas</div>'
+                + '<div>GitHub: ' + t.github + '</div>'
+                + '<div>Mail: ' + t.mail + '</div>'
+                + '<div style="border-top:1px solid #ccc;margin:4px 0;"></div>'
+                + '<div style="font-weight:bold;color:#666;margin-bottom:3px;">Estimates</div>'
+                + '<div>UrlFetch: ' + t.urlFetch + '</div>'
+                + '<div>Sheets: ' + t.spreadsheet + '</div>'
+                + '<div>Exec: ' + t.execTime + '</div>';
+            })
+            .fetchGitHubQuotaAndLimits();
+        }
+        pollQuotaAndLimits();
+        setInterval(pollQuotaAndLimits, 60000);
+
+        // Splash screen — fade out after 1 second
         setTimeout(function() {
           var splash = document.getElementById('splash');
           splash.style.opacity = '0';
@@ -246,24 +284,27 @@ function doGet() {
 
         function checkForUpdates() {
           document.getElementById('result').style.background = '#fff3e0';
-          document.getElementById('result').innerHTML = '&#9203; Pulling...';
+          document.getElementById('result').innerHTML = '⏳ Pulling...';
           google.script.run
             .withSuccessHandler(function(msg) {
               var wasUpdated = msg.indexOf('Updated to') === 0;
               document.getElementById('result').style.background = '#e8f5e9';
-              document.getElementById('result').innerHTML = '&#9989; ' + msg;
+              document.getElementById('result').innerHTML = '✅ ' + msg;
               if (!wasUpdated) {
                 setTimeout(function() { document.getElementById('result').innerHTML = ''; }, 2000);
                 return;
               }
+              // New version deployed — update dynamic content and highlight reload button
               setTimeout(function() {
                 google.script.run.writeVersionToSheet();
                 google.script.run
                   .withSuccessHandler(function(data) {
                     applyData(data);
+                    // Highlight the Reload Page button red to signal update is ready
                     var btn = document.getElementById('reload-btn');
                     btn.style.background = '#d32f2f';
-                    btn.textContent = '\\u26a0\\ufe0f Update Available \\u2014 Reload Page';
+                    btn.textContent = '⚠️ Update Available — Reload Page';
+                    // Tell parent/top page (if embedded) to reload
                     var reloadMsg = {type: 'gas-reload', version: data.version};
                     if (_soundDataUrl) reloadMsg.soundDataUrl = _soundDataUrl;
                     try { window.top.postMessage(reloadMsg, '*'); } catch(e) {}
@@ -274,7 +315,7 @@ function doGet() {
             })
             .withFailureHandler(function(err) {
               document.getElementById('result').style.background = '#ffebee';
-              document.getElementById('result').innerHTML = '&#10060; ' + err.message;
+              document.getElementById('result').innerHTML = '❌ ' + err.message;
             })
             .pullAndDeployFromGitHub();
         }
@@ -314,32 +355,10 @@ function doPost(e) {
 
 function getAppData() {
   var data = { version: "v" + VERSION, title: TITLE };
-
-  // Config status flags — reported to embedding page via postMessage
-  data.hasGithub = GITHUB_OWNER !== "YOUR_ORG_NAME" && GITHUB_REPO !== "YOUR_REPO_NAME";
-  data.hasDeployment = DEPLOYMENT_ID && DEPLOYMENT_ID !== "YOUR_DEPLOYMENT_ID";
-  data.hasSpreadsheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
-  data.hasSound = SOUND_FILE_ID && SOUND_FILE_ID !== "";
   data.spreadsheetId = (SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID") ? SPREADSHEET_ID : "";
+  data.sheetName = SHEET_NAME;
 
-  // Read spreadsheet data if configured
-  if (data.hasSpreadsheet) {
-    try {
-      var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-      var sheet = ss.getSheetByName(SHEET_NAME);
-      if (sheet) {
-        data.sheetData = {
-          a1: sheet.getRange("A1").getDisplayValue() || "",
-          b1: readB1FromCacheOrSheet(),
-          c1: sheet.getRange("C1").getDisplayValue() || "",
-          sheetName: SHEET_NAME
-        };
-      }
-    } catch(e) {
-      data.sheetData = { error: "Could not read spreadsheet" };
-    }
-  }
-
+  // Version count with caching
   var cache = CacheService.getScriptCache();
   var vStatus = cache.get("version_count_status");
   if (!vStatus) {
@@ -380,6 +399,44 @@ function getSoundBase64() {
 
 function readPushedVersionFromCache() {
   return CacheService.getScriptCache().get("pushed_version") || "";
+}
+
+function fetchGitHubQuotaAndLimits() {
+  var result = {};
+
+  // GitHub API rate limit (queryable)
+  var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
+  var headers = {};
+  if (GITHUB_TOKEN) {
+    headers["Authorization"] = "token " + GITHUB_TOKEN;
+  }
+  try {
+    var resp = UrlFetchApp.fetch("https://api.github.com/rate_limit", { headers: headers });
+    var data = JSON.parse(resp.getContentText());
+    var core = data.resources.core;
+    result.github = core.remaining + "/" + core.limit + "/hr";
+  } catch(e) {
+    result.github = "error";
+  }
+
+  // UrlFetchApp: 20,000/day (not queryable — show limit only)
+  result.urlFetch = "20,000/day";
+
+  // SpreadsheetApp: ~20,000/day (not queryable — show limit only)
+  result.spreadsheet = "~20,000/day";
+
+  // Apps Script execution time: 90 min/day (not queryable)
+  result.execTime = "90 min/day";
+
+  // MailApp remaining daily quota (requires script.send_mail scope)
+  try {
+    var mailRemaining = MailApp.getRemainingDailyQuota();
+    result.mail = mailRemaining + " remaining/day";
+  } catch(e) {
+    result.mail = "scope error: " + e.message;
+  }
+
+  return result;
 }
 
 function readB1FromCacheOrSheet() {

@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v02.38r] — 2026-03-04 10:48:27 AM EST
+
+### Changed
+- GAS web app now matches the RND Code.gs reference — includes live B1 value display, embedded spreadsheet with sheet name heading, and live quota/token info sidebar
+- Added GitHub API rate limit, Mail quota, UrlFetch, Sheets, and execution time monitoring to the GAS web app sidebar (polls every 60 seconds)
+- Spreadsheet section now conditionally shown based on config — uses dynamic sheet name heading instead of hardcoded label
+
+#### `gas-template.gs` — 01.04g
+##### Added
+- Live quotas sidebar showing GitHub rate limit, email quota, and service estimates
+- Live B1 cell value display above the spreadsheet embed, updating every 15 seconds
+##### Changed
+- Spreadsheet section now shows sheet name dynamically and includes live B1 value alongside the embed
+
+#### `gas-test.gs` — 01.04g
+##### Added
+- Live quotas sidebar showing GitHub rate limit, email quota, and service estimates
+- Live B1 cell value display above the spreadsheet embed, updating every 15 seconds
+##### Changed
+- Spreadsheet section now shows sheet name dynamically and includes live B1 value alongside the embed
 
 ## [v02.37r] — 2026-03-04 10:34:53 AM EST
 
