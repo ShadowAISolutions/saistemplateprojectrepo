@@ -106,10 +106,16 @@ This error occurs when the GCP project you're targeting lives inside Google's hi
 3. If your GCP project is inside the `apps-script` folder, that's the problem
 
 **How to fix — Option A (move the project):**
-1. In Manage Resources, find your project inside the `apps-script` folder
-2. Click the three-dot menu → **Migrate**
-3. Move it to your organization root or "No organization"
-4. Retry changing the GCP project in Apps Script settings
+
+Moving a project out of the managed folder requires the **Project Mover** IAM role, which you likely don't have by default — even as the organization owner/admin.
+
+1. Go to [IAM & Admin](https://console.cloud.google.com/iam-admin/iam) → use the top dropdown to select your **organization** (not a project or folder)
+2. Click **Grant Access** → enter your own email
+3. In "Select a role" → **Resource Manager** → **Project Mover** → **Save**
+4. Go to [Manage Resources](https://console.cloud.google.com/cloud-resource-manager) → find your project inside the `apps-script` folder
+5. Click the three-dot menu → **Migrate**
+6. Move it to your organization root or "No organization"
+7. Retry changing the GCP project in Apps Script settings
 
 **How to fix — Option B (create a new project):**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create a new project
@@ -123,6 +129,7 @@ This error occurs when the GCP project you're targeting lives inside Google's hi
 - It must live **outside** the `system-gsuite → apps-script` managed folder
 - Project numbers starting with `sys-` are auto-created defaults and cannot be used
 - You need **Project Browser** and **OAuth Config Editor** roles (or equivalent) on the project
+- Moving projects requires the **Project Mover** role (`roles/resourcemanager.projectMover`) granted at the **organization level** — even org owners/admins don't have this by default
 - Switching from a default project to a standard project is one-way — you cannot switch back
 - On Google Workspace accounts, the GCP project must be in the **same Cloud Organization** as the script owner, just not inside the managed folder
 
