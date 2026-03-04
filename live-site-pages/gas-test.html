@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.14w">
+  <meta name="build-version" content="v01.15w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -224,6 +224,44 @@
       color: #f85149;
     }
     .btn-clear:hover { background: #30363d; }
+    .config-actions button:disabled,
+    .btn-copy-gs:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    #gas-panel-tab:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .deploy-separator {
+      border-top: 1px solid #30363d;
+      margin-top: 12px;
+      padding-top: 8px;
+    }
+    .deploy-separator-label {
+      font-size: 11px;
+      color: #484f58;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .btn-copy-gs {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      color: #c9d1d9;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-copy-gs:hover { background: #30363d; }
     .config-toast {
       text-align: center;
       font-size: 12px;
@@ -674,6 +712,14 @@
         <li>Fill in your project values below and copy the configured <code>Code.gs</code>
           <div class="step-note">These values are baked into the code when you copy &mdash; this should be the last thing you do</div>
           <div class="step-input">
+            <label for="cfg-deployment-id">Deployment ID <em style="color:#f85149">(required)</em></label>
+            <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-deployment-id','gas-test-deployment-id')" title="Clear">&times;</button></div>
+            <span class="field-hint">From Apps Script: Deploy &rarr; Manage deployments &mdash; required before using Apply, Copy, or GAS Preview</span>
+          </div>
+          <div class="deploy-separator">
+            <div class="deploy-separator-label">Project Configuration</div>
+          </div>
+          <div class="step-input">
             <label for="cfg-title">Title</label>
             <div class="input-row"><input type="text" id="cfg-title" placeholder="My GAS Project" value="GAS Test Dashboard"><button class="field-clear" onclick="clearField('cfg-title','gas-test-title')" title="Clear">&times;</button></div>
             <span class="field-hint">Shown in browser tab and GAS UI</span>
@@ -704,11 +750,6 @@
             <span class="field-hint">Path to the .gs file in the repo</span>
           </div>
           <div class="step-input">
-            <label for="cfg-deployment-id">Deployment ID</label>
-            <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..."><button class="field-clear" onclick="clearField('cfg-deployment-id','gas-test-deployment-id')" title="Clear">&times;</button></div>
-            <span class="field-hint">From Apps Script: Deploy &rarr; Manage deployments</span>
-          </div>
-          <div class="step-input">
             <label for="cfg-spreadsheet-id">Spreadsheet ID <em>(optional)</em></label>
             <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-spreadsheet-id','gas-test-spreadsheet-id')" title="Clear">&times;</button></div>
             <span class="field-hint">Google Sheets ID for version tracking</span>
@@ -733,15 +774,15 @@
             <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS%20Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo','gas-test-splash-logo')" title="Clear">&times;</button></div>
             <span class="field-hint">Logo shown on the GAS splash screen</span>
           </div>
-          <div class="pre-wrap" style="margin-top:8px"><button class="btn-copy-json" onclick="copyGsCode(this)">Copy Code.gs</button></div>
+          <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
         </li>
       </ol>
     </div>
 
     <div class="config-actions">
-      <button class="btn-apply" onclick="applyConfig()">Apply</button>
-      <button class="btn-copy" onclick="showConfig()">Copy Config</button>
+      <button class="btn-apply" id="btn-apply" onclick="applyConfig()" disabled>Apply</button>
+      <button class="btn-copy" id="btn-copy-config" onclick="showConfig()" disabled>Copy Config</button>
       <button class="btn-clear" onclick="clearConfig()">Clear</button>
     </div>
     <div class="config-toast" id="config-toast"></div>
@@ -1357,6 +1398,20 @@
       });
     }
 
+    // ── Deployment ID Gate ─────────────────────────────────────────
+    function updateDeployGate() {
+      var hasId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
+      var btns = [
+        document.getElementById('btn-copy-gs'),
+        document.getElementById('btn-apply'),
+        document.getElementById('btn-copy-config'),
+        document.getElementById('gas-panel-tab')
+      ];
+      for (var i = 0; i < btns.length; i++) {
+        if (btns[i]) btns[i].disabled = !hasId;
+      }
+    }
+
     // ── Config Management ──────────────────────────────────────────
     function applyConfig() {
       var title = document.getElementById('cfg-title').value.trim();
@@ -1490,6 +1545,7 @@
       if (statusId) setStatus(statusId, 'gray', 'neutral', '\u2014');
       var label = el ? el.closest('.step-input').querySelector('label') : null;
       showToast('Cleared ' + (label ? label.textContent : storageKey));
+      updateDeployGate();
     }
 
     function clearConfig() {
@@ -1544,6 +1600,7 @@
       setStatus('title', 'green', 'ok', 'GAS Test Dashboard');
 
       showToast('Configuration cleared');
+      updateDeployGate();
     }
 
     function showToast(msg) {
@@ -1586,6 +1643,7 @@
         document.getElementById('saved-badge').style.display = 'inline-block';
         if (savedTitle) document.title = savedTitle;
       }
+      updateDeployGate();
     })();
 
     // Initial HTML layer checks

@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v02.49r] — 2026-03-04 12:55:33 PM EST
+
+### Changed
+- Moved Deployment ID to the first field in the GAS Test config form with a visual separator from other fields
+- Made Deployment ID required — Copy Code.gs, Apply, Copy Config, and GAS Preview buttons are disabled until a Deployment ID is entered
+- Restyled Copy Code.gs as a full-width action button matching the Apply/Copy Config button style
+
+#### `gas-test.html` — v01.15w
+
+##### Changed
+- Deployment ID is now the first config field with a "required" label and visual separator
+- Copy Code.gs, Apply, Copy Config, and GAS Preview are disabled until Deployment ID is filled in
+- Copy Code.gs button restyled to match other action buttons
 
 ## [v02.48r] — 2026-03-04 12:43:18 PM EST
 
