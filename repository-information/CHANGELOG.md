@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v02.33r] — 2026-03-04 10:09:15 AM EST
+
+### Changed
+- "Copy Code.gs" button now produces a fully configured .gs file — injects Spreadsheet ID, Sheet Name, Sound File ID, Title, and Deployment ID from the dashboard form fields into the code before copying
+- Moved Spreadsheet ID, Sheet Name, and Sound File ID inputs to Step 1 (before the Copy button) so values are filled in before copying the code
+
+#### `gas-template.html` — v01.11w
+##### Changed
+- Copy Code.gs now injects all filled config values into the copied code for a ready-to-paste .gs file
+- Spreadsheet ID, Sheet Name, and Sound File ID fields moved to Step 1 before the Copy button
+
+#### `gas-test.html` — v01.10w
+##### Changed
+- Copy Code.gs now injects all filled config values into the copied code for a ready-to-paste .gs file
+- Spreadsheet ID, Sheet Name, and Sound File ID fields moved to Step 1 before the Copy button
 
 ## [v02.32r] — 2026-03-04 09:47:03 AM EST
 

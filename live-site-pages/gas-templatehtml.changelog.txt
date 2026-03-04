@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templatehtml.changelog-archive.md](gas-templatehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-03-04 10:09:15 AM EST — v02.33r
+
+### Changed
+- "Copy Code.gs" now produces a fully configured script — Spreadsheet ID, Sheet Name, Sound File ID, Title, and Deployment ID from the form fields are injected into the code before copying
+- Spreadsheet ID, Sheet Name, and Sound File ID fields moved to Step 1 (before the Copy button) so configuration is ready before you copy
 
 ## [v01.10w] — 2026-03-04 09:47:03 AM EST — v02.32r
 

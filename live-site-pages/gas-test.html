@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.09w">
+  <meta name="build-version" content="v01.10w">
   <title>GAS Test Dashboard</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -601,7 +601,23 @@
 
     <div class="setup-steps">
       <ol>
-        <li>Create a new Apps Script project at <code>script.google.com</code> and paste the <code>Code.gs</code> contents
+        <li>Create a new Apps Script project at <code>script.google.com</code> and paste the configured <code>Code.gs</code>
+          <div class="step-note">Fill in any fields you have ready &mdash; they'll be baked into the code when you copy</div>
+          <div class="step-input">
+            <label for="cfg-spreadsheet-id">Spreadsheet ID <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-spreadsheet-id','gas-test-spreadsheet-id')" title="Clear">&times;</button></div>
+            <span class="field-hint">Google Sheets ID for version tracking</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-sheet-name">Sheet Name <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name','gas-test-sheet-name')" title="Clear">&times;</button></div>
+            <span class="field-hint">Tab name in the spreadsheet</span>
+          </div>
+          <div class="step-input">
+            <label for="cfg-sound-id">Sound File ID <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-sound-id" placeholder="1bzVp6wp..."><button class="field-clear" onclick="clearField('cfg-sound-id','gas-test-sound-file-id')" title="Clear">&times;</button></div>
+            <span class="field-hint">Google Drive file ID for notification sound</span>
+          </div>
           <div class="pre-wrap" style="margin-top:8px"><button class="btn-copy-json" onclick="copyGsCode(this)">Copy Code.gs</button></div>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
         </li>
@@ -683,28 +699,13 @@
           <div class="step-note"><strong>Reuse across projects:</strong> The same token works for all your GAS projects &mdash; you don't need a new one per repo. Just paste the same token into each project's Script Properties.</div>
         </li>
         <li>Run any function from the Apps Script editor to trigger the initial <strong>OAuth authorization</strong> prompt</li>
-        <li><em>(Optional)</em> If using Google Sheets: create a spreadsheet and enter the details below
-          <div class="step-input">
-            <label for="cfg-spreadsheet-id">Spreadsheet ID</label>
-            <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-spreadsheet-id','gas-test-spreadsheet-id')" title="Clear">&times;</button></div>
-            <span class="field-hint">Google Sheets ID for version tracking</span>
-          </div>
-          <div class="step-input">
-            <label for="cfg-sheet-name">Sheet Name</label>
-            <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name','gas-test-sheet-name')" title="Clear">&times;</button></div>
-            <span class="field-hint">Tab name in the spreadsheet</span>
-          </div>
+        <li><em>(Optional)</em> If using Google Sheets: create a spreadsheet and enter the Spreadsheet ID and Sheet Name in Step 1 above
+          <div class="step-note">The values you entered will be included in the copied Code.gs automatically</div>
         </li>
         <li><em>(Optional)</em> If using an installable trigger for sheet caching:
           <div class="step-note">Apps Script editor &rarr; Triggers &rarr; + Add Trigger &rarr; Function: <code>onEditWriteB1ToCache</code>, Event source: From spreadsheet, Event type: On edit</div>
         </li>
-        <li><em>(Optional)</em> Add a notification sound from Google Drive
-          <div class="step-input">
-            <label for="cfg-sound-id">Sound File ID</label>
-            <div class="input-row"><input type="text" id="cfg-sound-id" placeholder="1bzVp6wp..."><button class="field-clear" onclick="clearField('cfg-sound-id','gas-test-sound-file-id')" title="Clear">&times;</button></div>
-            <span class="field-hint">Google Drive file ID for notification sound</span>
-          </div>
-        </li>
+        <li><em>(Optional)</em> Add a notification sound: enter the Sound File ID in Step 1 above</li>
       </ol>
     </div>
 
@@ -1284,7 +1285,19 @@
         .catch(function() {});
       window.copyGsCode = function(btn) {
         if (!_gsCode) { btn.textContent = 'Loading...'; return; }
-        navigator.clipboard.writeText(_gsCode).then(function() {
+        var code = _gsCode;
+        // Inject config values from form fields into the code
+        var title = (document.getElementById('cfg-title') || {}).value || '';
+        var deployId = (document.getElementById('cfg-deployment-id') || {}).value || '';
+        var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
+        var sheetName = (document.getElementById('cfg-sheet-name') || {}).value || '';
+        var soundId = (document.getElementById('cfg-sound-id') || {}).value || '';
+        if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
+        if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
+        if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
+        if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
+        if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
+        navigator.clipboard.writeText(code).then(function() {
           btn.textContent = 'Copied!';
           setTimeout(function() { btn.textContent = 'Copy Code.gs'; }, 1500);
         });
