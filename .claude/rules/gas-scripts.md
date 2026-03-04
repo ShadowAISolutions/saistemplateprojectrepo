@@ -26,7 +26,7 @@ Each GAS project has a code file and a corresponding embedding page. Register th
 | Index | `googleAppsScripts/Index/index.gs` | `googleAppsScripts/Index/index.config.json` | `live-site-pages/index.html` |
 | Test | `googleAppsScripts/Test/test.gs` | `googleAppsScripts/Test/test.config.json` | `live-site-pages/test.html` |
 | GasTemplate | `googleAppsScripts/GasTemplate/gas-template.gs` | `googleAppsScripts/GasTemplate/gas-template.config.json` | `live-site-pages/gas-template.html` |
-| GasTest | `googleAppsScripts/GasTest/gas-test.gs` | `googleAppsScripts/GasTest/gas-test.config.json` | `live-site-pages/gas-test.html` |
+
 
 ## GAS Project Config (config.json)
 

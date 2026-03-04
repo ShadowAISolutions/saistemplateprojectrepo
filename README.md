@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-04 02:39:50 PM EST` · Repo version: `v02.60r`
+Last updated: `2026-03-04 04:32:56 PM EST` · Repo version: `v02.61r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -162,9 +162,6 @@ htmltemplateautoupdate/
 │   ├── gas-templatehtml.version.txt   # Version file for gas-template page auto-refresh
 │   ├── gas-templatehtml.changelog.txt # Deployed changelog for popup
 │   ├── gas-template-code.js.txt # Shared GAS template source for all Copy Code.gs buttons
-│   ├── gas-test.html           # GAS test dashboard (test instance of gas-template)
-│   ├── gas-testhtml.version.txt   # Version file for gas-test page auto-refresh
-│   ├── gas-testhtml.changelog.txt # Deployed changelog for popup
 │   └── sounds/                 # Audio feedback files
 ├── live-site-templates/        # Template for new pages
 │   ├── HtmlTemplateAutoUpdate.html           # Template HTML page
@@ -182,10 +179,6 @@ htmltemplateautoupdate/
 │   │   ├── gas-template.gs      # GAS integration status web app
 │   │   ├── gas-template.config.json  # Project config (source of truth)
 │   │   └── gas-templategs.version.txt  # GAS version file (mirrors VERSION var)
-│   ├── GasTest/                 # GAS for live-site-pages/gas-test.html
-│   │   ├── gas-test.gs          # GAS test dashboard web app
-│   │   ├── gas-test.config.json # Project config (source of truth)
-│   │   └── gas-testgs.version.txt  # GAS version file (mirrors VERSION var)
 │   └── HtmlTemplateAutoUpdate/  # GAS template for new projects
 │       ├── HtmlTemplateAutoUpdate.gs           # Template GAS web app
 │       ├── HtmlTemplateAutoUpdate.config.json  # Template config (placeholders)
