@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 54/100`
+`Sections: 55/100`
 
 ## [Unreleased]
+
+## [v02.64r] — 2026-03-04 05:31:19 PM EST
+
+### Changed
+- Copy Claude Config prompt now instructs Claude to create the full page ecosystem if the file path doesn't exist yet in the repo
+
+#### `gas-template.html` — v01.23w
+
+##### Changed
+- Copy Claude Config prompt includes ecosystem creation instructions for new projects
 
 ## [v02.63r] — 2026-03-04 05:27:21 PM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-templatehtml.changelog-archive.md](gas-templatehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23w] — 2026-03-04 05:31:19 PM EST — v02.64r
+
+### Changed
+- Copy Claude Config prompt now includes instructions to create the full page ecosystem if the project doesn't exist yet
 
 ## [v01.22w] — 2026-03-04 05:27:21 PM EST — v02.63r
 
