@@ -3,12 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-testhtml.changelog-archive.md](gas-testhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
 
-### Added
-- Interactive embedded Google Sheets preview in the GAS web app — view and edit the connected spreadsheet directly without leaving the page
+## [v01.11w] — 2026-03-04 11:46:16 AM EST — v02.42r
+
+### Changed
+- Setup wizard now copies from the shared GAS template source instead of a page-specific copy
 
 ## [v01.10w] — 2026-03-04 10:09:15 AM EST — v02.33r
 

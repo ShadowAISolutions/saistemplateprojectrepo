@@ -103,20 +103,15 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | Google Sign-In (GIS) for GAS Embedded Apps | *See `repository-information/CODING-GUIDELINES.md` — section "Google Sign-In (GIS) for GAS Embedded Apps"* |
 | GCP Project Setup & Troubleshooting | *See `repository-information/CODING-GUIDELINES.md` — section "GCP Project Setup & Troubleshooting"* |
 
-## Copy Code.gs Deployment Files
+## Copy Code.gs Deployment File
 
-GAS-enabled HTML pages (gas-template.html, gas-test.html) include a "Copy Code.gs" button that lets users copy the full `.gs` source to their clipboard. This button fetches its content from a **static deployment copy** in `live-site-pages/`:
+GAS-enabled HTML pages include a "Copy Code.gs" button that lets users copy the full `.gs` source to their clipboard. All pages fetch from a **single shared deployment copy**: `live-site-pages/gas-template-code.js.txt`.
 
-| GAS Source File | Deployment Copy |
-|----------------|-----------------|
-| `googleAppsScripts/GasTemplate/gas-template.gs` | `live-site-pages/gas-template-code.js.txt` |
-| `googleAppsScripts/GasTest/gas-test.gs` | `live-site-pages/gas-test-code.js.txt` |
+**Single source**: `gas-template-code.js.txt` is a verbatim copy of `googleAppsScripts/GasTemplate/gas-template.gs` — the canonical template with placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, etc.). Each HTML page's config form fields do find-and-replace on the copied code before it reaches the clipboard, so users get their values injected automatically.
 
-**Mandatory sync rule**: whenever a `.gs` file in this table is modified, its corresponding `-code.js.txt` deployment copy must be updated to match. The deployment copy is a **verbatim copy** of the `.gs` file — no transformations, no version differences. Simply copy the `.gs` file to the `.js.txt` path.
+**Mandatory sync rule**: whenever `gas-template.gs` is modified, `gas-template-code.js.txt` must be updated to match. Simply copy the `.gs` file to the `.js.txt` path.
 
-**Why this exists**: the HTML pages are served from GitHub Pages (`live-site-pages/`), but the `.gs` files live in `googleAppsScripts/` which is not part of the deployed site. The `.js.txt` files bridge this gap — they're deployed alongside the HTML so the browser `fetch()` can access them.
-
-**When adding a new GAS project** that needs a Copy Code.gs button: create the corresponding `-code.js.txt` file in `live-site-pages/` and add it to this table.
+**Why this exists**: the HTML pages are served from GitHub Pages (`live-site-pages/`), but the `.gs` files live in `googleAppsScripts/` which is not part of the deployed site. The `.js.txt` file bridges this gap — it's deployed alongside the HTML so the browser `fetch()` can access it.
 
 ## GAS UI Layout Awareness
 

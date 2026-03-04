@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v02.42r] — 2026-03-04 11:46:16 AM EST
+
+### Changed
+- Consolidated Copy Code.gs to use a single shared template source (`gas-template-code.js.txt`) instead of per-page copies — all pages now copy the canonical template with placeholder values
+
+### Removed
+- Removed redundant `gas-test-code.js.txt` — gas-test.html now fetches from the shared `gas-template-code.js.txt`
+
+#### `gas-test.html` — v01.11w
+
+##### Changed
+- Copy Code.gs button now fetches from the shared template source instead of a page-specific copy
 
 ## [v02.41r] — 2026-03-04 11:28:22 AM EST
 
