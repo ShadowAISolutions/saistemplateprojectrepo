@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v02.99r] — 2026-03-05 09:42:31 AM EST
+
+### Fixed
+- Re-trigger GitHub Pages deployment after transient GitHub API 500 error during prior deploy
 
 ## [v02.98r] — 2026-03-05 09:33:31 AM EST
 
