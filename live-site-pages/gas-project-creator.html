@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.30w">
+  <meta name="build-version" content="v01.31w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -275,16 +275,6 @@
       transition: opacity 0.3s;
     }
     .config-toast.show { opacity: 1; }
-    .saved-badge {
-      display: inline-block;
-      font-size: 10px;
-      color: #3fb950;
-      background: rgba(63,185,80,0.15);
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
     /* ── Setup Instructions ────────────────────────────────── */
     .setup-steps {
       font-size: 13px;
@@ -489,12 +479,6 @@
     <div class="section-header">HTML Layer</div>
 
     <div class="status-row">
-      <div class="status-dot gray" id="dot-deployment"></div>
-      <span class="status-label">GAS Deployment ID</span>
-      <span class="status-value neutral" id="val-deployment">Checking...</span>
-    </div>
-
-    <div class="status-row">
       <div class="status-dot gray" id="dot-title"></div>
       <span class="status-label">Page Title</span>
       <span class="status-value neutral" id="val-title">Checking...</span>
@@ -525,7 +509,7 @@
     </div>
 
     <div class="divider"></div>
-    <div class="section-header">Setup &amp; Configuration <span id="saved-badge" class="saved-badge" style="display:none">localStorage</span></div>
+    <div class="section-header">Setup &amp; Configuration</div>
 
     <div class="setup-steps">
       <ol>
@@ -1167,20 +1151,11 @@
       // Update page title
       if (title) document.title = title;
 
-      // Update deployment ID status
-      if (deployId && deployId !== 'YOUR_DEPLOYMENT_ID') {
-        setStatus('deployment', 'green', 'ok', 'Configured');
-      } else {
-        setStatus('deployment', 'red', 'missing', 'Not set');
-      }
-
       // Update title status
       if (title && title !== 'CHANGE THIS PROJECT TITLE TEMPLATE') {
         setStatus('title', 'green', 'ok', title);
       }
 
-      // Show saved badge
-      document.getElementById('saved-badge').style.display = 'inline-block';
       showToast('Configuration saved to localStorage');
     }
 
@@ -1195,9 +1170,18 @@
       var panel = document.getElementById('gas-panel');
       var tab = document.getElementById('gas-panel-tab');
 
-      // Remove any existing iframe
+      // Remove any existing iframe and tip
       var old = document.getElementById('gas-app');
       if (old) old.remove();
+      var oldTip = document.getElementById('gas-panel-tip');
+      if (oldTip) oldTip.remove();
+
+      // Add doGet tip banner
+      var tip = document.createElement('div');
+      tip.id = 'gas-panel-tip';
+      tip.style.cssText = 'background:#1c2128;color:#8b949e;font-size:12px;padding:6px 12px;border-bottom:1px solid #30363d;flex-shrink:0';
+      tip.innerHTML = '\uD83D\uDCA1 If you see <strong style="color:#f0883e">Script function not found: doGet</strong>, it means the Deployment ID is valid &mdash; you just need to add a <code style="color:#79c0ff">doGet()</code> function to your script.';
+      panel.appendChild(tip);
 
       // Create iframe via srcdoc trampoline
       var url = 'https://script.google.com/macros/s/' + deployId + '/exec';
@@ -1315,10 +1299,7 @@
       document.getElementById('cfg-sheet-name').value = 'Live_Sheet';
       document.getElementById('cfg-sound-id').value = '1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN';
       document.getElementById('cfg-splash-logo').value = 'https://www.shadowaisolutions.com/SAIS%20Logo.png';
-      document.getElementById('saved-badge').style.display = 'none';
-
       // Reset dashboard
-      setStatus('deployment', 'red', 'missing', 'Not set');
       document.title = 'CHANGE THIS PROJECT TITLE GAS TEMPLATE';
       setStatus('title', 'green', 'ok', 'CHANGE THIS PROJECT TITLE GAS TEMPLATE');
 
@@ -1357,11 +1338,7 @@
       if (savedSound) document.getElementById('cfg-sound-id').value = savedSound;
       if (savedSplashLogo) document.getElementById('cfg-splash-logo').value = savedSplashLogo;
 
-      var hasSaved = savedTitle || savedDeploy || savedSheet || savedSound;
-      if (hasSaved) {
-        document.getElementById('saved-badge').style.display = 'inline-block';
-        if (savedTitle) document.title = savedTitle;
-      }
+      if (savedTitle) document.title = savedTitle;
       updateDeployGate();
       // Show panel tab if deployment ID is saved (collapsed by default)
       if (savedDeploy && savedDeploy !== 'YOUR_DEPLOYMENT_ID') {
@@ -1371,14 +1348,6 @@
 
     // Initial HTML layer checks
     (function() {
-      // Deployment ID check — is localStorage deployment set?
-      var ld0 = localStorage.getItem('gas-project-creator-deployment-id') || '';
-      if (ld0 && ld0 !== 'YOUR_DEPLOYMENT_ID') {
-        setStatus('deployment', 'green', 'ok', 'Configured');
-      } else {
-        setStatus('deployment', 'red', 'missing', 'Not set');
-      }
-
       // Title check
       var title = document.title;
       if (title && title !== 'CHANGE THIS PROJECT TITLE TEMPLATE' && title !== 'GAS Project Creator') {

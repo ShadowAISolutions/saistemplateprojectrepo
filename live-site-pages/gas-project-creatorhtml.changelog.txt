@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.31w] — 2026-03-04 08:02:31 PM EST — v02.74r
+
+### Changed
+- Test GAS Connection panel now shows a helpful tip explaining that the "Script function not found: doGet" error means your Deployment ID is valid
+
+### Removed
+- GAS Deployment ID status indicator from the dashboard — the Test GAS Connection panel validates the ID directly
+- "LOCALSTORAGE" badge from the Setup & Configuration header
 
 ## [v01.30w] — 2026-03-04 07:20:53 PM EST — v02.73r
 

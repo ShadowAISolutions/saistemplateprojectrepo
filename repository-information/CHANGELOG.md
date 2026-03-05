@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v02.74r] — 2026-03-04 08:02:31 PM EST
+
+### Changed
+- Test GAS Connection panel now shows a tip explaining that "Script function not found: doGet" means the Deployment ID is valid
+
+### Removed
+- GAS Deployment ID "Configured" indicator from HTML Layer dashboard — redundant since Test GAS Connection validates the ID
+- "LOCALSTORAGE" badge from Setup & Configuration section header
+
+#### `gas-project-creator.html` — v01.31w
+
+##### Changed
+- Test GAS Connection panel now shows a tip about the "doGet" error meaning valid Deployment ID
+
+##### Removed
+- GAS Deployment ID status row from HTML Layer dashboard
+- LOCALSTORAGE badge from Setup & Configuration header
 
 ## [v02.73r] — 2026-03-04 07:20:53 PM EST
 
