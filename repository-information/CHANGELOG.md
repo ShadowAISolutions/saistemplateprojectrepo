@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 62/100`
+`Sections: 63/100`
 
 ## [Unreleased]
+
+## [v02.72r] — 2026-03-04 07:13:41 PM EST
+
+### Added
+- Test GAS Connection overlay — loads GAS deployment URL in an iframe popup for live testing
+
+### Changed
+- File Path and Embedding URL are now auto-derived by Claude when using Copy Claude Config — removed from form inputs
+- Copy Claude Config prompt updated to instruct Claude to determine file path and embedding URL from project title
+
+### Removed
+- Local Config (localStorage) dashboard section — redundant status indicators removed
+- File Path and Embedding URL form fields — now auto-created by the Claude config prompt
+
+#### `gas-project-creator.html` — v01.29w
+
+##### Added
+- Test GAS Connection button now opens an overlay with the GAS deployment in an iframe
+
+##### Changed
+- Copy Claude Config auto-derives file path and embedding URL from project title
+
+##### Removed
+- Local Config dashboard section (localStorage status indicators)
+- File Path and Embedding URL input fields
 
 ## [v02.71r] — 2026-03-04 07:02:02 PM EST
 

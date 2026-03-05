@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.28w">
+  <meta name="build-version" content="v01.29w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -412,6 +412,39 @@
       font-size: 11px;
       color: #484f58;
     }
+    /* ── Test GAS Connection Overlay ───────────────────────── */
+    #gas-test-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); z-index: 10002; display: none;
+      align-items: center; justify-content: center;
+    }
+    #gas-test-popup {
+      background: #1a1a2e; border-radius: 12px;
+      max-width: 560px; width: 92%; max-height: 80vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    #gas-test-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #gas-test-header span { font: bold 15px/1 sans-serif; color: #fff; }
+    #gas-test-close {
+      background: none; border: none; color: #888; font-size: 24px;
+      cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    #gas-test-close:hover { color: #fff; }
+    #gas-test-body {
+      flex: 1; min-height: 320px; position: relative;
+    }
+    #gas-test-body iframe {
+      width: 100%; height: 100%; min-height: 320px; border: none;
+      border-radius: 0 0 12px 12px;
+    }
+    #gas-test-body .gas-test-loading {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      color: #888; font: 13px/1.4 sans-serif;
+    }
     .pre-wrap {
       position: relative;
     }
@@ -434,6 +467,19 @@
 <body>
   <div id="splash-green" class="splash"><div class="splash-title">Website Ready</div><img id="splash-logo" src="" alt=""></div>
   <div id="splash-maintenance" class="splash"><div class="splash-title">&#128295;This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">&#128295;</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
+
+  <!-- Test GAS Connection Overlay -->
+  <div id="gas-test-overlay">
+    <div id="gas-test-popup">
+      <div id="gas-test-header">
+        <span>Test GAS Connection</span>
+        <button id="gas-test-close">&times;</button>
+      </div>
+      <div id="gas-test-body">
+        <div class="gas-test-loading">Loading GAS deployment&hellip;</div>
+      </div>
+    </div>
+  </div>
 
   <!-- GAS Project Creator Dashboard -->
   <div class="dashboard">
@@ -477,34 +523,6 @@
       <span class="status-label">Wake Lock</span>
       <span class="status-value neutral" id="val-wakelock">Checking...</span>
     </div>
-
-    <div class="divider"></div>
-    <div class="section-header">Local Config (localStorage)</div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-local-deploy"></div>
-      <span class="status-label">Deployment ID</span>
-      <span class="status-value neutral" id="val-local-deploy">&mdash;</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-local-sheet"></div>
-      <span class="status-label">Spreadsheet ID</span>
-      <span class="status-value neutral" id="val-local-sheet">&mdash;</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-local-sheetname"></div>
-      <span class="status-label">Sheet Name</span>
-      <span class="status-value neutral" id="val-local-sheetname">&mdash;</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-local-sound"></div>
-      <span class="status-label">Sound File ID</span>
-      <span class="status-value neutral" id="val-local-sound">&mdash;</span>
-    </div>
-
 
     <div class="divider"></div>
     <div class="section-header">Setup &amp; Configuration <span id="saved-badge" class="saved-badge" style="display:none">localStorage</span></div>
@@ -591,7 +609,7 @@
             <label for="cfg-deployment-id">Deployment ID <em style="color:#f85149">(required)</em></label>
             <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-deployment-id','gas-project-creator-deployment-id')" title="Clear">&times;</button></div>
             <span class="field-hint">From Apps Script: Deploy &rarr; Manage deployments &mdash; required before using Apply, Copy, or GAS Preview</span>
-            <button class="btn-apply" id="btn-apply" onclick="applyConfig()" disabled style="margin-top:8px">Test GAS Connection</button>
+            <button class="btn-apply" id="btn-apply" onclick="testGasConnection()" disabled style="margin-top:8px">Test GAS Connection</button>
           </div>
           <div class="deploy-separator">
             <div class="deploy-separator-label">Project Configuration</div>
@@ -622,11 +640,6 @@
             <span class="field-hint">Branch to pull .gs updates from</span>
           </div>
           <div class="step-input">
-            <label for="cfg-file-path">File Path</label>
-            <div class="input-row"><input type="text" id="cfg-file-path" placeholder="Code.gs" value="googleAppsScripts/NewGas/newgas1.gs"><button class="field-clear" onclick="clearField('cfg-file-path','gas-project-creator-file-path')" title="Clear">&times;</button></div>
-            <span class="field-hint">Path to the .gs file in the repo</span>
-          </div>
-          <div class="step-input">
             <label for="cfg-spreadsheet-id">Spreadsheet ID <em>(optional)</em></label>
             <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..." value="12OgP5hFV34oprTcAShaqlWHN35KZHzD13YjX8H7QhbE"><button class="field-clear" onclick="clearField('cfg-spreadsheet-id','gas-project-creator-spreadsheet-id')" title="Clear">&times;</button></div>
             <span class="field-hint">Google Sheets ID for version tracking</span>
@@ -640,11 +653,6 @@
             <label for="cfg-sound-id">Sound File ID <em>(optional)</em></label>
             <div class="input-row"><input type="text" id="cfg-sound-id" placeholder="1bzVp6wp..." value="1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN"><button class="field-clear" onclick="clearField('cfg-sound-id','gas-project-creator-sound-file-id')" title="Clear">&times;</button></div>
             <span class="field-hint">Google Drive file ID for notification sound</span>
-          </div>
-          <div class="step-input">
-            <label for="cfg-embedding-url">Embedding URL <em>(optional)</em></label>
-            <div class="input-row"><input type="text" id="cfg-embedding-url" placeholder="https://yoursite.com/page" value="https://shadowaisolutions.github.io/htmltemplateautoupdate/newgas1.html"><button class="field-clear" onclick="clearField('cfg-embedding-url','gas-project-creator-embedding-url')" title="Clear">&times;</button></div>
-            <span class="field-hint">External page that hosts this GAS app in an iframe</span>
           </div>
           <div class="step-input">
             <label for="cfg-splash-logo">Splash Logo URL <em>(optional)</em></label>
@@ -1086,24 +1094,20 @@
         var ghOwner = (document.getElementById('cfg-github-owner') || {}).value || '';
         var ghRepo = (document.getElementById('cfg-github-repo') || {}).value || '';
         var ghBranch = (document.getElementById('cfg-github-branch') || {}).value || '';
-        var filePath = (document.getElementById('cfg-file-path') || {}).value || '';
         var deployId = (document.getElementById('cfg-deployment-id') || {}).value || '';
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         var sheetName = (document.getElementById('cfg-sheet-name') || {}).value || '';
         var soundId = (document.getElementById('cfg-sound-id') || {}).value || '';
-        var embedUrl = (document.getElementById('cfg-embedding-url') || {}).value || '';
         var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
         if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
         if (version.trim()) code = code.replace(/var VERSION\s*=\s*"[^"]*"/, 'var VERSION = "' + version.trim() + '"');
         if (ghOwner.trim()) code = code.replace(/var GITHUB_OWNER\s*=\s*"[^"]*"/, 'var GITHUB_OWNER  = "' + ghOwner.trim() + '"');
         if (ghRepo.trim()) code = code.replace(/var GITHUB_REPO\s*=\s*"[^"]*"/, 'var GITHUB_REPO   = "' + ghRepo.trim() + '"');
         if (ghBranch.trim()) code = code.replace(/var GITHUB_BRANCH\s*=\s*"[^"]*"/, 'var GITHUB_BRANCH = "' + ghBranch.trim() + '"');
-        if (filePath.trim()) code = code.replace(/var FILE_PATH\s*=\s*"[^"]*"/, 'var FILE_PATH     = "' + filePath.trim() + '"');
         if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
         if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
         if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
-        if (embedUrl.trim()) code = code.replace(/var EMBEDDING_URL\s*=\s*"[^"]*"/, 'var EMBEDDING_URL = "' + embedUrl.trim() + '"');
         if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
         navigator.clipboard.writeText(code).then(function() {
           btn.textContent = 'Copied!';
@@ -1141,12 +1145,10 @@
       var ghOwner = document.getElementById('cfg-github-owner').value.trim();
       var ghRepo = document.getElementById('cfg-github-repo').value.trim();
       var ghBranch = document.getElementById('cfg-github-branch').value.trim();
-      var filePath = document.getElementById('cfg-file-path').value.trim();
       var deployId = document.getElementById('cfg-deployment-id').value.trim();
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim();
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
       var soundId = document.getElementById('cfg-sound-id').value.trim();
-      var embedUrl = document.getElementById('cfg-embedding-url').value.trim();
       var splashLogo = document.getElementById('cfg-splash-logo').value.trim();
 
       // Save to localStorage
@@ -1155,12 +1157,10 @@
       localStorage.setItem('gas-project-creator-github-owner', ghOwner);
       localStorage.setItem('gas-project-creator-github-repo', ghRepo);
       localStorage.setItem('gas-project-creator-github-branch', ghBranch);
-      localStorage.setItem('gas-project-creator-file-path', filePath);
       localStorage.setItem('gas-project-creator-deployment-id', deployId);
       localStorage.setItem('gas-project-creator-spreadsheet-id', sheetId);
       localStorage.setItem('gas-project-creator-sheet-name', sheetName);
       localStorage.setItem('gas-project-creator-sound-file-id', soundId);
-      localStorage.setItem('gas-project-creator-embedding-url', embedUrl);
       localStorage.setItem('gas-project-creator-splash-logo', splashLogo);
 
       // Update page title
@@ -1178,16 +1178,42 @@
         setStatus('title', 'green', 'ok', title);
       }
 
-      // Update local config status
-      setStatus('local-deploy', deployId ? 'green' : 'gray', deployId ? 'ok' : 'neutral', deployId ? deployId.substring(0, 16) + '\u2026' : '\u2014');
-      setStatus('local-sheet', sheetId ? 'green' : 'gray', sheetId ? 'ok' : 'neutral', sheetId ? sheetId.substring(0, 16) + '\u2026' : '\u2014');
-      setStatus('local-sheetname', sheetName ? 'green' : 'gray', sheetName ? 'ok' : 'neutral', sheetName || '\u2014');
-      setStatus('local-sound', soundId ? 'green' : 'gray', soundId ? 'ok' : 'neutral', soundId ? soundId.substring(0, 16) + '\u2026' : '\u2014');
-
       // Show saved badge
       document.getElementById('saved-badge').style.display = 'inline-block';
       showToast('Configuration saved to localStorage');
     }
+
+    // ── Test GAS Connection Overlay ──────────────────────────────
+    function testGasConnection() {
+      var deployId = document.getElementById('cfg-deployment-id').value.trim();
+      if (!deployId) return;
+
+      // Save config first
+      applyConfig();
+
+      var overlay = document.getElementById('gas-test-overlay');
+      var body = document.getElementById('gas-test-body');
+      var url = 'https://script.google.com/macros/s/' + deployId + '/exec';
+
+      // Reset body and show overlay
+      body.innerHTML = '<div class="gas-test-loading">Loading GAS deployment&hellip;</div>'
+        + '<iframe src="' + url + '" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>';
+      overlay.style.display = 'flex';
+    }
+    (function() {
+      var closeBtn = document.getElementById('gas-test-close');
+      var overlay = document.getElementById('gas-test-overlay');
+      function closeOverlay() {
+        overlay.style.display = 'none';
+        var body = document.getElementById('gas-test-body');
+        body.innerHTML = '<div class="gas-test-loading">Loading GAS deployment&hellip;</div>';
+      }
+      closeBtn.addEventListener('click', closeOverlay);
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) closeOverlay(); });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.style.display === 'flex') closeOverlay();
+      });
+    })();
 
     function copyConfig() {
       var title = document.getElementById('cfg-title').value.trim() || 'CHANGE THIS PROJECT TITLE GAS TEMPLATE';
@@ -1195,12 +1221,10 @@
       var ghOwner = document.getElementById('cfg-github-owner').value.trim() || 'ShadowAISolutions';
       var ghRepo = document.getElementById('cfg-github-repo').value.trim() || 'htmltemplateautoupdate';
       var ghBranch = document.getElementById('cfg-github-branch').value.trim() || 'main';
-      var filePath = document.getElementById('cfg-file-path').value.trim() || 'googleAppsScripts/NewGas/newgas1.gs';
       var deployId = document.getElementById('cfg-deployment-id').value.trim() || 'YOUR_DEPLOYMENT_ID';
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || '12OgP5hFV34oprTcAShaqlWHN35KZHzD13YjX8H7QhbE';
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
       var soundId = document.getElementById('cfg-sound-id').value.trim() || '1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN';
-      var embedUrl = document.getElementById('cfg-embedding-url').value.trim() || 'https://shadowaisolutions.github.io/htmltemplateautoupdate/newgas1.html';
       var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'https://www.shadowaisolutions.com/SAIS%20Logo.png';
 
       var json = '{\n'
@@ -1209,16 +1233,14 @@
         + '  "GITHUB_OWNER": "' + ghOwner + '",\n'
         + '  "GITHUB_REPO": "' + ghRepo + '",\n'
         + '  "GITHUB_BRANCH": "' + ghBranch + '",\n'
-        + '  "FILE_PATH": "' + filePath + '",\n'
         + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
         + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
         + '  "SHEET_NAME": "' + sheetName + '",\n'
         + '  "SOUND_FILE_ID": "' + soundId + '",\n'
-        + '  "EMBEDDING_URL": "' + embedUrl + '",\n'
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '"\n'
         + '}';
 
-      var prompt = 'Update ' + filePath + ' config — sync these values into the config.json, .gs file, and embedding HTML page. If the file path does not exist yet in the repo, create the full page ecosystem for it by copying from the gas-template ecosystem: HTML page (from live-site-templates/GasTemplate.html), .gs file (from googleAppsScripts/GasTemplate/gas-template.gs), config.json (from googleAppsScripts/GasTemplate/gas-template.config.json), version files, changelogs, and all tracking files. Register the new project in the GAS Projects table and update ARCHITECTURE.md, README.md, and STATUS.md:\n\n';
+      var prompt = 'Create or update a GAS project with these config values. Determine the appropriate file path (under googleAppsScripts/) and embedding URL (under live-site-pages/) based on the project title. If the project does not exist yet in the repo, create the full page ecosystem by copying from the gas-template ecosystem: HTML page (from live-site-templates/GasTemplate.html), .gs file (from googleAppsScripts/GasTemplate/gas-template.gs), config.json (from googleAppsScripts/GasTemplate/gas-template.config.json), version files, changelogs, and all tracking files. Sync these values into the config.json, .gs file, and embedding HTML page. Register the new project in the GAS Projects table and update ARCHITECTURE.md, README.md, and STATUS.md:\n\n';
 
       navigator.clipboard.writeText(prompt + json).then(function() {
         showToast('Config + prompt copied to clipboard');
@@ -1229,17 +1251,9 @@
 
     function clearField(inputId, storageKey) {
       var el = document.getElementById(inputId);
-      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-file-path':'googleAppsScripts/NewGas/newgas1.gs','cfg-version':'01.00g','cfg-title':'CHANGE THIS PROJECT TITLE GAS TEMPLATE','cfg-spreadsheet-id':'12OgP5hFV34oprTcAShaqlWHN35KZHzD13YjX8H7QhbE','cfg-sound-id':'1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN','cfg-embedding-url':'https://shadowaisolutions.github.io/htmltemplateautoupdate/newgas1.html','cfg-splash-logo':'https://www.shadowaisolutions.com/SAIS%20Logo.png','cfg-github-owner':'ShadowAISolutions','cfg-github-repo':'htmltemplateautoupdate'};
+      var defaults = {'cfg-sheet-name':'Live_Sheet','cfg-github-branch':'main','cfg-version':'01.00g','cfg-title':'CHANGE THIS PROJECT TITLE GAS TEMPLATE','cfg-spreadsheet-id':'12OgP5hFV34oprTcAShaqlWHN35KZHzD13YjX8H7QhbE','cfg-sound-id':'1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN','cfg-splash-logo':'https://www.shadowaisolutions.com/SAIS%20Logo.png','cfg-github-owner':'ShadowAISolutions','cfg-github-repo':'htmltemplateautoupdate'};
       if (el) el.value = defaults[inputId] || '';
       localStorage.removeItem(storageKey);
-      var statusMap = {
-        'gas-project-creator-deployment-id': 'local-deploy',
-        'gas-project-creator-spreadsheet-id': 'local-sheet',
-        'gas-project-creator-sheet-name': 'local-sheetname',
-        'gas-project-creator-sound-file-id': 'local-sound'
-      };
-      var statusId = statusMap[storageKey];
-      if (statusId) setStatus(statusId, 'gray', 'neutral', '\u2014');
       var label = el ? el.closest('.step-input').querySelector('label') : null;
       showToast('Cleared ' + (label ? label.textContent : storageKey));
       updateDeployGate();
@@ -1251,12 +1265,10 @@
       localStorage.removeItem('gas-project-creator-github-owner');
       localStorage.removeItem('gas-project-creator-github-repo');
       localStorage.removeItem('gas-project-creator-github-branch');
-      localStorage.removeItem('gas-project-creator-file-path');
       localStorage.removeItem('gas-project-creator-deployment-id');
       localStorage.removeItem('gas-project-creator-spreadsheet-id');
       localStorage.removeItem('gas-project-creator-sheet-name');
       localStorage.removeItem('gas-project-creator-sound-file-id');
-      localStorage.removeItem('gas-project-creator-embedding-url');
       localStorage.removeItem('gas-project-creator-splash-logo');
 
       document.getElementById('cfg-title').value = 'CHANGE THIS PROJECT TITLE GAS TEMPLATE';
@@ -1264,22 +1276,15 @@
       document.getElementById('cfg-github-owner').value = 'ShadowAISolutions';
       document.getElementById('cfg-github-repo').value = 'htmltemplateautoupdate';
       document.getElementById('cfg-github-branch').value = 'main';
-      document.getElementById('cfg-file-path').value = 'googleAppsScripts/NewGas/newgas1.gs';
       document.getElementById('cfg-deployment-id').value = '';
       document.getElementById('cfg-spreadsheet-id').value = '12OgP5hFV34oprTcAShaqlWHN35KZHzD13YjX8H7QhbE';
       document.getElementById('cfg-sheet-name').value = 'Live_Sheet';
       document.getElementById('cfg-sound-id').value = '1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN';
-      document.getElementById('cfg-embedding-url').value = 'https://shadowaisolutions.github.io/htmltemplateautoupdate/newgas1.html';
       document.getElementById('cfg-splash-logo').value = 'https://www.shadowaisolutions.com/SAIS%20Logo.png';
-      // Config output panel removed — copy goes directly to clipboard
       document.getElementById('saved-badge').style.display = 'none';
 
       // Reset dashboard
       setStatus('deployment', 'red', 'missing', 'Not set');
-      setStatus('local-deploy', 'gray', 'neutral', '\u2014');
-      setStatus('local-sheet', 'gray', 'neutral', '\u2014');
-      setStatus('local-sheetname', 'gray', 'neutral', '\u2014');
-      setStatus('local-sound', 'gray', 'neutral', '\u2014');
       document.title = 'CHANGE THIS PROJECT TITLE GAS TEMPLATE';
       setStatus('title', 'green', 'ok', 'CHANGE THIS PROJECT TITLE GAS TEMPLATE');
 
@@ -1301,12 +1306,10 @@
       var savedGhOwner = localStorage.getItem('gas-project-creator-github-owner') || '';
       var savedGhRepo = localStorage.getItem('gas-project-creator-github-repo') || '';
       var savedGhBranch = localStorage.getItem('gas-project-creator-github-branch') || '';
-      var savedFilePath = localStorage.getItem('gas-project-creator-file-path') || '';
       var savedDeploy = localStorage.getItem('gas-project-creator-deployment-id') || '';
       var savedSheet = localStorage.getItem('gas-project-creator-spreadsheet-id') || '';
       var savedSheetName = localStorage.getItem('gas-project-creator-sheet-name') || '';
       var savedSound = localStorage.getItem('gas-project-creator-sound-file-id') || '';
-      var savedEmbedUrl = localStorage.getItem('gas-project-creator-embedding-url') || '';
       var savedSplashLogo = localStorage.getItem('gas-project-creator-splash-logo') || '';
 
       if (savedTitle) document.getElementById('cfg-title').value = savedTitle;
@@ -1314,12 +1317,10 @@
       if (savedGhOwner) document.getElementById('cfg-github-owner').value = savedGhOwner;
       if (savedGhRepo) document.getElementById('cfg-github-repo').value = savedGhRepo;
       if (savedGhBranch) document.getElementById('cfg-github-branch').value = savedGhBranch;
-      if (savedFilePath) document.getElementById('cfg-file-path').value = savedFilePath;
       if (savedDeploy) document.getElementById('cfg-deployment-id').value = savedDeploy;
       if (savedSheet) document.getElementById('cfg-spreadsheet-id').value = savedSheet;
       if (savedSheetName) document.getElementById('cfg-sheet-name').value = savedSheetName;
       if (savedSound) document.getElementById('cfg-sound-id').value = savedSound;
-      if (savedEmbedUrl) document.getElementById('cfg-embedding-url').value = savedEmbedUrl;
       if (savedSplashLogo) document.getElementById('cfg-splash-logo').value = savedSplashLogo;
 
       var hasSaved = savedTitle || savedDeploy || savedSheet || savedSound;
@@ -1362,16 +1363,6 @@
 
       // Audio
       updateDashboardAudio();
-
-      // Local config status — show what's stored in localStorage
-      var ld = localStorage.getItem('gas-project-creator-deployment-id') || '';
-      var ls = localStorage.getItem('gas-project-creator-spreadsheet-id') || '';
-      var ln = localStorage.getItem('gas-project-creator-sheet-name') || '';
-      var lf = localStorage.getItem('gas-project-creator-sound-file-id') || '';
-      setStatus('local-deploy', ld ? 'green' : 'gray', ld ? 'ok' : 'neutral', ld ? ld.substring(0, 16) + '\u2026' : '\u2014');
-      setStatus('local-sheet', ls ? 'green' : 'gray', ls ? 'ok' : 'neutral', ls ? ls.substring(0, 16) + '\u2026' : '\u2014');
-      setStatus('local-sheetname', ln ? 'green' : 'gray', ln ? 'ok' : 'neutral', ln || '\u2014');
-      setStatus('local-sound', lf ? 'green' : 'gray', lf ? 'ok' : 'neutral', lf ? lf.substring(0, 16) + '\u2026' : '\u2014');
     })();
   </script>
 </body>

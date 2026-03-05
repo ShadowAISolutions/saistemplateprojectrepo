@@ -3,9 +3,21 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.29w] — 2026-03-04 07:13:41 PM EST — v02.72r
+
+### Added
+- Test GAS Connection button now opens an overlay showing the live GAS deployment for quick testing
+
+### Changed
+- Project configuration is now simpler — file path and embedding URL are automatically determined when you copy the Claude config
+
+### Removed
+- Local Config status section removed for a cleaner interface
+- File Path and Embedding URL fields removed — these are now handled automatically
 
 ## [v01.28w] — 2026-03-04 07:02:02 PM EST — v02.71r
 
