@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v03.06r] — 2026-03-05 01:37:09 PM EST
+
+### Changed
+- "Copy Config for Claude" output now lists the three template source files so Claude knows exactly which templates the setup script copies from
+
+#### `gas-project-creator.html` — v01.53w
+
+##### Changed
+- Copy Config button output now lists the template files used for new project creation
 
 ## [v03.05r] — 2026-03-05 01:32:42 PM EST
 

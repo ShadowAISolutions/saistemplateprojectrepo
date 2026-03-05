@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.52w">
+  <meta name="build-version" content="v01.53w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -1097,7 +1097,11 @@
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '"\n'
         + '}';
 
-      var command = "Set up a new GAS project with the following config. Run the setup script, then complete all post-script steps.\n\n"
+      var command = "Set up a new GAS project with the following config. The setup script copies from these templates:\n"
+        + "- HTML page: live-site-templates/GasTemplate.html\n"
+        + "- GAS script: googleAppsScripts/GasTemplate/gas-template.gs\n"
+        + "- Config: googleAppsScripts/GasTemplate/gas-template.config.json\n\n"
+        + "Run the setup script, then complete all post-script steps.\n\n"
         + "bash scripts/setup-gas-project.sh <<'CONFIG'\n" + json + "\nCONFIG\n\n"
         + "After the script completes:\n"
         + "1. Update repository-information/ARCHITECTURE.md (add new files to Mermaid diagram)\n"

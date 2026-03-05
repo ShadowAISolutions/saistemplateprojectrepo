@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v01.53w] — 2026-03-05 01:37:09 PM EST — v03.06r
+
+### Changed
+- Copy Config button output now lists the template files used for new project creation
 
 ## [v01.52w] — 2026-03-05 01:32:42 PM EST — v03.05r
 
