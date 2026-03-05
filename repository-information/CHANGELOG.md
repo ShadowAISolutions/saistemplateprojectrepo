@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v03.22r] — 2026-03-05 05:16:05 PM EST
+
+### Removed
+- "Pull Latest from GitHub" manual button from Testation3 GAS app (auto-update handles this now)
+- Red tree emoji art from Testation3 GAS app
+
+#### `testation3.gs` — 01.12g
+
+##### Removed
+- Manual "Pull Latest from GitHub" button (no longer needed — auto-update on page load handles updates)
+- Decorative red tree art
 
 ## [v03.21r] — 2026-03-05 05:12:23 PM EST
 
