@@ -4,33 +4,35 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-04 02:14:37 PM EST
-**Repo version:** v02.57r
+**Date:** 2026-03-04 09:34:12 PM EST
+**Repo version:** v02.85r
 
 ### What we worked on
-- Added "Bootstrap & Circular Dependency Reasoning" rule to behavioral-rules.md — catches chicken-and-egg logic (like GAS deployment ID bootstrap) in future explanations
-- Added two-step deployment instructions (Deploy #1 and Deploy #2) to both gas-test.html and gas-template.html setup steps, explaining why two deploys are needed
-- Reordered GAS setup steps multiple times per developer direction:
-  - First reorder: moved GITHUB_TOKEN before Deploy #1, Code.gs copy before OAuth, OAuth before Deploy #2, optional trigger last
-  - Second reorder: rearranged first 7 steps to: Enable API at usersettings → GCP project → Enable API in GCP → Create Apps Script project → Manifest toggle → Link GCP → GITHUB_TOKEN
-  - Split the manifest step: step 5 now just enables the toggle, step 8 (after GITHUB_TOKEN) sets the JSON contents
-- Added subtle subsection group labels to the setup `<ol>` on both GAS pages:
-  - Google Account Setup (steps 1-3)
-  - New Apps Script Project (step 4)
-  - GAS Project Settings (steps 5-7)
-  - GAS Editor (steps 8-12)
-  - GAS Triggers (step 13)
+- Built the GAS Project Creator page (`gas-project-creator.html`) from v01.00w to v01.42w across many iterations:
+  - Created a step-by-step GAS setup wizard with numbered instructions, group labels, and collapsible troubleshooting
+  - Added a live config panel (Deployment ID, Title, Spreadsheet ID, Sheet Name, Sound File ID, Splash Logo URL) that injects values into copied Code.gs and config JSON
+  - Built "Copy Code.gs for GAS", "Copy Config for Claude", and "Copy appsscript.json" buttons with visual feedback
+  - Added Test GAS Connection button with iframe-based deployment validation
+  - Added GAS Preview section with fullscreen toggle
+  - Added token budget warning banner (~38k tokens) for Claude Code context
+  - Implemented clear buttons (×) on all input fields
+  - Added deployment gate — Test GAS Connection, Copy, and Preview require Deployment ID
+  - Removed pre-populated values from Title, Spreadsheet ID, Sheet Name fields (kept placeholder hints)
+  - Changed Copy Config for Claude button to Claude's coral/orange (#d97757)
+  - Added standalone vs. linked script note to step 4
+  - Changed "Troubleshooting:" to "Potential Troubleshooting:" label
 
 ### Key decisions made
-- Setup steps should follow logical dependency order: prerequisites first, then the things that depend on them
-- The manifest JSON setting was split from enabling the toggle because the toggle is a project setting while the JSON content is editor work
-- OAuth authorization should happen after pasting Code.gs (so functions exist) but before Deploy #2 (so deploy has all auth)
-- Group labels use `.step-group-label` CSS class — 10px uppercase muted gray text, no list number
+- Fields should have placeholder hints (gray example text) but NOT pre-populated values — user starts with empty fields
+- Sound File ID and Splash Logo URL keep their pre-populated values (shared resources)
+- Copy Config for Claude button uses Claude's coral/orange brand color (#d97757), distinct from the green Copy Code.gs button
+- Step 4 explains standalone (script.google.com) vs. linked (Sheets Extensions tab) script creation
+- Token warning banner alerts developers about the ~38k token cost of this page in Claude Code context
 
 ### Where we left off
 - All changes committed and merged to main via auto-merge workflow
-- GAS Test at v01.23w, GAS Template at v01.18w, repo at v02.57r
-- CHANGELOG at 100/100 sections — next push will trigger archive rotation
+- GAS Project Creator at v01.42w, repo at v02.85r
+- Page is fully functional with all copy buttons, config panel, and GAS preview working
 
 ### Active context
 - Active reminders in REMINDERS.md (developer-owned, do not touch without approval):
@@ -43,20 +45,20 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-04 11:11:12 AM EST
-**Repo version:** v02.40r
+**Date:** 2026-03-04 02:14:37 PM EST
+**Repo version:** v02.57r
 
 ### What we worked on
-- Matched both `gas-template.gs` and `gas-test.gs` to the RND Code.gs reference (`RND_GAS_AND_WEBSITE/Code.gs`) with each file's own config variables
-- Added live B1 cell value display, embedded spreadsheet iframe with dynamic sheet name heading, and live quota/token info sidebar (v02.38r, 01.04g)
-- Added previously skipped RND features: test sound/beep/vibrate buttons, `playReadySound()` with error handling, `testVibrate()`, "Did it redirect?" and "Is this awesome?" radio buttons, SVG tree graphic (v02.39r, 01.05g)
-- Synced `.js.txt` deployment copies for both GAS files
-- Reinforced `TEMPLATE_DEPLOY` check in `chat-bookends.md` URL display rules — added explicit "check TEMPLATE_DEPLOY first" warning to prevent showing "no live site deployed" when `TEMPLATE_DEPLOY` = `On` (v02.40r)
+- Added "Bootstrap & Circular Dependency Reasoning" rule to behavioral-rules.md
+- Added two-step deployment instructions (Deploy #1 and Deploy #2) to both gas-test.html and gas-template.html
+- Reordered GAS setup steps multiple times per developer direction
+- Split the manifest step: step 5 enables the toggle, step 8 sets the JSON contents
+- Added subtle subsection group labels to the setup `<ol>` on both GAS pages
 
 ### Where we left off
-- Both GAS files now fully match RND Code.gs (with config-specific values)
 - All changes committed and merged to main via auto-merge workflow
-- GAS versions at 01.05g, repo version at v02.40r
+- GAS Test at v01.23w, GAS Template at v01.18w, repo at v02.57r
+- CHANGELOG at 100/100 sections — next push will trigger archive rotation
 
 ### Active context
 - Active reminders in REMINDERS.md (developer-owned, do not touch without approval):
