@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.02w">
+  <meta name="build-version" content="v01.03w">
   <title>Test Title 3</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -61,60 +61,17 @@
     }
     #changelog-body ul { margin: 0 0 8px; padding-left: 20px; }
     #changelog-body li { margin-bottom: 4px; }
-    #version-indicator .dot, #gas-version-indicator .dot {
+    #version-indicator .dot {
       width: 8px; height: 8px; border-radius: 50%;
       background: #888; transition: background 0.3s ease;
       display: flex; align-items: center; justify-content: center;
       font-size: 6px; line-height: 1; color: #fff;
     }
-    #version-indicator .dot.checking, #gas-version-indicator .dot.checking { background: #ffa726; animation: pulse 0.6s infinite alternate; }
-    #version-indicator .dot.counting, #gas-version-indicator .dot.counting { background: #888; }
-    #version-indicator .dot.found, #gas-version-indicator .dot.found    { background: #66bb6a; }
-    #version-indicator .dot.error, #gas-version-indicator .dot.error    { background: #ef5350; }
+    #version-indicator .dot.checking { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    #version-indicator .dot.counting { background: #888; }
+    #version-indicator .dot.found    { background: #66bb6a; }
+    #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
-    #gas-version-indicator {
-      position: fixed; bottom: 8px; left: 8px; z-index: 9999;
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
-      border-radius: 12px; font: 11px/1 monospace; user-select: none;
-      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
-    }
-    #gas-version-indicator:hover { background: rgba(0,0,0,0.75); }
-    #gas-changelog-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 10001; display: none;
-      align-items: center; justify-content: center;
-    }
-    #gas-changelog-popup {
-      background: #1a1a2e; color: #e0e0e0; border-radius: 12px;
-      max-width: 480px; width: 90%; max-height: 70vh;
-      display: flex; flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    }
-    #gas-changelog-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    #gas-changelog-title { font: bold 16px/1 sans-serif; color: #fff; }
-    #gas-changelog-close {
-      background: none; border: none; color: #888; font-size: 24px;
-      cursor: pointer; padding: 4px 8px; line-height: 1;
-    }
-    #gas-changelog-close:hover { color: #fff; }
-    #gas-changelog-body {
-      padding: 16px 20px; overflow-y: auto; font: 13px/1.5 sans-serif;
-    }
-    #gas-changelog-body h3 {
-      font-size: 14px; color: #7c8bff; margin: 16px 0 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;
-    }
-    #gas-changelog-body h3:first-child { margin-top: 0; }
-    #gas-changelog-body h4 {
-      font-size: 12px; color: #a0a0a0; margin: 10px 0 4px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    #gas-changelog-body ul { margin: 0 0 8px; padding-left: 20px; }
-    #gas-changelog-body li { margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -529,132 +486,6 @@
         }
       });
       obs.observe(document.body, { childList: true, subtree: true });
-    })();
-
-    // GAS version indicator — bottom-left pill with countdown and changelog
-    (function() {
-      var GAS_POLL_INTERVAL = 15000;
-      var gasIndicator = document.createElement('div');
-      gasIndicator.id = 'gas-version-indicator';
-      gasIndicator.innerHTML = '<span class="dot"></span><span class="label">GAS ...</span>';
-      document.body.appendChild(gasIndicator);
-
-      var gasDot = gasIndicator.querySelector('.dot');
-      var gasLabel = gasIndicator.querySelector('.label');
-      var gasVersion = null;
-      var gasCountdownTimer = null;
-      var gasCountdownSeconds = 0;
-
-      // GAS changelog overlay
-      var gasOverlay = document.createElement('div');
-      gasOverlay.id = 'gas-changelog-overlay';
-      gasOverlay.innerHTML = '<div id="gas-changelog-popup"><div id="gas-changelog-header">'
-        + '<span id="gas-changelog-title">GAS Changelog</span>'
-        + '<button id="gas-changelog-close">&times;</button></div>'
-        + '<div id="gas-changelog-body"></div></div>';
-      document.body.appendChild(gasOverlay);
-
-      var gasCloseBtn = document.getElementById('gas-changelog-close');
-      var gasBody = document.getElementById('gas-changelog-body');
-      var gasChangelogCache = null;
-
-      function showGasChangelog() { gasOverlay.style.display = 'flex'; if (!gasChangelogCache) fetchGasChangelog(); }
-      function hideGasChangelog() { gasOverlay.style.display = 'none'; }
-      gasCloseBtn.addEventListener('click', hideGasChangelog);
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && gasOverlay.style.display === 'flex') hideGasChangelog();
-      });
-      gasIndicator.addEventListener('click', function(e) { e.stopPropagation(); showGasChangelog(); });
-
-      function getGasChangelogUrl() {
-        var basePath = window.location.href.split('?')[0].split('#')[0];
-        var pn = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
-        if (!pn) pn = 'index';
-        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + pn + 'gs.changelog.txt';
-      }
-
-      function parseGasChangelog(md) {
-        var lines = md.split('\n');
-        var html = '';
-        var inList = false;
-        for (var i = 0; i < lines.length; i++) {
-          var line = lines[i];
-          if (line.match(/^# /) || line.match(/^`Sections:/) || line.match(/^All notable/)
-              || line.match(/^Format follows/) || line.match(/^Developed by:/)) continue;
-          if (line.match(/^## \[Unreleased\]/)) continue;
-          if (line.match(/^## \[/)) {
-            if (inList) { html += '</ul>'; inList = false; }
-            var m = line.match(/^## \[([\d.]+g)\].*?— (.+)/);
-            if (m) html += '<h3>' + m[1] + ' &mdash; ' + m[2] + '</h3>';
-            continue;
-          }
-          if (line.match(/^### /)) {
-            if (inList) { html += '</ul>'; inList = false; }
-            html += '<h4>' + line.substring(4) + '</h4>';
-            continue;
-          }
-          if (line.match(/^- /)) {
-            if (!inList) { html += '<ul>'; inList = true; }
-            html += '<li>' + line.substring(2) + '</li>';
-            continue;
-          }
-        }
-        if (inList) html += '</ul>';
-        return html || '<p style="color:#888">No changelog entries yet.</p>';
-      }
-
-      function fetchGasChangelog() {
-        gasBody.innerHTML = '<p style="color:#888">Loading changelog\u2026</p>';
-        fetch(getGasChangelogUrl())
-          .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
-          .then(function(md) {
-            gasChangelogCache = parseGasChangelog(md);
-            gasBody.innerHTML = gasChangelogCache;
-            var titleEl = document.getElementById('gas-changelog-title');
-            if (gasVersion && titleEl) titleEl.textContent = 'GAS Changelog \u2014 ' + gasVersion;
-          })
-          .catch(function() {
-            gasBody.innerHTML = '<p style="color:#888">Could not load changelog.</p>';
-          });
-      }
-
-      function startGasCountdown() {
-        gasCountdownSeconds = GAS_POLL_INTERVAL / 1000;
-        if (gasCountdownTimer) clearInterval(gasCountdownTimer);
-        gasCountdownTimer = setInterval(function() {
-          gasCountdownSeconds--;
-          if (gasCountdownSeconds <= 0) {
-            clearInterval(gasCountdownTimer);
-            if (gasDot) { gasDot.textContent = ''; gasDot.className = 'dot checking'; }
-          } else if (gasCountdownSeconds <= 5) {
-            if (gasDot) { gasDot.textContent = gasCountdownSeconds; gasDot.className = 'dot counting'; }
-          }
-        }, 1000);
-      }
-
-      // Listen for version reports from GAS iframe
-      window.addEventListener('message', function(e) {
-        if (e.data && e.data.type === 'gas-version') {
-          var newVersion = e.data.version;
-          if (!gasVersion) {
-            // First report — update the label from "GAS ..." to actual version
-            gasVersion = newVersion;
-            gasLabel.textContent = 'GAS ' + gasVersion;
-            if (gasDot) { gasDot.className = 'dot found'; setTimeout(function() { gasDot.className = 'dot'; }, 800); }
-          } else if (newVersion !== gasVersion) {
-            // Version changed — reload
-            if (gasDot) gasDot.className = 'dot found';
-            gasLabel.textContent = 'Updating...';
-            sessionStorage.setItem('gas-pending-sound', '1');
-            setTimeout(function() { window.location.reload(); }, 2000);
-            return;
-          } else {
-            // Same version — just flash check
-            if (gasDot) { gasDot.className = 'dot checking'; setTimeout(function() { gasDot.className = 'dot'; }, 800); }
-          }
-          startGasCountdown();
-        }
-      });
     })();
 
     // Screen Wake Lock — keep screen on while page is visible

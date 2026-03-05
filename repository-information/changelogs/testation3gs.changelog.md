@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [01.07g] — 2026-03-05 04:01:02 PM EST — v03.16r
+
+### Added
+- GAS version pill with countdown timer showing when the next version check occurs
+- GAS changelog popup — click the version pill to view the script's update history
+- Server-side changelog fetching from GitHub for the changelog popup
 
 ## [01.06g] — 2026-03-05 03:47:47 PM EST — v03.15r
 

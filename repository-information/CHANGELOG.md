@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 100/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v03.16r] — 2026-03-05 04:01:02 PM EST
+
+### Changed
+- GAS version indicator moved from the HTML embedding layer to the GAS iframe layer — the pill now renders inside the GAS iframe where it naturally belongs
+- GAS changelog popup now uses server-side `google.script.run` to fetch changelog data instead of cross-origin browser fetch
+
+### Removed
+- GAS indicator CSS and JavaScript from the HTML embedding page (now handled entirely within the GAS layer)
+
+#### `testation3.html` — v01.03w
+
+##### Removed
+- GAS version indicator CSS and JavaScript — moved to the GAS layer where it belongs
+
+#### `testation3.gs` — 01.07g
+
+##### Added
+- GAS version pill with countdown timer rendered directly in the GAS iframe
+- GAS changelog popup accessible by clicking the version pill
+- Server-side changelog fetching via `getGasChangelog()` using GitHub raw content API
 
 ## [v03.15r] — 2026-03-05 03:47:47 PM EST
 
@@ -1219,113 +1240,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 #### `gas-test.html` — v01.04w
 ##### Added
 - "Copy Code.gs" button at step 1 — one-click copy of the full `gas-test.gs` source code for pasting into the Apps Script editor
-
-## [v02.22r] — 2026-03-03 10:42:39 PM EST
-
-### Changed
-- Step 2 (manifest JSON): added a "Copy" button to copy the `appsscript.json` contents to clipboard
-- Step 3 (GCP project): added link to Google Cloud Console for users who need to create a new project
-- Step 9 (GITHUB_TOKEN): expanded with full instructions on creating a fine-grained PAT and note that the same token works across multiple projects
-
-#### `gas-template.html` — v01.04w
-##### Changed
-- Copy button on JSON manifest block for one-click clipboard copy
-- GCP Console link added to step 3 for new users
-- Detailed GITHUB_TOKEN creation walkthrough and reuse guidance in step 9
-
-#### `gas-test.html` — v01.03w
-##### Changed
-- Copy button on JSON manifest block for one-click clipboard copy
-- GCP Console link added to step 3 for new users
-- Detailed GITHUB_TOKEN creation walkthrough and reuse guidance in step 9
-
-## [v02.21r] — 2026-03-03 10:27:04 PM EST
-
-### Changed
-- Restructured GAS Template and GAS Test pages — setup instructions are now the primary section with configuration inputs embedded inline at the relevant steps (e.g. Deployment ID input appears at step 8, Spreadsheet fields at step 11)
-- Replaced separate collapsible instructions + standalone config form with a unified "Setup & Configuration" flow
-
-#### `gas-template.html` — v01.03w
-##### Changed
-- Setup instructions moved before config inputs — inputs now appear inline within the step where they apply
-- Section header renamed from "Configuration" to "Setup & Configuration"
-
-#### `gas-test.html` — v01.02w
-##### Changed
-- Setup instructions moved before config inputs — inputs now appear inline within the step where they apply
-- Section header renamed from "Configuration" to "Setup & Configuration"
-
-## [v02.20r] — 2026-03-03 10:19:44 PM EST
-
-### Added
-- Collapsible GAS Setup Instructions section on both GAS Template and GAS Test pages — step-by-step guide covering Apps Script project creation, GCP linking, deployment, and token configuration
-
-#### `gas-template.html` — v01.02w
-##### Added
-- Collapsible setup instructions panel — 12-step guide for creating and configuring the Apps Script project, including manifest settings, GCP linking, deployment, and optional spreadsheet integration
-
-#### `gas-test.html` — v01.01w
-##### Added
-- Collapsible setup instructions panel — same 12-step guide as the GAS Template page
-
-## [v02.19r] — 2026-03-03 10:09:44 PM EST
-
-### Added
-- New GAS Test page (`gas-test.html`) — test instance of the GAS template for trying out configuration before modifying the template itself
-- New GAS project `GasTest` with `.gs` file, config.json, and all tracking files (changelogs, version files)
-- GAS Test page uses separate `gas-test-` localStorage keys so it doesn't conflict with the template page
-
-#### `gas-test.html` — v01.00w
-##### Added
-- Test instance of the GAS integration status dashboard — identical functionality to gas-template with separate localStorage namespace
-
-#### `gas-test.gs` — 01.00g
-##### Added
-- Test instance of the GAS template script — pulls from and deploys to GasTest directory
-
-## [v02.18r] — 2026-03-03 09:53:51 PM EST
-
-### Added
-- Interactive configuration form on GAS Template status page — input GAS project variables directly in the browser and test the GAS iframe connection without editing repo files
-- localStorage persistence for configuration values — saved settings restore automatically on page load
-- Copy Config button generates exportable config.json content for easy transfer to the repository
-
-#### `gas-template.html` — v01.01w
-##### Added
-- Interactive configuration form — input GAS project variables (Title, Deployment ID, Spreadsheet ID, Sheet Name, Sound File ID) directly on the status page
-- Apply button saves settings to browser storage for instant GAS iframe testing without editing repo files
-- Copy Config button generates exportable config.json content for easy transfer to the repository
-- Clear button removes saved settings and resets the dashboard to default state
-- Previously saved settings automatically restore on page load
-
-## [v02.17r] — 2026-03-03 09:40:29 PM EST
-
-### Added
-- New GAS integration status page (`gas-template.html`) — diagnostic dashboard showing HTML and GAS layer configuration status
-- New GAS project `GasTemplate` with blank template `.gs` file, config.json, and all tracking files
-- GAS status reporting via postMessage — the `.gs` template sends config status to the embedding HTML page for real-time dashboard updates
-
-#### `gas-template.html` — v01.00w
-##### Added
-- Dark-themed diagnostic dashboard showing GAS integration status at a glance
-- HTML layer checks: Deployment ID, Page Title, Auto-Refresh, Version Polling, Audio Context, Wake Lock
-- GAS layer checks: Connection status, GAS Version, GitHub Config, Spreadsheet, Sound File
-- Real-time status updates — dots change color as configuration is detected
-
-#### `gas-template.gs` — 01.00g
-##### Added
-- Blank GAS template with all placeholder variables ready for configuration
-- Config status reporting via `getAppData()` — reports which variables are configured vs placeholder
-- postMessage integration sends `gas-status` to embedding page for dashboard display
-
-## [v02.16r] — 2026-03-03 09:16:20 PM EST
-
-### Changed
-- Deactivated maintenance mode on test page — maintenance overlay removed, page now accessible normally
-
-#### `test.html` — v01.18w
-##### Changed
-- Maintenance mode deactivated — page is now accessible normally
-
 
 Developed by: ShadowAISolutions
