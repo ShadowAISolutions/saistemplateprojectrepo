@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.45w">
+  <meta name="build-version" content="v01.46w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -520,7 +520,7 @@
             <label for="cfg-deployment-id">Deployment ID <em style="color:#f85149">(required)</em></label>
             <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-deployment-id')" title="Clear">&times;</button></div>
             <span class="field-hint">From Apps Script: Deploy &rarr; Manage deployments &mdash; required before using Test GAS Connection, Copy, or GAS Preview</span>
-            <button class="btn-apply" id="btn-apply" onclick="testGasConnection()" disabled style="margin-top:8px">Test GAS Connection</button>
+            <button class="btn-apply" id="btn-apply" onclick="testGasConnection()" disabled style="margin-top:8px">(Optional) Test GAS Connection</button>
             <span class="field-hint" style="margin-top:6px">&#128161; If the GAS preview shows <strong>&ldquo;Script function not found: doGet&rdquo;</strong>, the deployment ID is valid &mdash; proceed with entering your other fields, then copy Code.gs for GAS into the Apps Script editor</span>
           </div>
           <div class="deploy-separator">
@@ -1086,8 +1086,6 @@
     function clearField(inputId) {
       var el = document.getElementById(inputId);
       if (el) el.value = '';
-      var label = el ? el.closest('.step-input').querySelector('label') : null;
-      showToast('Cleared ' + (label ? label.textContent : inputId));
       updateDeployGate();
     }
 

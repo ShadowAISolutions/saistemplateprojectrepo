@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.46w] — 2026-03-04 10:10:42 PM EST — v02.89r
+
+### Changed
+- Test GAS Connection button now labeled as optional
+
+### Removed
+- Notification toast no longer appears when clearing config fields
 
 ## [v01.45w] — 2026-03-04 09:59:20 PM EST — v02.88r
 
