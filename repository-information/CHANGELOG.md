@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v02.80r] — 2026-03-04 08:47:21 PM EST
+
+### Fixed
+- Test GAS Connection button now visually appears disabled (dimmed, not-allowed cursor) when deployment ID is empty — CSS disabled style was missing for `.btn-apply`
+
+#### `gas-project-creator.html` — v01.37w
+
+##### Fixed
+- Test GAS Connection button now correctly appears grayed out when deployment ID is empty
 
 ## [v02.79r] — 2026-03-04 08:42:52 PM EST
 
