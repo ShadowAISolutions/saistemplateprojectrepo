@@ -27,6 +27,7 @@ Each GAS project has a code file and a corresponding embedding page. Register th
 | Test | `googleAppsScripts/Test/test.gs` | `googleAppsScripts/Test/test.config.json` | `live-site-pages/test.html` |
 | GasTemplate | `googleAppsScripts/GasTemplate/gas-template.gs` | `googleAppsScripts/GasTemplate/gas-template.config.json` | `live-site-pages/gas-template.html` |
 | TestLinkGas1App | `googleAppsScripts/TestLinkGas1App/test_link_gas_1_app.gs` | `googleAppsScripts/TestLinkGas1App/test_link_gas_1_app.config.json` | `live-site-pages/test_link_gas_1_app.html` |
+| Testation2 | `googleAppsScripts/Testation2/testation2.gs` | `googleAppsScripts/Testation2/testation2.config.json` | `live-site-pages/testation2.html` |
 
 
 ## GAS Project Config (config.json)
@@ -103,6 +104,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | AudioContext & Browser Autoplay Policy | *See `repository-information/CODING-GUIDELINES.md` — section "AudioContext & Browser Autoplay Policy"* |
 | Google Sign-In (GIS) for GAS Embedded Apps | *See `repository-information/CODING-GUIDELINES.md` — section "Google Sign-In (GIS) for GAS Embedded Apps"* |
 | GCP Project Setup & Troubleshooting | *See `repository-information/CODING-GUIDELINES.md` — section "GCP Project Setup & Troubleshooting"* |
+| Testation2 | `googleAppsScripts/Testation2/testation2.gs` | `googleAppsScripts/Testation2/testation2.config.json` | `live-site-pages/testation2.html` |
 
 ## Copy Code.gs Deployment File
 

@@ -55,6 +55,9 @@ graph TB
             TLGA_PAGE["test_link_gas_1_app.html"]
             TLGA_VERTXT["test_link_gas_1_apphtml.version.txt"]
             TLGA_CL["test_link_gas_1_apphtml.changelog.txt"]
+            TSTA2_PAGE["testation2.html"]
+            TSTA2_VERTXT["testation2html.version.txt"]
+            TSTA2_CL["testation2html.changelog.txt"]
             SND1["sounds/Website_Ready_Voice_1.mp3"]
             SND2["sounds/Code_Ready_Voice_1.mp3"]
         end
@@ -85,6 +88,8 @@ graph TB
             GAS_NEWTPL_CFG["gas-template.config.json\n(GAS template placeholders)"]
             GAS_TLGA["googleAppsScripts/TestLinkGas1App/\ntest_link_gas_1_app.gs"]
             GAS_TLGA_CFG["test_link_gas_1_app.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
+            GAS_TSTA2["googleAppsScripts/Testation2/\ntestation2.gs"]
+            GAS_TSTA2_CFG["testation2.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
         end
 
         subgraph "GAS Self-Update Loop"
@@ -128,9 +133,11 @@ graph TB
     GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_INDEX
     GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_TEST
     GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_TLGA
+    GAS_NEWTPL -.->|"copy to create\nnew GAS projects"| GAS_TSTA2
     GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_CFG
     GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_TEST_CFG
     GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_TLGA_CFG
+    GAS_NEWTPL_CFG -.->|"copy to create\nnew configs"| GAS_TSTA2_CFG
     GAS_TPL -.->|"original base\ntemplate"| GAS_NEWTPL
     GAS_TPL_CFG -.->|"original base\ntemplate"| GAS_NEWTPL_CFG
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_INDEX
@@ -141,16 +148,20 @@ graph TB
     GAS_NEWTPL_CFG -.->|"syncs to\n(Pre-Commit #15)"| GASTPL_LIVE
     GAS_TLGA_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TLGA
     GAS_TLGA_CFG -.->|"syncs to\n(Pre-Commit #15)"| TLGA_PAGE
+    GAS_TSTA2_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TSTA2
+    GAS_TSTA2_CFG -.->|"syncs to\n(Pre-Commit #15)"| TSTA2_PAGE
     LIVE -.->|"serves"| BROWSER
     INDEX -.->|"iframes"| GAS_APP
     TEST -.->|"iframes"| GAS_APP
     GASTPL_LIVE -.->|"iframes"| GAS_APP
     TLGA_PAGE -.->|"iframes"| GAS_APP
+    TSTA2_PAGE -.->|"iframes"| GAS_APP
     GAS_POSTMSG -.->|"tells embedding\npage to reload"| BROWSER
     GAS_INDEX -.->|"source of truth\nfor GAS app\n(index.gs)"| GAS_PULL
     GAS_TEST -.->|"source of truth\nfor GAS app\n(test.gs)"| GAS_PULL
     GAS_NEWTPL -.->|"source of truth\nfor GAS app\n(gas-template.gs)"| GAS_PULL
     GAS_TLGA -.->|"source of truth\nfor GAS app\n(test_link_gas_1_app.gs)"| GAS_PULL
+    GAS_TSTA2 -.->|"source of truth\nfor GAS app\n(testation2.gs)"| GAS_PULL
     GAS_DEPLOY -.->|"curl POST\naction=deploy"| GAS_APP
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
@@ -171,6 +182,8 @@ graph TB
     style GAS_NEWTPL_CFG fill:#ffe082,color:#000
     style GAS_TLGA fill:#ff7043,color:#fff
     style GAS_TLGA_CFG fill:#ffe082,color:#000
+    style GAS_TSTA2 fill:#ff7043,color:#fff
+    style GAS_TSTA2_CFG fill:#ffe082,color:#000
     style GAS_TPL_PAGE fill:#ffa726,color:#000
     style GAS_APP fill:#42a5f5,color:#fff
     style CLAUDE_MD fill:#ce93d8,color:#000
