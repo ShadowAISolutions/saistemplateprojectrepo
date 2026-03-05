@@ -16,7 +16,7 @@
 
 | Project | Code File | Embedding Page | GAS Version | Status |
 |---------|-----------|----------------|-------------|--------|
-| GasTemplate | `googleAppsScripts/GasTemplate/gas-template.gs` | `live-site-pages/gas-template.html` | 01.01g | Active |
+| GasTemplate | `googleAppsScripts/GasTemplate/gas-template.gs` | `live-site-pages/gas-template.html` | 01.02g | Active |
 | TestLinkGas1App | `googleAppsScripts/TestLinkGas1App/test_link_gas_1_app.gs` | `live-site-pages/test_link_gas_1_app.html` | 01.03g | Active |
 
 
@@ -26,6 +26,6 @@
 |----------|------|------------------|
 | Auto-Update HTML | `live-site-templates/HtmlTemplateAutoUpdate.html` | v01.00w |
 | GAS Template HTML | `live-site-templates/GasTemplate.html` | v01.00w |
-| GAS Template Script | `googleAppsScripts/GasTemplate/gas-template.gs` | 01.01g |
+| GAS Template Script | `googleAppsScripts/GasTemplate/gas-template.gs` | 01.02g |
 
 Developed by: ShadowAISolutions

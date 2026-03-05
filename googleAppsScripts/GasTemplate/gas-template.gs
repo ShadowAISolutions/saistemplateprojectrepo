@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.01g";
+var VERSION = "01.02g";
 var TITLE = "GAS Template";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -130,6 +130,12 @@ function doGet() {
         button:hover { background: #bf360c; }
         #result { margin-top: 8px; padding: 8px 15px; border-radius: 8px; font-size: 13px; }
         #versionCount { margin-top: 6px; font-size: 12px; color: #888; }
+        #sheet-container { margin-top: 10px; width: 90%; max-width: 600px; position: relative; }
+        #sheet-container h3 { text-align: center; color: #333; margin: 0 0 4px 0; }
+        #token-info { position: absolute; right: -170px; top: 0; font-size: 11px; color: #666; text-align: left; line-height: 1.6; white-space: nowrap; }
+        #token-info div { margin-bottom: 2px; }
+        #live-b1 { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 4px; text-align: center; }
+        #sheet-iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
       </style>
     </head>
     <body>
@@ -142,6 +148,15 @@ function doGet() {
       </form>
       <div id="result"></div>
       <div id="versionCount"></div>
+
+      ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
+      <div id="sheet-container">
+        <h3>${SHEET_NAME}</h3>
+        <div id="token-info">...</div>
+        <div id="live-b1">...</div>
+        <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal"></iframe>
+      </div>
+      ` : ''}
 
       <script>
         var _soundDataUrl = null;
@@ -180,6 +195,44 @@ function doGet() {
         google.script.run
           .withSuccessHandler(function(data) { applyData(data); })
           .getAppData();
+
+        // Poll cell B1 from cache every 15s (cache is updated by onEditWriteB1ToCache trigger)
+        function pollB1FromCache() {
+          google.script.run
+            .withSuccessHandler(function(val) {
+              var el = document.getElementById('live-b1');
+              if (el) el.textContent = val;
+            })
+            .readB1FromCacheOrSheet();
+        }
+        if (document.getElementById('live-b1')) {
+          pollB1FromCache();
+          setInterval(pollB1FromCache, 15000);
+        }
+
+        // Poll token/quota usage (on load + every 60s)
+        function pollQuotaAndLimits() {
+          google.script.run
+            .withSuccessHandler(function(t) {
+              var el = document.getElementById('token-info');
+              if (el) {
+                el.innerHTML =
+                  '<div style="font-weight:bold;color:#1b5e20;margin-bottom:3px;">Live Quotas</div>'
+                  + '<div>GitHub: ' + t.github + '</div>'
+                  + '<div>Mail: ' + t.mail + '</div>'
+                  + '<div style="border-top:1px solid #ccc;margin:4px 0;"></div>'
+                  + '<div style="font-weight:bold;color:#666;margin-bottom:3px;">Estimates</div>'
+                  + '<div>UrlFetch: ' + t.urlFetch + '</div>'
+                  + '<div>Sheets: ' + t.spreadsheet + '</div>'
+                  + '<div>Exec: ' + t.execTime + '</div>';
+              }
+            })
+            .fetchGitHubQuotaAndLimits();
+        }
+        if (document.getElementById('token-info')) {
+          pollQuotaAndLimits();
+          setInterval(pollQuotaAndLimits, 60000);
+        }
 
         var _autoPulling = false;
         function pollPushedVersionFromCache() {
@@ -327,6 +380,72 @@ function writeVersionToSheet() {
     if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
     sheet.getRange("A1").setValue("v" + VERSION + " — " + new Date().toLocaleString());
   } catch(e) {}
+}
+
+function readB1FromCacheOrSheet() {
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return "";
+  var cache = CacheService.getScriptCache();
+  var cached = cache.get("live_b1");
+  if (cached !== null) return cached;
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return "";
+  var val = sheet.getRange("B1").getValue();
+  var result = val !== null && val !== undefined ? String(val) : "";
+  cache.put("live_b1", result, 21600);
+  return result;
+}
+
+// Installable onEdit trigger. Writes B1 value to CacheService when edited.
+// Install: Apps Script editor → Triggers → + Add Trigger →
+//   Function: onEditWriteB1ToCache, Event source: From spreadsheet, Event type: On edit
+function onEditWriteB1ToCache(e) {
+  if (!e || !e.range) return;
+  var sheet = e.range.getSheet();
+  if (sheet.getName() !== SHEET_NAME) return;
+  if (e.range.getRow() !== 1 || e.range.getColumn() !== 2) return;
+  var val = e.range.getValue();
+  var result = val !== null && val !== undefined ? String(val) : "";
+  CacheService.getScriptCache().put("live_b1", result, 21600);
+}
+
+function fetchGitHubQuotaAndLimits() {
+  var result = {};
+
+  // GitHub API rate limit (queryable)
+  var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
+  var headers = {};
+  if (GITHUB_TOKEN) {
+    headers["Authorization"] = "token " + GITHUB_TOKEN;
+  }
+  try {
+    var resp = UrlFetchApp.fetch("https://api.github.com/rate_limit", { headers: headers });
+    var data = JSON.parse(resp.getContentText());
+    var core = data.resources.core;
+    result.github = core.remaining + "/" + core.limit + "/hr";
+  } catch(e) {
+    result.github = "error";
+  }
+
+  // UrlFetchApp: 20,000/day (not queryable — show limit only)
+  result.urlFetch = "20,000/day";
+
+  // SpreadsheetApp: ~20,000/day (not queryable — show limit only)
+  result.spreadsheet = "~20,000/day";
+
+  // Apps Script execution time: 90 min/day (not queryable)
+  result.execTime = "90 min/day";
+
+  // MailApp remaining daily quota (requires script.send_mail scope)
+  try {
+    var mailRemaining = MailApp.getRemainingDailyQuota();
+    result.mail = mailRemaining + " remaining/day";
+  } catch(e) {
+    result.mail = "scope error: " + e.message;
+  }
+
+  return result;
 }
 
 function pullAndDeployFromGitHub() {

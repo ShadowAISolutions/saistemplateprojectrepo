@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v03.03r] — 2026-03-05 10:34:03 AM EST
+
+### Added
+- Spreadsheet display section with embedded Google Sheets iframe, live B1 polling, and live quotas sidebar added to GAS template and Copy Code.gs template — new GAS projects created via GAS Project Creator now include these features out of the box
+
+#### `gas-template.gs` — 01.02g
+
+##### Added
+- Embedded Google Sheets iframe showing the configured spreadsheet when SPREADSHEET_ID is set
+- Live B1 value display with 15-second cache-backed polling
+- Live quotas sidebar showing GitHub rate limit, email quota, and service estimates (updates every 60 seconds)
+- Server-side functions: `readB1FromCacheOrSheet()`, `onEditWriteB1ToCache()`, `fetchGitHubQuotaAndLimits()`
 
 ## [v03.02r] — 2026-03-05 10:25:03 AM EST
 
