@@ -894,7 +894,7 @@ function doGet() {
       </style>
     </head>
     <body>
-      <div id="splash"><img src="https://www.shadowaisolutions.com/SAIS%20Logo.png" alt=""></div>
+      <div id="splash"><img src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt=""></div>
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">...</h1>
       <div id="version">...</div>
       <button onclick="checkForUpdates()">🔄 Pull Latest from GitHub</button>

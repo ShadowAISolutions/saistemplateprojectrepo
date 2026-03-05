@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.42w">
+  <meta name="build-version" content="v01.43w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -545,7 +545,7 @@
           </div>
           <div class="step-input">
             <label for="cfg-splash-logo">Splash Logo URL <em>(optional)</em></label>
-            <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS%20Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo')" title="Clear">&times;</button></div>
             <span class="field-hint">Logo shown on the GAS splash screen</span>
           </div>
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
@@ -577,7 +577,7 @@
   <script>
     /* tpl:7f3e9b2d */ // ── CONFIG ──────────────────────────────────────────────────────────
     // Logo shown on the green "Website Ready" splash screen
-    var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS%20Logo.png';
+    var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var YOUR_ORG_LOGO_URL = 'https://logoipsum.com/logoipsum-avatar.png';
     var LOGO_URL = DEVELOPER_LOGO_URL;
 
@@ -1060,7 +1060,7 @@
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || '12OgP5hFV34oprTcAShaqlWHN35KZHzD13YjX8H7QhbE';
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'Live_Sheet';
       var soundId = document.getElementById('cfg-sound-id').value.trim() || '1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN';
-      var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'https://www.shadowaisolutions.com/SAIS%20Logo.png';
+      var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'https://www.shadowaisolutions.com/SAIS_Logo.png';
 
       var json = '{\n'
         + '  "TITLE": "' + title + '",\n'

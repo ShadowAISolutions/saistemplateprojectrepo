@@ -3,9 +3,40 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v02.86r] — 2026-03-04 09:39:40 PM EST
+
+### Changed
+- Updated SAIS logo URL across all pages, templates, and GAS scripts (renamed from `SAIS%20Logo.png` to `SAIS_Logo.png`)
+
+#### `index.html` — v01.18w
+
+##### Changed
+- Developer splash logo URL updated to use underscore filename
+
+#### `test.html` — v01.19w
+
+##### Changed
+- Developer splash logo URL updated to use underscore filename
+
+#### `soccer-ball.html` — v01.02w
+
+##### Changed
+- Developer splash logo URL updated to use underscore filename
+
+#### `gas-template.html` — v01.01w
+
+##### Changed
+- Developer splash logo URL updated to use underscore filename
+
+#### `gas-project-creator.html` — v01.43w
+
+##### Changed
+- Developer splash logo URL updated to use underscore filename
+- Default splash logo URL in config panel updated
 
 ## [v02.85r] — 2026-03-04 09:31:18 PM EST
 

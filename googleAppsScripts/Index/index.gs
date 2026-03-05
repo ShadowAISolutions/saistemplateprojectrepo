@@ -107,7 +107,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.00g";
+var VERSION = "01.01g";
 var TITLE = "CHANGE THIS PROJECT TITLE TEMPLATE";               // ← index.config.json
 
 // GitHub config — where to pull code from
@@ -132,7 +132,7 @@ var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";        // ← index.con
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/";
 
 // Logo shown on the splash screen
-var SPLASH_LOGO_URL = "https://www.shadowaisolutions.com/SAIS%20Logo.png";
+var SPLASH_LOGO_URL = "https://www.shadowaisolutions.com/SAIS_Logo.png";
 // ──────────────────────────────────────────────────────────────────
 
 function doGet() {
