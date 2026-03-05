@@ -4,35 +4,24 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-04 09:34:12 PM EST
-**Repo version:** v02.85r
+**Date:** 2026-03-04 10:51:33 PM EST
+**Repo version:** v02.91r
 
 ### What we worked on
-- Built the GAS Project Creator page (`gas-project-creator.html`) from v01.00w to v01.42w across many iterations:
-  - Created a step-by-step GAS setup wizard with numbered instructions, group labels, and collapsible troubleshooting
-  - Added a live config panel (Deployment ID, Title, Spreadsheet ID, Sheet Name, Sound File ID, Splash Logo URL) that injects values into copied Code.gs and config JSON
-  - Built "Copy Code.gs for GAS", "Copy Config for Claude", and "Copy appsscript.json" buttons with visual feedback
-  - Added Test GAS Connection button with iframe-based deployment validation
-  - Added GAS Preview section with fullscreen toggle
-  - Added token budget warning banner (~38k tokens) for Claude Code context
-  - Implemented clear buttons (×) on all input fields
-  - Added deployment gate — Test GAS Connection, Copy, and Preview require Deployment ID
-  - Removed pre-populated values from Title, Spreadsheet ID, Sheet Name fields (kept placeholder hints)
-  - Changed Copy Config for Claude button to Claude's coral/orange (#d97757)
-  - Added standalone vs. linked script note to step 4
-  - Changed "Troubleshooting:" to "Potential Troubleshooting:" label
+- Continued building out GAS Project Creator page from v01.42w to v01.47w:
+  - Replaced hardcoded SAIS logo URLs with the `DEVELOPER_LOGO_URL` placeholder pattern (`https://www.shadowaisolutions.com/SAIS_Logo.png`) so forks can customize branding
+  - Fixed logo references across index.html, test.html, gas-template.html, and gas-project-creator.html
+  - Fixed test.html GAS iframe `_e` encoded deployment URL (was stale/incorrect)
+- Added "Mandatory first pushback" rule to Pushback & Reasoning in behavioral-rules.md — Claude must raise concerns about better alternatives once before implementing
 
 ### Key decisions made
-- Fields should have placeholder hints (gray example text) but NOT pre-populated values — user starts with empty fields
-- Sound File ID and Splash Logo URL keep their pre-populated values (shared resources)
-- Copy Config for Claude button uses Claude's coral/orange brand color (#d97757), distinct from the green Copy Code.gs button
-- Step 4 explains standalone (script.google.com) vs. linked (Sheets Extensions tab) script creation
-- Token warning banner alerts developers about the ~38k token cost of this page in Claude Code context
+- Logo URLs use the direct SAIS logo URL (`https://www.shadowaisolutions.com/SAIS_Logo.png`) as the template default, matching `DEVELOPER_LOGO_URL` in the variables table — forks replace this via init script
+- The "mandatory first pushback" rule was added at the developer's request — Claude should push back once per prompt when it sees a meaningfully better alternative, then comply after acknowledgment
 
 ### Where we left off
 - All changes committed and merged to main via auto-merge workflow
-- GAS Project Creator at v01.42w, repo at v02.85r
-- Page is fully functional with all copy buttons, config panel, and GAS preview working
+- GAS Project Creator at v01.47w, repo at v02.91r
+- Pushback rule is live in behavioral-rules.md
 
 ### Active context
 - Active reminders in REMINDERS.md (developer-owned, do not touch without approval):
@@ -45,28 +34,20 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-04 02:14:37 PM EST
-**Repo version:** v02.57r
+**Date:** 2026-03-04 09:34:12 PM EST
+**Repo version:** v02.85r
 
 ### What we worked on
-- Added "Bootstrap & Circular Dependency Reasoning" rule to behavioral-rules.md
-- Added two-step deployment instructions (Deploy #1 and Deploy #2) to both gas-test.html and gas-template.html
-- Reordered GAS setup steps multiple times per developer direction
-- Split the manifest step: step 5 enables the toggle, step 8 sets the JSON contents
-- Added subtle subsection group labels to the setup `<ol>` on both GAS pages
+- Built the GAS Project Creator page (`gas-project-creator.html`) from v01.00w to v01.42w across many iterations
+- Created step-by-step GAS setup wizard, live config panel, copy buttons, test connection, GAS preview
+- Added token budget warning banner, deployment gate, clear buttons on inputs
 
 ### Where we left off
 - All changes committed and merged to main via auto-merge workflow
-- GAS Test at v01.23w, GAS Template at v01.18w, repo at v02.57r
-- CHANGELOG at 100/100 sections — next push will trigger archive rotation
+- GAS Project Creator at v01.42w, repo at v02.85r
 
 ### Active context
-- Active reminders in REMINDERS.md (developer-owned, do not touch without approval):
-  - "Check test.html issues in Chrome DevTools"
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- `TEMPLATE_DEPLOY` = `On` — deployment active on template repo
-- `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-- `REMINDERS_DISPLAY` = `On`, `SESSION_CONTEXT_DISPLAY` = `On`
+- Same toggle states as current session
+- TODO items unchanged
 
 Developed by: ShadowAISolutions
