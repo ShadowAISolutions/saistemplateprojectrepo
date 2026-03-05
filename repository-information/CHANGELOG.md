@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 31/100`
+`Sections: 32/100`
 
 ## [Unreleased]
+
+## [v03.25r] — 2026-03-05 05:37:15 PM EST
+
+### Removed
+- Giant orange version number display from Testation3 GAS app (version already shown in the GAS pill)
+
+#### `testation3.gs` — 01.14g
+
+##### Removed
+- Large orange version display at the top of the app
 
 ## [v03.24r] — 2026-03-05 05:31:24 PM EST
 

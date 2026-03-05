@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.13g";
+var VERSION = "01.14g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -124,7 +124,6 @@ function doGet() {
         body { font-family: Arial; display: flex; flex-direction: column; align-items: center; padding: 20px 0; box-sizing: border-box; }
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d47a1; z-index: 9999; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center; }
         #splash img { max-width: 500px; max-height: 500px; }
-        #version { font-size: 80px; font-weight: bold; color: #e65100; line-height: 1; }
         button { background: #2e7d32; color: white; border: none; padding: 8px 20px;
                  border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px; }
         button:hover { background: #1b5e20; }
@@ -161,7 +160,6 @@ function doGet() {
       <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
       <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">...</h1>
-      <div id="version">...</div>
       <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
         <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
       </form>
