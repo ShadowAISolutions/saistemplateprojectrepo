@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.38w] — 2026-03-04 08:54:07 PM EST — v02.81r
+
+### Added
+- Hint explaining that "Script function not found: doGet" confirms a valid deployment ID — proceed with other fields and copy Code.gs
 
 ## [v01.37w] — 2026-03-04 08:47:21 PM EST — v02.80r
 
