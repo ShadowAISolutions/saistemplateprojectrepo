@@ -254,6 +254,21 @@ This triggers the auto-merge workflow, which merges into `main` and deploys to G
 > **--- END OF INITIALIZE COMMAND ---**
 ---
 
+## Setup GAS Project Command
+When the user pastes output from the **Copy Config for Claude** button (the prompt starts with "Set up a new GAS project with the following config"), execute this deterministic sequence — no research or reasoning needed:
+
+1. **Run the setup script** — pipe the JSON config from the user's prompt into `bash scripts/setup-gas-project.sh`. The script handles everything: creates 10 files, registers in all tables, updates ARCHITECTURE.md, README.md tree, and STATUS.md
+2. **Check script output** — if the script reports warnings (e.g. remaining template placeholders), fix them. If it reports zero warnings, proceed
+3. **No version bumps for new files** — the script creates files at initial versions (v01.00w, 01.00g). Do NOT bump versions for newly created files. Only bump if you make additional edits to them (e.g. fixing a warning)
+4. **Pre-Commit Checklist applies** — run the normal checklist. Key items: CHANGELOG entry under `## [Unreleased]` describing the new project, repo version bump on push commit, README timestamp update. No page/GAS changelog entries needed (new files at initial versions have no user-facing changes to log)
+5. **Commit and push** — single commit with the new project name in the message
+
+**This is a mechanical execution** — the setup script does all the heavy lifting. Claude's role is: run script → check output → checklist → commit → push. No manual ARCHITECTURE.md edits, no manual README tree edits, no manual STATUS.md edits, no manual gas-scripts.md edits.
+
+---
+> **--- END OF SETUP GAS PROJECT COMMAND ---**
+---
+
 ## Remember Session Command
 If the user says **"Remember Session"** (or similar: "remember this session", "save session context"):
 1. **Write session context** to `repository-information/SESSION-CONTEXT.md`:

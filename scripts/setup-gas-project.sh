@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────
-# setup-gas-project.sh — Automate GAS project file creation
+# setup-gas-project.sh — Fully automated GAS project setup
 #
-# Creates all files needed for a new GAS project:
+# Creates all files and updates all documentation for a new GAS project:
 #   - HTML embedding page (from GasTemplate.html)
 #   - .gs script (from gas-template.gs)
 #   - .config.json
 #   - Version files (html + gs)
 #   - Changelogs (html + gs, plus archives)
 #   - Deployment changelog copy
-#   - GAS Projects table registration
+#   - GAS Projects table registration (.claude/rules/gas-scripts.md)
+#   - STATUS.md (Hosted Pages + GAS Projects tables)
+#   - ARCHITECTURE.md (Mermaid diagram nodes, edges, styles)
+#   - README.md (structure tree — 3 insertion points)
 #
 # Usage:
 #   bash scripts/setup-gas-project.sh <<'CONFIG'
@@ -18,8 +21,7 @@
 #
 #   bash scripts/setup-gas-project.sh config.json
 #
-# After running: Claude handles ARCHITECTURE.md, README.md tree,
-# STATUS.md, and commit/push.
+# After running: Claude just needs to commit and push.
 # ──────────────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -249,6 +251,8 @@ sed -i "s|var EMBED_PAGE_URL = .*;|var EMBED_PAGE_URL = \"${EMBED_URL}\";|" "$GA
 if [ "$SPLASH_LOGO_URL" != "YOUR_SPLASH_LOGO_URL" ] && [ -n "$SPLASH_LOGO_URL" ]; then
     sed -i "s|var SPLASH_LOGO_URL = .*;|var SPLASH_LOGO_URL = \"${SPLASH_LOGO_URL}\";|" "$GAS_FILE"
 fi
+# Fix template comment reference: gas-template.gs → {env_name}.gs
+sed -i "s|this file (gas-template.gs)|this file (${ENV_NAME}.gs)|g" "$GAS_FILE"
 ok "Created $GAS_FILE"
 
 # --- Config JSON ---
@@ -365,16 +369,161 @@ else
     fi
 fi
 
-# ── Phase 7: Sounds Directory ────────────────────────────────────
-info "Phase 7: Ensuring sounds directory..."
+# ── Phase 7: Update STATUS.md ────────────────────────────────────
+info "Phase 7: Updating STATUS.md..."
+STATUS_FILE="repository-information/STATUS.md"
+if [ -f "$STATUS_FILE" ]; then
+    # Add to Hosted Pages table (before the blank line after the last page row)
+    HOSTED_ROW="| ${PROJECT_DIR} | \`${HTML_PAGE}\` | v01.00w | *(deploy to activate)* | Active |"
+    if grep -q "| ${PROJECT_DIR} |" "$STATUS_FILE"; then
+        warn "${PROJECT_DIR} already in STATUS.md Hosted Pages — skipping"
+    else
+        # Insert after the last row in Hosted Pages (last | row before ## GAS Projects)
+        LAST_HOSTED=$(grep -n '^| .* | Active |' "$STATUS_FILE" | head -$(grep -c '^| .* | Active |' "$STATUS_FILE") | while IFS=: read -r num _; do
+            if [ "$num" -lt "$(grep -n '## GAS Projects' "$STATUS_FILE" | cut -d: -f1)" ]; then echo "$num"; fi
+        done | tail -1)
+        if [ -n "$LAST_HOSTED" ]; then
+            sed -i "${LAST_HOSTED}a\\${HOSTED_ROW}" "$STATUS_FILE"
+            ok "Added ${PROJECT_DIR} to Hosted Pages"
+        else
+            warn "Could not find Hosted Pages table — manual update needed"
+        fi
+    fi
+
+    # Add to GAS Projects table
+    GAS_STATUS_ROW="| ${PROJECT_DIR} | \`${GAS_FILE}\` | \`${HTML_PAGE}\` | 01.00g | Active |"
+    if grep -q "| ${PROJECT_DIR} |.*${ENV_NAME}.gs" "$STATUS_FILE"; then
+        warn "${PROJECT_DIR} already in STATUS.md GAS Projects — skipping"
+    else
+        LAST_GAS=$(grep -n '^| .* | Active |' "$STATUS_FILE" | while IFS=: read -r num _; do
+            GAS_LINE=$(grep -n '## GAS Projects' "$STATUS_FILE" | cut -d: -f1)
+            TPL_LINE=$(grep -n '## Templates' "$STATUS_FILE" | cut -d: -f1)
+            if [ "$num" -gt "$GAS_LINE" ] && [ "$num" -lt "$TPL_LINE" ]; then echo "$num"; fi
+        done | tail -1)
+        if [ -n "$LAST_GAS" ]; then
+            sed -i "${LAST_GAS}a\\${GAS_STATUS_ROW}" "$STATUS_FILE"
+            ok "Added ${PROJECT_DIR} to GAS Projects"
+        else
+            warn "Could not find GAS Projects table — manual update needed"
+        fi
+    fi
+else
+    warn "STATUS.md not found — skipping"
+fi
+
+# ── Phase 8: Update ARCHITECTURE.md ─────────────────────────────
+info "Phase 8: Updating ARCHITECTURE.md..."
+ARCH_FILE="repository-information/ARCHITECTURE.md"
+# Derive a short Mermaid node prefix from PROJECT_DIR (e.g. Testation2 → TSTA2)
+# Use first letter + consonants, uppercase, max 6 chars
+NODE_PREFIX=$(echo "$PROJECT_DIR" | sed 's/[aeiou]//gi' | cut -c1-4 | tr '[:lower:]' '[:upper:]')
+# Ensure at least 3 chars by falling back to first 4 chars of PROJECT_DIR
+if [ ${#NODE_PREFIX} -lt 3 ]; then
+    NODE_PREFIX=$(echo "$PROJECT_DIR" | cut -c1-4 | tr '[:lower:]' '[:upper:]')
+fi
+
+if [ -f "$ARCH_FILE" ]; then
+    # Check if already added
+    if grep -q "${NODE_PREFIX}_PAGE" "$ARCH_FILE"; then
+        warn "${NODE_PREFIX} nodes already in ARCHITECTURE.md — skipping"
+    else
+        # 1. Add page nodes in live-site-pages subgraph (before SND1)
+        SND_LINE=$(grep -n 'SND1\["sounds/' "$ARCH_FILE" | head -1 | cut -d: -f1)
+        if [ -n "$SND_LINE" ]; then
+            sed -i "${SND_LINE}i\\            ${NODE_PREFIX}_PAGE[\"${ENV_NAME}.html\"]\n            ${NODE_PREFIX}_VERTXT[\"${ENV_NAME}html.version.txt\"]\n            ${NODE_PREFIX}_CL[\"${ENV_NAME}html.changelog.txt\"]" "$ARCH_FILE"
+            ok "Added page nodes to live-site-pages"
+        fi
+
+        # 2. Add GAS nodes in Google Apps Scripts subgraph (before "end" of that subgraph)
+        # Find the last GAS_*_CFG line and insert after it
+        LAST_GAS_CFG=$(grep -n 'GAS_.*_CFG\[' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_GAS_CFG" ]; then
+            sed -i "${LAST_GAS_CFG}a\\            GAS_${NODE_PREFIX}[\"googleAppsScripts/${PROJECT_DIR}/\\\n${ENV_NAME}.gs\"]\n            GAS_${NODE_PREFIX}_CFG[\"${ENV_NAME}.config.json\\\n(source of truth for\\\nTITLE, DEPLOYMENT_ID,\\\nSPREADSHEET_ID, etc.)\"]" "$ARCH_FILE"
+            ok "Added GAS nodes to Google Apps Scripts"
+        fi
+
+        # 3. Add template copy edges (after last GAS_NEWTPL copy edge)
+        LAST_NEWTPL_COPY=$(grep -n 'GAS_NEWTPL -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_NEWTPL_COPY" ]; then
+            sed -i "${LAST_NEWTPL_COPY}a\\    GAS_NEWTPL -.->|\"copy to create\\\nnew GAS projects\"| GAS_${NODE_PREFIX}" "$ARCH_FILE"
+        fi
+        LAST_CFG_COPY=$(grep -n 'GAS_NEWTPL_CFG -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_CFG_COPY" ]; then
+            sed -i "${LAST_CFG_COPY}a\\    GAS_NEWTPL_CFG -.->|\"copy to create\\\nnew configs\"| GAS_${NODE_PREFIX}_CFG" "$ARCH_FILE"
+        fi
+
+        # 4. Add config sync edges (after last *_CFG sync edge pair)
+        LAST_SYNC=$(grep -n '_CFG -\.->|"syncs to' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_SYNC" ]; then
+            sed -i "${LAST_SYNC}a\\    GAS_${NODE_PREFIX}_CFG -.->|\"syncs to\\\n(Pre-Commit #15)\"| GAS_${NODE_PREFIX}\n    GAS_${NODE_PREFIX}_CFG -.->|\"syncs to\\\n(Pre-Commit #15)\"| ${NODE_PREFIX}_PAGE" "$ARCH_FILE"
+        fi
+
+        # 5. Add iframe edge (after last *_PAGE iframes edge)
+        LAST_IFRAME=$(grep -n '_PAGE -\.->|"iframes"| GAS_APP' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_IFRAME" ]; then
+            sed -i "${LAST_IFRAME}a\\    ${NODE_PREFIX}_PAGE -.->|\"iframes\"| GAS_APP" "$ARCH_FILE"
+        fi
+
+        # 6. Add source of truth edge (after last GAS_* source of truth edge)
+        LAST_SOT=$(grep -n 'GAS_.* -\.->|"source of truth' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_SOT" ]; then
+            sed -i "${LAST_SOT}a\\    GAS_${NODE_PREFIX} -.->|\"source of truth\\\nfor GAS app\\\n(${ENV_NAME}.gs)\"| GAS_PULL" "$ARCH_FILE"
+        fi
+
+        # 7. Add styles (after last style line)
+        LAST_STYLE=$(grep -n '    style GAS_' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_STYLE" ]; then
+            sed -i "${LAST_STYLE}a\\    style GAS_${NODE_PREFIX} fill:#ff7043,color:#fff\n    style GAS_${NODE_PREFIX}_CFG fill:#ffe082,color:#000" "$ARCH_FILE"
+        fi
+        ok "Added edges and styles to ARCHITECTURE.md"
+    fi
+else
+    warn "ARCHITECTURE.md not found — skipping"
+fi
+
+# ── Phase 9: Update README.md Structure Tree ─────────────────────
+info "Phase 9: Updating README.md structure tree..."
+if [ -f "README.md" ]; then
+    # Check if already added
+    if grep -q "${ENV_NAME}.html.*GAS embedding page" "README.md"; then
+        warn "${ENV_NAME} already in README.md structure tree — skipping"
+    else
+        # 1. Add page files in live-site-pages section (before "└── sounds/")
+        SOUNDS_LINE=$(grep -n '│   └── sounds/' "README.md" | head -1 | cut -d: -f1)
+        if [ -n "$SOUNDS_LINE" ]; then
+            sed -i "${SOUNDS_LINE}i\\│   ├── ${ENV_NAME}.html                # ${PROJECT_DIR} GAS embedding page\n│   ├── ${ENV_NAME}html.version.txt     # Version file for ${ENV_NAME} page auto-refresh\n│   ├── ${ENV_NAME}html.changelog.txt   # Deployed changelog for popup" "README.md"
+            ok "Added page files to README.md tree"
+        fi
+
+        # 2. Add GAS directory in googleAppsScripts section (before "└── HtmlTemplateAutoUpdate/")
+        HTAU_LINE=$(grep -n '│   └── HtmlTemplateAutoUpdate/' "README.md" | head -1 | cut -d: -f1)
+        if [ -n "$HTAU_LINE" ]; then
+            sed -i "${HTAU_LINE}i\\│   ├── ${PROJECT_DIR}/              # GAS for live-site-pages/${ENV_NAME}.html\n│   │   ├── ${ENV_NAME}.gs        # Self-updating GAS web app\n│   │   ├── ${ENV_NAME}.config.json  # Project config (source of truth)\n│   │   └── ${ENV_NAME}gs.version.txt  # GAS version file (mirrors VERSION var)" "README.md"
+            ok "Added GAS directory to README.md tree"
+        fi
+
+        # 3. Add changelog files in repository-information/changelogs section
+        # (before the first HtmlTemplateAutoUpdate changelog line)
+        HTAU_CL_LINE=$(grep -n 'HtmlTemplateAutoUpdatehtml.changelog.md' "README.md" | head -1 | cut -d: -f1)
+        if [ -n "$HTAU_CL_LINE" ]; then
+            sed -i "${HTAU_CL_LINE}i\\│   │   ├── ${ENV_NAME}html.changelog.md          # User-facing changelog for ${PROJECT_DIR} page\n│   │   ├── ${ENV_NAME}html.changelog-archive.md  # Older changelog sections (rotated)\n│   │   ├── ${ENV_NAME}gs.changelog.md            # User-facing changelog for ${PROJECT_DIR} GAS\n│   │   ├── ${ENV_NAME}gs.changelog-archive.md    # Older changelog sections (rotated)" "README.md"
+            ok "Added changelog files to README.md tree"
+        fi
+    fi
+else
+    warn "README.md not found — skipping"
+fi
+
+# ── Phase 10: Sounds Directory ───────────────────────────────────
+info "Phase 10: Ensuring sounds directory..."
 if [ -f "live-site-pages/sounds/Website_Ready_Voice_1.mp3" ]; then
     ok "Sounds directory already populated"
 else
     warn "Sound file not found — live-site-pages/sounds/Website_Ready_Voice_1.mp3 missing"
 fi
 
-# ── Phase 8: Verification ────────────────────────────────────────
-info "Phase 8: Verification..."
+# ── Phase 11: Verification ───────────────────────────────────────
+info "Phase 11: Verification..."
 echo ""
 
 ERRORS=0
@@ -405,7 +554,7 @@ done
 # Check for remaining template placeholders in new files
 echo ""
 info "Checking for remaining template placeholders..."
-PLACEHOLDER_CHECK=$(grep -rn "CHANGE THIS PROJECT TITLE TEMPLATE\|gas-template\.gs\|GasTemplate/" \
+PLACEHOLDER_CHECK=$(grep -rn "CHANGE THIS PROJECT TITLE TEMPLATE\|this file (gas-template\.gs)\|GasTemplate/" \
     "$HTML_PAGE" "$GAS_FILE" "$GAS_CONFIG" 2>/dev/null || true)
 
 if [ -n "$PLACEHOLDER_CHECK" ]; then
@@ -431,11 +580,13 @@ done
 echo ""
 echo "Registered as: ${PROJECT_DIR} in GAS Projects table"
 echo ""
-echo "Claude still needs to update:"
+echo "Also updated:"
+echo "  - repository-information/STATUS.md (Hosted Pages + GAS Projects)"
 echo "  - repository-information/ARCHITECTURE.md (Mermaid diagram)"
-echo "  - README.md (ASCII structure tree)"
-echo "  - repository-information/STATUS.md (version tracking)"
-echo "  - Pre-Commit checklist + commit + push"
+echo "  - README.md (structure tree)"
+echo "  - .claude/rules/gas-scripts.md (GAS Projects table)"
+echo ""
+echo "Claude just needs to: commit and push (Pre-Commit checklist applies)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 exit "$ERRORS"

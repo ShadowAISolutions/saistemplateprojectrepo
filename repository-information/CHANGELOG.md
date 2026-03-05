@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v03.08r] — 2026-03-05 02:05:59 PM EST
+
+### Changed
+- `setup-gas-project.sh` now fully automates all post-setup steps: updates ARCHITECTURE.md (Mermaid diagram), README.md (structure tree), STATUS.md (both tables), and fixes .gs comment references — no manual edits needed after running the script
+- Added "Setup GAS Project Command" section to CLAUDE.md for deterministic execution (like Initialize Command)
+- Simplified Copy Config for Claude button output to a minimal prompt — script handles everything
+
+#### `gas-project-creator.html` — v01.54w
+
+##### Changed
+- Copy Config button now generates a shorter prompt since the setup script handles all documentation updates automatically
 
 ## [v03.07r] — 2026-03-05 01:57:34 PM EST
 
