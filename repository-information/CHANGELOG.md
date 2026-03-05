@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v02.79r] — 2026-03-04 08:42:52 PM EST
+
+### Removed
+- HTML Layer status dashboard section (Page Title, Auto-Refresh, Version Polling, Audio Context, Wake Lock indicators) — redundant with version sound icon
+- All `setStatus()` / `updateDashboardAudio()` functions and calls
+- Status dot/row/value CSS styles
+
+### Changed
+- Made `script.google.com/home/usersettings` and `script.google.com` into clickable links
+- Made GitHub fine-grained token path into a direct clickable link
+
+#### `gas-project-creator.html` — v01.36w
+
+##### Removed
+- HTML Layer status dashboard section — no longer shows redundant status indicators
+
+##### Changed
+- Setup instruction URLs are now clickable links instead of plain code text
 
 ## [v02.78r] — 2026-03-04 08:36:59 PM EST
 

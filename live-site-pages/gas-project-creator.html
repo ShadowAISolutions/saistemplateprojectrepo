@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.35w">
+  <meta name="build-version" content="v01.36w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -115,41 +115,6 @@
       border-bottom: 1px solid #21262d;
     }
     .section-header:first-of-type { margin-top: 0; }
-    .status-row {
-      display: flex;
-      align-items: center;
-      padding: 8px 0;
-      gap: 10px;
-    }
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      transition: background 0.3s ease;
-    }
-    .status-dot.green  { background: #3fb950; }
-    .status-dot.red    { background: #f85149; }
-    .status-dot.yellow { background: #d29922; }
-    .status-dot.gray   { background: #484f58; }
-    .status-label {
-      flex: 1;
-      font-size: 14px;
-      color: #c9d1d9;
-    }
-    .status-value {
-      font-size: 13px;
-      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-      text-align: right;
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .status-value.ok      { color: #3fb950; }
-    .status-value.missing { color: #f85149; }
-    .status-value.warn    { color: #d29922; }
-    .status-value.neutral { color: #8b949e; }
     .divider {
       height: 1px;
       background: #21262d;
@@ -471,51 +436,18 @@
     <h1>GAS Project Creator</h1>
     <p class="subtitle">Setup tool for creating and configuring Google Apps Script projects</p>
 
-    <div class="section-header">HTML Layer</div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-title"></div>
-      <span class="status-label">Page Title</span>
-      <span class="status-value neutral" id="val-title">Checking...</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-autorefresh"></div>
-      <span class="status-label">Auto-Refresh</span>
-      <span class="status-value neutral" id="val-autorefresh">Checking...</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-version"></div>
-      <span class="status-label">Version Polling</span>
-      <span class="status-value neutral" id="val-version">Checking...</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-audio"></div>
-      <span class="status-label">Audio Context</span>
-      <span class="status-value neutral" id="val-audio">Checking...</span>
-    </div>
-
-    <div class="status-row">
-      <div class="status-dot gray" id="dot-wakelock"></div>
-      <span class="status-label">Wake Lock</span>
-      <span class="status-value neutral" id="val-wakelock">Checking...</span>
-    </div>
-
-    <div class="divider"></div>
     <div class="section-header">Setup &amp; Configuration</div>
 
     <div class="setup-steps">
       <ol>
         <li class="step-group-label">Google Account Setup</li>
-        <li>Enable the Apps Script API at <code>script.google.com/home/usersettings</code></li>
+        <li>Enable the Apps Script API at <a href="https://script.google.com/home/usersettings" target="_blank" rel="noopener" style="color:#58a6ff">script.google.com/home/usersettings</a></li>
         <li>Create or use a GCP project where you have <strong>Owner</strong> access. If you don't have one, create a new project at <a href="https://console.cloud.google.com/home/" target="_blank" rel="noopener" style="color:#58a6ff">console.cloud.google.com</a></li>
         <li>Enable the <strong>Apps Script API</strong> in your GCP project
           <div class="step-note">APIs &amp; Services &rarr; Library &rarr; search "Apps Script API" &rarr; Enable</div>
         </li>
         <li class="step-group-label">New Apps Script Project</li>
-        <li>Create a new Apps Script project at <code>script.google.com</code></li>
+        <li>Create a new Apps Script project at <a href="https://script.google.com" target="_blank" rel="noopener" style="color:#58a6ff">script.google.com</a></li>
         <li class="step-group-label">GAS Project Settings</li>
         <li>In Project Settings, enable <strong>Show appsscript.json manifest file</strong>
           <div class="step-note">Project Settings &rarr; General settings &rarr; Show &ldquo;appsscript.json&rdquo; manifest file</div>
@@ -555,7 +487,7 @@
         </li>
         <li>Set <code>GITHUB_TOKEN</code> in Script Properties
           <div class="step-note">Project Settings &rarr; Script Properties &rarr; Add: Key = <code>GITHUB_TOKEN</code>, Value = your fine-grained personal access token</div>
-          <div class="step-note" style="margin-top:6px"><strong>To create a token:</strong> GitHub.com &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens &rarr; Generate new token. Under "Repository access" select <strong>Public repositories (read-only)</strong>. No additional permissions are needed. Copy the <code>github_pat_...</code> value.</div>
+          <div class="step-note" style="margin-top:6px"><strong>To create a token:</strong> <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener" style="color:#58a6ff">GitHub.com &rarr; Settings &rarr; Developer settings &rarr; Fine-grained tokens</a> &rarr; Generate new token. Under "Repository access" select <strong>Public repositories (read-only)</strong>. No additional permissions are needed. Copy the <code>github_pat_...</code> value.</div>
           <div class="step-note"><strong>Reuse across projects:</strong> The same token works for all your GAS projects &mdash; you don't need a new one per repo. Just paste the same token into each project's Script Properties.</div>
         </li>
         <li class="step-group-label">GAS Editor</li>
@@ -689,7 +621,7 @@
     // AudioContext for sound playback — created at load to probe browser audio policy
     var _audioCtx = null;
     try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
-    if (_audioCtx) _audioCtx.onstatechange = function() { updateAudioStatus(); updateDashboardAudio(); };
+    if (_audioCtx) _audioCtx.onstatechange = function() { updateAudioStatus(); };
     // Attempt auto-resume — browsers allow it if a prior gesture exists for this origin
     var _resumePromise = null;
     if (_audioCtx && _audioCtx.state === 'suspended') _resumePromise = _audioCtx.resume().catch(function() {});
@@ -712,7 +644,7 @@
 
     function unlockAudio() {
       if (!_audioCtx || _audioCtx.state === 'running') return;
-      _audioCtx.resume().then(function() { updateAudioStatus(); updateDashboardAudio(); }).catch(function() {});
+      _audioCtx.resume().then(function() { updateAudioStatus(); }).catch(function() {});
     }
     document.addEventListener('click', unlockAudio, { once: false });
     document.addEventListener('touchstart', unlockAudio, { once: false });
@@ -815,8 +747,6 @@
         updateAudioStatus();
         if (_resumePromise) _resumePromise.then(function() { updateAudioStatus(); });
         dot = indicator.querySelector('.dot');
-        // Update dashboard once version is established
-        setStatus('version', 'green', 'ok', 'v' + version);
       }
 
       function startCountdown() {
@@ -896,7 +826,6 @@
               dot.className = 'dot error';
               setTimeout(function() { dot.className = 'dot'; }, 2000);
             }
-            setStatus('version', 'red', 'missing', 'Poll error');
             schedulePoll();
           });
       }
@@ -1003,40 +932,15 @@
           _wakeLock = await navigator.wakeLock.request('screen');
           _wakeLock.addEventListener('release', function() {
             _wakeLock = null;
-            setStatus('wakelock', 'yellow', 'warn', 'Released');
           });
-          setStatus('wakelock', 'green', 'ok', 'Active');
-        } else {
-          setStatus('wakelock', 'yellow', 'warn', 'Not supported');
         }
-      } catch(e) {
-        setStatus('wakelock', 'yellow', 'warn', 'Denied');
-      }
+      } catch(e) {}
     }
     requestWakeLock();
     document.addEventListener('visibilitychange', function() {
       if (document.visibilityState === 'visible') requestWakeLock();
     });
 
-    // ── Dashboard Status Updater ────────────────────────────────────
-    function setStatus(id, dotColor, valueClass, text) {
-      var dotEl = document.getElementById('dot-' + id);
-      var valEl = document.getElementById('val-' + id);
-      if (dotEl) { dotEl.className = 'status-dot ' + dotColor; }
-      if (valEl) { valEl.className = 'status-value ' + valueClass; valEl.textContent = text; }
-    }
-
-    function updateDashboardAudio() {
-      if (_audioCtx && _audioCtx.state === 'running') {
-        setStatus('audio', 'green', 'ok', 'Running');
-      } else if (_audioCtx && sessionStorage.getItem('audio-unlocked')) {
-        setStatus('audio', 'green', 'ok', 'Running');
-      } else if (_audioCtx) {
-        setStatus('audio', 'yellow', 'warn', 'Suspended');
-      } else {
-        setStatus('audio', 'red', 'missing', 'Unavailable');
-      }
-    }
 
     // ── Copy Code.gs ─────────────────────────────────────────────
     (function() {
@@ -1198,31 +1102,6 @@
     // ── Initialize deploy gate on page load ─────────────────────────
     updateDeployGate();
 
-    // Initial HTML layer checks
-    (function() {
-      // Title check
-      var title = document.title;
-      if (title && title !== 'CHANGE THIS PROJECT TITLE TEMPLATE' && title !== 'GAS Project Creator') {
-        setStatus('title', 'green', 'ok', title);
-      } else if (title === 'GAS Project Creator') {
-        setStatus('title', 'green', 'ok', title);
-      } else {
-        setStatus('title', 'yellow', 'warn', 'Default');
-      }
-
-      // Auto-refresh check
-      if (AUTO_REFRESH) {
-        setStatus('autorefresh', 'green', 'ok', 'Active');
-      } else {
-        setStatus('autorefresh', 'yellow', 'warn', 'Disabled');
-      }
-
-      // Version — starts as checking, updated by createIndicator callback
-      setStatus('version', 'yellow', 'warn', 'Polling...');
-
-      // Audio
-      updateDashboardAudio();
-    })();
   </script>
 </body>
 </html>
