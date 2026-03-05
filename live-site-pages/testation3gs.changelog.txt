@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [01.06g] — 2026-03-05 03:47:47 PM EST — v03.15r
+
+### Changed
+- Version is now reported to the embedding page every 15 seconds automatically
 
 ## [01.05g] — 2026-03-05 03:34:35 PM EST — v03.14r
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3html.changelog-archive.md](testation3html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 1/50`
+`Sections: 2/50`
 
 ## [Unreleased]
+
+## [v01.02w] — 2026-03-05 03:47:47 PM EST — v03.15r
+
+### Fixed
+- GAS version indicator now appears immediately on page load instead of staying hidden
+- GAS version auto-checking now works reliably without manual refresh
 
 ## [v01.01w] — 2026-03-05 03:34:35 PM EST — v03.14r
 

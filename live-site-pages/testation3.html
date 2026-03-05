@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <title>Test Title 3</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -74,7 +74,7 @@
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
     #gas-version-indicator {
       position: fixed; bottom: 8px; left: 8px; z-index: 9999;
-      display: none; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
       pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
@@ -637,10 +637,9 @@
         if (e.data && e.data.type === 'gas-version') {
           var newVersion = e.data.version;
           if (!gasVersion) {
-            // First report — show the indicator
+            // First report — update the label from "GAS ..." to actual version
             gasVersion = newVersion;
             gasLabel.textContent = 'GAS ' + gasVersion;
-            gasIndicator.style.display = 'flex';
             if (gasDot) { gasDot.className = 'dot found'; setTimeout(function() { gasDot.className = 'dot'; }, 800); }
           } else if (newVersion !== gasVersion) {
             // Version changed — reload
@@ -656,21 +655,6 @@
           startGasCountdown();
         }
       });
-
-      // Periodically ask the GAS iframe to report its version
-      function requestGasVersion() {
-        var gasFrame = document.getElementById('gas-app');
-        if (gasFrame && gasFrame.contentWindow) {
-          try { gasFrame.contentWindow.postMessage({type: 'gas-version-request'}, '*'); } catch(e) {}
-        }
-        // Fallback: the GAS iframe may not respond to postMessage (cross-origin),
-        // so we also rely on the initial gas-version message sent on iframe load
-        startGasCountdown();
-      }
-
-      // Start polling after a short delay to let the iframe load
-      setTimeout(requestGasVersion, 5000);
-      setInterval(requestGasVersion, GAS_POLL_INTERVAL);
     })();
 
     // Screen Wake Lock — keep screen on while page is visible

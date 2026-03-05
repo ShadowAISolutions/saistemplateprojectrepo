@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.05g";
+var VERSION = "01.06g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -235,13 +235,13 @@ function doGet() {
           setInterval(pollQuotaAndLimits, 60000);
         }
 
-        // Listen for version requests from embedding page
-        window.addEventListener('message', function(e) {
-          if (e.data && e.data.type === 'gas-version-request') {
-            var ver = (document.getElementById('version').textContent || '').trim();
-            try { window.top.postMessage({type: 'gas-version', version: ver}, '*'); } catch(x) {}
+        // Periodically report current version to embedding page
+        setInterval(function() {
+          var ver = (document.getElementById('version').textContent || '').trim();
+          if (ver) {
+            try { window.top.postMessage({type: 'gas-version', version: ver}, '*'); } catch(e) {}
           }
-        });
+        }, 15000);
 
         var _autoPulling = false;
         function pollPushedVersionFromCache() {

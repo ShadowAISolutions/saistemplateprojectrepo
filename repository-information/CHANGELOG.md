@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v03.15r] — 2026-03-05 03:47:47 PM EST
+
+### Fixed
+- GAS version indicator now appears immediately on page load instead of staying hidden
+- GAS version polling now uses self-reporting from the iframe instead of unreliable cross-origin parent-to-iframe messaging
+
+#### `testation3.html` — v01.02w
+
+##### Fixed
+- GAS version indicator now visible immediately (shows "GAS ..." while waiting for first report)
+- Removed unreliable parent-to-iframe version polling
+
+#### `testation3.gs` — 01.06g
+
+##### Changed
+- Version is now reported to the embedding page every 15 seconds automatically
 
 ## [v03.14r] — 2026-03-05 03:34:35 PM EST
 
