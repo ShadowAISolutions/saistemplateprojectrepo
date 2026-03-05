@@ -157,6 +157,12 @@ When adding, moving, or reorganizing `##` sections in CLAUDE.md, follow the atte
 - If an imported skill needs behavioral changes, create a **custom skill** with the desired behavior instead — or add a `.claude/rules/` file that layers repo-specific guidance on top of the imported skill's base behavior
 - This rule applies regardless of who requests the change — even if the user asks to "fix" or "improve" an imported skill, flag that it's imported and recommend the alternatives above. Only proceed with direct modification if the user explicitly overrides after understanding the tradeoff
 
+## Pre-Stage Verification Gate
+- **Before running `git add`, verify every intended edit was actually applied.** Complex sub-tasks (archive rotation, large refactors, multi-file migrations) create a "distraction tunnel" — you read the target files, get pulled into the complex work, then jump to staging without ever running Edit on the core files. `git add` silently ignores unchanged files, so the commit succeeds but is missing the primary changes
+- **The check:** before any `git add` command, run `git diff --stat` (or `git diff` for specific files) to confirm the expected files show up as modified. If a file you intended to edit does not appear in the diff output, STOP — you forgot to edit it. Go back and make the edit before staging
+- **When this matters most:** any response where a secondary task (CHANGELOG updates, archive rotation, structural changes) is more complex than the primary task (version bump, config change, small edit). The secondary task's complexity creates tunnel vision that causes the simpler primary task to be skipped entirely
+- **Summary accuracy:** never write summary bullets claiming a file was edited unless `git diff` confirms the edit exists. Summaries must describe what actually happened, not what was planned
+
 ## Provenance Markers
 - This repo contains hidden provenance markers that identify ShadowAISolutions as the original author
 - These markers are embedded across multiple file types and are intentionally not documented in detail
