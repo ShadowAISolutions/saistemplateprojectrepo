@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v02.93r] — 2026-03-04 11:07:56 PM EST
+
+### Added
+- Page Rename/Move Checklist in `.claude/rules/html-pages.md` — 9-step checklist for safely renaming HTML pages without losing changelog history or deployment copy sync. Documents the gas-template → gas-project-creator rename as the motivating incident
 
 ## [v02.92r] — 2026-03-04 11:01:11 PM EST
 

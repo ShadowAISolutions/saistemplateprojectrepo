@@ -69,6 +69,19 @@ When creating a **new** HTML embedding page, follow every step below:
 12. **Create page changelog** — copy `repository-information/changelogs/HtmlTemplateAutoUpdatehtml.changelog.md` into `repository-information/changelogs/` as `<page-name>html.changelog.md`. Replace `YOUR_PROJECT_TITLE` with the page's human-readable title and update the archive link filename. Also copy `repository-information/changelogs/HtmlTemplateAutoUpdatehtml.changelog-archive.md` as `<page-name>html.changelog-archive.md` and update its title and changelog link filename
 13. **Create changelog deployment copy** — copy the page changelog created in step 12 to `live-site-pages/` as `<page-name>html.changelog.txt` (same content, `.txt` extension). This deployment copy is fetched by the changelog popup on the live site (see "Changelog Deployment Copies" above)
 
+### Page Rename/Move Checklist
+When **renaming** an existing HTML page (changing its filename, e.g. `gas-template.html` → `gas-project-creator.html`), follow every step below. **Renaming is high-risk for changelog drift** — the gas-template → gas-project-creator rename caused 16 missing entries in the deployment changelog because associated files were not fully synced.
+
+1. **Rename the HTML file** — rename the page in `live-site-pages/`
+2. **Rename the version file** — rename `<old-name>html.version.txt` → `<new-name>html.version.txt` in the same directory
+3. **Rename the source changelog** — rename `repository-information/changelogs/<old-name>html.changelog.md` → `<new-name>html.changelog.md`. Update the title and archive link inside the file
+4. **Rename the source changelog archive** — rename `<old-name>html.changelog-archive.md` → `<new-name>html.changelog-archive.md`. Update the title and changelog link inside the file
+5. **Sync the deployment changelog copy** — copy the renamed source changelog (step 3) to `live-site-pages/<new-name>html.changelog.txt`. **This is the step most likely to be missed.** The deployment copy must match the full source changelog content — do not just rename the old `.txt` file, because it may already be behind the source. Always copy fresh from the source
+6. **Delete the old deployment changelog** — remove `live-site-pages/<old-name>html.changelog.txt` (it now has the wrong name)
+7. **Rename GAS files** (if applicable) — rename `.gs` file, `config.json`, `gs.version.txt`, GAS changelogs, and GAS changelog archives. Update the GAS Projects table in `gas-scripts.md`
+8. **Update internal references** — search all files for the old page name and update: localStorage keys, HTML `<title>`, ARCHITECTURE.md, STATUS.md, README.md, and any cross-references in other pages
+9. **Verify changelog continuity** — after renaming, confirm the source changelog has all version entries from v01.01w through the current version with no gaps. The rename should not lose any history
+
 ### Directory Structure (per embedding page)
 ```
 live-site-pages/
