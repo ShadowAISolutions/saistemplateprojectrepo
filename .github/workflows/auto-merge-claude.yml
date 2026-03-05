@@ -327,6 +327,16 @@ jobs:
       #       --max-time 120 || true
       # ─────────────────────────────────────────────────────────────────
 
+      - name: Deploy Testation3
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Testation3/testation3.gs" && \
+          curl -L -X POST \
+            "https://script.google.com/macros/s/AKfycbzE--oM0T_h3Ox4tzj6haZyVEjrVfRMt-8AJnGrUGcyW8bGMr3emggbbT1AJeiaSWIL/exec" \
+            -d "action=deploy" \
+            --max-time 120 || true
+
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |

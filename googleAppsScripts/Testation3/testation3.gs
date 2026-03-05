@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.09g";
+var VERSION = "01.10g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -382,6 +382,19 @@ function doGet() {
             return html || '<p style="color:#888">No changelog entries yet.</p>';
           }
         })();
+
+        // Auto-check for updates on page load (fallback if webhook missed)
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.indexOf('Updated to') !== -1) {
+              var reloadMsg = {type: 'gas-reload', version: result};
+              if (_soundDataUrl) reloadMsg.soundDataUrl = _soundDataUrl;
+              try { window.top.postMessage(reloadMsg, '*'); } catch(e) {}
+              try { window.parent.postMessage(reloadMsg, '*'); } catch(e) {}
+            }
+          })
+          .withFailureHandler(function() {})
+          .pullAndDeployFromGitHub();
 
         setTimeout(function() {
           var splash = document.getElementById('splash');
