@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <title>Test Title 3</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -376,16 +376,39 @@
       document.body.appendChild(f);
     })();
 
-    // GAS auto-reload — listen for postMessage from the GAS 1fr4m3 after deploy
-    window.addEventListener('message', function(e) {
-      if (e.data && e.data.type === 'gas-reload') {
-        sessionStorage.setItem('gas-pending-sound', '1');
-        if (e.data.soundDataUrl) {
-          sessionStorage.setItem('gas-sound-data', e.data.soundDataUrl);
-        }
-        window.location.reload();
+    // GAS auto-refresh: poll <pagename>gs.version.txt for GAS version changes
+    (function() {
+      var GAS_POLL_INTERVAL = 15000;
+      if (!AUTO_REFRESH) return;
+
+      var basePath = window.location.href.split('?')[0].split('#')[0];
+      var pageName = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
+      if (!pageName) pageName = 'index';
+      var gasVersionUrl = basePath.substring(0, basePath.lastIndexOf('/') + 1) + pageName + 'gs.version.txt';
+
+      var currentGasVersion = null;
+
+      function checkGasUpdate() {
+        fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
+          .then(function(res) { return res.text(); })
+          .then(function(v) {
+            var fetched = v.trim();
+            if (!currentGasVersion) {
+              currentGasVersion = fetched;
+            } else if (fetched !== currentGasVersion) {
+              sessionStorage.setItem('gas-pending-sound', '1');
+              setTimeout(function() { window.location.reload(); }, 2000);
+              return;
+            }
+            setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
+          })
+          .catch(function() {
+            setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
+          });
       }
-    });
+
+      checkGasUpdate();
+    })();
 
     // After reload: play GAS deploy sound if pending
     if (sessionStorage.getItem('gas-pending-sound')) {

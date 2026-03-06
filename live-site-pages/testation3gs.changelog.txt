@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [01.20g] — 2026-03-05 11:06:42 PM EST — v03.32r
+
+### Changed
+- Update detection now handled by the embedding page polling a version file instead of internal cache polling
+
+### Removed
+- CacheService-based version caching and polling
+- PostMessage reload signaling to embedding page
 
 ## [01.18g] — 2026-03-05 10:47:58 PM EST — v03.30r
 

@@ -62,6 +62,7 @@ graph TB
             TSTT_VERTXT["testation3html.version.txt"]
             TSTT_CL["testation3html.changelog.txt"]
             TSTT_GCL["testation3gs.changelog.txt"]
+            TSTT_GVERTXT["testation3gs.version.txt"]
             SND1["sounds/Website_Ready_Voice_1.mp3"]
             SND2["sounds/Code_Ready_Voice_1.mp3"]
         end

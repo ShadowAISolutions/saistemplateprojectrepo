@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.19g";
+var VERSION = "01.20g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -297,16 +297,6 @@ function doGet() {
           _autoPulling = true;
           google.script.run
             .withSuccessHandler(function(result) {
-              if (result.indexOf('Updated to') !== -1) {
-                google.script.run
-                  .withSuccessHandler(function(data) {
-                    var reloadMsg = {type: 'gas-reload', version: data.version};
-                    if (_soundDataUrl) reloadMsg.soundDataUrl = _soundDataUrl;
-                    try { window.top.postMessage(reloadMsg, '*'); } catch(e) {}
-                    try { window.parent.postMessage(reloadMsg, '*'); } catch(e) {}
-                  })
-                  .getAppData();
-              }
               setTimeout(function() { _autoPulling = false; }, 30000);
             })
             .withFailureHandler(function() {
@@ -315,43 +305,9 @@ function doGet() {
             .pullAndDeployFromGitHub();
         }
 
-        function pollPushedVersionFromCache() {
-          if (_autoPulling) return;
-          google.script.run
-            .withSuccessHandler(function(pushed) {
-              if (!pushed) return;
-              var current = (document.getElementById('version').textContent || '').trim();
-              if (pushed !== current && pushed !== '') {
-                // Deploy already happened server-side via doPost — just reload
-                var reloadMsg = {type: 'gas-reload', version: pushed};
-                if (_soundDataUrl) reloadMsg.soundDataUrl = _soundDataUrl;
-                try { window.top.postMessage(reloadMsg, '*'); } catch(e) {}
-                try { window.parent.postMessage(reloadMsg, '*'); } catch(e) {}
-              }
-            })
-            .readPushedVersionFromCache();
-        }
-
-        // GAS version pill — countdown + polling integration
+        // GAS version pill — changelog popup
         (function() {
           var pill = document.getElementById('gas-pill');
-          var pillDot = pill.querySelector('.dot');
-          var POLL_SEC = 15;
-          var cd = POLL_SEC;
-
-          setInterval(function() {
-            cd--;
-            if (cd <= 0) {
-              cd = POLL_SEC;
-              pillDot.textContent = '';
-              pillDot.className = 'dot checking';
-              pollPushedVersionFromCache();
-              setTimeout(function() { if (pillDot.className === 'dot checking') { pillDot.className = 'dot'; pillDot.textContent = ''; } }, 800);
-            } else if (cd <= 5) {
-              pillDot.textContent = cd;
-              pillDot.className = 'dot counting';
-            }
-          }, 1000);
 
           // Changelog popup
           var overlay = document.getElementById('gcl-overlay');
@@ -446,7 +402,6 @@ function doPost(e) {
         sheet.getRange("C1").setValue(value + " — " + new Date().toLocaleString());
       } catch(e) {}
     }
-    CacheService.getScriptCache().put("pushed_version", value, 3600);
     return ContentService.createTextOutput("OK");
   }
 
@@ -514,9 +469,6 @@ function getGasChangelog() {
   }
 }
 
-function readPushedVersionFromCache() {
-  return CacheService.getScriptCache().get("pushed_version") || "";
-}
 
 function writeVersionToSheet() {
   if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
@@ -683,8 +635,6 @@ function pullAndDeployFromGitHub() {
   } catch(cleanupErr) {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
-
-  CacheService.getScriptCache().put("pushed_version", "v" + pulledVersion, 3600);
 
   return "Updated to v" + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }

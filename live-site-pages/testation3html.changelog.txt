@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3html.changelog-archive.md](testation3html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05w] — 2026-03-05 11:06:42 PM EST — v03.32r
+
+### Added
+- GAS version polling — page now detects GAS script updates and reloads automatically
+
+### Removed
+- PostMessage-based GAS reload listener (replaced by direct version file polling)
 
 ## [v01.04w] — 2026-03-05 05:09:46 PM EST — v03.20r
 

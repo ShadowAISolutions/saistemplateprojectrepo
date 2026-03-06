@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 38/100`
+`Sections: 39/100`
 
 ## [Unreleased]
+
+## [v03.32r] — 2026-03-05 11:06:42 PM EST
+
+### Changed
+- GAS update detection now polls `testation3gs.version.txt` from GitHub Pages instead of using GAS CacheService — mirrors the HTML auto-refresh pattern
+- Removed CacheService-based version polling and postMessage reload signaling from GAS client
+
+### Added
+- GAS version deployment copy (`testation3gs.version.txt`) deployed to GitHub Pages for client-side polling
+
+#### `testation3.gs` — 01.20g
+
+##### Changed
+- Update detection now handled by the embedding page polling a version file instead of internal cache polling
+
+##### Removed
+- CacheService-based version caching and polling
+- PostMessage reload signaling to embedding page
+
+#### `testation3.html` — v01.05w
+
+##### Added
+- GAS version polling — fetches `testation3gs.version.txt` every 15 seconds and reloads on version change
+
+##### Removed
+- PostMessage-based GAS reload listener (replaced by direct version.txt polling)
 
 ## [v03.31r] — 2026-03-05 10:52:53 PM EST
 
