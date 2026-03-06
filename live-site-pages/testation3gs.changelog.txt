@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 30/50`
+`Sections: 31/50`
 
 ## [Unreleased]
+
+## [01.31g] — 2026-03-06 12:47:04 AM EST — v03.47r
+
+### Changed
+- Sheet name and B1 content now shown in the header area next to the title
+- B1 value now has a "B1 Content:" label for clarity
+- Reload button displays on a single line
 
 ## [01.30g] — 2026-03-06 12:41:24 AM EST — v03.46r
 

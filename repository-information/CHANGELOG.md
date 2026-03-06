@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 53/100`
+`Sections: 54/100`
 
 ## [Unreleased]
+
+## [v03.47r] — 2026-03-06 12:47:04 AM EST
+
+### Changed
+- Reorganized GAS header: Live_Sheet name, version count, and B1 content now displayed inline in header area
+- Added "B1 Content:" label to the B1 value display
+- Reload button rendered as single line (removed extra margin)
+
+#### `testation3.gs` — 01.31g
+
+##### Changed
+- Sheet name and B1 content moved into header next to title and controls
+- Added "B1 Content:" label for clarity
+- Reload button displays as single line
 
 ## [v03.46r] — 2026-03-06 12:41:24 AM EST
 

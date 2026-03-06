@@ -85,7 +85,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.30g";
+var VERSION = "01.31g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -140,9 +140,11 @@ function doGet() {
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${TITLE}</h1>
       <div id="main-content">
         <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
-          <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
+          <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;">🔄 Reload Page</button>
         </form>
+        ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `<h3 style="color:#333; margin:6px 0 2px 0;">${SHEET_NAME}</h3>` : ''}
         <div id="versionCount"></div>
+        ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `<div style="margin-top:4px;"><span style="font-size:14px; color:#666;">B1 Content:</span> <span id="live-b1" style="font-size:20px; font-weight:bold; color:#333;">...</span></div>` : ''}
       </div>
       </div>
       <div id="token-info">...</div>
@@ -150,8 +152,6 @@ function doGet() {
 
       ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
       <div id="sheet-container" style="width:90%;max-width:600px;text-align:center;">
-        <h3>${SHEET_NAME}</h3>
-        <div id="live-b1">...</div>
         <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe>
       </div>
       ` : ''}
