@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.16g";
+var VERSION = "01.17g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -178,6 +178,23 @@ function doGet() {
         <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal"></iframe>
       </div>
       ` : ''}
+
+      <div style="margin-top:30px;text-align:center;">
+        <svg width="200" height="260" viewBox="0 0 200 260">
+          <!-- ground shadow -->
+          <ellipse cx="100" cy="242" rx="70" ry="12" fill="#c4b199" opacity="0.4"/>
+          <!-- trunk -->
+          <rect x="88" y="175" width="24" height="55" rx="4" fill="#8B5E3C"/>
+          <rect x="91" y="175" width="6" height="55" rx="2" fill="#A0714F" opacity="0.5"/>
+          <!-- tree layers (bottom to top, with overlap shadows) -->
+          <polygon points="100,85 15,190 185,190" fill="#4CAF50"/>
+          <polygon points="100,85 30,175 170,175" fill="#43A047" opacity="0.5"/>
+          <polygon points="100,45 35,145 165,145" fill="#388E3C"/>
+          <polygon points="100,45 50,130 150,130" fill="#2E7D32" opacity="0.4"/>
+          <polygon points="100,10 50,100 150,100" fill="#2E7D32"/>
+          <polygon points="100,10 60,90 140,90" fill="#1B5E20" opacity="0.35"/>
+        </svg>
+      </div>
 
       <script>
         var _soundDataUrl = null;

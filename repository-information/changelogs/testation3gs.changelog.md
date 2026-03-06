@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [01.17g] — 2026-03-05 09:30:02 PM EST — v03.29r
+
+### Added
+- Tree decoration displayed below the spreadsheet section
 
 ## [01.16g] — 2026-03-05 09:17:29 PM EST — v03.27r
 

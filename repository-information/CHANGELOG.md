@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 35/100`
+`Sections: 36/100`
 
 ## [Unreleased]
+
+## [v03.29r] — 2026-03-05 09:30:02 PM EST
+
+### Added
+- Decorative tree SVG below the spreadsheet in Testation3 GAS app
+
+#### `testation3.gs` — 01.17g
+
+##### Added
+- Tree decoration displayed below the spreadsheet section
 
 ## [v03.28r] — 2026-03-05 09:23:06 PM EST
 
