@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v03.85r] — 2026-03-06 03:00:24 PM EST
+
+### Changed
+
+- Consolidated GAS template to a single source of truth: `live-site-pages/gas-code/gas-project-creator-code.js.txt` — eliminated `HtmlTemplateAutoUpdate.gs` and its duplicate sync rule
+- Updated `setup-gas-project.sh` to use the `.js.txt` file as the GAS template source instead of `HtmlTemplateAutoUpdate.gs`
+- Updated ARCHITECTURE.md diagram to use `GASTPL_CODE` as the template source node for new GAS projects
+
+### Removed
+
+- Deleted `googleAppsScripts/HtmlTemplateAutoUpdate/` directory (`.gs` + `.config.json`) — redundant with `gas-project-creator-code.js.txt`
+- Deleted HtmlTemplateAutoUpdate version files (`HtmlTemplateAutoUpdategs.version.txt`) and all associated changelogs (4 changelog files + 1 deployed copy)
+- Removed mandatory sync rule from `gas-scripts.md` — no longer needed with single source
 
 ## [v03.84r] — 2026-03-06 02:33:04 PM EST
 

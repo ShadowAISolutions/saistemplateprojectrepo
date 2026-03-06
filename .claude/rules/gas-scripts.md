@@ -70,7 +70,7 @@ To generate via command line: `echo -n 'https://script.google.com/macros/s/{DEPL
 The inline decode reverses this: `atob()` then string-reverse. The iframe is created dynamically via srcdoc trampoline (no `src` attribute set). This is obfuscation, not security — the Network tab still shows the URL
 
 ### Template config
-`googleAppsScripts/HtmlTemplateAutoUpdate/HtmlTemplateAutoUpdate.config.json` contains placeholder values. The setup script (`scripts/setup-gas-project.sh`) copies this to new project directories and fills in real values.
+The setup script (`scripts/setup-gas-project.sh`) generates config.json files inline with placeholder values when creating new projects — there is no separate template config file to maintain.
 
 ## Commit Message Naming
 *Rule: see Pre-Commit Checklist item #9 in CLAUDE.md.*
@@ -111,15 +111,14 @@ When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` wo
 - Each GAS project gets its own deploy step in the workflow (added by `setup-gas-project.sh` during project creation)
 - The webhook URL is constructed from the `DEPLOYMENT_ID` in each project's `.config.json`
 
-## Copy Code.gs Deployment File
+## GAS Template Source File
 
-GAS-enabled HTML pages include a "Copy Code.gs" button that lets users copy the full `.gs` source to their clipboard. All pages fetch from a **single shared deployment copy**: `live-site-pages/gas-code/gas-project-creator-code.js.txt`.
+`live-site-pages/gas-code/gas-project-creator-code.js.txt` is the **single source of truth** for the base GAS template. It contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
 
-**Single source**: `gas-code/gas-project-creator-code.js.txt` is a verbatim copy of `googleAppsScripts/HtmlTemplateAutoUpdate/HtmlTemplateAutoUpdate.gs` — the base GAS template with placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, `YOUR_ORG_NAME`, etc.). Each HTML page's config form fields do find-and-replace on the copied code before it reaches the clipboard, so users get their values injected automatically.
+1. **Browser "Copy Code.gs" button** — GAS-enabled HTML pages fetch this file and do find-and-replace with the user's config values before copying to clipboard
+2. **Setup script template** — `scripts/setup-gas-project.sh` copies this file as the starting point for new GAS projects, then substitutes config values via sed
 
-**Mandatory sync rule**: whenever `HtmlTemplateAutoUpdate.gs` (the base template) is modified, `gas-code/gas-project-creator-code.js.txt` must be updated to match. Simply copy the `.gs` file to the `.js.txt` path.
-
-**Why this exists**: the HTML pages are served from GitHub Pages (`live-site-pages/`), but the `.gs` files live in `googleAppsScripts/` which is not part of the deployed site. The `.js.txt` file bridges this gap — it's deployed alongside the HTML so the browser `fetch()` can access it.
+There is no separate `.gs` template file — this single file eliminates the sync problem that existed when two copies had to be kept in lockstep. It lives in `live-site-pages/` because it must be accessible via GitHub Pages `fetch()`, and the setup script can read it from any location in the repo.
 
 ## GAS UI Layout Awareness
 

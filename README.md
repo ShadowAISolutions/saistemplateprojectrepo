@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-06 02:33:04 PM EST` · Repo version: `v03.84r`
+Last updated: `2026-03-06 03:00:24 PM EST` · Repo version: `v03.85r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -162,7 +162,6 @@ htmltemplateautoupdate/
 │   ├── gs-versions/             # GAS version files for GAS version pill polling
 │   │   ├── indexgs.version.txt
 │   │   ├── testgs.version.txt
-│   │   ├── HtmlTemplateAutoUpdategs.version.txt
 │   │   └── testation7gs.version.txt
 │   ├── html-changelogs/         # Deployed HTML changelogs for popup
 │   │   ├── indexhtml.changelog.txt
@@ -171,7 +170,6 @@ htmltemplateautoupdate/
 │   │   └── testation7html.changelog.txt
 │   ├── gs-changelogs/           # Deployed GAS changelogs for popup
 │   │   ├── indexgs.changelog.txt
-│   │   ├── HtmlTemplateAutoUpdategs.changelog.txt
 │   │   └── testation7gs.changelog.txt
 │   ├── testation7.html           # Testation7 GAS embedding page
 │   └── sounds/                 # Audio feedback files
@@ -187,12 +185,9 @@ htmltemplateautoupdate/
 │   ├── Test/                  # GAS for live-site-pages/test.html
 │   │   ├── test.gs            # Self-updating GAS web app
 │   │   └── test.config.json   # Project config (source of truth)
-│   ├── Testation7/              # GAS for live-site-pages/testation7.html
-│   │   ├── testation7.gs        # Self-updating GAS web app
-│   │   └── testation7.config.json  # Project config (source of truth)
-│   └── HtmlTemplateAutoUpdate/  # Original GAS template (base for GasExample)
-│       ├── HtmlTemplateAutoUpdate.gs           # Template GAS web app
-│       └── HtmlTemplateAutoUpdate.config.json  # Template config (placeholders)
+│   └── Testation7/              # GAS for live-site-pages/testation7.html
+│       ├── testation7.gs        # Self-updating GAS web app
+│       └── testation7.config.json  # Project config (source of truth)
 ├── .claude/
 │   ├── rules/                  # Always-loaded + path-scoped rules
 │   │   ├── behavioral-rules.md        # Always loaded — execution style, pushback, etc.
@@ -252,11 +247,7 @@ htmltemplateautoupdate/
 │   │   ├── testation7html.changelog.md          # User-facing changelog for Testation7 page
 │   │   ├── testation7html.changelog-archive.md  # Older changelog sections (rotated)
 │   │   ├── testation7gs.changelog.md            # User-facing changelog for Testation7 GAS
-│   │   ├── testation7gs.changelog-archive.md    # Older changelog sections (rotated)
-│   │   ├── HtmlTemplateAutoUpdatehtml.changelog.md          # Template page changelog
-│   │   ├── HtmlTemplateAutoUpdatehtml.changelog-archive.md  # Template page changelog archive
-│   │   ├── HtmlTemplateAutoUpdategs.changelog.md            # Template GAS changelog
-│   │   └── HtmlTemplateAutoUpdategs.changelog-archive.md    # Template GAS changelog archive
+│   │   └── testation7gs.changelog-archive.md    # Older changelog sections (rotated)
 │   ├── backups/                # Temporary safety-net backups of critical files
 │   │   └── CLAUDE.md.bak      # Latest CLAUDE.md backup
 │   ├── ARCHITECTURE.md         # System diagram (Mermaid)

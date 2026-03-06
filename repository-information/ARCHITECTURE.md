@@ -87,8 +87,6 @@ graph TB
             GAS_CFG["index.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
             GAS_TEST["googleAppsScripts/Test/test.gs"]
             GAS_TEST_CFG["test.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
-            GAS_TPL["googleAppsScripts/HtmlTemplateAutoUpdate/\nHtmlTemplateAutoUpdate.gs\n(template)"]
-            GAS_TPL_CFG["HtmlTemplateAutoUpdate.config.json\n(template placeholders)"]
             GAS_TSTA7["googleAppsScripts/Testation7/\ntestation7.gs"]
             GAS_TSTA7_CFG["testation7.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
         end
@@ -135,12 +133,9 @@ graph TB
     GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| TEST
     GAS_TSTA7_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TSTA7
     GAS_TSTA7_CFG -.->|"syncs to\n(Pre-Commit #15)"| TSTA7_PAGE
-    GAS_TPL -.->|"original base\ntemplate"| GAS_INDEX
-    GAS_TPL -.->|"original base\ntemplate"| GAS_TEST
-    GAS_TPL -.->|"original base\ntemplate"| GAS_TSTA7
-    GAS_TPL_CFG -.->|"original base\ntemplate"| GAS_CFG
-    GAS_TPL_CFG -.->|"original base\ntemplate"| GAS_TEST_CFG
-    GAS_TPL_CFG -.->|"original base\ntemplate"| GAS_TSTA7_CFG
+    GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
+    GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
+    GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_TSTA7
     LIVE -.->|"serves"| BROWSER
     INDEX -.->|"iframes"| GAS_APP
     TEST -.->|"iframes"| GAS_APP
@@ -161,10 +156,8 @@ graph TB
     style TPL fill:#ffa726,color:#000
     style GAS_INDEX fill:#ff7043,color:#fff
     style GAS_TEST fill:#ff7043,color:#fff
-    style GAS_TPL fill:#ffa726,color:#000
     style GAS_CFG fill:#ffe082,color:#000
     style GAS_TEST_CFG fill:#ffe082,color:#000
-    style GAS_TPL_CFG fill:#ffe082,color:#000
     style GAS_TSTA7 fill:#ff7043,color:#fff
     style GAS_TSTA7_CFG fill:#ffe082,color:#000
     style GAS_TPL_PAGE fill:#ffa726,color:#000

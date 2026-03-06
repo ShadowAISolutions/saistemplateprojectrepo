@@ -39,8 +39,8 @@ Create a new HTML embedding page with all the required files and boilerplate.
 
 9. **Ask about GAS** — ask the user if this page needs a Google Apps Script project embedded. If yes:
    - Create `googleAppsScripts/<ProjectName>/` directory
-   - Copy `HtmlTemplateAutoUpdate.gs` → `$0.gs`
-   - Copy `HtmlTemplateAutoUpdate.config.json` → `$0.config.json`
+   - Copy `live-site-pages/gas-code/gas-project-creator-code.js.txt` → `$0.gs`
+   - Create `$0.config.json` with placeholder values
    - Create `live-site-pages/gs-versions/$0gs.version.txt` with content `01.00g` (GAS version file — lives in `live-site-pages/gs-versions/` only)
    - Create GAS changelogs: `$0gs.changelog.md` and `$0gs.changelog-archive.md`
    - Register in the GAS Projects table in `.claude/rules/gas-scripts.md`

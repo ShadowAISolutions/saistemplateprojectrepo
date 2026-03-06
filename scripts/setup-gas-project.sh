@@ -4,7 +4,7 @@
 #
 # Creates all files and updates all documentation for a new GAS project:
 #   - HTML embedding page (from GasExample.html template)
-#   - .gs script (from HtmlTemplateAutoUpdate.gs)
+#   - .gs script (from gas-project-creator-code.js.txt)
 #   - .config.json
 #   - Version files (html + gs)
 #   - Changelogs (html + gs, plus archives)
@@ -126,13 +126,12 @@ GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
 # ── Template sources ─────────────────────────────────────────────
 TPL_HTML="live-site-templates/GasExample.html"
-TPL_GS="googleAppsScripts/HtmlTemplateAutoUpdate/HtmlTemplateAutoUpdate.gs"
-TPL_CFG="googleAppsScripts/HtmlTemplateAutoUpdate/HtmlTemplateAutoUpdate.config.json"
+TPL_GS="live-site-pages/gas-code/gas-project-creator-code.js.txt"
 
 # ── Phase 1: Pre-flight Checks ──────────────────────────────────
 info "Phase 1: Pre-flight checks..."
 
-for f in "$TPL_HTML" "$TPL_GS" "$TPL_CFG"; do
+for f in "$TPL_HTML" "$TPL_GS"; do
     if [ ! -f "$f" ]; then
         err "Template file not found: $f"
         exit 1
@@ -253,9 +252,9 @@ sed -i "s|var EMBED_PAGE_URL = .*;|var EMBED_PAGE_URL = \"${EMBED_URL}\";|" "$GA
 if [ "$SPLASH_LOGO_URL" != "YOUR_SPLASH_LOGO_URL" ] && [ -n "$SPLASH_LOGO_URL" ]; then
     sed -i "s|var SPLASH_LOGO_URL = .*;|var SPLASH_LOGO_URL = \"${SPLASH_LOGO_URL}\";|" "$GAS_FILE"
 fi
-# Fix template comment references: HtmlTemplateAutoUpdate.gs/.config.json → {env_name}.gs/.config.json
-sed -i "s|this file (HtmlTemplateAutoUpdate.gs)|this file (${ENV_NAME}.gs)|g" "$GAS_FILE"
-sed -i "s|HtmlTemplateAutoUpdate.config.json|${ENV_NAME}.config.json|g" "$GAS_FILE"
+# Fix template comment references: <page-name>.gs/.config.json → {env_name}.gs/.config.json
+sed -i "s|<page-name>\.gs|${ENV_NAME}.gs|g" "$GAS_FILE"
+sed -i "s|<page-name>\.config\.json|${ENV_NAME}.config.json|g" "$GAS_FILE"
 ok "Created $GAS_FILE"
 
 # --- Config JSON ---
@@ -448,14 +447,10 @@ if [ -f "$ARCH_FILE" ]; then
             ok "Added GAS nodes to Google Apps Scripts"
         fi
 
-        # 3. Add template copy edges (after last GAS_NEWTPL copy edge)
-        LAST_NEWTPL_COPY=$(grep -n 'GAS_NEWTPL -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_NEWTPL_COPY" ]; then
-            sed -i "${LAST_NEWTPL_COPY}a\\    GAS_NEWTPL -.->|\"copy to create\\\nnew GAS projects\"| GAS_${NODE_PREFIX}" "$ARCH_FILE"
-        fi
-        LAST_CFG_COPY=$(grep -n 'GAS_NEWTPL_CFG -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_CFG_COPY" ]; then
-            sed -i "${LAST_CFG_COPY}a\\    GAS_NEWTPL_CFG -.->|\"copy to create\\\nnew configs\"| GAS_${NODE_PREFIX}_CFG" "$ARCH_FILE"
+        # 3. Add template copy edges (after last GASTPL_CODE template source edge)
+        LAST_TPL_COPY=$(grep -n 'GASTPL_CODE -\.->|"template source' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_TPL_COPY" ]; then
+            sed -i "${LAST_TPL_COPY}a\\    GASTPL_CODE -.->|\"template source\\\n(setup-gas-project.sh)\"| GAS_${NODE_PREFIX}" "$ARCH_FILE"
         fi
 
         # 4. Add config sync edges (after last *_CFG sync edge pair)
@@ -527,18 +522,34 @@ if [ -f "README.md" ]; then
             fi
         fi
 
-        # 2. Add GAS directory in googleAppsScripts section (before "└── HtmlTemplateAutoUpdate/")
-        HTAU_LINE=$(grep -n '│   └── HtmlTemplateAutoUpdate/' "README.md" | head -1 | cut -d: -f1)
-        if [ -n "$HTAU_LINE" ]; then
-            sed -i "${HTAU_LINE}i\\│   ├── ${PROJECT_DIR}/              # GAS for live-site-pages/${ENV_NAME}.html\n│   │   ├── ${ENV_NAME}.gs        # Self-updating GAS web app\n│   │   └── ${ENV_NAME}.config.json  # Project config (source of truth)" "README.md"
+        # 2. Add GAS directory in googleAppsScripts section (before the last "└──" entry)
+        # Find the last directory in googleAppsScripts (the └── line) and insert before it
+        # First, change └── to ├── for the current last entry, then add new entry before .claude/
+        CLAUDE_DIR_LINE=$(grep -n '^├── \.claude/' "README.md" | head -1 | cut -d: -f1)
+        if [ -n "$CLAUDE_DIR_LINE" ]; then
+            # Change the current └── to ├── in the googleAppsScripts section
+            LAST_GAS_DIR=$(grep -n '│   └── .*/.*# GAS for' "README.md" | tail -1 | cut -d: -f1)
+            if [ -n "$LAST_GAS_DIR" ]; then
+                sed -i "${LAST_GAS_DIR}s/│   └──/│   ├──/" "README.md"
+                # Fix the sub-items of the old last entry (change │       to │   │  )
+                NEXT=$((LAST_GAS_DIR + 1))
+                NEXT2=$((LAST_GAS_DIR + 2))
+                sed -i "${NEXT}s/│       ├──/│   │   ├──/" "README.md"
+                sed -i "${NEXT2}s/│       └──/│   │   └──/" "README.md"
+            fi
+            # Insert new entry before .claude/
+            sed -i "${CLAUDE_DIR_LINE}i\\│   └── ${PROJECT_DIR}/              # GAS for live-site-pages/${ENV_NAME}.html\n│       ├── ${ENV_NAME}.gs        # Self-updating GAS web app\n│       └── ${ENV_NAME}.config.json  # Project config (source of truth)" "README.md"
             ok "Added GAS directory to README.md tree"
         fi
 
         # 3. Add changelog files in repository-information/changelogs section
-        # (before the first HtmlTemplateAutoUpdate changelog line)
-        HTAU_CL_LINE=$(grep -n 'HtmlTemplateAutoUpdatehtml.changelog.md' "README.md" | head -1 | cut -d: -f1)
-        if [ -n "$HTAU_CL_LINE" ]; then
-            sed -i "${HTAU_CL_LINE}i\\│   │   ├── ${ENV_NAME}html.changelog.md          # User-facing changelog for ${PROJECT_DIR} page\n│   │   ├── ${ENV_NAME}html.changelog-archive.md  # Older changelog sections (rotated)\n│   │   ├── ${ENV_NAME}gs.changelog.md            # User-facing changelog for ${PROJECT_DIR} GAS\n│   │   ├── ${ENV_NAME}gs.changelog-archive.md    # Older changelog sections (rotated)" "README.md"
+        # Find the last changelog entry (the └── line) and insert before it
+        LAST_CL_LINE=$(grep -n '│   │   └── .*changelog' "README.md" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_CL_LINE" ]; then
+            # Change └── to ├── on the current last entry
+            sed -i "${LAST_CL_LINE}s/│   │   └──/│   │   ├──/" "README.md"
+            # Insert new entries after the current last (which is now ├──)
+            sed -i "${LAST_CL_LINE}a\\│   │   ├── ${ENV_NAME}html.changelog.md          # User-facing changelog for ${PROJECT_DIR} page\n│   │   ├── ${ENV_NAME}html.changelog-archive.md  # Older changelog sections (rotated)\n│   │   ├── ${ENV_NAME}gs.changelog.md            # User-facing changelog for ${PROJECT_DIR} GAS\n│   │   └── ${ENV_NAME}gs.changelog-archive.md    # Older changelog sections (rotated)" "README.md"
             ok "Added changelog files to README.md tree"
         fi
     fi
@@ -610,7 +621,7 @@ done
 # Check for remaining template placeholders in new files
 echo ""
 info "Checking for remaining template placeholders..."
-PLACEHOLDER_CHECK=$(grep -rn "CHANGE THIS PROJECT TITLE TEMPLATE\|this file (HtmlTemplateAutoUpdate\.gs)\|HtmlTemplateAutoUpdate/" \
+PLACEHOLDER_CHECK=$(grep -rn "CHANGE THIS PROJECT TITLE TEMPLATE\|<page-name>\.gs\|<page-name>\.config\.json" \
     "$HTML_PAGE" "$GAS_FILE" "$GAS_CONFIG" 2>/dev/null || true)
 
 if [ -n "$PLACEHOLDER_CHECK" ]; then
