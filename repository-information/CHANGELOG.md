@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v03.54r] — 2026-03-06 08:23:52 AM EST
+
+### Changed
+
+#### `testation3.gs` — 01.35g
+
+##### Removed
+
+- Decorative tree graphic removed from the bottom of the web app
+
+#### `testation3.html` — v01.15w
+
+##### Fixed
+
+- Version countdown timers between GAS and page polls no longer occasionally sync up — anti-drift logic re-establishes the 5-second gap if they converge
 
 ## [v03.53r] — 2026-03-06 01:14:31 AM EST
 

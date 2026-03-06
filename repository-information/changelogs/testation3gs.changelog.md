@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [01.35g] — 2026-03-06 08:23:52 AM EST — v03.54r
+
+### Removed
+
+- Decorative tree graphic removed from the bottom of the web app
 
 ## [01.34g] — 2026-03-06 01:02:00 AM EST — v03.50r
 

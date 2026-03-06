@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3html.changelog-archive.md](testation3html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-03-06 08:23:52 AM EST — v03.54r
+
+### Fixed
+
+- Version countdown timers between GAS and page polls no longer occasionally sync up
 
 ## [v01.14w] — 2026-03-06 01:14:31 AM EST — v03.53r
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.14w">
+  <meta name="build-version" content="v01.15w">
   <title>Test Title 3</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -347,6 +347,7 @@
       }
 
       function checkForUpdate() {
+        window._htmlPollTime = Date.now();
         if (countdownTimer) clearInterval(countdownTimer);
         if (dot) dot.textContent = '';
         if (dot) dot.className = 'dot checking';
@@ -490,8 +491,13 @@
               return;
             }
             if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
-            startCountdown();
-            setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
+            // Anti-sync: if GAS poll fired within 3s of HTML poll, add 5s delay to re-establish gap
+            var _gasPollDelay = GAS_POLL_INTERVAL;
+            if (window._htmlPollTime && Math.abs(Date.now() - window._htmlPollTime) < 3000) {
+              _gasPollDelay += 5000;
+            }
+            startCountdown(_gasPollDelay);
+            setTimeout(checkGasUpdate, _gasPollDelay);
           })
           .catch(function() {
             if (dot) {
