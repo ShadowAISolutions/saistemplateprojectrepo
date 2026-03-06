@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 45/100`
+`Sections: 46/100`
 
 ## [Unreleased]
+
+## [v03.39r] — 2026-03-05 11:57:12 PM EST
+
+### Changed
+- GAS version and title now render instantly on page load instead of loading asynchronously
+
+#### `testation3.gs` — 01.24g
+
+##### Changed
+- Version and title display immediately on load — no more "..." placeholder while waiting for server response
 
 ## [v03.38r] — 2026-03-05 11:50:00 PM EST
 

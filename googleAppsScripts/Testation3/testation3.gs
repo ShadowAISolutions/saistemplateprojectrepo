@@ -85,7 +85,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.23g";
+var VERSION = "01.24g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -133,8 +133,8 @@ function doGet() {
       </style>
     </head>
     <body>
-      <h2 id="version">...</h2>
-      <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">...</h1>
+      <h2 id="version">v${VERSION}</h2>
+      <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${TITLE}</h1>
       <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
         <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
       </form>
