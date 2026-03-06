@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 34/100`
+`Sections: 35/100`
 
 ## [Unreleased]
+
+## [v03.28r] — 2026-03-05 09:23:06 PM EST
+
+### Changed
+- Updated time estimation heuristics with parallel batching discount — parallel tool calls count as ~15s total instead of N × 10s, producing more accurate estimates
 
 ## [v03.27r] — 2026-03-05 09:17:29 PM EST
 
