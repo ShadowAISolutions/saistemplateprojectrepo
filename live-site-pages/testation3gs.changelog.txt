@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [01.15g] — 2026-03-05 08:24:20 PM EST — v03.26r
+
+### Added
+- Test Sound (Drive) button to play notification sound from Google Drive
+- Test Beep (Old) button to play synthesized beep tone
+- Test Vibrate button to trigger device vibration
 
 ## [01.14g] — 2026-03-05 05:37:15 PM EST — v03.25r
 

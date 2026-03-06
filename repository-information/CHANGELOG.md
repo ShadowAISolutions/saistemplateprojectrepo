@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 32/100`
+`Sections: 33/100`
 
 ## [Unreleased]
+
+## [v03.26r] — 2026-03-05 08:24:20 PM EST
+
+### Added
+- Test Sound (Drive), Test Beep (Old), and Test Vibrate buttons to Testation3 GAS app
+
+#### `testation3.gs` — 01.15g
+
+##### Added
+- Test Sound (Drive) button to play notification sound from Google Drive
+- Test Beep (Old) button to play synthesized AudioContext beep
+- Test Vibrate button to trigger device vibration
 
 ## [v03.25r] — 2026-03-05 05:37:15 PM EST
 

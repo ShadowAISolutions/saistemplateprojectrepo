@@ -86,7 +86,7 @@
 // FILE_PATH, EMBED_PAGE_URL, SPLASH_LOGO_URL) are managed directly
 // in this file — they are NOT in config.json.
 
-var VERSION = "01.14g";
+var VERSION = "01.15g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -163,6 +163,11 @@ function doGet() {
       <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
         <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
       </form>
+      <div style="margin-top:10px;">
+        <button onclick="playReadySound()" style="background:#1565c0;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;">🔊 Test Sound (Drive)</button>
+        <button onclick="playBeep()" style="background:#6a1b9a;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;margin-left:6px;">🔔 Test Beep (Old)</button>
+        <button onclick="testVibrate()" style="background:#2e7d32;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;margin-left:6px;">📳 Test Vibrate</button>
+      </div>
       <div id="versionCount"></div>
 
       ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
@@ -193,6 +198,20 @@ function doGet() {
             osc.start();
             osc.stop(ctx.currentTime + 0.15);
           } catch(e) {}
+        }
+
+        function playReadySound() {
+          if (!_soundDataUrl) return;
+          try {
+            var audio = new Audio(_soundDataUrl);
+            audio.play().catch(function() {});
+          } catch(e) {}
+        }
+
+        function testVibrate() {
+          if (navigator.vibrate) {
+            navigator.vibrate(200);
+          }
         }
 
         function applyData(data) {
