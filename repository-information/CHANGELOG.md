@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v03.57r] — 2026-03-06 09:21:13 AM EST
+
+### Fixed
+
+- Removed incorrect backslash escaping from template literals in `gas-project-creator-code.js.txt` — `\${...}` and `` \` `` were being copied as literal text instead of JavaScript template expressions, causing GAS `doGet()` output to render raw `${SPREADSHEET_ID...}` text instead of evaluating conditionals
 
 ## [v03.56r] — 2026-03-06 09:10:42 AM EST
 

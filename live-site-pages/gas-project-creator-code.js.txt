@@ -134,17 +134,17 @@ function doGet() {
       </style>
     </head>
     <body>
-      <h2 id="version">v\${VERSION}</h2>
+      <h2 id="version">v${VERSION}</h2>
       <div style="display:flex; align-items:flex-start; justify-content:center; width:100%; gap:20px; padding:0 20px; box-sizing:border-box;">
       <div style="text-align:center; flex:0 1 auto;">
-      <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">\${TITLE}</h1>
+      <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${TITLE}</h1>
       <div id="main-content">
-        <form id="redirect-form" method="GET" action="\${EMBED_PAGE_URL}" target="_top" style="display:inline;">
+        <form id="redirect-form" method="GET" action="${EMBED_PAGE_URL}" target="_top" style="display:inline;">
           <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;white-space:nowrap;">🔄 Reload Page</button>
         </form>
-        \${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? \`<h3 style="color:#333; margin:6px 0 2px 0;">\${SHEET_NAME}</h3>\` : ''}
+        ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `<h3 style="color:#333; margin:6px 0 2px 0;">${SHEET_NAME}</h3>` : ''}
         <div id="versionCount" style="margin-top:6px; font-size:12px; color:#888;"><span style="color:#666;">Versions:</span> <span id="versionCountValue">...</span></div>
-        \${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? \`<div style="margin-top:4px;"><span style="font-size:14px; color:#666;">B1 Content:</span> <span id="live-b1" style="font-size:20px; font-weight:bold; color:#333;">...</span></div>\` : ''}
+        ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `<div style="margin-top:4px;"><span style="font-size:14px; color:#666;">B1 Content:</span> <span id="live-b1" style="font-size:20px; font-weight:bold; color:#333;">...</span></div>` : ''}
       </div>
       </div>
       <div id="token-info">
@@ -159,11 +159,11 @@ function doGet() {
       </div>
       </div>
 
-      \${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? \`
+      ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
       <div id="sheet-container" style="width:90%;max-width:600px;text-align:center;">
-        <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/\${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe>
+        <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe>
       </div>
-      \` : ''}
+      ` : ''}
 
       <div style="margin-top:10px;">
         <button onclick="playReadySound()" style="background:#1565c0;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;">🔊 Test Sound (Drive)</button>
