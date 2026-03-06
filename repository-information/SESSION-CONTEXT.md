@@ -4,30 +4,21 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-06 10:07:39 AM EST
-**Repo version:** v03.61r
+**Date:** 2026-03-06 11:43:47 AM EST
+**Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
+**Repo version:** v03.66r
 
-### What we worked on
-- Fixed escaped template literals in `live-site-pages/gas-project-creator-code.js.txt` — `\${...}` and `` \` `` were rendering as raw text when pasted into GAS
-- Investigated and fixed GAS version pill showing broken text on the HTML layer — root cause was missing GAS deployment copies (`gs.version.txt`, `gs.changelog.txt`) in `live-site-pages/`
-- Updated `scripts/setup-gas-project.sh` to create GAS deployment copies in `live-site-pages/` automatically
-- Created missing GAS deployment copies for all existing projects (index, test, testation2-6, test_link_gas_1_app, gas-template, HtmlTemplateAutoUpdate)
-- Set up testation5 and testation6 GAS projects via setup script
-- Bumped testation6 GAS to 01.01g to test auto-update
-- Investigated GAS auto-update (`pullAndDeployFromGitHub`) failing on testation6 — code was identical to working testation3; turned out to be missing GCP project linkage (user confirmed and resolved)
+### What was done
+- Bumped testation6 GAS version to 01.02g (v03.66r)
+- Removed 41 backward-compatibility stub files from flat `live-site-pages/` (v03.65r)
+- Added backward-compatibility stub files for version/changelog files after subfolder reorganization (v03.64r)
+- Reorganized version and changelog deployment files in `live-site-pages/` into 4 dedicated subfolders: `html-versions/`, `gs-versions/`, `html-changelogs/`, `gs-changelogs/` — updated all 11 HTML pages, templates, and scripts (v03.63r)
+- Consolidated GAS version files — eliminated duplicates from `googleAppsScripts/`, `live-site-pages/` is now single location (v03.62r)
 
 ### Where we left off
-- All changes committed and merged to main
-- Testation6 GAS at 01.01g, repo at v03.61r
-- GAS auto-update confirmed working on testation6 after GCP linkage was fixed
-
-### Key decisions made
-- GAS deployment copies (`gs.version.txt`, `gs.changelog.txt`) must live in `live-site-pages/` for the HTML layer to poll them — the setup script now handles this automatically
-- The `gas-project-creator-code.js.txt` file is fetched as plain text (not executed as JS), so template literals must NOT be escaped
-- GAS auto-update requires: (1) Apps Script API enabled in GCP, (2) GAS project linked to that GCP project — this is an infrastructure prerequisite not covered by the code/template
+All changes committed and merged to main
 
 ### Active context
-- Branch: `claude/fix-countdown-timer-sync-vXi2l`
 - Active reminders in REMINDERS.md (developer-owned):
   - "Check test.html issues in Chrome DevTools"
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
@@ -36,18 +27,16 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-06 01:16:52 AM EST
-**Repo version:** v03.53r
+**Date:** 2026-03-06 10:07:39 AM EST
+**Repo version:** v03.61r
 
 ### What we worked on
-- Iteratively refined the Testation3 GAS web app UI layout across multiple pushes (v03.42r–v03.53r):
-  - Moved "Live Quotas & Estimates" display from fixed top-right corner to inline next to the title/header content using flex layout
-  - Reordered header elements: Title → Reload Page → Live_Sheet → Versions → B1 Content
-  - Made Live Quotas and Estimates labels static in HTML (only numeric values load dynamically via `google.script.run`)
-  - Adjusted GAS version badge positioning relative to HTML version badge
+- Fixed escaped template literals in `live-site-pages/gas-project-creator-code.js.txt`
+- Fixed GAS version pill showing broken text — missing GAS deployment copies in `live-site-pages/`
+- Set up testation5 and testation6 GAS projects, bumped testation6 to 01.01g
+- Consolidated GAS version files and reorganized into subfolders
 
 ### Where we left off
-- All changes committed and merged to main
-- Testation3 GAS at 01.34g, Testation3 HTML page at v01.14w, repo at v03.53r
+- All changes committed and merged to main at v03.61r
 
 Developed by: ShadowAISolutions
