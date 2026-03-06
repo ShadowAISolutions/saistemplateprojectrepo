@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 56/100`
+`Sections: 57/100`
 
 ## [Unreleased]
+
+## [v03.50r] — 2026-03-06 01:02:00 AM EST
+
+### Changed
+
+#### `testation3.gs` — 01.34g
+
+##### Changed
+
+- Made Live Quotas and Estimates labels static in the UI so they display immediately without waiting for data to load
 
 ## [v03.49r] — 2026-03-06 12:55:49 AM EST
 

@@ -85,7 +85,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.33g";
+var VERSION = "01.34g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -147,7 +147,16 @@ function doGet() {
         ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `<div style="margin-top:4px;"><span style="font-size:14px; color:#666;">B1 Content:</span> <span id="live-b1" style="font-size:20px; font-weight:bold; color:#333;">...</span></div>` : ''}
       </div>
       </div>
-      <div id="token-info">...</div>
+      <div id="token-info">
+        <div style="font-weight:bold;color:#1b5e20;margin-bottom:3px;">Live Quotas</div>
+        <div>GitHub: <span id="qi-github">...</span></div>
+        <div>Mail: <span id="qi-mail">...</span></div>
+        <div style="border-top:1px solid #ccc;margin:4px 0;"></div>
+        <div style="font-weight:bold;color:#666;margin-bottom:3px;">Estimates</div>
+        <div>UrlFetch: <span id="qi-urlfetch">...</span></div>
+        <div>Sheets: <span id="qi-sheets">...</span></div>
+        <div>Exec: <span id="qi-exec">...</span></div>
+      </div>
       </div>
 
       ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
@@ -257,17 +266,10 @@ function doGet() {
         function pollQuotaAndLimits() {
           google.script.run
             .withSuccessHandler(function(t) {
-              var el = document.getElementById('token-info');
-              if (el) {
-                el.innerHTML =
-                  '<div style="font-weight:bold;color:#1b5e20;margin-bottom:3px;">Live Quotas</div>'
-                  + '<div>GitHub: ' + t.github + '</div>'
-                  + '<div>Mail: ' + t.mail + '</div>'
-                  + '<div style="border-top:1px solid #ccc;margin:4px 0;"></div>'
-                  + '<div style="font-weight:bold;color:#666;margin-bottom:3px;">Estimates</div>'
-                  + '<div>UrlFetch: ' + t.urlFetch + '</div>'
-                  + '<div>Sheets: ' + t.spreadsheet + '</div>'
-                  + '<div>Exec: ' + t.execTime + '</div>';
+              var ids = {github:'qi-github', mail:'qi-mail', urlFetch:'qi-urlfetch', spreadsheet:'qi-sheets', execTime:'qi-exec'};
+              for (var k in ids) {
+                var span = document.getElementById(ids[k]);
+                if (span && t[k]) span.textContent = t[k];
               }
             })
             .fetchGitHubQuotaAndLimits();
