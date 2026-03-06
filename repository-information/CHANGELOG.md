@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 50/100`
+`Sections: 51/100`
 
 ## [Unreleased]
+
+## [v03.44r] — 2026-03-06 12:24:44 AM EST
+
+### Changed
+- Live quotas and estimates pinned to top-right corner of the GAS app
+
+#### `testation3.gs` — 01.28g
+
+##### Changed
+- Live quotas and estimates moved to fixed top-right corner position
 
 ## [v03.43r] — 2026-03-06 12:19:57 AM EST
 
