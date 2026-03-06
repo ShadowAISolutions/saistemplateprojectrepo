@@ -85,7 +85,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.29g";
+var VERSION = "01.30g";
 var TITLE = "Test Title 3";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -143,18 +143,18 @@ function doGet() {
           <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-top:10px;">🔄 Reload Page</button>
         </form>
         <div id="versionCount"></div>
-
-        ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
-        <div id="sheet-container">
-          <h3>${SHEET_NAME}</h3>
-          <div id="live-b1">...</div>
-          <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe>
-        </div>
-        ` : ''}
       </div>
       </div>
       <div id="token-info">...</div>
       </div>
+
+      ${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? `
+      <div id="sheet-container" style="width:90%;max-width:600px;text-align:center;">
+        <h3>${SHEET_NAME}</h3>
+        <div id="live-b1">...</div>
+        <iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe>
+      </div>
+      ` : ''}
 
       <div style="margin-top:10px;">
         <button onclick="playReadySound()" style="background:#1565c0;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;">🔊 Test Sound (Drive)</button>

@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
 ## [Unreleased]
+
+## [v03.46r] — 2026-03-06 12:41:24 AM EST
+
+### Fixed
+- Restored full-width spreadsheet layout — moved sheet container out of flex row so it no longer gets squashed
+
+#### `testation3.gs` — 01.30g
+
+##### Fixed
+- Spreadsheet restored to full width below the title and controls area
 
 ## [v03.45r] — 2026-03-06 12:36:18 AM EST
 

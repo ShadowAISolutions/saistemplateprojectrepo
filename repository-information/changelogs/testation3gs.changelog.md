@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation3gs.changelog-archive.md](testation3gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [01.30g] — 2026-03-06 12:41:24 AM EST — v03.46r
+
+### Fixed
+- Spreadsheet restored to full width below the title and controls area
 
 ## [01.29g] — 2026-03-06 12:36:18 AM EST — v03.45r
 
