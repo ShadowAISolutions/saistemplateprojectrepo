@@ -85,7 +85,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.07g";
+var VERSION = "01.08g";
 var TITLE = "Testing test 6";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
@@ -261,23 +261,6 @@ function doGet() {
           pollQuotaAndLimits();
           setInterval(pollQuotaAndLimits, 60000);
         }
-
-        var _autoPulling = false;
-        function checkForUpdates() {
-          if (_autoPulling) return;
-          _autoPulling = true;
-          google.script.run
-            .withSuccessHandler(function(result) {
-              setTimeout(function() { _autoPulling = false; }, 30000);
-            })
-            .withFailureHandler(function() {
-              setTimeout(function() { _autoPulling = false; }, 30000);
-            })
-            .pullAndDeployFromGitHub();
-        }
-
-        // Auto-check for updates on page load (fallback if webhook missed)
-        checkForUpdates();
 
         // Listen for version check requests from parent page
         window.addEventListener('message', function(e) {

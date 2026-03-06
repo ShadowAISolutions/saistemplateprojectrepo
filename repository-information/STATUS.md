@@ -27,7 +27,7 @@
 | Testation3 | `googleAppsScripts/Testation3/testation3.gs` | `live-site-pages/testation3.html` | 01.36g | Active |
 | Testation4 | `googleAppsScripts/Testation4/testation4.gs` | `live-site-pages/testation4.html` | 01.01g | Active |
 | Testation5 | `googleAppsScripts/Testation5/testation5.gs` | `live-site-pages/testation5.html` | 01.01g | Active |
-| Testation6 | `googleAppsScripts/Testation6/testation6.gs` | `live-site-pages/testation6.html` | 01.07g | Active |
+| Testation6 | `googleAppsScripts/Testation6/testation6.gs` | `live-site-pages/testation6.html` | 01.08g | Active |
 
 
 ## Templates

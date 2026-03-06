@@ -262,23 +262,6 @@ function doGet() {
           setInterval(pollQuotaAndLimits, 60000);
         }
 
-        var _autoPulling = false;
-        function checkForUpdates() {
-          if (_autoPulling) return;
-          _autoPulling = true;
-          google.script.run
-            .withSuccessHandler(function(result) {
-              setTimeout(function() { _autoPulling = false; }, 30000);
-            })
-            .withFailureHandler(function() {
-              setTimeout(function() { _autoPulling = false; }, 30000);
-            })
-            .pullAndDeployFromGitHub();
-        }
-
-        // Auto-check for updates on page load (fallback if webhook missed)
-        checkForUpdates();
-
         // Listen for version check requests from parent page
         window.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'gas-version-check') {

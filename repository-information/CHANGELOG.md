@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v03.75r] — 2026-03-06 01:09:40 PM EST
+
+### Removed
+
+#### `testation6.gs` — 01.08g
+
+##### Removed
+
+- Removed client-side auto-pull on page load — GAS updates are now handled exclusively by the workflow webhook (`doPost(action=deploy)`), eliminating redundant `pullAndDeployFromGitHub()` calls on every page refresh
+
+#### `gas-template.gs` — 01.00g (no change)
+
+##### Removed
+
+- Removed client-side auto-pull on page load from template — new GAS projects will rely on the workflow webhook for updates
+
+#### `gas-project-creator-code.js.txt` — (no change)
+
+##### Removed
+
+- Removed client-side auto-pull code from the GAS code template used by the project creator
 
 ## [v03.74r] — 2026-03-06 01:01:24 PM EST
 

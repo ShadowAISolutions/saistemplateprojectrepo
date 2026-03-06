@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testation6gs.changelog-archive.md](testation6gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [01.08g] — 2026-03-06 01:09:40 PM EST — v03.75r
+
+### Removed
+
+- Removed automatic update check on page load — updates now arrive via webhook, no longer triggered by opening the page
 
 ## [01.07g] — 2026-03-06 12:42:40 PM EST — v03.72r
 
