@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v03.58r] — 2026-03-06 09:37:30 AM EST
+
+### Added
+
+- Set up Testation5 GAS project (`Test title 5`) with spreadsheet integration, deployment ID, and sound file — 10 files created, registered in GAS Projects table, STATUS.md, ARCHITECTURE.md, and README.md
 
 ## [v03.57r] — 2026-03-06 09:21:13 AM EST
 
