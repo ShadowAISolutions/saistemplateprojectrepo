@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v03.59r] — 2026-03-06 09:47:59 AM EST
+
+### Fixed
+
+- Added missing GAS deployment copies (`gs.version.txt` and `gs.changelog.txt`) to `live-site-pages/` for all GAS projects — the HTML page's GAS version pill polls these files from the deployed site, but they were only being created in `googleAppsScripts/` (not deployed)
+- Updated `setup-gas-project.sh` to create GAS deployment copies (`gs.version.txt` and `gs.changelog.txt` in `live-site-pages/`) alongside the existing HTML changelog deployment copy
 
 ## [v03.58r] — 2026-03-06 09:37:30 AM EST
 

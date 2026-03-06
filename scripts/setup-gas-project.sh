@@ -120,6 +120,8 @@ HTML_CL_ARCHIVE="${CL_DIR}/${ENV_NAME}html.changelog-archive.md"
 GAS_CL="${CL_DIR}/${ENV_NAME}gs.changelog.md"
 GAS_CL_ARCHIVE="${CL_DIR}/${ENV_NAME}gs.changelog-archive.md"
 HTML_CL_DEPLOY="live-site-pages/${ENV_NAME}html.changelog.txt"
+GAS_CL_DEPLOY="live-site-pages/${ENV_NAME}gs.changelog.txt"
+GAS_VERSION_DEPLOY="live-site-pages/${ENV_NAME}gs.version.txt"
 GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
 # ── Template sources ─────────────────────────────────────────────
@@ -347,9 +349,13 @@ Developed by: ShadowAISolutions
 CLEOF
 ok "Created $GAS_CL_ARCHIVE"
 
-# Deployment changelog copy
+# Deployment copies (live-site-pages/ — served by GitHub Pages)
 cp "$HTML_CL" "$HTML_CL_DEPLOY"
 ok "Created $HTML_CL_DEPLOY"
+cp "$GAS_CL" "$GAS_CL_DEPLOY"
+ok "Created $GAS_CL_DEPLOY"
+cp "$GAS_VERSION" "$GAS_VERSION_DEPLOY"
+ok "Created $GAS_VERSION_DEPLOY"
 
 # ── Phase 6: Register in GAS Projects Table ──────────────────────
 info "Phase 6: Registering in GAS Projects table..."
@@ -430,7 +436,7 @@ if [ -f "$ARCH_FILE" ]; then
         # 1. Add page nodes in live-site-pages subgraph (before SND1)
         SND_LINE=$(grep -n 'SND1\["sounds/' "$ARCH_FILE" | head -1 | cut -d: -f1)
         if [ -n "$SND_LINE" ]; then
-            sed -i "${SND_LINE}i\\            ${NODE_PREFIX}_PAGE[\"${ENV_NAME}.html\"]\n            ${NODE_PREFIX}_VERTXT[\"${ENV_NAME}html.version.txt\"]\n            ${NODE_PREFIX}_CL[\"${ENV_NAME}html.changelog.txt\"]" "$ARCH_FILE"
+            sed -i "${SND_LINE}i\\            ${NODE_PREFIX}_PAGE[\"${ENV_NAME}.html\"]\n            ${NODE_PREFIX}_VERTXT[\"${ENV_NAME}html.version.txt\"]\n            ${NODE_PREFIX}_CL[\"${ENV_NAME}html.changelog.txt\"]\n            ${NODE_PREFIX}_GSCL[\"${ENV_NAME}gs.changelog.txt\"]\n            ${NODE_PREFIX}_GSVER[\"${ENV_NAME}gs.version.txt\"]" "$ARCH_FILE"
             ok "Added page nodes to live-site-pages"
         fi
 
@@ -491,7 +497,7 @@ if [ -f "README.md" ]; then
         # 1. Add page files in live-site-pages section (before "└── sounds/")
         SOUNDS_LINE=$(grep -n '│   └── sounds/' "README.md" | head -1 | cut -d: -f1)
         if [ -n "$SOUNDS_LINE" ]; then
-            sed -i "${SOUNDS_LINE}i\\│   ├── ${ENV_NAME}.html                # ${PROJECT_DIR} GAS embedding page\n│   ├── ${ENV_NAME}html.version.txt     # Version file for ${ENV_NAME} page auto-refresh\n│   ├── ${ENV_NAME}html.changelog.txt   # Deployed changelog for popup" "README.md"
+            sed -i "${SOUNDS_LINE}i\\│   ├── ${ENV_NAME}.html                # ${PROJECT_DIR} GAS embedding page\n│   ├── ${ENV_NAME}html.version.txt     # Version file for ${ENV_NAME} page auto-refresh\n│   ├── ${ENV_NAME}html.changelog.txt   # Deployed HTML changelog for popup\n│   ├── ${ENV_NAME}gs.changelog.txt     # Deployed GAS changelog for popup\n│   ├── ${ENV_NAME}gs.version.txt       # Deployed GAS version for pill polling" "README.md"
             ok "Added page files to README.md tree"
         fi
 
@@ -540,6 +546,8 @@ EXPECTED_FILES=(
     "$GAS_CL"
     "$GAS_CL_ARCHIVE"
     "$HTML_CL_DEPLOY"
+    "$GAS_CL_DEPLOY"
+    "$GAS_VERSION_DEPLOY"
 )
 
 for f in "${EXPECTED_FILES[@]}"; do
