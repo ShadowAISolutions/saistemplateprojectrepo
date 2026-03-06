@@ -106,6 +106,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | GCP Project Setup & Troubleshooting | *See `repository-information/CODING-GUIDELINES.md` — section "GCP Project Setup & Troubleshooting"* |
 | Testation2 | `googleAppsScripts/Testation2/testation2.gs` | `googleAppsScripts/Testation2/testation2.config.json` | `live-site-pages/testation2.html` |
 | Testation3 | `googleAppsScripts/Testation3/testation3.gs` | `googleAppsScripts/Testation3/testation3.config.json` | `live-site-pages/testation3.html` |
+| Testation4 | `googleAppsScripts/Testation4/testation4.gs` | `googleAppsScripts/Testation4/testation4.config.json` | `live-site-pages/testation4.html` |
 
 ## Copy Code.gs Deployment File
 

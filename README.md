@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-06 08:52:56 AM EST` · Repo version: `v03.55r`
+Last updated: `2026-03-06 09:10:42 AM EST` · Repo version: `v03.56r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -176,6 +176,9 @@ htmltemplateautoupdate/
 │   ├── testation3html.changelog.txt   # Deployed page changelog for popup
 │   ├── testation3gs.changelog.txt    # Deployed GAS changelog for popup
 │   ├── testation3gs.version.txt     # Deployed GAS version for auto-refresh polling
+│   ├── testation4.html                # Testation4 GAS embedding page
+│   ├── testation4html.version.txt     # Version file for testation4 page auto-refresh
+│   ├── testation4html.changelog.txt   # Deployed changelog for popup
 │   └── sounds/                 # Audio feedback files
 ├── live-site-templates/        # Templates for new pages
 │   ├── HtmlTemplateAutoUpdate.html           # Template HTML page (no GAS)
@@ -207,6 +210,10 @@ htmltemplateautoupdate/
 │   │   ├── testation3.gs        # Self-updating GAS web app
 │   │   ├── testation3.config.json  # Project config (source of truth)
 │   │   └── testation3gs.version.txt  # GAS version file (mirrors VERSION var)
+│   ├── Testation4/              # GAS for live-site-pages/testation4.html
+│   │   ├── testation4.gs        # Self-updating GAS web app
+│   │   ├── testation4.config.json  # Project config (source of truth)
+│   │   └── testation4gs.version.txt  # GAS version file (mirrors VERSION var)
 │   └── HtmlTemplateAutoUpdate/  # Original GAS template (base for GasTemplate)
 │       ├── HtmlTemplateAutoUpdate.gs           # Template GAS web app
 │       ├── HtmlTemplateAutoUpdate.config.json  # Template config (placeholders)
@@ -287,6 +294,10 @@ htmltemplateautoupdate/
 │   │   ├── testation3html.changelog-archive.md  # Older changelog sections (rotated)
 │   │   ├── testation3gs.changelog.md            # User-facing changelog for Testation3 GAS
 │   │   ├── testation3gs.changelog-archive.md    # Older changelog sections (rotated)
+│   │   ├── testation4html.changelog.md          # User-facing changelog for Testation4 page
+│   │   ├── testation4html.changelog-archive.md  # Older changelog sections (rotated)
+│   │   ├── testation4gs.changelog.md            # User-facing changelog for Testation4 GAS
+│   │   ├── testation4gs.changelog-archive.md    # Older changelog sections (rotated)
 │   │   ├── HtmlTemplateAutoUpdatehtml.changelog.md          # Template page changelog
 │   │   ├── HtmlTemplateAutoUpdatehtml.changelog-archive.md  # Template page changelog archive
 │   │   ├── HtmlTemplateAutoUpdategs.changelog.md            # Template GAS changelog
