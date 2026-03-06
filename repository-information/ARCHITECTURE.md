@@ -105,8 +105,8 @@ graph TB
         subgraph "Template Files"
             TPL["HtmlTemplateAutoUpdate.html\n(template — never bumped)"]
             TPL_VER["HtmlTemplateAutoUpdatehtml.version.txt"]
-            GAS_TPL_PAGE["GasExample.html\n(GAS example — never bumped)"]
-            GAS_TPL_PAGE_VER["GasExamplehtml.version.txt"]
+            GAS_TPL_PAGE["HtmlAndGasTemplateAutoUpdate.html\n(GAS+HTML template — never bumped)"]
+            GAS_TPL_PAGE_VER["HtmlAndGasTemplateAutoUpdatehtml.version.txt"]
         end
 
         subgraph "Project Config"

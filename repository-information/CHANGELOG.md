@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v03.86r] — 2026-03-06 06:22:15 PM EST
+
+### Changed
+
+- Renamed `GasExample.html` → `HtmlAndGasTemplateAutoUpdate.html` (and version file) for clearer naming — this is the GAS-enabled HTML page template used by `setup-gas-project.sh`
 
 ## [v03.85r] — 2026-03-06 03:00:24 PM EST
 
