@@ -39,7 +39,7 @@ graph TB
             INDEX["index.html"]
             TEST["test.html"]
             GASTPL_PAGE["gas-project-creator.html"]
-            GASTPL_CODE["gas-project-creator/\ngas-project-creator-code.js.txt"]
+            GASTPL_CODE["gas-code/\ngas-project-creator-code.js.txt"]
             TSTA7_PAGE["testation7.html"]
             SND1["sounds/Website_Ready_Voice_1.mp3"]
             SND2["sounds/Code_Ready_Voice_1.mp3"]

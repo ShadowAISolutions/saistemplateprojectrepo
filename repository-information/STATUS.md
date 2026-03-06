@@ -6,7 +6,7 @@
 |------|------|---------|----------|--------|
 | Landing Page | `live-site-pages/index.html` | v01.19w | *(deploy to activate)* | Active |
 | Test Page | `live-site-pages/test.html` | v01.20w | *(deploy to activate)* | Active |
-| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.56w | *(deploy to activate)* | Active |
+| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.57w | *(deploy to activate)* | Active |
 | Testation7 | `live-site-pages/testation7.html` | v01.00w | *(deploy to activate)* | Active |
 
 
