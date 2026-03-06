@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v03.69r] — 2026-03-06 12:12:47 PM EST
+
+### Changed
+
+#### `testation6.gs` — 01.05g
+
+##### Changed
+
+- Bumped GAS version to 01.05g
 
 ## [v03.68r] — 2026-03-06 12:03:29 PM EST
 
