@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v03.76r] — 2026-03-06 01:13:59 PM EST
+
+### Changed
+
+- Cleaned up header comments in `testation6.gs`, `gas-template.gs`, and `gas-project-creator-code.js.txt` to reflect webhook-only update flow (removed "MANUAL: Pull Latest" references)
+
+#### `testation6.gs` — 01.09g
+
+##### Changed
+
+- Updated header comments to reflect webhook-only update flow
+
+#### `gas-template.gs` — 01.00g (no change)
+
+##### Changed
+
+- Updated header comments to reflect webhook-only update flow
+
+#### `gas-project-creator-code.js.txt` — (no change)
+
+##### Changed
+
+- Updated header comments to reflect webhook-only update flow
 
 ## [v03.75r] — 2026-03-06 01:09:40 PM EST
 

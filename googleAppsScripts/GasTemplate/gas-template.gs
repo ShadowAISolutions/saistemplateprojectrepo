@@ -8,10 +8,9 @@
 // a GitHub repository and redeploys itself. GitHub is the source of
 // truth — this file (gas-template.gs) is the ONLY file you need to edit.
 //
-// There are TWO ways updates reach the live web app:
-//   1. AUTOMATIC: Push to a claude/* branch → GitHub Action merges to
-//      main → calls doPost(action=deploy) → GAS pulls + deploys itself
-//   2. MANUAL: Click "Pull Latest" in the web app UI
+// Updates reach the live web app via webhook:
+//   Push to a claude/* branch → GitHub Action merges to main →
+//   workflow calls doPost(action=deploy) → GAS pulls + deploys itself
 //
 // PAGE RELOAD (EMBEDDING SOLUTION)
 // ---------------------------------

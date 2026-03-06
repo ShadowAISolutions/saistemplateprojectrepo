@@ -8,10 +8,9 @@
 // a GitHub repository and redeploys itself. GitHub is the source of
 // truth — this file (testation6.gs) is the ONLY file you need to edit.
 //
-// There are TWO ways updates reach the live web app:
-//   1. AUTOMATIC: Push to a claude/* branch → GitHub Action merges to
-//      main → calls doPost(action=deploy) → GAS pulls + deploys itself
-//   2. MANUAL: Click "Pull Latest" in the web app UI
+// Updates reach the live web app via webhook:
+//   Push to a claude/* branch → GitHub Action merges to main →
+//   workflow calls doPost(action=deploy) → GAS pulls + deploys itself
 //
 // PAGE RELOAD (EMBEDDING SOLUTION)
 // ---------------------------------
@@ -85,7 +84,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.08g";
+var VERSION = "01.09g";
 var TITLE = "Testing test 6";                                      // ← gas-template.config.json
 
 // GitHub config — where to pull code from
