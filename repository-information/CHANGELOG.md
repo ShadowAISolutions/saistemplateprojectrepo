@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v04.01r] — 2026-03-06 11:26:53 PM EST
+
+### Fixed
+
+- HTML+GAS template (`HtmlAndGasTemplateAutoUpdate.html`): GAS version pill and GAS polling now only activate when `gs.version.txt` exists — previously the pill showed unconditionally and polling started even on pure HTML pages with no GAS project, causing error dots and failed fetches. The template now works seamlessly as a pure HTML page when no GAS project is configured
 
 ## [v04.00r] — 2026-03-06 11:02:58 PM EST
 

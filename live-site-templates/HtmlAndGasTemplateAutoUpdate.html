@@ -512,17 +512,21 @@
           });
       }
 
-      // Fetch version immediately for display, then start polling after 15s initial delay (5s offset from HTML)
+      // Fetch version immediately — only show GAS pill and start polling if gs.version.txt exists
+      // This allows the HTML+GAS template to work as a pure HTML page with no GAS project
       fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
-        .then(function(res) { return res.text(); })
+        .then(function(res) {
+          if (!res.ok) throw new Error('no gs.version.txt');
+          return res.text();
+        })
         .then(function(v) {
           currentGasVersion = v.trim();
           if (pillLabel) pillLabel.textContent = 'GAS ' + currentGasVersion;
+          if (pill) pill.style.display = 'flex';
+          startCountdown(GAS_INITIAL_DELAY);
+          setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);
         })
-        .catch(function() {});
-      if (pill) pill.style.display = 'flex';
-      startCountdown(GAS_INITIAL_DELAY);
-      setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);
+        .catch(function() { /* no gs.version.txt — GAS pill stays hidden, no polling */ });
 
       // GAS changelog popup — click pill to view GAS changelog
       var gclOverlay = document.getElementById('gcl-overlay');
