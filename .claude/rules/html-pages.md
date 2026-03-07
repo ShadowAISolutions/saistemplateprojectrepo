@@ -3,6 +3,7 @@ paths:
   - "live-site-pages/**/*.html"
   - "live-site-pages/html-versions/**"
   - "live-site-templates/**"
+  - "live-site-pages/gas-code/gas-project-creator-code.js.txt"
 ---
 
 # HTML Pages Rules
@@ -122,6 +123,43 @@ live-site-pages/
 Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-versions/`. Changelogs and their archives live in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/` — these are both the source of truth and the deployed files fetched by the changelog popup. See Pre-Commit item #17.
 
 **Note:** The `live-site-pages/.nojekyll` file must already exist in the repo (see "Changelog Files" section above). New pages inherit it automatically since it applies to the entire deployment directory.
+
+## Template Source Propagation
+
+*Rule: see Pre-Commit Checklist item #20 in CLAUDE.md.*
+
+When either template source file is modified, **propagate the same changes to all existing pages/GAS scripts** in the repo. The two template sources are:
+- **HTML template**: `live-site-templates/HtmlAndGasTemplateAutoUpdate.html` → propagate to all `.html` pages in `live-site-pages/`
+- **GAS template**: `live-site-pages/gas-code/gas-project-creator-code.js.txt` → propagate to all `.gs` files in `googleAppsScripts/`
+
+### What "propagate" means
+- Apply the **same structural/feature change** (the diff) to each existing page or GAS script — do NOT blindly overwrite files. Each page has its own title, config values, deployment IDs, localStorage keys, and page-specific customizations that must be preserved
+- If the template change adds a new feature (e.g. a new UI element, a new polling mechanism, a new function), add that same feature to every existing page/script in the equivalent location
+- If the template change fixes a bug or modifies existing shared logic, apply the same fix/modification to every existing page/script that has that logic
+- If the template change removes a feature, remove it from every existing page/script
+
+### Conflict detection — alert before applying
+Before propagating, check each target page/script for **customizations that would conflict** with the template change. A conflict exists when:
+- The target has **modified the same code region** that the template change touches (e.g. the page replaced the standard splash overlay with a custom one, and the template change modifies the splash overlay)
+- The target has **removed a feature** that the template change modifies (e.g. the page intentionally stripped out audio handling, and the template change adds new audio logic)
+- The template change would **break page-specific behavior** (e.g. the change assumes a DOM structure that a page has customized)
+
+When a conflict is detected:
+1. **Stop propagation for that specific page** — do not force the change
+2. **Alert the user** with the page name, the conflicting code region, and why it conflicts
+3. **Let the user decide** — they may adjust the template source to accommodate all pages, manually adapt the conflicting page, or skip that page
+
+### What is NOT a conflict
+- Different `<title>` values, different GAS config variables (`DEPLOYMENT_ID`, `SPREADSHEET_ID`, etc.), different localStorage key prefixes — these are expected per-page customizations and are never touched during propagation
+- Page-specific content (custom HTML sections, extra features unique to one page) that does not overlap with the template change — leave these untouched
+
+### Version bumps
+- Each propagated page/script gets its own version bump per Pre-Commit items #1 and #2 — the template change counts as a modification to each file
+- The template version file (`HtmlAndGasTemplateAutoUpdatehtml.version.txt`) is **never bumped** (Pre-Commit item #4)
+
+### Propagation scope
+- **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
+- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from the GAS template. The GAS template (`gas-project-creator-code.js.txt`) uses `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
 
 ## GAS UI Layout Awareness
 

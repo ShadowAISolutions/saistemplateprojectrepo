@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v04.03r] — 2026-03-07 12:02:36 AM EST
+
+### Added
+
+- Template source propagation rule (Pre-Commit #20) — when either template source (`HtmlAndGasTemplateAutoUpdate.html` or `gas-project-creator-code.js.txt`) is modified, changes are now automatically propagated to all existing pages and GAS scripts, with conflict detection to alert the developer before applying changes that would break page-specific customizations
 
 ## [v04.02r] — 2026-03-06 11:40:01 PM EST
 
