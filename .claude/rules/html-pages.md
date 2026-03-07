@@ -166,31 +166,71 @@ When a conflict is detected:
 HTML pages use the same TEMPLATE/PROJECT divider system as GAS files (see `.claude/rules/gas-scripts.md` — "Template vs Project Code Separation"). The divider format adapts to the file context:
 
 ### Divider format by context
-**HTML/CSS sections** — use HTML comments or CSS comments:
+Dividers use 34 `═` characters (shortened from the original 60 for readability). Both TEMPLATE and PROJECT markers use the same 3-line format.
+
+**HTML body sections** — use HTML comments:
 ```html
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════ -->
+<!-- TEMPLATE START -->
+<!-- ══════════════════════════════════ -->
+
+<!-- ══════════════════════════════════ -->
+<!-- TEMPLATE END -->
+<!-- ══════════════════════════════════ -->
+
+<!-- ══════════════════════════════════ -->
 <!-- PROJECT START -->
-<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════ -->
+
+<!-- ══════════════════════════════════ -->
+<!-- PROJECT END -->
+<!-- ══════════════════════════════════ -->
 ```
+
+**CSS sections** — use CSS comments:
 ```css
-/* ══════════════════════════════════════════════════════════════ */
-/* PROJECT START                                                 */
-/* ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════ */
+/* TEMPLATE START                    */
+/* ══════════════════════════════════ */
+
+/* ══════════════════════════════════ */
+/* TEMPLATE END                      */
+/* ══════════════════════════════════ */
+
+/* ══════════════════════════════════ */
+/* PROJECT START                     */
+/* ══════════════════════════════════ */
+
+/* ══════════════════════════════════ */
+/* PROJECT END                       */
+/* ══════════════════════════════════ */
 ```
 
 **JavaScript sections** (inside `<script>`) — use JS comments (same as GAS files):
 ```javascript
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
+// TEMPLATE START
+// ══════════════════════════════════
+
+// ══════════════════════════════════
+// TEMPLATE END
+// ══════════════════════════════════
+
+// ══════════════════════════════════
 // PROJECT START
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
+
+// ══════════════════════════════════
+// PROJECT END
+// ══════════════════════════════════
 ```
 
 ### HTML page structure (top to bottom)
-Each HTML page has three zones where project code can appear:
+Each HTML page has three zones with both TEMPLATE and PROJECT markers:
 
-1. **CSS** (`<style>` block) — template styles first (splash, version indicator, changelog, GAS pill, maintenance), then `/* PROJECT START/END */` wrapping any page-specific styles. Empty on new pages
-2. **Body HTML** — template structural elements first (splash divs, gas-pill, gcl-overlay), then `<!-- PROJECT START/END -->` wrapping page-specific content (where `<!-- YOUR PAGE CONTENT HERE -->` appears in the template). Empty on new pages
-3. **JavaScript** (`<script>` block) — template JS first (CONFIG, auto-refresh polling, splash logic, GAS iframe, changelog popup, wake lock), then `// PROJECT START/END` wrapping page-specific scripts. Empty on new pages
+1. **CSS** (`<style>` block) — `/* TEMPLATE START */` before template styles (splash, version indicator, changelog, GAS pill, maintenance), `/* TEMPLATE END */` after template styles, then `/* PROJECT START/END */` wrapping any page-specific styles. PROJECT block is empty on new pages
+2. **Body HTML** — `<!-- TEMPLATE START -->` after `<body>` before template structural elements (splash divs, gas-pill, gcl-overlay), `<!-- TEMPLATE END -->` after template elements, then `<!-- PROJECT START/END -->` wrapping page-specific content (where `<!-- YOUR PAGE CONTENT HERE -->` appears in the template). PROJECT block is empty on new pages
+3. **JavaScript** (`<script>` block) — CONFIG section first (not inside TEMPLATE markers), then `// TEMPLATE START` before template JS (splash logic, auto-refresh polling, GAS iframe, changelog popup, wake lock), `// TEMPLATE END` after template JS, then `// PROJECT START/END` wrapping page-specific scripts. PROJECT block is empty on new pages
 
 ### Inline project markers
 Same as GAS files — when project-specific code must live within template territory, use inline markers:
@@ -202,9 +242,11 @@ Same as GAS files — when project-specific code must live within template terri
 ```
 
 ### Rules
-- Same rules as GAS files: project code goes in PROJECT blocks, template updates propagate only within template territory, inline `// PROJECT:` markers for modifications inside template functions
+- Same rules as GAS files: TEMPLATE markers delineate shared template code, PROJECT markers delineate page-specific code. Template updates propagate only within TEMPLATE markers, PROJECT blocks are preserved as-is
+- Inline `// PROJECT:` markers for project-specific modifications that must live inside template territory (same as GAS files)
 - **The HTML template source** (`HtmlAndGasTemplateAutoUpdate.html`) has empty PROJECT blocks — placeholders for page-specific content
-- **Template propagation** (Pre-Commit #20) respects PROJECT boundaries — changes are applied to template regions only, PROJECT blocks are preserved as-is
+- **Template propagation** (Pre-Commit #20) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched
+- **New pages** must include all 6 marker pairs (TEMPLATE START/END + PROJECT START/END in CSS, body HTML, and JS). The `setup-gas-project.sh` script creates pages from the template which already contains these markers
 
 ## GAS UI Layout Awareness
 

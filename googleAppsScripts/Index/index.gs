@@ -10,17 +10,17 @@ var SHEET_NAME     = "Live_Sheet";
 var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/";
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // PROJECT START
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 var SPLASH_LOGO_URL = "https://www.shadowaisolutions.com/SAIS_Logo.png";
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // PROJECT END
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // TEMPLATE START
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 
 // PROJECT: custom UI (entire doGet diverged from template)
 function doGet() {
@@ -336,7 +336,7 @@ function pullAndDeployFromGitHub() {
   return "Updated to v" + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // TEMPLATE END
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // Developed by: ShadowAISolutions

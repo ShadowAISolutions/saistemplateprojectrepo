@@ -129,9 +129,9 @@ jobs:
       - name: Guard against stale inherited branches
         id: guard
         run: |
-          echo "═══════════════════════════════════════════════"
+          echo "══════════════════════════════════"
           echo "GUARD: Starting inherited branch detection"
-          echo "═══════════════════════════════════════════════"
+          echo "══════════════════════════════════"
           echo "Branch: ${{ github.ref_name }}"
           echo "Run number: ${{ github.run_number }}"
 

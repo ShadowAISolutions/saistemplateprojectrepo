@@ -190,22 +190,23 @@ There is no separate `.gs` template file — this single file eliminates the syn
 All GAS code files (`.gs` and `gas-project-creator-code.js.txt`) use section dividers to distinguish **template code** (shared across all projects, propagated via Pre-Commit #20) from **project-specific code** (unique to one project, never overwritten during propagation).
 
 ### Divider format
+Dividers use 34 `═` characters. Each marker is a 3-line block (divider, label, divider):
 ```javascript
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // TEMPLATE START
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // TEMPLATE END
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // PROJECT START
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 // PROJECT END
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════
 ```
 
 ### File structure (top to bottom)
@@ -228,7 +229,7 @@ CacheService.getScriptCache().put("pushed_version", value, 3600); // PROJECT: au
 function doGet() {
 ```
 
-**Key distinction**: block dividers (`// ═══...` + `// TEMPLATE START/END` + `// PROJECT START/END`) mark **structural boundaries** between large code regions. Inline `// PROJECT:` markers flag **individual lines or sections embedded within template territory**. Never use block dividers inside a template function — always use inline markers there.
+**Key distinction**: block dividers (`// ═══...` (34 chars) + `// TEMPLATE START/END` + `// PROJECT START/END`) mark **structural boundaries** between large code regions. Inline `// PROJECT:` markers flag **individual lines or sections embedded within template territory**. Never use block dividers inside a template function — always use inline markers there.
 
 ### Rules for new code
 - **New project-specific features** should go in the PROJECT block when possible — standalone functions, new variables, and self-contained logic belong there

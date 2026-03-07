@@ -51,11 +51,11 @@ if [ "$REPO_NAME" = "$OLD_REPO" ] && [ "$ORG_NAME" = "$OLD_ORG" ]; then
   exit 1
 fi
 
-echo "═══════════════════════════════════════════════════════════════"
+echo "══════════════════════════════════"
 echo "  Initializing: $ORG_NAME/$REPO_NAME"
 echo "  Developer:    $DEVELOPER_NAME"
 echo "  Old values:   $OLD_ORG/$OLD_REPO"
-echo "═══════════════════════════════════════════════════════════════"
+echo "══════════════════════════════════"
 echo ""
 
 # ── PHASE 0: CLEAN UP INHERITED BRANCHES ─────────────────────────────────────
@@ -336,13 +336,13 @@ else
   RESULT="COMPLETED SUCCESSFULLY"
 fi
 
-echo "═══════════════════════════════════════════════════════════════"
+echo "══════════════════════════════════"
 echo "  Init $RESULT"
 echo "  Repository: $ORG_NAME/$REPO_NAME"
 echo "  Developer:  $DEVELOPER_NAME"
 echo ""
 echo "  Next step: commit and push to deploy."
-echo "═══════════════════════════════════════════════════════════════"
+echo "══════════════════════════════════"
 
 # Developed by: ShadowAISolutions
 

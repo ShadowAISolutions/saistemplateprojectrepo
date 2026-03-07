@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v04.14r] — 2026-03-07 11:47:12 AM EST
+
+### Changed
+
+- Added TEMPLATE START/END markers to all HTML pages and template source to match the existing GAS pattern — 3 pairs per page (CSS, body HTML, JavaScript zones)
+- Shortened all `═` structural dividers from 60 to 34 characters across all HTML pages, GAS scripts, template sources, init script, and workflow file
+- Updated `html-pages.md` and `gas-scripts.md` rules to document 34-char divider standard and TEMPLATE marker requirement
+
+#### `index.html` — v01.26w
+
+##### Changed
+- Internal code organization markers added (no user-visible change)
+
+#### `gas-project-creator.html` — v01.63w
+
+##### Changed
+- Internal code organization markers added (no user-visible change)
+
+#### `testation7.html` — v01.06w
+
+##### Changed
+- Internal code organization markers added (no user-visible change)
+
+#### `testation8.html` — v01.05w
+
+##### Changed
+- Internal code organization markers added (no user-visible change)
 
 ## [v04.13r] — 2026-03-07 11:13:58 AM EST
 
