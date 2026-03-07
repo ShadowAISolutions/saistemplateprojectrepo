@@ -63,8 +63,10 @@ Community health files (`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`) 
 | STATUS.md | `repository-information/STATUS.md` |
 | SUPPORT.md | `repository-information/SUPPORT.md` |
 | TODO.md | `repository-information/TODO.md` |
-| Per-page changelogs | `repository-information/changelogs/<name>.changelog.md` |
-| Per-page changelog archives | `repository-information/changelogs/<name>.changelog-archive.md` |
+| Per-page HTML changelogs | `live-site-pages/html-changelogs/<name>html.changelog.md` |
+| Per-page HTML changelog archives | `live-site-pages/html-changelogs/<name>html.changelog-archive.md` |
+| Per-page GAS changelogs | `live-site-pages/gs-changelogs/<name>gs.changelog.md` |
+| Per-page GAS changelog archives | `live-site-pages/gs-changelogs/<name>gs.changelog-archive.md` |
 
 ### Common cross-directory link patterns
 | From directory | To file in `repository-information/` | Correct relative path |

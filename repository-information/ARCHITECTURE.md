@@ -54,13 +54,19 @@ graph TB
             end
 
             subgraph "html-changelogs/"
-                INDEX_CL["indexhtml.changelog.txt"]
-                GASTPL_CL["gas-project-creatorhtml.changelog.txt"]
-                TSTA7_CL["testation7html.changelog.txt"]
+                INDEX_CL["indexhtml.changelog.md"]
+                INDEX_CL_ARCH["indexhtml.changelog-archive.md"]
+                GASTPL_CL["gas-project-creatorhtml.changelog.md"]
+                GASTPL_CL_ARCH["gas-project-creatorhtml.changelog-archive.md"]
+                TSTA7_CL["testation7html.changelog.md"]
+                TSTA7_CL_ARCH["testation7html.changelog-archive.md"]
             end
 
             subgraph "gs-changelogs/"
-                TSTA7_GCL["testation7gs.changelog.txt"]
+                INDEX_GCL["indexgs.changelog.md"]
+                INDEX_GCL_ARCH["indexgs.changelog-archive.md"]
+                TSTA7_GCL["testation7gs.changelog.md"]
+                TSTA7_GCL_ARCH["testation7gs.changelog-archive.md"]
             end
         end
 

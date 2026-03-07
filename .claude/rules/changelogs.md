@@ -2,7 +2,8 @@
 paths:
   - "repository-information/CHANGELOG.md"
   - "repository-information/CHANGELOG-archive.md"
-  - "repository-information/changelogs/**"
+  - "live-site-pages/html-changelogs/**"
+  - "live-site-pages/gs-changelogs/**"
 ---
 
 # Changelog Rules
@@ -32,7 +33,7 @@ paths:
 - Version section format for GAS: `## [XX.XXg] — YYYY-MM-DD HH:MM:SS AM/PM EST — vXX.XXr`
 - Skip changelog entry if the change is purely internal with no user-visible effect
 - Same 100-section archive rotation as the repo CHANGELOG
-- **Deployment copy sync** — after ANY update to a page changelog (entries added, versioned sections created, archive rotation), copy the updated `.md` source to the corresponding `.txt` deployment copy in the appropriate `live-site-pages/` subfolder: HTML changelogs go to `live-site-pages/html-changelogs/` (e.g. `repository-information/changelogs/indexhtml.changelog.md` → `live-site-pages/html-changelogs/indexhtml.changelog.txt`), GAS changelogs go to `live-site-pages/gs-changelogs/` (e.g. `repository-information/changelogs/indexgs.changelog.md` → `live-site-pages/gs-changelogs/indexgs.changelog.txt`). The deployment copy is what the live site's changelog popup fetches — skipping this sync causes the user to see stale changelog data on the live site
+- **Single source of truth** — page changelogs live directly in `live-site-pages/html-changelogs/` (`.md` files) and GAS changelogs in `live-site-pages/gs-changelogs/` (`.md` files). These are both the source of truth and the deployed files fetched by the live site's changelog popup — no separate deployment copy is needed
 
 ### Archive Rotation Summary
 - **Quick rule**: 100 triggers, date groups move. A date group is ALL sections sharing the same date — could be 1 section or 500. Never split a date group. Today's sections (EST) are always exempt. Repeat until ≤100 non-exempt sections remain

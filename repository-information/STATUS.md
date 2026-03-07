@@ -4,9 +4,9 @@
 
 | Page | File | Version | Live URL | Status |
 |------|------|---------|----------|--------|
-| Landing Page | `live-site-pages/index.html` | v01.19w | *(deploy to activate)* | Active |
-| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.57w | *(deploy to activate)* | Active |
-| Testation7 | `live-site-pages/testation7.html` | v01.00w | *(deploy to activate)* | Active |
+| Landing Page | `live-site-pages/index.html` | v01.20w | *(deploy to activate)* | Active |
+| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.58w | *(deploy to activate)* | Active |
+| Testation7 | `live-site-pages/testation7.html` | v01.01w | *(deploy to activate)* | Active |
 
 
 ## GAS Projects

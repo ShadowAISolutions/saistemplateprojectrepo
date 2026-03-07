@@ -33,9 +33,7 @@ Create a new HTML embedding page with all the required files and boilerplate.
 
 6. **Add developer branding** — ensure `<!-- Developed by: DEVELOPER_NAME -->` is the last line (resolve from Template Variables)
 
-7. **Create page changelog** — copy `repository-information/changelogs/HtmlTemplateAutoUpdatehtml.changelog.md` to `repository-information/changelogs/$0html.changelog.md`. Update the title and archive link filename. Also copy the archive template as `$0html.changelog-archive.md`
-
-8. **Create changelog deployment copy** — copy the new changelog to `live-site-pages/html-changelogs/$0html.changelog.txt` (note: lives in the shared `html-changelogs/` folder)
+7. **Create page changelog** — create `$0html.changelog.md` in `live-site-pages/html-changelogs/`. Update the title and archive link filename. Also create `$0html.changelog-archive.md` in the same directory
 
 9. **Ask about GAS** — ask the user if this page needs a Google Apps Script project embedded. If yes:
    - Create `googleAppsScripts/<ProjectName>/` directory
@@ -52,11 +50,11 @@ Create a new HTML embedding page with all the required files and boilerplate.
 ## File Naming Convention
 
 - HTML version files: `live-site-pages/html-versions/<page-name>html.version.txt`
-- HTML changelog deploys: `live-site-pages/html-changelogs/<page-name>html.changelog.txt`
+- HTML changelogs: `live-site-pages/html-changelogs/<page-name>html.changelog.md`
+- HTML changelog archives: `live-site-pages/html-changelogs/<page-name>html.changelog-archive.md`
 - GAS version files: `live-site-pages/gs-versions/<page-name>gs.version.txt`
-- GAS changelog deploys: `live-site-pages/gs-changelogs/<page-name>gs.changelog.txt`
-- HTML changelog sources: `repository-information/changelogs/<page-name>html.changelog.md`
-- GAS changelog sources: `repository-information/changelogs/<page-name>gs.changelog.md`
+- GAS changelogs: `live-site-pages/gs-changelogs/<page-name>gs.changelog.md`
+- GAS changelog archives: `live-site-pages/gs-changelogs/<page-name>gs.changelog-archive.md`
 - No two files in the repo may share the same basename (Pre-Commit #18)
 
 Developed by: ShadowAISolutions

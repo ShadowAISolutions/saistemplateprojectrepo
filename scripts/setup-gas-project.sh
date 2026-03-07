@@ -7,8 +7,7 @@
 #   - .gs script (from gas-project-creator-code.js.txt)
 #   - .config.json
 #   - Version files (html + gs)
-#   - Changelogs (html + gs, plus archives)
-#   - Deployment changelog copy
+#   - Changelogs (html + gs, plus archives) — created directly in live-site-pages/
 #   - GAS Projects table registration (.claude/rules/gas-scripts.md)
 #   - STATUS.md (Hosted Pages + GAS Projects tables)
 #   - ARCHITECTURE.md (Mermaid diagram nodes, edges, styles)
@@ -115,13 +114,10 @@ GAS_DIR="googleAppsScripts/${PROJECT_DIR}"
 GAS_FILE="${GAS_DIR}/${ENV_NAME}.gs"
 GAS_CONFIG="${GAS_DIR}/${ENV_NAME}.config.json"
 GAS_VERSION="live-site-pages/gs-versions/${ENV_NAME}gs.version.txt"
-CL_DIR="repository-information/changelogs"
-HTML_CL="${CL_DIR}/${ENV_NAME}html.changelog.md"
-HTML_CL_ARCHIVE="${CL_DIR}/${ENV_NAME}html.changelog-archive.md"
-GAS_CL="${CL_DIR}/${ENV_NAME}gs.changelog.md"
-GAS_CL_ARCHIVE="${CL_DIR}/${ENV_NAME}gs.changelog-archive.md"
-HTML_CL_DEPLOY="live-site-pages/html-changelogs/${ENV_NAME}html.changelog.txt"
-GAS_CL_DEPLOY="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.txt"
+HTML_CL="live-site-pages/html-changelogs/${ENV_NAME}html.changelog.md"
+HTML_CL_ARCHIVE="live-site-pages/html-changelogs/${ENV_NAME}html.changelog-archive.md"
+GAS_CL="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.md"
+GAS_CL_ARCHIVE="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog-archive.md"
 GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
 # ── Template sources ─────────────────────────────────────────────
@@ -304,7 +300,7 @@ Older version sections rotated from [${ENV_NAME}html.changelog.md](${ENV_NAME}ht
 
 ## Rotation Logic
 
-Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
+Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../../repository-information/CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
 
 ---
 
@@ -339,7 +335,7 @@ Older version sections rotated from [${ENV_NAME}gs.changelog.md](${ENV_NAME}gs.c
 
 ## Rotation Logic
 
-Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
+Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../../repository-information/CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
 
 ---
 
@@ -349,11 +345,6 @@ Developed by: ShadowAISolutions
 CLEOF
 ok "Created $GAS_CL_ARCHIVE"
 
-# Deployment copies (live-site-pages/ — served by GitHub Pages)
-cp "$HTML_CL" "$HTML_CL_DEPLOY"
-ok "Created $HTML_CL_DEPLOY"
-cp "$GAS_CL" "$GAS_CL_DEPLOY"
-ok "Created $GAS_CL_DEPLOY"
 
 # ── Phase 6: Register in GAS Projects Table ──────────────────────
 info "Phase 6: Registering in GAS Projects table..."
@@ -434,7 +425,7 @@ if [ -f "$ARCH_FILE" ]; then
         # 1. Add page nodes in live-site-pages subgraph (before SND1)
         SND_LINE=$(grep -n 'SND1\["sounds/' "$ARCH_FILE" | head -1 | cut -d: -f1)
         if [ -n "$SND_LINE" ]; then
-            sed -i "${SND_LINE}i\\            ${NODE_PREFIX}_PAGE[\"${ENV_NAME}.html\"]\n            ${NODE_PREFIX}_VERTXT[\"${ENV_NAME}html.version.txt\"]\n            ${NODE_PREFIX}_CL[\"${ENV_NAME}html.changelog.txt\"]\n            ${NODE_PREFIX}_GSCL[\"${ENV_NAME}gs.changelog.txt\"]\n            ${NODE_PREFIX}_GSVER[\"${ENV_NAME}gs.version.txt\"]" "$ARCH_FILE"
+            sed -i "${SND_LINE}i\\            ${NODE_PREFIX}_PAGE[\"${ENV_NAME}.html\"]\n            ${NODE_PREFIX}_VERTXT[\"${ENV_NAME}html.version.txt\"]\n            ${NODE_PREFIX}_CL[\"${ENV_NAME}html.changelog.md\"]\n            ${NODE_PREFIX}_CLARCH[\"${ENV_NAME}html.changelog-archive.md\"]\n            ${NODE_PREFIX}_GSCL[\"${ENV_NAME}gs.changelog.md\"]\n            ${NODE_PREFIX}_GSCLARCH[\"${ENV_NAME}gs.changelog-archive.md\"]\n            ${NODE_PREFIX}_GSVER[\"${ENV_NAME}gs.version.txt\"]" "$ARCH_FILE"
             # Note: gs.version.txt lives in live-site-pages/ (no copy in googleAppsScripts/)
             ok "Added page nodes to live-site-pages"
         fi
@@ -509,16 +500,16 @@ if [ -f "README.md" ]; then
                 ok "Added gs-versions entry"
             fi
             # html-changelogs/
-            HC_LAST=$(grep -n '│   │   .\+html\.changelog\.txt' "README.md" | tail -1 | cut -d: -f1)
+            HC_LAST=$(grep -n '│   │   .\+html\.changelog.*\.md' "README.md" | grep -v archive | tail -1 | cut -d: -f1)
             if [ -n "$HC_LAST" ]; then
-                sed -i "${HC_LAST}a\\│   │   ├── ${ENV_NAME}html.changelog.txt   # Deployed HTML changelog for popup" "README.md"
-                ok "Added html-changelogs entry"
+                sed -i "${HC_LAST}a\\│   │   ├── ${ENV_NAME}html.changelog.md           # HTML changelog for popup\n│   │   ├── ${ENV_NAME}html.changelog-archive.md   # Older changelog sections (rotated)" "README.md"
+                ok "Added html-changelogs entries"
             fi
             # gs-changelogs/
-            GC_LAST=$(grep -n '│   │   .\+gs\.changelog\.txt' "README.md" | tail -1 | cut -d: -f1)
+            GC_LAST=$(grep -n '│   │   .\+gs\.changelog.*\.md' "README.md" | grep -v archive | tail -1 | cut -d: -f1)
             if [ -n "$GC_LAST" ]; then
-                sed -i "${GC_LAST}a\\│   │   ├── ${ENV_NAME}gs.changelog.txt     # Deployed GAS changelog for popup" "README.md"
-                ok "Added gs-changelogs entry"
+                sed -i "${GC_LAST}a\\│   │   ├── ${ENV_NAME}gs.changelog.md             # GAS changelog for popup\n│   │   ├── ${ENV_NAME}gs.changelog-archive.md     # Older changelog sections (rotated)" "README.md"
+                ok "Added gs-changelogs entries"
             fi
         fi
 
@@ -542,16 +533,6 @@ if [ -f "README.md" ]; then
             ok "Added GAS directory to README.md tree"
         fi
 
-        # 3. Add changelog files in repository-information/changelogs section
-        # Find the last changelog entry (the └── line) and insert before it
-        LAST_CL_LINE=$(grep -n '│   │   └── .*changelog' "README.md" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_CL_LINE" ]; then
-            # Change └── to ├── on the current last entry
-            sed -i "${LAST_CL_LINE}s/│   │   └──/│   │   ├──/" "README.md"
-            # Insert new entries after the current last (which is now ├──)
-            sed -i "${LAST_CL_LINE}a\\│   │   ├── ${ENV_NAME}html.changelog.md          # User-facing changelog for ${PROJECT_DIR} page\n│   │   ├── ${ENV_NAME}html.changelog-archive.md  # Older changelog sections (rotated)\n│   │   ├── ${ENV_NAME}gs.changelog.md            # User-facing changelog for ${PROJECT_DIR} GAS\n│   │   └── ${ENV_NAME}gs.changelog-archive.md    # Older changelog sections (rotated)" "README.md"
-            ok "Added changelog files to README.md tree"
-        fi
     fi
 else
     warn "README.md not found — skipping"

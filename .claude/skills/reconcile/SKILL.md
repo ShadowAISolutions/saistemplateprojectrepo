@@ -17,7 +17,7 @@ Run this after all parallel Claude Code sessions have finished pushing their cha
 
 1. **Review what happened** — run `git log origin/main --oneline -30` to show all commits that landed while multi-session mode was active. Output a summary: number of commits, which files/pages were touched, which sessions contributed
 
-2. **Read accumulated entries** — read `## [Unreleased]` from `repository-information/CHANGELOG.md` and all page/GAS changelogs in `repository-information/changelogs/` that have `[Unreleased]` entries. List them for user review before proceeding
+2. **Read accumulated entries** — read `## [Unreleased]` from `repository-information/CHANGELOG.md` and all page/GAS changelogs in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/` that have `[Unreleased]` entries. List them for user review before proceeding
 
 3. **Set `MULTI_SESSION_MODE` to `Off`** in the CLAUDE.md Template Variables table
 

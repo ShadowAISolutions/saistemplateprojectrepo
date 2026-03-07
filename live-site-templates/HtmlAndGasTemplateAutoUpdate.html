@@ -593,7 +593,7 @@
       document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && gclOverlay.style.display === 'flex') gclOverlay.style.display = 'none'; });
 
       function getGasChangelogUrl() {
-        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-changelogs/' + pageName + 'gs.changelog.txt';
+        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-changelogs/' + pageName + 'gs.changelog.md';
       }
 
       function parseGasChangelog(md) {
@@ -674,7 +674,7 @@
         var basePath = window.location.href.split('?')[0].split('#')[0];
         var pn = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
         if (!pn) pn = 'index';
-        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'html-changelogs/' + pn + 'html.changelog.txt';
+        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'html-changelogs/' + pn + 'html.changelog.md';
       }
 
       function parseChangelog(md) {

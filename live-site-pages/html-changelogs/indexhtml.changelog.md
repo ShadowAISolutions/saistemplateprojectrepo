@@ -3,9 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [indexhtml.changelog-archive.md](indexhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
-## [Unreleased]
+## [v01.20w] — 2026-03-06 08:15:21 PM EST — v03.88r
+
+### Changed
+- Changelog popup now fetches `.md` files instead of `.txt`
 
 ## [v01.18w] — 2026-03-04 09:39:40 PM EST — v02.86r
 

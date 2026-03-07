@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-06 06:41:54 PM EST` · Repo version: `v03.87r`
+Last updated: `2026-03-06 08:15:21 PM EST` · Repo version: `v03.88r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -160,13 +160,18 @@ htmltemplateautoupdate/
 │   ├── gs-versions/             # GAS version files for GAS version pill polling
 │   │   ├── indexgs.version.txt
 │   │   └── testation7gs.version.txt
-│   ├── html-changelogs/         # Deployed HTML changelogs for popup
-│   │   ├── indexhtml.changelog.txt
-│   │   ├── gas-project-creatorhtml.changelog.txt
-│   │   └── testation7html.changelog.txt
-│   ├── gs-changelogs/           # Deployed GAS changelogs for popup
-│   │   ├── indexgs.changelog.txt
-│   │   └── testation7gs.changelog.txt
+│   ├── html-changelogs/         # HTML changelogs (source of truth + deployed)
+│   │   ├── indexhtml.changelog.md                 # Homepage changelog
+│   │   ├── indexhtml.changelog-archive.md         # Older sections (rotated)
+│   │   ├── gas-project-creatorhtml.changelog.md   # GAS Project Creator changelog
+│   │   ├── gas-project-creatorhtml.changelog-archive.md  # Older sections (rotated)
+│   │   ├── testation7html.changelog.md            # Testation7 changelog
+│   │   └── testation7html.changelog-archive.md    # Older sections (rotated)
+│   ├── gs-changelogs/           # GAS changelogs (source of truth + deployed)
+│   │   ├── indexgs.changelog.md                   # Index GAS changelog
+│   │   ├── indexgs.changelog-archive.md           # Older sections (rotated)
+│   │   ├── testation7gs.changelog.md              # Testation7 GAS changelog
+│   │   └── testation7gs.changelog-archive.md      # Older sections (rotated)
 │   ├── testation7.html           # Testation7 GAS embedding page
 │   └── sounds/                 # Audio feedback files
 ├── live-site-templates/        # Templates for new pages
@@ -226,17 +231,6 @@ htmltemplateautoupdate/
 │   ├── FUNDING.yml             # Sponsor button config
 │   └── last-processed-commit.sha # Inherited branch guard (commit SHA tracking)
 ├── repository-information/
-│   ├── changelogs/             # Per-page and per-GAS changelogs (centralized)
-│   │   ├── indexhtml.changelog.md           # User-facing changelog for landing page
-│   │   ├── indexhtml.changelog-archive.md   # Older changelog sections (rotated)
-│   │   ├── indexgs.changelog.md             # User-facing changelog for Index GAS
-│   │   ├── indexgs.changelog-archive.md     # Older changelog sections (rotated)
-│   │   ├── gas-project-creatorhtml.changelog.md          # User-facing changelog for GAS Project Creator page
-│   │   ├── gas-project-creatorhtml.changelog-archive.md  # Older changelog sections (rotated)
-│   │   ├── testation7html.changelog.md          # User-facing changelog for Testation7 page
-│   │   ├── testation7html.changelog-archive.md  # Older changelog sections (rotated)
-│   │   ├── testation7gs.changelog.md            # User-facing changelog for Testation7 GAS
-│   │   └── testation7gs.changelog-archive.md    # Older changelog sections (rotated)
 │   ├── backups/                # Temporary safety-net backups of critical files
 │   │   └── CLAUDE.md.bak      # Latest CLAUDE.md backup
 │   ├── ARCHITECTURE.md         # System diagram (Mermaid)

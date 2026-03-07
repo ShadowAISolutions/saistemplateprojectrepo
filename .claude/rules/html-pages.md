@@ -41,11 +41,12 @@ The html.version.txt polling system supports a **maintenance mode** that display
 - The GAS scripts (server-side) are exempt — they use authenticated API calls via `GITHUB_TOKEN` from script properties
 - This applies to all existing and future features that run in the browser on the deployed site
 
-### Changelog Deployment Copies
-- Each page's changelog is deployed alongside the HTML page as a `.txt` file for the changelog popup to fetch. The source of truth remains in `repository-information/changelogs/` as `.md`; the deployment copy in `live-site-pages/` uses `.txt` to satisfy the unique filename rule
-- Naming: `repository-information/changelogs/PAGENAMEhtml.changelog.md` → `live-site-pages/html-changelogs/PAGENAMEhtml.changelog.txt`
-- **Sync rule**: whenever Pre-Commit item #17 updates a page changelog, also copy the updated content to the corresponding `.txt` deployment file in `live-site-pages/`. This ensures the changelog popup always shows the latest entries after deployment
-- The HTML pages fetch this file via a relative URL from `html-changelogs/` (same base-path pattern as the version files in `html-versions/`), so the changelog popup works regardless of whether the repo is public or private
+### Changelog Files
+- Each page's changelog lives directly in `live-site-pages/html-changelogs/` as a `.md` file — this is both the source of truth and the deployed file fetched by the changelog popup. No separate deployment copy is needed
+- Naming: `live-site-pages/html-changelogs/PAGENAMEhtml.changelog.md`
+- GAS changelogs follow the same pattern: `live-site-pages/gs-changelogs/PAGENAMEgs.changelog.md`
+- Archive files live alongside their changelogs in the same subdirectory
+- The HTML pages fetch changelog files via a relative URL from `html-changelogs/` (same base-path pattern as the version files in `html-versions/`), so the changelog popup works regardless of whether the repo is public or private
 
 ### New Embedding Page Setup Checklist
 > **Automated by `scripts/setup-gas-project.sh`** — for GAS-embedded pages, the setup script handles all mechanical file creation (steps 1–13). Claude runs the script, then handles ARCHITECTURE.md, README.md tree, STATUS.md, and commit/push.
@@ -66,10 +67,9 @@ When creating a **new** HTML embedding page, follow every step below:
 7. **Update the page title** — replace `YOUR_PROJECT_TITLE` in `<title>` with the actual project name
 8. **Register in GAS Projects table** — if this page embeds a GAS iframe, add a row to the GAS Projects table in `.claude/rules/gas-scripts.md`
 9. **Create GAS config file** — if this page embeds a GAS iframe, copy `googleAppsScripts/HtmlTemplateAutoUpdate/HtmlTemplateAutoUpdate.config.json` into the new GAS project directory, renaming it to `<page-name>.config.json` (e.g. `googleAppsScripts/MyProject/my-project.config.json`). Fill in the project-specific values. This is the single source of truth for `TITLE`, `DEPLOYMENT_ID`, `SPREADSHEET_ID`, `SHEET_NAME`, and `SOUND_FILE_ID` — Pre-Commit item #15 syncs these values to `<page-name>.gs` and the embedding HTML
-10. **Create GAS version file and changelog** — if this page has a GAS project, copy `gs-versions/HtmlTemplateAutoUpdategs.version.txt` into `live-site-pages/gs-versions/` as `<page-name>gs.version.txt` (initial value `01.00g`). Also copy `repository-information/changelogs/HtmlTemplateAutoUpdategs.changelog.md` and `repository-information/changelogs/HtmlTemplateAutoUpdategs.changelog-archive.md` into `repository-information/changelogs/` as `<page-name>gs.changelog.md` and `<page-name>gs.changelog-archive.md`, replacing `YOUR_PROJECT_TITLE` with the project name
+10. **Create GAS version file and changelog** — if this page has a GAS project, create `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` (initial value `01.00g`). Also create `<page-name>gs.changelog.md` and `<page-name>gs.changelog-archive.md` in `live-site-pages/gs-changelogs/`, replacing `YOUR_PROJECT_TITLE` with the project name
 11. **Add developer branding** — ensure `<!-- Developed by: DEVELOPER_NAME -->` is the last line of the HTML file
-12. **Create page changelog** — copy `repository-information/changelogs/HtmlTemplateAutoUpdatehtml.changelog.md` into `repository-information/changelogs/` as `<page-name>html.changelog.md`. Replace `YOUR_PROJECT_TITLE` with the page's human-readable title and update the archive link filename. Also copy `repository-information/changelogs/HtmlTemplateAutoUpdatehtml.changelog-archive.md` as `<page-name>html.changelog-archive.md` and update its title and changelog link filename
-13. **Create changelog deployment copy** — copy the page changelog created in step 12 to `live-site-pages/html-changelogs/` as `<page-name>html.changelog.txt` (same content, `.txt` extension). This deployment copy is fetched by the changelog popup on the live site (see "Changelog Deployment Copies" above)
+12. **Create page changelog** — create `<page-name>html.changelog.md` in `live-site-pages/html-changelogs/`. Replace `YOUR_PROJECT_TITLE` with the page's human-readable title and update the archive link filename. Also create `<page-name>html.changelog-archive.md` in the same directory and update its title and changelog link filename
 
 ### Page Rename/Move Checklist
 When **renaming** an existing HTML page's project environment, follow every step below. **Renaming is high-risk for changelog drift** — the `gas-template` → `gas-example` rename caused 16 missing entries in the deployment changelog because associated files were not fully synced.
@@ -82,19 +82,17 @@ When **renaming** an existing HTML page's project environment, follow every step
 |---|------|----------|----------|
 | 1 | HTML page | `live-site-pages/OLD.html` | `live-site-pages/NEW.html` |
 | 2 | Version file | `live-site-pages/html-versions/OLDhtml.version.txt` | `live-site-pages/html-versions/NEWhtml.version.txt` |
-| 3 | Source changelog | `repository-information/changelogs/OLDhtml.changelog.md` | `repository-information/changelogs/NEWhtml.changelog.md` |
-| 4 | Source changelog archive | `repository-information/changelogs/OLDhtml.changelog-archive.md` | `repository-information/changelogs/NEWhtml.changelog-archive.md` |
-| 5 | **Deployment changelog copy** | `live-site-pages/html-changelogs/OLDhtml.changelog.txt` | `live-site-pages/html-changelogs/NEWhtml.changelog.txt` |
-| 6 | GAS script (if applicable) | `googleAppsScripts/OLD_PROJECT/OLD.gs` | `googleAppsScripts/NEW_PROJECT/NEW.gs` |
-| 7 | GAS config (if applicable) | `googleAppsScripts/OLD_PROJECT/OLD.config.json` | `googleAppsScripts/NEW_PROJECT/NEW.config.json` |
-| 8 | GAS version file | `live-site-pages/gs-versions/OLDgs.version.txt` | `live-site-pages/gs-versions/NEWgs.version.txt` |
-| 9 | GAS source changelog | `repository-information/changelogs/OLDgs.changelog.md` | `repository-information/changelogs/NEWgs.changelog.md` |
-| 10 | GAS source changelog archive | `repository-information/changelogs/OLDgs.changelog-archive.md` | `repository-information/changelogs/NEWgs.changelog-archive.md` |
+| 3 | Changelog | `live-site-pages/html-changelogs/OLDhtml.changelog.md` | `live-site-pages/html-changelogs/NEWhtml.changelog.md` |
+| 4 | Changelog archive | `live-site-pages/html-changelogs/OLDhtml.changelog-archive.md` | `live-site-pages/html-changelogs/NEWhtml.changelog-archive.md` |
+| 5 | GAS script (if applicable) | `googleAppsScripts/OLD_PROJECT/OLD.gs` | `googleAppsScripts/NEW_PROJECT/NEW.gs` |
+| 6 | GAS config (if applicable) | `googleAppsScripts/OLD_PROJECT/OLD.config.json` | `googleAppsScripts/NEW_PROJECT/NEW.config.json` |
+| 7 | GAS version file | `live-site-pages/gs-versions/OLDgs.version.txt` | `live-site-pages/gs-versions/NEWgs.version.txt` |
+| 8 | GAS changelog | `live-site-pages/gs-changelogs/OLDgs.changelog.md` | `live-site-pages/gs-changelogs/NEWgs.changelog.md` |
+| 9 | GAS changelog archive | `live-site-pages/gs-changelogs/OLDgs.changelog-archive.md` | `live-site-pages/gs-changelogs/NEWgs.changelog-archive.md` |
 
 **Steps:**
 1. **Rename all files** — rename every file in the table above from old path to new path. Update titles, archive links, and internal references within each renamed file
-2. **Sync the deployment changelog copy (step 5)** — **this is the step most likely to be missed.** After renaming the source changelog (row 3), copy its full content to the new deployment path (row 5). Do not just rename the old `.txt` file — it may already be behind the source. Always copy fresh from the source
-3. **Delete old files** — remove all old-path files that were renamed (they now have the wrong name)
+2. **Delete old files** — remove all old-path files that were renamed (they now have the wrong name)
 4. **Update GAS Projects table** — if the page has a GAS project, update the row in `.claude/rules/gas-scripts.md` with the new environment name, file paths, and directory
 5. **Update internal references** — search all files for the old environment name and update: localStorage keys, HTML `<title>`, ARCHITECTURE.md, STATUS.md, README.md, and any cross-references in other pages
 6. **Verify changelog continuity** — after renaming, confirm the source changelog has all version entries from v01.01w through the current version with no gaps. The rename should not lose any history
@@ -111,13 +109,13 @@ live-site-pages/
 ├── gs-versions/
 │   └── indexgs.version.txt       # Tracks GAS version (e.g. "01.00g")
 ├── html-changelogs/
-│   └── indexhtml.changelog.txt   # Deployed HTML changelog (copied from repository-information/changelogs/)
+│   ├── indexhtml.changelog.md         # HTML changelog (source of truth + deployed)
+│   └── indexhtml.changelog-archive.md # Older changelog sections (rotated)
 └── gs-changelogs/
-    └── indexgs.changelog.txt     # Deployed GAS changelog (copied from repository-information/changelogs/)
+    ├── indexgs.changelog.md           # GAS changelog (source of truth + deployed)
+    └── indexgs.changelog-archive.md   # Older changelog sections (rotated)
 ```
-Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-versions/`. Changelog deployment copies live in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/`. The HTML pages themselves and `sounds/` sit directly in `live-site-pages/`.
-
-Per-page and per-GAS changelogs are centralized in `repository-information/changelogs/` (e.g. `indexhtml.changelog.md`, `indexgs.changelog.md`) — see Pre-Commit item #17.
+Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-versions/`. Changelogs and their archives live in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/` — these are both the source of truth and the deployed files fetched by the changelog popup. See Pre-Commit item #17.
 
 ## GAS UI Layout Awareness
 

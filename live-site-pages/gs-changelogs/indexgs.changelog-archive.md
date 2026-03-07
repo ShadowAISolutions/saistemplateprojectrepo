@@ -4,7 +4,7 @@ Older version sections rotated from [indexgs.changelog.md](indexgs.changelog.md)
 
 ## Rotation Logic
 
-Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
+Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../../repository-information/CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
 
 ---
 

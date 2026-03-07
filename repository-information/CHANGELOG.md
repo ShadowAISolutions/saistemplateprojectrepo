@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
-## [Unreleased]
+## [v03.88r] — 2026-03-06 08:15:21 PM EST
+
+### Changed
+
+- Consolidated changelog files — eliminated duplicate `.md` source + `.txt` deployment copy pattern. Changelogs now live directly in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/` as `.md` files (single source of truth + deployed). Removed `repository-information/changelogs/` directory entirely
+- Updated JavaScript fetch code in all HTML pages and templates to use `.md` extension instead of `.txt`
+- Updated `setup-gas-project.sh` to create changelog files directly in `live-site-pages/` subdirectories (no separate deployment copy step)
+- Updated CLAUDE.md Pre-Commit #17 — removed deployment copy sync rule (no longer needed)
+- Moved all changelog archive files from `repository-information/changelogs/` to their respective `live-site-pages/` subdirectories
+
+#### `index.html` — v01.20w
+
+##### Changed
+- Changelog popup now fetches `.md` files instead of `.txt`
+
+#### `gas-project-creator.html` — v01.58w
+
+##### Changed
+- Changelog popup now fetches `.md` files instead of `.txt`
+
+#### `testation7.html` — v01.01w
+
+##### Changed
+- Changelog popup now fetches `.md` files instead of `.txt`
 
 ## [v03.87r] — 2026-03-06 06:41:54 PM EST
 
