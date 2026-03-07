@@ -452,10 +452,6 @@
       var gasVersionUrl = basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-versions/' + pageName + 'gs.version.txt';
 
       var currentGasVersion = null;
-      var targetGasVersion = null;
-      var gasCheckInterval = null;
-      var GAS_CHECK_INTERVAL = 5000;
-      var GAS_DEPLOY_TIMEOUT = 180000;
       var pill = document.getElementById('gas-pill');
       var pillLabel = document.getElementById('gas-pill-label');
       var dot = pill ? pill.querySelector('.dot') : null;
@@ -488,11 +484,11 @@
               if (pill) { pill.style.display = 'flex'; }
               if (pillLabel) pillLabel.textContent = 'GAS ' + fetched;
             } else if (fetched !== currentGasVersion) {
-              // Don't reload yet — GAS may not have deployed. Enter "awaiting" mode.
-              targetGasVersion = fetched;
+              // GAS version changed on GitHub — reload immediately
               if (dot) dot.className = 'dot found';
-              if (pillLabel) pillLabel.textContent = 'Awaiting GAS update...';
-              waitForGasDeploy();
+              if (pillLabel) pillLabel.textContent = 'GAS updated — reloading...';
+              sessionStorage.setItem('gas-pending-sound', '1');
+              setTimeout(function() { window.location.reload(); }, 1500);
               return;
             }
             if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
@@ -512,56 +508,6 @@
             startCountdown();
             setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
           });
-      }
-
-      function waitForGasDeploy() {
-        var gasFrame = document.getElementById('gas-app');
-        console.log('[GAS Poll] Entering waitForGasDeploy — target:', targetGasVersion);
-        if (!gasFrame) {
-          console.log('[GAS Poll] No iframe found — falling back to reload');
-          sessionStorage.setItem('gas-pending-sound', '1');
-          setTimeout(function() { window.location.reload(); }, 2000);
-          return;
-        }
-
-        // Listen for version response from GAS iframe
-        function onGasVersion(e) {
-          if (!e.data || e.data.type !== 'gas-version') return;
-          var reported = e.data.version;
-          // getAppData returns "v01.02g" — strip leading "v" for comparison
-          if (reported && reported.charAt(0) === 'v') reported = reported.substring(1);
-          console.log('[GAS Poll] Iframe reports version:', reported, '(target:', targetGasVersion + ')');
-          if (reported === targetGasVersion) {
-            // GAS has caught up — reload now
-            window.removeEventListener('message', onGasVersion);
-            if (gasCheckInterval) clearInterval(gasCheckInterval);
-            console.log('[GAS Poll] Version matched! Reloading in 1.5s');
-            if (pillLabel) pillLabel.textContent = 'GAS updated!';
-            sessionStorage.setItem('gas-pending-sound', '1');
-            setTimeout(function() { window.location.reload(); }, 1500);
-          }
-          // else: GAS still on old version — keep waiting
-        }
-        window.addEventListener('message', onGasVersion);
-
-        // Request version check immediately, then every 5s
-        function requestGasVersion() {
-          if (gasFrame.contentWindow) {
-            gasFrame.contentWindow.postMessage({type: 'gas-version-check'}, '*');
-          }
-        }
-        requestGasVersion();
-        gasCheckInterval = setInterval(requestGasVersion, GAS_CHECK_INTERVAL);
-
-        // Safety timeout: if GAS doesn't respond, reload anyway
-        console.log('[GAS Poll] Safety timeout set:', GAS_DEPLOY_TIMEOUT / 1000, 'seconds');
-        setTimeout(function() {
-          console.log('[GAS Poll] Safety timeout reached — forcing reload');
-          window.removeEventListener('message', onGasVersion);
-          if (gasCheckInterval) clearInterval(gasCheckInterval);
-          sessionStorage.setItem('gas-pending-sound', '1');
-          window.location.reload();
-        }, GAS_DEPLOY_TIMEOUT);
       }
 
       // Fetch version immediately for display, then start polling after 15s initial delay (5s offset from HTML)

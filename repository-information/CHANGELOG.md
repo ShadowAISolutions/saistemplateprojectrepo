@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v03.92r] — 2026-03-06 08:52:54 PM EST
+
+### Changed
+
+- Applied "remove awaiting GAS, reload immediately" fix to `HtmlAndGasTemplateAutoUpdate.html` template
+- Bumped testation7.gs VERSION from 01.02g to 01.03g
+
+#### `testation7.gs` — 01.03g
+
+##### Changed
+
+- Version bump to 01.03g
 
 ## [v03.91r] — 2026-03-06 08:47:22 PM EST
 

@@ -13,7 +13,7 @@
 
 | Project | Code File | Embedding Page | GAS Version | Status |
 |---------|-----------|----------------|-------------|--------|
-| Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.02g | Active |
+| Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.03g | Active |
 
 
 ## Templates

@@ -84,7 +84,7 @@
 // FILE_PATH, EMBED_PAGE_URL) are managed directly in this file —
 // they are NOT in config.json.
 
-var VERSION = "01.02g";
+var VERSION = "01.03g";
 var TITLE = "title 7";                                      // ← testation7.config.json
 
 // GitHub config — where to pull code from
