@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.65w">
+  <meta name="build-version" content="v01.66w">
   <title>GAS Project Creator</title>
   <style>
     /* ══════════════ */
-    /* TEMPLATE START                    */
+    /* TEMPLATE START */
     /* ══════════════ */
     html, body { margin: 0; padding: 0; height: 100%; }
     .splash {
@@ -131,14 +131,14 @@
     #gcl-body li { margin-bottom: 4px; }
 
     /* ══════════════ */
-    /* TEMPLATE END                      */
+    /* TEMPLATE END */
     /* ══════════════ */
 
     /* ══════════════ */
-    /* PROJECT START                     */
+    /* PROJECT START */
     /* ══════════════ */
 
-    /* ── GAS Integration Dashboard ─────────────────────────── */
+    /* ── GAS Integration Dashboard ── */
     body {
       background: #0d1117;
       color: #c9d1d9;
@@ -191,7 +191,7 @@
       text-align: center;
       margin-top: 16px;
     }
-    /* ── Config Form ───────────────────────────────────────── */
+    /* ── Config Form ── */
     .config-field {
       display: flex;
       flex-direction: column;
@@ -301,7 +301,7 @@
       transition: opacity 0.3s;
     }
     .config-toast.show { opacity: 1; }
-    /* ── Setup Instructions ────────────────────────────────── */
+    /* ── Setup Instructions ── */
     .setup-steps {
       font-size: 13px;
       color: #c9d1d9;
@@ -429,7 +429,7 @@
       font-size: 11px;
       color: #484f58;
     }
-    /* ── GAS Panel (bottom drawer) ─────────────────────────── */
+    /* ── GAS Panel (bottom drawer) ── */
     #gas-panel {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
       transition: height 0.3s ease; display: flex; flex-direction: column;
@@ -482,7 +482,7 @@
     .pre-wrap .btn-copy-json:hover { color: #58a6ff; border-color: #58a6ff; }
 
     /* ══════════════ */
-    /* PROJECT END                       */
+    /* PROJECT END */
     /* ══════════════ */
   </style>
 </head>
@@ -670,7 +670,7 @@
   <!-- GAS 1fr4m3 injected dynamically by script -->
 
   <script>
-    /* tpl:7f3e9b2d */ // ── CONFIG ──────────────────
+    /* tpl:7f3e9b2d */ // ── CONFIG ──
     // Logo shown on the green "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var YOUR_ORG_LOGO_URL = 'https://logoipsum.com/logoipsum-avatar.png';
@@ -684,7 +684,7 @@
     // Show/hide: set to false to disable changelog popup on version indicator click
     var SHOW_CHANGELOG = true;
 
-    // ──────────────────────────────────
+    // ──────────────
 
     // ══════════════
     // TEMPLATE START
@@ -1220,7 +1220,7 @@
     // PROJECT START
     // ══════════════
 
-    // ── Copy Code.gs ─────────────────────────────────────────────
+    // ── Copy Code.gs ──
     (function() {
       var _gsCode = null;
       fetch('gas-code-templates/gas-project-creator-code.js.txt')
@@ -1267,7 +1267,7 @@
       };
     })();
 
-    // ── Copy Manifest JSON ─────────────────────────────────────────
+    // ── Copy Manifest JSON ──
     function copyManifest(btn) {
       var text = document.getElementById('manifest-json').textContent;
       navigator.clipboard.writeText(text).then(function() {
@@ -1276,7 +1276,7 @@
       });
     }
 
-    // ── Deployment ID Gate ─────────────────────────────────────────
+    // ── Deployment ID Gate ──
     function updateDeployGate() {
       var hasId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
       var hasEnvName = (document.getElementById('cfg-env-name').value || '').trim().length > 0;
@@ -1288,7 +1288,7 @@
       if (configBtn) configBtn.disabled = !(hasId && hasEnvName);
     }
 
-    // ── Test GAS Connection (bottom panel) ─────────────────────
+    // ── Test GAS Connection (bottom panel) ──
     function testGasConnection() {
       var deployId = document.getElementById('cfg-deployment-id').value.trim();
       if (!deployId) return;
@@ -1392,7 +1392,7 @@
       setTimeout(function() { toast.className = 'config-toast'; }, 2500);
     }
 
-    // ── Initialize deploy gate on page load ─────────────────────────
+    // ── Initialize deploy gate on page load ──
     updateDeployGate();
 
     // ══════════════

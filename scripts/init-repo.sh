@@ -19,13 +19,13 @@
 
 set -euo pipefail
 
-# ── CONSTANTS ─────────────────────────────────────────────────────────────────
+# ── CONSTANTS ──
 OLD_ORG="ShadowAISolutions"
 OLD_REPO="htmltemplateautoupdate"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# ── AUTO-DETECT ORG/REPO FROM GIT REMOTE ─────────────────────────────────────
+# ── AUTO-DETECT ORG/REPO FROM GIT REMOTE ──
 cd "$REPO_ROOT"
 
 REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
@@ -44,7 +44,7 @@ ORG_NAME="${1:-$AUTO_ORG}"
 REPO_NAME="${2:-$AUTO_REPO}"
 DEVELOPER_NAME="${3:-$ORG_NAME}"
 
-# ── TEMPLATE REPO GUARD ──────────────────────────────────────────────────────
+# ── TEMPLATE REPO GUARD ──
 if [ "$REPO_NAME" = "$OLD_REPO" ] && [ "$ORG_NAME" = "$OLD_ORG" ]; then
   echo "ERROR: This appears to be the template repo itself ($OLD_ORG/$OLD_REPO)."
   echo "This script is intended for forks/clones only."
@@ -58,7 +58,7 @@ echo "  Old values:   $OLD_ORG/$OLD_REPO"
 echo "══════════════"
 echo ""
 
-# ── PHASE 0: CLEAN UP INHERITED BRANCHES ─────────────────────────────────────
+# ── PHASE 0: CLEAN UP INHERITED BRANCHES ──
 # Forks/template copies inherit claude/* branches from the template repo.
 # These trigger the auto-merge workflow unnecessarily. Delete them now.
 echo "[Phase 0] Cleaning up inherited claude/* branches..."
@@ -86,7 +86,7 @@ else
 fi
 echo ""
 
-# ── PHASE 1: GLOBAL SED REPLACEMENTS ─────────────────────────────────────────
+# ── PHASE 1: GLOBAL SED REPLACEMENTS ──
 # Explicit file list — avoids touching CLAUDE.md examples or provenance markers.
 # Each file is checked for existence before processing.
 
@@ -166,7 +166,7 @@ fi
 echo "  Processed $REPLACED_COUNT files."
 echo ""
 
-# ── PHASE 2: CLAUDE.MD TEMPLATE VARIABLES TABLE UPDATE ───────────────────────
+# ── PHASE 2: CLAUDE.MD TEMPLATE VARIABLES TABLE UPDATE ──
 echo "[Phase 2] Updating CLAUDE.md Template Variables table..."
 
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"
@@ -185,7 +185,7 @@ else
 fi
 echo ""
 
-# ── PHASE 2b: ENABLE MAIN PUSH TRIGGER IN WORKFLOW ──────────────────────────
+# ── PHASE 2b: ENABLE MAIN PUSH TRIGGER IN WORKFLOW ──
 # The template ships without 'main' in the push trigger to prevent template
 # copies from firing the workflow on their initial commit. Now that the repo
 # is initialized (IS_TEMPLATE_REPO = No), add 'main' back so direct-to-main
@@ -202,7 +202,7 @@ else
 fi
 echo ""
 
-# ── PHASE 3: STATUS.MD PLACEHOLDER ───────────────────────────────────────────
+# ── PHASE 3: STATUS.MD PLACEHOLDER ──
 echo "[Phase 3] Replacing STATUS.md deployment placeholder..."
 
 STATUS_FILE="$REPO_ROOT/repository-information/STATUS.md"
@@ -214,7 +214,7 @@ else
 fi
 echo ""
 
-# ── PHASE 4: README STRUCTURAL CHANGES ───────────────────────────────────────
+# ── PHASE 4: README STRUCTURAL CHANGES ──
 echo "[Phase 4] Restructuring README.md..."
 
 README_FILE="$REPO_ROOT/README.md"
@@ -262,7 +262,7 @@ else
 fi
 echo ""
 
-# ── PHASE 5: README TIMESTAMP ────────────────────────────────────────────────
+# ── PHASE 5: README TIMESTAMP ──
 echo "[Phase 5] Updating README.md 'Last updated:' timestamp..."
 
 if [ -f "$README_FILE" ]; then
@@ -274,7 +274,7 @@ else
 fi
 echo ""
 
-# ── PHASE 6: QR CODE GENERATION ─────────────────────────────────────────────
+# ── PHASE 6: QR CODE GENERATION ──
 echo "[Phase 6] Generating QR code for live site URL..."
 
 LIVE_URL="https://${ORG_NAME}.github.io/${REPO_NAME}/"
@@ -301,7 +301,7 @@ else
 fi
 echo ""
 
-# ── PHASE 7: VERIFICATION ────────────────────────────────────────────────────
+# ── PHASE 7: VERIFICATION ──
 echo "[Phase 7] Verifying no stale references remain..."
 
 # Build the grep pattern based on whether org changed

@@ -190,19 +190,19 @@ Dividers use 14 `═` characters. Both TEMPLATE and PROJECT markers use the same
 **CSS sections** — use CSS comments:
 ```css
 /* ══════════════ */
-/* TEMPLATE START                    */
+/* TEMPLATE START */
 /* ══════════════ */
 
 /* ══════════════ */
-/* TEMPLATE END                      */
+/* TEMPLATE END */
 /* ══════════════ */
 
 /* ══════════════ */
-/* PROJECT START                     */
+/* PROJECT START */
 /* ══════════════ */
 
 /* ══════════════ */
-/* PROJECT END                       */
+/* PROJECT END */
 /* ══════════════ */
 ```
 

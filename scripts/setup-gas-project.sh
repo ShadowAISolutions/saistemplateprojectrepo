@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ──────────────────────────────────────────────────────────────────
+# ──────────────
 # setup-gas-project.sh — Fully automated GAS project setup
 #
 # Creates all files and updates all documentation for a new GAS project:
@@ -22,14 +22,14 @@
 #   bash scripts/setup-gas-project.sh config.json
 #
 # After running: Claude just needs to commit and push.
-# ──────────────────────────────────────────────────────────────────
+# ──────────────
 set -euo pipefail
 
-# ── Repo root ────────────────────────────────────────────────────
+# ── Repo root ──
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
-# ── Color helpers ────────────────────────────────────────────────
+# ── Color helpers ──
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -41,7 +41,7 @@ ok()    { echo -e "${GREEN}[OK]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()   { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
-# ── Phase 0: Parse Input ────────────────────────────────────────
+# ── Phase 0: Parse Input ──
 info "Phase 0: Parsing input..."
 
 JSON_INPUT=""
@@ -87,13 +87,13 @@ if [ -z "$ENV_NAME" ]; then
     exit 1
 fi
 
-# ── Auto-detect repo info ───────────────────────────────────────
+# ── Auto-detect repo info ──
 REMOTE_URL="$(git remote get-url origin 2>/dev/null || echo '')"
 GITHUB_OWNER="$(echo "$REMOTE_URL" | sed -E 's|.*[:/]([^/]+)/[^/]+(\.git)?$|\1|')"
 GITHUB_REPO="$(echo "$REMOTE_URL" | sed -E 's|.*[:/][^/]+/([^/]+?)(\.git)?$|\1|')"
 GITHUB_BRANCH="main"
 
-# ── Derive project directory name ────────────────────────────────
+# ── Derive project directory name ──
 # Capitalize first letter of each segment separated by _ or -
 # e.g. test_link → TestLink, my-app → MyApp
 derive_project_dir() {
@@ -107,7 +107,7 @@ info "Project directory: $PROJECT_DIR"
 info "Title: $TITLE"
 info "GitHub: $GITHUB_OWNER/$GITHUB_REPO (branch: $GITHUB_BRANCH)"
 
-# ── Path constants ───────────────────────────────────────────────
+# ── Path constants ──
 HTML_PAGE="live-site-pages/${ENV_NAME}.html"
 HTML_VERSION="live-site-pages/html-versions/${ENV_NAME}html.version.txt"
 GAS_DIR="googleAppsScripts/${PROJECT_DIR}"
@@ -120,11 +120,11 @@ GAS_CL="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.md"
 GAS_CL_ARCHIVE="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog-archive.md"
 GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
-# ── Template sources ─────────────────────────────────────────────
+# ── Template sources ──
 TPL_HTML="live-site-templates/HtmlAndGasTemplateAutoUpdate.html"
 TPL_GS="live-site-pages/gas-code-templates/gas-project-creator-code.js.txt"
 
-# ── Phase 1: Pre-flight Checks ──────────────────────────────────
+# ── Phase 1: Pre-flight Checks ──
 info "Phase 1: Pre-flight checks..."
 
 for f in "$TPL_HTML" "$TPL_GS"; do
@@ -144,7 +144,7 @@ if [ -f "$HTML_PAGE" ] || [ -d "$GAS_DIR" ] || [ -f "$GAS_CONFIG" ]; then
 fi
 
 if [ "$UPDATE_MODE" = true ]; then
-    # ── Update Mode ──────────────────────────────────────────────
+    # ── Update Mode ──
     info "Updating existing project: $ENV_NAME"
 
     # Update config.json
@@ -194,17 +194,17 @@ CFGEOF
     exit 0
 fi
 
-# ── Create Mode ──────────────────────────────────────────────────
+# ── Create Mode ──
 info "Creating new project: $ENV_NAME"
 echo ""
 
-# ── Phase 2: Create Directory Structure ──────────────────────────
+# ── Phase 2: Create Directory Structure ──
 info "Phase 2: Creating directories..."
 mkdir -p "$GAS_DIR"
 mkdir -p "live-site-pages/sounds"
 ok "Directories created"
 
-# ── Phase 3: Copy & Substitute Templates ─────────────────────────
+# ── Phase 3: Copy & Substitute Templates ──
 info "Phase 3: Copying and substituting templates..."
 
 # --- HTML page ---
@@ -265,14 +265,14 @@ cat > "$GAS_CONFIG" <<CFGEOF
 CFGEOF
 ok "Created $GAS_CONFIG"
 
-# ── Phase 4: Create Version Files ────────────────────────────────
+# ── Phase 4: Create Version Files ──
 info "Phase 4: Creating version files..."
 echo -n '|v01.00w|' > "$HTML_VERSION"
 echo -n '01.00g' > "$GAS_VERSION"
 ok "Created $HTML_VERSION"
 ok "Created $GAS_VERSION"
 
-# ── Phase 5: Create Changelog Files ─────────────────────────────
+# ── Phase 5: Create Changelog Files ──
 info "Phase 5: Creating changelog files..."
 
 # HTML changelog
@@ -346,7 +346,7 @@ CLEOF
 ok "Created $GAS_CL_ARCHIVE"
 
 
-# ── Phase 6: Register in GAS Projects Table ──────────────────────
+# ── Phase 6: Register in GAS Projects Table ──
 info "Phase 6: Registering in GAS Projects table..."
 
 TABLE_ROW="| ${PROJECT_DIR} | \`${GAS_FILE}\` | \`${GAS_CONFIG}\` | \`${HTML_PAGE}\` |"
@@ -364,7 +364,7 @@ else
     fi
 fi
 
-# ── Phase 7: Update STATUS.md ────────────────────────────────────
+# ── Phase 7: Update STATUS.md ──
 info "Phase 7: Updating STATUS.md..."
 STATUS_FILE="repository-information/STATUS.md"
 if [ -f "$STATUS_FILE" ]; then
@@ -406,7 +406,7 @@ else
     warn "STATUS.md not found — skipping"
 fi
 
-# ── Phase 8: Update ARCHITECTURE.md ─────────────────────────────
+# ── Phase 8: Update ARCHITECTURE.md ──
 info "Phase 8: Updating ARCHITECTURE.md..."
 ARCH_FILE="repository-information/ARCHITECTURE.md"
 # Derive a short Mermaid node prefix from PROJECT_DIR (e.g. Testation2 → TSTA2)
@@ -473,7 +473,7 @@ else
     warn "ARCHITECTURE.md not found — skipping"
 fi
 
-# ── Phase 9: Update README.md Structure Tree ─────────────────────
+# ── Phase 9: Update README.md Structure Tree ──
 info "Phase 9: Updating README.md structure tree..."
 if [ -f "README.md" ]; then
     # Check if already added
@@ -538,7 +538,7 @@ else
     warn "README.md not found — skipping"
 fi
 
-# ── Phase 10: Add Workflow Deploy Step ──────────────────────────
+# ── Phase 10: Add Workflow Deploy Step ──
 info "Phase 10: Adding workflow deploy step..."
 WORKFLOW_FILE=".github/workflows/auto-merge-claude.yml"
 if [ -f "$WORKFLOW_FILE" ]; then
@@ -561,7 +561,7 @@ else
     warn "Workflow file not found — skipping"
 fi
 
-# ── Phase 11: Sounds Directory ───────────────────────────────────
+# ── Phase 11: Sounds Directory ──
 info "Phase 10: Ensuring sounds directory..."
 if [ -f "live-site-pages/sounds/Website_Ready_Voice_1.mp3" ]; then
     ok "Sounds directory already populated"
@@ -569,7 +569,7 @@ else
     warn "Sound file not found — live-site-pages/sounds/Website_Ready_Voice_1.mp3 missing"
 fi
 
-# ── Phase 12: Verification ───────────────────────────────────────
+# ── Phase 12: Verification ──
 info "Phase 12: Verification..."
 echo ""
 
@@ -610,7 +610,7 @@ else
     ok "No template placeholders found in new files"
 fi
 
-# ── Summary ──────────────────────────────────────────────────────
+# ── Summary ──
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 if [ "$ERRORS" -eq 0 ]; then

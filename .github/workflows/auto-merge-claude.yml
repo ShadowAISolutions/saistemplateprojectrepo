@@ -311,7 +311,7 @@ jobs:
           fi
           echo "pages-changed=$PAGES_CHANGED" >> "$GITHUB_OUTPUT"
 
-      # ── GAS DEPLOY STEPS ──────────────────────────────────────────────
+      # ── GAS DEPLOY STEPS ──
       # Add one step per GAS project here, BEFORE "Delete branch".
       # Each step only fires when its .gs file changed in the merge.
       #
@@ -325,7 +325,7 @@ jobs:
       #       "https://script.google.com/macros/s/<YOUR_DEPLOYMENT_ID>/exec" \
       #       -d "action=deploy" \
       #       --max-time 120 || true
-      # ─────────────────────────────────────────────────────────────────
+      # ──────────────
 
       - name: Deploy Testation7
         if: steps.guard.outputs.skip != 'true'

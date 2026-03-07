@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v04.17r] — 2026-03-07 12:15:34 PM EST
+
+### Changed
+
+- Removed trailing whitespace padding from CSS comment labels (`/* TEMPLATE END */` etc.) across all HTML pages and template
+- Shortened long `─` description/section headers in `gas-project-creator.html`, `init-repo.sh`, `setup-gas-project.sh`, and workflow file
+- Shortened CONFIG separator lines in all HTML pages and template
 
 ## [v04.16r] — 2026-03-07 12:03:58 PM EST
 
