@@ -35,6 +35,58 @@ paths:
 - Same 100-section archive rotation as the repo CHANGELOG
 - **Single source of truth** — page changelogs live directly in `live-site-pages/html-changelogs/` (`.md` files) and GAS changelogs in `live-site-pages/gs-changelogs/` (`.md` files). These are both the source of truth and the deployed files fetched by the live site's changelog popup — no separate deployment copy is needed
 
+### Changelog Security (MANDATORY — applies to ALL changelogs)
+Changelogs in this repo are **publicly accessible** — page changelogs are deployed to GitHub Pages and fetched by the browser. Even on private repos, GitHub Pages content is public. Every changelog entry must be safe for public consumption.
+
+**HIPAA / PHI — never include any of the following in a changelog entry:**
+- Patient names, dates of birth, ages, or any demographic identifiers
+- Social Security numbers, Medical Record Numbers (MRNs), or account numbers
+- Phone numbers, fax numbers, email addresses, or physical addresses
+- Insurance plan names, policy numbers, or payer identifiers
+- Medical conditions, diagnoses, medications, or treatment details
+- Lab results, vitals, or clinical observations
+- Provider names tied to specific patient interactions
+- Any combination of data points that could identify a specific individual (even if each alone is non-identifying)
+
+**Attack surface — never reveal internal implementation details:**
+- Database table names, column names, or query patterns (e.g. ~~"Fixed SQL injection in patient_records.ssn column"~~)
+- API endpoint paths, parameter names, or authentication mechanisms (e.g. ~~"Added /api/v2/patients?mrn= lookup"~~)
+- Specific vulnerability types that were fixed (e.g. ~~"Patched XSS in discharge notes textarea"~~)
+- Third-party service names, SDK versions, or integration details (e.g. ~~"Upgraded Stripe SDK to fix payment bypass"~~)
+- Internal file names, function names, class names, or variable names
+- Error message text that appears in logs or responses
+- Authentication/authorization flow details (e.g. ~~"Added JWT refresh token rotation"~~)
+- Infrastructure details — server names, IP ranges, cloud regions, deployment pipelines
+
+**How to write secure changelog entries — examples:**
+
+| Unsafe (never write this) | Safe (write this instead) |
+|---------------------------|--------------------------|
+| Fixed SQL injection in patient lookup query | Improved data validation on search forms |
+| Added SSN field to intake form | Added new identifier field to intake workflow |
+| Patched XSS vulnerability in notes textarea | Fixed text input sanitization issue |
+| Fixed bug where patient DOB showed in error messages | Fixed an issue where sensitive data could appear in error messages |
+| Upgraded auth to use OAuth 2.0 PKCE flow | Improved login security |
+| Added /api/discharge endpoint for PDF export | Added discharge document export feature |
+| Fixed race condition in prescription refill cron job | Fixed timing issue with prescription refill processing |
+| Migrated from MySQL 5.7 to PostgreSQL 15 | Upgraded backend database for better performance |
+| Added insurance eligibility check via Availity API | Added real-time insurance verification |
+| Fixed CORS issue allowing cross-origin data access | Fixed a security issue with cross-origin requests |
+
+**The general rule:** describe **what the user experiences**, not **how the system works**. A changelog reader should learn "what changed for me" without learning anything about the technical implementation, data model, or security posture of the application.
+
+**Repo CHANGELOG (`repository-information/CHANGELOG.md`)** — while not publicly deployed, apply the same discipline. Repo changelogs may be visible to anyone with repo access (collaborators, auditors, future open-sourcing). Per-file subheadings (which reference filenames) are acceptable in the repo CHANGELOG since filenames are already visible in the repo — but entry descriptions should still follow the safe-writing rules above.
+
+### Changelog Popup Toggle (per-page)
+The changelog popup can be independently enabled or disabled per page using the `SHOW_CHANGELOG` variable in each HTML page's configuration block. This is **separate from `SHOW_WEB_VERSION`** — the version indicator pill can remain visible (for developer reference) while the changelog popup is hidden from users.
+
+**Implementation design** *(not yet implemented — planned for a future session)*:
+- Add `var SHOW_CHANGELOG = true;` to each HTML page's config block (near `SHOW_WEB_VERSION`)
+- When `SHOW_CHANGELOG = false`: the version indicator still appears (if `SHOW_WEB_VERSION = true`), but clicking it does nothing — no popup, no fetch. The changelog CSS, DOM elements, and JavaScript are still present but the click handler is gated
+- When `SHOW_CHANGELOG = true` (default): current behavior — clicking the version indicator opens the changelog popup
+- Add `SHOW_CHANGELOG` to `.config.json` files so GAS config sync keeps it in sync
+- **Recommended for clinic/healthcare apps**: set `SHOW_CHANGELOG = false` to minimize public information exposure. The changelog files still exist in the repo for developer reference but are not surfaced to end users
+
 ### Archive Rotation Summary
 - **Quick rule**: 100 triggers, date groups move. A date group is ALL sections sharing the same date — could be 1 section or 500. Never split a date group. Today's sections (EST) are always exempt. Repeat until ≤100 non-exempt sections remain
 - Full rotation logic is documented in `repository-information/CHANGELOG-archive.md` (see "Rotation Logic" section)

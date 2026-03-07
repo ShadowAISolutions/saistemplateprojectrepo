@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
 
 ## [Unreleased]
+
+## [v03.98r] — 2026-03-06 10:44:03 PM EST
+
+### Added
+
+- Added changelog security rule covering HIPAA/PHI omission and attack surface obfuscation — mandatory for all changelogs (public and repo-level), with detailed examples of unsafe vs. safe entry writing
+- Added per-page changelog popup toggle design (`SHOW_CHANGELOG` variable) — planned for future implementation, documented in changelogs rules file
 
 ## [v03.97r] — 2026-03-06 10:11:52 PM EST
 
