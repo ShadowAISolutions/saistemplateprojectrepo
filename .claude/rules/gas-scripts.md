@@ -214,19 +214,25 @@ All GAS code files (`.gs` and `gas-project-creator-code.js.txt`) use section div
 3. **TEMPLATE block** — all template functions (`doGet`, `doPost`, `getAppData`, `getSoundBase64`, `writeVersionToSheet`, `readB1FromCacheOrSheet`, `onEditWriteB1ToCache`, `fetchGitHubQuotaAndLimits`, `pullAndDeployFromGitHub`)
 4. `// Developed by:` branding line — always last
 
-### Inline project markers
-When a project modifies lines **within** a template function (rather than adding a whole new function), use an inline marker:
+### Project code inside template territory
+Project-specific code sometimes **must** live inside a template function (e.g. a cache write after a deploy, a custom UI within `doGet()`). This is explicitly allowed but must be clearly marked using **inline project markers** — a distinct notation from the block dividers so there is no confusion between structural boundaries and inline annotations.
+
+**Single-line additions** — append `// PROJECT: description` to the end of the line:
 ```javascript
 CacheService.getScriptCache().put("pushed_version", value, 3600); // PROJECT: auto-update cache
 ```
-For larger project-customized sections within a template function, use a single-line marker before the block:
+
+**Multi-line additions or whole-function divergence** — place `// PROJECT: description` on its own line before the block:
 ```javascript
 // PROJECT: custom UI (entire doGet diverged from template)
 function doGet() {
 ```
 
+**Key distinction**: block dividers (`// ═══...` + `// TEMPLATE START/END` + `// PROJECT START/END`) mark **structural boundaries** between large code regions. Inline `// PROJECT:` markers flag **individual lines or sections embedded within template territory**. Never use block dividers inside a template function — always use inline markers there.
+
 ### Rules for new code
-- **New project-specific features** must go in the PROJECT block or use inline `// PROJECT:` markers — never mixed unmarked into template functions
+- **New project-specific features** should go in the PROJECT block when possible — standalone functions, new variables, and self-contained logic belong there
+- **Project code inside template functions** is allowed when required (e.g. the feature needs to hook into a specific point in a template function's flow). It must be marked with inline `// PROJECT:` markers — never mixed unmarked into template functions
 - **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is
 - **Keep clusters large** — prefer grouping related project-specific code together rather than scattering small project additions throughout the file. When practical, extract project logic into standalone functions in the PROJECT block and call them from template functions with an inline `// PROJECT:` marker
 - **The template source file** (`gas-project-creator-code.js.txt`) has an empty PROJECT block — it defines the insertion point but contains no project code itself

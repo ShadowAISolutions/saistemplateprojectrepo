@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v04.12r] — 2026-03-07 11:02:10 AM EST
+
+### Changed
+
+- Clarified inline project marker rules in `gas-scripts.md` — project code inside template territory is explicitly allowed when required, must use `// PROJECT:` inline markers (distinct from block dividers)
 
 ## [v04.11r] — 2026-03-07 10:57:40 AM EST
 
