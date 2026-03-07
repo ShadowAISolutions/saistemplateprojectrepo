@@ -14,9 +14,9 @@
 
 | Project | Code File | Embedding Page | GAS Version | Status |
 |---------|-----------|----------------|-------------|--------|
-| Index | `googleAppsScripts/Index/index.gs` | `live-site-pages/index.html` | 01.03g | Active |
-| Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.05g | Active |
-| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.04g | Active |
+| Index | `googleAppsScripts/Index/index.gs` | `live-site-pages/index.html` | 01.04g | Active |
+| Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.06g | Active |
+| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.05g | Active |
 
 
 ## Templates

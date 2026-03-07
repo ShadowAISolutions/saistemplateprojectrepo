@@ -1,26 +1,14 @@
-var VERSION = "01.05g";
-var TITLE = "title 7";                                      // ← testation7.config.json
-
-// GitHub config — where to pull code from
+var VERSION = "01.06g";
+var TITLE = "title 7";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "htmltemplateautoupdate";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Testation7/testation7.gs";
-
-// Apps Script deployment ID (from Deploy → Manage deployments)
-var DEPLOYMENT_ID = "AKfycby4HQJQmuZr6Mt3wqrpY_2g9_B6QaF_c1tFbbFX5n9SIBmooPHrWWPp4MFekQ2iEtj1";                        // ← testation7.config.json
-
-// Google Sheets config (optional — for version tracking)
-var SPREADSHEET_ID = "1BATaipMZPl0aaA4-K2GWGLUdOoZukJSAzFlZf0603xk";                      // ← testation7.config.json
-var SHEET_NAME     = "Live_Sheet";                               // ← testation7.config.json
-
-// Sound config (optional — Google Drive file ID for notification sound)
-var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";                                          // ← testation7.config.json
-
-// Embedding page URL — the GitHub Pages page that iframes this GAS app
+var DEPLOYMENT_ID = "AKfycby4HQJQmuZr6Mt3wqrpY_2g9_B6QaF_c1tFbbFX5n9SIBmooPHrWWPp4MFekQ2iEtj1";
+var SPREADSHEET_ID = "1BATaipMZPl0aaA4-K2GWGLUdOoZukJSAzFlZf0603xk";
+var SHEET_NAME     = "Live_Sheet";
+var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/testation7.html";
-
-// ──────────────────────────────────────────────────────────────────
 
 function doGet() {
   var html = `
@@ -144,7 +132,6 @@ function doGet() {
           })
           .getAppData();
 
-        // Poll cell B1 from cache every 15s (cache is updated by onEditWriteB1ToCache trigger)
         function pollB1FromCache() {
           google.script.run
             .withSuccessHandler(function(val) {
@@ -158,7 +145,6 @@ function doGet() {
           setInterval(pollB1FromCache, 15000);
         }
 
-        // Poll token/quota usage (on load + every 60s)
         function pollQuotaAndLimits() {
           google.script.run
             .withSuccessHandler(function(t) {
@@ -175,7 +161,6 @@ function doGet() {
           setInterval(pollQuotaAndLimits, 60000);
         }
 
-        // Listen for version check requests from parent page
         window.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
@@ -289,9 +274,6 @@ function readB1FromCacheOrSheet() {
   return result;
 }
 
-// Installable onEdit trigger. Writes B1 value to CacheService when edited.
-// Install: Apps Script editor → Triggers → + Add Trigger →
-//   Function: onEditWriteB1ToCache, Event source: From spreadsheet, Event type: On edit
 function onEditWriteB1ToCache(e) {
   if (!e || !e.range) return;
   var sheet = e.range.getSheet();
@@ -305,7 +287,6 @@ function onEditWriteB1ToCache(e) {
 function fetchGitHubQuotaAndLimits() {
   var result = {};
 
-  // GitHub API rate limit (queryable)
   var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
   var headers = {};
   if (GITHUB_TOKEN) {
@@ -320,16 +301,10 @@ function fetchGitHubQuotaAndLimits() {
     result.github = "error";
   }
 
-  // UrlFetchApp: 20,000/day (not queryable — show limit only)
   result.urlFetch = "20,000/day";
-
-  // SpreadsheetApp: ~20,000/day (not queryable — show limit only)
   result.spreadsheet = "~20,000/day";
-
-  // Apps Script execution time: 90 min/day (not queryable)
   result.execTime = "90 min/day";
 
-  // MailApp remaining daily quota (requires script.send_mail scope)
   try {
     var mailRemaining = MailApp.getRemainingDailyQuota();
     result.mail = mailRemaining + " remaining/day";

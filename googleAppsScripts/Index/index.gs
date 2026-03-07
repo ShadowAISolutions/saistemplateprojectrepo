@@ -1,30 +1,15 @@
-var VERSION = "01.03g";
-var TITLE = "CHANGE THIS PROJECT TITLE TEMPLATE";               // ← index.config.json
-
-// GitHub config — where to pull code from
+var VERSION = "01.04g";
+var TITLE = "CHANGE THIS PROJECT TITLE TEMPLATE";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "htmltemplateautoupdate";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Index/index.gs";
-
-// Apps Script deployment ID (from Deploy → Manage deployments)
-// This is the long AKfycb... string, NOT the web app URL
-var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";                        // ← index.config.json
-
-// Google Sheets config (optional — for version tracking in a linked sheet)
-var SPREADSHEET_ID = "1fZhpw9h_Ci4bIQTwyT-3txrKmtg1tWASBHM2n0UFCRY"; // ← index.config.json
-var SHEET_NAME     = "Live_Sheet";                               // ← index.config.json
-
-// Sound config (Google Drive file ID for notification sound)
-var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";        // ← index.config.json
-
-// Embedding page URL — the GitHub Pages page that iframes this GAS app
-// Used for the "Reload Page" button (form target="_top" navigates here)
+var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";
+var SPREADSHEET_ID = "1fZhpw9h_Ci4bIQTwyT-3txrKmtg1tWASBHM2n0UFCRY";
+var SHEET_NAME     = "Live_Sheet";
+var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/";
-
-// Logo shown on the splash screen
 var SPLASH_LOGO_URL = "https://www.shadowaisolutions.com/SAIS_Logo.png";
-// ──────────────────────────────────────────────────────────────────
 
 function doGet() {
   var html = `
@@ -58,7 +43,6 @@ function doGet() {
       <div id="versionCount"></div>
 
       <script>
-        // Pre-load Drive sound from server on page load (if configured)
         var _soundDataUrl = null;
         google.script.run
           .withSuccessHandler(function(dataUrl) { _soundDataUrl = dataUrl; })
@@ -92,12 +76,10 @@ function doGet() {
           }
         }
 
-        // Load initial data
         google.script.run
           .withSuccessHandler(function(data) { applyData(data); })
           .getAppData();
 
-        // Poll for new pushed version every 15s (set by doPost via GitHub Action)
         var _autoPulling = false;
         function pollPushedVersionFromCache() {
           if (_autoPulling) return;
@@ -115,10 +97,8 @@ function doGet() {
         }
         setInterval(pollPushedVersionFromCache, 15000);
 
-        // Auto-pull from GitHub on every page load
         checkForUpdates();
 
-        // Splash screen — fade out after 1 second
         setTimeout(function() {
           var splash = document.getElementById('splash');
           splash.style.opacity = '0';
@@ -137,17 +117,14 @@ function doGet() {
                 setTimeout(function() { document.getElementById('result').innerHTML = ''; }, 2000);
                 return;
               }
-              // New version deployed — update dynamic content
               setTimeout(function() {
                 google.script.run.writeVersionToSheet();
                 google.script.run
                   .withSuccessHandler(function(data) {
                     applyData(data);
-                    // Highlight reload button
                     var btn = document.getElementById('reload-btn');
                     btn.style.background = '#d32f2f';
                     btn.textContent = '⚠️ Update Available — Reload Page';
-                    // Tell embedding page to reload
                     var reloadMsg = {type: 'gas-reload', version: data.version};
                     if (_soundDataUrl) reloadMsg.soundDataUrl = _soundDataUrl;
                     try { window.top.postMessage(reloadMsg, '*'); } catch(e) {}
@@ -171,10 +148,6 @@ function doGet() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-// POST endpoint — called by GitHub Action after merging to main.
-// Supports two actions:
-//   action=deploy        → directly pull + deploy from GitHub (primary)
-//   action=writeC1       → write version to sheet C1 + set cache flag
 function doPost(e) {
   var action = (e && e.parameter && e.parameter.action) || "";
 
@@ -203,7 +176,6 @@ function doPost(e) {
 function getAppData() {
   var data = { version: "v" + VERSION, title: TITLE };
 
-  // Version count with caching
   var cache = CacheService.getScriptCache();
   var vStatus = cache.get("version_count_status");
   if (!vStatus) {
@@ -271,11 +243,9 @@ function pullAndDeployFromGitHub() {
   var response = UrlFetchApp.fetch(apiUrl, { headers: fetchHeaders });
   var newCode = response.getContentText();
 
-  // Extract VERSION from the pulled code
   var versionMatch = newCode.match(/var VERSION\s*=\s*"([^"]+)"/);
   var pulledVersion = versionMatch ? versionMatch[1] : null;
 
-  // Skip deployment if already up to date
   if (pulledVersion && pulledVersion === VERSION) {
     return "Already up to date (v" + VERSION + ")";
   }
@@ -326,7 +296,6 @@ function pullAndDeployFromGitHub() {
     })
   });
 
-  // Update version count cache
   var cleanupInfo = "";
   try {
     var totalVersions = 0;
@@ -349,7 +318,6 @@ function pullAndDeployFromGitHub() {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
 
-  // Set pushed_version cache flag for client-side polling
   CacheService.getScriptCache().put("pushed_version", "v" + pulledVersion, 3600);
 
   return "Updated to v" + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
