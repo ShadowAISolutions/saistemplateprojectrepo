@@ -15,7 +15,7 @@
 | Project | Code File | Embedding Page | GAS Version | Status |
 |---------|-----------|----------------|-------------|--------|
 | Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.03g | Active |
-| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.00g | Active |
+| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.01g | Active |
 
 
 ## Templates
