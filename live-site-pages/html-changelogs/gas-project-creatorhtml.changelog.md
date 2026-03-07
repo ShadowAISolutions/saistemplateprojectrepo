@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
+
+## [v01.61w] — 2026-03-07 12:31:43 AM EST — v04.06r
+
+### Changed
+- GAS version pill repositioned slightly to the right for better spacing
 
 ## [v01.60w] — 2026-03-07 12:21:26 AM EST — v04.05r
 

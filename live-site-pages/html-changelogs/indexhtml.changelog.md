@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [indexhtml.changelog-archive.md](indexhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
+
+## [v01.23w] — 2026-03-07 12:31:43 AM EST — v04.06r
+
+### Changed
+- GAS version pill repositioned slightly to the right for better spacing
 
 ## [v01.22w] — 2026-03-07 12:21:26 AM EST — v04.05r
 
