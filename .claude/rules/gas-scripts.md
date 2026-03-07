@@ -231,10 +231,33 @@ function doGet() {
 
 **Key distinction**: block dividers (`// ═══...` (14 chars) + `// TEMPLATE START/END` + `// PROJECT START/END`) mark **structural boundaries** between large code regions. Inline `// PROJECT:` markers flag **individual lines or sections embedded within template territory**. Never use block dividers inside a template function — always use inline markers there.
 
+### Project override markers
+When a project **modifies existing template code** (not adding new code, but changing template behavior — e.g. different return values, altered logic flow, changed constants), the modified lines must be marked with `PROJECT OVERRIDE` so template propagation can detect them and stop before overwriting.
+
+**Single-line overrides** — append `// PROJECT OVERRIDE: reason` to the end of the line:
+```javascript
+const MAX_RETRIES = 10; // PROJECT OVERRIDE: more retries for slow API
+```
+
+**Multi-line overrides** — wrap the modified block with start/end markers:
+```javascript
+// PROJECT OVERRIDE START: custom doGet response
+function doGet(e) {
+  // entirely different response logic for this project
+  return HtmlService.createHtmlOutput('<h1>Custom</h1>');
+}
+// PROJECT OVERRIDE END
+```
+
+**Key distinction from inline `// PROJECT:` markers**: `// PROJECT:` marks **additions** (new code inserted into template territory). `// PROJECT OVERRIDE:` marks **modifications** (existing template code that was changed). Both live inside TEMPLATE regions, but they signal different things to the propagation system:
+- `// PROJECT:` lines are preserved as-is — template propagation works around them
+- `// PROJECT OVERRIDE:` lines trigger a **hard stop** — template propagation must halt for that file and ask the user what to do, because the template change may conflict with the override
+
 ### Rules for new code
 - **New project-specific features** should go in the PROJECT block when possible — standalone functions, new variables, and self-contained logic belong there
 - **Project code inside template functions** is allowed when required (e.g. the feature needs to hook into a specific point in a template function's flow). It must be marked with inline `// PROJECT:` markers — never mixed unmarked into template functions
-- **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is
+- `// PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
+- **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is. When `// PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **Keep clusters large** — prefer grouping related project-specific code together rather than scattering small project additions throughout the file. When practical, extract project logic into standalone functions in the PROJECT block and call them from template functions with an inline `// PROJECT:` marker
 - **The template source file** (`gas-project-creator-code.js.txt`) has an empty PROJECT block — it defines the insertion point but contains no project code itself
 

@@ -241,11 +241,56 @@ Same as GAS files — when project-specific code must live within template terri
 // PROJECT: deploy gate initialization
 ```
 
+### Project override markers
+When a project **modifies existing template code** (not adding new code, but changing template behavior — e.g. different CSS values, altered logic, restructured DOM within a template region), the modified lines must be marked with `PROJECT OVERRIDE` so template propagation can detect them and stop before overwriting.
+
+**Single-line overrides** — append `PROJECT OVERRIDE: reason` to the end of the line:
+```html
+<div id="splash-overlay" style="background: #1a1a2e;"> <!-- PROJECT OVERRIDE: custom brand color -->
+```
+```css
+#splash-overlay { background: #1a1a2e; } /* PROJECT OVERRIDE: custom brand color */
+```
+```javascript
+const SPLASH_DURATION = 5000; // PROJECT OVERRIDE: longer splash for animation
+```
+
+**Multi-line overrides** — wrap the modified block with start/end markers:
+```html
+<!-- PROJECT OVERRIDE START: custom splash layout -->
+<div id="splash-overlay" class="custom-splash">
+  <img src="custom-logo.png" />
+  <div class="custom-tagline">Welcome</div>
+</div>
+<!-- PROJECT OVERRIDE END -->
+```
+```css
+/* PROJECT OVERRIDE START: custom splash styles */
+#splash-overlay {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  display: grid;
+  place-items: center;
+}
+/* PROJECT OVERRIDE END */
+```
+```javascript
+// PROJECT OVERRIDE START: custom splash sequence
+function showSplash() {
+  // entirely different splash logic
+}
+// PROJECT OVERRIDE END
+```
+
+**Key distinction from inline `PROJECT:` markers**: `PROJECT:` marks **additions** (new code inserted into template territory). `PROJECT OVERRIDE:` marks **modifications** (existing template code that was changed). Both live inside TEMPLATE regions, but they signal different things to the propagation system:
+- `PROJECT:` lines are preserved as-is — template propagation works around them
+- `PROJECT OVERRIDE:` lines trigger a **hard stop** — template propagation must halt for that file and ask the user what to do, because the template change may conflict with the override
+
 ### Rules
 - Same rules as GAS files: TEMPLATE markers delineate shared template code, PROJECT markers delineate page-specific code. Template updates propagate only within TEMPLATE markers, PROJECT blocks are preserved as-is
-- Inline `// PROJECT:` markers for project-specific modifications that must live inside template territory (same as GAS files)
+- Inline `// PROJECT:` markers for project-specific additions that must live inside template territory (same as GAS files)
+- `PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
 - **The HTML template source** (`HtmlAndGasTemplateAutoUpdate.html`) has empty PROJECT blocks — placeholders for page-specific content
-- **Template propagation** (Pre-Commit #20) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched
+- **Template propagation** (Pre-Commit #20) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched. When `PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **New pages** must include all 6 marker pairs (TEMPLATE START/END + PROJECT START/END in CSS, body HTML, and JS). The `setup-gas-project.sh` script creates pages from the template which already contains these markers
 
 ## GAS UI Layout Awareness
