@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.61w">
+  <meta name="build-version" content="v01.62w">
   <title>GAS Project Creator</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
@@ -126,6 +126,10 @@
     }
     #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
     #gcl-body li { margin-bottom: 4px; }
+
+    /* ══════════════════════════════════════════════════════════════ */
+    /* PROJECT START                                                 */
+    /* ══════════════════════════════════════════════════════════════ */
 
     /* ── GAS Integration Dashboard ─────────────────────────── */
     body {
@@ -469,6 +473,10 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .pre-wrap .btn-copy-json:hover { color: #58a6ff; border-color: #58a6ff; }
+
+    /* ══════════════════════════════════════════════════════════════ */
+    /* PROJECT END                                                   */
+    /* ══════════════════════════════════════════════════════════════ */
   </style>
 </head>
 <body>
@@ -479,6 +487,9 @@
   <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
   <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
 
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- PROJECT START -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
   <!-- GAS panel — collapsible bottom drawer for iframe -->
   <button id="gas-panel-tab">&#9650; GAS</button>
   <div id="gas-panel" class="collapsed">
@@ -640,6 +651,11 @@
       Copies a setup script command — paste into Claude Code or run directly in your terminal
     </div>
   </div>
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- PROJECT END -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- GAS 1fr4m3 injected dynamically by script -->
+
   <script>
     /* tpl:7f3e9b2d */ // ── CONFIG ──────────────────────────────────────────────────────────
     // Logo shown on the green "Website Ready" splash screen
@@ -1179,6 +1195,9 @@
       if (document.visibilityState === 'visible') requestWakeLock();
     });
 
+    // ══════════════════════════════════════════════════════════════
+    // PROJECT START
+    // ══════════════════════════════════════════════════════════════
 
     // ── Copy Code.gs ─────────────────────────────────────────────
     (function() {
@@ -1355,6 +1374,9 @@
     // ── Initialize deploy gate on page load ─────────────────────────
     updateDeployGate();
 
+    // ══════════════════════════════════════════════════════════════
+    // PROJECT END
+    // ══════════════════════════════════════════════════════════════
   </script>
 </body>
 </html>

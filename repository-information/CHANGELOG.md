@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v04.13r] — 2026-03-07 11:13:58 AM EST
+
+### Added
+
+- Added TEMPLATE/PROJECT section dividers to all HTML pages and the HTML template source
+- Added "Template vs Project Code Separation (HTML)" rule to `html-pages.md` with HTML comment and CSS comment divider formats
+- Dividers cover three zones per page: CSS, body HTML, and JavaScript
+
+#### `index.html` — v01.25w
+
+##### Added
+- Internal code organization markers added (no user-visible change)
+
+#### `gas-project-creator.html` — v01.62w
+
+##### Added
+- Internal code organization markers added (no user-visible change)
+
+#### `testation7.html` — v01.05w
+
+##### Added
+- Internal code organization markers added (no user-visible change)
+
+#### `testation8.html` — v01.04w
+
+##### Added
+- Internal code organization markers added (no user-visible change)
 
 ## [v04.12r] — 2026-03-07 11:02:10 AM EST
 

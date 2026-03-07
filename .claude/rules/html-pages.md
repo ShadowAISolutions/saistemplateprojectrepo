@@ -161,6 +161,51 @@ When a conflict is detected:
 - **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
 - **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from the GAS template. The GAS template (`gas-project-creator-code.js.txt`) uses `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
 
+## Template vs Project Code Separation (HTML)
+
+HTML pages use the same TEMPLATE/PROJECT divider system as GAS files (see `.claude/rules/gas-scripts.md` — "Template vs Project Code Separation"). The divider format adapts to the file context:
+
+### Divider format by context
+**HTML/CSS sections** — use HTML comments or CSS comments:
+```html
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- PROJECT START -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+```
+```css
+/* ══════════════════════════════════════════════════════════════ */
+/* PROJECT START                                                 */
+/* ══════════════════════════════════════════════════════════════ */
+```
+
+**JavaScript sections** (inside `<script>`) — use JS comments (same as GAS files):
+```javascript
+// ══════════════════════════════════════════════════════════════
+// PROJECT START
+// ══════════════════════════════════════════════════════════════
+```
+
+### HTML page structure (top to bottom)
+Each HTML page has three zones where project code can appear:
+
+1. **CSS** (`<style>` block) — template styles first (splash, version indicator, changelog, GAS pill, maintenance), then `/* PROJECT START/END */` wrapping any page-specific styles. Empty on new pages
+2. **Body HTML** — template structural elements first (splash divs, gas-pill, gcl-overlay), then `<!-- PROJECT START/END -->` wrapping page-specific content (where `<!-- YOUR PAGE CONTENT HERE -->` appears in the template). Empty on new pages
+3. **JavaScript** (`<script>` block) — template JS first (CONFIG, auto-refresh polling, splash logic, GAS iframe, changelog popup, wake lock), then `// PROJECT START/END` wrapping page-specific scripts. Empty on new pages
+
+### Inline project markers
+Same as GAS files — when project-specific code must live within template territory, use inline markers:
+```html
+<!-- PROJECT: custom splash override -->
+```
+```javascript
+// PROJECT: deploy gate initialization
+```
+
+### Rules
+- Same rules as GAS files: project code goes in PROJECT blocks, template updates propagate only within template territory, inline `// PROJECT:` markers for modifications inside template functions
+- **The HTML template source** (`HtmlAndGasTemplateAutoUpdate.html`) has empty PROJECT blocks — placeholders for page-specific content
+- **Template propagation** (Pre-Commit #20) respects PROJECT boundaries — changes are applied to template regions only, PROJECT blocks are preserved as-is
+
 ## GAS UI Layout Awareness
 
 *Rule: see `.claude/rules/gas-scripts.md` — section "GAS UI Layout Awareness". GAS elements are guests in the host HTML page and must defer to its layout.*
