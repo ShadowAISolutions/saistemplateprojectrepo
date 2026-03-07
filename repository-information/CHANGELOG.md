@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v04.23r] — 2026-03-07 02:08:52 PM EST
+
+### Changed
+
+- Added explicit STATUS.md placeholder restoration rule to Template Repo Guard — when `TEMPLATE_DEPLOY` switches from `On` to `Off`, live site `[View](https://...)` links must revert to `*(deploy to activate)*`
 
 ## [v04.22r] — 2026-03-07 01:56:59 PM EST
 
