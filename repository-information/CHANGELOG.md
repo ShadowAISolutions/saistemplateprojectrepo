@@ -3,7 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
+
+## [v03.95r] — 2026-03-06 09:43:17 PM EST
+
+### Changed
+
+- Bumped testation8.html version from v01.00w to v01.01w
+- Bumped testation8.gs VERSION from 01.01g to 01.02g
+- Added sample text to testation8 HTML and GAS changelogs
+
+#### `testation8.html` — v01.01w
+
+##### Added
+
+- Fresh page styling with improved layout
+- Sample content section for testing purposes
+
+##### Changed
+
+- Updated build version to v01.01w
+
+#### `testation8.gs` — 01.02g
+
+##### Added
+
+- Enhanced app data display with richer formatting
+- Improved quota monitoring dashboard layout
+
+##### Changed
+
+- Version bumped to 01.02g for sample content update
 
 ## [v03.94r] — 2026-03-06 09:35:13 PM EST
 

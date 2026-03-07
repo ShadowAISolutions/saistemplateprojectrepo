@@ -7,7 +7,7 @@
 | Landing Page | `live-site-pages/index.html` | v01.20w | *(deploy to activate)* | Active |
 | GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.58w | *(deploy to activate)* | Active |
 | Testation7 | `live-site-pages/testation7.html` | v01.02w | *(deploy to activate)* | Active |
-| Testation8 | `live-site-pages/testation8.html` | v01.00w | *(deploy to activate)* | Active |
+| Testation8 | `live-site-pages/testation8.html` | v01.01w | *(deploy to activate)* | Active |
 
 
 ## GAS Projects
@@ -15,7 +15,7 @@
 | Project | Code File | Embedding Page | GAS Version | Status |
 |---------|-----------|----------------|-------------|--------|
 | Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.03g | Active |
-| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.01g | Active |
+| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.02g | Active |
 
 
 ## Templates
