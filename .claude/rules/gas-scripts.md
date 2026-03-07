@@ -120,6 +120,8 @@ When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` wo
 
 There is no separate `.gs` template file — this single file eliminates the sync problem that existed when two copies had to be kept in lockstep. It lives in `live-site-pages/` because it must be accessible via GitHub Pages `fetch()`, and the setup script can read it from any location in the repo.
 
+*Template source propagation: when this file is modified, changes must be propagated to all existing `.gs` files — see `.claude/rules/html-pages.md` — section "Template Source Propagation" (Pre-Commit #20)*
+
 ## GAS UI Layout Awareness
 
 GAS UI elements (iframe panels, toggle buttons, status indicators, overlays) are **guests** inside the host HTML page. They must defer to the host page's existing layout — the HTML page should never need to accommodate GAS elements. When making changes to GAS-related UI on any HTML page:

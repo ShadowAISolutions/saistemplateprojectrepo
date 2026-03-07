@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v04.04r] — 2026-03-07 12:09:07 AM EST
+
+### Changed
+
+- Added cross-reference pointer in `gas-scripts.md` linking to the template source propagation rule in `html-pages.md` (Pre-Commit #20) — ensures the propagation rule is visible when working on GAS files even if `html-pages.md` isn't loaded
 
 ## [v04.03r] — 2026-03-07 12:02:36 AM EST
 
