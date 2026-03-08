@@ -19,7 +19,7 @@
 
 | Template | File | Version (frozen) | Origin |
 |----------|------|------------------|--------|
-| Universal Template | `live-site-templates/HtmlAndGasTemplateAutoUpdate.html` | v01.00w | template |
-| GAS Code Template | `live-site-pages/gas-code-templates/gas-project-creator-code.js.txt` | 01.00g | template |
+| HTML Page Template (with GAS embedding) | `live-site-templates/HtmlAndGasTemplateAutoUpdate.html` | v01.00w | template |
+| GAS Script Template | `live-site-pages/gas-code-templates/gas-project-creator-code.js.txt` | 01.00g | template |
 
 Developed by: ShadowAISolutions
