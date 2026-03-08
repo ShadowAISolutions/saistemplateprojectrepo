@@ -413,6 +413,9 @@ jobs:
        (needs.auto-merge.result == 'success' && needs.auto-merge.outputs.pages-changed == 'true') ||
        (needs.auto-merge.result == 'success' && needs.check-template.outputs.template-deploy == 'On'))
     needs: [auto-merge, check-template]
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
