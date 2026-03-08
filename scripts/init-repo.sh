@@ -222,8 +222,8 @@ echo "[Phase 4] Restructuring README.md..."
 README_FILE="$REPO_ROOT/README.md"
 if [ -f "$README_FILE" ]; then
   # 4a. Replace title (preserving any invisible characters before #)
-  # The template has zero-width Unicode chars before "# Auto Update HTML Template"
-  sed -i "1s/Auto Update HTML Template/ReadMe - ${REPO_NAME}/" "$README_FILE"
+  # The template has zero-width Unicode chars before "# Auto Update HTML & GAS Template"
+  sed -i "1s/Auto Update HTML \& GAS Template/ReadMe - ${REPO_NAME}/" "$README_FILE"
   echo "  4a. Replaced title."
 
   # 4b. Replace placeholder block with live site link + QR code

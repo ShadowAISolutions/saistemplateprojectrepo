@@ -1,8 +1,8 @@
-# ​‌‌‌‌‌‌‌​​‌‌‌‌‌​Auto Update HTML Template
+# ​‌‌‌‌‌‌‌​​‌‌‌‌‌​Auto Update HTML & GAS Template
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-08 03:48:05 PM EST` · Repo version: `v01.13r`
+Last updated: `2026-03-08 04:08:05 PM EST` · Repo version: `v01.14r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here

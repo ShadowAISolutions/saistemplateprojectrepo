@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 13/100`
+`Sections: 14/100`
 
 ## [Unreleased]
+
+## [v01.14r] — 2026-03-08 04:08:05 PM EST
+
+### Changed
+- Renamed project from "Auto Update HTML Template" to "Auto Update HTML & GAS Template" in README title, init script, and phantom update commit message references
 
 ## [v01.13r] — 2026-03-08 03:48:05 PM EST
 

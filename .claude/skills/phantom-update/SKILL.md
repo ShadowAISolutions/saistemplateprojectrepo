@@ -17,7 +17,7 @@ Touch every file in the repo with a no-op change so all files share the same com
 4. **Reset `repository-information/CHANGELOG.md`** — remove all versioned release sections and all entries/category headings under `[Unreleased]`, leaving a fresh template (header, version suffix note, and an empty `## [Unreleased]` section with `*(No changes yet)*`). Also reset `repository-information/CHANGELOG-archive.md` — remove all archived sections and restore the `*(No archived sections yet)*` placeholder
 5. **Reset all page and GAS changelogs** — reset every `<page-name>html.changelog.md` in `live-site-pages/html-changelogs/` and `<page-name>gs.changelog.md` in `live-site-pages/gs-changelogs/` and their corresponding archive files the same way. Also reset GAS `<page-name>gs.version.txt` files in `live-site-pages/gs-versions/` to `01.00g`
 6. **Update `Last updated:` in `README.md`** — set the timestamp to the real current time (run `TZ=America/New_York date '+%Y-%m-%d %I:%M:%S %p EST'`)
-7. **Commit message**: `Auto Update HTML Template Created` (no version prefix)
+7. **Commit message**: `Auto Update HTML & GAS Template Created` (no version prefix)
 8. **Push** to the `claude/*` branch (Pre-Push Checklist applies)
 
 ## Important Notes
