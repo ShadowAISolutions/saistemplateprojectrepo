@@ -327,6 +327,16 @@ jobs:
       #       --max-time 120 || true
       # ──────────────
 
+      - name: Deploy Test
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Test/test.gs" && \
+          curl -L -X POST \
+            "https://script.google.com/macros/s/AKfycbyJid5Cl6TU9PYrjvdlhvq9aTRQmuDlcCWH6tnqEmTt4rRz4oMEfyTrU4njYTmASG_v1Q/exec" \
+            -d "action=deploy" \
+            --max-time 120 || true
+
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |
