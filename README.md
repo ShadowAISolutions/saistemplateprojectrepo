@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-08 02:48:28 PM EST` · Repo version: `v01.04r`
+Last updated: `2026-03-08 02:53:07 PM EST` · Repo version: `v01.05r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -168,6 +168,8 @@ htmltemplateautoupdate/
 │   │   ├── indexgs.changelog.md                   # Index GAS changelog
 │   │   └── indexgs.changelog-archive.md           # Older sections (rotated)
 │   └── sounds/                 # Audio feedback files
+│       ├── Website_Ready_Voice_1.mp3   # "Website Ready" splash sound
+│       └── Code_Ready_Voice_1.mp3      # "Code Ready" splash sound
 ├── live-site-templates/        # Templates for new pages
 │   ├── HtmlAndGasTemplateAutoUpdate.html     # Universal HTML page template (GAS features auto-activate when gs.version.txt exists)
 │   └── HtmlAndGasTemplateAutoUpdatehtml.version.txt # Template version file (frozen at v01.00w)
