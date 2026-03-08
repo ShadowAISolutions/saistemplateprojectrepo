@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 20/100`
+`Sections: 21/100`
 
 ## [Unreleased]
+
+## [v01.21r] — 2026-03-08 05:14:03 PM EST
+
+### Changed
+- Added compaction recovery closure rule to CLAUDE.md — after context compaction, if no work remains, the recovery response must still end with the full end-of-response block and closing marker instead of informal text
 
 ## [v01.20r] — 2026-03-08 05:07:22 PM EST
 
