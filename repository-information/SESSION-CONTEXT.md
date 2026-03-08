@@ -4,6 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-08 05:56:53 PM EST
+**Repo version:** v01.24r
+
+### What was done
+- Multiple CHANGELOG template and formatting improvements across sessions (v01.02r through v01.22r) — archive rotation logic, capacity counters, SHA enrichment, section formatting, and rules refinements
+- Added immediate fix proposal requirement to Continuous Improvement rule (v01.22r)
+- Fixed GitHub Pages deploy permission error — added explicit job-level `permissions` block (`pages: write`, `id-token: write`) to the deploy job in auto-merge workflow (v01.23r)
+- Set up new GAS project "Test" — created all 10 files (page, script, config, version files, changelogs, archives), registered in GAS Projects table, added workflow deploy step, updated STATUS.md, ARCHITECTURE.md, and README.md tree (v01.24r)
+
+### Where we left off
+All changes committed and merged to main. The deploy permission fix (v01.23r) and Test GAS project setup (v01.24r) were pushed together. The workflow should now successfully deploy to GitHub Pages — the prior error was "Ensure GITHUB_TOKEN has permission id-token: write". If it fails again, the issue is in GitHub repo Settings → Pages → Source (must be "GitHub Actions").
+
+### Key decisions made
+- Job-level permissions added to deploy job rather than relying on top-level inheritance — GitHub may have changed how permissions propagate to jobs using `environment`
+- Test GAS project set up with provided config values (DEPLOYMENT_ID, SPREADSHEET_ID, SHEET_NAME, SOUND_FILE_ID all configured)
+- The setup script had issues auto-updating STATUS.md and ARCHITECTURE.md (table parsing errors) — both were updated manually
+
+### Active context
+- Branch: `claude/update-changelog-template-7PvWT`
+- Repo version: v01.24r
+- Pages: index (v01.00w), gas-project-creator (v01.01w), test (v01.00w)
+- GAS versions: index (01.00g), test (01.00g)
+- Active reminders in REMINDERS.md (developer-owned):
+  - "Check test.html issues in Chrome DevTools" (note: test.html was deleted in a prior session but a new test.html was just created via GAS project setup — reminder may or may not apply to the new page)
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-08 01:56:47 PM EST
 **Repo version:** v01.01r
 
@@ -14,35 +44,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### Where we left off
 All changes committed and merged to main. The repo is now at clean initial versions (v01.01r) with `TEMPLATE_DEPLOY` = `On` and deployment active. All page/GAS versions are at their initial values (v01.00w / 01.00g). Changelogs have a clean slate — only one entry (v01.01r, the TEMPLATE_DEPLOY re-enable).
-
-### Key decisions made
-- Full version reset performed as part of the `TEMPLATE_DEPLOY` Off → On cycle — forks will inherit clean starting versions
-- All 28 files across the repo were reset in a single commit
-- STATUS.md live site links restored when toggling back to On
-
-### Active context
-- Branch: `claude/fix-changelog-archive-links-Zq8OV`
-- Repo version: v01.01r
-- Page versions: all at v01.00w (index, gas-project-creator, testation7, testation8)
-- GAS versions: all at 01.00g (index, testation7, testation8)
-- Active reminders in REMINDERS.md (developer-owned):
-  - "Check test.html issues in Chrome DevTools" (note: test.html was deleted in a prior session — reminder may be obsolete)
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-07 01:04:32 PM EST
-**Repo version:** v04.20r
-
-### What was done
-- Left-aligned internal dividers (`/* ═══...`) in template HTML and all 4 pages — moved from centered to left-aligned for consistency (v04.08r through v04.13r, multiple pushes covering template + pages)
-- Shortened dividers from full-width to ~60 chars in template and all pages (v04.14r through v04.18r)
-- Added PROJECT OVERRIDE markers for template propagation safety — marking page-specific customizations so Pre-Commit #20 knows to stop and alert instead of blindly overwriting (v04.19r)
-- Updated page & GAS changelog rules to require an entry for every version bump — internal-only changes now use generic "Minor internal improvements" instead of skipping the changelog, preventing version gaps in public-facing changelogs (v04.20r)
-
-### Where we left off
-All changes committed and merged to main. The user clarified that the repo-level CHANGELOG.md is allowed to have detailed internal descriptions, while only the public-facing page/GAS changelogs should use generic entries for internal changes. The rules already reflect this correctly (the change was scoped to Pre-Commit #17 only).
 
 Developed by: ShadowAISolutions
