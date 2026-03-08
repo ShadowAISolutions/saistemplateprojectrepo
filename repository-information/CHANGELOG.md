@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 14/100`
+`Sections: 15/100`
 
 ## [Unreleased]
+
+## [v01.15r] — 2026-03-08 04:19:59 PM EST
+
+### Fixed
+- Regenerated QR code in README to point to the correct live site URL after repo rename
 
 ## [v01.14r] — 2026-03-08 04:08:05 PM EST
 
