@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 21/100`
+`Sections: 22/100`
 
 ## [Unreleased]
+
+## [v01.22r] — 2026-03-08 05:16:55 PM EST
+
+### Changed
+- Added "immediate fix proposal" rule to Continuous Improvement section — acknowledging a mistake without proposing a concrete structural fix in the same response is now explicitly prohibited
 
 ## [v01.21r] — 2026-03-08 05:14:03 PM EST
 
