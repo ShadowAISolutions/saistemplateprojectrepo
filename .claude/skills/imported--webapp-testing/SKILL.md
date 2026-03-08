@@ -32,7 +32,7 @@ User task → Is it static HTML?
 
 ## Testing GitHub Pages (This Repo)
 
-For this repo, pages are deployed at `https://ShadowAISolutions.github.io/htmltemplateautoupdate/`. To test:
+For this repo, pages are deployed at `https://ShadowAISolutions.github.io/saistemplateprojectrepo/`. To test:
 
 ```python
 from playwright.sync_api import sync_playwright
@@ -40,7 +40,7 @@ from playwright.sync_api import sync_playwright
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
     page = browser.new_page()
-    page.goto('https://ShadowAISolutions.github.io/htmltemplateautoupdate/')
+    page.goto('https://ShadowAISolutions.github.io/saistemplateprojectrepo/')
     page.wait_for_load_state('networkidle')
 
     # Verify the version indicator pill appears

@@ -4,8 +4,8 @@
 
 | Page | File | Version | Live URL | Status | Origin |
 |------|------|---------|----------|--------|--------|
-| Landing Page | `live-site-pages/index.html` | v01.00w | [View](https://ShadowAISolutions.github.io/htmltemplateautoupdate/) | Active | template |
-| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.00w | [View](https://ShadowAISolutions.github.io/htmltemplateautoupdate/gas-project-creator.html) | Active | template |
+| Landing Page | `live-site-pages/index.html` | v01.00w | [View](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) | Active | template |
+| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.00w | [View](https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html) | Active | template |
 
 
 ## GAS Projects

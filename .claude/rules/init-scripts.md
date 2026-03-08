@@ -15,7 +15,7 @@ The init script automates all fork/clone initialization. It is run by the Templa
 - Auto-detects org and repo name from `git remote -v`
 - Deletes inherited `claude/*` branches (local and remote)
 - Replaces `ShadowAISolutions` → new org name across 23 target files
-- Replaces `htmltemplateautoupdate` → new repo name across the same files
+- Replaces `saistemplateprojectrepo` → new repo name across the same files
 - Updates CLAUDE.md Template Variables table (`IS_TEMPLATE_REPO` → `No`)
 - Replaces STATUS.md `*(deploy to activate)*` placeholder with live site URL
 - Restructures README.md (title, placeholder block, removes setup sections)

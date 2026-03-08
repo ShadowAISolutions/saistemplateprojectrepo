@@ -20,7 +20,7 @@ Before running, the user should have:
 1. **Session Start Checklist runs first** — the drift checks detect this is an uninitialized fork and run `scripts/init-repo.sh`, which handles:
    - Deleting inherited `claude/*` branches
    - Replacing `ShadowAISolutions` → new org name across 23+ files
-   - Replacing `htmltemplateautoupdate` → new repo name
+   - Replacing `saistemplateprojectrepo` → new repo name
    - Updating CLAUDE.md Template Variables
    - Replacing STATUS.md placeholder with live site URL
    - Restructuring README.md

@@ -21,7 +21,7 @@ set -euo pipefail
 
 # ── CONSTANTS ──
 OLD_ORG="ShadowAISolutions"
-OLD_REPO="htmltemplateautoupdate"
+OLD_REPO="saistemplateprojectrepo"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -171,7 +171,7 @@ echo "[Phase 2] Updating CLAUDE.md Template Variables table..."
 
 CLAUDE_FILE="$REPO_ROOT/CLAUDE.md"
 if [ -f "$CLAUDE_FILE" ]; then
-  # IS_TEMPLATE_REPO: htmltemplateautoupdate -> No
+  # IS_TEMPLATE_REPO: saistemplateprojectrepo -> No
   sed -i "s/| \`IS_TEMPLATE_REPO\` | ${OLD_REPO}/| \`IS_TEMPLATE_REPO\` | No/" "$CLAUDE_FILE"
   # YOUR_ORG_NAME: YourOrgName -> new org
   sed -i "s/| \`YOUR_ORG_NAME\` | YourOrgName/| \`YOUR_ORG_NAME\` | ${ORG_NAME}/" "$CLAUDE_FILE"

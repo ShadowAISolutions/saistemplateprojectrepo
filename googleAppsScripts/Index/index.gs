@@ -1,14 +1,14 @@
 var VERSION = "01.00g";
 var TITLE = "CHANGE THIS PROJECT TITLE TEMPLATE";
 var GITHUB_OWNER  = "ShadowAISolutions";
-var GITHUB_REPO   = "htmltemplateautoupdate";
+var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Index/index.gs";
 var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";
 var SPREADSHEET_ID = "1fZhpw9h_Ci4bIQTwyT-3txrKmtg1tWASBHM2n0UFCRY";
 var SHEET_NAME     = "Live_Sheet";
 var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
-var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/htmltemplateautoupdate/";
+var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/";
 
 // ══════════════
 // PROJECT START

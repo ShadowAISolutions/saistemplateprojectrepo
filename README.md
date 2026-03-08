@@ -2,12 +2,12 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-08 03:38:44 PM EST` · Repo version: `v01.12r`
+Last updated: `2026-03-08 03:48:05 PM EST` · Repo version: `v01.13r`
 
-You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
+You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
 
-**This Template Repository's URL:** [github.com/ShadowAISolutions/htmltemplateautoupdate](https://github.com/ShadowAISolutions/htmltemplateautoupdate)
+**This Template Repository's URL:** [github.com/ShadowAISolutions/saistemplateprojectrepo](https://github.com/ShadowAISolutions/saistemplateprojectrepo)
 
 <p align="center">
   <img src="repository-information/readme-qr-code.png" alt="QR code to template repo" width="200">
@@ -19,7 +19,7 @@ Initialize your repository and Claude will update the live site link and QR code
 
 > <sub>**Tip:** Link below navigates away from this page. `Shift + click` (or `Right-click` → `Open link in new window`) to keep this ReadMe visible while you work.</sub>
 
-1. Click the green **Use this template** button at the top of this page, or go to [**Create from template**](https://github.com/new?template_name=htmltemplateautoupdate&template_owner=ShadowAISolutions)
+1. Click the green **Use this template** button at the top of this page, or go to [**Create from template**](https://github.com/new?template_name=saistemplateprojectrepo&template_owner=ShadowAISolutions)
 2. Fill in the **Repository name** field with a descriptive name of your choice
 3. Click **Create repository**
 
@@ -28,7 +28,7 @@ Initialize your repository and Claude will update the live site link and QR code
 1. Click the `⧉` button below to copy this template's URL:
 
 ```
-https://github.com/ShadowAISolutions/htmltemplateautoupdate
+https://github.com/ShadowAISolutions/saistemplateprojectrepo
 ```
 
    > <sub>**Tip:** Link below navigates away from this page. `Shift + click` (or `Right-click` → `Open link in new window`) to keep this ReadMe visible while you work.</sub>
@@ -147,7 +147,7 @@ This error means the Apps Script API is not enabled in the GCP project associate
 ## Project Structure
 
 ```
-htmltemplateautoupdate/
+saistemplateprojectrepo/
 ├── live-site-pages/             # [template] Deployed to GitHub Pages
 │   ├── .nojekyll               # [template] Disables Jekyll processing on GitHub Pages
 │   ├── index.html              # [template] Live landing page
