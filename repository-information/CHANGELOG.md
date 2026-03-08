@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 16/100`
+`Sections: 17/100`
 
 ## [Unreleased]
+
+## [v01.17r] — 2026-03-08 04:46:19 PM EST
+
+### Changed
+- Added GAS Code Template entry to STATUS.md Templates table — `gas-project-creator-code.js.txt` is now tracked alongside the Universal Template as the GAS-specific code template
 
 ## [v01.16r] — 2026-03-08 04:25:29 PM EST
 
