@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 18/100`
+`Sections: 19/100`
 
 ## [Unreleased]
+
+## [v01.19r] — 2026-03-08 04:54:56 PM EST
+
+### Changed
+- Merged "Hosted Pages" and "GAS Projects" into a single "Hosted Pages & GAS Projects" table in STATUS.md — each page row now shows its associated GAS file and version inline
 
 ## [v01.18r] — 2026-03-08 04:49:52 PM EST
 
