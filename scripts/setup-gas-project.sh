@@ -3,7 +3,7 @@
 # setup-gas-project.sh — Fully automated GAS project setup
 #
 # Creates all files and updates all documentation for a new GAS project:
-#   - HTML embedding page (from HtmlAndGasTemplateAutoUpdate.html template)
+#   - HTML embedding page (from HtmlAndGasTemplateAutoUpdate.html.txt template)
 #   - .gs script (from gas-project-creator-code.js.txt)
 #   - .config.json
 #   - Version files (html + gs)
@@ -121,8 +121,8 @@ GAS_CL_ARCHIVE="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog-archive.md
 GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
 # ── Template sources ──
-TPL_HTML="live-site-templates/HtmlAndGasTemplateAutoUpdate.html"
-TPL_GS="live-site-pages/gas-code-templates/gas-project-creator-code.js.txt"
+TPL_HTML="live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt"
+TPL_GS="live-site-pages/templates/gas-project-creator-code.js.txt"
 
 # ── Phase 1: Pre-flight Checks ──
 info "Phase 1: Pre-flight checks..."

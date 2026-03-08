@@ -176,12 +176,12 @@ When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` wo
 
 ## GAS Template Source File
 
-`live-site-pages/gas-code-templates/gas-project-creator-code.js.txt` is the **single source of truth** for the base GAS template. It contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
+`live-site-pages/templates/gas-project-creator-code.js.txt` is the **single source of truth** for the base GAS template. It contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
 
 1. **Browser "Copy Code.gs" button** — GAS-enabled HTML pages fetch this file and do find-and-replace with the user's config values before copying to clipboard
 2. **Setup script template** — `scripts/setup-gas-project.sh` copies this file as the starting point for new GAS projects, then substitutes config values via sed
 
-There is no separate `.gs` template file — this single file eliminates the sync problem that existed when two copies had to be kept in lockstep. It lives in `live-site-pages/` because it must be accessible via GitHub Pages `fetch()`, and the setup script can read it from any location in the repo.
+There is no separate `.gs` template file — this single file eliminates the sync problem that existed when two copies had to be kept in lockstep. It lives in `live-site-pages/templates/` because it must be accessible via GitHub Pages `fetch()`, and the setup script can read it from any location in the repo.
 
 *Template source propagation: when this file is modified, changes must be propagated to all existing `.gs` files — see `.claude/rules/html-pages.md` — section "Template Source Propagation" (Pre-Commit #20)*
 

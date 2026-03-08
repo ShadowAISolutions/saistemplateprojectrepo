@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-08 04:54:56 PM EST` · Repo version: `v01.19r`
+Last updated: `2026-03-08 05:07:22 PM EST` · Repo version: `v01.20r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -152,8 +152,10 @@ saistemplateprojectrepo/
 │   ├── .nojekyll               # [template] Disables Jekyll processing on GitHub Pages
 │   ├── index.html              # [template] Live landing page
 │   ├── gas-project-creator.html       # [template] GAS project creator dashboard
-│   ├── gas-code-templates/       # [template] GAS code files (.js.txt) for Copy Code.gs buttons
-│   │   └── gas-project-creator-code.js.txt # [template] Shared GAS template source
+│   ├── templates/               # [template] Template source files for creating new pages and GAS scripts
+│   │   ├── HtmlAndGasTemplateAutoUpdate.html.txt     # [template] HTML page template (GAS features auto-activate when gs.version.txt exists)
+│   │   ├── HtmlAndGasTemplateAutoUpdatehtml.version.txt # [template] Template version file (frozen at v01.00w)
+│   │   └── gas-project-creator-code.js.txt # [template] GAS script template
 │   ├── html-versions/           # [template] HTML page version files for auto-refresh polling
 │   │   ├── indexhtml.version.txt          # [template]
 │   │   └── gas-project-creatorhtml.version.txt # [template]
@@ -170,9 +172,6 @@ saistemplateprojectrepo/
 │   └── sounds/                 # [template] Audio feedback files
 │       ├── Website_Ready_Voice_1.mp3   # [template] "Website Ready" splash sound
 │       └── Code_Ready_Voice_1.mp3      # [template] "Code Ready" splash sound
-├── live-site-templates/        # [template] Templates for new pages
-│   ├── HtmlAndGasTemplateAutoUpdate.html     # [template] Universal HTML page template (GAS features auto-activate when gs.version.txt exists)
-│   └── HtmlAndGasTemplateAutoUpdatehtml.version.txt # [template] Template version file (frozen at v01.00w)
 ├── googleAppsScripts/          # [template] Google Apps Script projects
 │   └── Index/                 # [template] GAS for live-site-pages/index.html
 │       ├── index.gs           # [template] Self-updating GAS web app

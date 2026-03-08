@@ -39,7 +39,6 @@ graph TB
             NOJEKYLL["[template] .nojekyll"]
             INDEX["[template] index.html"]
             GASTPL_PAGE["[template] gas-project-creator.html"]
-            GASTPL_CODE["[template] gas-code-templates/\ngas-project-creator-code.js.txt"]
             SND1["[template] sounds/Website_Ready_Voice_1.mp3"]
             SND2["[template] sounds/Code_Ready_Voice_1.mp3"]
 
@@ -96,9 +95,10 @@ graph TB
             GAS_DEPLOY_STEP --> GAS_POSTMSG
         end
 
-        subgraph "Template Files [template]"
-            TPL["[template] HtmlAndGasTemplateAutoUpdate.html\n(universal template — never bumped)"]
+        subgraph "live-site-pages/templates/ [template]"
+            TPL["[template] HtmlAndGasTemplateAutoUpdate.html.txt\n(HTML page template — never bumped)"]
             TPL_VER["[template] HtmlAndGasTemplateAutoUpdatehtml.version.txt"]
+            GASTPL_CODE["[template] gas-project-creator-code.js.txt\n(GAS script template)"]
         end
 
         subgraph "Project Config [template]"

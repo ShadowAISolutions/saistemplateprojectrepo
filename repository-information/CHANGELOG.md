@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 19/100`
+`Sections: 20/100`
 
 ## [Unreleased]
+
+## [v01.20r] — 2026-03-08 05:07:22 PM EST
+
+### Changed
+- Consolidated all template files into `live-site-pages/templates/` — moved `HtmlAndGasTemplateAutoUpdate.html` (renamed to `.html.txt`) and `gas-project-creator-code.js.txt` from separate directories into a single templates folder
+- Removed `live-site-templates/` and `live-site-pages/gas-code-templates/` directories
+- Updated all references across 15 files (CLAUDE.md, rules, skills, scripts, ARCHITECTURE.md, README.md, STATUS.md, CONTRIBUTING.md, IMPROVEMENTS.md)
+
+#### `gas-project-creator.html` — v01.01w
+
+##### Changed
+- Updated template file fetch path to new location
 
 ## [v01.19r] — 2026-03-08 04:54:56 PM EST
 
