@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-08 02:53:07 PM EST` · Repo version: `v01.05r`
+Last updated: `2026-03-08 03:01:03 PM EST` · Repo version: `v01.06r`
 
 You are currently using the **htmltemplateautoupdate** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -148,109 +148,109 @@ This error means the Apps Script API is not enabled in the GCP project associate
 
 ```
 htmltemplateautoupdate/
-├── live-site-pages/             # Deployed to GitHub Pages
-│   ├── .nojekyll               # Disables Jekyll processing on GitHub Pages
-│   ├── index.html              # Live landing page
-│   ├── gas-project-creator.html       # GAS project creator dashboard
-│   ├── gas-code-templates/       # GAS code files (.js.txt) for Copy Code.gs buttons
-│   │   └── gas-project-creator-code.js.txt # Shared GAS template source
-│   ├── html-versions/           # HTML page version files for auto-refresh polling
-│   │   ├── indexhtml.version.txt
-│   │   └── gas-project-creatorhtml.version.txt
-│   ├── gs-versions/             # GAS version files for GAS version pill polling
-│   │   └── indexgs.version.txt
-│   ├── html-changelogs/         # HTML changelogs (source of truth + deployed)
-│   │   ├── indexhtml.changelog.md                 # Homepage changelog
-│   │   ├── indexhtml.changelog-archive.md         # Older sections (rotated)
-│   │   ├── gas-project-creatorhtml.changelog.md   # GAS Project Creator changelog
-│   │   └── gas-project-creatorhtml.changelog-archive.md  # Older sections (rotated)
-│   ├── gs-changelogs/           # GAS changelogs (source of truth + deployed)
-│   │   ├── indexgs.changelog.md                   # Index GAS changelog
-│   │   └── indexgs.changelog-archive.md           # Older sections (rotated)
-│   └── sounds/                 # Audio feedback files
-│       ├── Website_Ready_Voice_1.mp3   # "Website Ready" splash sound
-│       └── Code_Ready_Voice_1.mp3      # "Code Ready" splash sound
-├── live-site-templates/        # Templates for new pages
-│   ├── HtmlAndGasTemplateAutoUpdate.html     # Universal HTML page template (GAS features auto-activate when gs.version.txt exists)
-│   └── HtmlAndGasTemplateAutoUpdatehtml.version.txt # Template version file (frozen at v01.00w)
-├── googleAppsScripts/          # Google Apps Script projects
-│   └── Index/                 # GAS for live-site-pages/index.html
-│       ├── index.gs           # Self-updating GAS web app
-│       └── index.config.json  # Project config (source of truth)
-├── .claude/
-│   ├── rules/                  # Always-loaded + path-scoped rules
-│   │   ├── behavioral-rules.md        # Always loaded — execution style, pushback, etc.
-│   │   ├── changelogs.md              # Path-scoped — CHANGELOG rules
-│   │   ├── chat-bookends.md           # Always loaded — response formatting rules
-│   │   ├── chat-bookends-reference.md # Always loaded — bookend examples & tables
-│   │   ├── gas-scripts.md             # Path-scoped — GAS rules
-│   │   ├── html-pages.md             # Path-scoped — HTML page rules
-│   │   ├── init-scripts.md           # Path-scoped — init script rules
-│   │   ├── output-formatting.md      # Always loaded — CLI styling, attribution
-│   │   ├── repo-docs.md              # Path-scoped — documentation rules
-│   │   └── workflows.md              # Path-scoped — workflow rules
-│   ├── skills/                  # Invokable workflow skills
-│   │   ├── imported--diff-review/       # /diff-review — pre-push differential review
-│   │   │   └── SKILL.md
-│   │   ├── imported--frontend-design/   # /frontend-design — distinctive UI creation
-│   │   │   └── SKILL.md
-│   │   ├── imported--git-cleanup/       # /git-cleanup — stale branch/worktree cleanup
-│   │   │   └── SKILL.md
-│   │   ├── imported--security-review/   # /security-review — OWASP/web security audit
-│   │   │   └── SKILL.md
-│   │   ├── imported--skill-creator/     # /skill-creator — create new skills
-│   │   │   └── SKILL.md
-│   │   ├── imported--webapp-testing/    # /webapp-testing — Playwright page testing
-│   │   │   └── SKILL.md
-│   │   ├── initialize/          # /initialize — first deployment setup
-│   │   │   └── SKILL.md
-│   │   ├── maintenance-mode/    # /maintenance-mode — toggle maintenance overlay
-│   │   │   └── SKILL.md
-│   │   ├── new-page/            # /new-page — create new HTML page with boilerplate
-│   │   │   └── SKILL.md
-│   │   ├── phantom-update/      # /phantom-update — timestamp alignment
-│   │   │   └── SKILL.md
-│   │   ├── reconcile/           # /reconcile — end multi-session mode
-│   │   │   └── SKILL.md
-│   │   └── remember-session/    # /remember-session — save session context
-│   │       └── SKILL.md
-│   └── settings.json           # Claude Code project settings
-├── .github/
-│   ├── workflows/              # CI/CD pipeline
-│   ├── ISSUE_TEMPLATE/         # Bug report & feature request forms
-│   ├── PULL_REQUEST_TEMPLATE.md # PR checklist
-│   ├── FUNDING.yml             # Sponsor button config
-│   └── last-processed-commit.sha # Inherited branch guard (commit SHA tracking)
-├── repository-information/
-│   ├── backups/                # Temporary safety-net backups of critical files
-│   │   └── CLAUDE.md.bak      # Latest CLAUDE.md backup
-│   ├── ARCHITECTURE.md         # System diagram (Mermaid)
-│   ├── CHANGELOG.md            # Version history
-│   ├── CHANGELOG-archive.md    # Older changelog sections (rotated from CHANGELOG.md)
-│   ├── CODING-GUIDELINES.md    # Domain-specific coding knowledge
-│   ├── GOVERNANCE.md           # Project governance
-│   ├── IMPROVEMENTS.md         # Potential improvements
-│   ├── STATUS.md               # Project status dashboard
-│   ├── TODO.md                 # Actionable to-do items
-│   ├── readme-qr-code.png             # QR code linking to this repo
-│   ├── REMINDERS.md            # Reminders for Developer (developer's own notes)
-│   ├── SESSION-CONTEXT.md      # Previous Session Context (Claude-written session log)
-│   ├── SKILLS-REFERENCE.md     # Complete Claude Code skills inventory (custom + imported + bundled)
-│   ├── repository.version.txt  # Repo version (v01.XXr — bumps every push)
-│   ├── TOKEN-BUDGETS.md        # Token cost reference for CLAUDE.md
-│   └── SUPPORT.md              # Getting help
-├── scripts/
-│   ├── init-repo.sh            # One-shot fork initialization script
-│   └── setup-gas-project.sh    # GAS project file creation script
-├── .gitattributes              # Line ending normalization (LF)
-├── .editorconfig               # Editor formatting rules (indent, charset, EOL)
-├── .gitignore                  # Git ignore patterns
-├── CITATION.cff                # Citation metadata
-├── CLAUDE.md                   # Developer instructions
-├── CODE_OF_CONDUCT.md          # Community standards
-├── CONTRIBUTING.md             # How to contribute
-├── LICENSE.md                  # Proprietary license
-└── SECURITY.md                 # Vulnerability reporting
+├── live-site-pages/             # [template] Deployed to GitHub Pages
+│   ├── .nojekyll               # [template] Disables Jekyll processing on GitHub Pages
+│   ├── index.html              # [template] Live landing page
+│   ├── gas-project-creator.html       # [template] GAS project creator dashboard
+│   ├── gas-code-templates/       # [template] GAS code files (.js.txt) for Copy Code.gs buttons
+│   │   └── gas-project-creator-code.js.txt # [template] Shared GAS template source
+│   ├── html-versions/           # [template] HTML page version files for auto-refresh polling
+│   │   ├── indexhtml.version.txt          # [template]
+│   │   └── gas-project-creatorhtml.version.txt # [template]
+│   ├── gs-versions/             # [template] GAS version files for GAS version pill polling
+│   │   └── indexgs.version.txt            # [template]
+│   ├── html-changelogs/         # [template] HTML changelogs (source of truth + deployed)
+│   │   ├── indexhtml.changelog.md                 # [template] Homepage changelog
+│   │   ├── indexhtml.changelog-archive.md         # [template] Older sections (rotated)
+│   │   ├── gas-project-creatorhtml.changelog.md   # [template] GAS Project Creator changelog
+│   │   └── gas-project-creatorhtml.changelog-archive.md  # [template] Older sections (rotated)
+│   ├── gs-changelogs/           # [template] GAS changelogs (source of truth + deployed)
+│   │   ├── indexgs.changelog.md                   # [template] Index GAS changelog
+│   │   └── indexgs.changelog-archive.md           # [template] Older sections (rotated)
+│   └── sounds/                 # [template] Audio feedback files
+│       ├── Website_Ready_Voice_1.mp3   # [template] "Website Ready" splash sound
+│       └── Code_Ready_Voice_1.mp3      # [template] "Code Ready" splash sound
+├── live-site-templates/        # [template] Templates for new pages
+│   ├── HtmlAndGasTemplateAutoUpdate.html     # [template] Universal HTML page template (GAS features auto-activate when gs.version.txt exists)
+│   └── HtmlAndGasTemplateAutoUpdatehtml.version.txt # [template] Template version file (frozen at v01.00w)
+├── googleAppsScripts/          # [template] Google Apps Script projects
+│   └── Index/                 # [template] GAS for live-site-pages/index.html
+│       ├── index.gs           # [template] Self-updating GAS web app
+│       └── index.config.json  # [template] Project config (source of truth)
+├── .claude/                   # [template]
+│   ├── rules/                  # [template] Always-loaded + path-scoped rules
+│   │   ├── behavioral-rules.md        # [template] Always loaded — execution style, pushback, etc.
+│   │   ├── changelogs.md              # [template] Path-scoped — CHANGELOG rules
+│   │   ├── chat-bookends.md           # [template] Always loaded — response formatting rules
+│   │   ├── chat-bookends-reference.md # [template] Always loaded — bookend examples & tables
+│   │   ├── gas-scripts.md             # [template] Path-scoped — GAS rules
+│   │   ├── html-pages.md             # [template] Path-scoped — HTML page rules
+│   │   ├── init-scripts.md           # [template] Path-scoped — init script rules
+│   │   ├── output-formatting.md      # [template] Always loaded — CLI styling, attribution
+│   │   ├── repo-docs.md              # [template] Path-scoped — documentation rules
+│   │   └── workflows.md              # [template] Path-scoped — workflow rules
+│   ├── skills/                  # [template] Invokable workflow skills
+│   │   ├── imported--diff-review/       # [template] /diff-review — pre-push differential review
+│   │   │   └── SKILL.md                # [template]
+│   │   ├── imported--frontend-design/   # [template] /frontend-design — distinctive UI creation
+│   │   │   └── SKILL.md                # [template]
+│   │   ├── imported--git-cleanup/       # [template] /git-cleanup — stale branch/worktree cleanup
+│   │   │   └── SKILL.md                # [template]
+│   │   ├── imported--security-review/   # [template] /security-review — OWASP/web security audit
+│   │   │   └── SKILL.md                # [template]
+│   │   ├── imported--skill-creator/     # [template] /skill-creator — create new skills
+│   │   │   └── SKILL.md                # [template]
+│   │   ├── imported--webapp-testing/    # [template] /webapp-testing — Playwright page testing
+│   │   │   └── SKILL.md                # [template]
+│   │   ├── initialize/          # [template] /initialize — first deployment setup
+│   │   │   └── SKILL.md        # [template]
+│   │   ├── maintenance-mode/    # [template] /maintenance-mode — toggle maintenance overlay
+│   │   │   └── SKILL.md        # [template]
+│   │   ├── new-page/            # [template] /new-page — create new HTML page with boilerplate
+│   │   │   └── SKILL.md        # [template]
+│   │   ├── phantom-update/      # [template] /phantom-update — timestamp alignment
+│   │   │   └── SKILL.md        # [template]
+│   │   ├── reconcile/           # [template] /reconcile — end multi-session mode
+│   │   │   └── SKILL.md        # [template]
+│   │   └── remember-session/    # [template] /remember-session — save session context
+│   │       └── SKILL.md        # [template]
+│   └── settings.json           # [template] Claude Code project settings
+├── .github/                   # [template]
+│   ├── workflows/              # [template] CI/CD pipeline
+│   ├── ISSUE_TEMPLATE/         # [template] Bug report & feature request forms
+│   ├── PULL_REQUEST_TEMPLATE.md # [template] PR checklist
+│   ├── FUNDING.yml             # [template] Sponsor button config
+│   └── last-processed-commit.sha # [template] Inherited branch guard (commit SHA tracking)
+├── repository-information/    # [template]
+│   ├── backups/                # [template] Temporary safety-net backups of critical files
+│   │   └── CLAUDE.md.bak      # [template] Latest CLAUDE.md backup
+│   ├── ARCHITECTURE.md         # [template] System diagram (Mermaid)
+│   ├── CHANGELOG.md            # [template] Version history
+│   ├── CHANGELOG-archive.md    # [template] Older changelog sections (rotated from CHANGELOG.md)
+│   ├── CODING-GUIDELINES.md    # [template] Domain-specific coding knowledge
+│   ├── GOVERNANCE.md           # [template] Project governance
+│   ├── IMPROVEMENTS.md         # [template] Potential improvements
+│   ├── STATUS.md               # [template] Project status dashboard
+│   ├── TODO.md                 # [template] Actionable to-do items
+│   ├── readme-qr-code.png             # [template] QR code linking to this repo
+│   ├── REMINDERS.md            # [template] Reminders for Developer (developer's own notes)
+│   ├── SESSION-CONTEXT.md      # [template] Previous Session Context (Claude-written session log)
+│   ├── SKILLS-REFERENCE.md     # [template] Complete Claude Code skills inventory (custom + imported + bundled)
+│   ├── repository.version.txt  # [template] Repo version (v01.XXr — bumps every push)
+│   ├── TOKEN-BUDGETS.md        # [template] Token cost reference for CLAUDE.md
+│   └── SUPPORT.md              # [template] Getting help
+├── scripts/                   # [template]
+│   ├── init-repo.sh            # [template] One-shot fork initialization script
+│   └── setup-gas-project.sh    # [template] GAS project file creation script
+├── .gitattributes              # [template] Line ending normalization (LF)
+├── .editorconfig               # [template] Editor formatting rules (indent, charset, EOL)
+├── .gitignore                  # [template] Git ignore patterns
+├── CITATION.cff                # [template] Citation metadata
+├── CLAUDE.md                   # [template] Developer instructions
+├── CODE_OF_CONDUCT.md          # [template] Community standards
+├── CONTRIBUTING.md             # [template] How to contribute
+├── LICENSE.md                  # [template] Proprietary license
+└── SECURITY.md                 # [template] Vulnerability reporting
 ```
 
 ## Documentation
