@@ -42,6 +42,6 @@ Never use generic AI-generated aesthetics:
 
 ## Applying to This Repo
 
-When building new pages in `live-site-pages/`, use the template from `live-site-templates/HtmlTemplateAutoUpdate.html` as a starting point, then apply these design principles to create a distinctive page that still includes the required version polling, splash overlay, and auto-refresh infrastructure.
+When building new pages in `live-site-pages/`, use the template from `live-site-templates/HtmlAndGasTemplateAutoUpdate.html` as a starting point, then apply these design principles to create a distinctive page that still includes the required version polling, splash overlay, and auto-refresh infrastructure.
 
 Developed by: ShadowAISolutions

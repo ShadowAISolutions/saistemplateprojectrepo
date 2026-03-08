@@ -19,7 +19,7 @@ The init script automates all fork/clone initialization. It is run by the Templa
 - Updates CLAUDE.md Template Variables table (`IS_TEMPLATE_REPO` → `No`)
 - Replaces STATUS.md `*(deploy to activate)*` placeholder with live site URL
 - Restructures README.md (title, placeholder block, removes setup sections)
-- Generates QR code for the fork's live site URL
+- Generates QR code for the fork's GitHub repo URL
 - Runs verification grep to catch any remaining old values
 
 ### Custom developer name

@@ -349,7 +349,7 @@ echo ""
 # ── PHASE 6: QR CODE GENERATION ──
 echo "[Phase 6] Generating QR code for live site URL..."
 
-LIVE_URL="https://${ORG_NAME}.github.io/${REPO_NAME}/"
+REPO_URL="https://github.com/${ORG_NAME}/${REPO_NAME}"
 QR_PATH="$REPO_ROOT/repository-information/readme-qr-code.png"
 
 if command -v python3 &>/dev/null; then
@@ -358,18 +358,18 @@ if command -v python3 &>/dev/null; then
     echo "  qrcode package not found, installing..."
     pip install qrcode[pil] --quiet 2>/dev/null || pip3 install qrcode[pil] --quiet 2>/dev/null || {
       echo "  WARN: Could not install qrcode package. Skipping QR code generation."
-      echo "  Manual step: pip install qrcode[pil] && python3 -c \"import qrcode; qrcode.make('${LIVE_URL}').save('${QR_PATH}')\""
+      echo "  Manual step: pip install qrcode[pil] && python3 -c \"import qrcode; qrcode.make('${REPO_URL}').save('${QR_PATH}')\""
       QR_SKIP=1
     }
   fi
   if [ "${QR_SKIP:-0}" = "0" ]; then
-    python3 -c "import qrcode; qrcode.make('${LIVE_URL}').save('${QR_PATH}')" && \
+    python3 -c "import qrcode; qrcode.make('${REPO_URL}').save('${QR_PATH}')" && \
       echo "  Generated: $QR_PATH" || \
       echo "  WARN: QR code generation failed. Skipping."
   fi
 else
   echo "  WARN: python3 not found. Skipping QR code generation."
-  echo "  Manual step: python3 -c \"import qrcode; qrcode.make('${LIVE_URL}').save('${QR_PATH}')\""
+  echo "  Manual step: python3 -c \"import qrcode; qrcode.make('${REPO_URL}').save('${QR_PATH}')\""
 fi
 echo ""
 

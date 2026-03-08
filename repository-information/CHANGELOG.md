@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 15/100`
+`Sections: 16/100`
 
 ## [Unreleased]
+
+## [v01.16r] — 2026-03-08 04:25:29 PM EST
+
+### Fixed
+- Corrected QR code to point to GitHub repo URL instead of GitHub Pages URL
+- Updated Pre-Commit #14 rule and init script to generate QR codes with the repo URL
+- Fixed stale `HtmlTemplateAutoUpdate` file references in `html-pages.md` and `imported--frontend-design` skill after repo rename
 
 ## [v01.15r] — 2026-03-08 04:19:59 PM EST
 
