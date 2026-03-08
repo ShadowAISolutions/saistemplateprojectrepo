@@ -277,24 +277,70 @@ fi
 echo ""
 
 # ── PHASE 5b: TEMPLATE ORIGIN LABELS ──
-echo "[Phase 5b] Upgrading [template] labels to [template · initialized]..."
+echo "[Phase 5b] Upgrading [template] labels to [template · initialized] for init-modified files..."
 
-# README.md tree comments: [template] -> [template · initialized]
+# Only files actually modified by init get [template · initialized].
+# Files init doesn't touch stay [template] so post-init edits produce
+# [template · modified] (not [template · initialized · modified]).
+# Build the list from REPLACE_FILES + CLAUDE.md + readme-qr-code.png.
+INIT_MODIFIED_BASENAMES=()
+for f in "${REPLACE_FILES[@]}"; do
+  INIT_MODIFIED_BASENAMES+=("$(basename "$f")")
+done
+# Add files modified by other phases (not in REPLACE_FILES)
+INIT_MODIFIED_BASENAMES+=("CLAUDE.md" "readme-qr-code.png")
+# Deduplicate
+INIT_MODIFIED_BASENAMES=($(printf '%s\n' "${INIT_MODIFIED_BASENAMES[@]}" | sort -u))
+
+# README.md tree: only update [template] labels on lines containing init-modified filenames
 if [ -f "$README_FILE" ]; then
-  sed -i 's/\[template\]/[template · initialized]/g' "$README_FILE"
-  echo "  Updated README.md tree labels."
+  UPDATED_README=0
+  for bname in "${INIT_MODIFIED_BASENAMES[@]}"; do
+    # Escape dots for sed regex
+    escaped=$(echo "$bname" | sed 's/\./\\./g')
+    if grep -q "${escaped}.*\[template\]" "$README_FILE" 2>/dev/null; then
+      sed -i "/${escaped}/s/\[template\]/[template · initialized]/" "$README_FILE"
+      UPDATED_README=$((UPDATED_README + 1))
+    fi
+  done
+  echo "  Updated $UPDATED_README README.md tree labels."
 fi
 
-# ARCHITECTURE.md Mermaid nodes and subgraph titles
+# ARCHITECTURE.md: same targeted approach
 ARCH_FILE="$REPO_ROOT/repository-information/ARCHITECTURE.md"
 if [ -f "$ARCH_FILE" ]; then
-  sed -i 's/\[template\]/[template · initialized]/g' "$ARCH_FILE"
-  echo "  Updated ARCHITECTURE.md diagram labels."
+  UPDATED_ARCH=0
+  for bname in "${INIT_MODIFIED_BASENAMES[@]}"; do
+    escaped=$(echo "$bname" | sed 's/\./\\./g')
+    if grep -q "${escaped}.*\[template\]" "$ARCH_FILE" 2>/dev/null; then
+      sed -i "/${escaped}/s/\[template\]/[template · initialized]/" "$ARCH_FILE"
+      UPDATED_ARCH=$((UPDATED_ARCH + 1))
+    fi
+  done
+  # Also update subgraph titles that reference init-modified directories
+  # (e.g. "live-site-pages/ — Hosted Content [template]" when index.html was modified)
+  for dir_label in "live-site-pages" "repository-information" ".github"; do
+    if grep -q "${dir_label}.*\[template\]" "$ARCH_FILE" 2>/dev/null; then
+      sed -i "/${dir_label}/s/\[template\]/[template · initialized]/" "$ARCH_FILE"
+      UPDATED_ARCH=$((UPDATED_ARCH + 1))
+    fi
+  done
+  echo "  Updated $UPDATED_ARCH ARCHITECTURE.md diagram labels."
 fi
 
-# STATUS.md Origin column: template -> initialized
+# STATUS.md Origin column: only update rows for init-modified files
 STATUS_FILE="$REPO_ROOT/repository-information/STATUS.md"
 if [ -f "$STATUS_FILE" ]; then
+  UPDATED_STATUS=0
+  for bname in "${INIT_MODIFIED_BASENAMES[@]}"; do
+    escaped=$(echo "$bname" | sed 's/\./\\./g')
+    if grep -q "${escaped}.*| template |" "$STATUS_FILE" 2>/dev/null; then
+      sed -i "/${escaped}/s/| template |/| initialized |/" "$STATUS_FILE"
+      UPDATED_STATUS=$((UPDATED_STATUS + 1))
+    fi
+  done
+  echo "  Updated $UPDATED_STATUS STATUS.md Origin column values."
+fi
   sed -i 's/| template |/| initialized |/g' "$STATUS_FILE"
   echo "  Updated STATUS.md Origin column values."
 fi
