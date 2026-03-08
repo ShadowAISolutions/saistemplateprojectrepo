@@ -327,26 +327,6 @@ jobs:
       #       --max-time 120 || true
       # ──────────────
 
-      - name: Deploy Testation7
-        if: steps.guard.outputs.skip != 'true'
-        run: |
-          PRE=${{ steps.merge.outputs.pre_merge_sha }}
-          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Testation7/testation7.gs" && \
-          curl -L -X POST \
-            "https://script.google.com/macros/s/AKfycby4HQJQmuZr6Mt3wqrpY_2g9_B6QaF_c1tFbbFX5n9SIBmooPHrWWPp4MFekQ2iEtj1/exec" \
-            -d "action=deploy" \
-            --max-time 120 || true
-
-      - name: Deploy Testation8
-        if: steps.guard.outputs.skip != 'true'
-        run: |
-          PRE=${{ steps.merge.outputs.pre_merge_sha }}
-          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Testation8/testation8.gs" && \
-          curl -L -X POST \
-            "https://script.google.com/macros/s/AKfycbyYVpND1UzIP-8rI_zDasIXQ9QqlTS2Y8RseBs55KZQOuYn9R0l5F1FxCmP4h9akQxV/exec" \
-            -d "action=deploy" \
-            --max-time 120 || true
-
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |

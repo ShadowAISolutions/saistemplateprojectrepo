@@ -6,8 +6,6 @@
 |------|------|---------|----------|--------|
 | Landing Page | `live-site-pages/index.html` | v01.00w | [View](https://ShadowAISolutions.github.io/htmltemplateautoupdate/) | Active |
 | GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.00w | [View](https://ShadowAISolutions.github.io/htmltemplateautoupdate/gas-project-creator.html) | Active |
-| Testation7 | `live-site-pages/testation7.html` | v01.00w | [View](https://ShadowAISolutions.github.io/htmltemplateautoupdate/testation7.html) | Active |
-| Testation8 | `live-site-pages/testation8.html` | v01.00w | [View](https://ShadowAISolutions.github.io/htmltemplateautoupdate/testation8.html) | Active |
 
 
 ## GAS Projects
@@ -15,8 +13,6 @@
 | Project | Code File | Embedding Page | GAS Version | Status |
 |---------|-----------|----------------|-------------|--------|
 | Index | `googleAppsScripts/Index/index.gs` | `live-site-pages/index.html` | 01.00g | Active |
-| Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `live-site-pages/testation7.html` | 01.00g | Active |
-| Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `live-site-pages/testation8.html` | 01.00g | Active |
 
 
 ## Templates
