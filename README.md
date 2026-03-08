@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-08 05:23:48 PM EST` · Repo version: `v01.23r`
+Last updated: `2026-03-08 05:34:53 PM EST` · Repo version: `v01.24r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -152,30 +152,40 @@ saistemplateprojectrepo/
 │   ├── .nojekyll               # [template] Disables Jekyll processing on GitHub Pages
 │   ├── index.html              # [template] Live landing page
 │   ├── gas-project-creator.html       # [template] GAS project creator dashboard
+│   ├── test.html                      # [template] Test Title page
 │   ├── templates/               # [template] Template source files for creating new pages and GAS scripts
 │   │   ├── HtmlAndGasTemplateAutoUpdate.html.txt     # [template] HTML page template (GAS features auto-activate when gs.version.txt exists)
 │   │   ├── HtmlAndGasTemplateAutoUpdatehtml.version.txt # [template] Template version file (frozen at v01.00w)
 │   │   └── gas-project-creator-code.js.txt # [template] GAS script template
 │   ├── html-versions/           # [template] HTML page version files for auto-refresh polling
 │   │   ├── indexhtml.version.txt          # [template]
-│   │   └── gas-project-creatorhtml.version.txt # [template]
+│   │   ├── gas-project-creatorhtml.version.txt # [template]
+│   │   └── testhtml.version.txt           # [template]
 │   ├── gs-versions/             # [template] GAS version files for GAS version pill polling
-│   │   └── indexgs.version.txt            # [template]
+│   │   ├── indexgs.version.txt            # [template]
+│   │   └── testgs.version.txt             # [template]
 │   ├── html-changelogs/         # [template] HTML changelogs (source of truth + deployed)
 │   │   ├── indexhtml.changelog.md                 # [template] Homepage changelog
 │   │   ├── indexhtml.changelog-archive.md         # [template] Older sections (rotated)
 │   │   ├── gas-project-creatorhtml.changelog.md   # [template] GAS Project Creator changelog
-│   │   └── gas-project-creatorhtml.changelog-archive.md  # [template] Older sections (rotated)
+│   │   ├── gas-project-creatorhtml.changelog-archive.md  # [template] Older sections (rotated)
+│   │   ├── testhtml.changelog.md                  # [template] Test page changelog
+│   │   └── testhtml.changelog-archive.md          # [template] Older sections (rotated)
 │   ├── gs-changelogs/           # [template] GAS changelogs (source of truth + deployed)
 │   │   ├── indexgs.changelog.md                   # [template] Index GAS changelog
-│   │   └── indexgs.changelog-archive.md           # [template] Older sections (rotated)
+│   │   ├── indexgs.changelog-archive.md           # [template] Older sections (rotated)
+│   │   ├── testgs.changelog.md                    # [template] Test GAS changelog
+│   │   └── testgs.changelog-archive.md            # [template] Older sections (rotated)
 │   └── sounds/                 # [template] Audio feedback files
 │       ├── Website_Ready_Voice_1.mp3   # [template] "Website Ready" splash sound
 │       └── Code_Ready_Voice_1.mp3      # [template] "Code Ready" splash sound
 ├── googleAppsScripts/          # [template] Google Apps Script projects
-│   └── Index/                 # [template] GAS for live-site-pages/index.html
-│       ├── index.gs           # [template] Self-updating GAS web app
-│       └── index.config.json  # [template] Project config (source of truth)
+│   ├── Index/                 # [template] GAS for live-site-pages/index.html
+│   │   ├── index.gs           # [template] Self-updating GAS web app
+│   │   └── index.config.json  # [template] Project config (source of truth)
+│   └── Test/                  # [template] GAS for live-site-pages/test.html
+│       ├── test.gs            # [template] Self-updating GAS web app
+│       └── test.config.json   # [template] Project config (source of truth)
 ├── .claude/                   # [template]
 │   ├── rules/                  # [template] Always-loaded + path-scoped rules
 │   │   ├── behavioral-rules.md        # [template] Always loaded — execution style, pushback, etc.

@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 23/100`
+`Sections: 24/100`
 
 ## [Unreleased]
+
+## [v01.24r] — 2026-03-08 05:34:53 PM EST
+
+### Added
+- Set up new GAS project "Test" with full page, script, config, version files, changelogs, and workflow deploy step
+- Added Test project row to STATUS.md Hosted Pages table
+- Added Test project nodes and relationships to ARCHITECTURE.md diagram
+- Added Test project files to README.md project structure tree
+- Added GAS deploy step for Test in auto-merge workflow
 
 ## [v01.23r] — 2026-03-08 05:23:48 PM EST
 

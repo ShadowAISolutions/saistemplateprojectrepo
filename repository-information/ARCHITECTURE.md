@@ -40,15 +40,18 @@ graph TB
             INDEX["[template] index.html"]
             GASTPL_PAGE["[template] gas-project-creator.html"]
             SND1["[template] sounds/Website_Ready_Voice_1.mp3"]
+            TEST_PAGE["[template] test.html"]
             SND2["[template] sounds/Code_Ready_Voice_1.mp3"]
 
             subgraph "html-versions/ [template]"
                 VERTXT["[template] indexhtml.version.txt"]
                 GASTPL_VERTXT["[template] gas-project-creatorhtml.version.txt"]
+                TEST_VERTXT["[template] testhtml.version.txt"]
             end
 
             subgraph "gs-versions/ [template]"
                 INDEX_GSVER["[template] indexgs.version.txt"]
+                TEST_GSVER["[template] testgs.version.txt"]
             end
 
             subgraph "html-changelogs/ [template]"
@@ -56,11 +59,15 @@ graph TB
                 INDEX_CL_ARCH["[template] indexhtml.changelog-archive.md"]
                 GASTPL_CL["[template] gas-project-creatorhtml.changelog.md"]
                 GASTPL_CL_ARCH["[template] gas-project-creatorhtml.changelog-archive.md"]
+                TEST_CL["[template] testhtml.changelog.md"]
+                TEST_CL_ARCH["[template] testhtml.changelog-archive.md"]
             end
 
             subgraph "gs-changelogs/ [template]"
                 INDEX_GCL["[template] indexgs.changelog.md"]
                 INDEX_GCL_ARCH["[template] indexgs.changelog-archive.md"]
+                TEST_GCL["[template] testgs.changelog.md"]
+                TEST_GCL_ARCH["[template] testgs.changelog-archive.md"]
             end
         end
 
@@ -82,6 +89,8 @@ graph TB
             direction LR
             GAS_INDEX["[template] googleAppsScripts/Index/index.gs"]
             GAS_CFG["[template] index.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
+            GAS_TEST["[template] googleAppsScripts/Test/test.gs"]
+            GAS_TEST_CFG["[template] test.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
         end
 
         subgraph "GAS Self-Update Loop"
@@ -120,7 +129,11 @@ graph TB
     TPL -.->|"copy to create\nnew pages"| INDEX
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_INDEX
     GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| INDEX
+    GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TEST
+    GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| TEST_PAGE
     GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
+    GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
+    TEST_PAGE -.->|"iframes"| GAS_APP
     LIVE -.->|"serves"| BROWSER
     INDEX -.->|"iframes"| GAS_APP
     GAS_POSTMSG -.->|"tells embedding\npage to reload"| BROWSER
