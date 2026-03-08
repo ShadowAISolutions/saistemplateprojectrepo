@@ -4,6 +4,35 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-08 01:56:47 PM EST
+**Repo version:** v01.01r
+
+### What was done
+- Added "Repo Audit" command to CLAUDE.md — comprehensive cross-system consistency audit using parallel subagents across 10 categories (v04.24r, before reset)
+- Switched `TEMPLATE_DEPLOY` to `Off` — reset ALL versions and changelogs to initial state: repository.version.txt → v01.00r, all html.version.txt → |v01.00w|, all HTML meta tags → v01.00w, all .gs VERSION → "01.00g", all gs.version.txt → 01.00g, STATUS.md versions reset and live site links → placeholder, CHANGELOG.md cleared (85 sections + 239 archived), all page/GAS changelogs and archives cleared
+- Switched `TEMPLATE_DEPLOY` back to `On` — restored live site URLs in STATUS.md, bumped repo version to v01.01r, added CHANGELOG entry (v01.01r)
+
+### Where we left off
+All changes committed and merged to main. The repo is now at clean initial versions (v01.01r) with `TEMPLATE_DEPLOY` = `On` and deployment active. All page/GAS versions are at their initial values (v01.00w / 01.00g). Changelogs have a clean slate — only one entry (v01.01r, the TEMPLATE_DEPLOY re-enable).
+
+### Key decisions made
+- Full version reset performed as part of the `TEMPLATE_DEPLOY` Off → On cycle — forks will inherit clean starting versions
+- All 28 files across the repo were reset in a single commit
+- STATUS.md live site links restored when toggling back to On
+
+### Active context
+- Branch: `claude/fix-changelog-archive-links-Zq8OV`
+- Repo version: v01.01r
+- Page versions: all at v01.00w (index, gas-project-creator, testation7, testation8)
+- GAS versions: all at 01.00g (index, testation7, testation8)
+- Active reminders in REMINDERS.md (developer-owned):
+  - "Check test.html issues in Chrome DevTools" (note: test.html was deleted in a prior session — reminder may be obsolete)
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-07 01:04:32 PM EST
 **Repo version:** v04.20r
 
@@ -15,38 +44,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### Where we left off
 All changes committed and merged to main. The user clarified that the repo-level CHANGELOG.md is allowed to have detailed internal descriptions, while only the public-facing page/GAS changelogs should use generic entries for internal changes. The rules already reflect this correctly (the change was scoped to Pre-Commit #17 only).
-
-### Key decisions made
-- Divider alignment: left-aligned is the standard, not centered — applied across all pages and template
-- Divider length: ~60 chars, not full-width — shorter for readability
-- Changelog gap policy: every version bump must have a page/GAS changelog entry, even for internal-only changes — use `- Minor internal improvements` under `### Changed`
-- Repo CHANGELOG.md is exempt from the "generic entry" rule — it can include detailed internal descriptions since it's not public-facing
-
-### Active context
-- Branch: `claude/align-dividers-left-enG0o`
-- Repo version: v04.20r
-- Page versions: index v01.29w, gas-project-creator v01.67w, testation7 v01.09w, testation8 v01.08w
-- GAS versions: index 01.01g, testation7 01.03g, testation8 01.02g
-- Active reminders in REMINDERS.md (developer-owned):
-  - "Check test.html issues in Chrome DevTools" (note: test.html was deleted in a prior session — reminder may be obsolete)
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-07 12:46:28 AM EST
-**Repo version:** v04.07r
-
-### What was done
-- Established Template Source Propagation rule (Pre-Commit #20) — when `HtmlAndGasTemplateAutoUpdate.html` or `gas-project-creator-code.js.txt` is modified, propagate changes to all existing pages/GAS scripts with conflict detection
-- Propagated all universal template features to `index.html` (v01.22w) and `gas-project-creator.html` (v01.60w) — they were outdated. 8 categories: dual splash system, `showUpdateSplash()`, code sound caching, GAS pill, GAS changelog popup, GAS polling IIFE with auto-detect, `_htmlPollTime` anti-sync, wake lock (v04.05r)
-- Moved GAS pill 24px to the right (`right: 170px` → `right: 146px`) in template and all 4 pages (v04.06r)
-- Bumped homepage version v01.23w → v01.24w to trigger live site reload (v04.07r)
-- Set up Testation8 GAS project — created all files, registered in tables and workflow (earlier in session, pre-v04.05r)
-- Deleted old HTML-only template (`HtmlTemplateAutoUpdate.html`) — consolidated to single universal template (earlier in session)
-
-### Where we left off
-All changes committed and merged to main. All 4 pages are now at current template features. The 3 existing `.gs` files (`index.gs`, `testation7.gs`, `testation8.gs`) have never been compared against the GAS template (`gas-project-creator-code.js.txt`) — identified as a potential follow-up task.
 
 Developed by: ShadowAISolutions
