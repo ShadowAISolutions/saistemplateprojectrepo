@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 54/100`
+`Sections: 55/100`
 
 ## [Unreleased]
+
+## [v01.55r] — 2026-03-09 03:12:42 PM EST
+
+### Changed
+- Swapped splash screen colors: "Website Ready" is now green (#1b5e20), "Code Ready" is now blue (#0d47a1) — applied across all pages and template
+- Updated color references in README, ARCHITECTURE.md comments, html-pages.md rules, and new-page skill
+
+#### `index.html` — v01.01w
+
+##### Changed
+- "Website Ready" splash screen changed to green, "Code Ready" splash changed to blue
+
+#### `test.html` — v01.01w
+
+##### Changed
+- "Website Ready" splash screen changed to green, "Code Ready" splash changed to blue
+
+#### `gas-project-creator.html` — v01.02w
+
+##### Changed
+- "Website Ready" splash screen changed to green, "Code Ready" splash changed to blue
 
 ## [v01.54r] — 2026-03-09 02:46:48 PM EST
 

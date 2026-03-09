@@ -19,7 +19,7 @@ Create a new HTML embedding page with all the required files and boilerplate.
 1. **Copy the template** — start from `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` (the HTML page template), which includes:
    - Version file polling logic (fetches html.version.txt on load, polls every 10s)
    - Version indicator pill (bottom-right corner)
-   - Blue "Website Ready" + Green "Code Ready" splash overlays + sound playback
+   - Green "Website Ready" + Blue "Code Ready" splash overlays + sound playback
    - Orange "Under Maintenance" splash overlay
    - AudioContext handling and screen wake lock
    - GAS version pill + polling (auto-activates when `gs.version.txt` exists — stays hidden otherwise)

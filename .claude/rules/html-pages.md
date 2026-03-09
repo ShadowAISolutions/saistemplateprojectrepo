@@ -30,7 +30,7 @@ paths:
 The html.version.txt polling system supports a **maintenance mode** that displays a full-screen orange overlay when the first field is `maintenance`. The format always uses pipe (`|`) delimiters — you never need to add or remove pipes, just edit the fields:
 - **Activate**: change the first field from empty to `maintenance` **and** fill the third field with the **exact display string** — the JS renders it verbatim with no reformatting. Use `As of:` prefix and pre-formatted date (e.g. `|v01.02w|` → `maintenance|v01.02w|As of: 10:00:00 PM EST 02/26/2026`). To get the value, run `TZ=America/New_York date '+As of: %I:%M:%S %p EST %m/%d/%Y'`. Custom messages also work (e.g. `maintenance|v01.02w|Back online soon!` → displays "Back online soon!")
 - **Deactivate**: clear the first field back to empty (e.g. `maintenance|v01.02w|` → `|v01.02w|`)
-- When the polling logic detects the `maintenance` prefix, it displays an orange full-screen overlay with the developer logo centered and a "🔧This Webpage is Undergoing Maintenance🔧" title — similar to the green "Website Ready" splash but persistent
+- When the polling logic detects the `maintenance` prefix, it displays an orange full-screen overlay with the developer logo centered and a "🔧This Webpage is Undergoing Maintenance🔧" title — similar to the "Website Ready" splash but persistent
 - The overlay stays visible as long as the html.version.txt content starts with `maintenance` — it does not auto-dismiss
 - The version indicator pill remains visible on top of the maintenance overlay (the maintenance overlay uses `z-index: 9998`, below the version indicator's `z-index: 9999`)
 - When the `maintenance` prefix is removed: if the underlying version also changed, the page auto-reloads; if the version is unchanged, the overlay fades out gracefully
@@ -57,12 +57,12 @@ When creating a **new** HTML embedding page, follow every step below:
 1. **Copy the template** — start from `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` (the HTML page template), which already includes:
    - Version file polling logic (fetches html.version.txt on load, then polls every 10 seconds)
    - Version indicator pill (bottom-right corner)
-   - Green "Website Ready" splash overlay + sound playback
+   - Green "Website Ready" + blue "Code Ready" splash overlays + sound playback
    - Orange "Under Maintenance" splash overlay (triggered by `maintenance|` prefix in html.version.txt)
    - AudioContext handling and screen wake lock
    - GAS version pill + GAS version polling (auto-activates when `gs.version.txt` exists — stays hidden otherwise)
    - GAS changelog popup (auto-activates with GAS pill)
-   - Blue "Website Ready" + Green "Code Ready" splash screens (for HTML and GAS updates respectively)
+   - Green "Website Ready" + Blue "Code Ready" splash screens (for HTML and GAS updates respectively)
 2. **Choose the directory** — create a new subdirectory under `live-site-pages/` named after the project (e.g. `live-site-pages/my-project/`)
 3. **Create the version file** — place a `<page-name>html.version.txt` file in `live-site-pages/html-versions/` (e.g. `html-versions/indexhtml.version.txt` for `index.html`), containing the initial version string in pipe-delimited format (e.g. `|v01.00w|`). This is the **single source of truth** for the page version — the HTML contains no hardcoded version
 4. **Update the polling URL in the template** — ensure the JS version-file URL derivation matches the HTML filename (the template defaults to deriving it from the page's own filename)

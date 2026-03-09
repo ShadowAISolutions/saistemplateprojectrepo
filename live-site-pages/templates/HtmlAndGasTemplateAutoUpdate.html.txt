@@ -18,8 +18,8 @@
     }
     .splash .splash-title { color: #fff; font: bold 36px/1 sans-serif; margin-bottom: 20px; }
     .splash img { max-width: 500px; max-height: 500px; }
-    #splash-web { background: #0d47a1; }
-    #splash-code { background: #1b5e20; }
+    #splash-web { background: #1b5e20; }
+    #splash-code { background: #0d47a1; }
     #splash-maintenance { background: #b04000; z-index: 9998; }
     .maintenance-timestamp { color: rgba(255,255,255,0.85); font: 16px/1.4 monospace; margin-top: 20px; }
     #version-indicator {
@@ -159,7 +159,7 @@
 
   <script>
 /* tpl:7f3e9b2d */ // ── CONFIG ──
-    // Logo shown on the green "Website Ready" splash screen
+    // Logo shown on the "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var YOUR_ORG_LOGO_URL = 'https://logoipsum.com/logoipsum-avatar.png';
     var LOGO_URL = DEVELOPER_LOGO_URL;
