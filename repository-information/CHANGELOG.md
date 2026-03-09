@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 35/100`
+`Sections: 36/100`
 
 ## [Unreleased]
+
+## [v01.36r] — 2026-03-09 09:36:44 AM EST
+
+### Changed
+- Changed root `saistemplateprojectrepo/` in project structure tree back to plain link with a "Repository Root" bold group label above it (matching the style of other section labels)
+- Moved Claude Code section below Configuration section in the project structure tree
 
 ## [v01.35r] — 2026-03-09 09:32:27 AM EST
 

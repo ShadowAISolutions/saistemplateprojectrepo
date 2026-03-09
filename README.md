@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 09:32:27 AM EST` · Repo version: `v01.35r`
+Last updated: `2026-03-09 09:36:44 AM EST` · Repo version: `v01.36r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -18,7 +18,8 @@ Initialize your repository and Claude will update the live site link and QR code
 > <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
 
 <pre>
-<b>─── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> ───────────────────────────────────────────────────</b>
+<b>─── Repository Root ──────────────────────────────────────────────────────────</b>
+<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a>
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
@@ -64,6 +65,42 @@ Initialize your repository and Claude will update the live site link and QR code
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.gs">test.gs</a>            — [template] Self-updating GAS web app
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.config.json">test.config.json</a>   — [template] Project config (source of truth)
 │
+<b>─── GitHub Configuration ─────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github">.github/</a>                   — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows">workflows/</a>              — [template] CI/CD pipeline
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a>         — [template] Bug report &amp; feature request forms
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a> — [template] PR checklist
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml">FUNDING.yml</a>             — [template] Sponsor button config
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha">last-processed-commit.sha</a> — [template] Inherited branch guard (commit SHA tracking)
+│
+<b>─── Repository Information ───────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/ARCHITECTURE.md">ARCHITECTURE.md</a>         — [template] System diagram (Mermaid)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md">CHANGELOG-archive.md</a>    — [template] Older changelog sections (rotated from CHANGELOG.md)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md">CODING-GUIDELINES.md</a>    — [template] Domain-specific coding knowledge
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/GOVERNANCE.md">GOVERNANCE.md</a>           — [template] Project governance
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/STATUS.md">STATUS.md</a>               — [template] Project status dashboard
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TODO.md">TODO.md</a>                 — [template] Actionable to-do items
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/readme-qr-code.png">readme-qr-code.png</a>             — [template] QR code linking to this repo
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REMINDERS.md">REMINDERS.md</a>            — [template] Reminders for Developer (developer's own notes)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SESSION-CONTEXT.md">SESSION-CONTEXT.md</a>      — [template] Previous Session Context (Claude-written session log)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SKILLS-REFERENCE.md">SKILLS-REFERENCE.md</a>     — [template] Complete Claude Code skills inventory (custom + imported + bundled)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/repository.version.txt">repository.version.txt</a>  — [template] Repo version (v01.XXr — bumps every push)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TOKEN-BUDGETS.md">TOKEN-BUDGETS.md</a>        — [template] Token cost reference for CLAUDE.md
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md">SUPPORT.md</a>              — [template] Getting help
+│
+<b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
+│
+<b>─── Configuration ────────────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes">.gitattributes</a>              — [template] Line ending normalization (LF)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig">.editorconfig</a>               — [template] Editor formatting rules (indent, charset, EOL)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
+│
 <b>─── Claude Code ──────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude">.claude/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/rules">rules/</a>                  — [template] Always-loaded + path-scoped rules
@@ -103,42 +140,6 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/remember-session">remember-session/</a>    — [template] /remember-session — save session context
 │   │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/remember-session/SKILL.md">SKILL.md</a>        — [template]
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/settings.json">settings.json</a>           — [template] Claude Code project settings
-│
-<b>─── GitHub Configuration ─────────────────────────────────────────────────────</b>
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github">.github/</a>                   — [template]
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows">workflows/</a>              — [template] CI/CD pipeline
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a>         — [template] Bug report &amp; feature request forms
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a> — [template] PR checklist
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml">FUNDING.yml</a>             — [template] Sponsor button config
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha">last-processed-commit.sha</a> — [template] Inherited branch guard (commit SHA tracking)
-│
-<b>─── Repository Information ───────────────────────────────────────────────────</b>
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/ARCHITECTURE.md">ARCHITECTURE.md</a>         — [template] System diagram (Mermaid)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md">CHANGELOG-archive.md</a>    — [template] Older changelog sections (rotated from CHANGELOG.md)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md">CODING-GUIDELINES.md</a>    — [template] Domain-specific coding knowledge
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/GOVERNANCE.md">GOVERNANCE.md</a>           — [template] Project governance
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/STATUS.md">STATUS.md</a>               — [template] Project status dashboard
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TODO.md">TODO.md</a>                 — [template] Actionable to-do items
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/readme-qr-code.png">readme-qr-code.png</a>             — [template] QR code linking to this repo
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REMINDERS.md">REMINDERS.md</a>            — [template] Reminders for Developer (developer's own notes)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SESSION-CONTEXT.md">SESSION-CONTEXT.md</a>      — [template] Previous Session Context (Claude-written session log)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SKILLS-REFERENCE.md">SKILLS-REFERENCE.md</a>     — [template] Complete Claude Code skills inventory (custom + imported + bundled)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/repository.version.txt">repository.version.txt</a>  — [template] Repo version (v01.XXr — bumps every push)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TOKEN-BUDGETS.md">TOKEN-BUDGETS.md</a>        — [template] Token cost reference for CLAUDE.md
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md">SUPPORT.md</a>              — [template] Getting help
-│
-<b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
-│
-<b>─── Configuration ────────────────────────────────────────────────────────────</b>
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes">.gitattributes</a>              — [template] Line ending normalization (LF)
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig">.editorconfig</a>               — [template] Editor formatting rules (indent, charset, EOL)
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
 │
 <b>─── Documentation ────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CITATION.cff">CITATION.cff</a>                — [template] Citation metadata
