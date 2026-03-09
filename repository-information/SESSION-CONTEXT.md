@@ -4,26 +4,25 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-09 10:58:38 AM EST
-**Repo version:** v01.42r
+**Date:** 2026-03-09 02:35:24 PM EST
+**Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
+**Repo version:** v01.52r
 
 ### What was done
-- Extensive README project structure tree reordering (v01.25r through v01.42r) — reorganized section groups for better logical flow
-- Moved Repository Information section after Scripts section in the project structure tree (v01.42r — most recent change)
-- Multiple section moves throughout the session: GitHub Configuration and Configuration moved below Claude Code, various other group reorderings
+- Added `v` prefix to all GAS version values throughout the repo (v01.43r)
+- Fixed missing README.md entry in project structure tree (v01.44r)
+- Added version display links on live site page entries in README tree (v01.45r)
+- Moved version display links before descriptions, added `vNoGASg` placeholder (v01.46r, v01.47r)
+- Added mermaid.live URL link in ARCHITECTURE.md with pako-compressed encoding (v01.48r, v01.49r)
+- Fixed mermaid.live URL encoding — multiple iterations switching compression approaches (v01.50r, v01.51r, v01.52r)
 
 ### Where we left off
-All changes committed and merged to main. The README project structure tree has been reorganized extensively — the current order is: Live Site Pages → Google Apps Scripts → Scripts → Repository Information → Claude Code → GitHub Configuration → Configuration → Community → Documentation.
-
-### Key decisions made
-- Structure tree ordering was driven by user requests to reposition specific groups relative to each other
-- No page or GAS file modifications — all changes were README structure/documentation only
+All changes committed and merged to main. The mermaid.live URL in ARCHITECTURE.md has a single-character corruption (position 1102: 'F' instead of 'H') that was identified but not yet fixed — the session crashed before the fix could be applied.
 
 ### Active context
-- Branch: `claude/add-readme-structure-links-ASCcX`
-- Repo version: v01.42r
+- Repo version: v01.52r
 - Pages: index (v01.00w), gas-project-creator (v01.01w), test (v01.00w)
-- GAS versions: index (v01.00g), test (v01.00g)
+- GAS versions: index (v01.01g), test (v01.01g)
 - No active reminders
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -31,16 +30,14 @@ All changes committed and merged to main. The README project structure tree has 
 
 ## Previous Sessions
 
-**Date:** 2026-03-08 05:56:53 PM EST
-**Repo version:** v01.24r
+**Date:** 2026-03-09 10:58:38 AM EST
+**Repo version:** v01.42r
 
 ### What was done
-- Multiple CHANGELOG template and formatting improvements across sessions (v01.02r through v01.22r) — archive rotation logic, capacity counters, SHA enrichment, section formatting, and rules refinements
-- Added immediate fix proposal requirement to Continuous Improvement rule (v01.22r)
-- Fixed GitHub Pages deploy permission error — added explicit job-level `permissions` block (`pages: write`, `id-token: write`) to the deploy job in auto-merge workflow (v01.23r)
-- Set up new GAS project "Test" — created all 10 files (page, script, config, version files, changelogs, archives), registered in GAS Projects table, added workflow deploy step, updated STATUS.md, ARCHITECTURE.md, and README.md tree (v01.24r)
+- Extensive README project structure tree reordering (v01.25r through v01.42r) — reorganized section groups for better logical flow
+- Moved Repository Information section after Scripts section in the project structure tree (v01.42r — most recent change)
 
 ### Where we left off
-All changes committed and merged to main. The deploy permission fix (v01.23r) and Test GAS project setup (v01.24r) were pushed together.
+All changes committed and merged to main.
 
 Developed by: ShadowAISolutions
