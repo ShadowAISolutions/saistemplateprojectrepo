@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 48/100`
+`Sections: 49/100`
 
 ## [Unreleased]
+
+## [v01.49r] — 2026-03-09 01:36:40 PM EST
+
+### Added
+- "Open in mermaid.live" link in ARCHITECTURE.md — pako-compressed URL pre-loads the diagram in the interactive editor
+- CLAUDE.md Pre-Commit #6 rule for regenerating the mermaid.live link when the diagram changes
 
 ## [v01.48r] — 2026-03-09 01:24:49 PM EST
 
