@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 31/100`
+`Sections: 32/100`
 
 ## [Unreleased]
+
+## [v01.32r] — 2026-03-09 09:16:20 AM EST
+
+### Changed
+- Rearranged live page entries in project structure tree: live site link now appears before the description (with `→` separator), and link text uses the page name without `.html` extension (e.g. `index`, `gas-project-creator`, `test`) instead of generic "live"
 
 ## [v01.31r] — 2026-03-09 09:12:09 AM EST
 

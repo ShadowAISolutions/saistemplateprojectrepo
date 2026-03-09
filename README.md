@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 09:12:09 AM EST` · Repo version: `v01.31r`
+Last updated: `2026-03-09 09:16:20 AM EST` · Repo version: `v01.32r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -153,9 +153,9 @@ This error means the Apps Script API is not enabled in the GCP project associate
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>              — [template] Live landing page → <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/">live</a>
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>       — [template] GAS project creator dashboard → <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">live</a>
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html">test.html</a>                      — [template] Test Title page → <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/test.html">live</a>
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/">index</a>  — [template] Live landing page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">gas-project-creator</a>  — [template] GAS project creator dashboard
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html">test.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/test.html">test</a>  — [template] Test Title page
 │   │
 │   <b>── Supporting Files ──────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/.nojekyll">.nojekyll</a>               — [template] Disables Jekyll processing on GitHub Pages
