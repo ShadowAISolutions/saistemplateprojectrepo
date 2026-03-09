@@ -5,8 +5,8 @@
 | Page | HTML File | Version | GAS File | GAS Version | Live URL | Status | Origin |
 |------|-----------|---------|----------|-------------|----------|--------|--------|
 | Landing Page | `live-site-pages/index.html` | v01.00w | `googleAppsScripts/Index/index.gs` | 01.00g | [View](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) | Active | template |
-| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.01w | — | — | [View](https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html) | Active | template |
 | Test | `live-site-pages/test.html` | v01.00w | `googleAppsScripts/Test/test.gs` | 01.00g | [View](https://ShadowAISolutions.github.io/saistemplateprojectrepo/test.html) | Active | template |
+| GAS Project Creator | `live-site-pages/gas-project-creator.html` | v01.01w | — | — | [View](https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html) | Active | template |
 
 
 ## Templates

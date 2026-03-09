@@ -38,15 +38,15 @@ graph TB
             direction LR
             NOJEKYLL["[template] .nojekyll"]
             INDEX["[template] index.html"]
+            TEST_PAGE["[template] test.html"]
             GASTPL_PAGE["[template] gas-project-creator.html"]
             SND1["[template] sounds/Website_Ready_Voice_1.mp3"]
-            TEST_PAGE["[template] test.html"]
             SND2["[template] sounds/Code_Ready_Voice_1.mp3"]
 
             subgraph "html-versions/ [template]"
                 VERTXT["[template] indexhtml.version.txt"]
-                GASTPL_VERTXT["[template] gas-project-creatorhtml.version.txt"]
                 TEST_VERTXT["[template] testhtml.version.txt"]
+                GASTPL_VERTXT["[template] gas-project-creatorhtml.version.txt"]
             end
 
             subgraph "gs-versions/ [template]"
@@ -57,10 +57,10 @@ graph TB
             subgraph "html-changelogs/ [template]"
                 INDEX_CL["[template] indexhtml.changelog.md"]
                 INDEX_CL_ARCH["[template] indexhtml.changelog-archive.md"]
-                GASTPL_CL["[template] gas-project-creatorhtml.changelog.md"]
-                GASTPL_CL_ARCH["[template] gas-project-creatorhtml.changelog-archive.md"]
                 TEST_CL["[template] testhtml.changelog.md"]
                 TEST_CL_ARCH["[template] testhtml.changelog-archive.md"]
+                GASTPL_CL["[template] gas-project-creatorhtml.changelog.md"]
+                GASTPL_CL_ARCH["[template] gas-project-creatorhtml.changelog-archive.md"]
             end
 
             subgraph "gs-changelogs/ [template]"
