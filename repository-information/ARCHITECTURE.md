@@ -150,7 +150,7 @@ graph TB
     style TPL fill:#ffa726,color:#000
     style GAS_INDEX fill:#ff7043,color:#fff
     style GAS_CFG fill:#ffe082,color:#000
-    style GAS_TPL_PAGE fill:#ffa726,color:#000
+    style GASTPL_PAGE fill:#ffa726,color:#000
     style GAS_APP fill:#42a5f5,color:#fff
     style CLAUDE_MD fill:#ce93d8,color:#000
     style RULES fill:#ce93d8,color:#000
