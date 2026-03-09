@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 49/100`
+`Sections: 50/100`
 
 ## [Unreleased]
+
+## [v01.50r] — 2026-03-09 01:47:30 PM EST
+
+### Fixed
+- Fixed mermaid.live URL encoding — switched from URL-safe base64 to standard base64 (mermaid.live uses standard base64 in URL fragments)
+
+### Added
+- Collapsible "Copy code for mermaid.live" section below the diagram in ARCHITECTURE.md with raw Mermaid code in a copyable code block
 
 ## [v01.49r] — 2026-03-09 01:36:40 PM EST
 
