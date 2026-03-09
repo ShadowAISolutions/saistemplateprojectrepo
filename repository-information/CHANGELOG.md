@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 29/100`
+`Sections: 30/100`
 
 ## [Unreleased]
+
+## [v01.30r] — 2026-03-09 09:09:01 AM EST
+
+### Added
+- Added "Supporting Files" subheading within the `live-site-pages/` section of the project structure tree, separating live HTML pages from supporting folders (templates, versions, changelogs, sounds)
 
 ## [v01.29r] — 2026-03-09 09:03:31 AM EST
 

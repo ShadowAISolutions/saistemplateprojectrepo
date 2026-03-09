@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 09:03:31 AM EST` · Repo version: `v01.29r`
+Last updated: `2026-03-09 09:09:01 AM EST` · Repo version: `v01.30r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -157,6 +157,8 @@ This error means the Apps Script API is not enabled in the GCP project associate
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>              — [template] Live landing page
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>       — [template] GAS project creator dashboard
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html">test.html</a>                      — [template] Test Title page
+│   │
+│   <b>── Supporting Files ──────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/templates">templates/</a>               — [template] Template source files for creating new pages and GAS scripts
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt">HtmlAndGasTemplateAutoUpdate.html.txt</a>     — [template] HTML page template (GAS features auto-activate when gs.version.txt exists)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdatehtml.version.txt">HtmlAndGasTemplateAutoUpdatehtml.version.txt</a> — [template] Template version file (frozen at v01.00w)
