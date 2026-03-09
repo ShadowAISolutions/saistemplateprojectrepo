@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 09:43:08 AM EST` · Repo version: `v01.38r`
+Last updated: `2026-03-09 09:49:11 AM EST` · Repo version: `v01.39r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -18,7 +18,8 @@ Initialize your repository and Claude will update the live site link and QR code
 > <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
 
 <pre>
-<b>─── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> ───────────────────────────────────────────────────</b>
+<b>─── Repository Root ──────────────────────────────────────────────────────────</b>
+<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a>
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
@@ -101,6 +102,7 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
 │
 <b>─── Claude Code ──────────────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md">CLAUDE.md</a>                   — [template] Developer instructions
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude">.claude/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/rules">rules/</a>                  — [template] Always-loaded + path-scoped rules
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/behavioral-rules.md">behavioral-rules.md</a>        — [template] Always loaded — execution style, pushback, etc.
@@ -139,7 +141,6 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/remember-session">remember-session/</a>    — [template] /remember-session — save session context
 │   │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/remember-session/SKILL.md">SKILL.md</a>        — [template]
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/settings.json">settings.json</a>           — [template] Claude Code project settings
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md">CLAUDE.md</a>                   — [template] Developer instructions
 │
 <b>─── Community ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CITATION.cff">CITATION.cff</a>                — [template] Citation metadata
