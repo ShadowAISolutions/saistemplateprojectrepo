@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 33/100`
+`Sections: 34/100`
 
 ## [Unreleased]
+
+## [v01.34r] — 2026-03-09 09:27:29 AM EST
+
+### Changed
+- Moved "Copy This Repository" and "Initialize This Template" sections below the "Project Structure" section in README.md for improved reading flow — setup instructions now follow the structure overview
 
 ## [v01.33r] — 2026-03-09 09:22:53 AM EST
 
