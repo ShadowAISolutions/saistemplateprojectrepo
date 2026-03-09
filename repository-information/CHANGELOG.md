@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 26/100`
+`Sections: 27/100`
 
 ## [Unreleased]
+
+## [v01.27r] — 2026-03-09 08:51:34 AM EST
+
+### Fixed
+- Fixed README project structure tree rendering as a continuous paragraph — switched from plain markdown (no line break preservation) to HTML `<pre>` block with `<a href>` tags, restoring monospace formatting and proper tree structure while keeping all filenames clickable
+
+### Changed
+- Updated CLAUDE.md Pre-Commit #8 to document `<pre>` + `<a href>` format for tree entries
 
 ## [v01.26r] — 2026-03-09 08:46:00 AM EST
 

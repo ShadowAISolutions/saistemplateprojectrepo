@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 08:46:00 AM EST` · Repo version: `v01.26r`
+Last updated: `2026-03-09 08:51:34 AM EST` · Repo version: `v01.27r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -148,117 +148,119 @@ This error means the Apps Script API is not enabled in the GCP project associate
 
 > <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
 
-[saistemplateprojectrepo/](https://github.com/ShadowAISolutions/saistemplateprojectrepo)
-├── [live-site-pages/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages) — [template] Deployed to GitHub Pages
-│   ├── [.nojekyll](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/.nojekyll) — [template] Disables Jekyll processing on GitHub Pages
-│   ├── [index.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html) — [template] Live landing page
-│   ├── [gas-project-creator.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html) — [template] GAS project creator dashboard
-│   ├── [test.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html) — [template] Test Title page
-│   ├── [templates/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/templates) — [template] Template source files for creating new pages and GAS scripts
-│   │   ├── [HtmlAndGasTemplateAutoUpdate.html.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt) — [template] HTML page template (GAS features auto-activate when gs.version.txt exists)
-│   │   ├── [HtmlAndGasTemplateAutoUpdatehtml.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdatehtml.version.txt) — [template] Template version file (frozen at v01.00w)
-│   │   └── [gas-project-creator-code.js.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/gas-project-creator-code.js.txt) — [template] GAS script template
-│   ├── [html-versions/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-versions) — [template] HTML page version files for auto-refresh polling
-│   │   ├── [indexhtml.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/indexhtml.version.txt) — [template]
-│   │   ├── [gas-project-creatorhtml.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/gas-project-creatorhtml.version.txt) — [template]
-│   │   └── [testhtml.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/testhtml.version.txt) — [template]
-│   ├── [gs-versions/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-versions) — [template] GAS version files for GAS version pill polling
-│   │   ├── [indexgs.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/indexgs.version.txt) — [template]
-│   │   └── [testgs.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testgs.version.txt) — [template]
-│   ├── [html-changelogs/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-changelogs) — [template] HTML changelogs (source of truth + deployed)
-│   │   ├── [indexhtml.changelog.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md) — [template] Homepage changelog
-│   │   ├── [indexhtml.changelog-archive.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog-archive.md) — [template] Older sections (rotated)
-│   │   ├── [gas-project-creatorhtml.changelog.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md) — [template] GAS Project Creator changelog
-│   │   ├── [gas-project-creatorhtml.changelog-archive.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog-archive.md) — [template] Older sections (rotated)
-│   │   ├── [testhtml.changelog.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testhtml.changelog.md) — [template] Test page changelog
-│   │   └── [testhtml.changelog-archive.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testhtml.changelog-archive.md) — [template] Older sections (rotated)
-│   ├── [gs-changelogs/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-changelogs) — [template] GAS changelogs (source of truth + deployed)
-│   │   ├── [indexgs.changelog.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog.md) — [template] Index GAS changelog
-│   │   ├── [indexgs.changelog-archive.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog-archive.md) — [template] Older sections (rotated)
-│   │   ├── [testgs.changelog.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testgs.changelog.md) — [template] Test GAS changelog
-│   │   └── [testgs.changelog-archive.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testgs.changelog-archive.md) — [template] Older sections (rotated)
-│   └── [sounds/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/sounds) — [template] Audio feedback files
-│       ├── [Website_Ready_Voice_1.mp3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Website_Ready_Voice_1.mp3) — [template] "Website Ready" splash sound
-│       └── [Code_Ready_Voice_1.mp3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Code_Ready_Voice_1.mp3) — [template] "Code Ready" splash sound
-├── [googleAppsScripts/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts) — [template] Google Apps Script projects
-│   ├── [Index/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Index) — [template] GAS for live-site-pages/index.html
-│   │   ├── [index.gs](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Index/index.gs) — [template] Self-updating GAS web app
-│   │   └── [index.config.json](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Index/index.config.json) — [template] Project config (source of truth)
-│   └── [Test/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Test) — [template] GAS for live-site-pages/test.html
-│       ├── [test.gs](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.gs) — [template] Self-updating GAS web app
-│       └── [test.config.json](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.config.json) — [template] Project config (source of truth)
-├── [.claude/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude) — [template]
-│   ├── [rules/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/rules) — [template] Always-loaded + path-scoped rules
-│   │   ├── [behavioral-rules.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/behavioral-rules.md) — [template] Always loaded — execution style, pushback, etc.
-│   │   ├── [changelogs.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/changelogs.md) — [template] Path-scoped — CHANGELOG rules
-│   │   ├── [chat-bookends.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/chat-bookends.md) — [template] Always loaded — response formatting rules
-│   │   ├── [chat-bookends-reference.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/chat-bookends-reference.md) — [template] Always loaded — bookend examples & tables
-│   │   ├── [gas-scripts.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/gas-scripts.md) — [template] Path-scoped — GAS rules
-│   │   ├── [html-pages.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/html-pages.md) — [template] Path-scoped — HTML page rules
-│   │   ├── [init-scripts.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/init-scripts.md) — [template] Path-scoped — init script rules
-│   │   ├── [output-formatting.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/output-formatting.md) — [template] Always loaded — CLI styling, attribution
-│   │   ├── [repo-docs.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/repo-docs.md) — [template] Path-scoped — documentation rules
-│   │   └── [workflows.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/workflows.md) — [template] Path-scoped — workflow rules
-│   ├── [skills/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills) — [template] Invokable workflow skills
-│   │   ├── [imported--diff-review/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--diff-review) — [template] /diff-review — pre-push differential review
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--diff-review/SKILL.md) — [template]
-│   │   ├── [imported--frontend-design/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--frontend-design) — [template] /frontend-design — distinctive UI creation
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--frontend-design/SKILL.md) — [template]
-│   │   ├── [imported--git-cleanup/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--git-cleanup) — [template] /git-cleanup — stale branch/worktree cleanup
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--git-cleanup/SKILL.md) — [template]
-│   │   ├── [imported--security-review/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--security-review) — [template] /security-review — OWASP/web security audit
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--security-review/SKILL.md) — [template]
-│   │   ├── [imported--skill-creator/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--skill-creator) — [template] /skill-creator — create new skills
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--skill-creator/SKILL.md) — [template]
-│   │   ├── [imported--webapp-testing/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--webapp-testing) — [template] /webapp-testing — Playwright page testing
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--webapp-testing/SKILL.md) — [template]
-│   │   ├── [initialize/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/initialize) — [template] /initialize — first deployment setup
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/initialize/SKILL.md) — [template]
-│   │   ├── [maintenance-mode/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/maintenance-mode) — [template] /maintenance-mode — toggle maintenance overlay
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/maintenance-mode/SKILL.md) — [template]
-│   │   ├── [new-page/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/new-page) — [template] /new-page — create new HTML page with boilerplate
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/new-page/SKILL.md) — [template]
-│   │   ├── [phantom-update/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/phantom-update) — [template] /phantom-update — timestamp alignment
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/phantom-update/SKILL.md) — [template]
-│   │   ├── [reconcile/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/reconcile) — [template] /reconcile — end multi-session mode
-│   │   │   └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/reconcile/SKILL.md) — [template]
-│   │   └── [remember-session/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/remember-session) — [template] /remember-session — save session context
-│   │       └── [SKILL.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/remember-session/SKILL.md) — [template]
-│   └── [settings.json](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/settings.json) — [template] Claude Code project settings
-├── [.github/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github) — [template]
-│   ├── [workflows/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows) — [template] CI/CD pipeline
-│   ├── [ISSUE_TEMPLATE/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE) — [template] Bug report & feature request forms
-│   ├── [PULL_REQUEST_TEMPLATE.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md) — [template] PR checklist
-│   ├── [FUNDING.yml](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml) — [template] Sponsor button config
-│   └── [last-processed-commit.sha](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha) — [template] Inherited branch guard (commit SHA tracking)
-├── [repository-information/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information) — [template]
-│   ├── [ARCHITECTURE.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/ARCHITECTURE.md) — [template] System diagram (Mermaid)
-│   ├── [CHANGELOG.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md) — [template] Version history
-│   ├── [CHANGELOG-archive.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md) — [template] Older changelog sections (rotated from CHANGELOG.md)
-│   ├── [CODING-GUIDELINES.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md) — [template] Domain-specific coding knowledge
-│   ├── [GOVERNANCE.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/GOVERNANCE.md) — [template] Project governance
-│   ├── [IMPROVEMENTS.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md) — [template] Potential improvements
-│   ├── [STATUS.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/STATUS.md) — [template] Project status dashboard
-│   ├── [TODO.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TODO.md) — [template] Actionable to-do items
-│   ├── [readme-qr-code.png](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/readme-qr-code.png) — [template] QR code linking to this repo
-│   ├── [REMINDERS.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REMINDERS.md) — [template] Reminders for Developer (developer's own notes)
-│   ├── [SESSION-CONTEXT.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SESSION-CONTEXT.md) — [template] Previous Session Context (Claude-written session log)
-│   ├── [SKILLS-REFERENCE.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SKILLS-REFERENCE.md) — [template] Complete Claude Code skills inventory (custom + imported + bundled)
-│   ├── [repository.version.txt](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/repository.version.txt) — [template] Repo version (v01.XXr — bumps every push)
-│   ├── [TOKEN-BUDGETS.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TOKEN-BUDGETS.md) — [template] Token cost reference for CLAUDE.md
-│   └── [SUPPORT.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md) — [template] Getting help
-├── [scripts/](https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts) — [template]
-│   ├── [init-repo.sh](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh) — [template] One-shot fork initialization script
-│   └── [setup-gas-project.sh](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh) — [template] GAS project file creation script
-├── [.gitattributes](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes) — [template] Line ending normalization (LF)
-├── [.editorconfig](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig) — [template] Editor formatting rules (indent, charset, EOL)
-├── [.gitignore](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore) — [template] Git ignore patterns
-├── [CITATION.cff](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CITATION.cff) — [template] Citation metadata
-├── [CLAUDE.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md) — [template] Developer instructions
-├── [CODE_OF_CONDUCT.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CODE_OF_CONDUCT.md) — [template] Community standards
-├── [CONTRIBUTING.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CONTRIBUTING.md) — [template] How to contribute
-├── [LICENSE.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/LICENSE.md) — [template] Proprietary license
-└── [SECURITY.md](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md) — [template] Vulnerability reporting
+<pre>
+<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/.nojekyll">.nojekyll</a>               — [template] Disables Jekyll processing on GitHub Pages
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>              — [template] Live landing page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>       — [template] GAS project creator dashboard
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html">test.html</a>                      — [template] Test Title page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/templates">templates/</a>               — [template] Template source files for creating new pages and GAS scripts
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt">HtmlAndGasTemplateAutoUpdate.html.txt</a>     — [template] HTML page template (GAS features auto-activate when gs.version.txt exists)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdatehtml.version.txt">HtmlAndGasTemplateAutoUpdatehtml.version.txt</a> — [template] Template version file (frozen at v01.00w)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/gas-project-creator-code.js.txt">gas-project-creator-code.js.txt</a> — [template] GAS script template
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-versions">html-versions/</a>           — [template] HTML page version files for auto-refresh polling
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/indexhtml.version.txt">indexhtml.version.txt</a>          — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/gas-project-creatorhtml.version.txt">gas-project-creatorhtml.version.txt</a> — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/testhtml.version.txt">testhtml.version.txt</a>           — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-versions">gs-versions/</a>             — [template] GAS version files for GAS version pill polling
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/indexgs.version.txt">indexgs.version.txt</a>            — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testgs.version.txt">testgs.version.txt</a>             — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-changelogs">html-changelogs/</a>         — [template] HTML changelogs (source of truth + deployed)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">indexhtml.changelog.md</a>                 — [template] Homepage changelog
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog-archive.md">indexhtml.changelog-archive.md</a>         — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md">gas-project-creatorhtml.changelog.md</a>   — [template] GAS Project Creator changelog
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog-archive.md">gas-project-creatorhtml.changelog-archive.md</a>  — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testhtml.changelog.md">testhtml.changelog.md</a>                  — [template] Test page changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testhtml.changelog-archive.md">testhtml.changelog-archive.md</a>          — [template] Older sections (rotated)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-changelogs">gs-changelogs/</a>           — [template] GAS changelogs (source of truth + deployed)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog.md">indexgs.changelog.md</a>                   — [template] Index GAS changelog
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog-archive.md">indexgs.changelog-archive.md</a>           — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testgs.changelog.md">testgs.changelog.md</a>                    — [template] Test GAS changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testgs.changelog-archive.md">testgs.changelog-archive.md</a>            — [template] Older sections (rotated)
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/sounds">sounds/</a>                 — [template] Audio feedback files
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Website_Ready_Voice_1.mp3">Website_Ready_Voice_1.mp3</a>   — [template] "Website Ready" splash sound
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Code_Ready_Voice_1.mp3">Code_Ready_Voice_1.mp3</a>      — [template] "Code Ready" splash sound
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts">googleAppsScripts/</a>          — [template] Google Apps Script projects
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Index">Index/</a>                 — [template] GAS for live-site-pages/index.html
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Index/index.gs">index.gs</a>           — [template] Self-updating GAS web app
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Index/index.config.json">index.config.json</a>  — [template] Project config (source of truth)
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Test">Test/</a>                  — [template] GAS for live-site-pages/test.html
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.gs">test.gs</a>            — [template] Self-updating GAS web app
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.config.json">test.config.json</a>   — [template] Project config (source of truth)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude">.claude/</a>                   — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/rules">rules/</a>                  — [template] Always-loaded + path-scoped rules
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/behavioral-rules.md">behavioral-rules.md</a>        — [template] Always loaded — execution style, pushback, etc.
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/changelogs.md">changelogs.md</a>              — [template] Path-scoped — CHANGELOG rules
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/chat-bookends.md">chat-bookends.md</a>           — [template] Always loaded — response formatting rules
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/chat-bookends-reference.md">chat-bookends-reference.md</a> — [template] Always loaded — bookend examples &amp; tables
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/gas-scripts.md">gas-scripts.md</a>             — [template] Path-scoped — GAS rules
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/html-pages.md">html-pages.md</a>             — [template] Path-scoped — HTML page rules
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/init-scripts.md">init-scripts.md</a>           — [template] Path-scoped — init script rules
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/output-formatting.md">output-formatting.md</a>      — [template] Always loaded — CLI styling, attribution
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/repo-docs.md">repo-docs.md</a>              — [template] Path-scoped — documentation rules
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/workflows.md">workflows.md</a>              — [template] Path-scoped — workflow rules
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills">skills/</a>                  — [template] Invokable workflow skills
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--diff-review">imported--diff-review/</a>       — [template] /diff-review — pre-push differential review
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--diff-review/SKILL.md">SKILL.md</a>                — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--frontend-design">imported--frontend-design/</a>   — [template] /frontend-design — distinctive UI creation
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--frontend-design/SKILL.md">SKILL.md</a>                — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--git-cleanup">imported--git-cleanup/</a>       — [template] /git-cleanup — stale branch/worktree cleanup
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--git-cleanup/SKILL.md">SKILL.md</a>                — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--security-review">imported--security-review/</a>   — [template] /security-review — OWASP/web security audit
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--security-review/SKILL.md">SKILL.md</a>                — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--skill-creator">imported--skill-creator/</a>     — [template] /skill-creator — create new skills
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--skill-creator/SKILL.md">SKILL.md</a>                — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/imported--webapp-testing">imported--webapp-testing/</a>    — [template] /webapp-testing — Playwright page testing
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/imported--webapp-testing/SKILL.md">SKILL.md</a>                — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/initialize">initialize/</a>          — [template] /initialize — first deployment setup
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/initialize/SKILL.md">SKILL.md</a>        — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/maintenance-mode">maintenance-mode/</a>    — [template] /maintenance-mode — toggle maintenance overlay
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/maintenance-mode/SKILL.md">SKILL.md</a>        — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/new-page">new-page/</a>            — [template] /new-page — create new HTML page with boilerplate
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/new-page/SKILL.md">SKILL.md</a>        — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/phantom-update">phantom-update/</a>      — [template] /phantom-update — timestamp alignment
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/phantom-update/SKILL.md">SKILL.md</a>        — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/reconcile">reconcile/</a>           — [template] /reconcile — end multi-session mode
+│   │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/reconcile/SKILL.md">SKILL.md</a>        — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/remember-session">remember-session/</a>    — [template] /remember-session — save session context
+│   │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/remember-session/SKILL.md">SKILL.md</a>        — [template]
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/settings.json">settings.json</a>           — [template] Claude Code project settings
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github">.github/</a>                   — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows">workflows/</a>              — [template] CI/CD pipeline
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a>         — [template] Bug report &amp; feature request forms
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a> — [template] PR checklist
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml">FUNDING.yml</a>             — [template] Sponsor button config
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha">last-processed-commit.sha</a> — [template] Inherited branch guard (commit SHA tracking)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/ARCHITECTURE.md">ARCHITECTURE.md</a>         — [template] System diagram (Mermaid)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md">CHANGELOG-archive.md</a>    — [template] Older changelog sections (rotated from CHANGELOG.md)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md">CODING-GUIDELINES.md</a>    — [template] Domain-specific coding knowledge
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/GOVERNANCE.md">GOVERNANCE.md</a>           — [template] Project governance
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/STATUS.md">STATUS.md</a>               — [template] Project status dashboard
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TODO.md">TODO.md</a>                 — [template] Actionable to-do items
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/readme-qr-code.png">readme-qr-code.png</a>             — [template] QR code linking to this repo
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REMINDERS.md">REMINDERS.md</a>            — [template] Reminders for Developer (developer's own notes)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SESSION-CONTEXT.md">SESSION-CONTEXT.md</a>      — [template] Previous Session Context (Claude-written session log)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SKILLS-REFERENCE.md">SKILLS-REFERENCE.md</a>     — [template] Complete Claude Code skills inventory (custom + imported + bundled)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/repository.version.txt">repository.version.txt</a>  — [template] Repo version (v01.XXr — bumps every push)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TOKEN-BUDGETS.md">TOKEN-BUDGETS.md</a>        — [template] Token cost reference for CLAUDE.md
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md">SUPPORT.md</a>              — [template] Getting help
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes">.gitattributes</a>              — [template] Line ending normalization (LF)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig">.editorconfig</a>               — [template] Editor formatting rules (indent, charset, EOL)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CITATION.cff">CITATION.cff</a>                — [template] Citation metadata
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md">CLAUDE.md</a>                   — [template] Developer instructions
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a>          — [template] Community standards
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>             — [template] How to contribute
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/LICENSE.md">LICENSE.md</a>                  — [template] Proprietary license
+└── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md">SECURITY.md</a>                 — [template] Vulnerability reporting
+</pre>
 
 ## Documentation
 
