@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 45/100`
+`Sections: 46/100`
 
 ## [Unreleased]
+
+## [v01.46r] — 2026-03-09 01:05:37 PM EST
+
+### Changed
+- Moved version display links before descriptions in README project structure tree, separated by `|`
+- Pages without GAS now show `·······` placeholder for visual alignment
+- Moved README.md to the end of the Community group (below SECURITY.md)
+- Updated CLAUDE.md #8 rule to reflect new version display format
 
 ## [v01.45r] — 2026-03-09 12:59:44 PM EST
 

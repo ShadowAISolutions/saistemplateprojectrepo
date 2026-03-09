@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 12:59:44 PM EST` · Repo version: `v01.45r`
+Last updated: `2026-03-09 01:05:37 PM EST` · Repo version: `v01.46r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -23,9 +23,9 @@ Initialize your repository and Claude will update the live site link and QR code
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/">index</a>  — [template] Live landing page  <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">v01.00w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog.md">v01.01g</a>
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html">test.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/test.html">test</a>  — [template] Test Title page  <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testhtml.changelog.md">v01.00w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testgs.changelog.md">v01.01g</a>
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">gas-project-creator</a>  — [template] GAS project creator dashboard  <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md">v01.01w</a>
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/">index</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">v01.00w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog.md">v01.01g</a> | [template] Live landing page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/test.html">test.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/test.html">test</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testhtml.changelog.md">v01.00w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testgs.changelog.md">v01.01g</a> | [template] Test Title page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">gas-project-creator</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md">v01.01w</a> · ······· | [template] GAS project creator dashboard
 │   │
 │   <b>── Supporting Files ──────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/.nojekyll">.nojekyll</a>               — [template] Disables Jekyll processing on GitHub Pages
@@ -147,8 +147,8 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a>          — [template] Community standards
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>             — [template] How to contribute
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/LICENSE.md">LICENSE.md</a>                  — [template] Proprietary license
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/README.md">README.md</a>                   — [template] This file — project overview &amp; structure
-└── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md">SECURITY.md</a>                 — [template] Vulnerability reporting
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md">SECURITY.md</a>                 — [template] Vulnerability reporting
+└── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/README.md">README.md</a>                   — [template] This file — project overview &amp; structure
 </pre>
 
 ## Copy This Repository
