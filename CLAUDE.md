@@ -1,5 +1,9 @@
 # Claude Code Instructions
 
+> **⚠️ MANDATORY FIRST ACTION — EVERY SESSION, EVERY RESPONSE ⚠️**
+> 1. **First response of session**: Run the Session Start Checklist (below) BEFORE reading or acting on the user's request — no exceptions, even for casual questions
+> 2. **Every response**: Open with Chat Bookends (CODING PLAN or RESEARCH START with timestamp) BEFORE any other output — no exceptions, even for short answers
+> 3. **Do NOT skip these because the user's question seems simple** — protocol compliance is independent of task complexity
 
 ## Template Variables
 
