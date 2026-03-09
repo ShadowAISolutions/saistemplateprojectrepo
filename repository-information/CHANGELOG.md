@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 36/100`
+`Sections: 37/100`
 
 ## [Unreleased]
+
+## [v01.37r] — 2026-03-09 09:39:53 AM EST
+
+### Changed
+- Consolidated root label in project structure tree — removed separate "Repository Root" line and put the `saistemplateprojectrepo/` link directly on the bold label line
 
 ## [v01.36r] — 2026-03-09 09:36:44 AM EST
 
