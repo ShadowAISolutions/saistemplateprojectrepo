@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 09:27:29 AM EST` · Repo version: `v01.34r`
+Last updated: `2026-03-09 09:32:27 AM EST` · Repo version: `v01.35r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -13,86 +13,12 @@ Initialize your repository and Claude will update the live site link and QR code
   <img src="repository-information/readme-qr-code.png" alt="QR code to template repo" width="200">
 </p>
 
-## How It Works
-
-### Auto-Refresh via Version Polling
-Every hosted page polls a lightweight `html.version.txt` file (from `live-site-pages/html-versions/`) every 10 seconds. When a new version is deployed, the page detects the mismatch and auto-reloads — showing a green "Website Ready" splash with audio feedback.
-
-### CI/CD Auto-Merge Flow
-1. Push to a `claude/*` branch
-2. GitHub Actions automatically merges into `main`, deploys to GitHub Pages, and cleans up the branch
-3. No pull requests needed — the workflow handles everything
-
-### GAS Embedding Architecture
-Google Apps Script projects are embedded as iframes in GitHub Pages. The framework handles:
-
-&emsp;Automatic GAS deployment via `doPost` when `.gs` files change<br>
-&emsp;"Code Ready" blue splash on GAS updates (client-side polling)<br>
-&emsp;Google Sign-In from the parent page (stable OAuth origin)
-
-## GCP Project Setup & Troubleshooting
-
-> **Tip:** Links below navigate away from this page. **Ctrl + click** (or right-click → *Open in new tab*) to keep this ReadMe visible while you work.
-
-Each GAS web app deployment requires a Google Cloud Platform (GCP) project. To set up:
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create a **new project**
-2. **Critical**: set the project **Location** to your organization root or "No organization" — do **not** place it inside any managed folder
-3. Copy the **project number** (not project ID) from the project dashboard
-4. In the GCP project, enable the **Apps Script API**: APIs & Services → Library → search "Apps Script API" → Enable
-5. In Apps Script, go to Project Settings (gear icon) → Google Cloud Platform (GCP) Project → Change project → paste the project number
-
-### "You cannot switch to a Cloud Platform project in an Apps Script-managed folder"
-
-This error occurs when the GCP project you're targeting lives inside Google's hidden `apps-script` managed folder (`organization → system-gsuite → apps-script`). Even projects created from [console.cloud.google.com](https://console.cloud.google.com/) can end up there on Workspace accounts.
-
-**How to diagnose:**
-1. Go to [Google Cloud Console → Manage Resources](https://console.cloud.google.com/cloud-resource-manager)
-2. Look for a folder hierarchy: **your org → system-gsuite → apps-script**
-3. If your GCP project is inside the `apps-script` folder, that's the problem
-
-**How to fix — Option A (move the project):**
-
-Moving a project out of the managed folder requires the **Project Mover** IAM role, which you likely don't have by default — even as the organization owner/admin.
-
-1. Go to [IAM & Admin](https://console.cloud.google.com/iam-admin/iam) → use the top dropdown to select your **organization** (not a project or folder)
-2. Click **Grant Access** → enter your own email
-3. In "Select a role" → **Resource Manager** → **Project Mover** → **Save**
-4. Go to [Manage Resources](https://console.cloud.google.com/cloud-resource-manager) → find your project inside the `apps-script` folder
-5. Click the three-dot menu → **Migrate**
-6. Move it to your organization root or "No organization"
-7. Retry changing the GCP project in Apps Script settings
-
-**How to fix — Option B (create a new project):**
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create a new project
-2. When setting the **Location**, explicitly choose your organization root or "No organization"
-3. Verify the project number does **not** start with `sys-` (those are auto-created default projects and won't work)
-4. Enable the Apps Script API in the new project
-5. Use this project's number in Apps Script settings
-
-**Key requirements:**
-- The GCP project must be a **manually created, standard project** — not an auto-generated one
-- It must live **outside** the `system-gsuite → apps-script` managed folder
-- Project numbers starting with `sys-` are auto-created defaults and cannot be used
-- You need **Project Browser** and **OAuth Config Editor** roles (or equivalent) on the project
-- Moving projects requires the **Project Mover** role (`roles/resourcemanager.projectMover`) granted at the **organization level** — even org owners/admins don't have this by default
-- Switching from a default project to a standard project is one-way — you cannot switch back
-- On Google Workspace accounts, the GCP project must be in the **same Cloud Organization** as the script owner, just not inside the managed folder
-
-### "Apps Script API has not been used in project X"
-
-This error means the Apps Script API is not enabled in the GCP project associated with your script. Fix:
-1. Note the project number from the error message
-2. Go to [Google Cloud Console](https://console.cloud.google.com/) → select that project
-3. APIs & Services → Library → search "Apps Script API" → **Enable**
-4. If the project number doesn't match any project you own, your script is using a default GCP project that you can't access — follow the "cannot switch" fix above to assign your own GCP project first
-
 ## Project Structure
 
 > <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
 
 <pre>
-<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a>
+<b>─── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> ───────────────────────────────────────────────────</b>
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
@@ -224,6 +150,80 @@ This error means the Apps Script API is not enabled in the GCP project associate
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/LICENSE.md">LICENSE.md</a>                  — [template] Proprietary license
 └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md">SECURITY.md</a>                 — [template] Vulnerability reporting
 </pre>
+
+## How It Works
+
+### Auto-Refresh via Version Polling
+Every hosted page polls a lightweight `html.version.txt` file (from `live-site-pages/html-versions/`) every 10 seconds. When a new version is deployed, the page detects the mismatch and auto-reloads — showing a green "Website Ready" splash with audio feedback.
+
+### CI/CD Auto-Merge Flow
+1. Push to a `claude/*` branch
+2. GitHub Actions automatically merges into `main`, deploys to GitHub Pages, and cleans up the branch
+3. No pull requests needed — the workflow handles everything
+
+### GAS Embedding Architecture
+Google Apps Script projects are embedded as iframes in GitHub Pages. The framework handles:
+
+&emsp;Automatic GAS deployment via `doPost` when `.gs` files change<br>
+&emsp;"Code Ready" blue splash on GAS updates (client-side polling)<br>
+&emsp;Google Sign-In from the parent page (stable OAuth origin)
+
+## GCP Project Setup & Troubleshooting
+
+> **Tip:** Links below navigate away from this page. **Ctrl + click** (or right-click → *Open in new tab*) to keep this ReadMe visible while you work.
+
+Each GAS web app deployment requires a Google Cloud Platform (GCP) project. To set up:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create a **new project**
+2. **Critical**: set the project **Location** to your organization root or "No organization" — do **not** place it inside any managed folder
+3. Copy the **project number** (not project ID) from the project dashboard
+4. In the GCP project, enable the **Apps Script API**: APIs & Services → Library → search "Apps Script API" → Enable
+5. In Apps Script, go to Project Settings (gear icon) → Google Cloud Platform (GCP) Project → Change project → paste the project number
+
+### "You cannot switch to a Cloud Platform project in an Apps Script-managed folder"
+
+This error occurs when the GCP project you're targeting lives inside Google's hidden `apps-script` managed folder (`organization → system-gsuite → apps-script`). Even projects created from [console.cloud.google.com](https://console.cloud.google.com/) can end up there on Workspace accounts.
+
+**How to diagnose:**
+1. Go to [Google Cloud Console → Manage Resources](https://console.cloud.google.com/cloud-resource-manager)
+2. Look for a folder hierarchy: **your org → system-gsuite → apps-script**
+3. If your GCP project is inside the `apps-script` folder, that's the problem
+
+**How to fix — Option A (move the project):**
+
+Moving a project out of the managed folder requires the **Project Mover** IAM role, which you likely don't have by default — even as the organization owner/admin.
+
+1. Go to [IAM & Admin](https://console.cloud.google.com/iam-admin/iam) → use the top dropdown to select your **organization** (not a project or folder)
+2. Click **Grant Access** → enter your own email
+3. In "Select a role" → **Resource Manager** → **Project Mover** → **Save**
+4. Go to [Manage Resources](https://console.cloud.google.com/cloud-resource-manager) → find your project inside the `apps-script` folder
+5. Click the three-dot menu → **Migrate**
+6. Move it to your organization root or "No organization"
+7. Retry changing the GCP project in Apps Script settings
+
+**How to fix — Option B (create a new project):**
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → create a new project
+2. When setting the **Location**, explicitly choose your organization root or "No organization"
+3. Verify the project number does **not** start with `sys-` (those are auto-created default projects and won't work)
+4. Enable the Apps Script API in the new project
+5. Use this project's number in Apps Script settings
+
+**Key requirements:**
+- The GCP project must be a **manually created, standard project** — not an auto-generated one
+- It must live **outside** the `system-gsuite → apps-script` managed folder
+- Project numbers starting with `sys-` are auto-created defaults and cannot be used
+- You need **Project Browser** and **OAuth Config Editor** roles (or equivalent) on the project
+- Moving projects requires the **Project Mover** role (`roles/resourcemanager.projectMover`) granted at the **organization level** — even org owners/admins don't have this by default
+- Switching from a default project to a standard project is one-way — you cannot switch back
+- On Google Workspace accounts, the GCP project must be in the **same Cloud Organization** as the script owner, just not inside the managed folder
+
+### "Apps Script API has not been used in project X"
+
+This error means the Apps Script API is not enabled in the GCP project associated with your script. Fix:
+1. Note the project number from the error message
+2. Go to [Google Cloud Console](https://console.cloud.google.com/) → select that project
+3. APIs & Services → Library → search "Apps Script API" → **Enable**
+4. If the project number doesn't match any project you own, your script is using a default GCP project that you can't access — follow the "cannot switch" fix above to assign your own GCP project first
 
 ## Copy This Repository
 

@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 34/100`
+`Sections: 35/100`
 
 ## [Unreleased]
+
+## [v01.35r] — 2026-03-09 09:32:27 AM EST
+
+### Changed
+- Added bold group label to the root `saistemplateprojectrepo/` entry in the project structure tree
+- Moved all informational sections (How It Works, GCP Project Setup & Troubleshooting) below Project Structure to match the original intended order: Project Structure → How It Works → GCP Project Setup → Copy This Repository → Initialize This Template
 
 ## [v01.34r] — 2026-03-09 09:27:29 AM EST
 
