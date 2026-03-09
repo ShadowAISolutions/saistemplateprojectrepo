@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 08:51:34 AM EST` · Repo version: `v01.27r`
+Last updated: `2026-03-09 08:57:08 AM EST` · Repo version: `v01.28r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -251,43 +251,21 @@ This error means the Apps Script API is not enabled in the GCP project associate
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
+│
+<b>─── Configuration ────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes">.gitattributes</a>              — [template] Line ending normalization (LF)
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig">.editorconfig</a>               — [template] Editor formatting rules (indent, charset, EOL)
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
+│
+<b>─── Documentation ────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CITATION.cff">CITATION.cff</a>                — [template] Citation metadata
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md">CLAUDE.md</a>                   — [template] Developer instructions
+│
+<b>─── Community ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a>          — [template] Community standards
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>             — [template] How to contribute
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/LICENSE.md">LICENSE.md</a>                  — [template] Proprietary license
 └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md">SECURITY.md</a>                 — [template] Vulnerability reporting
 </pre>
-
-## Documentation
-
-> <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
-
-| Document | Description |
-|----------|-------------|
-| [ARCHITECTURE.md](repository-information/ARCHITECTURE.md) | Visual system diagram (Mermaid) |
-| [CHANGELOG.md](repository-information/CHANGELOG.md) | Version history |
-| [CHANGELOG-archive.md](repository-information/CHANGELOG-archive.md) | Older changelog sections |
-| [CLAUDE.md](CLAUDE.md) | Developer instructions and conventions |
-| [IMPROVEMENTS.md](repository-information/IMPROVEMENTS.md) | Potential improvements to explore |
-| [REMINDERS.md](repository-information/REMINDERS.md) | Reminders for Developer (developer's own notes) |
-| [SESSION-CONTEXT.md](repository-information/SESSION-CONTEXT.md) | Previous Session Context (Claude-written) |
-| [STATUS.md](repository-information/STATUS.md) | Current project status and versions |
-| [TODO.md](repository-information/TODO.md) | Actionable planned items |
-
-## Community
-
-> <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
-
-| Document | Description |
-|----------|-------------|
-| [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards and expectations |
-| [Contributing](CONTRIBUTING.md) | How to contribute to this project |
-| [Security Policy](SECURITY.md) | How to report vulnerabilities |
-| [Support](repository-information/SUPPORT.md) | Getting help |
-| [Governance](repository-information/GOVERNANCE.md) | Project ownership and decision making |
 
 Developed by: ShadowAISolutions
