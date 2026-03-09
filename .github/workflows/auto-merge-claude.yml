@@ -61,7 +61,7 @@
 #     3. Copy <page-name>.config.json and rename to match (e.g. dashboard.config.json).
 #        Fill in project-unique values (TITLE, DEPLOYMENT_ID, SPREADSHEET_ID, etc.)
 #     4. Update the PROJECT CONFIG section at the top of <page-name>.gs:
-#          var VERSION        = "01.00g";
+#          var VERSION        = "v01.00g";
 #          var TITLE          = "My New Project";           // ← from config.json
 #          var SPREADSHEET_ID = "your-spreadsheet-id";      // ← from config.json
 #          var SHEET_NAME     = "Live_Sheet";               // ← from config.json

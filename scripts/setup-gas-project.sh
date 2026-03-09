@@ -231,7 +231,7 @@ ok "Created $HTML_PAGE"
 # --- GAS script ---
 cp "$TPL_GS" "$GAS_FILE"
 # Reset VERSION to initial
-sed -i 's|var VERSION = "[^"]*";|var VERSION = "01.00g";|' "$GAS_FILE"
+sed -i 's|var VERSION = "[^"]*";|var VERSION = "v01.00g";|' "$GAS_FILE"
 # Set config-tracked variables
 sed -i "s|var TITLE = .*;|var TITLE = \"${TITLE}\";|" "$GAS_FILE"
 sed -i "s|var DEPLOYMENT_ID = .*;|var DEPLOYMENT_ID = \"${DEPLOYMENT_ID}\";|" "$GAS_FILE"
@@ -268,7 +268,7 @@ ok "Created $GAS_CONFIG"
 # ── Phase 4: Create Version Files ──
 info "Phase 4: Creating version files..."
 echo -n '|v01.00w|' > "$HTML_VERSION"
-echo -n '01.00g' > "$GAS_VERSION"
+echo -n 'v01.00g' > "$GAS_VERSION"
 ok "Created $HTML_VERSION"
 ok "Created $GAS_VERSION"
 
@@ -386,7 +386,7 @@ if [ -f "$STATUS_FILE" ]; then
     fi
 
     # Add to GAS Projects table
-    GAS_STATUS_ROW="| ${PROJECT_DIR} | \`${GAS_FILE}\` | \`${HTML_PAGE}\` | 01.00g | Active |"
+    GAS_STATUS_ROW="| ${PROJECT_DIR} | \`${GAS_FILE}\` | \`${HTML_PAGE}\` | v01.00g | Active |"
     if grep -q "| ${PROJECT_DIR} |.*${ENV_NAME}.gs" "$STATUS_FILE"; then
         warn "${PROJECT_DIR} already in STATUS.md GAS Projects — skipping"
     else

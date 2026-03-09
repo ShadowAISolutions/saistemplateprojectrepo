@@ -41,7 +41,7 @@ Create a new HTML embedding page with all the required files and boilerplate.
    - Create `googleAppsScripts/<ProjectName>/` directory
    - Copy `live-site-pages/templates/gas-project-creator-code.js.txt` → `$0.gs`
    - Create `$0.config.json` with placeholder values
-   - Create `live-site-pages/gs-versions/$0gs.version.txt` with content `01.00g` (GAS version file — lives in `live-site-pages/gs-versions/` only)
+   - Create `live-site-pages/gs-versions/$0gs.version.txt` with content `v01.00g` (GAS version file — lives in `live-site-pages/gs-versions/` only)
    - Create GAS changelogs: `$0gs.changelog.md` and `$0gs.changelog-archive.md`
    - Register in the GAS Projects table in `.claude/rules/gas-scripts.md`
 

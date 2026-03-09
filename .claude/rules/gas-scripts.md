@@ -14,8 +14,8 @@ paths:
 ## Version Bumping
 
 - The `VERSION` variable is near the top of each `.gs` file (look for `var VERSION = "..."`)
-- Format includes a `g` suffix: e.g. `"01.13g"` → `"01.14g"`
-- Each GAS project also has a `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` that mirrors the `VERSION` variable value (e.g. `01.00g`). This file is bumped alongside `VERSION` by Pre-Commit #1. There is no copy in `googleAppsScripts/` — the `live-site-pages/gs-versions/` file is the single location, polled by the HTML layer for GAS version display
+- Format includes a `g` suffix with a `v` prefix: e.g. `"v01.13g"` → `"v01.14g"`
+- Each GAS project also has a `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` that mirrors the `VERSION` variable value (e.g. `v01.00g`). This file is bumped alongside `VERSION` by Pre-Commit #1. There is no copy in `googleAppsScripts/` — the `live-site-pages/gs-versions/` file is the single location, polled by the HTML layer for GAS version display
 - Do NOT bump VERSION if the commit doesn't touch the `.gs` file
 
 ### GAS Projects
@@ -171,7 +171,7 @@ Apps Script has a hard 200 version limit. The API does NOT support deleting vers
 
 When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` workflow triggers a webhook (`doPost(action=deploy)`) on the corresponding GAS web app. This causes the GAS script to pull its latest source from GitHub and redeploy itself — **without the embedding HTML page needing to be open**. The GAS backend updates server-side; the next time a user loads the page, they get the new version automatically.
 
-- **Confirmed 2026-03-06**: Testation7 GAS updated from 01.00g → 01.01g via webhook with no page open — the workflow deploy step successfully triggered `doPost`, and the GAS app pulled and redeployed itself
+- **Confirmed 2026-03-06**: Testation7 GAS updated from v01.00g → v01.01g via webhook with no page open — the workflow deploy step successfully triggered `doPost`, and the GAS app pulled and redeployed itself
 - Each GAS project gets its own deploy step in the workflow (added by `setup-gas-project.sh` during project creation)
 - The webhook URL is constructed from the `DEPLOYMENT_ID` in each project's `.config.json`
 

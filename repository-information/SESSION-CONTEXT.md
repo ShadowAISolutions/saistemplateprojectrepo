@@ -23,7 +23,7 @@ All changes committed and merged to main. The README project structure tree has 
 - Branch: `claude/add-readme-structure-links-ASCcX`
 - Repo version: v01.42r
 - Pages: index (v01.00w), gas-project-creator (v01.01w), test (v01.00w)
-- GAS versions: index (01.00g), test (01.00g)
+- GAS versions: index (v01.00g), test (v01.00g)
 - No active reminders
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`

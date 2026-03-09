@@ -1,4 +1,4 @@
-var VERSION = "01.00g";
+var VERSION = "v01.01g";
 var TITLE = "Test Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -47,7 +47,7 @@ function doGet() {
       </style>
     </head>
     <body>
-      <h2 id="version">v${VERSION}</h2>
+      <h2 id="version">${VERSION}</h2>
       <div style="display:flex; align-items:flex-start; justify-content:center; width:100%; gap:20px; padding:0 20px; box-sizing:border-box;">
       <div style="text-align:center; flex:0 1 auto;">
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${TITLE}</h1>
@@ -220,7 +220,7 @@ function doPost(e) {
 }
 
 function getAppData() {
-  var data = { version: "v" + VERSION, title: TITLE };
+  var data = { version: VERSION, title: TITLE };
 
   var cache = CacheService.getScriptCache();
   var vStatus = cache.get("version_count_status");
@@ -267,7 +267,7 @@ function writeVersionToSheet() {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
-    sheet.getRange("A1").setValue("v" + VERSION + " — " + new Date().toLocaleString());
+    sheet.getRange("A1").setValue(VERSION + " — " + new Date().toLocaleString());
   } catch(e) {}
 }
 
@@ -346,7 +346,7 @@ function pullAndDeployFromGitHub() {
   var pulledVersion = versionMatch ? versionMatch[1] : null;
 
   if (pulledVersion && pulledVersion === VERSION) {
-    return "Already up to date (v" + VERSION + ")";
+    return "Already up to date (" + VERSION + ")";
   }
 
   var scriptId = ScriptApp.getScriptId();
@@ -376,7 +376,7 @@ function pullAndDeployFromGitHub() {
     method: "post",
     contentType: "application/json",
     headers: { "Authorization": "Bearer " + ScriptApp.getOAuthToken() },
-    payload: JSON.stringify({ description: "v" + pulledVersion + " — from GitHub " + new Date().toLocaleString() })
+    payload: JSON.stringify({ description: pulledVersion + " — from GitHub " + new Date().toLocaleString() })
   });
   var newVersion = JSON.parse(versionResponse.getContentText()).versionNumber;
 
@@ -390,7 +390,7 @@ function pullAndDeployFromGitHub() {
       deploymentConfig: {
         scriptId: scriptId,
         versionNumber: newVersion,
-        description: "v" + pulledVersion + " (deployment " + newVersion + ")"
+        description: pulledVersion + " (deployment " + newVersion + ")"
       }
     })
   });
@@ -417,7 +417,7 @@ function pullAndDeployFromGitHub() {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
 
-  return "Updated to v" + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
+  return "Updated to " + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }
 
 // ══════════════

@@ -1,4 +1,4 @@
-var VERSION = "01.00g";
+var VERSION = "v01.01g";
 var TITLE = "CHANGE THIS PROJECT TITLE TEMPLATE";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -186,7 +186,7 @@ function doPost(e) {
 }
 
 function getAppData() {
-  var data = { version: "v" + VERSION, title: TITLE };
+  var data = { version: VERSION, title: TITLE };
 
   var cache = CacheService.getScriptCache();
   var vStatus = cache.get("version_count_status");
@@ -237,7 +237,7 @@ function writeVersionToSheet() {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
-    sheet.getRange("A1").setValue("v" + VERSION + " — " + new Date().toLocaleString());
+    sheet.getRange("A1").setValue(VERSION + " — " + new Date().toLocaleString());
   } catch(e) {}
 }
 
@@ -260,7 +260,7 @@ function pullAndDeployFromGitHub() {
   var pulledVersion = versionMatch ? versionMatch[1] : null;
 
   if (pulledVersion && pulledVersion === VERSION) {
-    return "Already up to date (v" + VERSION + ")";
+    return "Already up to date (" + VERSION + ")";
   }
 
   var scriptId = ScriptApp.getScriptId();
@@ -290,7 +290,7 @@ function pullAndDeployFromGitHub() {
     method: "post",
     contentType: "application/json",
     headers: { "Authorization": "Bearer " + ScriptApp.getOAuthToken() },
-    payload: JSON.stringify({ description: "v" + pulledVersion + " — from GitHub " + new Date().toLocaleString() })
+    payload: JSON.stringify({ description: pulledVersion + " — from GitHub " + new Date().toLocaleString() })
   });
   var newVersion = JSON.parse(versionResponse.getContentText()).versionNumber;
 
@@ -304,7 +304,7 @@ function pullAndDeployFromGitHub() {
       deploymentConfig: {
         scriptId: scriptId,
         versionNumber: newVersion,
-        description: "v" + pulledVersion + " (deployment " + newVersion + ")"
+        description: pulledVersion + " (deployment " + newVersion + ")"
       }
     })
   });
@@ -331,9 +331,9 @@ function pullAndDeployFromGitHub() {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
 
-  CacheService.getScriptCache().put("pushed_version", "v" + pulledVersion, 3600); // PROJECT: auto-update cache
+  CacheService.getScriptCache().put("pushed_version", pulledVersion, 3600); // PROJECT: auto-update cache
 
-  return "Updated to v" + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
+  return "Updated to " + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }
 
 // ══════════════

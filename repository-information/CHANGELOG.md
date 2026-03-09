@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 42/100`
+`Sections: 43/100`
 
 ## [Unreleased]
+
+## [v01.43r] — 2026-03-09 12:43:18 PM EST
+
+### Changed
+- Added `v` prefix to all GAS version values throughout the repo — VERSION variables in `.gs` files now store `"v01.XXg"` instead of `"01.XXg"`, matching how HTML versions are handled
+- Removed all `"v" + VERSION` concatenations in `.gs` files and GAS template to prevent double-v after prefix change
+- Updated GAS version format references across CLAUDE.md, rules files, skills, setup script, workflow comments, CONTRIBUTING.md, and SESSION-CONTEXT.md
+
+#### `index.gs` — v01.01g
+
+##### Changed
+- Version format now includes `v` prefix for consistency with HTML versions
+
+#### `test.gs` — v01.01g
+
+##### Changed
+- Version format now includes `v` prefix for consistency with HTML versions
 
 ## [v01.42r] — 2026-03-09 10:32:50 AM EST
 
