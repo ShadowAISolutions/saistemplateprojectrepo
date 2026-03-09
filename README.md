@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 08:57:08 AM EST` · Repo version: `v01.28r`
+Last updated: `2026-03-09 09:03:31 AM EST` · Repo version: `v01.29r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -150,6 +150,8 @@ This error means the Apps Script API is not enabled in the GCP project associate
 
 <pre>
 <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a>
+│
+<b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/.nojekyll">.nojekyll</a>               — [template] Disables Jekyll processing on GitHub Pages
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>              — [template] Live landing page
@@ -181,6 +183,8 @@ This error means the Apps Script API is not enabled in the GCP project associate
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/sounds">sounds/</a>                 — [template] Audio feedback files
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Website_Ready_Voice_1.mp3">Website_Ready_Voice_1.mp3</a>   — [template] "Website Ready" splash sound
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Code_Ready_Voice_1.mp3">Code_Ready_Voice_1.mp3</a>      — [template] "Code Ready" splash sound
+│
+<b>─── Google Apps Scripts ───────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts">googleAppsScripts/</a>          — [template] Google Apps Script projects
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Index">Index/</a>                 — [template] GAS for live-site-pages/index.html
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Index/index.gs">index.gs</a>           — [template] Self-updating GAS web app
@@ -188,6 +192,8 @@ This error means the Apps Script API is not enabled in the GCP project associate
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Test">Test/</a>                  — [template] GAS for live-site-pages/test.html
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.gs">test.gs</a>            — [template] Self-updating GAS web app
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.config.json">test.config.json</a>   — [template] Project config (source of truth)
+│
+<b>─── Claude Code ──────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude">.claude/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/rules">rules/</a>                  — [template] Always-loaded + path-scoped rules
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/rules/behavioral-rules.md">behavioral-rules.md</a>        — [template] Always loaded — execution style, pushback, etc.
@@ -226,12 +232,16 @@ This error means the Apps Script API is not enabled in the GCP project associate
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/remember-session">remember-session/</a>    — [template] /remember-session — save session context
 │   │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/remember-session/SKILL.md">SKILL.md</a>        — [template]
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/settings.json">settings.json</a>           — [template] Claude Code project settings
+│
+<b>─── GitHub Configuration ─────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github">.github/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows">workflows/</a>              — [template] CI/CD pipeline
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a>         — [template] Bug report &amp; feature request forms
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a> — [template] PR checklist
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml">FUNDING.yml</a>             — [template] Sponsor button config
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha">last-processed-commit.sha</a> — [template] Inherited branch guard (commit SHA tracking)
+│
+<b>─── Repository Information ───────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/ARCHITECTURE.md">ARCHITECTURE.md</a>         — [template] System diagram (Mermaid)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
@@ -248,6 +258,8 @@ This error means the Apps Script API is not enabled in the GCP project associate
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/repository.version.txt">repository.version.txt</a>  — [template] Repo version (v01.XXr — bumps every push)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TOKEN-BUDGETS.md">TOKEN-BUDGETS.md</a>        — [template] Token cost reference for CLAUDE.md
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md">SUPPORT.md</a>              — [template] Getting help
+│
+<b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
