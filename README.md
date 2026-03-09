@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 09:53:49 AM EST` · Repo version: `v01.40r`
+Last updated: `2026-03-09 10:28:38 AM EST` · Repo version: `v01.41r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -65,14 +65,6 @@ Initialize your repository and Claude will update the live site link and QR code
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.gs">test.gs</a>            — [template] Self-updating GAS web app
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Test/test.config.json">test.config.json</a>   — [template] Project config (source of truth)
 │
-<b>─── GitHub Configuration ─────────────────────────────────────────────────────</b>
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github">.github/</a>                   — [template]
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows">workflows/</a>              — [template] CI/CD pipeline
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a>         — [template] Bug report &amp; feature request forms
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a> — [template] PR checklist
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml">FUNDING.yml</a>             — [template] Sponsor button config
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha">last-processed-commit.sha</a> — [template] Inherited branch guard (commit SHA tracking)
-│
 <b>─── Repository Information ───────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/ARCHITECTURE.md">ARCHITECTURE.md</a>         — [template] System diagram (Mermaid)
@@ -95,11 +87,6 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
-│
-<b>─── Configuration ────────────────────────────────────────────────────────────</b>
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes">.gitattributes</a>              — [template] Line ending normalization (LF)
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig">.editorconfig</a>               — [template] Editor formatting rules (indent, charset, EOL)
-├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
 │
 <b>─── Claude Code ──────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md">CLAUDE.md</a>                   — [template] Developer instructions
@@ -141,6 +128,19 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.claude/skills/remember-session">remember-session/</a>    — [template] /remember-session — save session context
 │   │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/skills/remember-session/SKILL.md">SKILL.md</a>        — [template]
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.claude/settings.json">settings.json</a>           — [template] Claude Code project settings
+│
+<b>─── GitHub Configuration ─────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github">.github/</a>                   — [template]
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/workflows">workflows/</a>              — [template] CI/CD pipeline
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/.github/ISSUE_TEMPLATE">ISSUE_TEMPLATE/</a>         — [template] Bug report &amp; feature request forms
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/PULL_REQUEST_TEMPLATE.md">PULL_REQUEST_TEMPLATE.md</a> — [template] PR checklist
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/FUNDING.yml">FUNDING.yml</a>             — [template] Sponsor button config
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.github/last-processed-commit.sha">last-processed-commit.sha</a> — [template] Inherited branch guard (commit SHA tracking)
+│
+<b>─── Configuration ────────────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitattributes">.gitattributes</a>              — [template] Line ending normalization (LF)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.editorconfig">.editorconfig</a>               — [template] Editor formatting rules (indent, charset, EOL)
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/.gitignore">.gitignore</a>                  — [template] Git ignore patterns
 │
 <b>─── Community ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CITATION.cff">CITATION.cff</a>                — [template] Citation metadata
