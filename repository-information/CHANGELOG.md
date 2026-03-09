@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 39/100`
+`Sections: 40/100`
 
 ## [Unreleased]
+
+## [v01.40r] — 2026-03-09 09:53:49 AM EST
+
+### Changed
+- Changed root label in project structure tree from `─── Repository Root ───` to `Repository Root ───` (removed leading dashes)
+- Reordered sections below Project Structure: Copy This Repository → Initialize This Template → How It Works → GCP Project Setup & Troubleshooting (setup instructions now come first, informational sections follow)
 
 ## [v01.39r] — 2026-03-09 09:49:11 AM EST
 
