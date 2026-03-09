@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-09 12:43:18 PM EST` · Repo version: `v01.43r`
+Last updated: `2026-03-09 12:51:13 PM EST` · Repo version: `v01.44r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -147,6 +147,7 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a>          — [template] Community standards
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>             — [template] How to contribute
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/LICENSE.md">LICENSE.md</a>                  — [template] Proprietary license
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/README.md">README.md</a>                   — [template] This file — project overview &amp; structure
 └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/SECURITY.md">SECURITY.md</a>                 — [template] Vulnerability reporting
 </pre>
 
