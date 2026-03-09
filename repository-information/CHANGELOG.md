@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
 ## [Unreleased]
+
+## [v01.53r] — 2026-03-09 02:40:34 PM EST
+
+### Fixed
+- Fixed single-character corruption in mermaid.live URL in ARCHITECTURE.md (position 1102: 'F' → 'H') — URL now decompresses correctly and loads the diagram in the interactive editor
 
 ## [v01.52r] — 2026-03-09 02:16:06 PM EST
 
