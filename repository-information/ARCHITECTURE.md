@@ -119,6 +119,7 @@ graph TB
             RULES["[template] .claude/rules/\n(always-loaded + path-scoped rules)"]
             SKILLS["[template] .claude/skills/\n(invokable workflow skills)"]
             REPO_VER["[template] repository.version.txt"]
+            DIAGRAMS["[template] repository-information/diagrams/\n(per-page architecture diagrams)"]
             SETTINGS["[template] .claude/settings.json\n(git * auto-allowed)"]
             SHA_FILE["[template] .github/last-processed-commit.sha\n(inherited branch guard)"]
         end
