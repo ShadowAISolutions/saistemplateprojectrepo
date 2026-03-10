@@ -310,10 +310,10 @@ gitGraph
 
 ## 7. Mindmap — Concept Hierarchy
 
-> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1VF2P2jAQ_CurVIg7CVrujgfEG4KKQ6LSqaHXF14cexMs_CXboUWI_16bpAdJDkuRotnx2js73lNCNcNkmvR6J664n8Kp73cosT_tM8xJKXx_ABX0TiwnmUDXjyyaUiJwFP77X3CSjbNJJFbo0wXNJmyMN-hzjeKE3qAvdQbWyDC-oBG7zbAmGYrqyNFo1MKf7uDPd_CXO_j4Az-fz73eVkmumCRmqyAsq7V_eNigNIJ4hJ9o9ONjFYprgUboo0Tlr1hcS-5fywzeSIGuGYlrVno9tJhbdDswWgiuii7rHa3jWg0z4pCBRaEJ67JSXSoGSnuec0p82NA6cL76Nl_Ab233udB_7lxGoi0QqCAlQ8gsUXT32cVTH1Sr48DQI40HdnmXugMhitONLmdpHQNveVGgvXKWWhfhiJkxDlJquWkJm6LIh6VhsRm51bJWulWyVjkvhszyAypw6EvTymIsEuZ2iB4yQveoWsquckskAsoMGWt0p-5Kp2PRGY57bY9wqCgwBNvkRFluoq1mRFmuwVb6-Y6oIligcGDQQs4FNgkzS3eh3GBYT5pNWeAhbIy7NlqLtjvWs1-L718lA66ctyX9xEFvFodUS8k9BFvQveDOdxmmDGa-E0_RXcqiWnn869vKxRcXCr_CH-8tPTqPssl_3fxYg4lS-prW1dFdrHOHsAqD7z8j1zZ-e9e-cPDMLSckTQZJeCaScBbm52mbXIbkNpluk3pybpNz4JDwntKjosk0yImDpDLrgpMiWKoCz_8AdCCTew) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1VF1v2jAU_StWJkQrwdYPpCHeEEwtEpOqhXUveXHsm2DhL1073RDiv88OaSFJuVJezjm5ts899iFhhkMySwaDg9DCz8hh6LegYDgbcihoJf1wRE7QK0VBcwluGFUWhaK4XxhpMADDL99z-sgnUd1QG_jnz_RdXZFmKaMS7moUpvkkn57R-xrNp3wCF-hDg8KUXaCPTQfe6jCp0YhddljTHOTd-0Y6-P0V_OEK_ngFn3zgx-NxMMi0EporajNNQqEx_uZmA8pK6oH8Amtub09UrCVYafYKtD9jsZ6Ef65y8kJLcG0m1rzyZoxQILgtsUZKocu-6hXQCaPHOXXACYI0lPdVqak0J9p4UQhGffihs-Bi9W2xJH8M7gpp_l7ZjAIsgTBJKw4kR6rZ9rONpz641vCEgwcWF-zr6nMHQTSnzz7N04YjHkVZAp41T8aUYYm5tY6kDIXtGJuCLMaV5XEYBRrVON05stGFKMccxRto4sBXttPFIlDutgCe5JTtQHecXRVIFRBQOXDemk4zld7EYjKc8Ab35O0kIWOCbU205YLtDCPaciY77RdbqssQgdIRC0gKIaEtmCPbhuOGwHraHsoS3sKP8a-NMbKbjvX89_LHV8WJ0M5jxT5J0AvCmBmlhCchFmwnhfN9ha1CmK_wKbj6WMxoH96XrnPxxoWDn-GP-5bunQfV1j9vfq6JjVb6Rtb30dXRuSJYhSfzXVEYjN_OdTccMnOpCU2TURKuiaKCh5f3kCX185olsyxp3twsOQYNDfcp3WuWzIKdMEpOYV0KWoZIncDjf_pppNU) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
-%%{init: {'theme':'default', 'themeVariables': {'cScale0': '#e8b4b8', 'cScale1': '#b8d4e8', 'cScale2': '#b8e8c8', 'cScale3': '#e8d4b8', 'cScale4': '#d4b8e8', 'cScaleLabel0': '#000', 'cScaleLabel1': '#000', 'cScaleLabel2': '#000', 'cScaleLabel3': '#000', 'cScaleLabel4': '#000'}}}%%
+%%{init: {'theme':'default', 'themeVariables': {'primaryColor': '#7ba3d4', 'primaryTextColor': '#000000', 'cScale0': '#e8b4b8', 'cScale1': '#b8d4e8', 'cScale2': '#b8e8c8', 'cScale3': '#e8d4b8', 'cScale4': '#d4b8e8', 'cScaleLabel0': '#000', 'cScaleLabel1': '#000', 'cScaleLabel2': '#000', 'cScaleLabel3': '#000', 'cScaleLabel4': '#000'}}}%%
 mindmap
     root((Template Repo))
         Deployment
