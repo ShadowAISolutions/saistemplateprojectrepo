@@ -103,6 +103,114 @@ style NODE_ID fill:#4a90d9,color:#fff
 ```
 These work in both light and dark mode because the fill and text color are explicitly set per node. No theme directive is needed.
 
+### Mermaid.live URL generation — the pako encoding process
+
+Every diagram in ARCHITECTURE.md has a clickable "Open in mermaid.live" link. These links use pako-compressed, base64url-encoded JSON that mermaid.live decodes to populate its editor. **Getting these URLs right was the hardest part of the diagram setup** — multiple failure modes exist.
+
+#### How the URL format works
+
+mermaid.live URLs have the format: `https://mermaid.live/edit#pako:<encoded-string>`
+
+The encoded string is created by:
+1. Building a JSON state object: `{"code": "<mermaid code>", "mermaid": "{\"theme\":\"default\"}", "autoSync": true, "updateDiagram": true}`
+2. Deflating it with pako (zlib compression, level 9)
+3. Base64url-encoding the compressed bytes (URL-safe alphabet, no padding)
+
+#### Required npm dependencies
+
+The generation uses **the exact same libraries** as mermaid.live itself:
+```bash
+npm install --prefix /tmp pako js-base64
+```
+These must be installed in `/tmp` before any URL generation. They persist across tool calls within a session but not across sessions — reinstall if needed.
+
+#### The generation command (per diagram)
+
+The CLAUDE.md Pre-Commit #6 command only handles the **first** `` ```mermaid `` block in the file. For multiple diagrams, the extraction must target the specific diagram by searching for its unique content or link label.
+
+**Generic approach for any diagram** — extract the mermaid code between `` ```mermaid\n `` and `` \n``` `` for a specific section:
+
+```javascript
+node -e "
+const pako=require('/tmp/node_modules/pako');
+const{fromUint8Array}=require('/tmp/node_modules/js-base64');
+const fs=require('fs');
+const f=fs.readFileSync('repository-information/ARCHITECTURE.md','utf8');
+// Find the specific code block by searching for content unique to this diagram
+const marker='<UNIQUE_FIRST_LINE>';  // e.g. 'graph TB' or 'sequenceDiagram' or 'mindmap'
+const startSearch=f.indexOf(marker);
+const codeStart=f.lastIndexOf('\`\`\`mermaid\n', startSearch)+'\`\`\`mermaid\n'.length;
+const codeEnd=f.indexOf('\n\`\`\`', startSearch);
+const code=f.substring(codeStart, codeEnd);
+const state={code:code,mermaid:JSON.stringify({theme:'default'}),autoSync:true,updateDiagram:true};
+const compressed=pako.deflate(new TextEncoder().encode(JSON.stringify(state)),{level:9});
+const url='https://mermaid.live/edit#pako:'+fromUint8Array(compressed,true);
+fs.writeFileSync('/tmp/mermaid_url.txt', url);
+console.log('done, code length:', code.length);
+"
+```
+
+**For mermaid.live-only diagrams** (no code block in the file), the mermaid code must be passed as a string literal or read from a temporary file.
+
+#### Critical rule: NEVER use Edit tool to insert raw pako URLs
+
+The encoded URLs are ~1000–3000 characters of dense base64. **The Edit tool can corrupt individual characters** during replacement — a single-character change produces a valid-looking URL that fails to decompress.
+
+**The safe approach:**
+1. Write the URL to a temp file: `fs.writeFileSync('/tmp/mermaid_url.txt', url)`
+2. Use Python regex replacement to swap the URL in ARCHITECTURE.md:
+```python
+python3 << 'PYEOF'
+import re
+with open('repository-information/ARCHITECTURE.md') as f:
+    content = f.read()
+with open('/tmp/mermaid_url.txt') as f:
+    new_url = f.read().strip()
+# Use the link label to target the specific diagram's URL
+old_pattern = r'(\[Open in mermaid\.live — DIAGRAM_NAME\]\()https://mermaid\.live/edit#pako:[^)]+(\))'
+new_repl = r'\g<1>' + new_url + r'\g<2>'
+content_new = re.sub(old_pattern, new_repl, content)
+with open('repository-information/ARCHITECTURE.md', 'w') as f:
+    f.write(content_new)
+PYEOF
+```
+Replace `DIAGRAM_NAME` with the specific link label (e.g. `Flowchart`, `Sequence`, `Mindmap`).
+
+#### Mandatory verification after every URL update
+
+After writing the URL into the file, **always** verify it decompresses correctly:
+```python
+python3 -c "
+import base64,zlib,json,re
+f=open('repository-information/ARCHITECTURE.md').read()
+m=re.search(r'mermaid\.live/edit#pako:([^\)]+)',f)
+e=m.group(1)
+p=e+'='*((4-len(e)%4)%4)
+d=zlib.decompress(base64.urlsafe_b64decode(p))
+j=json.loads(d)
+print('OK —',len(j['code']),'chars')
+"
+```
+If this fails with a checksum or decompression error, the URL was corrupted — regenerate it.
+
+**For verifying a specific diagram's URL** (not just the first match), use the link label in the regex:
+```python
+m=re.search(r'DIAGRAM_NAME\]\(https://mermaid\.live/edit#pako:([^\)]+)', f)
+```
+
+#### Common failure modes (lessons learned)
+
+1. **Edit tool character corruption** — the #1 cause of broken URLs. The Edit tool's `old_string`/`new_string` matching can silently alter characters in long base64 strings. Always use the Python regex file-write approach instead
+2. **Wrong code extraction boundaries** — if the `indexOf` for `` ```mermaid\n `` or `` \n``` `` is off by even one character, the mermaid code will include the fence markers or miss the init directive, producing a URL that opens mermaid.live with a syntax error. Always log `code.length` and sanity-check it matches expectations
+3. **Multiple code blocks** — the simple `indexOf('```mermaid\n')` finds the **first** code block. For diagrams later in the file, use a unique content marker (like the diagram's first keyword) to locate the right block, then search backwards for the fence
+4. **mermaid.live-only diagrams have no code block** — `architecture-beta` and `C4Context` diagrams exist only as mermaid.live links (no `` ```mermaid `` block). Their code must be stored as the URL's encoded payload. When modifying these, decode the existing URL to get the code, edit it, re-encode, and update the link
+5. **Theme in the state object vs. in the code** — the JSON state object has a `mermaid` field (set to `{"theme":"default"}`) that controls mermaid.live's editor theme, and the diagram code itself may have a `%%{init: ...}%%` directive. These are independent — the `%%{init}%%` directive in the code takes precedence for rendering. Always set the state object's theme to `"default"` regardless of what the code's init directive says
+6. **Base64url vs. standard base64** — mermaid.live uses base64url encoding (URL-safe alphabet: `-` and `_` instead of `+` and `/`, no `=` padding). The `js-base64` library's `fromUint8Array(bytes, true)` produces this format (the `true` flag enables URL-safe mode). Python's `base64.urlsafe_b64decode` handles the decoding side, but you must re-add padding (`=`) before decoding since the URL strips it
+
+#### Batch generation for all 9 diagrams
+
+When regenerating all URLs at once (e.g. after a major restructure), process each diagram sequentially — extract its code, generate the URL, write to a temp file, and use Python to update the specific link. Do not try to batch all 9 into a single command — the risk of cross-contamination (wrong code in wrong URL) is too high.
+
 ### Adding new diagrams
 
 When adding a new diagram to ARCHITECTURE.md:
@@ -111,8 +219,9 @@ When adding a new diagram to ARCHITECTURE.md:
 3. If not renderable: include only mermaid.live link + explanatory note
 4. If the diagram type uses `cScale` for colored regions (mindmap, timeline, etc.): apply the `base` theme fix above
 5. For all other renderable types: no theme directive needed — they handle dark mode automatically
-6. Always regenerate the mermaid.live pako URL when diagram code changes (see Pre-Commit #6)
-7. Always include the collapsible `<details>` raw code section below the diagram
+6. Generate the mermaid.live pako URL using the process above — never construct it manually
+7. Always verify the URL decompresses correctly before committing
+8. Always include the collapsible `<details>` raw code section below the diagram (for GitHub-renderable types)
 
 ## Keeping Documentation Files in Sync
 
