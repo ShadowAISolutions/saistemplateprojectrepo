@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v01.62r] — 2026-03-09 10:20:06 PM EST
+
+### Changed
+- Restructured Architecture diagram layout from horizontal to vertical flow for better readability
 
 ## [v01.61r] — 2026-03-09 10:16:20 PM EST
 
