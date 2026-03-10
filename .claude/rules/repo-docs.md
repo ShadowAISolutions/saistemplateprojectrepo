@@ -346,9 +346,10 @@ Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-
 - **🌐** — live site URL link. Format: `<a href="https://ORG.github.io/REPO/page.html">🌐</a>`
 - **📊** — diagram link. Format: `<a href="...diagram.md">📊</a>`
 - **📋** — spreadsheet link. Format: `<a href="https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/">📋</a>`. The `SPREADSHEET_ID` is read from the page's `<page-name>.config.json` in `googleAppsScripts/`
-- **📁** — Google Drive folder link. Format: `<a href="https://drive.google.com/drive/folders/FOLDER_ID">📁</a>`. Links to the Drive folder containing all files for that page's environment. When no folder ID is available yet, show the emoji as a non-linked placeholder: `📁`
-- **╌** — subtle placeholder for a missing icon (e.g. no spreadsheet for a page without a GAS project). Used in place of 📋 when the page has no GAS project (`vNoGASg`) or has a placeholder `SPREADSHEET_ID`
+- **📁** — Google Drive folder link. Format: `<a href="https://drive.google.com/drive/folders/FOLDER_ID">📁</a>`. Links to the Drive folder containing all files for that page's environment
+- **✕** — placeholder for a missing spreadsheet (no GAS project or placeholder `SPREADSHEET_ID`). Subtle thin x
+- **◇** — placeholder for a missing Google Drive folder (folder ID not yet provided). White diamond
 
-When `setup-gas-project.sh` creates a new project, it should add the icon cluster with 📋 if the spreadsheet ID is not a placeholder, or `╌` if it is.
+When `setup-gas-project.sh` creates a new project, it should add the icon cluster with 📋 if the spreadsheet ID is not a placeholder, or `✕` if it is. Use `◇` for the folder position until a folder ID is provided.
 
 Developed by: ShadowAISolutions
