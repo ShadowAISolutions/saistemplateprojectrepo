@@ -80,6 +80,24 @@
 - **Duration annotations (MANDATORY — NEVER SKIP)** — a `⏱️` annotation appears between **every** consecutive pair of bookends (and before the end-of-response block). **No exceptions** — if two bookends appear in sequence, there must be a `⏱️` line between them. **Procedure for EVERY mid-response bookend** (CHECKLIST, RESEARCHING, NEXT PHASE, BLOCKED, VERIFYING, CHANGES PUSHED, AWAITING HOOK, HOOK FEEDBACK, and the end-of-response block): (1) run `date` via Bash, (2) compute the elapsed time since the previous bookend's timestamp, (3) write `⏱️ Xs` (or `Xm Ys` for durations over 60 seconds), (4) THEN write the bookend marker. **The `date` call for the bookend's timestamp and the `⏱️` duration can share a single `date` invocation** — run `date` once, compute the duration from the previous bookend, write the `⏱️` line, then write the bookend with that same timestamp. **You must run `date` to get the current time and compute the difference** — never estimate durations mentally. If a phase lasted less than 1 second, write `⏱️ <1s`. **The last working phase always gets a `⏱️`** — its annotation appears immediately before the END OF RESPONSE BLOCK header (as part of the pre-fetched end-of-response block). This includes the gap between the opening marker (CODING START or RESEARCH START) and the next bookend, the gap between AWAITING HOOK and HOOK FEEDBACK, and every other transition. **Self-check**: before writing any bookend, ask yourself: "Did I write a `⏱️` line first?" If the answer is no, stop and compute the duration before proceeding
 - **Duration before user interaction** — before calling `ExitPlanMode` or `AskUserQuestion`, output a `⏱️` duration annotation showing how long the preceding phase took (from the last bookend's timestamp to now), followed by `⏳⏳ACTUAL PLANNING TIME: Xm Ys (estimated Xm)⏳⏳` comparing the actual planning duration against the overall estimate. The planning time is computed from the response start timestamp to the current moment (when the user is about to be prompted). This makes the planning/research cost visible before the user decides. Run `date`, compute both durations (phase `⏱️` and total planning time since the response start), and write both lines immediately before the tool call. After the user responds (plan approved or question answered), the continuation resumes with the next bookend (`📋📋PLAN APPROVED📋📋` or `🔄🔄NEXT PHASE🔄🔄`) as normal
 
+## Page Enumeration — Mandatory Discovery
+
+**The failure pattern:** when writing UNAFFECTED URLS and AFFECTED URLS sections, the page list is constructed from memory rather than from the actual filesystem. This causes pages to be silently omitted — the user sees only the pages Claude "remembers" (typically just `index.html`), not the full set. Version numbers may also be fabricated from memory instead of read from the actual `html.version.txt` files.
+
+**The fix — enumerate before writing:** before starting the end-of-response block, **always run** `ls live-site-pages/*.html` (or equivalent glob) to get the complete list of pages, then read each page's `html.version.txt` from `live-site-pages/html-versions/`. Never rely on memory for which pages exist or what their versions are. This enumeration can be combined with the `date` call and TODO.md read that already happen before the end-of-response block.
+
+**What to enumerate:**
+- Every `.html` file directly in `live-site-pages/` (not in subdirectories like `templates/`)
+- Every `index.html` in subdirectories of `live-site-pages/` (e.g. `live-site-pages/my-project/index.html`)
+- Exclude `templates/` directory — template files are not deployed pages
+
+**For each page found:**
+1. Read its version from `live-site-pages/html-versions/<page-name>html.version.txt`
+2. Determine if it was affected (directly edited, or its GAS script was edited) in this response
+3. Place it in the appropriate section (UNAFFECTED or AFFECTED) with the correct version
+
+**The self-check:** before writing any URL section, ask: "Did I actually run a filesystem command to discover pages, or am I listing them from memory?" If from memory, STOP and enumerate first.
+
 ## Hook Anticipation — Bug Context
 
 **The failure pattern:** if the hook conditions are evaluated *before* a `git push` completes (or evaluated mentally instead of actually running the git commands), the prediction can be wrong — e.g. concluding there are unpushed commits when the push already succeeded. Writing `🐟🐟AWAITING HOOK🐟🐟` in that case means the hook never fires (because all conditions are actually false), and the conversation gets stuck with no closing marker.
