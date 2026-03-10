@@ -342,10 +342,12 @@ Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-
 ` ` `
 ```
 
-**README tree diagram links:** each live-site page entry in the README tree should include a 📊 link after the version numbers, pointing to the page's diagram file in `repository-information/diagrams/`. Format: `| <a href="...">📊</a> |` using pipe separators on both sides (matching the `|` before the description).
+**README tree page entry icon cluster:** each live-site page entry in the README tree groups its action icons together between `—` separators, using `·` as dividers between icons. Layout: `filename — 🌐 · 📊 · 📋 — versions | description`. The icons are:
+- **🌐** — live site URL link. Format: `<a href="https://ORG.github.io/REPO/page.html">🌐</a>`
+- **📊** — diagram link. Format: `<a href="...diagram.md">📊</a>`
+- **📋** — spreadsheet link. Format: `<a href="https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/">📋</a>`. The `SPREADSHEET_ID` is read from the page's `<page-name>.config.json` in `googleAppsScripts/`
+- **🚫** — no-spreadsheet placeholder (non-linked). Used when the page has no GAS project (e.g. `vNoGASg`) or has a placeholder `SPREADSHEET_ID`
 
-**README tree live site links:** each live-site page entry uses 🌐 as the clickable link text for the live site URL (instead of the page name). Format: `<a href="https://ORG.github.io/REPO/page.html">🌐</a>`. This matches the 🌐 prefix used in the end-of-response block page URL labels.
-
-**README tree spreadsheet links:** each live-site page entry that has an associated GAS project with a `SPREADSHEET_ID` (not a placeholder) should include a 📋 link after the 📊 diagram link, pointing to the Google Sheets URL. Format: `| <a href="https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/">📋</a> |` using pipe separators. The `SPREADSHEET_ID` is read from the page's `<page-name>.config.json` in `googleAppsScripts/`. Pages without a GAS project (e.g. `vNoGASg`) or with a placeholder `SPREADSHEET_ID` use a non-linked placeholder instead: `| 📋✖ |` — the ✖ indicates no spreadsheet is associated. When `setup-gas-project.sh` creates a new project, it should add the 📋 link if the spreadsheet ID is not a placeholder, or `📋✖` if it is.
+When `setup-gas-project.sh` creates a new project, it should add the icon cluster with 📋 if the spreadsheet ID is not a placeholder, or 🚫 if it is.
 
 Developed by: ShadowAISolutions
