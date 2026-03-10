@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v01.78r] — 2026-03-10 12:10:30 AM EST
+
+### Added
+- 📋✖ placeholder for pages without an associated spreadsheet in README tree (gas-project-creator)
+- Documented the 📋✖ no-spreadsheet placeholder convention in `repo-docs.md`
 
 ## [v01.77r] — 2026-03-10 12:06:53 AM EST
 
