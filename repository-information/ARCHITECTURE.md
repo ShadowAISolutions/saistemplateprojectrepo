@@ -164,7 +164,7 @@ graph TB
 
 ## 2. Sequence Diagram — Interaction Flows
 
-> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqNVs1u2zgQfpWBTnYT2e1V2ATwJnVcoGmDuF1ffGGkkcSGJrkkZdcIct0H2EfcJ9khKf_IVtD6Ikuc3-_7ZqSXJFcFJlli8e8GZY63nFWGrZYS6KeZcTznmkkHt7gGZv0FhdJoYPzHkxlf3wjWFAg3FOXc527mXe64mzVPwXqQB_PxO3gyTOb18NxnMfU-k8ap9B5NhcFvocxzKdTm3PyecekdVv4ag54bPbAK7aGUeH9u9qdRG0udkeF3f23ve_qazEM0pSqBMNFahirnueHanZvPa0Rnjzzig6WMpl-UQ1BrSkjgVsazDK6uruheC7WFKXXu73cOZJZeX9_NMqi4A93YGna4RoO7GZ0vphl8M7yqKPCmg99i2h7f1Jg_Q65WK4ozn01CF2sLglmXaqNytBaL6MSEg0-yRsMdFjCwjgkcdhDfh_aV3aJAaiuek_kz17DyfLaUo7AIX3DTZj-J4FnNIPC_bw3---ffQPOJrW_kuy4YZevWncbQI1uzHpfYuwew4GV5MPB9Cr7G1FKjqfZKGUNeM1ntkOiEClLKdkw51SOx0K4suilGlYWSkxbeDk0qyyBvjICHr_NvUKgHZd2A5Y4reVWEhMOuG3m08E_REeyCQLEx15qzXWmTh0-9bj7dV5LhxlMMBOMPzB1cBFHkBj3AkggjC0sVvNFbqQBOBr4l33v8SvxhBTxiaZD0_VkpfTwC7WgeCPisWAFcFvhzVLuViFbCe32k4Fv48B4s5koWR6ScBYmoef9R2-XI_XRd4v6KB_28HSK2_zKYI40oNcxllVrVyAJKwaq33NpCHmnHUj9efV3LcN4Nb9YITdB_n0NfRTWtk2WywCcvccrFiu0yCTRbTSNUwwXQdQuh3B6ef4s-vyPnKMq0nc1TBo9EpxshJrKIMzQ1ahWFOhh2LPeqDqNDVmBQq_3C2wV7RNcY6Ws3Oclv_17qFfkFtMJu6W7VHuGEOGMrlO44xB5HTeN4T5uGMB-8uK1G2sfMpiZw9zo8FereryXXA8RLetfir8F8bKTjK4Rb5tjZ6-CQInQXXl1cOjRxVcAgZumguQvuyR9HLKjldk_Gw1NED-c-RLchmjtDdFitpKV2ksuEdj3t6oK-LF6WiauRukyyZVJgyRrhlskr2TCa8PlW5knmTIOXSYS9_QKJD1__B14mv9M) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqNVs1u2zgQfpWBTnYT2e1V2ATwJnVcoGmDuF1ffGGkkcSGJrkkZdcIct0H2EfcJ9khKf_IVtD6Ikuc3-_7ZqSXJFcFJlli8e8GZY63nFWGrZYS6KeZcTznmkkHt7gGZv0FhdJoYPzHkxlf3wjWFAg3FOXc527mXe64mzVPwXqQB_PxO3gyTOb18NxnMfU-k8ap9B5NhcFvocxzKdTm3PyecekdVv4ag54bPbAK7aGUeH9u9qdRG0udkeF3f23ve_qazEM0pSqBMNHahirnueHanZvPa0Rnjzzig6WMpl-UQ1BrSkjgXsazDK6uruheC7WFKXXu73cOZJZeX9_NMqi4A93YGna4RoO7GZ0vphl8M7yqKPCmg99i2h7f1Jg_Q65WK4ozn01CF2sLglmXaqNytBaL6MSEg0-yRsMdFjCwjgkcdhDfh_aV3aJAaiuek_kz17DyfLaUo7AIX3DTZj-J4FnNIPC_bw3---ffQPOJrW_kuy4YZevWncbQI1uzHpfYuwew4GV5MPB9Cr7G1FKjqfZKGUNeM1ntkOiEClLKdkw51SOx0K4suilGlYWSkxbeDk0qyyBvjICHr_NvUKgHZd2A5Y4reVWEhMOuG3m08E_REeyCQLEx15qzXWmTh0-9bj7dV5LhxlMMBOMPzB1cBFHkBj3AkggjC0sVvNHbqQBOBr4l33v8SvxhBTxiaZD0_VkpfTwC7WgeCPisWAFcFvhzVLuViFbCe32k4Fv48B4s5koWR6ScBYmoef9R2-XI_XRd4v6KB_28HSK2_zKYI40oNcxllVrVyAJKwaq33NpCHmnHUj9efV3LcN4Nb9YITdB_n0NfRTWtk2WywCcvccrFiu0yCTRbTSNUwwXQdQuh3B6ef4s-vyPnKMq0nc1TBo9EpxshJrKIMzQ1ahWFOhh2LPeqDqNDVmBQq_3C2wV7RNcY6Ws3Oclv_17qFfkFtMJu6W7VHuGEOGMrlO44xB5HTeN4T5uGMB-8uK1G2sfMpiZw9zo8FereryXXA8RLetfir8F8bKTjK4Rb5tjZ6-CQInQXXl1cOjRxVcAgZumguQvuyR9HLKjldk_Gw1NED-c-RLchmjtDdFitpMXkMqFNT5u6oO-Kl2XiaqQek2yZFFiyRrhl8ko2jOZ7vpV5kjnT4GUSQW-_P-LD1_8B14K_CQ) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 sequenceDiagram
@@ -310,12 +310,12 @@ gitGraph
 
 ## 7. Mindmap — Concept Hierarchy
 
-> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1lE1v2zAMhv8KoVML1Os9tyAZ0gAdUMzpdslFkWhbiCQKEp0uKPrfJyXZUtsNAV_ERx98-dLvQpFGMRPOeO1k2HrIEYn47m6DLljJCD8x0P39OVViicHS0aHn61qJleGnfgcvssU0zJSY90xVxCZi6iCQtca3U-oXxmTIVzuZUENES1JPqZp6r8ETm8YoyXnD6MLF-nGxhN8U942ltxuPcRhbBGVlrxF2UXrVffXwmqX9lweNjKpcOOVOdWegiDPNrub1JQccTdtivDIrojZfMQ8hQa2iCSNha7RN1QddmtFEchelRyWTb0xb6WgO6CEh92F0SogodeoQGXZS7dGPlF03UToEdDvUetCdS1cmHSvOSIYpHuFwRqCCOGSKLJ-yo2YUWa7J0fGLTvo2W6BNEDBCYywOgXlUXS43G5blsClLPOSNZdeGyI7d8Tx_XX7_5jQYnzj26gsHvUSsFDlnGLIt1N6axFMi9NnMN_I1plNZijzjHx4rVyYuF35d_j9v9TExuiH_tPnxDKFIyRdsqmM6WecGsPa5kgvRUCzfPo0fnD3zmcmHigeRx8RJo_NP4n0ruEOHWzHbCo2N7C1vxUdmZJ6n-uiVmGU58UGczbo0ss2WOi9-_AXygUT1) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1VMFu2zAM_RXCpwSo13tuQTKkATqgmNPtkosi0bYQSRQkOl1Q9N8nJdmayA0BX_SeRPLx0e-VJIXVrLLaKSv81kGKQMSTyQatN4IRfqKn6fQM5Zgu0Rs6WnQ8-TzNsdL8NOzgRXQYb5Ec84GpDtgGjD14Mka7bsz6hSFqcvVORFQQ0JBQY1ZDg1PgiHWrpeB0oUi4WD8ulvCbwr419HanGIuhQ5BGDAphF4ST_VeFNyzMPxwUMsqccMw79Z0IWZ0xupo3Fww46K7DcCXpiqhLOebeR2hk0L6UtkHT1oNXeSBtIHvRumiaXKu7WgV9QAcRefDFKz6gULFHZNgJuUdXaLtug7AIaHeo1M18ppfBpMOitOyPqJnCEQ5nDtQQbjlZmiu0GEiW5hMsTLHoheuSDboIHgO02uAtYR5knxpOtmVxO5jk1EO6ma9tiEwsCl88z1-X379ZBdpFDoP8wkcvAWtJ1mqGZA65NzrymOGHZOk7eIPx1Jgkx_iHS-3y5qXWr4r-v3jNMTLaouinzY9n8FlOvvDGWsaTg-4Q1i71cmG0FPK3j2XJyTnXnPRo9VCldbFCq_S7eN9W3KPFbTXbVgpbMRjeVh-JI9JeNUcnq1kSFB-qs2WXWnTJWOfDj7-M60aK) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 mindmap
     root((Template Repo))
-        Deployment
+        )Deployment(
             GitHub Pages
                 Auto-refresh polling
                 Version-based reload
@@ -325,24 +325,24 @@ mindmap
                 Stale branch detection
                 Pages deploy
                 GAS deploy trigger
-        Google Apps Script
+        )Google Apps Script(
             Self-update from GitHub
             Config-driven setup
             Spreadsheet backend
             Iframe embedding
-        Versioning
+        )Versioning(
             Repository version - r
             Page version - w
             GAS version - g
             Changelogs per file
             Archive rotation
-        Developer Tools
+        )Developer Tools(
             CLAUDE.md instructions
             Pre-commit checklist
             Pre-push checklist
             Session context
             Reminders
-        Template System
+        )Template System(
             HTML page template
             GAS script template
             Init script for forks

@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v01.65r] — 2026-03-09 10:45:21 PM EST
+
+### Fixed
+- Fixed corrupted Sequence diagram mermaid.live link (regenerated from source)
+- Fixed Mindmap dark-mode readability on GitHub by using cloud-shaped nodes for second-level categories
 
 ## [v01.64r] — 2026-03-09 10:37:06 PM EST
 
