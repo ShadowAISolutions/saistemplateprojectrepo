@@ -162,5 +162,71 @@ graph TB
     style INIT_SCRIPT fill:#78909c,color:#fff
 ```
 
+## Sequence Diagram
+
+> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqNVs1u2zgQfpWBTnYT2e1V2ATwJnVcoGmDuF1ffGGkkcSGJrkkZdcIct0H2EfcJ9khKf_IVtD6Ikuc3-_7ZqSXJFcFJlli8e8GZY63nFWGrZYS6KeZcTznmkkHt7gGZv0FhdJoYPzHkxlf3wjWFAg3FOXc527mXe64mzVPwXqQB_PxO3gyTOb18NxnMfU-k8ap9B5NhcFvocxzKdTm3PyecekdVv4ag54bPbAK7aGUeH9u9qdRG0udkeF3f23ve_qazEM0pSqBMNFahirnueHanZvPa0Rnjzzig6WMpl-UQ1BrSkjgVsazDK6uruheC7WFKXXu73cOZJZeX9_NMqi4A93YGna4RoO7GZ0vphl8M7yqKPCmg99i2h7f1Jg_Q65WK4ozn01CF2sLglmXaqNytBaL6MSEg0-yRsMdFjCwjgkcdhDfh_aV3aJAaiuek_kz17DyfLaUo7AIX3DTZj-J4FnNIPC_bw3---ffQPOJrW_kuy4YZevWncbQI1uzHpfYuwew4GV5MPB9Cr7G1FKjqfZKGUNeM1ntkOiEClLKdkw51SOx0K4suilGlYWSkxbeDk0qyyBvjICHr_NvUKgHZd2A5Y4reVWEhMOuG3m08E_REeyCQLEx15qzXWmTh0-9bj7dV5LhxlMMBOMPzB1cBFHkBj3AkggjC0sVvNFbqQBOBr4l33v8SvxhBTxiaZD0_VkpfTwC7WgeCPisWAFcFvhzVLuViFbCe32k4Fv48B4s5koWR6ScBYmoef9R2-XI_XRd4v6KB_28HSK2_zKYI40oNcxllVrVyAJKwaq33NpCHmnHUj9efV3LcN4Nb9YITdB_n0NfRTWtk2WywCcvccrFiu0yCTRbTSNUwwXQdQuh3B6ef4s-vyPnKMq0nc1TBo9EpxshJrKIMzQ1ahWFOhh2LPeqDqNDVmBQq_3C2wV7RNcY6Ws3Oclv_17qFfkFtMJu6W7VHuGEOGMrlO44xB5HTeN4T5uGMB-8uK1G2sfMpiZw9zo8FereryXXA8RLetfir8F8bKTjK4Rb5tjZ6-CQInQXXl1cOjRxVcAgZumguQvuyR9HLKjldk_Gw1NED-c-RLchmjtDdFitpKV2ksuEdj3t6oK-LF6WiauRukyyZVJgyRrhlskr2TCa8PlW5knmTIOXSYS9_QKJD1__B14mv9M) — *interactive editor with pan, zoom, and export*
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer /<br/>Claude Code
+    participant GH as GitHub<br/>(claude/* branch)
+    participant WF as Auto-Merge<br/>Workflow
+    participant Main as main branch
+    participant Pages as GitHub Pages
+    participant Browser as User Browser
+    participant GAS as Google Apps<br/>Script
+    participant Sheets as Google Sheets
+
+    Note over Dev,Sheets: === Deploy Flow ===
+
+    Dev->>GH: git push claude/*
+    GH->>WF: Trigger workflow
+    WF->>WF: Check commit SHA<br/>vs last-processed
+    alt Inherited (stale) branch
+        WF->>GH: Delete branch (skip merge)
+    else New commit
+        WF->>Main: Merge claude/* → main
+        WF->>WF: Update last-processed-commit.sha
+        WF->>WF: Check git diff
+        alt live-site-pages/ changed
+            WF->>Pages: Deploy to GitHub Pages
+        end
+        alt .gs file changed
+            WF->>GAS: curl POST doPost(action=deploy)
+            GAS->>GH: Fetch latest .gs via GitHub API
+            GAS->>GAS: Overwrite project +<br/>create new version
+        end
+        WF->>GH: Delete claude/* branch
+    end
+
+    Note over Dev,Sheets: === Auto-Refresh Loop ===
+
+    Browser->>Pages: Load index.html
+    loop Every 10 seconds
+        Browser->>Pages: Fetch html.version.txt
+        alt Version changed
+            Browser->>Browser: Set pending-sound flag
+            Browser->>Pages: Reload page
+            Pages->>Browser: Serve updated page
+            Browser->>Browser: Show "Website Ready"<br/>splash + play sound
+        end
+    end
+
+    Note over Dev,Sheets: === GAS Self-Update Loop ===
+
+    GAS->>GAS: pullAndDeployFromGitHub()
+    GAS->>GH: Fetch .gs from repo
+    GH-->>GAS: Return source code
+    GAS->>GAS: Overwrite + create version +<br/>update deployment
+    GAS->>Browser: postMessage({type: gas-reload})
+    Browser->>Browser: Reload GAS iframe
+
+    Note over Dev,Sheets: === Runtime Data Flow ===
+
+    Browser->>GAS: User interaction (iframe)
+    GAS->>Sheets: Read/write data
+    Sheets-->>GAS: Return data
+    GAS-->>Browser: Render response
+```
 
 Developed by: ShadowAISolutions
