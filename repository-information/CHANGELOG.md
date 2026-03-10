@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v01.76r] — 2026-03-09 11:58:02 PM EST
+
+### Changed
+- Replaced live site URL text labels (`index`, `test`, `gas-project-creator`) with 🌐 globe emoji in README tree
+- Changed diagram link separator from `· 📊 |` to `| 📊 |` in README tree page entries
+- Added 🌐 globe emoji prefix to all page URL labels in end-of-response block rules and examples (`chat-bookends.md` and `chat-bookends-reference.md`)
+- Added README tree rules for 🌐 live site links and updated 📊 diagram link separator format in `repo-docs.md`
 
 ## [v01.75r] — 2026-03-09 11:47:30 PM EST
 

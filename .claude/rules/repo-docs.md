@@ -342,6 +342,8 @@ Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-
 ` ` `
 ```
 
-**README tree diagram links:** each live-site page entry in the README tree should include a 📊 link after the version numbers, pointing to the page's diagram file in `repository-information/diagrams/`. Format: `· <a href="...">📊</a>` placed after the last version link and before the `|` separator.
+**README tree diagram links:** each live-site page entry in the README tree should include a 📊 link after the version numbers, pointing to the page's diagram file in `repository-information/diagrams/`. Format: `| <a href="...">📊</a> |` using pipe separators on both sides (matching the `|` before the description).
+
+**README tree live site links:** each live-site page entry uses 🌐 as the clickable link text for the live site URL (instead of the page name). Format: `<a href="https://ORG.github.io/REPO/page.html">🌐</a>`. This matches the 🌐 prefix used in the end-of-response block page URL labels.
 
 Developed by: ShadowAISolutions
