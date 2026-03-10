@@ -327,4 +327,21 @@ The framework handles:
 
 Plain markdown collapses consecutive indented lines into one paragraph — `<br>` and `&emsp;` are the reliable way to get separate indented rows on GitHub.
 
+## Mermaid Diagrams — mermaid.live Links
+
+Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-information/diagrams/`, or any other file — must include an "Open in mermaid.live" link above the ```` ```mermaid ```` code block. This gives the reader one-click access to an interactive editor with pan, zoom, and export.
+
+**When to generate:** whenever a new Mermaid diagram is created or an existing diagram's code is modified, generate (or regenerate) the mermaid.live URL using the pako + js-base64 compression method documented in Pre-Commit Checklist item #6. After generating, verify the URL decompresses correctly.
+
+**Format:** place the link on its own line before the mermaid code block, with a blank line between:
+```
+> [Open in mermaid.live](https://mermaid.live/edit#pako:...) — *interactive editor with pan, zoom, and export*
+
+` ` `mermaid
+...
+` ` `
+```
+
+**README tree diagram links:** each live-site page entry in the README tree should include a `diagram` link after the version numbers, pointing to the page's diagram file in `repository-information/diagrams/`. Format: `· <a href="...">diagram</a>` placed after the last version link and before the `|` separator.
+
 Developed by: ShadowAISolutions

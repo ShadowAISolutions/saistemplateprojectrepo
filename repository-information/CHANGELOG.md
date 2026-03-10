@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v01.74r] — 2026-03-09 11:39:47 PM EST
+
+### Added
+- mermaid.live interactive editor links for all 3 page diagrams (`index-diagram.md`, `test-diagram.md`, `gas-project-creator-diagram.md`)
+- Diagram links in README tree next to each page's version numbers (clickable `diagram` link)
+- "Mermaid Diagrams — mermaid.live Links" rule in `.claude/rules/repo-docs.md` — requires mermaid.live links on all diagrams going forward
+
+### Changed
+- Moved `diagrams/` directory in README tree to sit directly after `ARCHITECTURE.md` for logical grouping
 
 ## [v01.73r] — 2026-03-09 11:32:09 PM EST
 
