@@ -310,12 +310,13 @@ gitGraph
 
 ## 7. Mindmap — Concept Hierarchy
 
-> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1VMFu2zAM_RXCpwSo13tuQTKkATqgmNPtkosi0bYQSRQkOl1Q9N8nJdmayA0BX_SeRPLx0e-VJIXVrLLaKSv81kGKQMSTyQatN4IRfqKn6fQM5Zgu0Rs6WnQ8-TzNsdL8NOzgRXQYb5Ec84GpDtgGjD14Mka7bsz6hSFqcvVORFQQ0JBQY1ZDg1PgiHWrpeB0oUi4WD8ulvCbwr419HanGIuhQ5BGDAphF4ST_VeFNyzMPxwUMsqccMw79Z0IWZ0xupo3Fww46K7DcCXpiqhLOebeR2hk0L6UtkHT1oNXeSBtIHvRumiaXKu7WgV9QAcRefDFKz6gULFHZNgJuUdXaLtug7AIaHeo1M18ppfBpMOitOyPqJnCEQ5nDtQQbjlZmiu0GEiW5hMsTLHoheuSDboIHgO02uAtYR5knxpOtmVxO5jk1EO6ma9tiEwsCl88z1-X379ZBdpFDoP8wkcvAWtJ1mqGZA65NzrymOGHZOk7eIPx1Jgkx_iHS-3y5qXWr4r-v3jNMTLaouinzY9n8FlOvvDGWsaTg-4Q1i71cmG0FPK3j2XJyTnXnPRo9VCldbFCq_S7eN9W3KPFbTXbVgpbMRjeVh-JI9JeNUcnq1kSFB-qs2WXWnTJWOfDj7-M60aK) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1lE1v2kAQhv_KyBIikeL2zg2FiiClUlTT9sJl2R3bK_ZLs2NahPjv3QVSYjuM5MvOsx_zzjs-FtIrLGbFZHLUTvMMjlNu0eJ0NnXYMQkzPZ0mk42z2ikrwsZBCvKeHx7WaIMRjPADg398vKRyLDAYf7Do-LaWY6n5pdvCm2gw9jM55h37krAmjC0Eb4x2zZj6hRS1d-VWRFRAaLxQY6rynVPgPOtaS8Fpw-DC59XX5wX89rSrjf9z5zEWqUGQRnQKYUvCyfazh1cszHseFDLKfOGYO9edgCzOOLucV9ccMOmmQboxS--bdMU8hAiVJB0GwlZo6rILKjejJm-vSg9K9q7WTalI79FBRO7C4JRAKFRsERm2Qu7QDZRd1SQsAtotKtXrzrUro45lZ0TNng6wvyBQAvWZLMuH7KAZWZZbcnD8cytckyzQRAhIUGuDfWBOsk3lJsOy6Ddlgfu0Me9ae2-G7nid_1x8-2IVaBeZOvmJg94IS-mt1QzJFnJndOQxEbpk5jv5CuO5LOkd418eKpcnLhV-W_4_b9UhMto-_7L-_gohS8lXbKxjPFvnDrBK4_9O1J7yt4vDByfPfGTSocVTkcbECq3SX-S4Kc5_j00x2xQKa9EZ3hSnxIg0T9XByWKW5MSn4mLWhRZNstRl8fQPZTBQNQ) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 mindmap
     root((Template Repo))
-        )Deployment(
+        Deployment
             GitHub Pages
                 Auto-refresh polling
                 Version-based reload
@@ -325,24 +326,24 @@ mindmap
                 Stale branch detection
                 Pages deploy
                 GAS deploy trigger
-        )Google Apps Script(
+        Google Apps Script
             Self-update from GitHub
             Config-driven setup
             Spreadsheet backend
             Iframe embedding
-        )Versioning(
+        Versioning
             Repository version - r
             Page version - w
             GAS version - g
             Changelogs per file
             Archive rotation
-        )Developer Tools(
+        Developer Tools
             CLAUDE.md instructions
             Pre-commit checklist
             Pre-push checklist
             Session context
             Reminders
-        )Template System(
+        Template System
             HTML page template
             GAS script template
             Init script for forks
