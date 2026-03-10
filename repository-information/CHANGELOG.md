@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v01.69r] — 2026-03-09 10:59:19 PM EST
+
+### Changed
+- Switched Mindmap to `base` theme with `cScaleInv` overrides to force black text on all node levels including leaf nodes
 
 ## [v01.68r] — 2026-03-09 10:56:33 PM EST
 
