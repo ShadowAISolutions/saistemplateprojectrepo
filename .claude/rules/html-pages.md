@@ -36,6 +36,13 @@ The html.version.txt polling system supports a **maintenance mode** that display
 - When the `maintenance` prefix is removed: if the underlying version also changed, the page auto-reloads; if the version is unchanged, the overlay fades out gracefully
 - **No version bump for standalone maintenance activation** — if the user's request is solely to activate (or deactivate) maintenance mode and nothing else, do NOT bump the version in html.version.txt or the HTML meta tag. Only edit the first and third fields of html.version.txt (the `maintenance` prefix and the timestamp/message). The version field (middle) stays unchanged. If the user requests maintenance mode **combined** with other changes that would normally trigger a version bump (e.g. editing the HTML page, updating a `.gs` file), then bump the version as usual per Pre-Commit Checklist item #2
 
+### Inactive Mode via html.version.txt
+The html.version.txt polling system also supports an **inactive mode** using the same first-field mechanism as maintenance mode. Inactive mode signals that a page is intentionally taken offline or disabled — distinct from maintenance (temporary, coming back) or active (normal operation).
+- **Activate**: change the first field to `inactive` (e.g. `|v01.02w|` → `inactive|v01.02w|As of: 10:00:00 PM EST 03/10/2026`). Like maintenance mode, the third field is the display string
+- **Deactivate**: clear the first field back to empty (e.g. `inactive|v01.02w|` → `|v01.02w|`)
+- **No version bump for standalone inactive activation** — same rule as maintenance mode: only edit the first and third fields, leave the version field unchanged
+- **Status indicators in chat output** — the page's status is reflected in the URL sections of every response (see `chat-bookends.md` — Page Enumeration). The three states map to: `🟢` Active (empty first field), `🟡` Maintenance (`maintenance` first field), `🔴` Inactive (`inactive` first field)
+
 ### Private Repo Compatibility
 - **All client-side code in HTML pages must only access resources available on the public GitHub Pages URL.** The repo may be private while GitHub Pages remains public — `raw.githubusercontent.com` and `api.github.com` require authentication on private repos and will fail silently from browser JavaScript. Instead, deploy any needed resources alongside the HTML pages in `live-site-pages/` so they're served through the public GitHub Pages domain
 - The GAS scripts (server-side) are exempt — they use authenticated API calls via `GITHUB_TOKEN` from script properties

@@ -59,7 +59,7 @@
 
 🔗✏️PLANNED AFFECTED URLS✏️🔗
 
-`✏️🌐 Homepage (v01.13w)`
+`✏️🟢🌐 Homepage (v01.13w)`
 > [index.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html) → [ShadowAISolutions.github.io/saistemplateprojectrepo/](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) `(TEMPLATE_DEPLOY: On)`
 
 ⏳⏳ESTIMATED TIME ≈ 2m⏳⏳ — ~3 file reads + ~4 edits + commit + push cycle
@@ -111,7 +111,7 @@ SHA: [abc1234](https://github.com/ORG/REPO/commit/abc1234...) — Add feature X
 
 🔗✏️AFFECTED URLS✏️🔗
 
-`✏️🌐 Homepage (v01.14w)`
+`✏️🟢🌐 Homepage (v01.14w)`
 > [index.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html) → [ShadowAISolutions.github.io/saistemplateprojectrepo/](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) `(TEMPLATE_DEPLOY: On)`
 
 ⏳⏳ACTUAL TOTAL COMPLETION TIME: 3m 14s (estimated 4m)⏳⏳
@@ -159,7 +159,7 @@ SHA: [abc1234](https://github.com/ORG/REPO/commit/abc1234...) — Add feature X
 
 ─────────────────────────
 
-`🌐 Homepage (v01.13w)`
+`🟢🌐 Homepage (v01.13w)`
 > [index.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html) → [ShadowAISolutions.github.io/saistemplateprojectrepo/](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) `(TEMPLATE_DEPLOY: On)`
 
 🕵🕵AGENTS USED🕵🕵
@@ -213,7 +213,7 @@ SHA: [abc1234](https://github.com/ORG/REPO/commit/abc1234...) — Add feature X
 
 ─────────────────────────
 
-`🌐 Homepage (v01.13w)`
+`🟢🌐 Homepage (v01.13w)`
 > [index.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html) → [ShadowAISolutions.github.io/saistemplateprojectrepo/](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) `(TEMPLATE_DEPLOY: On)`
 
 🕵🕵AGENTS USED🕵🕵
@@ -282,7 +282,7 @@ SHA: [abc1234](https://github.com/ORG/REPO/commit/abc1234...) — Add feature X
 
 ─────────────────────────
 
-`🌐 Homepage (v01.13w)`
+`🟢🌐 Homepage (v01.13w)`
 > [index.html](https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html) → [ShadowAISolutions.github.io/saistemplateprojectrepo/](https://ShadowAISolutions.github.io/saistemplateprojectrepo/) `(TEMPLATE_DEPLOY: On)`
 
 🕵🕵AGENTS USED🕵🕵
