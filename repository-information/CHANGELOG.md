@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v01.77r] — 2026-03-10 12:06:53 AM EST
+
+### Added
+- Spreadsheet 📋 emoji links in README tree for pages with associated GAS spreadsheets (index, test)
+- README tree spreadsheet links rule in `repo-docs.md` documenting the 📋 convention
 
 ## [v01.76r] — 2026-03-09 11:58:02 PM EST
 

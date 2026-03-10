@@ -346,4 +346,6 @@ Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-
 
 **README tree live site links:** each live-site page entry uses 🌐 as the clickable link text for the live site URL (instead of the page name). Format: `<a href="https://ORG.github.io/REPO/page.html">🌐</a>`. This matches the 🌐 prefix used in the end-of-response block page URL labels.
 
+**README tree spreadsheet links:** each live-site page entry that has an associated GAS project with a `SPREADSHEET_ID` (not a placeholder) should include a 📋 link after the 📊 diagram link, pointing to the Google Sheets URL. Format: `| <a href="https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/">📋</a> |` using pipe separators. The `SPREADSHEET_ID` is read from the page's `<page-name>.config.json` in `googleAppsScripts/`. Pages without a GAS project (e.g. `vNoGASg`) or with a placeholder `SPREADSHEET_ID` do not get this link. When `setup-gas-project.sh` creates a new project, it should add the 📋 link if the spreadsheet ID is not a placeholder.
+
 Developed by: ShadowAISolutions
