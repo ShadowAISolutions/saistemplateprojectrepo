@@ -20,6 +20,100 @@ When a new embedding page is created (see New Embedding Page Setup Checklist in 
 - A page node: `NEWPAGE["page-name.html"]`
 - A version file node: `NEWVER["page-namehtml.version.txt"]`
 
+## Mermaid Diagram Compatibility Reference
+
+ARCHITECTURE.md contains 9 diagrams across different mermaid types. Each has different rendering support and theme requirements. **Follow these rules when adding or modifying diagrams.**
+
+### Rendering support by diagram type
+
+| # | Type | Mermaid Syntax | GitHub Renders? | Theme Required? |
+|---|------|---------------|-----------------|-----------------|
+| 1 | Flowchart | `graph TB` | Yes | No — use per-node `style` directives for colors |
+| 2 | Sequence | `sequenceDiagram` | Yes | No — works natively |
+| 3 | State | `stateDiagram-v2` | Yes | No — works natively |
+| 4 | Git Graph | `gitGraph` | Yes | No — works natively |
+| 5 | Architecture | `architecture-beta` | **No** | N/A — mermaid.live link only |
+| 6 | C4 Context | `C4Context` | **No** | N/A — mermaid.live link only |
+| 7 | Mindmap | `mindmap` | Yes | **Yes** — requires `base` theme with custom colors (see below) |
+| 8 | ER Diagram | `erDiagram` | Yes | No — works natively |
+| 9 | Class Diagram | `classDiagram` | Yes | No — works natively |
+
+### Diagrams that GitHub cannot render
+
+`architecture-beta` and `C4Context` are not supported by GitHub's mermaid renderer. For these:
+- Do **not** include a `` ```mermaid `` code block (it would show an error on GitHub)
+- Provide only a mermaid.live link with a note: *"This diagram type is not supported by GitHub's mermaid renderer — use the link above to view it."*
+
+### Diagrams that GitHub renders — all must include both
+
+For all 7 GitHub-renderable types, always include:
+1. A mermaid.live link above the code block (for interactive editing, pan/zoom, export)
+2. A `` ```mermaid `` code block (for inline rendering on GitHub)
+
+### Dark-mode text readability — the Mindmap problem
+
+GitHub and mermaid.live both support dark mode. Most diagram types handle dark-mode text automatically — the renderer inverts text colors to stay readable. **Mindmaps are the exception.** Without theme overrides, mindmap nodes get colored backgrounds (via `cScale`) but the text color may remain light/white on light backgrounds, making labels unreadable.
+
+**The fix** — use the `base` theme with explicit color overrides:
+
+```
+%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor': '#7ba3d4',
+  'primaryTextColor': '#000000',
+  'cScale0': '#e8b4b8',
+  'cScale1': '#b8d4e8',
+  'cScale2': '#b8e8c8',
+  'cScale3': '#e8d4b8',
+  'cScale4': '#d4b8e8',
+  'cScaleLabel0': '#000000',
+  'cScaleLabel1': '#000000',
+  'cScaleLabel2': '#000000',
+  'cScaleLabel3': '#000000',
+  'cScaleLabel4': '#000000',
+  'cScaleInv0': '#000000',
+  'cScaleInv1': '#000000',
+  'cScaleInv2': '#000000',
+  'cScaleInv3': '#000000',
+  'cScaleInv4': '#000000'
+}}}%%
+```
+
+**What each variable controls:**
+- `primaryColor` / `primaryTextColor` — the root node's fill and text color
+- `cScale0`–`cScale4` — background colors for branch depth levels 1–5 (pastel palette for readability)
+- `cScaleLabel0`–`cScaleLabel4` — text color per depth level (force `#000000` for black text)
+- `cScaleInv0`–`cScaleInv4` — inverted/alternate text color per depth level (also force `#000000`)
+
+**Why `base` theme, not `default` or `neutral`:**
+- `default` theme: ignores `cScaleLabel` and `cScaleInv` — text stays white on dark mode
+- `neutral` theme: makes the entire diagram grayscale — loses the colorful branch distinction
+- `base` theme: gives full control over all theme variables — colors and text both respond to overrides
+
+**Why all three text variables are needed:**
+- `cScaleLabel` alone is insufficient — mermaid's mindmap renderer uses different CSS classes at different depths
+- `cScaleInv` catches the alternate text path used by some depth levels
+- `primaryTextColor` catches the root node specifically
+- Setting all three to `#000000` guarantees black text at every depth in both light and dark mode
+
+### Flowchart node colors
+
+Flowcharts use per-node `style` directives instead of theme variables:
+```
+style NODE_ID fill:#4a90d9,color:#fff
+```
+These work in both light and dark mode because the fill and text color are explicitly set per node. No theme directive is needed.
+
+### Adding new diagrams
+
+When adding a new diagram to ARCHITECTURE.md:
+1. Check if the diagram type is GitHub-renderable (test on GitHub or check the mermaid docs)
+2. If renderable: include both mermaid.live link + code block
+3. If not renderable: include only mermaid.live link + explanatory note
+4. If the diagram type uses `cScale` for colored regions (mindmap, timeline, etc.): apply the `base` theme fix above
+5. For all other renderable types: no theme directive needed — they handle dark mode automatically
+6. Always regenerate the mermaid.live pako URL when diagram code changes (see Pre-Commit #6)
+7. Always include the collapsible `<details>` raw code section below the diagram
+
 ## Keeping Documentation Files in Sync
 
 *Mandatory rules: see Pre-Commit Checklist items #5, #6, #7, #8 in CLAUDE.md. Reference table below for additional files to consider.*
