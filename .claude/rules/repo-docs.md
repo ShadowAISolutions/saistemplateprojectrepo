@@ -342,6 +342,6 @@ Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-
 ` ` `
 ```
 
-**README tree diagram links:** each live-site page entry in the README tree should include a `diagram` link after the version numbers, pointing to the page's diagram file in `repository-information/diagrams/`. Format: `· <a href="...">diagram</a>` placed after the last version link and before the `|` separator.
+**README tree diagram links:** each live-site page entry in the README tree should include a 📊 link after the version numbers, pointing to the page's diagram file in `repository-information/diagrams/`. Format: `· <a href="...">📊</a>` placed after the last version link and before the `|` separator.
 
 Developed by: ShadowAISolutions
