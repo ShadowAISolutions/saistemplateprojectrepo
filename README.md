@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-11 01:59:47 PM EST` · Repo version: `v02.09r`
+Last updated: `2026-03-11 02:25:09 PM EST` · Repo version: `v02.10r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -12,6 +12,43 @@ Initialize your repository and Claude will update the live site link and QR code
 <p align="center">
   <img src="repository-information/readme-qr-code.png" alt="QR code to template repo" width="200">
 </p>
+
+## Commands
+
+> **Tip:** Links below navigate away from this page. **Ctrl + click** (or right-click → *Open in new tab*) to keep this ReadMe visible while you work.
+
+All commands are invoked as slash commands in [Claude Code](https://github.com/anthropics/claude-code) or by typing the command name conversationally (e.g. "initialize", "remember session").
+
+### Repo Workflow Commands
+
+| Command | Description |
+|---------|-------------|
+| [`/initialize`](.claude/skills/initialize/SKILL.md) | First deployment setup — resolves template placeholders, deploys to GitHub Pages |
+| [`/new-page`](.claude/skills/new-page/SKILL.md) `<project-name>` | Create a new HTML page with full boilerplate (version polling, splash, auto-refresh) |
+| [`/maintenance-mode`](.claude/skills/maintenance-mode/SKILL.md) `<page> <on\|off>` | Toggle maintenance overlay on/off for specific pages on the live site |
+| [`/phantom-update`](.claude/skills/phantom-update/SKILL.md) | Timestamp alignment — touch every file so all share the same commit timestamp on GitHub |
+| `setup gas project` | Create a new GAS project from config — run by pasting output from the Copy Config for Claude button |
+| [`/remember-session`](.claude/skills/remember-session/SKILL.md) | Save session context so the next Claude session picks up where you left off |
+| [`/reconcile`](.claude/skills/reconcile/SKILL.md) | End multi-session mode — bundle accumulated changes into versioned changelog sections |
+| `diff rules` | Compare this fork's rules against the template repo to find additions, modifications, and upstream changes |
+| `repo audit` | Comprehensive cross-system consistency audit of the entire repository |
+
+### Code Quality Commands
+
+| Command | Description |
+|---------|-------------|
+| [`/diff-review`](.claude/skills/imported--diff-review/SKILL.md) | Security-focused differential review of staged changes before pushing |
+| [`/security-review`](.claude/skills/imported--security-review/SKILL.md) | OWASP Top 10, XSS, and insecure defaults audit for HTML and GAS code |
+| [`/webapp-testing`](.claude/skills/imported--webapp-testing/SKILL.md) | Playwright-based testing for live pages — screenshots, browser logs, UI verification |
+| `/simplify` | Review changed code for reuse, quality, and efficiency, then fix any issues found |
+
+### Design & Tooling Commands
+
+| Command | Description |
+|---------|-------------|
+| [`/frontend-design`](.claude/skills/imported--frontend-design/SKILL.md) | Create distinctive, production-grade frontend interfaces with high design quality |
+| [`/skill-creator`](.claude/skills/imported--skill-creator/SKILL.md) | Meta-skill for building and refining new Claude Code skills |
+| [`/git-cleanup`](.claude/skills/imported--git-cleanup/SKILL.md) | Clean up stale branches, worktrees, and `claude/*` artifacts |
 
 ## Project Structure
 

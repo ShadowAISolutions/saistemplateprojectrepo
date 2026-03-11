@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 109/100`
+`Sections: 110/100`
 
 ## [Unreleased]
+
+## [v02.10r] — 2026-03-11 02:25:09 PM EST
+
+### Added
+- Added "Commands" section to README.md above Project Structure — lists all 16 slash commands and conversational commands organized into Repo Workflow, Code Quality, and Design & Tooling categories with descriptions and links to skill files
 
 ## [v02.09r] — 2026-03-11 01:59:47 PM EST
 
