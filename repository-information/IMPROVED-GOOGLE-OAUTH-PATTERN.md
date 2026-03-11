@@ -2,6 +2,8 @@
 
 Reference implementation for Google OAuth authentication in GAS web apps embedded via iframe. This pattern combines Google Identity Services (GIS) OAuth2 for sign-in with **server-side session management** via `CacheService`, eliminating client-side token exposure.
 
+> **Design philosophy: GAS-heavy, HTML-minimal.** All security logic — token validation, session management, authorization, token refresh, sign-out — lives entirely in the GAS backend. The HTML wrapper is reduced to the **irreducible minimum**: triggering the browser-only GIS sign-in popup, storing one opaque session token in localStorage, and toggling the auth wall UI. If it can run on the server, it does.
+
 > **When to use this pattern**: any GAS web app that authenticates users via their Google account, where the app is embedded in an HTML wrapper page (GitHub Pages, custom domain, etc.) via an iframe. Suitable for internal tools, business apps, and any scenario where Google Workspace identity is the access control mechanism.
 
 > **Comparison with other patterns**: see [CUSTOM-AUTH-PATTERN.md](CUSTOM-AUTH-PATTERN.md) for username/password authentication and [GOOGLE-OAUTH-AUTH-PATTERN.md](GOOGLE-OAUTH-AUTH-PATTERN.md) for the basic Google OAuth pattern (which this improves upon).
@@ -12,18 +14,21 @@ Reference implementation for Google OAuth authentication in GAS web apps embedde
 
 1. [Architecture Overview](#1-architecture-overview)
 2. [Why This Pattern](#2-why-this-pattern)
-3. [Authentication Flow](#3-authentication-flow)
-4. [Implementation Guide — GAS Backend](#4-implementation-guide--gas-backend)
-5. [Implementation Guide — HTML Wrapper](#5-implementation-guide--html-wrapper)
-6. [postMessage Protocol](#6-postmessage-protocol)
-7. [Security Checklist](#7-security-checklist)
-8. [Migration Guide](#8-migration-guide)
-9. [Three-Pattern Comparison](#9-three-pattern-comparison)
-10. [Troubleshooting](#10-troubleshooting)
+3. [GAS vs HTML Responsibility Split](#3-gas-vs-html-responsibility-split)
+4. [Authentication Flow](#4-authentication-flow)
+5. [Implementation Guide — GAS Backend (All Security Logic)](#5-implementation-guide--gas-backend-all-security-logic)
+6. [Implementation Guide — Minimal HTML Shell](#6-implementation-guide--minimal-html-shell)
+7. [postMessage Protocol](#7-postmessage-protocol)
+8. [Security Checklist](#8-security-checklist)
+9. [Migration Guide](#9-migration-guide)
+10. [Three-Pattern Comparison](#10-three-pattern-comparison)
+11. [Troubleshooting](#11-troubleshooting)
 
 ---
 
 ## 1. Architecture Overview
+
+> **Where the logic lives**: the GAS server (right side of the diagram) owns all security — token validation, session creation, authorization checks, and token refresh. The HTML wrapper (left side) is a thin shell that triggers the browser sign-in popup and relays messages. No Google API calls happen in the browser.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -102,7 +107,52 @@ Reference implementation for Google OAuth authentication in GAS web apps embedde
 
 ---
 
-## 3. Authentication Flow
+## 3. GAS vs HTML Responsibility Split
+
+This pattern is designed to keep **maximum logic in GAS** and **minimum in the HTML wrapper**. The HTML side handles only what the browser physically requires — everything else runs server-side.
+
+### GAS Backend (~80% of auth logic)
+
+| Responsibility | Function | Why it's in GAS |
+|---------------|----------|-----------------|
+| Token validation | `validateGoogleToken()` | Calls Google's userinfo API via `UrlFetchApp` — server-side only, token never exposed to browser |
+| Session creation | `exchangeTokenForSession()` | Generates UUID, stores session data in `CacheService` |
+| Session validation | `validateSession()` | Reads `CacheService`, checks expiry, extends TTL on activity |
+| Session invalidation | `invalidateSession()` | Removes session from `CacheService` on sign-out |
+| Single-session enforcement | `invalidateAllSessions()` | Tracks and invalidates prior sessions per user |
+| Token refresh detection | `refreshGoogleTokenIfNeeded()` | Checks token age, flags `needsReauth` when expiring |
+| Authorization | `checkSpreadsheetAccess()` | Checks spreadsheet editors/viewers list |
+| Auth gate on every request | `validateSession()` in each data function | Every server function validates the session before returning data |
+| Sign-out | `serverSignOut()` | Server-side session invalidation (not just client-side cleanup) |
+
+### HTML Wrapper (~20% — irreducible minimum)
+
+These are in the HTML wrapper **only because the browser requires them** — they cannot run on a server:
+
+| Responsibility | Why it MUST be in the HTML | What it does |
+|---------------|---------------------------|--------------|
+| GIS library loading | Browser-only API (`accounts.google.com/gsi/client`) | Loads Google's sign-in JavaScript library |
+| Sign-in popup trigger | Browser-only API (`google.accounts.oauth2.initTokenClient`) | Opens the Google account chooser popup |
+| localStorage read/write | Browser storage API | Stores/reads one opaque session token (UUID) across page reloads |
+| Auth wall UI | Browser DOM | Shows/hides "Sign In Required" or "Access Denied" overlay |
+| postMessage listener | Browser event API | Receives auth status messages from GAS iframe, validates origin |
+| Silent re-auth trigger | Browser-only API (GIS `requestAccessToken`) | Re-triggers GIS when server flags token expiry |
+
+> **Key constraint**: you cannot trigger a Google sign-in popup from server-side GAS code, and you cannot persist state across browser page reloads without `localStorage`. These are fundamental browser platform limitations — no architecture can eliminate them.
+
+### What is NOT in the HTML wrapper
+
+The following are explicitly **excluded from the HTML side** (unlike the basic pattern where some of these leak into the wrapper):
+
+- No client-side calls to `googleapis.com/oauth2/v3/userinfo` — all Google API calls happen in GAS
+- No raw Google `access_token` in localStorage — only the opaque UUID session token
+- No token expiry logic — GAS handles refresh detection server-side
+- No authorization checks — GAS checks spreadsheet access server-side
+- No session duration management — GAS controls TTL via `CacheService`
+
+---
+
+## 4. Authentication Flow
 
 ### Initial Sign-In
 
@@ -201,7 +251,9 @@ token         refresh endpoint
 
 ---
 
-## 4. Implementation Guide — GAS Backend
+## 5. Implementation Guide — GAS Backend (All Security Logic)
+
+> **This section contains ~80% of the authentication system.** All token validation, session management, authorization, and refresh logic lives here. The GAS backend is the single source of truth for auth state.
 
 ### Constants
 
@@ -647,9 +699,11 @@ function serverSignOut(sessionToken) {
 
 ---
 
-## 5. Implementation Guide — HTML Wrapper
+## 6. Implementation Guide — Minimal HTML Shell
 
-### GIS Sign-In (Modified)
+> **This is the irreducible minimum.** The code below contains only what the browser physically requires — GIS popup trigger, localStorage for one session token, postMessage listener, and auth wall UI toggle. All security logic is in Section 5 (GAS Backend). When implementing a new page, copy this shell and customize only the `_gasBaseUrl`, `client_id`, and auth wall HTML styling.
+
+### GIS Sign-In (Browser-Only — Cannot Move to GAS)
 
 ```javascript
 // =============================================
@@ -689,7 +743,7 @@ function exchangeForSession(accessToken) {
 }
 ```
 
-### postMessage Handler (Origin-Validated)
+### postMessage Handler (Browser-Only — Cannot Move to GAS)
 
 ```javascript
 // =============================================
@@ -765,7 +819,7 @@ function handleAuthOk(data) {
 }
 ```
 
-### Silent Re-Authentication
+### Silent Re-Authentication (Browser-Only — Triggered by GAS Server)
 
 ```javascript
 // =============================================
@@ -798,7 +852,7 @@ function silentReauth() {
 }
 ```
 
-### Iframe Loading
+### Iframe Loading (Browser-Only)
 
 ```javascript
 // =============================================
@@ -827,7 +881,7 @@ function reloadIframe() {
 })();
 ```
 
-### Sign-Out (Server-Side Invalidation)
+### Sign-Out (Triggers Server-Side Invalidation)
 
 ```javascript
 // =============================================
@@ -905,7 +959,7 @@ if (_sessionToken) resetInactivityTimer();
 
 ---
 
-## 6. postMessage Protocol
+## 7. postMessage Protocol
 
 ### Messages FROM GAS iframe TO HTML wrapper
 
@@ -938,7 +992,7 @@ GAS iframes serve content from `*.googleusercontent.com` subdomains (e.g., `scri
 
 ---
 
-## 7. Security Checklist
+## 8. Security Checklist
 
 Before deploying a project using this pattern, verify:
 
@@ -952,13 +1006,15 @@ Before deploying a project using this pattern, verify:
 - [ ] `invalidateSession()` removes the session from CacheService (not just localStorage)
 - [ ] `MAX_SESSIONS_PER_USER` is set to 1 for sensitive apps (single-session enforcement)
 
-### Client-Side (HTML Wrapper)
+### Client-Side (Minimal HTML Shell — verify these are the ONLY auth-related things in the wrapper)
 - [ ] `access_token` from GIS is NEVER stored in localStorage — only the opaque session token
 - [ ] `access_token` is passed to GAS via URL parameter (one-time exchange), then discarded
 - [ ] postMessage handler validates `e.origin` includes `googleusercontent.com`
 - [ ] Sign-out calls server-side invalidation (not just `localStorage.removeItem()`)
-- [ ] Inactivity timeout is shorter than the server-side session TTL
+- [ ] Inactivity timeout (if used) is shorter than the server-side session TTL
 - [ ] No client-side calls to `googleapis.com` — all Google API calls happen in GAS
+- [ ] No token validation logic in the HTML — the wrapper never inspects or validates tokens
+- [ ] No authorization logic in the HTML — the wrapper never checks who has access
 
 ### OAuth Configuration
 - [ ] Google Cloud Console OAuth consent screen is configured for the correct scopes
@@ -968,7 +1024,7 @@ Before deploying a project using this pattern, verify:
 
 ---
 
-## 8. Migration Guide
+## 9. Migration Guide
 
 ### Migrating from the Basic Google OAuth Pattern
 
@@ -1023,7 +1079,7 @@ Update the inline JavaScript inside GAS's HTML output:
 
 ---
 
-## 9. Three-Pattern Comparison
+## 10. Three-Pattern Comparison
 
 | Feature | Custom Auth | Basic Google OAuth | Improved Google OAuth |
 |---------|-------------|--------------------|-----------------------|
@@ -1042,11 +1098,13 @@ Update the inline JavaScript inside GAS's HTML output:
 | **Password storage** | Sheets (recommend hashing) | N/A | N/A |
 | **Audit logging** | Yes (HIPAA-grade) | No | Optional |
 | **Setup complexity** | Medium (Sheets user table) | Low (just client_id) | Medium (session functions) |
+| **Auth logic in GAS** | ~90% (all session + credential logic) | ~40% (only spreadsheet access check) | **~80% (all security logic)** |
+| **Auth logic in HTML** | ~10% (login form UI only) | ~60% (token storage, validation, API calls) | **~20% (irreducible: GIS popup, localStorage, UI toggle)** |
 | **Best for** | Apps needing custom credentials | Simple internal tools | Production internal tools |
 
 ---
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 ### Common Issues
 
