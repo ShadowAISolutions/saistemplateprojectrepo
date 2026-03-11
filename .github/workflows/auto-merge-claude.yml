@@ -121,7 +121,7 @@ jobs:
       # PAT stored as WORKFLOW_PAT, use it; otherwise fall back to GITHUB_TOKEN
       # (which works for all pushes except workflow file changes).
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.WORKFLOW_PAT || secrets.GITHUB_TOKEN }}
@@ -372,7 +372,7 @@ jobs:
       template-deploy: ${{ steps.check.outputs.template-deploy }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           sparse-checkout: CLAUDE.md
           sparse-checkout-cone-mode: false
@@ -432,13 +432,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: './live-site-pages'
       - name: Deploy to GitHub Pages
