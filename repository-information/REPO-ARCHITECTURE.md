@@ -315,11 +315,11 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 
 ## 4. Git Graph — Branching Strategy
 
-> [Open in mermaid.live — Git Graph](https://mermaid.live/edit#pako:eNqVktFqwjAUhl_lcK51s91d7wYyHWwwmHfLLmJy2oY2TYjJZhHffWFx4lBLDeQm58_385HsUBhJWGCl_MJxW7MO4hJGa-VByQIYrkjblnsCR9YwTIm1452oQbQ8SLovifvgaJodrtckGhP8tfEp_WuW3c0yB08pA9_GNX8lR47mqktHmlxFZ9wD6zF4M02Jj02jLAj1eWSdls7JtqYHb-CNV7RhCL63VMDyebF8iXs1JJkPS-bXJHMHryYaipp3v6W3SeYDkjDGEsZprkNVqu1lx3-zM8GH-IpqCzE01i3xhsTGmV1QwwlGVuyV8XfvGPqaNDEsGEoqeWg9w33M8Fj63ncCC-8CTTBYGb_6XPHKcZ0O9z9fQQfz) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Git Graph](https://mermaid.live/edit#pako:eNqVks1qwzAQhF9l2XPSxu7Nt0JoEmih0N6qHjbSxhb-kVGkNibk3SsqN6QkMY5Al9nRDB_aPUqjGDPMtVtYagvRQDjS1LV2oFUGAleNdpqqXhQYLWtLjSxAVuQV32-YnLc8Tfr3BcvSeHdtfBr_NUvuZomFp-iBb2PLv5JjTk26iVLNNuez3D7r0TszjY6PbalbkPrzmHVaOue2Mh04A6-U81YguK7lDJarxfI53PchyHQYMr0GmVp4MYFQFtT8lt4GmQ5AwhhKGIe59vlG7y4z_pudAT6EX9Q7CKaxbDFvCGwc2QU0nGDICr0qrPdeoCu4ZoGZQMUb8lXY5EPwUCh96xqJmbOeJ-hbRY7nmnJLdRQPP43zCFQ) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 gitGraph
-    commit id: "Template repo"
+    commit id: "Initial commit"
     branch claude/feature-1
     checkout claude/feature-1
     commit id: "v01.01r Feature work"
@@ -354,12 +354,12 @@ gitGraph
 
 ## 7. Mindmap — Concept Hierarchy
 
-> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1VU2P2jAU_CtWKsSuBC27IBVxQ1DtIm2lVUO3Fy6O_RIs_KVnhxYh_nvtkBYSiCUOzIyf7Xlj55gwwyGZJb3eUWjhZ-TY91tQ0J_1M-qgPyDn_x8UBc0kuH6UWBSK4mFhpMEA9D99zeiYT6K6ptbwx1_oUTUizVJGJYwqFKbZJJte0KcKzaZ8Alfoc43ClF2h47oCb1SYVGjEriu80Qzk6O5GKuqpm3rupsbd1OQutdL7URfx1EU8dxHjLqKx-Ol06vU2WgnNFbUbTcJAY_zDwxqUldQD-QHWPD6eqTiWYKU5KND-gsXxIvxrmZF3WoBrMnHMS2-GCDmC2xJrpBS6uFV9ADph9DBGixMEaSi_VaWm1Jxo40UuGPVhQmvBxerLYkl-Gdzl0vzu2IwCLIAwSUsOJEOq2fbexlMfbKt5wsEDiwve6qpzB0E055Z9mac1RzyKogC8aF6MKcISc2sdSRkK2zI2BZkPS8tjM3I0qna6dWSjc1EMOYo9aOLAl7ZVxSJQ7rYAnmSU7UC3nF3lSBUQUBlw3uhO3ZWbjsVkOOENHsj-LCFDgk1NtOWKbTUj2nIhW-UXW6qLEIHCEQtIciGhKZgj24bjhsB62mzKEvZhYpy1Nka20_E2_7n89llxIrTzWLI7CXpHGDKjlPAkxILtpHD-VmHLEOYOPgVXHYsZ7cNb13Yu3rhw8Av8_76lB-dBNfWv6-9vxEYrfS279dFV0ekQrMLb_U-RG4y_nWtvOGTmWhOKJoMkXBNFBQ-fgOMmqZ76TTLbJBxyWkq_SU5BQ8N9Sg-aJbNgJwySc1iXghYhUmfw9BdgTcVG) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Mindmap](https://mermaid.live/edit#pako:eNp1VU2P2jAU_CtWKsRWWlp2QSrihqDaRdpKq4ZuL1wc-yVY-EvPDi1C_PfaIRUkIZY4MDN-tueNnVPCDIdkngwGJ6GFn5PT0O9AwXA-zKiD4SO5_P-gKGgmwQ2jxKJQFI9LIw0GYPjpW0YnfBrVNbWBv_5Kj6sRaZYyKmFcoTDLptnsij5VaDbjU7hBn2sUZuwGndQVeKPCtEIjdlvhjWYgx3c3UlFP_dRzPzXpp6Z3qbU-jPuIpz7iuY-Y9BGNxc_n82Cw1UporqjdahIGGuMfHtKj86DIAtlOeGC-RPj8-SKIYwVWmqMC7a9YHC_Cv5YZeacFuCYTx6L0ZoSQI7gdsUZKoYuu6gPQCaNHMWCcIEhDeVeVmlJzoo0XuWDUhwmtBZfrr8sV-W1wn0vzp2czCrAAwiQtOZAMqWa7extPfTCv5gmHaEhYsKurzh0E0Zwu-7JIa454FEUBeNW8GFOEJRbWOpIyFLZlbAoyH5WWUw8kR6Nqp1tHNjoXxYijOIAmDnxpW1UsAuVuB-BJRtkedMvZdY5UAQGVAeeN7tRd6XTsJ1jjhDd4JIeLhIwINjXRlhu21Yxoy5VslV_uqC5CBApHLCDJhYSmoEroAUJsPW02ZQWHMDHO2hgj2-l4W_xaff-iOBHaeSzZnQS9I4yYUUp4EmLB9lI431XYMoS5h0_BVcdiRvvw4rWdi_cuHPwKb0BZGVt8uX5N_evmxxux0Upfy7o-uio6PYJ1eMH_K3KD8bd37Q2HzNxqQtHkMQnXRFHBw4fgtE2qB3-bzLcJh5yW0m-Tc9DQcJ_So2bJPNgJj8klrCtBixCpC3j-B8UWx9w) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': {'primaryColor': '#7ba3d4', 'primaryTextColor': '#000000', 'cScale0': '#e8b4b8', 'cScale1': '#b8d4e8', 'cScale2': '#b8e8c8', 'cScale3': '#e8d4b8', 'cScale4': '#d4b8e8', 'cScaleLabel0': '#000000', 'cScaleLabel1': '#000000', 'cScaleLabel2': '#000000', 'cScaleLabel3': '#000000', 'cScaleLabel4': '#000000', 'cScaleInv0': '#000000', 'cScaleInv1': '#000000', 'cScaleInv2': '#000000', 'cScaleInv3': '#000000', 'cScaleInv4': '#000000'}}}%%
 mindmap
-    root((Template Repo))
+    root((System Architecture))
         Deployment
             GitHub Pages
                 Auto-refresh polling
