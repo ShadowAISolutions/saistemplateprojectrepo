@@ -4,6 +4,38 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-11 02:53:36 PM EST
+**Repo version:** v02.12r
+
+### What was done
+- Added "Diagram accuracy requirements" rule to `repo-docs.md` — 7 criteria for source-faithful diagrams (v02.05r)
+- Replaced template-identity labels in diagrams with generic labels so they work on both template and forks (v02.06r)
+- Expanded Pre-Commit #6 to trigger on behavioral/functional code changes affecting diagrams, not just structural changes (v02.07r)
+- Added missing mermaid.live link to testenvironment per-environment diagram (v02.08r)
+- Removed STATUS.md entirely — was redundant with README tree; removed all cross-references from 12+ files (v02.09r)
+- Added "Commands" section to README.md listing all 16 commands organized into Repo Workflow, Code Quality, and Design & Tooling categories (v02.10r)
+- Fixed missed CHANGELOG archive rotation for v01.01r date group; added mandatory first rotation rule (v02.11r)
+- Moved Commands section below Project Structure and added Origin column (Custom/Imported/Bundled) to all command tables (v02.12r)
+
+### Where we left off
+All changes committed and merged to main. README now has Commands section after Project Structure with origin indicators for each command.
+
+### Key decisions made
+- STATUS.md was removed as redundant — README tree already shows all the same information (versions, links, labels)
+- Pre-Commit item numbering shifted after STATUS.md removal (old #5 removed, #6→#5, etc.)
+- Commands section placed after Project Structure (user preference) with origin tracking
+
+### Active context
+- Repo version: v02.12r
+- Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.02w)
+- GAS versions: index (v01.01g), testenvironment (v01.01g)
+- No active reminders
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-11 09:53:21 AM EST
 **Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
 **Repo version:** v02.03r
@@ -18,35 +50,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### Where we left off
 All changes committed and merged to main. The template-level state diagram in REPO-ARCHITECTURE.md section 3 now accurately reflects the actual template source code.
-
-### Active context
-- Repo version: v02.03r
-- Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.02w)
-- GAS versions: index (v01.01g), testenvironment (v01.01g)
-- No active reminders
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-10 12:32:10 AM EST
-**Repo version:** v01.81r
-
-### What was done
-- Changed diagram link separator from `· 📊 |` to `| 📊 |` in README tree (v01.76r)
-- Added 🌐 globe emoji to replace text labels for live site URLs in README tree and end-of-response block rules (v01.76r)
-- Added 📋 spreadsheet emoji links for pages with GAS spreadsheets (v01.77r)
-- Added placeholder for pages without spreadsheets — evolved through 📋✖ → 🚫 → ╌ → ✕ (v01.78r–v01.81r)
-- Reorganized README tree page entries: grouped action icons together with `·` separators (v01.79r)
-- Added 📁 Google Drive folder icon placeholder for all pages (v01.80r)
-- Finalized icon placeholders: `✕` for missing spreadsheet, `◇` for missing folder (v01.81r)
-- Final README tree page entry layout: `filename → 🌐 · 📊 · 📋 · 📁 — versions | description`
-
-### Where we left off
-All changes committed and merged to main. The icon cluster system is complete:
-- 🌐 = live site, 📊 = diagram, 📋 = spreadsheet, 📁 = Drive folder
-- `✕` = no spreadsheet (no GAS project), `◇` = no folder ID yet (placeholder for all pages currently)
-- User will provide Google Drive folder IDs at a later time to replace the `◇` placeholders with linked 📁 icons
 
 Developed by: ShadowAISolutions
