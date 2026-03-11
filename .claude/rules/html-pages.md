@@ -57,7 +57,7 @@ The html.version.txt polling system also supports an **inactive mode** using the
 - **`.nojekyll` is required** — the `live-site-pages/.nojekyll` file **must** exist to prevent GitHub Pages from running Jekyll on the deployment. Without it, Jekyll processes `.md` files into rendered HTML (with `<h1>`, `<h2>`, `<ul>` tags wrapped in a Jekyll layout), which breaks the changelog popup parsers — the JavaScript regex expects raw markdown (`## [v01.01w]`, `### Added`, `- item`) and produces no matches against rendered HTML, resulting in "No changelog entries yet." for every page. **Never delete `.nojekyll`** — it is critical infrastructure for the changelog system. This file was added in v03.96r after diagnosing the bug introduced when changelogs migrated from `.txt` to `.md` in v03.88r (`.txt` files were unaffected because Jekyll only processes markdown)
 
 ### New Embedding Page Setup Checklist
-> **Automated by `scripts/setup-gas-project.sh`** — for GAS-embedded pages, the setup script handles all mechanical file creation (steps 1–13). Claude runs the script, then handles REPO-ARCHITECTURE.md, README.md tree, STATUS.md, and commit/push.
+> **Automated by `scripts/setup-gas-project.sh`** — for GAS-embedded pages, the setup script handles all mechanical file creation (steps 1–13). Claude runs the script, then handles REPO-ARCHITECTURE.md, README.md tree, and commit/push.
 
 When creating a **new** HTML embedding page, follow every step below:
 
@@ -105,7 +105,7 @@ When **renaming** an existing HTML page's project environment, follow every step
 1. **Rename all files** — rename every file in the table above from old path to new path. Update titles, archive links, and internal references within each renamed file
 2. **Delete old files** — remove all old-path files that were renamed (they now have the wrong name)
 4. **Update GAS Projects table** — if the page has a GAS project, update the row in `.claude/rules/gas-scripts.md` with the new environment name, file paths, and directory
-5. **Update internal references** — search all files for the old environment name and update: localStorage keys, HTML `<title>`, REPO-ARCHITECTURE.md, STATUS.md, README.md, and any cross-references in other pages
+5. **Update internal references** — search all files for the old environment name and update: localStorage keys, HTML `<title>`, REPO-ARCHITECTURE.md, README.md, and any cross-references in other pages
 6. **Verify changelog continuity** — after renaming, confirm the source changelog has all version entries from v01.01w through the current version with no gaps. The rename should not lose any history
 
 ### Directory Structure (per embedding page)

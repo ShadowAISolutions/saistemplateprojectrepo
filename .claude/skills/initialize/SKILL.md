@@ -22,13 +22,11 @@ Before running, the user should have:
    - Replacing `ShadowAISolutions` → new org name across 23+ files
    - Replacing `saistemplateprojectrepo` → new repo name
    - Updating CLAUDE.md Template Variables
-   - Replacing STATUS.md placeholder with live site URL
+
    - Restructuring README.md
    - Generating QR code
 
-2. **Verify placeholders are resolved** — confirm STATUS.md no longer contains `*(deploy to activate)*`
-
-3. **Update `Last updated:` timestamp** in README.md to the real current time
+2. **Update `Last updated:` timestamp** in README.md to the real current time
 
 4. **Commit** with message `Initialize deployment`
 

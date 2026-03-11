@@ -15,7 +15,7 @@ If you need help with this project, here are your options:
 - [ARCHITECTURE](REPO-ARCHITECTURE.md) — System diagram and data flow
 - [CLAUDE.md](../CLAUDE.md) — Developer conventions and constraints
 - [CHANGELOG](CHANGELOG.md) — Version history
-- [STATUS](STATUS.md) — Current deployment status and versions
+
 
 ### Security Issues
 

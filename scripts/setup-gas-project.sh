@@ -9,7 +9,6 @@
 #   - Version files (html + gs)
 #   - Changelogs (html + gs, plus archives) — created directly in live-site-pages/
 #   - GAS Projects table registration (.claude/rules/gas-scripts.md)
-#   - STATUS.md (Hosted Pages + GAS Projects tables)
 #   - REPO-ARCHITECTURE.md (Mermaid diagram nodes, edges, styles)
 #   - README.md (structure tree — 3 insertion points)
 #   - Workflow deploy step (auto-merge-claude.yml — webhook for GAS self-update)
@@ -364,50 +363,8 @@ else
     fi
 fi
 
-# ── Phase 7: Update STATUS.md ──
-info "Phase 7: Updating STATUS.md..."
-STATUS_FILE="repository-information/STATUS.md"
-if [ -f "$STATUS_FILE" ]; then
-    # Add to Hosted Pages table (before the blank line after the last page row)
-    HOSTED_ROW="| ${PROJECT_DIR} | \`${HTML_PAGE}\` | v01.00w | *(deploy to activate)* | Active |"
-    if grep -q "| ${PROJECT_DIR} |" "$STATUS_FILE"; then
-        warn "${PROJECT_DIR} already in STATUS.md Hosted Pages — skipping"
-    else
-        # Insert after the last row in Hosted Pages (last | row before ## GAS Projects)
-        LAST_HOSTED=$(grep -n '^| .* | Active |' "$STATUS_FILE" | head -$(grep -c '^| .* | Active |' "$STATUS_FILE") | while IFS=: read -r num _; do
-            if [ "$num" -lt "$(grep -n '## GAS Projects' "$STATUS_FILE" | cut -d: -f1)" ]; then echo "$num"; fi
-        done | tail -1)
-        if [ -n "$LAST_HOSTED" ]; then
-            sed -i "${LAST_HOSTED}a\\${HOSTED_ROW}" "$STATUS_FILE"
-            ok "Added ${PROJECT_DIR} to Hosted Pages"
-        else
-            warn "Could not find Hosted Pages table — manual update needed"
-        fi
-    fi
-
-    # Add to GAS Projects table
-    GAS_STATUS_ROW="| ${PROJECT_DIR} | \`${GAS_FILE}\` | \`${HTML_PAGE}\` | v01.00g | Active |"
-    if grep -q "| ${PROJECT_DIR} |.*${ENV_NAME}.gs" "$STATUS_FILE"; then
-        warn "${PROJECT_DIR} already in STATUS.md GAS Projects — skipping"
-    else
-        LAST_GAS=$(grep -n '^| .* | Active |' "$STATUS_FILE" | while IFS=: read -r num _; do
-            GAS_LINE=$(grep -n '## GAS Projects' "$STATUS_FILE" | cut -d: -f1)
-            TPL_LINE=$(grep -n '## Templates' "$STATUS_FILE" | cut -d: -f1)
-            if [ "$num" -gt "$GAS_LINE" ] && [ "$num" -lt "$TPL_LINE" ]; then echo "$num"; fi
-        done | tail -1)
-        if [ -n "$LAST_GAS" ]; then
-            sed -i "${LAST_GAS}a\\${GAS_STATUS_ROW}" "$STATUS_FILE"
-            ok "Added ${PROJECT_DIR} to GAS Projects"
-        else
-            warn "Could not find GAS Projects table — manual update needed"
-        fi
-    fi
-else
-    warn "STATUS.md not found — skipping"
-fi
-
-# ── Phase 8: Update REPO-ARCHITECTURE.md ──
-info "Phase 8: Updating REPO-ARCHITECTURE.md..."
+# ── Phase 7: Update REPO-ARCHITECTURE.md ──
+info "Phase 7: Updating REPO-ARCHITECTURE.md..."
 ARCH_FILE="repository-information/REPO-ARCHITECTURE.md"
 # Derive a short Mermaid node prefix from PROJECT_DIR (e.g. Testation2 → TSTA2)
 # Use first letter + consonants, uppercase, max 6 chars
@@ -473,8 +430,8 @@ else
     warn "REPO-ARCHITECTURE.md not found — skipping"
 fi
 
-# ── Phase 9: Update README.md Structure Tree ──
-info "Phase 9: Updating README.md structure tree..."
+# ── Phase 8: Update README.md Structure Tree ──
+info "Phase 8: Updating README.md structure tree..."
 if [ -f "README.md" ]; then
     # Check if already added
     if grep -q "${ENV_NAME}.html.*GAS embedding page" "README.md"; then
@@ -538,8 +495,8 @@ else
     warn "README.md not found — skipping"
 fi
 
-# ── Phase 10: Add Workflow Deploy Step ──
-info "Phase 10: Adding workflow deploy step..."
+# ── Phase 9: Add Workflow Deploy Step ──
+info "Phase 9: Adding workflow deploy step..."
 WORKFLOW_FILE=".github/workflows/auto-merge-claude.yml"
 if [ -f "$WORKFLOW_FILE" ]; then
     if grep -q "Deploy ${PROJECT_DIR}" "$WORKFLOW_FILE"; then
@@ -561,7 +518,7 @@ else
     warn "Workflow file not found — skipping"
 fi
 
-# ── Phase 11: Sounds Directory ──
+# ── Phase 10: Sounds Directory ──
 info "Phase 10: Ensuring sounds directory..."
 if [ -f "live-site-pages/sounds/Website_Ready_Voice_1.mp3" ]; then
     ok "Sounds directory already populated"
@@ -569,8 +526,8 @@ else
     warn "Sound file not found — live-site-pages/sounds/Website_Ready_Voice_1.mp3 missing"
 fi
 
-# ── Phase 12: Verification ──
-info "Phase 12: Verification..."
+# ── Phase 11: Verification ──
+info "Phase 11: Verification..."
 echo ""
 
 ERRORS=0
@@ -627,7 +584,6 @@ echo ""
 echo "Registered as: ${PROJECT_DIR} in GAS Projects table"
 echo ""
 echo "Also updated:"
-echo "  - repository-information/STATUS.md (Hosted Pages + GAS Projects)"
 echo "  - repository-information/REPO-ARCHITECTURE.md (Mermaid diagram)"
 echo "  - README.md (structure tree)"
 echo "  - .claude/rules/gas-scripts.md (GAS Projects table)"

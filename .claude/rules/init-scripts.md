@@ -17,7 +17,7 @@ The init script automates all fork/clone initialization. It is run by the Templa
 - Replaces `ShadowAISolutions` → new org name across 23 target files
 - Replaces `saistemplateprojectrepo` → new repo name across the same files
 - Updates CLAUDE.md Template Variables table (`IS_TEMPLATE_REPO` → `No`)
-- Replaces STATUS.md `*(deploy to activate)*` placeholder with live site URL
+
 - Restructures README.md (title, placeholder block, removes setup sections)
 - Generates QR code for the fork's GitHub repo URL
 - Runs verification grep to catch any remaining old values

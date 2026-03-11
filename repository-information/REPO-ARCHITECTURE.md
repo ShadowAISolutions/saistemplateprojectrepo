@@ -396,7 +396,7 @@ mindmap
 
 ## 8. Entity Relationship — File Dependencies
 
-> [Open in mermaid.live — ER Diagram](https://mermaid.live/edit#pako:eNqNldtuozAQhl_F4qqVmh5U7V7kDgVvwiqQCGjUlSIhBybEWoKRbVJFSd99zSEbc2gVLo2_-eefGdsnI2IxGGMDuEVJwsl-nSH1zQJnHi7NKUbn82h0PtcLK-z59sINg_cAjdHaOAAXlGVIchL9hRhtjmvjO34yM90pni-mFR3tSJaAQClLEgXTbBhmZzQ1_dCfePayloX9BmKBDpQgulUpQwu8igxKh6Y3mdkrXEXiTBKpUpCsDFEH0cSaAOXK7daH-RutfwEv3F_2NPztL9waZ9mWJgXv6fa8txZvsq5r6QWs-lGC4phFCqMyhQb-Bu10rmYPhLd1PbxctCrc0O2iXUouWMEjQFvGL-I927dY_k7YD8zgzQ8dq-JiKvKUHFuN-or0sGk5-CtSG9MAO8u5GTQzfuoUOeJQpZrBh17hLtQpb4eqOeyuQss2p57poM-hhsYsKvaQSaGSlMAzkgrEtp10q92neqH8hOQ0S9CmoGk8unRmbexBEiRJgu5ophq0J1Ktk_T-YkJD66M7EjxSnDKCYshTdiwzQW_e_EJ8akno9e7ncs0CHpNHdHh-eXx5_UB3Qv1Us9qMDduqM1vI3X1HQCtlP3QjrId-_pEMmLLwcr7442A3CG1LbTfzXCA_4jSXjT9kWwPK-tHpywd2MMcqWk4SqE_eDdLXkmqS2n5_Wc6qP8O4AWKiercpr7MsHtpf7XRNp8xEEp6ARGIHIDt2eifjpk79fOWdOPrc9kOkLKpmqzzWkDNBJePHkTZ0T3H9nomn_3GNBzWf6jeN1YN3UiZ2UL4dY2UdtqRIlZNyDykk89VFZYzVoMCDUeSqMtA8j_Xi5z82gTVI) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — ER Diagram](https://mermaid.live/edit#pako:eNqNVV2PojAU_SsNTzPJ6MxksvvgG5GushE0wJrdxIRUuGKzSElbnBj1v2_5cKzAGnm83HPPPefetkcjYjEYIwO4RUnCyW6VIfVNA2cWLswJRqfTYHA61YEl9nx77obB7wCN0MrYAxeUZUhyEv2FGK0PK-Mefjw13QmezScVOtqSLAGBUpYkCkyzfjA7oYnph_7Ysxc1LezWEAu0pwTRjWoZboBXkl7q0PTGU3uJq0qcSSJVC5KVJeoiGllToIw8Lr0f_6D0_4Dn7g97Ev70524NZ9mGJgXv8Ha03wQfkq5z6QZW8yiB4pBFCkZlCg34DrQ1uRq7J_yW18OL-Y3DDfrWtIvlghU8ArRh_ELekf2I5HvEHjYtB4eOVeFiKvKUHL4GpS1bgJ3FzAyaTT22rIo4VIQZfOo-tUEtk1qoGofdZWjZ5sQzHXTuG0vMomIHmRSqSQk8I6lAbNNqt8o-1oHyE5LTLEHrgqbx4OLvytiBJEiSBD3RTNm8I1LFSfp8EaFB6wM4EDxSOCUExZCn7FB2gn55swvirDWh-93t5doFDJMh2r-9D98_PtGTUD_VxjXDZxt18gq5fW4RaFZ2SzfEeum3b0mPKAsvZvM_DnaD0LZUupnnAvkRp7ls9CHb6mHWD0CXPrCDGVbVcpJAfX4eoL5aqlFq-f6i3FV_inEDiIma3bq8lLK4L7_KdE2n7EQSnoBEYgsgW3I6J-OhSX3_4K06-t52S6QsqnarPJyQM0El44eBtnSvcf0qidevusaL2k_1m8bq2ToqEVsoX4CRkg4bUqRKSZlDCsl8dd0YI7Uo8GIUuXIGmkeuDp7_AVo1I1o) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 erDiagram
@@ -415,7 +415,6 @@ erDiagram
 
     REPO_VERSION_TXT ||--|| CHANGELOG : "version source for"
     CHANGELOG ||--|| CHANGELOG_ARCHIVE : "rotates to"
-    REPO_VERSION_TXT ||--|| STATUS_MD : "displayed in"
     REPO_VERSION_TXT ||--|| README_MD : "displayed in"
 
     HTML_TEMPLATE ||--o{ HTML_PAGE : "creates new"

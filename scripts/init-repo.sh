@@ -108,7 +108,6 @@ REPLACE_FILES=(
   "repository-information/CODING-GUIDELINES.md"
   "repository-information/GOVERNANCE.md"
   "repository-information/IMPROVEMENTS.md"
-  "repository-information/STATUS.md"
   "repository-information/SUPPORT.md"
   "repository-information/TODO.md"
   "repository-information/TOKEN-BUDGETS.md"
@@ -201,18 +200,6 @@ if [ -f "$WORKFLOW_FILE" ]; then
   echo "  Added 'main' to push trigger branches."
 else
   echo "  WARN: Workflow file not found, skipping."
-fi
-echo ""
-
-# ── PHASE 3: STATUS.MD PLACEHOLDER ──
-echo "[Phase 3] Replacing STATUS.md deployment placeholder..."
-
-STATUS_FILE="$REPO_ROOT/repository-information/STATUS.md"
-if [ -f "$STATUS_FILE" ]; then
-  sed -i "s|\*(deploy to activate)\*|[View](https://${ORG_NAME}.github.io/${REPO_NAME}/)|" "$STATUS_FILE"
-  echo "  Replaced placeholder with live URL."
-else
-  echo "  WARN: STATUS.md not found, skipping."
 fi
 echo ""
 
@@ -328,22 +315,6 @@ if [ -f "$ARCH_FILE" ]; then
   echo "  Updated $UPDATED_ARCH REPO-ARCHITECTURE.md diagram labels."
 fi
 
-# STATUS.md Origin column: only update rows for init-modified files
-STATUS_FILE="$REPO_ROOT/repository-information/STATUS.md"
-if [ -f "$STATUS_FILE" ]; then
-  UPDATED_STATUS=0
-  for bname in "${INIT_MODIFIED_BASENAMES[@]}"; do
-    escaped=$(echo "$bname" | sed 's/\./\\./g')
-    if grep -q "${escaped}.*| template |" "$STATUS_FILE" 2>/dev/null; then
-      sed -i "/${escaped}/s/| template |/| initialized |/" "$STATUS_FILE"
-      UPDATED_STATUS=$((UPDATED_STATUS + 1))
-    fi
-  done
-  echo "  Updated $UPDATED_STATUS STATUS.md Origin column values."
-fi
-  sed -i 's/| template |/| initialized |/g' "$STATUS_FILE"
-  echo "  Updated STATUS.md Origin column values."
-fi
 echo ""
 
 # ── PHASE 6: QR CODE GENERATION ──

@@ -11,7 +11,7 @@ Bundle accumulated `[Unreleased]` changelog entries from parallel sessions into 
 
 ## When to Use
 
-Run this after all parallel Claude Code sessions have finished pushing their changes. This catches up on all the deferred work (version sections, repo version bump, README timestamp, STATUS.md sync).
+Run this after all parallel Claude Code sessions have finished pushing their changes. This catches up on all the deferred work (version sections, repo version bump, README timestamp).
 
 ## Steps
 
@@ -25,11 +25,9 @@ Run this after all parallel Claude Code sessions have finished pushing their cha
 
 5. **Create versioned sections** — move all `[Unreleased]` entries in CHANGELOG.md into a new version section with the reconciliation version and current timestamp. Do the same for each page/GAS changelog that has entries. Follow all standard formatting rules (category groupings, timestamps, capacity counters, archive rotation if needed)
 
-6. **Update STATUS.md** — sync all current version numbers
+6. **Update README.md** — update the `Last updated:` timestamp and `Repo version:` value
 
-7. **Update README.md** — update the `Last updated:` timestamp and `Repo version:` value
-
-8. **Commit** with message `vXX.XXr Reconcile multi-session mode`
+7. **Commit** with message `vXX.XXr Reconcile multi-session mode`
 
 9. **Push** to the `claude/*` branch (Pre-Push Checklist applies)
 

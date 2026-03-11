@@ -13,7 +13,7 @@ paths:
 
 ## REPO-ARCHITECTURE.md Structural Updates
 
-The Mermaid diagrams in `repository-information/REPO-ARCHITECTURE.md` show the repo-wide architecture: how environments (pages) connect to each other and to shared infrastructure (CI/CD, GitHub Pages, templates, versioning, developer tools). Diagrams are updated when any change affects what they depict — structural changes (files added, moved, deleted), behavioral changes (code logic that a diagram documents), or workflow changes (CI/CD steps shown in a diagram). Version bumps alone do NOT trigger diagram updates. Version numbers are not displayed in diagram nodes; STATUS.md serves as the version dashboard.
+The Mermaid diagrams in `repository-information/REPO-ARCHITECTURE.md` show the repo-wide architecture: how environments (pages) connect to each other and to shared infrastructure (CI/CD, GitHub Pages, templates, versioning, developer tools). Diagrams are updated when any change affects what they depict — structural changes (files added, moved, deleted), behavioral changes (code logic that a diagram documents), or workflow changes (CI/CD steps shown in a diagram). Version bumps alone do NOT trigger diagram updates. Version numbers are not displayed in diagram nodes.
 
 ### Environment scope rule
 REPO-ARCHITECTURE.md must NOT include the internal processes of **individual** environments (page lifecycle states, maintenance mode internals, splash screen flows, environment-specific workflows). Environments appear as **nodes** that show their connections to other environments and shared repo components — but their internal behavior is documented in per-environment diagrams under `repository-information/diagrams/`. When adding or modifying REPO-ARCHITECTURE.md diagrams, keep environment nodes as opaque boxes — show what they connect to, not what happens inside them. If internal process detail is needed, add it to the corresponding per-environment diagram instead.
@@ -281,7 +281,7 @@ Community health files (`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`) 
 | CHANGELOG-archive.md | `repository-information/CHANGELOG-archive.md` |
 | GOVERNANCE.md | `repository-information/GOVERNANCE.md` |
 | IMPROVEMENTS.md | `repository-information/IMPROVEMENTS.md` |
-| STATUS.md | `repository-information/STATUS.md` |
+
 | SUPPORT.md | `repository-information/SUPPORT.md` |
 | TODO.md | `repository-information/TODO.md` |
 | Per-page HTML changelogs | `live-site-pages/html-changelogs/<name>html.changelog.md` |
