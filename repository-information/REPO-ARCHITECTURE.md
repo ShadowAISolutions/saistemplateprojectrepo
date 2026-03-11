@@ -117,7 +117,7 @@ graph TB
 
 ## 2. Sequence Diagram — Deploy & Runtime Flows
 
-> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqNVs1u2zgQfpWBTnYTxe3VaAK4yTou0LRBnK4vvjDSSCJCkSxJ2TWCXPcB9hH3SXZIyj-yFTS-CDLn7_u-maFekkzlmIwTi78alBnecFYaVi8l0E8z43jGNZMObnAFzPoHCqXRwOjzkxldXQvW5AjXFOXU53bmXW65mzVPwXqQBfPRB3gyTGbV8NRnMfU-k8ap9A5NicFvocxzIdT61PyOcekdav-MQU-N7lmJdl9KfD81-2LU2hIyMvzpn-17D67JPERTqhQIE61tqHKeGa7dqfm8QnT2wCP-sZTR9LtyCGpFCYnc83g2hsvLS3rXQm1gSsj9-9aBzNKrq9vZGEruQDe2gi2v0eB2RueL6RgeDS9LCrzu8LeYtsfXFWbPkKm6pjjz2SSgWFkQzLpUG5WhtZhHJyYcfJUVGu4wh4F1TOCww_gutK_sBgUSrHhO5s9cQ-31bCVHYRG-47rNfhTBqzqGoP8OGvz3z79B5iNbD-Snzhll69adxtAXtmI9LhG7JzDnRbE38DgFX2FqCWiqfaeMIKuYLLdMdEKFVhpvlXKqp8UCXJl3U1yUFgpOvfB2aOqyMWSNEXD_Y_4IubpX1g1Y5riSl3lIOOy6kUdL_xQd0S6IFBtzrTjblja5_9rr5tPNURRpE9k8A4MxzRs4jsU-Gu5WaO_xp0YP4_6AhUHq5W9KaRg8Yq19_fAFK7biygwPRyDQS9nbEfWFmxXC7PHuG3jNopXwkf6ihBv49BEsZkrmB6K0znsVI2uVq8UFOVni-cL9dl3h_o4H_brtIx4URiNKJHBZplY1ModCsPItt7aQB9qxLD9Asv29gTsq1ufQV1FF62SZLPDJtzjlYvlmmYTZt0Q5KXAG9NxAKLdH-3dJ6ndk6KZ2Nt-j6kEj6kaIiczjXE2NqmPzDoYdy12nh3EiK2pZrXZLcBvsAV1jpMdjMmrT3V11kO8HYVj73UbgM4O-xLYF4CxQ0w5FHIgapTsMseNW04je0fYhHQYvbqORdjSzqQl6vrbF92jSCu5J4wXdv_hngh8a6XiNcMMcO7ki3jcf-0ICB-HS49KhiUsGBrGWDufbEnzbjCJjREy7YePhMe_7cx-iC1vmlJPGXitpMTlP6I6gHZ_TF8nLMnEVEhPJeJnkWLBGuGXySjaMtsV8I7Nk7EyD50mUpv1yiX--_g9v99EW) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNq9Vs1u2zgQfpWBTvYmittDL0YTwE3qOECTGHZaX3yhpZHEDUWqJGXXKHrdB9hH3CfZISnF_0h7aH0RZM7PN_PNN-L3KFEpRv3I4NcaZYI3nOWalXMJ9KuYtjzhFZMWbnAJzLgHClWhht77he5dXQtWpwjXFOXQ53bkXG65HdULb91JvHnvL1hoJpOie-gzGzqfQW1VfI86R-83U_o5E2p1aH7PuHQOpXuGoIdGY5aj2UAJ74dmH7RaGaqMDD-7Z_N-pK7B1EdTKhcIg6oyHuU00byyh-bTAtGaLY_wx1wG0wdlEdSSElJzz8NZHy4vL-m9EmoNQ6rcvbcOZBZfXd2O-pBzC1VtCmj7GgxuR3Q-G_bhSfM8p8Crnf7Nhs3xdYHJMySqLCnOdDTwVSwNCGZsXGmVoDGYBicmLNzJAjW3mELHWCawu9Pxl9AO2Q0KpLLCOZk_8wpKx2dDOQqD8ICrJvteBMdqHzz_L6XBf__862nes3WFfK5SRtl2ccch9IUp2BGXULtrYMqzbGPg6hR8ibGhQuPKTUoPkoLJvO3ETig_Sv2WKauOjJgvV6a7KS5yAxmnWTgdmqasD0mtBYwfp0-QqrEytsMSy5W8TH3C7q4beTTtH6Kltgtqigm5lpy10Abju6NuLt0URRbXoZtnoDGkOVHHPtl74m6Idh6vDbqX-wQzjTTLn5SqoPOEZeXwwwcs2JIr3d2WgG8vZW8k6oDrJcLo6f4TOM6ClXCRPlLCNbx9AwYTJdMtUhrnDYuha4UtxQU5Gerzhf1md4n7Eg6O87aJuAWMJEpN4DKPjaplCplg-Sm3BsiEdixLtyppfyfqDowdcziGqKB1Mo9muHAjTrlYup5HXvuGWk4MnAE91-DhHuH-pyh1O9JPU6PNjkeq4ylPcYdKH4L2VGFBZeCnsFlbVNBi_bK7vArOPUxdSwPEQbNOjY_cEPuLGqBV2c7-BG2tpataJzTML1-0LXlcq5IWO8KXj5Pp3eMDLJnmbCFwsyJPjsdWlEdCu3J7FGhX_Y2J9ZvAwJkvLtHo-tUMIHHRyDFIsURpf5GFFtJYCUFT-Jq0dkRjoMMyS4HfvjPAJbecCUJC09F9VUe5Oa0ih2v5B5VEXePE228VlLsD_S41TWoqoES4YZYd3Ad-bhlugPsh9DccLonb8EWBDs_o4td-n8O4thBcVb0wstSX5nMaDvflszl3IbZRTahSykk7vlLSYHQe0YWAPugpXT-_zyNbYInzqD-PUsxYLew8-kE2jD4N07VMor7VNZ5HgZnmmhr-_PE_DdFqhQ) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 sequenceDiagram
@@ -165,14 +165,27 @@ sequenceDiagram
         end
     end
 
-    Note over Dev,Sheets: === GAS Self-Update Loop (Template Behavior) ===
+    Note over Dev,Sheets: === GAS Self-Update (Server-Side) ===
 
-    GAS->>GAS: pullAndDeployFromGitHub()
-    GAS->>GH: Fetch .gs from repo
+    Note right of GAS: Triggered by workflow POST,<br/>runs on Google servers
+    GAS->>GH: Fetch latest .gs via GitHub API
     GH-->>GAS: Return source code
-    GAS->>GAS: Overwrite + create version +<br/>update deployment
-    GAS->>Browser: postMessage({type: gas-reload})
-    Browser->>Browser: Reload GAS iframe
+    GAS->>GAS: Compare VERSION variable
+    alt Version changed
+        GAS->>GAS: Overwrite project files +<br/>create version + update deployment
+    end
+
+    Note over Dev,Sheets: === GAS Version Polling (Template Behavior) ===
+
+    loop Every 10s (after 15s initial delay)
+        Browser->>Pages: Fetch gs.version.txt
+        alt GAS version changed
+            Browser->>Browser: Set pending-sound flag
+            Browser->>Pages: Reload entire page
+            Pages->>Browser: Serve updated page
+            Browser->>Browser: Show "Code Ready"<br/>splash + play sound
+        end
+    end
 
     Note over Dev,Sheets: === Runtime Data Flow ===
 
