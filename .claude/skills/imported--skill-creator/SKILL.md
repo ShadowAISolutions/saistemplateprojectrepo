@@ -80,6 +80,6 @@ When creating skills for this repo:
 - Use `imported--` prefix for skills adapted from external sources
 - Use plain names for repo-specific custom skills
 - Add `Developed by: ShadowAISolutions` as the last line (Pre-Commit #10)
-- Update ARCHITECTURE.md and README.md tree when adding new skill directories
+- Update REPO-ARCHITECTURE.md and README.md tree when adding new skill directories
 
 Developed by: ShadowAISolutions

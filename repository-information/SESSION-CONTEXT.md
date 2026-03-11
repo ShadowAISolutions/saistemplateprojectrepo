@@ -49,7 +49,7 @@ All changes committed and merged to main. The icon cluster system is complete:
 - Fixed missing README.md entry in project structure tree (v01.44r)
 - Added version display links on live site page entries in README tree (v01.45r)
 - Moved version display links before descriptions, added `vNoGASg` placeholder (v01.46r, v01.47r)
-- Added mermaid.live URL link in ARCHITECTURE.md with pako-compressed encoding (v01.48r, v01.49r)
+- Added mermaid.live URL link in REPO-ARCHITECTURE.md with pako-compressed encoding (v01.48r, v01.49r)
 - Fixed mermaid.live URL encoding — multiple iterations switching compression approaches (v01.50r, v01.51r, v01.52r)
 
 ### Where we left off

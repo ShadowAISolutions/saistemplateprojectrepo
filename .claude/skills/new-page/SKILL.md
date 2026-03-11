@@ -45,7 +45,7 @@ Create a new HTML embedding page with all the required files and boilerplate.
    - Create GAS changelogs: `$0gs.changelog.md` and `$0gs.changelog-archive.md`
    - Register in the GAS Projects table in `.claude/rules/gas-scripts.md`
 
-10. **Update repo docs** — update ARCHITECTURE.md diagram, README.md project structure tree, and any other docs that reference the list of pages
+10. **Update repo docs** — update REPO-ARCHITECTURE.md diagram, README.md project structure tree, and any other docs that reference the list of pages
 
 11. **Commit and push** — standard Pre-Commit and Pre-Push checklists apply
 

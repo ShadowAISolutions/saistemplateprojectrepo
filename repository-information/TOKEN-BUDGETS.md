@@ -65,9 +65,9 @@ The Pre-Commit Checklist runs before every commit — costs multiply with multi-
 |----------|---------------|-------------|-------|
 | Template repo (most items skipped) | 100–200 | 2–4 | Items #0, #4, #8, #10, #11, #12, #13 only |
 | Fork — no version bumps needed | 150–300 | 3–6 | README timestamp + checklist verification |
-| Fork — version bumps triggered | 300–600 | 6–12 | Version bump + STATUS.md + ARCHITECTURE.md + CHANGELOG.md + version.txt |
+| Fork — version bumps triggered | 300–600 | 6–12 | Version bump + STATUS.md + REPO-ARCHITECTURE.md + CHANGELOG.md + version.txt |
 
-**Where the cost lives:** CHANGELOG.md entry (item #7) requires a `date` call + file read + edit. ARCHITECTURE.md Mermaid updates (item #6) require reading the diagram and updating multiple nodes. These two items together account for ~40% of the full-checklist cost.
+**Where the cost lives:** CHANGELOG.md entry (item #7) requires a `date` call + file read + edit. REPO-ARCHITECTURE.md Mermaid updates (item #6) require reading the diagram and updating multiple nodes. These two items together account for ~40% of the full-checklist cost.
 
 ---
 

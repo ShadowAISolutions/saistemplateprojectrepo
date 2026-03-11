@@ -11,9 +11,9 @@ paths:
 
 *Actionable rules: see Pre-Commit Checklist items #6, #8, #11, #12, #13 in CLAUDE.md.*
 
-## ARCHITECTURE.md Structural Updates
+## REPO-ARCHITECTURE.md Structural Updates
 
-The Mermaid diagram in `repository-information/ARCHITECTURE.md` shows the project's file structure and relationships. It is updated only when the project structure changes (files added, moved, or deleted) — **not** on version bumps. Version numbers are not displayed in diagram nodes; STATUS.md serves as the version dashboard.
+The Mermaid diagram in `repository-information/REPO-ARCHITECTURE.md` shows the project's file structure and relationships. It is updated only when the project structure changes (files added, moved, or deleted) — **not** on version bumps. Version numbers are not displayed in diagram nodes; STATUS.md serves as the version dashboard.
 
 ### Adding new pages
 When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add corresponding nodes to the diagram:
@@ -22,7 +22,7 @@ When a new embedding page is created (see New Embedding Page Setup Checklist in 
 
 ## Mermaid Diagram Compatibility Reference
 
-ARCHITECTURE.md contains 9 diagrams across different mermaid types. Each has different rendering support and theme requirements. **Follow these rules when adding or modifying diagrams.**
+REPO-ARCHITECTURE.md contains 9 diagrams across different mermaid types. Each has different rendering support and theme requirements. **Follow these rules when adding or modifying diagrams.**
 
 ### Rendering support by diagram type
 
@@ -105,7 +105,7 @@ These work in both light and dark mode because the fill and text color are expli
 
 ### Mermaid.live URL generation — the pako encoding process
 
-Every diagram in ARCHITECTURE.md has a clickable "Open in mermaid.live" link. These links use pako-compressed, base64url-encoded JSON that mermaid.live decodes to populate its editor. **Getting these URLs right was the hardest part of the diagram setup** — multiple failure modes exist.
+Every diagram in REPO-ARCHITECTURE.md has a clickable "Open in mermaid.live" link. These links use pako-compressed, base64url-encoded JSON that mermaid.live decodes to populate its editor. **Getting these URLs right was the hardest part of the diagram setup** — multiple failure modes exist.
 
 #### How the URL format works
 
@@ -135,7 +135,7 @@ node -e "
 const pako=require('/tmp/node_modules/pako');
 const{fromUint8Array}=require('/tmp/node_modules/js-base64');
 const fs=require('fs');
-const f=fs.readFileSync('repository-information/ARCHITECTURE.md','utf8');
+const f=fs.readFileSync('repository-information/REPO-ARCHITECTURE.md','utf8');
 // Find the specific code block by searching for content unique to this diagram
 const marker='<UNIQUE_FIRST_LINE>';  // e.g. 'graph TB' or 'sequenceDiagram' or 'mindmap'
 const startSearch=f.indexOf(marker);
@@ -158,11 +158,11 @@ The encoded URLs are ~1000–3000 characters of dense base64. **The Edit tool ca
 
 **The safe approach:**
 1. Write the URL to a temp file: `fs.writeFileSync('/tmp/mermaid_url.txt', url)`
-2. Use Python regex replacement to swap the URL in ARCHITECTURE.md:
+2. Use Python regex replacement to swap the URL in REPO-ARCHITECTURE.md:
 ```python
 python3 << 'PYEOF'
 import re
-with open('repository-information/ARCHITECTURE.md') as f:
+with open('repository-information/REPO-ARCHITECTURE.md') as f:
     content = f.read()
 with open('/tmp/mermaid_url.txt') as f:
     new_url = f.read().strip()
@@ -170,7 +170,7 @@ with open('/tmp/mermaid_url.txt') as f:
 old_pattern = r'(\[Open in mermaid\.live — DIAGRAM_NAME\]\()https://mermaid\.live/edit#pako:[^)]+(\))'
 new_repl = r'\g<1>' + new_url + r'\g<2>'
 content_new = re.sub(old_pattern, new_repl, content)
-with open('repository-information/ARCHITECTURE.md', 'w') as f:
+with open('repository-information/REPO-ARCHITECTURE.md', 'w') as f:
     f.write(content_new)
 PYEOF
 ```
@@ -182,7 +182,7 @@ After writing the URL into the file, **always** verify it decompresses correctly
 ```python
 python3 -c "
 import base64,zlib,json,re
-f=open('repository-information/ARCHITECTURE.md').read()
+f=open('repository-information/REPO-ARCHITECTURE.md').read()
 m=re.search(r'mermaid\.live/edit#pako:([^\)]+)',f)
 e=m.group(1)
 p=e+'='*((4-len(e)%4)%4)
@@ -213,7 +213,7 @@ When regenerating all URLs at once (e.g. after a major restructure), process eac
 
 ### Adding new diagrams
 
-When adding a new diagram to ARCHITECTURE.md:
+When adding a new diagram to REPO-ARCHITECTURE.md:
 1. Check if the diagram type is GitHub-renderable (test on GitHub or check the mermaid docs)
 2. If renderable: include both mermaid.live link + code block
 3. If not renderable: include only mermaid.live link + explanatory note
@@ -258,7 +258,7 @@ Community health files (`CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`) 
 | CONTRIBUTING.md | `./CONTRIBUTING.md` (root) |
 | SECURITY.md | `./SECURITY.md` (root) |
 | PULL_REQUEST_TEMPLATE.md | `.github/PULL_REQUEST_TEMPLATE.md` |
-| ARCHITECTURE.md | `repository-information/ARCHITECTURE.md` |
+| REPO-ARCHITECTURE.md | `repository-information/REPO-ARCHITECTURE.md` |
 | CHANGELOG.md | `repository-information/CHANGELOG.md` |
 | CHANGELOG-archive.md | `repository-information/CHANGELOG-archive.md` |
 | GOVERNANCE.md | `repository-information/GOVERNANCE.md` |
@@ -329,7 +329,7 @@ Plain markdown collapses consecutive indented lines into one paragraph — `<br>
 
 ## Mermaid Diagrams — mermaid.live Links
 
-Every Mermaid diagram in the repo — whether in `ARCHITECTURE.md`, `repository-information/diagrams/`, or any other file — must include an "Open in mermaid.live" link above the ```` ```mermaid ```` code block. This gives the reader one-click access to an interactive editor with pan, zoom, and export.
+Every Mermaid diagram in the repo — whether in `REPO-ARCHITECTURE.md`, `repository-information/diagrams/`, or any other file — must include an "Open in mermaid.live" link above the ```` ```mermaid ```` code block. This gives the reader one-click access to an interactive editor with pan, zoom, and export.
 
 **When to generate:** whenever a new Mermaid diagram is created or an existing diagram's code is modified, generate (or regenerate) the mermaid.live URL using the pako + js-base64 compression method documented in Pre-Commit Checklist item #6. After generating, verify the URL decompresses correctly.
 

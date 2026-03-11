@@ -10,7 +10,7 @@
 #   - Changelogs (html + gs, plus archives) — created directly in live-site-pages/
 #   - GAS Projects table registration (.claude/rules/gas-scripts.md)
 #   - STATUS.md (Hosted Pages + GAS Projects tables)
-#   - ARCHITECTURE.md (Mermaid diagram nodes, edges, styles)
+#   - REPO-ARCHITECTURE.md (Mermaid diagram nodes, edges, styles)
 #   - README.md (structure tree — 3 insertion points)
 #   - Workflow deploy step (auto-merge-claude.yml — webhook for GAS self-update)
 #
@@ -406,9 +406,9 @@ else
     warn "STATUS.md not found — skipping"
 fi
 
-# ── Phase 8: Update ARCHITECTURE.md ──
-info "Phase 8: Updating ARCHITECTURE.md..."
-ARCH_FILE="repository-information/ARCHITECTURE.md"
+# ── Phase 8: Update REPO-ARCHITECTURE.md ──
+info "Phase 8: Updating REPO-ARCHITECTURE.md..."
+ARCH_FILE="repository-information/REPO-ARCHITECTURE.md"
 # Derive a short Mermaid node prefix from PROJECT_DIR (e.g. Testation2 → TSTA2)
 # Use first letter + consonants, uppercase, max 6 chars
 NODE_PREFIX=$(echo "$PROJECT_DIR" | sed 's/[aeiou]//gi' | cut -c1-4 | tr '[:lower:]' '[:upper:]')
@@ -420,7 +420,7 @@ fi
 if [ -f "$ARCH_FILE" ]; then
     # Check if already added
     if grep -q "${NODE_PREFIX}_PAGE" "$ARCH_FILE"; then
-        warn "${NODE_PREFIX} nodes already in ARCHITECTURE.md — skipping"
+        warn "${NODE_PREFIX} nodes already in REPO-ARCHITECTURE.md — skipping"
     else
         # 1. Add page nodes in live-site-pages subgraph (before SND1)
         SND_LINE=$(grep -n 'SND1\["sounds/' "$ARCH_FILE" | head -1 | cut -d: -f1)
@@ -467,10 +467,10 @@ if [ -f "$ARCH_FILE" ]; then
         if [ -n "$LAST_STYLE" ]; then
             sed -i "${LAST_STYLE}a\\    style GAS_${NODE_PREFIX} fill:#ff7043,color:#fff\n    style GAS_${NODE_PREFIX}_CFG fill:#ffe082,color:#000" "$ARCH_FILE"
         fi
-        ok "Added edges and styles to ARCHITECTURE.md"
+        ok "Added edges and styles to REPO-ARCHITECTURE.md"
     fi
 else
-    warn "ARCHITECTURE.md not found — skipping"
+    warn "REPO-ARCHITECTURE.md not found — skipping"
 fi
 
 # ── Phase 9: Update README.md Structure Tree ──
@@ -628,7 +628,7 @@ echo "Registered as: ${PROJECT_DIR} in GAS Projects table"
 echo ""
 echo "Also updated:"
 echo "  - repository-information/STATUS.md (Hosted Pages + GAS Projects)"
-echo "  - repository-information/ARCHITECTURE.md (Mermaid diagram)"
+echo "  - repository-information/REPO-ARCHITECTURE.md (Mermaid diagram)"
 echo "  - README.md (structure tree)"
 echo "  - .claude/rules/gas-scripts.md (GAS Projects table)"
 echo "  - .github/workflows/auto-merge-claude.yml (GAS deploy webhook step)"

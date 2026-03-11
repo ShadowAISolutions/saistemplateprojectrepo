@@ -103,7 +103,7 @@ REPLACE_FILES=(
   ".github/ISSUE_TEMPLATE/bug_report.yml"
   ".github/ISSUE_TEMPLATE/feature_request.yml"
   ".github/workflows/auto-merge-claude.yml"
-  "repository-information/ARCHITECTURE.md"
+  "repository-information/REPO-ARCHITECTURE.md"
   "repository-information/CHANGELOG.md"
   "repository-information/CODING-GUIDELINES.md"
   "repository-information/GOVERNANCE.md"
@@ -306,8 +306,8 @@ if [ -f "$README_FILE" ]; then
   echo "  Updated $UPDATED_README README.md tree labels."
 fi
 
-# ARCHITECTURE.md: same targeted approach
-ARCH_FILE="$REPO_ROOT/repository-information/ARCHITECTURE.md"
+# REPO-ARCHITECTURE.md: same targeted approach
+ARCH_FILE="$REPO_ROOT/repository-information/REPO-ARCHITECTURE.md"
 if [ -f "$ARCH_FILE" ]; then
   UPDATED_ARCH=0
   for bname in "${INIT_MODIFIED_BASENAMES[@]}"; do
@@ -325,7 +325,7 @@ if [ -f "$ARCH_FILE" ]; then
       UPDATED_ARCH=$((UPDATED_ARCH + 1))
     fi
   done
-  echo "  Updated $UPDATED_ARCH ARCHITECTURE.md diagram labels."
+  echo "  Updated $UPDATED_ARCH REPO-ARCHITECTURE.md diagram labels."
 fi
 
 # STATUS.md Origin column: only update rows for init-modified files

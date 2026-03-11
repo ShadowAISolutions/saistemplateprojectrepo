@@ -62,7 +62,7 @@ For this repo specifically:
 - **CHANGELOG** — do all user-facing changes have entries? (Pre-Commit #7)
 - **Private repo compat** — no `raw.githubusercontent.com` or `api.github.com` in client-side code? (Pre-Commit #19)
 - **Developer branding** — do new files have `Developed by:` footer? (Pre-Commit #10)
-- **Structure tree** — if files were added/removed, were ARCHITECTURE.md and README.md tree updated? (Pre-Commit #6, #8)
+- **Structure tree** — if files were added/removed, were REPO-ARCHITECTURE.md and README.md tree updated? (Pre-Commit #6, #8)
 
 ## Output Format
 

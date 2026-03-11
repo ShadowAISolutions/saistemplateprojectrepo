@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v01.98r] — 2026-03-11 08:55:52 AM EST
+
+### Changed
+- Renamed `ARCHITECTURE.md` to `REPO-ARCHITECTURE.md` — updated all references across 14 files (CLAUDE.md, README.md, SUPPORT.md, TOKEN-BUDGETS.md, SESSION-CONTEXT.md, CHANGELOG.md, repo-docs.md, html-pages.md, init-repo.sh, setup-gas-project.sh, new-page skill, diff-review skill, skill-creator skill, gas-project-creator-diagram.md)
+- Renamed README sub-dividers from "Internal Use" → "Internal Sites" and "External Use" → "External Sites"
 
 ## [v01.97r] — 2026-03-11 08:39:01 AM EST
 
@@ -21,7 +27,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.95r] — 2026-03-11 08:08:09 AM EST
 
 ### Changed
-- Renamed "test" environment to "testenvironment" — all files, directories, and references updated across the repo (HTML page, GAS script, config, changelogs, version files, diagram, workflow, README tree, STATUS.md, ARCHITECTURE.md, gas-scripts.md)
+- Renamed "test" environment to "testenvironment" — all files, directories, and references updated across the repo (HTML page, GAS script, config, changelogs, version files, diagram, workflow, README tree, STATUS.md, REPO-ARCHITECTURE.md, gas-scripts.md)
 
 ## [v01.94r] — 2026-03-10 01:53:27 PM EST
 
@@ -149,7 +155,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - "Mermaid Diagrams — mermaid.live Links" rule in `.claude/rules/repo-docs.md` — requires mermaid.live links on all diagrams going forward
 
 ### Changed
-- Moved `diagrams/` directory in README tree to sit directly after `ARCHITECTURE.md` for logical grouping
+- Moved `diagrams/` directory in README tree to sit directly after `REPO-ARCHITECTURE.md` for logical grouping
 
 ## [v01.73r] — 2026-03-09 11:32:09 PM EST
 
@@ -175,7 +181,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.70r] — 2026-03-09 11:04:18 PM EST
 
 ### Added
-- Mermaid Diagram Compatibility Reference in `.claude/rules/repo-docs.md` — documents rendering support, dark-mode text fixes, and theme requirements for all 9 ARCHITECTURE.md diagram types
+- Mermaid Diagram Compatibility Reference in `.claude/rules/repo-docs.md` — documents rendering support, dark-mode text fixes, and theme requirements for all 9 REPO-ARCHITECTURE.md diagram types
 
 ## [v01.69r] — 2026-03-09 10:59:19 PM EST
 
@@ -206,14 +212,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.64r] — 2026-03-09 10:37:06 PM EST
 
 ### Added
-- Added 7 new diagram sections to ARCHITECTURE.md: State (page lifecycle), Git Graph (branching strategy), Architecture (system topology, mermaid.live only), C4 Context (system boundaries, mermaid.live only), Mindmap (concept hierarchy), ER (file dependencies), Class (component model)
+- Added 7 new diagram sections to REPO-ARCHITECTURE.md: State (page lifecycle), Git Graph (branching strategy), Architecture (system topology, mermaid.live only), C4 Context (system boundaries, mermaid.live only), Mindmap (concept hierarchy), ER (file dependencies), Class (component model)
 - All GitHub-supported diagrams include both inline mermaid blocks and mermaid.live links
-- Reorganized ARCHITECTURE.md with numbered sections (1-9) ranked by usefulness
+- Reorganized REPO-ARCHITECTURE.md with numbered sections (1-9) ranked by usefulness
 
 ## [v01.63r] — 2026-03-09 10:27:12 PM EST
 
 ### Added
-- Added inline Sequence diagram to ARCHITECTURE.md (GitHub-rendered mermaid block with mermaid.live link)
+- Added inline Sequence diagram to REPO-ARCHITECTURE.md (GitHub-rendered mermaid block with mermaid.live link)
 
 ## [v01.62r] — 2026-03-09 10:20:06 PM EST
 
@@ -223,25 +229,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.61r] — 2026-03-09 10:16:20 PM EST
 
 ### Fixed
-- Fixed Architecture diagram link in ARCHITECTURE.md (simplified to flat groups, removed special characters from labels)
+- Fixed Architecture diagram link in REPO-ARCHITECTURE.md (simplified to flat groups, removed special characters from labels)
 
 ## [v01.60r] — 2026-03-09 10:11:51 PM EST
 
 ### Fixed
-- Fixed Architecture diagram link in ARCHITECTURE.md (replaced `-->` arrow syntax with `--` plain edges for mermaid.live compatibility)
+- Fixed Architecture diagram link in REPO-ARCHITECTURE.md (replaced `-->` arrow syntax with `--` plain edges for mermaid.live compatibility)
 
 ## [v01.59r] — 2026-03-09 10:05:10 PM EST
 
 ### Fixed
-- Fixed C4 Context and Architecture diagram links in ARCHITECTURE.md (simplified syntax for mermaid.live compatibility)
+- Fixed C4 Context and Architecture diagram links in REPO-ARCHITECTURE.md (simplified syntax for mermaid.live compatibility)
 
 ### Removed
-- Removed copy-code-for-mermaid.live details block from ARCHITECTURE.md (redundant with working link)
+- Removed copy-code-for-mermaid.live details block from REPO-ARCHITECTURE.md (redundant with working link)
 
 ## [v01.58r] — 2026-03-09 09:54:51 PM EST
 
 ### Added
-- C4 Context, Sequence, and Architecture diagram links in ARCHITECTURE.md — alternative mermaid.live views of the repo's system interactions
+- C4 Context, Sequence, and Architecture diagram links in REPO-ARCHITECTURE.md — alternative mermaid.live views of the repo's system interactions
 
 ## [v01.57r] — 2026-03-09 08:31:56 PM EST
 
@@ -257,7 +263,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ### Changed
 - Swapped splash screen colors: "Website Ready" is now green (#1b5e20), "Code Ready" is now blue (#0d47a1) — applied across all pages and template
-- Updated color references in README, ARCHITECTURE.md comments, html-pages.md rules, and new-page skill
+- Updated color references in README, REPO-ARCHITECTURE.md comments, html-pages.md rules, and new-page skill
 
 #### `index.html` — v01.01w
 
@@ -282,7 +288,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.53r] — 2026-03-09 02:40:34 PM EST
 
 ### Fixed
-- Fixed single-character corruption in mermaid.live URL in ARCHITECTURE.md (position 1102: 'F' → 'H') — URL now decompresses correctly and loads the diagram in the interactive editor
+- Fixed single-character corruption in mermaid.live URL in REPO-ARCHITECTURE.md (position 1102: 'F' → 'H') — URL now decompresses correctly and loads the diagram in the interactive editor
 
 ## [v01.52r] — 2026-03-09 02:16:06 PM EST
 
@@ -306,18 +312,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Fixed mermaid.live URL encoding — switched from URL-safe base64 to standard base64 (mermaid.live uses standard base64 in URL fragments)
 
 ### Added
-- Collapsible "Copy code for mermaid.live" section below the diagram in ARCHITECTURE.md with raw Mermaid code in a copyable code block
+- Collapsible "Copy code for mermaid.live" section below the diagram in REPO-ARCHITECTURE.md with raw Mermaid code in a copyable code block
 
 ## [v01.49r] — 2026-03-09 01:36:40 PM EST
 
 ### Added
-- "Open in mermaid.live" link in ARCHITECTURE.md — pako-compressed URL pre-loads the diagram in the interactive editor
+- "Open in mermaid.live" link in REPO-ARCHITECTURE.md — pako-compressed URL pre-loads the diagram in the interactive editor
 - CLAUDE.md Pre-Commit #6 rule for regenerating the mermaid.live link when the diagram changes
 
 ## [v01.48r] — 2026-03-09 01:24:49 PM EST
 
 ### Fixed
-- Fixed `GAS_TPL_PAGE` → `GASTPL_PAGE` style reference bug in ARCHITECTURE.md Mermaid diagram (undefined node ID caused mermaid.live syntax error)
+- Fixed `GAS_TPL_PAGE` → `GASTPL_PAGE` style reference bug in REPO-ARCHITECTURE.md Mermaid diagram (undefined node ID caused mermaid.live syntax error)
 
 ## [v01.47r] — 2026-03-09 01:11:33 PM EST
 
@@ -414,7 +420,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.33r] — 2026-03-09 09:22:53 AM EST
 
 ### Changed
-- Reordered page listings across all files to: Landing Page (index), Test, GAS Project Creator — applied to README.md project structure tree, README.md supporting file listings (html-versions, html-changelogs), STATUS.md table, and ARCHITECTURE.md Mermaid diagram
+- Reordered page listings across all files to: Landing Page (index), Test, GAS Project Creator — applied to README.md project structure tree, README.md supporting file listings (html-versions, html-changelogs), STATUS.md table, and REPO-ARCHITECTURE.md Mermaid diagram
 
 ## [v01.32r] — 2026-03-09 09:16:20 AM EST
 
@@ -471,7 +477,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Added
 - Set up new GAS project "Test" with full page, script, config, version files, changelogs, and workflow deploy step
 - Added Test project row to STATUS.md Hosted Pages table
-- Added Test project nodes and relationships to ARCHITECTURE.md diagram
+- Added Test project nodes and relationships to REPO-ARCHITECTURE.md diagram
 - Added Test project files to README.md project structure tree
 - Added GAS deploy step for Test in auto-merge workflow
 
@@ -495,7 +501,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Changed
 - Consolidated all template files into `live-site-pages/templates/` — moved `HtmlAndGasTemplateAutoUpdate.html` (renamed to `.html.txt`) and `gas-project-creator-code.js.txt` from separate directories into a single templates folder
 - Removed `live-site-templates/` and `live-site-pages/gas-code-templates/` directories
-- Updated all references across 15 files (CLAUDE.md, rules, skills, scripts, ARCHITECTURE.md, README.md, STATUS.md, CONTRIBUTING.md, IMPROVEMENTS.md)
+- Updated all references across 15 files (CLAUDE.md, rules, skills, scripts, REPO-ARCHITECTURE.md, README.md, STATUS.md, CONTRIBUTING.md, IMPROVEMENTS.md)
 
 #### `gas-project-creator.html` — v01.01w
 
@@ -547,7 +553,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.11r] — 2026-03-08 03:34:16 PM EST
 
 ### Changed
-- Extended STATUS.md Origin column to four-tier system: `template`, `initialized`, `modified`, `initialized · modified`, or empty (fork-added) — matching the README tree and ARCHITECTURE.md label tiers
+- Extended STATUS.md Origin column to four-tier system: `template`, `initialized`, `modified`, `initialized · modified`, or empty (fork-added) — matching the README tree and REPO-ARCHITECTURE.md label tiers
 - Updated Pre-Commit #5 with transition rules: `initialized` → `initialized · modified` and `template` → `modified` on post-init file edits
 
 ## [v01.10r] — 2026-03-08 03:31:41 PM EST
@@ -555,13 +561,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Changed
 - Upgraded template origin labels from three-tier to four-tier system: added `[template · initialized · modified]` state to distinguish post-init customizations of init-modified files from post-init customizations of untouched template files
 - Made init script Phase 5b surgical — only upgrades `[template]` → `[template · initialized]` for files that init actually modifies (based on REPLACE_FILES array), leaving untouched template files as `[template]`
-- Updated Pre-Commit #6 (ARCHITECTURE.md) and #8 (README tree) rules: `[template · initialized]` → `[template · initialized · modified]` on post-init edit; `[template]` → `[template · modified]` on post-init edit
+- Updated Pre-Commit #6 (REPO-ARCHITECTURE.md) and #8 (README tree) rules: `[template · initialized]` → `[template · initialized · modified]` on post-init edit; `[template]` → `[template · modified]` on post-init edit
 
 ## [v01.09r] — 2026-03-08 03:23:13 PM EST
 
 ### Added
 - Added three-tier template origin label system: `[template]` (template repo), `[template · initialized]` (fork after init), `[template · modified]` (fork after customization) — distinguishes initialization changes from genuine post-init customizations
-- Added Phase 5b to init script (`scripts/init-repo.sh`) — upgrades all `[template]` labels to `[template · initialized]` in README.md tree, ARCHITECTURE.md diagram, and STATUS.md Origin column during fork initialization
+- Added Phase 5b to init script (`scripts/init-repo.sh`) — upgrades all `[template]` labels to `[template · initialized]` in README.md tree, REPO-ARCHITECTURE.md diagram, and STATUS.md Origin column during fork initialization
 
 ### Changed
 - Updated Pre-Commit #5, #6, #8 template origin label rules to document the three-tier system and the `[template · initialized]` intermediate state
@@ -569,9 +575,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v01.08r] — 2026-03-08 03:12:53 PM EST
 
 ### Added
-- Added `[template]` origin labels to ARCHITECTURE.md Mermaid diagram — file nodes and file-centric subgraphs are prefixed with `[template]` to distinguish template-origin components from fork-added ones
+- Added `[template]` origin labels to REPO-ARCHITECTURE.md Mermaid diagram — file nodes and file-centric subgraphs are prefixed with `[template]` to distinguish template-origin components from fork-added ones
 - Added `Origin` column to all STATUS.md tables — template-origin entries show `template`, making it immediately visible which rows came from the template
-- Added template origin label rules to Pre-Commit #5 (STATUS.md Origin column) and #6 (ARCHITECTURE.md node/subgraph labels), including `[template · modified]` tracking on non-template repos
+- Added template origin label rules to Pre-Commit #5 (STATUS.md Origin column) and #6 (REPO-ARCHITECTURE.md node/subgraph labels), including `[template · modified]` tracking on non-template repos
 
 ## [v01.07r] — 2026-03-08 03:04:33 PM EST
 
