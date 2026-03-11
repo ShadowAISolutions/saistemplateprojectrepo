@@ -79,6 +79,6 @@ flowchart TB
 - **Bootstrap is 2-step** — the GAS web app needs a deployment ID to target itself, but the ID doesn't exist until after the first deploy. So: (1) deploy to get the ID, (2) add the ID to config, (3) re-deploy with the code that references itself
 - **Config JSON** — the "Copy Config for Claude" button generates a JSON blob that `setup-gas-project.sh` consumes to scaffold all 10 files automatically
 - **GAS Panel** — a collapsible bottom drawer that loads the GAS deployment in an iframe for testing the connection without leaving the page. Resizable via drag handle
-- **Dashboard is a developer tool** — unlike `index.html` and `test.html` which are end-user facing, this page is used by the developer during project setup. It generates config and code, not content
+- **Dashboard is a developer tool** — unlike `index.html` and `testenvironment.html` which are end-user facing, this page is used by the developer during project setup. It generates config and code, not content
 
 Developed by: ShadowAISolutions

@@ -2,7 +2,7 @@
 
 ## 1. Flowchart — System Overview
 
-> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNq1Wd1ym0gWfpUu5WKcGSPZzjiJXZXdwghLmmCLEjiZVJRStaCRGANN0cgabZyqvZ37eYB9tnmSPd0NCAmQmGytb1zVnPP1-evzp68dh7qkc91ZJDheIvtmGiH4Y6u5PJh2JiSmzE9psrlGDPssJWEc4JTECf2NOGkCn6cdycX_XD-BU59GAmt7XkLskycS0Jgk6CNNHr2ArssA_K-vf_hcpushLcArlyANhJ12vuxSazdA7AiC3o9onuDIWVaIABIpyj-ep514xeDzM7BtKUjkNgirjXpaH_317z8RXqVUCUmyIIq8rLsJA_Q5t8eXfSV2LVH-Yk9Gg4E--TrtmCALSinKpf_ntPNtXzkuds5SiyP0-kTYM7KG6kwb6tp7gNZoGPopP5pOo3cowCxVwGcOYYy41XsK1i1aXzd0W59Ztmrowh0BSQnyoyVJ_JS4uaWn0Ql79GMkTPOyYvhd4Hv6jO70yYAD3nEGwAP9Q-xHFU5BJ7R_MPsql2SoAttD7IK54dpdlRRHKNxlS1xB2vILuP7o9haAtCVxHtECjOT6nleNGKDKQibwn4gCj4AoMV4Q1kPOEkcL4vIwMtWBbs1uDXUAkOKzkn1F71CarMgh4O6ClbEGqjXr66Yx_iTsHQd0w8_Qk4-Rs0oCZI4tGzQHi7nUpCw9wSLC3rmCtmr8LaBUXHr0ZtJk6IJg6-9jD2urf4bAb5uJ0-ZoBXTxOlCcPQAZAM8N7M3Pc-Cnw9UcmdzuSFosJFFaTShb2K1pK25NKRi3DFnR1hh94KFrACeyfBGG1hK7dK2OLBqsuDNYF0JquZp3fdprTJhfmuUTZuT3tNG_ogLPVEOIDAg_jUYp2KJVijL2QuJ-_Iv-_pNhgK5bdtSNQIXHTRBUFBjd9_Vfd4n9yCW_d5dpWKW2dcsWyu5ypISl9QwQx7Zp1LAsMFMywypOQjDUqXoE675_vsvK6CpyWe8jmXP7zSYEu5vZB-o7ZHbeDeNXdRAXtRC8KjXw7yKUHMeFVJ5IwnjE9A74iP990Cf2r3aNeTlKN0Pppr-nFZkLa9dBcHu3QsjMX4dR44CjkHvhvGeZBWttFxF1s4EFgtUYZ8HamaaGn1vmCPthJYR7ZWYP6KKlIprR5OICqRu6tYrkADN1og2Poig4cZaQOZrQhFn2pSmi5agwGXuNLFWMY6JkobcvTFPYHZWtwKuR7ijoIWGPBvXfjYZBbThAVLYMhkFzNJRBWsXCoC4Y2oiSczfEQltBhHGPV0OVt-gT4iUEugqD0hidaIEPNVCxfJf3pm079JvJ-KMlksJNQtcMRpCAYpcdqmnmWFRLkwZBQ26eRjDQJBt0flbtK7TxnalO9K983goptF0ZIzD99cd_xO1Q0bPDavc-0Y2x2ofrLZKiNZkrMRjJjxaKqFAAMiEcAvEmoVrXTEO1uHOsJV2jRUJIhH7IyiISZe0HQGDgNrDqTwj-b2TlqyBlZhMdDLdH1ULiU6ZsrQW244fUqU5PASKlbsbgk8auDAe6SEoXAUFqHDNkOYkfp-y7uibebtd0QgsBz9Ez8N6IB0hPRtOC1bbt2u2grp9yaOT5i-5vTMTGCfghcQiiHh810iXyaALH9sg29NOsq7zT7-3ZqH_KW1Vzoqt9a6jr4gSR1OnWDw383R5TwoYH3BM9W4MKsg7s6yE4_s9qHHA1jFMWCTxFjpEiS7TPC1wr1TQ_Sxx4IzxmuAKl0Kk3qPkg0kO8CgI1cuUAcpvQUE4bJy8BxAM9ljDG8KHQg09Ifjsw1MFsrnNhxpAY1nwoZyirX-gnABQ1DM4iss5ThzhfCdUZckvzUp3IMGzeWWKshYHiDqZsnj2m0dd0E5NrUS0TkVa-1bKDncRDzbWvt0lBUtLooLpbTCne90xJeTAerMTQJuwG7hASOvhugJmdnfF6I-NI1IQsy58M7TtDpFqUM4uxTKR_NF-FMXGrQZI12O2vPNpm563OuH98aFL4GhCeY64CD28mwrnQoe0LM7MI1MQTP2BgzVAf-vrsrr8rnTzmXQDIkYezHzHIDOJRsqrtJg-GmOvLo2q2t0hWAbiZQ-FgjTdMyUop1DGcLhXmUPAGElQ1u6v3I8NoAGaPfhBIZD96oo94DhVknS00kfxaI6lujqtuTood60GHWrptj-4HTQKRNIWSz4qkyjdbP8q1JQ5AqLqo49u525GxFyDZBqPXvGETWu8uAtFihRO3bZQcL7Oj-5E9s7TJyNyrRCyrP37kpwo3HUjEBaIRPPIlTXn1eET8q48D_1-YB019UgaDPpj14GDNVayUXkp2CX8YeVB6PrhcPKDaG0oKIKUrtl7CGS5JgZshmix6Yhs0jeBfgMHK6OJCoDKxoM7fx5499wwLbzyHh2DeiHWySPyAyzN_LBdZz3IskDxZg5HzsU3kMLn9OjETomS74xfnly_zteR3M-8x5j3B37ias3w3QLFqKhDynJgDFDlaNiGiHalxfoMl_le0rXKFpDmU7yU4lK7L6qkk5LvBQnuSPEmSrPeWJELGYzilIrqVHrIWIuGcuHx8AOllGaNIVvrKRYVBCoF2Ozne1tBELLGx7JTyprewwLY3KG-rs4AuLb13Vt0VZfJElnPCC4DEJOiKXyAkZfnHAEkrW6eclKPkb4ulG3ji_LcjeJXB9Yuf8dWZe3Xq0IAm1y88zyuTCb9Iutev5_PXuIGuEFXSEu_y1eVZA235N5iC_gpfFdhnZ2c72GIqyijP55fkogmZpw1J5nn4zcXrBsCtg3PiN2c_v2rAzDNDTkrO3l404-Yb3bZi8IYyc8MFvvQuG4Qo0mZG7JCrV-7bBlzRObQhlK1AG8py2pfkb95enV05JXE7p52QJCH23c51B2b-dElCmMuvpx2XeHgVQOn_BjS8WliQ3jrX_Hek047s2_s-hiIaysNv_wWBwxpG) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNq1Wd1u28YSfpWFclGnNSXbqZPYQM4BLdGSGsoiRDppEAXCilxKrEkuwSWtqnaA3va-D3CerU9yZndJihJJSU1R3xhYznw7fzt_emrZ1CGt69YixtESWTfTEMEfS-fyYNqakIgyL6Hx-hox7LGEBJGPExLF9BdiJzF8nrYkF_9zvBhOPRoKrM15CbFHHolPIxKjjzR-cH26KgPwv5724XOZroO6Pk4dgrog7LT1ZZu6ewPEtiDofI_mMQ7tZYUIIJGi_Od52opSBp-fgW1DQUKnQdjusNPtob9-_xPhNKFKQOIFUeRl7XXgo8-5Pb7sKrFtifIXazLs97XJ07RlgCwooSiX_r_T1tdd5bjYOUstjtDrE2HPyByos-5A674H6C4NAi_hR9Np-A75mCUK-MwmjBGnek_BukHrabpmaTPTUnVNuMMnCUFeuCSxlxAnt_Q0PGEPXoSEaV5WDL8NfEef0Uib9DngiDMAHugfYC-scAo6of290VO5JAMV2O4jB8wN126rpNhC4TZb4grShl_A9Ya3twDUXRL7AS3ASI7nutWIAaosZHzvkSjwCIgS4QVhHWQvcbggDg8jQ-1r5uxWV_sAKT4r2Vf0DiVxSvYBtxesjNVXzVlPM_TxJ2HvyKdrfoYePYzsNPaRMTYt0Bws5lCDsuQEiwh75wjaqvE3gFJx6dGbSZOhC4KNvw89rI3-GQK_bSZOm6MV0MXrQFH2AGQAPDewNz_PvpcM0jkyuN2RtFhAwqSaUDawG9NW3JpQMG4ZsqKtPvzAQ1cHTmR6IgzNJXboSh2a1E-5M1gbQmqZztse7TQmzC_N8gkz8nuO0b-iAs9UA4gMCL8uDROwxVEpSt8JibvxT9r7T7oOum7YUTsEFR7Wvl9RYHjX037eJvZCh_zaXiZBldrSTEsou82REJA7fPRiGnIn1vNCSFuGXsO9wEzJbKzYMcFQsuoRzLve-TYro2nosM5HMuemnE0IdtazD9Szyey8HUSv6iAuaiF4gWrg30Yo-ZALqTySmPHg6exxF__7oE2sn60aS3OUdobSTn5NKjIXhq-D2DH9UWCZJ-rganxxEHInyHeMtGBHm0jE4qxvgmA1dlqw46xUw79jpANI-_URTpep36eLI3Xq6k2OL5DagVOrUw4wUyfdwUEUBcf2ElJLE5qw0K40dTF0UK4MqUasvXCHBMxic1fEprg8KGaBVyPoQdB9wh6M-r8bI_3aIIFYPTJE-s0xUgY5KkL6B0LkGKlyoMMRcqx4wuSHS6vK-_0JcWMCLYpOaYROur4H9yim5_BG99h2_2Yy_miKXHIT0xWDecan2GH7CqQxFqXXoL7fkN2nIUxH8Rqdn1WblO54ZKgT7YkPbwGFHi5jBKa__vifuB3ag-ywOgpMNH2s9uB6kyRoReZKBEbywoUiahyATAiHQLzjqFZGQ1dN7idzSVdoERMSou-ywopEYfwOEBh4EKz6A4L_a1k7K0iZ2UQ7xO1RtZD4lClba4HNLCN1qtNTgEipmzH42LItw56WlNKFT5AaRQyZduxFCfumFoz37jVt1ULAc_QMvDPkAdKR0bRgtTNA97Zf15zZNHS9RfsXJmLjBPwQ2wRRl88tyRK5NIZja2jp2mnWoo60O2s27J3yvteYaGrPHGiaOEEksdv1Ewh_woeUsLbfcme3F2xQTJaPXe12mf9lPffEAgxvJvFdRQ6tIo0cnzi4gqphfJY48Ih4UHEFSrFVb3HjXuSPKPV9NXTkuHMb00DONicvAcQFPZYwNPER1IVPSH7bM0LOTEvjwowhc6z4CoChrOyhHwBQlD44C8kqzy3iPBWqM-SUprM6kWG0HZliiIbxZQQzPU8v0_ApWUfkWhTZWOSdr7XsYCfxknPt621SkJQ02qvuBlOK9y0zWR6Xews4dBfbMTyAjA--62NmZWe8IMk4EkUjKwMnA2uki1yMcmYxBIr6gOZpEBGnGiRZ4378lQfb97xDGvcOz2UKXzrCc8xV4OHNRDgXOhz7wowsArviie8xcFdX73vabNTblk4e8zYB5MjD2QsZZAbxKFnVdpN7XWwRyoNxtiWJUx_czKGwv8JrpmS1FgodTpYKsyl4Awmqmk3Z-6GuNwCzB8_3JbIXPtIHPIcSs8rWp0h-rZFUM8ZVN8fFRnevQ3tDtT9RR2YTs-KFkDgDzK3UcTwMHgmkhBGJRegj0YQlYNE0JignqVFcs6zhXb9JdZIk0H2wIn3zjd33ch2LfVC_Lr751vF2qO-EYraZ6TRvDoV9txecaJHi2Dk2Hg9X_OHd0JqZ3cnQ2CmKLCuFXuglCrczSMQFoiGkkyVNeJ16QPyrh33vN2H4-vQPBr036sHBmmmklN5kdgl_gnn4ux4El3iqtTeUFEBKW2zzhDMcwl3NEI0XHbHlmobwz8dgZXRxIVCZWLznL3HHnjuGhWySw8OzWYs1uSgxgMtrTCQXdM9ybpE8Wa-T87F1aDO51TsxYqJkO_EX55cv83XrNzPvMOaNyN-4mrN8M0CxQisQ8uybAxTVQLY7ovGpcX6DJf4p2ka5QtIcynMhDUjXZZVbEvKdZ6E9iR8lSTYGSBIh4yGcUrneSA_5EZFgThw-yYD0smBSJHuKykWFQQqBtntG3kDRWCznsezJ8v67sMCmCylv4bOALi3zt1b4FWXyRJZzwguAxCToil9WJGX5Rw5JK5u0nJSj5G-LJWt44vw3MXiV_vWLH_HVmXN1alOfxtcvXNctkwm_SLrXr-fz17iBrhBV0hL38tXlWQNt-belgv4KXxXYZ2dnW9hiQMsoz-eX5KIJmacNSea6-M3F6wbAjYNz4jdnP75qwMwzQ05Kzt5eNOPm6-ljxeCta-aGC3zpXjYIUaTNjNgmV6-ctw24okc5hlA2HcdQltO-JH_z9ursyi6J2zptBQRaAs9pXbee4NktSUCmretpyyEuTn1oMr4CDa8WJqS31jX_fey0JSeEnuwP5OHX_wOt5W2-) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 graph TB
@@ -42,27 +42,27 @@ graph TB
             direction LR
             NOJEKYLL["[template] .nojekyll"]
             INDEX["[template] index.html"]
-            TEST_PAGE["[template] test.html"]
+            TEST_PAGE["[template] testenvironment.html"]
             GASTPL_PAGE["[template] gas-project-creator.html"]
             SND1["[template] sounds/Website_Ready_Voice_1.mp3"]
             SND2["[template] sounds/Code_Ready_Voice_1.mp3"]
 
             subgraph "html-versions/ [template]"
                 VERTXT["[template] indexhtml.version.txt"]
-                TEST_VERTXT["[template] testhtml.version.txt"]
+                TEST_VERTXT["[template] testenvironmenthtml.version.txt"]
                 GASTPL_VERTXT["[template] gas-project-creatorhtml.version.txt"]
             end
 
             subgraph "gs-versions/ [template]"
                 INDEX_GSVER["[template] indexgs.version.txt"]
-                TEST_GSVER["[template] testgs.version.txt"]
+                TEST_GSVER["[template] testenvironmentgs.version.txt"]
             end
 
             subgraph "html-changelogs/ [template]"
                 INDEX_CL["[template] indexhtml.changelog.md"]
                 INDEX_CL_ARCH["[template] indexhtml.changelog-archive.md"]
-                TEST_CL["[template] testhtml.changelog.md"]
-                TEST_CL_ARCH["[template] testhtml.changelog-archive.md"]
+                TEST_CL["[template] testenvironmenthtml.changelog.md"]
+                TEST_CL_ARCH["[template] testenvironmenthtml.changelog-archive.md"]
                 GASTPL_CL["[template] gas-project-creatorhtml.changelog.md"]
                 GASTPL_CL_ARCH["[template] gas-project-creatorhtml.changelog-archive.md"]
             end
@@ -70,8 +70,8 @@ graph TB
             subgraph "gs-changelogs/ [template]"
                 INDEX_GCL["[template] indexgs.changelog.md"]
                 INDEX_GCL_ARCH["[template] indexgs.changelog-archive.md"]
-                TEST_GCL["[template] testgs.changelog.md"]
-                TEST_GCL_ARCH["[template] testgs.changelog-archive.md"]
+                TEST_GCL["[template] testenvironmentgs.changelog.md"]
+                TEST_GCL_ARCH["[template] testenvironmentgs.changelog-archive.md"]
             end
         end
 
@@ -93,8 +93,8 @@ graph TB
             direction LR
             GAS_INDEX["[template] googleAppsScripts/Index/index.gs"]
             GAS_CFG["[template] index.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
-            GAS_TEST["[template] googleAppsScripts/Test/test.gs"]
-            GAS_TEST_CFG["[template] test.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
+            GAS_TEST["[template] googleAppsScripts/Testenvironment/testenvironment.gs"]
+            GAS_TEST_CFG["[template] testenvironment.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
         end
 
         subgraph "GAS Self-Update Loop"

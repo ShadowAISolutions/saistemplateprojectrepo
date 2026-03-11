@@ -1,6 +1,6 @@
 # Changelog Archive — Test Title
 
-Older version sections rotated from [testhtml.changelog.md](testhtml.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [testenvironmenthtml.changelog.md](testenvironmenthtml.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

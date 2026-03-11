@@ -1,6 +1,6 @@
 # Changelog Archive — Test Title (Google Apps Script)
 
-Older version sections rotated from [testgs.changelog.md](testgs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [testenvironmentgs.changelog.md](testenvironmentgs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

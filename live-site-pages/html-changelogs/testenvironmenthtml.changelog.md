@@ -1,7 +1,7 @@
 # Changelog — Test Title
 
 All notable user-facing changes to this page are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testhtml.changelog-archive.md](testhtml.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testenvironmenthtml.changelog-archive.md](testenvironmenthtml.changelog-archive.md) when this file exceeds 50 version sections.
 
 `Sections: 1/50`
 

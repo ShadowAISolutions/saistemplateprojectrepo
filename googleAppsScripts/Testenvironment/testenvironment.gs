@@ -3,12 +3,12 @@ var TITLE = "Test Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
-var FILE_PATH     = "googleAppsScripts/Test/test.gs";
+var FILE_PATH     = "googleAppsScripts/Testenvironment/testenvironment.gs";
 var DEPLOYMENT_ID = "AKfycbyJid5Cl6TU9PYrjvdlhvq9aTRQmuDlcCWH6tnqEmTt4rRz4oMEfyTrU4njYTmASG_v1Q";
 var SPREADSHEET_ID = "1JSHTDKo1zknsdbQAO83EKjvGKcKp91HkuB91LrFaTzE";
 var SHEET_NAME     = "Live_Sheet";
 var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
-var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/test.html";
+var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testenvironment.html";
 
 // ══════════════
 // PROJECT START
