@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 101/100`
+`Sections: 102/100`
 
 ## [Unreleased]
+
+## [v02.02r] — 2026-03-11 09:37:46 AM EST
+
+### Changed
+- Replaced combined flowchart in REPO-ARCHITECTURE.md section 3 with a `stateDiagram-v2` showing Auto-Refresh Loop, GAS Iframe interaction, and Maintenance Mode as template-level state machines
+- Updated environment scope rule in `repo-docs.md` to include maintenance mode in the template-level exception
 
 ## [v02.01r] — 2026-03-11 09:32:02 AM EST
 

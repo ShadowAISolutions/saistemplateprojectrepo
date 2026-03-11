@@ -18,7 +18,7 @@ The Mermaid diagrams in `repository-information/REPO-ARCHITECTURE.md` show the r
 ### Environment scope rule
 REPO-ARCHITECTURE.md must NOT include the internal processes of **individual** environments (page lifecycle states, maintenance mode internals, splash screen flows, environment-specific workflows). Environments appear as **nodes** that show their connections to other environments and shared repo components — but their internal behavior is documented in per-environment diagrams under `repository-information/diagrams/`. When adding or modifying REPO-ARCHITECTURE.md diagrams, keep environment nodes as opaque boxes — show what they connect to, not what happens inside them. If internal process detail is needed, add it to the corresponding per-environment diagram instead.
 
-**Exception — template-level behaviors**: the auto-refresh loop and GAS self-update loop ARE included in REPO-ARCHITECTURE.md (section 3) because they are inherited by **all pages** via the HTML/GAS templates. These diagrams are generic (referencing "any page" / "any Apps Script project") and should only change when the templates (`HtmlAndGasTemplateAutoUpdate.html.txt` or the GAS script template) change — not when individual environments change.
+**Exception — template-level behaviors**: the auto-refresh loop, GAS iframe interaction, and maintenance mode state machine ARE included in REPO-ARCHITECTURE.md (section 3) as a combined state diagram because they are inherited by **all pages** via the HTML/GAS templates. This diagram is generic (not referencing specific environments) and should only change when the templates (`HtmlAndGasTemplateAutoUpdate.html.txt` or the GAS script template) change — not when individual environments change.
 
 ### Adding new pages
 When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add:
@@ -36,7 +36,7 @@ REPO-ARCHITECTURE.md contains 9 diagrams across different mermaid types. Each ha
 |---|------|---------------|-----------------|-----------------|
 | 1 | Flowchart | `graph TB` | Yes | No — use per-node `style` directives for colors |
 | 2 | Sequence | `sequenceDiagram` | Yes | No — works natively |
-| 3 | Flowchart (Template Behaviors) | `flowchart TB` | Yes | No — use per-node `style` directives for colors |
+| 3 | State (Template Behaviors) | `stateDiagram-v2` | Yes | No — works natively |
 | 4 | Git Graph | `gitGraph` | Yes | No — works natively |
 | 5 | Architecture | `architecture-beta` | **No** | N/A — mermaid.live link only |
 | 6 | C4 Context | `C4Context` | **No** | N/A — mermaid.live link only |

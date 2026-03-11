@@ -187,44 +187,40 @@ sequenceDiagram
 
 The following behaviors are inherited by **all pages** via the HTML/GAS templates (`HtmlAndGasTemplateAutoUpdate.html.txt` and GAS script template). They are documented here because they are template-level — they only change when the templates change, not when individual environments change.
 
-### Template-Level Behavior Diagram
+### Template-Level State Diagram
 
-> [Open in mermaid.live — Template Behaviors](https://mermaid.live/edit#pako:eNqVVMFO20AQ_ZWRewAEQWmLgsihldOkcHBqyw5CCFdoY49jV2uvtbsmtUikXnvvB_Tb-JKO7TiEurR0L0lm5s28efuy90YgQjSGRsTFMoiZ1DAb-RnQUcV8IVkeg2-YhRY9FyOJKgZLiBz2Z5jmnGmEEcbsLhESHr79gEiKFC5mUwv0Jn_gG0276oSJxEAnItsOqc7Ita-8iXvjGyMplgolcMFCBSwrIWcL9I3Pj8WObVlU6QjO6-Seglin_PgOpaLGx_qr9v0M6WcJr_vqCfaDPXVMd3LvGy6mgrhvQAR4-P6znophG3zvG-tHqDuxbHNMgz3UsMR5L8csTLJFT4kiC6mBixW8y9dzLNO7qICxWMJCImawd4VzldB8F1lY7hFakVYk7SHQZwlNz90uG4mg13tXK_BUjzq8Wa6zbZVcXaNabXb4faca3LD8M_aTWO3MpLX9rGOQc9MDD3nUu8zDyhT_9EgF-A-LUPmt6Tg3zSSSD8w8J932K4_QVwVeIJNcQy7FF8IfPFGvQjuXtW_ygnMzC8eYc1F-JCbnib4o5vsH1CxCHcSo4HihNiTrXKfVeOJY9vWtN5tUhGzyy1LSbap2OBxSs0Aiq2IZLltH1fGiFkhBWDNIMdNdqrY3m3rnFVuh9BSVqkzlZ_e6zHEIC6Z6snbbugMljer7bDfuarBN72zx7HqPvRpKHQvs5GqvvITyqnXz1ke65Li1eJRwPnx1ws764dlRILiQw1dRFO2WbozbVA4G8_mAPVPZ-Polla16TWkUnfZP3v6ldFekFsJO3wxaSL_fN46MFGXKkpCeV3pzdIwpvQ1D3wgxYgWni19TDaO31SuzwBhqWeCR0RhknDD6b6VNcP0LFU7EWA) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Template State Diagram](https://mermaid.live/edit#pako:eNqFVN-L2zAM_leEH8d1bH00bFDutnGw3kqzHw_LHrxYTcxcO9hOu1L6v0-O08Qpxy0QMNL3SfInyWdWWYmMMx9EwAclaif2i8OyNEDfz1e_YLF4D49SI4eNqBG0FRJlcvccKNmqC3axxZ1D38Bna9uSgfDgBss5oeMXA_URN1ZrZWoOHw7oTvD2jZ9Agy_L_B2dV9ZAZ6pGmPqa_xY8wO4ThsMTHuEwUCUGrELOnKP7AAWGDRpJ8QrbGYpABvDxCDst6ol7A-zJW4za9Jf66lRdoyMFommijZCUrdXCNzNd4ahCA2aqO0vZo5N4WpyGAuOROvADf3tFvdiikKeSZfJcoZmaW_TdHqFNyiXsZd7RT6sCHnc0CphaWdOftZHcYye_eXSrKlCtvD-DMgGdqELW0QmT6ne2Qu97qQqSEYKFVdt6KCqn2pBVPwIHhY1ER-W31ni6yIMIgjQOnTM4UzmH9cyhYD4I9OxF6Jz6w0kaH9aUODaGrr647eMInQdPig1dv1Z0o-xaRH2MMBXCmlYv6buP1lzh6-bdN1j9yTjZtEzgW1CarsYev9AU0QDwFD853wXX4X-4T9bthZ7TdkL7jJeFHxd6XicZrlP8OvwN85V9sdoiKOIqk-d_mT4u1pJD7qs0CofPbeBydtGP_UM1qXphd2yP5FOS3sZzyUKDcRd4ySTuRKdDySJG0MtXnEzFeFT1jnWtnJ7RZLz8Ay_MuJg) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
-flowchart TB
-    subgraph "Auto-Refresh Loop (Template Behavior — from HTML template)"
-        direction TB
-        BROWSER["Browser loads any page"]
-        POLL["Poll page's html.version.txt\nevery 10s"]
-        COMPARE{"Remote version\n≠ loaded version?"}
-        RELOAD["Set web-pending-sound\nReload page"]
-        SPLASH["Show green 'Website Ready'\nsplash + play sound"]
-        BROWSER --> POLL
-        POLL --> COMPARE
-        COMPARE -->|Yes| RELOAD
-        RELOAD --> SPLASH
-        COMPARE -->|No| POLL
-    end
-
-    subgraph "GAS Self-Update Loop (Template Behavior — from GAS template)"
-        direction TB
-        GAS_APP["GAS Web App\n(any Apps Script project)"]
-        GAS_PULL["pullAndDeployFromGitHub()\nfetches .gs from GitHub"]
-        GAS_DEPLOY_STEP["Overwrites project +\ncreates new version +\nupdates deployment"]
-        GAS_POSTMSG["postMessage\n{type: gas-reload}"]
-        GAS_APP --> GAS_PULL
-        GAS_PULL --> GAS_DEPLOY_STEP
-        GAS_DEPLOY_STEP --> GAS_POSTMSG
-    end
-
-    GAS_POSTMSG -->|"postMessage\n{type: gas-reload}"| BROWSER
-
-    style BROWSER fill:#4a90d9,color:#fff
-    style RELOAD fill:#66bb6a,color:#fff
-    style SPLASH fill:#66bb6a,color:#fff
-    style GAS_APP fill:#ff7043,color:#fff
-    style GAS_DEPLOY_STEP fill:#ffa726,color:#000
+stateDiagram-v2
+    [*] --> Idle: Page loaded
+    state "Auto-Refresh Loop" as refresh {
+        Idle --> Polling: Every 10s
+        Polling --> Idle: Version unchanged
+        Polling --> VersionChanged: New version detected
+        VersionChanged --> SetPendingSound: Set sound flag
+        SetPendingSound --> Reloading: Trigger reload
+        Reloading --> Splash: Page loaded with new version
+        Splash --> PlaySound: Play "Website Ready"
+        PlaySound --> Idle: Resume polling
+    }
+    state "GAS Iframe" as gas {
+        GASIdle --> UserAction: User interacts
+        UserAction --> Processing: Send to Apps Script
+        Processing --> RenderResponse: Data returned
+        RenderResponse --> GASIdle: Ready
+        GASIdle --> GASReload: postMessage gas-reload
+        GASReload --> GASIdle: Iframe reloaded
+    }
+    state "Maintenance Mode" as maint {
+        [*] --> CheckMaintenance: Page load
+        CheckMaintenance --> ShowOverlay: maintenance=true
+        CheckMaintenance --> Normal: maintenance=false
+        ShowOverlay --> PollMaintenance: Poll version.txt
+        PollMaintenance --> ShowOverlay: Still in maintenance
+        PollMaintenance --> Reloading2: Maintenance cleared
+        Reloading2 --> Normal: Fresh load
+    }
 ```
 
 ### Per-Environment Diagrams
