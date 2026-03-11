@@ -117,7 +117,7 @@ graph TB
 
 ## 2. Sequence Diagram — Deploy & Runtime Flows
 
-> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqFVMFu2zAM_RXCp3Srm7uxFMgSJCmwdkHcIpdcVJm2hcqSJ8kJiqLXfcA-cV8yyrLbJk4xXwyZ75F8j7ReIq4zjJLI4q8GFce5YIVh1U4BPTUzTnBRM-Vgjntg1r9Q6hoNjL89mvH1TLImQ5hRliFnufKUpXCr5rFFj3gLH3-BR8MULy-GnO3Cc6aN0_EtmgJb3labp1zqwxB-y4TyhMq_Q9IhaM0KtO-thPMQ9t3ogyVlBHzw7-58Rtc0bbNpXUiEaV3btsuUG1G7ITwtEZ39wAgfdipA77RD0HsqSOZehlgCk8mEzrXUz7Ag5f7cEwgWX18vVwkUwkHd2BJ6XwNguaL4dpHAvRFFQYkPR_5tF114ViJ_Aq6rivKkq2mrYm9BMuvi2miO1mIWSEw6uFElGuEwg5F1TOLFkeNvqX1nc5RIskKc4E-ihsrPsxs5Sotwh4eu-kkGP9UE2vm_SYO_v_-0Yz7BeiEPdcao2nHfcUh9ZUt2hhK0ewMzkefvAK9Tij3GloTGtd-UMfCSqaJ34ihVu0pJPymnz6xYK1dlxyWuCgu5oF34PDVtWQK8MRLWP9N7yPRaWzdi3AmtJllb8OKYRozO_gU6sl2SKTbU2gvWtzZd35yl-XIpyjxugptfwWAo84mO02Gf_NzdoD3jf4u-aZQTFcKcOTZY99ZKqtT9jr5Js0dY3d_-AD-fgOqivZD2BxbKoQmGwUjkdK_16xck9y1skGXjg99sIOXdtoRg3CfcoGuM-hD3KT52tSGlVNOgrbWyGF1GtO-0rxndri-7yJVY4S5KdlGGOWuk20WvhGF00aXPikeJMw1eRsH77hYOH1__Abayy14) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqNVs1u2zgQfpWBTnYTxe3VaAK4yTou0LRBnK4vvjDSSCJCkSxJ2TWCXPcB9hH3SXZIyj-yFTS-CDLn7_u-maFekkzlmIwTi78alBnecFYaVi8l0E8z43jGNZMObnAFzPoHCqXRwOjzkxldXQvW5AjXFOXU53bmXW65mzVPwXqQBfPRB3gyTGbV8NRnMfU-k8ap9A5NicFvocxzIdT61PyOcekdav-MQU-N7lmJdl9KfD81-2LU2hIyMvzpn-17D67JPERTqhQIE61tqHKeGa7dqfm8QnT2wCP-sZTR9LtyCGpFCYnc83g2hsvLS3rXQm1gSsj9-9aBzNKrq9vZGEruQDe2gi2v0eB2RueL6RgeDS9LCrzu8LeYtsfXFWbPkKm6pjjz2SSgWFkQzLpUG5WhtZhHJyYcfJUVGu4wh4F1TOCww_gutK_sBgUSrHhO5s9cQ-31bCVHYRG-47rNfhTBqzqGoP8OGvz3z79B5iNbD-Snzhll69adxtAXtmI9LhG7JzDnRbE38DgFX2FqCWiqfaeMIKuYLLdMdEKFVhpvlXKqp8UCXJl3U1yUFgpOvfB2aOqyMWSNEXD_Y_4IubpX1g1Y5riSl3lIOOy6kUdL_xQd0S6IFBtzrTjblja5_9rr5tPNURRpE9k8A4MxzRs4jsU-Gu5WaO_xp0YP4_6AhUHq5W9KaRg8Yq19_fAFK7biygwPRyDQS9nbEfWFmxXC7PHuG3jNopXwkf6ihBv49BEsZkrmB6K0znsVI2uVq8UFOVni-cL9dl3h_o4H_brtIx4URiNKJHBZplY1ModCsPItt7aQB9qxLD9Asv29gTsq1ufQV1FF62SZLPDJtzjlYvlmmYTZt0Q5KXAG9NxAKLdH-3dJ6ndk6KZ2Nt-j6kEj6kaIiczjXE2NqmPzDoYdy12nh3EiK2pZrXZLcBvsAV1jpMdjMmrT3V11kO8HYVj73UbgM4O-xLYF4CxQ0w5FHIgapTsMseNW04je0fYhHQYvbqORdjSzqQl6vrbF92jSCu5J4wXdv_hngh8a6XiNcMMcO7ki3jcf-0ICB-HS49KhiUsGBrGWDufbEnzbjCJjREy7YePhMe_7cx-iC1vmlJPGXitpMTlP6I6gHZ_TF8nLMnEVEhPJeJnkWLBGuGXySjaMtsV8I7Nk7EyD50mUpv1yiX--_g9v99EW) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 sequenceDiagram
@@ -152,6 +152,28 @@ sequenceDiagram
         WF->>GH: Delete claude/* branch
     end
 
+    Note over Dev,Sheets: === Auto-Refresh Loop (Template Behavior) ===
+
+    Pages->>Browser: Serve HTML page
+    loop Every 10 seconds
+        Browser->>Pages: Fetch html.version.txt
+        alt Version changed
+            Browser->>Browser: Set pending-sound flag
+            Browser->>Pages: Reload page
+            Pages->>Browser: Serve updated page
+            Browser->>Browser: Show "Website Ready"<br/>splash + play sound
+        end
+    end
+
+    Note over Dev,Sheets: === GAS Self-Update Loop (Template Behavior) ===
+
+    GAS->>GAS: pullAndDeployFromGitHub()
+    GAS->>GH: Fetch .gs from repo
+    GH-->>GAS: Return source code
+    GAS->>GAS: Overwrite + create version +<br/>update deployment
+    GAS->>Browser: postMessage({type: gas-reload})
+    Browser->>Browser: Reload GAS iframe
+
     Note over Dev,Sheets: === Runtime Data Flow ===
 
     Pages->>Browser: Serve HTML page
@@ -161,17 +183,61 @@ sequenceDiagram
     GAS-->>Browser: Render response
 ```
 
-## 3. Per-Environment Diagrams
+## 3. Template-Level Behaviors & Per-Environment Diagrams
 
-Individual environment internals (auto-refresh polling, GAS self-update loops, page lifecycle states, maintenance mode, splash screens, etc.) are documented in dedicated per-environment diagrams:
+The following behaviors are inherited by **all pages** via the HTML/GAS templates (`HtmlAndGasTemplateAutoUpdate.html.txt` and GAS script template). They are documented here because they are template-level — they only change when the templates change, not when individual environments change.
+
+### Auto-Refresh Loop (from HTML template)
+
+```mermaid
+flowchart TB
+    subgraph "Auto-Refresh Loop (Template Behavior)"
+        direction TB
+        BROWSER["Browser loads any page"]
+        POLL["Poll page's html.version.txt\nevery 10s"]
+        COMPARE{"Remote version\n≠ loaded version?"}
+        RELOAD["Set web-pending-sound\nReload page"]
+        SPLASH["Show green 'Website Ready'\nsplash + play sound"]
+        BROWSER --> POLL
+        POLL --> COMPARE
+        COMPARE -->|Yes| RELOAD
+        RELOAD --> SPLASH
+        COMPARE -->|No| POLL
+    end
+
+    style BROWSER fill:#4a90d9,color:#fff
+    style RELOAD fill:#66bb6a,color:#fff
+    style SPLASH fill:#66bb6a,color:#fff
+```
+
+### GAS Self-Update Loop (from GAS template)
+
+```mermaid
+flowchart TB
+    subgraph "GAS Self-Update Loop (Template Behavior)"
+        direction TB
+        GAS_APP["GAS Web App\n(any Apps Script project)"]
+        GAS_PULL["pullAndDeployFromGitHub()\nfetches .gs from GitHub"]
+        GAS_DEPLOY_STEP["Overwrites project +\ncreates new version +\nupdates deployment"]
+        GAS_POSTMSG["postMessage\n{type: gas-reload}"]
+        GAS_APP --> GAS_PULL
+        GAS_PULL --> GAS_DEPLOY_STEP
+        GAS_DEPLOY_STEP --> GAS_POSTMSG
+    end
+
+    style GAS_APP fill:#ff7043,color:#fff
+    style GAS_DEPLOY_STEP fill:#ffa726,color:#000
+```
+
+### Per-Environment Diagrams
+
+Environment-specific internals (page lifecycle states, maintenance mode, splash screens, environment-specific workflows) are documented in dedicated per-environment diagrams:
 
 | Environment | Diagram |
 |-------------|---------|
 | Landing Page (index) | [`repository-information/diagrams/index-diagram.md`](diagrams/index-diagram.md) |
 | Test Environment | [`repository-information/diagrams/testenvironment-diagram.md`](diagrams/testenvironment-diagram.md) |
 | GAS Project Creator | [`repository-information/diagrams/gas-project-creator-diagram.md`](diagrams/gas-project-creator-diagram.md) |
-
-These diagrams cover the internal processes that were previously included in this file: auto-refresh loop, GAS self-update loop, page lifecycle states, and environment-specific workflows.
 
 ## 4. Git Graph — Branching Strategy
 
