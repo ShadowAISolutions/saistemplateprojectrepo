@@ -36,8 +36,7 @@ REPO-ARCHITECTURE.md contains 9 diagrams across different mermaid types. Each ha
 |---|------|---------------|-----------------|-----------------|
 | 1 | Flowchart | `graph TB` | Yes | No — use per-node `style` directives for colors |
 | 2 | Sequence | `sequenceDiagram` | Yes | No — works natively |
-| 3a | Flowchart (Auto-Refresh) | `flowchart TB` | Yes | No — use per-node `style` directives for colors |
-| 3b | Flowchart (GAS Self-Update) | `flowchart TB` | Yes | No — use per-node `style` directives for colors |
+| 3 | Flowchart (Template Behaviors) | `flowchart TB` | Yes | No — use per-node `style` directives for colors |
 | 4 | Git Graph | `gitGraph` | Yes | No — works natively |
 | 5 | Architecture | `architecture-beta` | **No** | N/A — mermaid.live link only |
 | 6 | C4 Context | `C4Context` | **No** | N/A — mermaid.live link only |
