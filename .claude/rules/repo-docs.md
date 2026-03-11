@@ -36,7 +36,7 @@ Every diagram must faithfully represent the actual source code it documents. **D
 When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add:
 - A page node in the "Environments (Pages)" subgraph: `NEWPAGE["[template] page-name.html\n(Display Name)"]`
 - Connection edges showing how the page relates to shared resources (version polling, iframe embedding, etc.)
-- A per-environment diagram in `repository-information/diagrams/` for the page's internal processes
+- A per-environment diagram in `repository-information/diagrams/` for the page's internal processes, with an "Open in mermaid.live" link above the code block (see "Mermaid Diagrams — mermaid.live Links" section)
 
 ## Mermaid Diagram Compatibility Reference
 
