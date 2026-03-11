@@ -20,6 +20,18 @@ REPO-ARCHITECTURE.md must NOT include the internal processes of **individual** e
 
 **Exception — template-level behaviors**: the auto-refresh loop, GAS iframe interaction, and maintenance mode state machine ARE included in REPO-ARCHITECTURE.md (section 3) as a combined state diagram because they are inherited by **all pages** via the HTML/GAS templates. This diagram is generic (not referencing specific environments) and should only change when the templates (`HtmlAndGasTemplateAutoUpdate.html.txt` or the GAS script template) change — not when individual environments change.
 
+### Diagram accuracy requirements
+
+Every diagram must faithfully represent the actual source code it documents. **Do not invent, simplify, or assume behaviors** — read the code first. These criteria apply to all diagrams in `REPO-ARCHITECTURE.md`, `repository-information/diagrams/`, and any future diagram files:
+
+1. **Cross-reference against source code** — before creating or modifying a diagram, read the actual source file(s) it describes. For template-level behaviors, read `HtmlAndGasTemplateAutoUpdate.html.txt` and the GAS script template. For per-environment diagrams, read the specific page's HTML and `.gs` files. Never diagram from memory or assumption
+2. **No invented interactions** — only show messages, events, and state transitions that exist in the code. If a `postMessage` handler doesn't exist, don't diagram it. If a function isn't called, don't show it being called. The most common error is inventing plausible-sounding interactions that seem like they should exist but don't (e.g. a `gas-reload` postMessage that was never implemented)
+3. **Distinguish server-side vs. client-side** — GAS scripts run on Google's servers (triggered by HTTP requests), not in the browser. Sequence diagrams must show server-side operations as interactions between the GAS participant and external services (GitHub API, Apps Script API), not as browser-to-GAS messages. Client-side detection of changes (e.g. gs.version.txt polling) is a separate flow from the server-side update itself
+4. **State machines must reflect real code paths** — every state, transition, and condition in a `stateDiagram-v2` must map to an actual code construct (variable check, function call, setTimeout, event listener). Include error states, conditional branches, and timing values (delays, intervals) that exist in the code. Don't collapse distinct code paths into a single transition for "simplicity" if it misrepresents the behavior
+5. **Show timing and sequencing accurately** — if the code uses a 15s initial delay before starting a polling loop, show it. If there's an anti-sync mechanism that adds padding when two polls overlap, show it. These details matter for understanding actual runtime behavior
+6. **Maintenance mode is a conditional, not a separate machine** — in the template source, maintenance mode is checked as a flag within the HTML version polling loop, not as an independent state machine. Diagrams should reflect this structural relationship
+7. **Verify mermaid.live URLs decompress correctly** — after every URL update, run the decompression verification (see "Mandatory verification" in the mermaid.live URL section below). A URL that looks valid but fails to decompress is useless
+
 ### Adding new pages
 When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add:
 - A page node in the "Environments (Pages)" subgraph: `NEWPAGE["[template] page-name.html\n(Display Name)"]`
