@@ -17,13 +17,14 @@ When Claude runs Pre-Commit #7 on the push commit, after creating the new versio
 1. **Count** — count all `## [vXX.XX*]` version sections in CHANGELOG.md (exclude `## [Unreleased]`)
 2. **Threshold check** — if the count is **100 or fewer**, stop — no rotation needed
 3. **Current-day exemption** — get today's date (EST via `TZ=America/New_York date '+%Y-%m-%d'`). Any version section whose date (`YYYY-MM-DD` in the header) matches today is **exempt from rotation**, even if the total exceeds 100. This means the main changelog can temporarily exceed the 100-section limit on busy days — it self-corrects on the next push after midnight
-4. **Identify the oldest date group** — among the non-exempt sections (dates before today), find the **oldest date** that appears in any section header. **ALL sections sharing that date form a single date group** — this could be 1 section or 100+ sections. The entire group moves together, no matter how many sections it contains
-5. **Rotate the group** — move the entire date group from CHANGELOG.md to CHANGELOG-archive.md:
+4. **Mandatory first rotation** — if the threshold check triggered (step 2), you MUST rotate at least one date group before checking the non-exempt count. Do NOT skip straight to the re-check in step 7 — the trigger means "rotate now", not "check if rotation is needed". Proceed to steps 5–6 with the oldest non-exempt date group
+5. **Identify the oldest date group** — among the non-exempt sections (dates before today), find the **oldest date** that appears in any section header. **ALL sections sharing that date form a single date group** — this could be 1 section or 100+ sections. The entire group moves together, no matter how many sections it contains
+6. **Rotate the group** — move the entire date group from CHANGELOG.md to CHANGELOG-archive.md:
    - **SHA enrichment** — as each version section is moved, look up its push commit SHA. For a header like `## [v01.05r] — 2026-02-28 ...`, run `git log --oneline --all --grep="^v01.05r " | head -1` to find the commit. Extract the short and full SHA (`git rev-parse FULL_SHA` if needed), then append ` — [SHORT_SHA](https://github.com/ORG/REPO/commit/FULL_SHA)` to the end of the header line. Resolve ORG/REPO from `git remote -v`. If the header already contains a SHA link (from older entries that were created before this rule), skip it. If the lookup fails (commit not found), move the section as-is without a SHA link
    - Remove them from CHANGELOG.md
    - Insert them into CHANGELOG-archive.md **above** any previously archived sections but below the archive header, in their original order (reverse-chronological, same as in CHANGELOG.md)
    - On the first rotation, remove the `*(No archived sections yet)*` placeholder
-6. **Re-check** — after moving one date group, re-count the non-exempt sections remaining. If still above 100, repeat steps 4–5 with the next oldest date group. Continue until ≤100 non-exempt sections remain (or only today's sections are left)
+7. **Re-check** — after moving one date group, re-count the non-exempt sections remaining. If still above 100, repeat steps 5–6 with the next oldest date group. Continue until ≤100 non-exempt sections remain (or only today's sections are left)
 
 ### Key rules
 
@@ -73,4 +74,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
-*(No archived sections yet)*
+## [v01.01r] — 2026-03-07 03:15:58 PM EST
+
+### Changed
+- Re-enabled `TEMPLATE_DEPLOY` toggle (`Off` → `On`) to restore GitHub Pages deployment on the template repo
