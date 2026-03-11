@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-11 07:05:44 PM EST` · Repo version: `v02.17r`
+Last updated: `2026-03-11 07:23:14 PM EST` · Repo version: `v02.18r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -40,7 +40,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/templates">templates/</a>               — [template] Template source files for creating new pages and GAS scripts
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt">HtmlAndGasTemplateAutoUpdate.html.txt</a>     — [template] HTML page template (GAS features auto-activate when gs.version.txt exists)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/HtmlAndGasTemplateAutoUpdatehtml.version.txt">HtmlAndGasTemplateAutoUpdatehtml.version.txt</a> — [template] Template version file (frozen at v01.00w)
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/gas-project-creator-code.js.txt">gas-project-creator-code.js.txt</a> — [template] GAS script template
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/gas-project-creator-code.js.txt">gas-project-creator-code.js.txt</a> — [template] GAS script template (full-featured with UI)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/templates/gas-minimal-template-code.js.txt">gas-minimal-template-code.js.txt</a> — [template] Minimal GAS template (version display + auto-update only)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-versions">html-versions/</a>           — [template] HTML page version files for auto-refresh polling
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/indexhtml.version.txt">indexhtml.version.txt</a>          — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/testenvironmenthtml.version.txt">testenvironmenthtml.version.txt</a>    — [template]
