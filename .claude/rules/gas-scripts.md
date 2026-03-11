@@ -177,7 +177,7 @@ When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` wo
 
 ## GAS Template Source File
 
-`live-site-pages/templates/gas-project-creator-code.js.txt` is the **single source of truth** for the base GAS template. It contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_SPREADSHEET_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
+`live-site-pages/templates/gas-minimal-template-code.js.txt` is the **single source of truth** for the default GAS template. It contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
 
 1. **Browser "Copy Code.gs" button** — GAS-enabled HTML pages fetch this file and do find-and-replace with the user's config values before copying to clipboard
 2. **Setup script template** — `scripts/setup-gas-project.sh` copies this file as the starting point for new GAS projects, then substitutes config values via sed
@@ -188,7 +188,7 @@ There is no separate `.gs` template file — this single file eliminates the syn
 
 ## Template vs Project Code Separation
 
-All GAS code files (`.gs` and `gas-project-creator-code.js.txt`) use section dividers to distinguish **template code** (shared across all projects, propagated via Pre-Commit #20) from **project-specific code** (unique to one project, never overwritten during propagation).
+All GAS code files (`.gs` and the GAS template `.js.txt` files) use section dividers to distinguish **template code** (shared across all projects, propagated via Pre-Commit #20) from **project-specific code** (unique to one project, never overwritten during propagation).
 
 ### Divider format
 Dividers use 14 `═` characters. Each marker is a 3-line block (divider, label, divider):
@@ -260,7 +260,7 @@ function doGet(e) {
 - `// PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
 - **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is. When `// PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **Keep clusters large** — prefer grouping related project-specific code together rather than scattering small project additions throughout the file. When practical, extract project logic into standalone functions in the PROJECT block and call them from template functions with an inline `// PROJECT:` marker
-- **The template source file** (`gas-project-creator-code.js.txt`) has an empty PROJECT block — it defines the insertion point but contains no project code itself
+- **The template source files** (`gas-minimal-template-code.js.txt` and `gas-test-template-code.js.txt`) have empty PROJECT blocks — they define the insertion point but contain no project code themselves
 
 ## GAS UI Layout Awareness
 

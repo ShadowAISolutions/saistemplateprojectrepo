@@ -4,7 +4,7 @@
 #
 # Creates all files and updates all documentation for a new GAS project:
 #   - HTML embedding page (from HtmlAndGasTemplateAutoUpdate.html.txt template)
-#   - .gs script (from gas-project-creator-code.js.txt)
+#   - .gs script (from gas-minimal-template-code.js.txt)
 #   - .config.json
 #   - Version files (html + gs)
 #   - Changelogs (html + gs, plus archives) — created directly in live-site-pages/
@@ -121,7 +121,7 @@ GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
 # ── Template sources ──
 TPL_HTML="live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt"
-TPL_GS="live-site-pages/templates/gas-project-creator-code.js.txt"
+TPL_GS="live-site-pages/templates/gas-minimal-template-code.js.txt"
 
 # ── Phase 1: Pre-flight Checks ──
 info "Phase 1: Pre-flight checks..."

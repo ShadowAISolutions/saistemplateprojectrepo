@@ -136,7 +136,7 @@ Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-v
 
 When either template source file is modified, **propagate the same changes to all existing pages/GAS scripts** in the repo. The two template sources are:
 - **HTML template**: `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` → propagate to all `.html` pages in `live-site-pages/`
-- **GAS template**: `live-site-pages/templates/gas-project-creator-code.js.txt` → propagate to all `.gs` files in `googleAppsScripts/`
+- **GAS template**: `live-site-pages/templates/gas-minimal-template-code.js.txt` (default) → propagate to all `.gs` files in `googleAppsScripts/`. A full-featured variant (`gas-test-template-code.js.txt`) also exists but is not the propagation source
 
 ### What "propagate" means
 - Apply the **same structural/feature change** (the diff) to each existing page or GAS script — do NOT blindly overwrite files. Each page has its own title, config values, deployment IDs, localStorage keys, and page-specific customizations that must be preserved
@@ -165,7 +165,7 @@ When a conflict is detected:
 
 ### Propagation scope
 - **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
-- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from the GAS template. The GAS template (`gas-project-creator-code.js.txt`) uses `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
+- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from the GAS template. The GAS template (`gas-minimal-template-code.js.txt`) uses `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
 
 ## Template vs Project Code Separation (HTML)
 
