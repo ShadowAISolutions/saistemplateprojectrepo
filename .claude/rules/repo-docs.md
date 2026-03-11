@@ -13,12 +13,16 @@ paths:
 
 ## REPO-ARCHITECTURE.md Structural Updates
 
-The Mermaid diagram in `repository-information/REPO-ARCHITECTURE.md` shows the project's file structure and relationships. It is updated only when the project structure changes (files added, moved, or deleted) — **not** on version bumps. Version numbers are not displayed in diagram nodes; STATUS.md serves as the version dashboard.
+The Mermaid diagrams in `repository-information/REPO-ARCHITECTURE.md` show the repo-wide architecture: how environments (pages) connect to each other and to shared infrastructure (CI/CD, GitHub Pages, templates, versioning, developer tools). Diagrams are updated only when the project structure changes (files added, moved, or deleted) — **not** on version bumps. Version numbers are not displayed in diagram nodes; STATUS.md serves as the version dashboard.
+
+### Environment scope rule
+REPO-ARCHITECTURE.md must NOT include the internal processes of individual environments (auto-refresh polling loops, GAS self-update loops, page lifecycle states, maintenance mode internals, splash screen flows, etc.). Environments appear as **nodes** that show their connections to other environments and shared repo components — but their internal behavior is documented in per-environment diagrams under `repository-information/diagrams/`. When adding or modifying REPO-ARCHITECTURE.md diagrams, keep environment nodes as opaque boxes — show what they connect to, not what happens inside them. If internal process detail is needed, add it to the corresponding per-environment diagram instead.
 
 ### Adding new pages
-When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add corresponding nodes to the diagram:
-- A page node: `NEWPAGE["page-name.html"]`
-- A version file node: `NEWVER["page-namehtml.version.txt"]`
+When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add:
+- A page node in the "Environments (Pages)" subgraph: `NEWPAGE["[template] page-name.html\n(Display Name)"]`
+- Connection edges showing how the page relates to shared resources (version polling, iframe embedding, etc.)
+- A per-environment diagram in `repository-information/diagrams/` for the page's internal processes
 
 ## Mermaid Diagram Compatibility Reference
 

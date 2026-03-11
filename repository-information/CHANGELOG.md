@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v01.99r] — 2026-03-11 09:10:29 AM EST
+
+### Changed
+- Simplified REPO-ARCHITECTURE.md to show environments as nodes without internal processes — auto-refresh loops, GAS self-update loops, and page lifecycle states moved to per-environment diagrams in `repository-information/diagrams/`
+- Replaced detailed file-listing subgraphs with collapsed environment nodes and shared resource groups
+- Simplified sequence diagram to deploy flow and runtime data flow only (removed internal loop details)
+- Replaced state diagram section with per-environment diagram reference table
+- Added `ENV_DIAGRAM` entity to ER diagram and `EnvironmentDiagram` class to class diagram showing the per-environment documentation relationship
+- Added environment scope rule to `repo-docs.md` — REPO-ARCHITECTURE.md must not include environment-internal processes going forward
 
 ## [v01.98r] — 2026-03-11 08:55:52 AM EST
 

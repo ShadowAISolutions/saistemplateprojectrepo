@@ -1,8 +1,10 @@
 # Project Architecture
 
+> **Scope** — this document covers the repo-wide architecture: how environments connect to each other and to shared infrastructure (CI/CD, GitHub Pages, templates, versioning, developer tools). It does **not** cover the internal processes of individual environments (auto-refresh polling, GAS self-update loops, page lifecycle states, etc.) — those are documented in per-environment diagrams under `repository-information/diagrams/`.
+
 ## 1. Flowchart — System Overview
 
-> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNq1Wd1u28YSfpWFclGnNSXbqZPYQM4BLdGSGsoiRDppEAXCilxKrEkuwSWtqnaA3va-D3CerU9yZndJihJJSU1R3xhYznw7fzt_emrZ1CGt69YixtESWTfTEMEfS-fyYNqakIgyL6Hx-hox7LGEBJGPExLF9BdiJzF8nrYkF_9zvBhOPRoKrM15CbFHHolPIxKjjzR-cH26KgPwv5724XOZroO6Pk4dgrog7LT1ZZu6ewPEtiDofI_mMQ7tZYUIIJGi_Od52opSBp-fgW1DQUKnQdjusNPtob9-_xPhNKFKQOIFUeRl7XXgo8-5Pb7sKrFtifIXazLs97XJ07RlgCwooSiX_r_T1tdd5bjYOUstjtDrE2HPyByos-5A674H6C4NAi_hR9Np-A75mCUK-MwmjBGnek_BukHrabpmaTPTUnVNuMMnCUFeuCSxlxAnt_Q0PGEPXoSEaV5WDL8NfEef0Uib9DngiDMAHugfYC-scAo6of290VO5JAMV2O4jB8wN126rpNhC4TZb4grShl_A9Ya3twDUXRL7AS3ASI7nutWIAaosZHzvkSjwCIgS4QVhHWQvcbggDg8jQ-1r5uxWV_sAKT4r2Vf0DiVxSvYBtxesjNVXzVlPM_TxJ2HvyKdrfoYePYzsNPaRMTYt0Bws5lCDsuQEiwh75wjaqvE3gFJx6dGbSZOhC4KNvw89rI3-GQK_bSZOm6MV0MXrQFH2AGQAPDewNz_PvpcM0jkyuN2RtFhAwqSaUDawG9NW3JpQMG4ZsqKtPvzAQ1cHTmR6IgzNJXboSh2a1E-5M1gbQmqZztse7TQmzC_N8gkz8nuO0b-iAs9UA4gMCL8uDROwxVEpSt8JibvxT9r7T7oOum7YUTsEFR7Wvl9RYHjX037eJvZCh_zaXiZBldrSTEsou82REJA7fPRiGnIn1vNCSFuGXsO9wEzJbKzYMcFQsuoRzLve-TYro2nosM5HMuemnE0IdtazD9Szyey8HUSv6iAuaiF4gWrg30Yo-ZALqTySmPHg6exxF__7oE2sn60aS3OUdobSTn5NKjIXhq-D2DH9UWCZJ-rganxxEHInyHeMtGBHm0jE4qxvgmA1dlqw46xUw79jpANI-_URTpep36eLI3Xq6k2OL5DagVOrUw4wUyfdwUEUBcf2ElJLE5qw0K40dTF0UK4MqUasvXCHBMxic1fEprg8KGaBVyPoQdB9wh6M-r8bI_3aIIFYPTJE-s0xUgY5KkL6B0LkGKlyoMMRcqx4wuSHS6vK-_0JcWMCLYpOaYROur4H9yim5_BG99h2_2Yy_miKXHIT0xWDecan2GH7CqQxFqXXoL7fkN2nIUxH8Rqdn1WblO54ZKgT7YkPbwGFHi5jBKa__vifuB3ag-ywOgpMNH2s9uB6kyRoReZKBEbywoUiahyATAiHQLzjqFZGQ1dN7idzSVdoERMSou-ywopEYfwOEBh4EKz6A4L_a1k7K0iZ2UQ7xO1RtZD4lClba4HNLCN1qtNTgEipmzH42LItw56WlNKFT5AaRQyZduxFCfumFoz37jVt1ULAc_QMvDPkAdKR0bRgtTNA97Zf15zZNHS9RfsXJmLjBPwQ2wRRl88tyRK5NIZja2jp2mnWoo60O2s27J3yvteYaGrPHGiaOEEksdv1Ewh_woeUsLbfcme3F2xQTJaPXe12mf9lPffEAgxvJvFdRQ6tIo0cnzi4gqphfJY48Ih4UHEFSrFVb3HjXuSPKPV9NXTkuHMb00DONicvAcQFPZYwNPER1IVPSH7bM0LOTEvjwowhc6z4CoChrOyhHwBQlD44C8kqzy3iPBWqM-SUprM6kWG0HZliiIbxZQQzPU8v0_ApWUfkWhTZWOSdr7XsYCfxknPt621SkJQ02qvuBlOK9y0zWR6Xews4dBfbMTyAjA--62NmZWe8IMk4EkUjKwMnA2uki1yMcmYxBIr6gOZpEBGnGiRZ4378lQfb97xDGvcOz2UKXzrCc8xV4OHNRDgXOhz7wowsArviie8xcFdX73vabNTblk4e8zYB5MjD2QsZZAbxKFnVdpN7XWwRyoNxtiWJUx_czKGwv8JrpmS1FgodTpYKsyl4Awmqmk3Z-6GuNwCzB8_3JbIXPtIHPIcSs8rWp0h-rZFUM8ZVN8fFRnevQ3tDtT9RR2YTs-KFkDgDzK3UcTwMHgmkhBGJRegj0YQlYNE0JignqVFcs6zhXb9JdZIk0H2wIn3zjd33ch2LfVC_Lr751vF2qO-EYraZ6TRvDoV9txecaJHi2Dk2Hg9X_OHd0JqZ3cnQ2CmKLCuFXuglCrczSMQFoiGkkyVNeJ16QPyrh33vN2H4-vQPBr036sHBmmmklN5kdgl_gnn4ux4El3iqtTeUFEBKW2zzhDMcwl3NEI0XHbHlmobwz8dgZXRxIVCZWLznL3HHnjuGhWySw8OzWYs1uSgxgMtrTCQXdM9ybpE8Wa-T87F1aDO51TsxYqJkO_EX55cv83XrNzPvMOaNyN-4mrN8M0CxQisQ8uybAxTVQLY7ovGpcX6DJf4p2ka5QtIcynMhDUjXZZVbEvKdZ6E9iR8lSTYGSBIh4yGcUrneSA_5EZFgThw-yYD0smBSJHuKykWFQQqBtntG3kDRWCznsezJ8v67sMCmCylv4bOALi3zt1b4FWXyRJZzwguAxCToil9WJGX5Rw5JK5u0nJSj5G-LJWt44vw3MXiV_vWLH_HVmXN1alOfxtcvXNctkwm_SLrXr-fz17iBrhBV0hL38tXlWQNt-belgv4KXxXYZ2dnW9hiQMsoz-eX5KIJmacNSea6-M3F6wbAjYNz4jdnP75qwMwzQ05Kzt5eNOPm6-ljxeCta-aGC3zpXjYIUaTNjNgmV6-ctw24okc5hlA2HcdQltO-JH_z9ursyi6J2zptBQRaAs9pXbee4NktSUCmretpyyEuTn1oMr4CDa8WJqS31jX_fey0JSeEnuwP5OHX_wOt5W2-) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqtWG1v2zYQ_iuE-qXpKjvoS9oE6AbXVhyvSmJYTreiLgxaomU2tCiQklOvKbAfsV-4X7IjKcmyXhJvWL4EkJ577u7h3fHk75bPA2KdWaHA8QpN388iBH8yXZgHM2tCYi5pwsX2DElMZULWMcMJiQX_SvxEwOuZZazUX0AFPKU80ly75yXGAdkQxmMi0G9c3C4ZvysTqL-B8_FzGddFfYbTgKA-BDuzvuyj--8B7GtA9xlaCBz5qxoIKJFt_3w_s-JUwut7MNshSBS0BNsfdfsD9PeffyGcJtxeExES2zjrbNcMfc71-FJNYl-J8pvpZDQcOpPvM2sMsaCEozz6X2bWj2pyKuzcpJFH5_WJyHvkXfTm_Qun_wGo-3y9pol6NJtF7xDDMrHhzHwiJQnqfgrTHdvAcZ2pM_emPdfRx8FIQhCNVkTQhAS50rPoqbylMdLSHNWE3ye-4vfo0pkMFeGlMgA-yH-NaVSz1Did_c140FORXPTA7CYOQG5wu5-S7euEO3KFa0w7e003GJ2fA1F_RfxbFIJIAV0u6xUDqKxkGN0QG5qA2DEOiewif4WjkASqjMa9oePNz93eECj1azt7i96hRKTkIeJOKMtcw543Hzhj9_qT1jtmfKueoQ3FyE8FQ-Nrb1rj21mZ7MyxvZ-0qVkAdof6WPfskswYlLe5ftpeksCuWwDFWZWbU75vMW_vwSFNLtIFGitxkZFlTaKkPjV2tDv9ameXcKidMmUtW3f0UdWnC5bIo7rWvBUO-F1v5HGWqp6WHaibVbroUN5tnYpf2uPTMio_h-TvRBsqeKRyluipjvmofdq4lYMfXQ2c3yGd3aSCngvIt84qWTPVvS6OAhqFWox6_04db6pj3qdICOS8i6sgm8JzVAr4qKlcp2O3gTLE0s70s31BMNw5Ba3qgrF5h_rm3T7zA9XDecgI6sWxRJ4vaAwiHjK1qzqqNmvVMpSNbanEe1i3imF7GlCBAmbKhEieChh5_ymHq-tfnQ-fXHc_pk4Ewt5uGasP76vBPhScR4Hs1oAX00t3_tGZePtwdXz2hgipWqZuNfQabEL5gIX203cbvJgxynjY7KdqE8pWi_YzqM6SnA6mSvtpQLHvu76AcHtRMMRymj3rwWphrjVd8J3kW6KKXiWLlCeUG-tFJIK9SKBFuo5J0NCvY30Qh7vUHjPFteeWhu1fDx5vWFutk52vMk9B9a3UTVfkcGjfFu3OoyUNHxC47_ZuBs78slKq5nFnHag4sjChWyXcybo5ZF27yY3rVKqxk12NImVwzIoKszu8lTbjOIB-_AkOKFnZ0odFNUAa1bADfRi5bgsx7E6MGWYabfgtXsCwussWY2TeNkTqjK_rxyyKXf3BAx2MesNJ79JrM7ZptORijZVK3YBiOJG1iRCWcbs0vRAW_grawU9SQVCObMjfmU5HV8M2BUiSwP0joWx4pLyoleyZ2bcxAxWaylytlecjt1KR2a3cbV8Ntcz7GywKUyyCQ8vy8StkdDWazr3-ZDSuzH7TCLJLI5rYSm6ISAXEI5gqK54gUP0WqbcUM_qH1r_x_pyDoDfjZnJQM43tUmtmTlQn5l2wpFBjumMbPZQSQHZHb3L6MAKijloiLsKu3nBmEfxjWN1GL15oVqm_rPKGrOhZERaGSk4P3bPV30EqJrVvReROTz7Np29dY1OaRbltMRvNxai_Rxo0OMoX7P-XTd3whkzz5jRkvSCB1Is7XUJTkAbvxWb1qNHOiVoZc7gkYlMTqBlQuHoIVFrMCnmKD4tMHUHDECYLkoQt7dR8iTXq-i8Md9nlTZ1bQTVAk24VsPiMNMjyF53B3qmWljlUsRhksZnkwGwyopgzBmOnot8h8Iqah5jsaZv9xpJsoQvV7xLQOOzsySt8ehycPvc54-LsyRK-SEswfWIGd3KyWJzgFlyhoMGS5euXr49bsOXv-wJ_ik8L7uPj4zJe9auBLZf4zYuTFlhRCwX4zfGrly0xlHQ5hLuYLBnYJ6cvg7ctYH2bHwI01_MhyPJkNPA3b0-PT_1SdtZza03g8qSBdWZ9h8pfEdXIZzMrIEucMriOfwBGDVRvG_nWmfqN4LllWmJgrlDz8Mc_qB8PpA) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 graph TB
@@ -25,7 +27,7 @@ graph TB
             MERGE --> UPDATE_SHA["Update\nlast-processed-commit.sha"]
             UPDATE_SHA --> DIFF["Check git diff"]
             DIFF -->|"live-site-pages/ changed"| PAGES_FLAG["pages-changed = true"]
-            DIFF -->|".gs changed"| GAS_DEPLOY["Deploy GAS via curl POST\nto doPost(action=deploy)"]
+            DIFF -->|".gs changed"| GAS_DEPLOY["Deploy GAS via curl POST"]
             GAS_DEPLOY --> DELETE_BR
             MERGE --> DELETE_BR["Delete claude/* branch"]
             PAGES_FLAG --> DEPLOY_PAGES
@@ -38,74 +40,27 @@ graph TB
             DEPLOY_PAGES --> LIVE
         end
 
-        subgraph "live-site-pages/ — Hosted Content [template]"
+        subgraph "Environments (Pages)"
             direction LR
-            NOJEKYLL["[template] .nojekyll"]
-            INDEX["[template] index.html"]
-            TEST_PAGE["[template] testenvironment.html"]
-            GASTPL_PAGE["[template] gas-project-creator.html"]
-            SND1["[template] sounds/Website_Ready_Voice_1.mp3"]
-            SND2["[template] sounds/Code_Ready_Voice_1.mp3"]
-
-            subgraph "html-versions/ [template]"
-                VERTXT["[template] indexhtml.version.txt"]
-                TEST_VERTXT["[template] testenvironmenthtml.version.txt"]
-                GASTPL_VERTXT["[template] gas-project-creatorhtml.version.txt"]
-            end
-
-            subgraph "gs-versions/ [template]"
-                INDEX_GSVER["[template] indexgs.version.txt"]
-                TEST_GSVER["[template] testenvironmentgs.version.txt"]
-            end
-
-            subgraph "html-changelogs/ [template]"
-                INDEX_CL["[template] indexhtml.changelog.md"]
-                INDEX_CL_ARCH["[template] indexhtml.changelog-archive.md"]
-                TEST_CL["[template] testenvironmenthtml.changelog.md"]
-                TEST_CL_ARCH["[template] testenvironmenthtml.changelog-archive.md"]
-                GASTPL_CL["[template] gas-project-creatorhtml.changelog.md"]
-                GASTPL_CL_ARCH["[template] gas-project-creatorhtml.changelog-archive.md"]
-            end
-
-            subgraph "gs-changelogs/ [template]"
-                INDEX_GCL["[template] indexgs.changelog.md"]
-                INDEX_GCL_ARCH["[template] indexgs.changelog-archive.md"]
-                TEST_GCL["[template] testenvironmentgs.changelog.md"]
-                TEST_GCL_ARCH["[template] testenvironmentgs.changelog-archive.md"]
-            end
-        end
-
-        subgraph "Auto-Refresh Loop (Client-Side)"
-            direction TB
-            BROWSER["Browser loads index.html"]
-            POLL["Poll indexhtml.version.txt\nevery 10s"]
-            COMPARE{"Remote version\n≠ loaded version?"}
-            RELOAD["Set web-pending-sound\nReload page"]
-            SPLASH["Show green 'Website Ready'\nsplash + play sound"]
-            BROWSER --> POLL
-            POLL --> COMPARE
-            COMPARE -->|Yes| RELOAD
-            RELOAD --> SPLASH
-            COMPARE -->|No| POLL
+            INDEX["[template] index.html\n(Landing Page)"]
+            TEST_PAGE["[template] testenvironment.html\n(Test Environment)"]
+            GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
         end
 
         subgraph "Google Apps Scripts [template]"
             direction LR
-            GAS_INDEX["[template] googleAppsScripts/Index/index.gs"]
-            GAS_CFG["[template] index.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
-            GAS_TEST["[template] googleAppsScripts/Testenvironment/testenvironment.gs"]
-            GAS_TEST_CFG["[template] testenvironment.config.json\n(source of truth for\nTITLE, DEPLOYMENT_ID,\nSPREADSHEET_ID, etc.)"]
+            GAS_INDEX["[template] index.gs"]
+            GAS_TEST["[template] testenvironment.gs"]
         end
 
-        subgraph "GAS Self-Update Loop"
-            direction TB
-            GAS_APP["GAS Web App\n(Apps Script)"]
-            GAS_PULL["pullAndDeployFromGitHub()\nfetches .gs from GitHub"]
-            GAS_DEPLOY_STEP["Overwrites project +\ncreates new version +\nupdates deployment"]
-            GAS_POSTMSG["postMessage\n{type: gas-reload}"]
-            GAS_APP --> GAS_PULL
-            GAS_PULL --> GAS_DEPLOY_STEP
-            GAS_DEPLOY_STEP --> GAS_POSTMSG
+        subgraph "Shared Resources [template]"
+            direction LR
+            NOJEKYLL["[template] .nojekyll"]
+            SND["[template] sounds/"]
+            HTML_VERS["[template] html-versions/"]
+            GS_VERS["[template] gs-versions/"]
+            HTML_CL["[template] html-changelogs/"]
+            GS_CL["[template] gs-changelogs/"]
         end
 
         subgraph "live-site-pages/templates/ [template]"
@@ -119,7 +74,7 @@ graph TB
             RULES["[template] .claude/rules/\n(always-loaded + path-scoped rules)"]
             SKILLS["[template] .claude/skills/\n(invokable workflow skills)"]
             REPO_VER["[template] repository.version.txt"]
-            DIAGRAMS["[template] repository-information/diagrams/\n(per-page architecture diagrams)"]
+            DIAGRAMS["[template] repository-information/diagrams/\n(per-environment architecture diagrams)"]
             SETTINGS["[template] .claude/settings.json\n(git * auto-allowed)"]
             SHA_FILE["[template] .github/last-processed-commit.sha\n(inherited branch guard)"]
         end
@@ -132,40 +87,37 @@ graph TB
     end
 
     TPL -.->|"copy to create\nnew pages"| INDEX
-    GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_INDEX
-    GAS_CFG -.->|"syncs to\n(Pre-Commit #15)"| INDEX
-    GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| GAS_TEST
-    GAS_TEST_CFG -.->|"syncs to\n(Pre-Commit #15)"| TEST_PAGE
     GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
     GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
-    TEST_PAGE -.->|"iframes"| GAS_APP
-    LIVE -.->|"serves"| BROWSER
-    INDEX -.->|"iframes"| GAS_APP
-    GAS_POSTMSG -.->|"tells embedding\npage to reload"| BROWSER
-    GAS_INDEX -.->|"source of truth\nfor GAS app\n(index.gs)"| GAS_PULL
-    GAS_DEPLOY -.->|"curl POST\naction=deploy"| GAS_APP
+    INDEX -.->|"embeds via iframe"| GAS_INDEX
+    TEST_PAGE -.->|"embeds via iframe"| GAS_TEST
+    LIVE -.->|"serves"| INDEX
+    LIVE -.->|"serves"| TEST_PAGE
+    LIVE -.->|"serves"| GASTPL_PAGE
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_INDEX
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_TEST
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
+    HTML_VERS -.->|"version polling"| INDEX
+    HTML_VERS -.->|"version polling"| TEST_PAGE
+    HTML_VERS -.->|"version polling"| GASTPL_PAGE
 
     style DEV fill:#4a90d9,color:#fff
     style LIVE fill:#66bb6a,color:#fff
     style SHA_FILE fill:#ef5350,color:#fff
     style DELETE_STALE fill:#ef9a9a,color:#000
-    style SPLASH fill:#1b5e20,color:#fff
     style TPL fill:#ffa726,color:#000
     style GAS_INDEX fill:#ff7043,color:#fff
-    style GAS_CFG fill:#ffe082,color:#000
     style GASTPL_PAGE fill:#ffa726,color:#000
-    style GAS_APP fill:#42a5f5,color:#fff
     style CLAUDE_MD fill:#ce93d8,color:#000
     style RULES fill:#ce93d8,color:#000
     style SKILLS fill:#ce93d8,color:#000
     style INIT_SCRIPT fill:#78909c,color:#fff
 ```
 
-## 2. Sequence Diagram — Interaction Flows
+## 2. Sequence Diagram — Deploy & Runtime Flows
 
-> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqNVs1u2zgQfpWBTnYT2e1V2ATwJnVcoGmDuF1ffGGkkcSGJrkkZdcIct0H2EfcJ9khKf_IVtD6Ikuc3-_7ZqSXJFcFJlli8e8GZY63nFWGrZYS6KeZcTznmkkHt7gGZv0FhdJoYPzHkxlf3wjWFAg3FOXc527mXe64mzVPwXqQB_PxO3gyTOb18NxnMfU-k8ap9B5NhcFvocxzKdTm3PyecekdVv4ag54bPbAK7aGUeH9u9qdRG0udkeF3f23ve_qazEM0pSqBMNHahirnueHanZvPa0Rnjzzig6WMpl-UQ1BrSkjgXsazDK6uruheC7WFKXXu73cOZJZeX9_NMqi4A93YGna4RoO7GZ0vphl8M7yqKPCmg99i2h7f1Jg_Q65WK4ozn01CF2sLglmXaqNytBaL6MSEg0-yRsMdFjCwjgkcdhDfh_aV3aJAaiuek_kz17DyfLaUo7AIX3DTZj-J4FnNIPC_bw3---ffQPOJrW_kuy4YZevWncbQI1uzHpfYuwew4GV5MPB9Cr7G1FKjqfZKGUNeM1ntkOiEClLKdkw51SOx0K4suilGlYWSkxbeDk0qyyBvjICHr_NvUKgHZd2A5Y4reVWEhMOuG3m08E_REeyCQLEx15qzXWmTh0-9bj7dV5LhxlMMBOMPzB1cBFHkBj3AkggjC0sVvNHbqQBOBr4l33v8SvxhBTxiaZD0_VkpfTwC7WgeCPisWAFcFvhzVLuViFbCe32k4Fv48B4s5koWR6ScBYmoef9R2-XI_XRd4v6KB_28HSK2_zKYI40oNcxllVrVyAJKwaq33NpCHmnHUj9efV3LcN4Nb9YITdB_n0NfRTWtk2WywCcvccrFiu0yCTRbTSNUwwXQdQuh3B6ef4s-vyPnKMq0nc1TBo9EpxshJrKIMzQ1ahWFOhh2LPeqDqNDVmBQq_3C2wV7RNcY6Ws3Oclv_17qFfkFtMJu6W7VHuGEOGMrlO44xB5HTeN4T5uGMB-8uK1G2sfMpiZw9zo8FereryXXA8RLetfir8F8bKTjK4Rb5tjZ6-CQInQXXl1cOjRxVcAgZumguQvuyR9HLKjldk_Gw1NED-c-RLchmjtDdFitpMXkMqFNT5u6oO-Kl2XiaqQek2yZFFiyRrhl8ko2jOZ7vpV5kjnT4GUSQW-_P-LD1_8B14K_CQ) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Sequence](https://mermaid.live/edit#pako:eNqFVMFu2zAM_RXCp3Srm7uxFMgSJCmwdkHcIpdcVJm2hcqSJ8kJiqLXfcA-cV8yyrLbJk4xXwyZ75F8j7ReIq4zjJLI4q8GFce5YIVh1U4BPTUzTnBRM-Vgjntg1r9Q6hoNjL89mvH1TLImQ5hRliFnufKUpXCr5rFFj3gLH3-BR8MULy-GnO3Cc6aN0_EtmgJb3labp1zqwxB-y4TyhMq_Q9IhaM0KtO-thPMQ9t3ogyVlBHzw7-58Rtc0bbNpXUiEaV3btsuUG1G7ITwtEZ39wAgfdipA77RD0HsqSOZehlgCk8mEzrXUz7Ag5f7cEwgWX18vVwkUwkHd2BJ6XwNguaL4dpHAvRFFQYkPR_5tF114ViJ_Aq6rivKkq2mrYm9BMuvi2miO1mIWSEw6uFElGuEwg5F1TOLFkeNvqX1nc5RIskKc4E-ihsrPsxs5Sotwh4eu-kkGP9UE2vm_SYO_v_-0Yz7BeiEPdcao2nHfcUh9ZUt2hhK0ewMzkefvAK9Tij3GloTGtd-UMfCSqaJ34ihVu0pJPymnz6xYK1dlxyWuCgu5oF34PDVtWQK8MRLWP9N7yPRaWzdi3AmtJllb8OKYRozO_gU6sl2SKTbU2gvWtzZd35yl-XIpyjxugptfwWAo84mO02Gf_NzdoD3jf4u-aZQTFcKcOTZY99ZKqtT9jr5Js0dY3d_-AD-fgOqivZD2BxbKoQmGwUjkdK_16xck9y1skGXjg99sIOXdtoRg3CfcoGuM-hD3KT52tSGlVNOgrbWyGF1GtO-0rxndri-7yJVY4S5KdlGGOWuk20WvhGF00aXPikeJMw1eRsH77hYOH1__Abayy14) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 sequenceDiagram
@@ -195,80 +147,31 @@ sequenceDiagram
         alt .gs file changed
             WF->>GAS: curl POST doPost(action=deploy)
             GAS->>GH: Fetch latest .gs via GitHub API
-            GAS->>GAS: Overwrite project +<br/>create new version
+            GAS->>GAS: Self-update + redeploy
         end
         WF->>GH: Delete claude/* branch
     end
 
-    Note over Dev,Sheets: === Auto-Refresh Loop ===
-
-    Browser->>Pages: Load index.html
-    loop Every 10 seconds
-        Browser->>Pages: Fetch html.version.txt
-        alt Version changed
-            Browser->>Browser: Set pending-sound flag
-            Browser->>Pages: Reload page
-            Pages->>Browser: Serve updated page
-            Browser->>Browser: Show "Website Ready"<br/>splash + play sound
-        end
-    end
-
-    Note over Dev,Sheets: === GAS Self-Update Loop ===
-
-    GAS->>GAS: pullAndDeployFromGitHub()
-    GAS->>GH: Fetch .gs from repo
-    GH-->>GAS: Return source code
-    GAS->>GAS: Overwrite + create version +<br/>update deployment
-    GAS->>Browser: postMessage({type: gas-reload})
-    Browser->>Browser: Reload GAS iframe
-
     Note over Dev,Sheets: === Runtime Data Flow ===
 
+    Pages->>Browser: Serve HTML page
     Browser->>GAS: User interaction (iframe)
     GAS->>Sheets: Read/write data
     Sheets-->>GAS: Return data
     GAS-->>Browser: Render response
 ```
 
-## 3. State Diagram — Page Lifecycle
+## 3. Per-Environment Diagrams
 
-> [Open in mermaid.live — State](https://mermaid.live/edit#pako:eNqFVNuK2zAQ_ZVBj2VT2jwaWgi7bVlotiHu5aHeB9Ua26KKZCQ5aQj5944sx5bTsDUYxOicuZyZ0YmVRiDLmPPc44PkteW7xX5ZaKDv56tnWCzew6NQmMGG1wjKcIGi0BHQs6Bgq86bxRYri66Bz8a0BQPuwA6WU0SHL7jqfW6MUlLXGXzYoz3C2zduAg13SezvaJ00GjpdNlzXIYNb4AF2HzEZPOEB9gNVoMfSp8w5uneQo9-gFuQvN50mD2QAF45QKV5P3CtgT95iUKcv6quVdY2WFAimiTZCYrRWcdfMlIWD9A3oKe8kZI-O4il-HBIMR-rAD_zlJPVii1wcC5bIc4Emam7RdTuENioXsefrnn5a5fBY0ThgbGZNf9JIuh57-c2hXZWess36M0jt0fLSJz2dMLECa0p0rhcrJyHBG1i1rYO8tLL1Sf4jcNBYC7RUQGu0o1IeuOeksu-sxpnOKaxnDglng0T6dil0jj3KSB7n1xQ6NIeKX1z3coTO3UfNhs5fcvpH3TUPGmmuS4Q1rWDUeBesqcqXDbxvsPydcJKZmcDXoDhjjTl8oVmiMcii_3j5ztsO_8N9MnbH1ZxWceUSXuJ-XOt5nmS4zPJr_8fPF_fFbHMviSt1Gv9l-rheywzSu1Iht3hrD5ezQj_2z9Wk6pndsR3SnRT0Rp4K5hsM-5AVTGDFO-ULFjCc3r_8qEuWBVXvWNeK6TmNxvNf5Ie7wA) — *interactive editor with pan, zoom, and export*
+Individual environment internals (auto-refresh polling, GAS self-update loops, page lifecycle states, maintenance mode, splash screens, etc.) are documented in dedicated per-environment diagrams:
 
-```mermaid
-stateDiagram-v2
-    [*] --> Idle: Page loaded
+| Environment | Diagram |
+|-------------|---------|
+| Landing Page (index) | [`repository-information/diagrams/index-diagram.md`](diagrams/index-diagram.md) |
+| Test Environment | [`repository-information/diagrams/testenvironment-diagram.md`](diagrams/testenvironment-diagram.md) |
+| GAS Project Creator | [`repository-information/diagrams/gas-project-creator-diagram.md`](diagrams/gas-project-creator-diagram.md) |
 
-    state "Auto-Refresh Loop" as refresh {
-        Idle --> Polling: Every 10s
-        Polling --> Idle: Version unchanged
-        Polling --> VersionChanged: New version detected
-        VersionChanged --> SetPendingSound: Set sound flag
-        SetPendingSound --> Reloading: Trigger reload
-        Reloading --> Splash: Page loaded with new version
-        Splash --> PlaySound: Play "Website Ready"
-        PlaySound --> Idle: Resume polling
-    }
-
-    state "GAS Iframe" as gas {
-        GASIdle --> UserAction: User interacts
-        UserAction --> Processing: Send to Apps Script
-        Processing --> RenderResponse: Data returned
-        RenderResponse --> GASIdle: Ready
-
-        GASIdle --> GASReload: postMessage gas-reload
-        GASReload --> GASIdle: Iframe reloaded
-    }
-
-    state "Maintenance Mode" as maint {
-        [*] --> CheckMaintenance: Page load
-        CheckMaintenance --> ShowOverlay: maintenance=true
-        CheckMaintenance --> Normal: maintenance=false
-        ShowOverlay --> PollMaintenance: Poll version.txt
-        PollMaintenance --> ShowOverlay: Still in maintenance
-        PollMaintenance --> Reloading2: Maintenance cleared
-        Reloading2 --> Normal: Fresh load
-    }
-```
+These diagrams cover the internal processes that were previously included in this file: auto-refresh loop, GAS self-update loop, page lifecycle states, and environment-specific workflows.
 
 ## 4. Git Graph — Branching Strategy
 
@@ -305,7 +208,7 @@ gitGraph
 
 ## 6. C4 Context — System Boundaries (mermaid.live only)
 
-> [Open in mermaid.live — C4 Context](https://mermaid.live/edit#pako:eNp1VMGO2jAQ_ZVRTrQCcemJG0uqZaVdFRGqvUSqnHgS3DW2ZTuwCK3Uj-gX9ks6trMBtoUL2J437_nNM6es1hyzWbb4stDK46svFdDHCy8RiqPzuIP-BP78-g2OibBnJPNorP6JtbdodKkSboXWaTXiuB9DmeW4R6kNWpjCQrKOI_XiWGbh8NkKjw4C_xhM57a08BrqWDf9DJVlqqbNMvv03j3p-XGnO8WZPY4Cc2h1L_yyq2BNSye8tkfCwClhzrjRQduXRupDgMw7rydPaFuE5347yVo8TBf5DHbhyJ3VCEXadkyoMXA0Uh8dGEYVY_BWtC1dG-7nBXSGkzFJ8wf2vnxQuwrrxLnUzjuQYo8T0o-TWDoF5sB55kUNYRcOwm-BBd0WG4tuC0ZLKVQ7sL3dMqrVupUYyeMvmobu-P9dapm7KJwb46CorTC-HxtWwIwB3FXIOXLYCwaisWxH_R3KZtJ7AI3VO-gvGzPyryl5NaK5o79kLOJGIsuZZ1Cx-gUVh0bb6LGLatzNW3999aPK6oNDG3p8p2-4S-vU9VEzPowveOhi7z0NUWgF9ZapeHTp9VUO1yhTxC8TtUoRroeAt8LHXA8hGhQH_Bk6BCNPwUro3rh57UmTuwHtZ7V5j2CKZmpQd1bC6luxucL2ZBf-FGj3pHu5eXrs07jZrIor0FDd8yUD09BvYWLpebhrJMj0kN485YMl3EW8YL56iB2ycUavj94ap_-lU5n5LQaaWZlxbFgnKYhvVBOmUxxVnc287XCcpdjlgrUkK22-_QUoHp5t) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — C4 Context](https://mermaid.live/edit#pako:eNp1VMGO2jAQ_ZVRTrQCcemJG0uqZaVdFRGqvUSqnHgS3DW2ZTuwCK3Uj-gX9ks6trMBtoUL2J437_nNM6es1hyzWbb4stDK46svFdDHCy8RiqPzuIP-BP78-g2OibBnJPNorP6JtbdodKkSboXWaTXiuB9DmeW4R6kNWpjCQrKOI_XiWGbh8NkKjw4C_xhM57a08BrqWDf9DJVlqqbNMvv03j3p-XGnO8WZPY4Cc2h1L_yyq2BNSye8tkfCwClhzrjRQduXRupDgMw7rydNaFuE5347yVo8TBf5DHbhyJ3VCEXadkyoMXA0Uh8dGEYVY_BWtC1dG-7nBXSGkzFJ8wf2vnxQuwrrxLnUzjuQYo8T0o-TWDoF5sB55kUNYRcOwm-BBd0WG4tuC0ZLKVQ7sL3dMqrVupUYyeMvmobu-P9dapm7KJwb46CorTC-HxtWwIwB3FXIOXLYCwaisWxH_R3KZtJ7AI3VO-gvGzPyryl5NaK5o79kLOJGIsuZZ1Cx-gUVh0bb6LGLatzNW3999aPK6oNDG3p8p2-4S-vU9VEzPowveOhi7z0NUWgF9ZapeHTp9VUO1yhTxC8TtUoRroeAt8LHXA8hGhQH_Bk6BCNPwUro3rh57UmTuwHtZ7V5j2CKZmpQd1bC6luxucL2ZBf-FGj3pHu5eXrs07jZrIor0FDd8yUD09BvYWLpebhrJMj0kN485YMl3EW8YL56iB2ycUavj94ap_-lU5n5LQaaWZlxbFgnKYhvVBOmUxxVnc287XCcpdjlgrUkK22-_QUoHp5t) — *interactive editor with pan, zoom, and export*
 >
 > *This diagram type (`C4Context`) is not supported by GitHub's mermaid renderer — use the link above to view it.*
 
@@ -353,7 +256,7 @@ mindmap
 
 ## 8. Entity Relationship — File Dependencies
 
-> [Open in mermaid.live — ER Diagram](https://mermaid.live/edit#pako:eNqNlduOokAQhl-lw9VMMpqZTHYvvCPSq2w4RZjJbGJCWiixswikaZwY9d23Obg2Bw1cFv3VX_VXNZyUIA1BmSnANEoiRvbrBIln6ZmG76gLjM7nyeR8rgOfeOXqtuV7Xx6aobVyAJbTNEGckeAvhGhzXCuP-PlStRbYsBcVHexIEkGO4jSKBEyTYTg9o4Xq-u58pTu1LOw3EOboQAmiW1EytMCbyKC0r67mS_0TV5lYygkXJfC0TFEnkcSaBGVkfOvD_MjW78C29Utf-L9d26rxNNnSqGA93V7vreCo1mUt2cBqHiWYH5NAYJTH0MAP0M7kavZAWFt3hR275XBDt027Wp6nBQsAbVN2Fe-1PablR8Kup3ofrm9qFRfSPIvJsTWoe-QKq5qJ75HSmnrYdAzVa3b81DE5YFCVmsC37HAX6tjbobq36VQHyifnjCYR2hQ0DidXY9fKHjhBnEToiSbC3z3hIk7i52sNElrfvEnOAsGJOlAIWZwe95Bw9LEyrsRFKkK2q1_LrQqYRlN0eH2bvr1_o6dcvBSr1kw93YorV_Ddc0dAcqKfuhGWU7_-iAaa0rBj2H9MbHm-ronjapblyA0YzXjTH9K1AWV58_vynu4ZWGTLSAT1xRkhfbNUkpTOu065au4S4wYIiZjdpvwaJeHQ-eqkpZplJZywCDjKdwC8005vsUdN6uf7_8t4UV7EHondoaH4r5yE2A7KT_RMlAhbUsRCsTxDCp664nugzMRA4UUpMtEBNH-hOnj5Bw58A9Y) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — ER Diagram](https://mermaid.live/edit#pako:eNqNldtuozAQhl_F4qqVmh5U7V7kDgVvwiqQCGjUlSIhBybEWoKRbVJFSd99zSEbc2gVLo2_-eefGdsnI2IxGGMDuEVJwsl-nSH1zQJnHi7NKUbn82h0PtcLK-z59sINg_cAjdHaOAAXlGVIchL9hRhtjmvjO34yM90pni-mFR3tSJaAQClLEgXTbBhmZzQ1_dCfePayloX9BmKBDpQgulUpQwu8igxKh6Y3mdkrXEXiTBKpUpCsDFEH0cSaAOXK7daH-RutfwEv3F_2NPztL9waZ9mWJgXv6fa8txZvsq5r6QWs-lGC4phFCqMyhQb-Bu10rmYPhLd1PbxctCrc0O2iXUouWMEjQFvGL-I927dY_k7YD8zgzQ8dq-JiKvKUHFuN-or0sGk5-CtSG9MAO8u5GTQzfuoUOeJQpZrBh17hLtQpb4eqOeyuQss2p57poM-hhsYsKvaQSaGSlMAzkgrEtp10q92neqH8hOQ0S9CmoGk8unRmbexBEiRJgu5ophq0J1Ktk_T-YkJD66M7EjxSnDKCYshTdiwzQW_e_EJ8akno9e7ncs0CHpNHdHh-eXx5_UB3Qv1Us9qMDduqM1vI3X1HQCtlP3QjrId-_pEMmLLwcr7442A3CG1LbTfzXCA_4jSXjT9kWwPK-tHpywd2MMcqWk4SqE_eDdLXkmqS2n5_Wc6qP8O4AWKiercpr7MsHtpf7XRNp8xEEp6ARGIHIDt2eifjpk79fOWdOPrc9kOkLKpmqzzWkDNBJePHkTZ0T3H9nomn_3GNBzWf6jeN1YN3UiZ2UL4dY2UdtqRIlZNyDykk89VFZYzVoMCDUeSqMtA8j_Xi5z82gTVI) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 erDiagram
@@ -378,6 +281,8 @@ erDiagram
     HTML_TEMPLATE ||--o{ HTML_PAGE : "creates new"
     GAS_TEMPLATE ||--o{ GAS_SCRIPT : "creates new"
 
+    ENV_DIAGRAM }|--|| HTML_PAGE : "documents internals of"
+
     HTML_PAGE {
         string build-version "meta tag (informational)"
         string iframe-src "GAS deployment URL"
@@ -398,11 +303,14 @@ erDiagram
     REPO_VERSION_TXT {
         string version "e.g. v01.63r"
     }
+    ENV_DIAGRAM {
+        string location "repository-information/diagrams/"
+    }
 ```
 
 ## 9. Class Diagram — Component Model
 
-> [Open in mermaid.live — Class Diagram](https://mermaid.live/edit#pako:eNqtVduO2jAQ_RXLT70sqH3NQyW0hIvETRu6VVUqy9hDYq0TR7bDFiH-vQ4JEEOW7UPz5MyZM3Myl3iPmeKAA8wkNaYvaKxpusqQe44WNFpOJwsaA9pX1vL5HFktshitCyF5ZwvaCJXdwmLjYkHHaNbAciUlqSkfPjYAWlhFNGw0mMQDTKJeicmdGt_uLDtiVJHxk_nQFD7sRRHTIrdtyp_Dp2g8n90C_XAxmf-chrMlGfdv4WjxFPb60SgMr3CuhmA9eVwtlPFNeSFlL-N9yKXaDbRKh8KOivVb8h9VthFxm_zleDkJ_5_4E35EZr1pS-ho_n3WJ4PxJDxTPbnPVUcHQrZOyu2MOHscO6truVS0vYWPCc1iB1_VAJh1sX79RkXmyEAN8Fa4TmoaoFaWWiBu0qhmidhCa96eG8Up6Bh-KP2ykerVy88SYC_EJNTrbVr6k7WmGfPHlB-7TXK3Q8YD6gqQmBpSOV3xJNjriJ7MJaRuB2xrwd1eaAakXO7mAGrldNQV8BS5wNXhvO8r_HWFUafzrT41OxygxKayWxe4a__YO-Qv3W75ctnHAEG6Bm7QVtD6J_FO7ssgVJkROxkq4iX2fdWxudX8NreZNTb_nvOyugFix0OhgaP17kys4cq92z0Rz98fILPLmEFWWFnX5tzsJumTT2IanId5h9BshMe4HfuS1IhfTeld72bw04qjIucuC37AbklSKri7bvYrbBNwjcfBCnPY0ELaFT44n_IeiNzX48DqAh5wRa5vpsp4-AtUVwV4) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Class Diagram](https://mermaid.live/edit#pako:eNqtVdtu4jAQ_RXLT3spaPc1DyuhElokbmrYVqtlZRl7SKw6dmQ7dBHqv69DAsSQti-bp2TOnJnjuTh7zDQHHGEmqbVDQVND85VC_jlY0P1yOlnQFNC-tlbP18QZoVK0LoXkvS0YK7S6hsXGx4KeNayFFVpK0lA-fW4BtHSaGNgYsFkA2Ey_EFt4NaHdW3bE6lLxo_m1LfxukCTMiMJ1KX-MH5LxfHYNDOPFZP5rGs-WZDy8hpPFQzwYJvdxfIFzfQcukMf1QtvQVJRSDhQfQiH1bmR0fifcfbl-S_6tVhuRdslfjpeT-P-JP-IHZDaYdoRO5j9nQzIaT-ITNZD7WHd0JGTnpFzPiLenqbf6lktNu1t4m1GVeviiBsCcj_X7DyqVJwO1wDvhJqltgUY76oD4SaOGZWILnXkHfhSnYFJ40uZ5I_VLkJ9lwJ6JzWjQ27zyJ2tDFQvHlB-6TQq_QzYAmgqQlFpSO13wJLjLiIHMJeR-B1xnwf1eGAakWu72ABrtdTQVCBQFgWO1FUarHJRrboSuFFIz6sKmcs3KimWJUA6MorKdoH45XSgr_H2FUa_3o3lrj1CEMpfLftPBvvvr3iF_6_erj_PCRwjyNXCLtoI2t9AHuc-TVmdG7Gj4gNhRqgidDo-OBQHujXWos8z3C5Da6-O_zW0fILWX8t_mna-ZCLHDS2m82PXuRGzg2r3fPxJPFYmQ3SlmkRNONmU-DWab9CUkMQPew35AaPc0YFyvaEVqxa836l3vdvDjdYTKgvss-Ab7hc6p4P7XuF9hl4GfIRytMIcNLaVb4VfvU_2zEn96HDlTwg2uyc0g1MbXfze3PRE) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 classDiagram
@@ -449,10 +357,15 @@ classDiagram
         +String source_code
         +propagate_to_pages()
     }
+    class EnvironmentDiagram {
+        +String location
+        +documents_internals()
+    }
 
     HTMLPage "1" --> "1" VersionFile : html.version.txt
     HTMLPage "1" --> "0..1" GASScript : embeds via iframe
     HTMLPage "1" --> "1" Changelog : html changelog
+    HTMLPage "1" --> "1" EnvironmentDiagram : internals documented in
     GASScript "1" --> "1" VersionFile : gs.version.txt
     GASScript "1" --> "1" Changelog : gs changelog
     GASScript "1" --> "1" GASConfig : configured by
