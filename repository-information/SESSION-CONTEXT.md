@@ -4,6 +4,32 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-11 09:53:21 AM EST
+**Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
+**Repo version:** v02.03r
+
+### What was done
+- Renamed ARCHITECTURE.md to REPO-ARCHITECTURE.md with 14 cross-references updated (v01.98r)
+- Simplified REPO-ARCHITECTURE.md to show environments as nodes, moved internal processes to per-environment diagrams (v01.99r)
+- Re-added auto-refresh and GAS self-update diagrams as template-level behaviors (v02.00r)
+- Combined auto-refresh and GAS loops into a single unified template behaviors diagram (v02.01r)
+- Replaced combined flowchart with stateDiagram-v2 showing template-level state machines (v02.02r)
+- Rewrote template-level state diagram for accuracy — faithful state machines for HTML polling (with maintenance as conditional), GAS polling (with anti-sync), splash/sound lifecycle, and audio unlock (v02.03r)
+
+### Where we left off
+All changes committed and merged to main. The template-level state diagram in REPO-ARCHITECTURE.md section 3 now accurately reflects the actual template source code.
+
+### Active context
+- Repo version: v02.03r
+- Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.02w)
+- GAS versions: index (v01.01g), testenvironment (v01.01g)
+- No active reminders
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-10 12:32:10 AM EST
 **Repo version:** v01.81r
 
@@ -22,37 +48,5 @@ All changes committed and merged to main. The icon cluster system is complete:
 - 🌐 = live site, 📊 = diagram, 📋 = spreadsheet, 📁 = Drive folder
 - `✕` = no spreadsheet (no GAS project), `◇` = no folder ID yet (placeholder for all pages currently)
 - User will provide Google Drive folder IDs at a later time to replace the `◇` placeholders with linked 📁 icons
-
-### Key decisions made
-- User chose 🌐 globe emoji over per-page unique emojis or generic 📄
-- User chose `✕` (thin multiplication sign) for missing spreadsheet over other x-like options
-- User chose `◇` (white diamond) for missing folder over `✕` (wanted different placeholder per icon type)
-- Icons are grouped together with `·` separators, not spread across the entry with `|` separators
-
-### Active context
-- Repo version: v01.81r
-- Pages: index (v01.01w), test (v01.01w), gas-project-creator (v01.02w)
-- GAS versions: index (v01.01g), test (v01.01g)
-- No active reminders
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-09 02:35:24 PM EST
-**Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
-**Repo version:** v01.52r
-
-### What was done
-- Added `v` prefix to all GAS version values throughout the repo (v01.43r)
-- Fixed missing README.md entry in project structure tree (v01.44r)
-- Added version display links on live site page entries in README tree (v01.45r)
-- Moved version display links before descriptions, added `vNoGASg` placeholder (v01.46r, v01.47r)
-- Added mermaid.live URL link in REPO-ARCHITECTURE.md with pako-compressed encoding (v01.48r, v01.49r)
-- Fixed mermaid.live URL encoding — multiple iterations switching compression approaches (v01.50r, v01.51r, v01.52r)
-
-### Where we left off
-All changes committed and merged to main.
 
 Developed by: ShadowAISolutions

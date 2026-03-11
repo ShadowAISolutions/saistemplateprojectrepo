@@ -189,37 +189,104 @@ The following behaviors are inherited by **all pages** via the HTML/GAS template
 
 ### Template-Level State Diagram
 
-> [Open in mermaid.live — Template State Diagram](https://mermaid.live/edit#pako:eNqFVN-L2zAM_leEH8d1bH00bFDutnGw3kqzHw_LHrxYTcxcO9hOu1L6v0-O08Qpxy0QMNL3SfInyWdWWYmMMx9EwAclaif2i8OyNEDfz1e_YLF4D49SI4eNqBG0FRJlcvccKNmqC3axxZ1D38Bna9uSgfDgBss5oeMXA_URN1ZrZWoOHw7oTvD2jZ9Agy_L_B2dV9ZAZ6pGmPqa_xY8wO4ThsMTHuEwUCUGrELOnKP7AAWGDRpJ8QrbGYpABvDxCDst6ol7A-zJW4za9Jf66lRdoyMFommijZCUrdXCNzNd4ahCA2aqO0vZo5N4WpyGAuOROvADf3tFvdiikKeSZfJcoZmaW_TdHqFNyiXsZd7RT6sCHnc0CphaWdOftZHcYye_eXSrKlCtvD-DMgGdqELW0QmT6ne2Qu97qQqSEYKFVdt6KCqn2pBVPwIHhY1ER-W31ni6yIMIgjQOnTM4UzmH9cyhYD4I9OxF6Jz6w0kaH9aUODaGrr647eMInQdPig1dv1Z0o-xaRH2MMBXCmlYv6buP1lzh6-bdN1j9yTjZtEzgW1CarsYev9AU0QDwFD853wXX4X-4T9bthZ7TdkL7jJeFHxd6XicZrlP8OvwN85V9sdoiKOIqk-d_mT4u1pJD7qs0CofPbeBydtGP_UM1qXphd2yP5FOS3sZzyUKDcRd4ySTuRKdDySJG0MtXnEzFeFT1jnWtnJ7RZLz8Ay_MuJg) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Template State Diagram](https://mermaid.live/edit#pako:eNqVV8Fu4zYQ_ZWBDoXTjdMku7kIaYBsttkesrtGnHQPVRHQEmURK5MCSSUxgpwL9Nx7f7Gf0CEpiZQt2VsDiWVx3sxwOPNm-BKlIqNRHClNNP3AyFKS1fTxNOGAn4xJmmomONzcJty9s4KQRL_efbqB36hUZnkmypLxZRIBUVDoVQkvTtp8fv_xD5hOL-Ca6rRoEDHMyJJCKUgGE7Za0Yyh2gMPCoUtekakordU1aWOAb8rwRUF9I-yR5rtAP4ipZBz43XsFiEnrAwhXsICrkTNdSaeuLGTQSY0TE7VQRsAH4TKuPSQFjT9BufnaSFYSi8uvFTgslUcyHuhUIl1F3UvSqaK90RRDKrxmkmlIbe-T7iARbMCa6oPxjVdmadPhHFNOeEpKmpVAn1mSqtwR1tmnQpJcaMzVpYxzMkjhccmsG8gtUvAeMZSooX0qjxo0I3tOK7M4o44bmqwagOQlww1GaEA9AVdL8k6djKNorwkS_gZtKzpuBJrvsmoq4LwJR1UkpNS9Ta3bXxU3ZXgmvGaghZdiDe2xgVGSrJloUHkgxubF-JJgWhMPTFdgGYrijFeVUnC7ySrSjpNS4b7epKUYzahucW6Ikrh-nv7gEciJGY946CoMo7M8QXW6vaxNY7uO7jeVm0EekAv3de3UYltRdfotlGU7cL1TGYenLE8x0fIpVh1VRRurA-0uuZUf6WLOXqCivAHPNHFtKKY9nw5Vea1TQCvIwBYBbfUsFwMpwoyak5GF5Qj82HVoKkjaZcnPXrp9j3AmyfHCtJufaLsoZ9Nj82JIVU1fPC6SdcfL-fDbL3EvwGytkeHoGukyr1kHQpb9GdhbMSwVEfN6RzpZ21yGHIbmMm743e7FJhcxt-OeezbbcoKZCwGn78Sht3h5ExhNJhmpHQh95hGxscVX3ShvcNqkZBj01Mb_cRLtZb-VzvahtuWM9aP2vVW-LsbEp7lw_6q7HtvjWwBvfS2zm2vdhTnKHxPjYab25JuCxMXgsJEU_sKswW0TrS1eXJ09v3V6WJNkLEf1JqnYzHuF3En7mW8hsFsNIVuur0dtCosp4baq4MxFYj-YPZgwtmhMFrn8FYBWYqee43kiG0Mx8Qon1rlFclMVHtRcCVu4cgZMf6GylSiISR-iKVurRuaGSakmVB66uIP86okqoAfwB6O4yXl3o1R08wd9DWesAr4afOUTAbsa1ChKmvAg7xkoMiIGIa3DsYj_QC7px5FX-HM3cKHs3Yn_LNowRj03LptxT2gc8-NznjSbZ3g6cBSUszxJsCTE3WA49wjW0gMWNiDWh8HdSxKnFb2qOgwLslIRr_Uhp6x1JiBBrzcLG5s7-3x8QonmoqkTK-RJjMa5l_gHaZGuP3-rBS6br0RvFyDsY9tIsfJ57LOmDAjGMUexRTImnOTuAnOVxk82FOZuWrpxrzBnLaK4J4jfXxzWUzsm6EktkNyY3QwgXsSPvHtPWWbjlL9vC_P_Q2nE_YSHm9nFheBGC5L9CJbdyEZkZ_XyuSwIZ7uEcmL0gwHDJxAa0l75OGFbDFhR74W8qMTjOEGOz0mqJ1Uf9Kixhb5xjHg_WV7NbVZ3sP1Hb9X2Mob08jsGu-xYVtq5Dx9_fvP33_5y4xjsfGUCvaLwD-dOLY_zUr8b44fjSXcuOscp0jdazi1-Ty5KnD-bOen1-gwwrEDLxQZXsNfkggb0IomUZxEGc0JdugkMjKk1mKOZBzF5rZyGNVV5m_s7uXrf_q5GsM) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Idle: Page loaded
-    state "Auto-Refresh Loop" as refresh {
-        Idle --> Polling: Every 10s
-        Polling --> Idle: Version unchanged
-        Polling --> VersionChanged: New version detected
-        VersionChanged --> SetPendingSound: Set sound flag
-        SetPendingSound --> Reloading: Trigger reload
-        Reloading --> Splash: Page loaded with new version
-        Splash --> PlaySound: Play "Website Ready"
-        PlaySound --> Idle: Resume polling
+    direction LR
+
+    state "HTML Version Polling" as html {
+        [*] --> FetchVersion: Page load (immediate)
+        FetchVersion --> ParseResult: Response received
+        FetchVersion --> ErrorState: Fetch failed
+        ErrorState --> Countdown: Red dot (2s)
+
+        state parse_check <<choice>>
+        ParseResult --> parse_check
+        parse_check --> EstablishBaseline: First fetch (no baseline yet)
+        parse_check --> CheckMaintenance: Baseline exists
+
+        EstablishBaseline --> CreatePill: Save version + create indicator
+        CreatePill --> CheckMaintenance
+
+        state maint_check <<choice>>
+        CheckMaintenance --> maint_check
+        maint_check --> MaintenanceOverlay: maintenance flag = true
+        maint_check --> CheckVersionChange: maintenance flag = false
+
+        MaintenanceOverlay --> CheckVersionChange: Continue to version check
+        note right of MaintenanceOverlay: Shows overlay with timestamp\nTriple-click wrench to bypass\nBypass stored in sessionStorage
+
+        state version_check <<choice>>
+        CheckVersionChange --> version_check
+        version_check --> Countdown: Version unchanged
+        version_check --> VersionChanged: Version differs from baseline
+
+        VersionChanged --> SetWebSound: Set web-pending-sound flag
+        SetWebSound --> Reload: 2s delay then location.reload()
+
+        Countdown --> FetchVersion: 10s countdown (shows 5-0 in dot)
     }
-    state "GAS Iframe" as gas {
-        GASIdle --> UserAction: User interacts
-        UserAction --> Processing: Send to Apps Script
-        Processing --> RenderResponse: Data returned
-        RenderResponse --> GASIdle: Ready
-        GASIdle --> GASReload: postMessage gas-reload
-        GASReload --> GASIdle: Iframe reloaded
+
+    state "GAS Version Polling" as gas {
+        [*] --> CheckGASFile: Page load (immediate)
+        CheckGASFile --> NoPoll: gs.version.txt not found (404)
+        CheckGASFile --> ShowGASPill: File exists
+
+        ShowGASPill --> GASWait: 15s initial delay
+        GASWait --> FetchGASVersion: Timer fires
+        FetchGASVersion --> GASParseResult: Response received
+        FetchGASVersion --> GASError: Fetch failed
+        GASError --> GASCountdown: Red dot (2s)
+
+        state gas_version_check <<choice>>
+        GASParseResult --> gas_version_check
+        gas_version_check --> GASCountdown: Version unchanged
+        gas_version_check --> GASVersionChanged: Version differs
+
+        GASVersionChanged --> SetGASSound: Set gas-pending-sound flag
+        SetGASSound --> GASReload: 1.5s delay then location.reload()
+
+        state anti_sync <<choice>>
+        GASCountdown --> anti_sync
+        anti_sync --> FetchGASVersion: 10s (no HTML poll overlap)
+        anti_sync --> GASDelayed: HTML polled < 3s ago
+        GASDelayed --> FetchGASVersion: 15s (anti-sync padding)
+
+        NoPoll --> [*]: No pill shown, no polling
     }
-    state "Maintenance Mode" as maint {
-        [*] --> CheckMaintenance: Page load
-        CheckMaintenance --> ShowOverlay: maintenance=true
-        CheckMaintenance --> Normal: maintenance=false
-        ShowOverlay --> PollMaintenance: Poll version.txt
-        PollMaintenance --> ShowOverlay: Still in maintenance
-        PollMaintenance --> Reloading2: Maintenance cleared
-        Reloading2 --> Normal: Fresh load
+
+    state "Post-Reload Splash & Sound" as splash {
+        [*] --> CheckPendingFlags: Page load
+        state flag_check <<choice>>
+        CheckPendingFlags --> flag_check
+        flag_check --> WebSplash: web-pending-sound flag set
+        flag_check --> CodeSplash: gas-pending-sound flag set
+        flag_check --> NoSplash: No flags set
+
+        WebSplash --> PlaySound: Show green splash (1s) + vibrate
+        CodeSplash --> PlaySound: Show blue splash (1s) + vibrate
+        PlaySound --> FadeOut: 1s display
+        FadeOut --> NoSplash: 300ms opacity fade
+        NoSplash --> [*]
+
+        note right of PlaySound: Sound only plays if\nAudioContext is running\nand _soundPlayed = false
+    }
+
+    state "Audio Unlock" as audio {
+        [*] --> CreateContext: Page load
+        CreateContext --> CheckState
+
+        state ctx_check <<choice>>
+        CheckState --> ctx_check
+        ctx_check --> Running: Already running
+        ctx_check --> Suspended: Suspended (needs gesture)
+
+        Suspended --> WaitForGesture: Listen click/touch + poll UAv2
+        WaitForGesture --> Running: User gesture detected
+        Running --> [*]: 🔊 indicator shown
+
+        note right of Suspended: 🔇 shown until unlocked\nUAv2 poll every 200ms (Chrome)
     }
 ```
 
