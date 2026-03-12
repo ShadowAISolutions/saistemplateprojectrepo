@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
 ## [Unreleased]
+
+## [v02.29r] — 2026-03-12 10:10:19 AM EST
+
+### Changed
+- Rewrote all three auth template files from scratch using the Unified Toggleable Auth Pattern (pattern 6): `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`
+- Auth templates now use noauth counterparts as exact baseline with clearly separated `AUTH START/END` and `AUTH CONFIG` section markers
+- Replaced flat auth variables with unified `PRESETS` + `resolveConfig()` + `AUTH_CONFIG` config-driven system (`standard` and `hipaa` presets)
+- Added toggle-gated features: domain restriction, audit logging, HMAC session integrity, emergency access, postMessage token exchange, sessionStorage, inactivity timeout, auto-signout
+- Added dual token exchange paths: URL parameter (standard) and postMessage three-phase handshake (HIPAA)
+- Added storage abstraction layer controlled by `HTML_CONFIG.STORAGE_TYPE` toggle
+- Added dedicated `gas-signed-out` message type (replaces old `gas-needs-auth` for sign-out)
+- Moved `doGet()` from TEMPLATE section to AUTH section in GAS templates (requires auth routing logic)
 
 ## [v02.28r] — 2026-03-12 09:28:34 AM EST
 
