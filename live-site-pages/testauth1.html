@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.15w">
+  <meta name="build-version" content="v01.16w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -205,7 +205,12 @@
     #auth-timers .timer-header {
       color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
       border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 3px; margin-bottom: 2px;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
     }
+    #auth-timers .timer-header:hover { color: #fff; }
+    #auth-timers .timer-header .toggle-icon { font-size: 8px; }
+    #auth-timers .timer-body { display: none; flex-direction: column; gap: 4px; }
+    #auth-timers .timer-body.expanded { display: flex; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -247,12 +252,14 @@
   </div>
 
   <div id="auth-timers">
-    <div class="timer-header">Session Timers</div>
-    <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
-    <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
-    <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
-    <button class="test-gas-btn" onclick="testGasCall()">Test GAS Call</button>
-    <div class="test-gas-result" id="test-gas-result"></div>
+    <div class="timer-header" onclick="toggleTimers()"><span>Session Timers</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
+    <div class="timer-body" id="timer-body">
+      <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
+      <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
+      <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
+      <button class="test-gas-btn" onclick="testGasCall()">Test GAS Call</button>
+      <div class="test-gas-result" id="test-gas-result"></div>
+    </div>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -1157,6 +1164,13 @@
     // Session = server-side expiration, extended by heartbeats.
     // Heartbeat = extends session while user is active.
     // =============================================
+
+    function toggleTimers() {
+      var body = document.getElementById('timer-body');
+      var icon = document.getElementById('timer-toggle-icon');
+      var expanded = body.classList.toggle('expanded');
+      icon.innerHTML = expanded ? '&#9662;' : '&#9656;';
+    }
 
     var SERVER_SESSION_DURATION = 180;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
     var ABSOLUTE_SESSION_DURATION = 57600; // seconds (16 hours) — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT

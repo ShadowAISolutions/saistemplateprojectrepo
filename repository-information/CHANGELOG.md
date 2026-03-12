@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v02.54r] — 2026-03-12 07:22:08 PM EST
+
+### Changed
+- Session timers panel now starts minimized — click "Session Timers" header to expand/collapse
+
+#### `testauth1.html` — v01.16w
+
+##### Changed
+- Session timers default to collapsed state with a clickable header to expand
 
 ## [v02.53r] — 2026-03-12 07:14:59 PM EST
 
