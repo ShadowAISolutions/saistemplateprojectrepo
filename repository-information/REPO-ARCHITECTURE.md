@@ -4,7 +4,7 @@
 
 ## 1. Flowchart — System Overview
 
-> [Open in mermaid.live — Flowchart]() — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqlWOtum0gUfpURlVbNbrHTW9pk1V1Rm9jeEseyne5WdWWNYcA0A4MYSOptKu1D7BPuk-yZGcBgwHFa_7EE3_nO_cwZvmo2c4h2pnkxjtZo_nYRIvjxdKUeLLQpiRj3ExZvzhDHPk9IEFGckChmn4mdxPB6oSkp8XP8GJ76LJRc2-clxj65IZRFJEZ_svjapey2TCB-ffP9xzKui3oUpw5BPTB2oX2qontvAWxLQPdntIpxaK9rIKBEuv7b3UKLUg6v70BsiyCh02Jsb9Tt9dF___yLcJowPSCxR3SlrLMJKPqYx-PTrhPVSJTfzKejwcCcfl1oE7AFJQzl1v--0L7tOifMzkUaeaRfHwi_Q7OhsewNzd47oO6xIPAT8WixCN8ginmiQ85swjlx6noK0S1b37TMubmczQ3LlOmgJCHID9ck9hPi5JFehI_5tR8hGZqjWuCrxGN2hy7M6UAQXggB4AP_A-yHNUmJk95fTfqGsGRogNhV5EC4QW3VJd2WDnf4GteYtvKSrj86Pwei3prY18iDIDm-69YrBlBZyVD_hujQBESPsEd4F9lrHHrEEWU0MQbmbHluGQOglK_17C16g5I4JfuIOx4vcw2M2bJvTqzLDzLeEWUb8Qzd-BjZaUzR5HI2r_FtpZR3Km1vp23RLADbpN7XPVsnMwahbSmftpcksMsWQFFW5SrLdy3i7T048JNhukITEVykwhKQMKlPjS3tNn613CUMaqdMWfPWGr0X9WmBJJr5stZma-ywW2M0YzQVPc07UDfrdNXxWbd1Kn5qt0-GUeg5xH8zvPFjFgqfOXosbT5qnzbWTuJH4775F7iznVTQcw750lknARXda-HQ8UNPBqPev3NzNpc2VykSAj5v7SrI5vAclQw-airX-cRqoPQw17P46XZMMJw5Ba3ogol6h3rqXbOpxtV8-LTFXpjg66dVSw14hJ5WqfYUImMeJciIIo5mduxHkI9DDoDdlIiObU2Lxxs7XDi3PwV7BGVU2gKyI9fuPjRBDGNtSjhLY5i63-X7-PIP890Hy6pa0wkht9cbSuvnx7hfhYLy0OHdGnA4v7CW783prAoX6dZvSMxF19alBrMGGY_vkZB6elaDFjXJKfOa9ezKeLxVoj0Hu-Msp4PB1p4N0W_jS1EEVQuGYLUROgPM59kz6AemDlg9ZKI8ZLt0ki-JaBnhOsrF0S1MQJYmYjFaNzQj6HygxgP0oawFm3Vmo-ViNG50VwyYwA_9ANPMOz1_qYs1uPOZ55ovFEyevjlmr7792h6sSzm710s5mNvcFN19n4_nKW1SKkTR1Wi_3j1af0An-gkH0a8Nbrf3Q3EosND1vT090LOMq765vNiZJupxJ3CEddnpA4OYw-Ym5xevx2F6ZZk7A6OTLVBxSqETBRWmt3jDdcqwAyPzFxRhiAq34TrjIIlq2JTfjSyrhRg2bEoVsx_esGu8gia4za5PSL1tsNScXIrxVuWMixtdJ5tyMjv1NdUYTI2LWZuw7ocuiwMsotR1fAwZCZSFcGXTSwcTwrG9hollJ2lMUI5s8N-cz0fjQVsESJLAlsKhmFgotIjF_Wd1K8MUokCc5svH-cja2QWy3a3bfoGQYa7ec5CX4tg5tCzv3w5G49F8OetNR5OdY50r0S5MhUQX4QaLhEEshMG_ZgmCqF8j8dbH1P9bxr-xWZcQ0KtJMzlEM4300saVKRGtmXeB60ONyUWsUUPJAaR35L4vk-EQkWqOWOx15R68COGPYrEwPHsmWbm8f-cNuRPPncBuz65cCzTRRl6ahWliOQ_JLYrUJn-n1t2t6L2CYthspasrpKKpnSo5XzHD1D4kb8INcT3Kr3Yl0-oz_HtJBUXNzh8llCFQrNLonIsEK-JweR_1Xehi0uBacWG4V2hrejXsBwmWTBT3qFyGk_imVgjNgMLQfaDSbeU-roa6Ke7lWSpi3_Ng5CJOqKun6kNGY3E8QLBSAA-UKwUxH5W5KPQIjL6NQBefcBSy_DVFYW_FoOQ5VLAoZLGS58DsvEERoxSG-U6aDoHvJO0QkVoKD9VTTmj2XTTZwEwU3xJhjNGzRy_w6bFz-sRmlMVnj1zXLcNkpSjcyclqdYJbcEXkFZa4L5-_PG7Blr_JFfhTfFpwHx8fl_Gl6anQrotfPTvZgz4UW9RsAX51_OJ5i9mlFBzCXRwNGdgmp8-d1y1guY4dAlT71SHI8tGm4K9enx6f2iXvtCdaQGD78R3tTPsKnbYmYj6dLTSHuDilsE99A4w4EWeb0NbOxKfAJ5pqwb7agdTDb_8DWO1Nnw) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 graph TB
@@ -45,12 +45,14 @@ graph TB
             INDEX["[template] index.html\n(Landing Page)"]
             TEST_PAGE["[template] testenvironment.html\n(Test Environment)"]
             GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
+            TESTAUTH1_PAGE["[template] testauth1.html\n(Test Auth 1)"]
         end
 
         subgraph "Google Apps Scripts [template]"
             direction LR
             GAS_INDEX["[template] index.gs"]
             GAS_TEST["[template] testenvironment.gs"]
+            GAS_TESTAUTH1["[template] testauth1.gs"]
         end
 
         subgraph "Shared Resources [template]"
@@ -90,21 +92,26 @@ graph TB
     end
 
     TPL_NOAUTH -.->|"copy to create\nnew pages"| INDEX
-    TPL_AUTH -.->|"copy to create\nnew auth pages"| INDEX
+    TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTH1_PAGE
     GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
     GASTPL_TEST_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
+    GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
     INDEX -.->|"embeds via iframe"| GAS_INDEX
     TEST_PAGE -.->|"embeds via iframe"| GAS_TEST
+    TESTAUTH1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTH1
     LIVE -.->|"serves"| INDEX
     LIVE -.->|"serves"| TEST_PAGE
     LIVE -.->|"serves"| GASTPL_PAGE
+    LIVE -.->|"serves"| TESTAUTH1_PAGE
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INDEX
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TEST
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| INDEX
     HTML_VERS -.->|"version polling"| TEST_PAGE
     HTML_VERS -.->|"version polling"| GASTPL_PAGE
+    HTML_VERS -.->|"version polling"| TESTAUTH1_PAGE
 
     style DEV fill:#4a90d9,color:#fff
     style LIVE fill:#66bb6a,color:#fff
@@ -317,6 +324,7 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Landing Page (index) | [`repository-information/diagrams/index-diagram.md`](diagrams/index-diagram.md) |
 | Test Environment | [`repository-information/diagrams/testenvironment-diagram.md`](diagrams/testenvironment-diagram.md) |
 | GAS Project Creator | [`repository-information/diagrams/gas-project-creator-diagram.md`](diagrams/gas-project-creator-diagram.md) |
+| Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
 
 ## 4. Git Graph — Branching Strategy
 

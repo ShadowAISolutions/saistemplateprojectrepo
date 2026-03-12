@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
 
 ## [Unreleased]
+
+## [v02.32r] — 2026-03-12 11:55:11 AM EST
+
+### Added
+- Set up new GAS project `testauth1` with Google OAuth authentication (standard preset)
+- Created `testauth1.html` embedding page from auth template with encoded deployment URL
+- Created `testauth1.gs` GAS script from minimal-auth template with OAuth config
+- Created `testauth1.config.json` project config
+- Created version files (`testauth1html.version.txt`, `testauth1gs.version.txt`), changelogs, and changelog archives
+- Added `testauth1-diagram.md` per-environment architecture diagram (auth sequence)
+- Added Deploy Testauth1 webhook step to auto-merge workflow
+- Registered Testauth1 in GAS Projects table
+
+### Fixed
+- Fixed setup script creating noauth files when auth was requested (Python `False` vs bash `true` string comparison) — recreated files from correct auth templates
+- Fixed SPREADSHEET_ID placeholder comparison checks in generated GAS file — sed was replacing both the variable value and the guard-clause string literals, causing guard clauses to always evaluate true
+
+#### `testauth1.html` — v01.00w
+
+##### Added
+- New auth-enabled page for testauth1title with Google OAuth sign-in
+
+#### `testauth1.gs` — v01.00g
+
+##### Added
+- New auth-enabled GAS web app with OAuth token exchange and audit logging
 
 ## [v02.31r] — 2026-03-12 11:21:23 AM EST
 

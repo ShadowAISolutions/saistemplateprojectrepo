@@ -337,6 +337,16 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
+      - name: Deploy Testauth1
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Testauth1/testauth1.gs" && \
+          curl -L -X POST \
+            "https://script.google.com/macros/s/AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w/exec" \
+            -d "action=deploy" \
+            --max-time 120 || true
+
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |
