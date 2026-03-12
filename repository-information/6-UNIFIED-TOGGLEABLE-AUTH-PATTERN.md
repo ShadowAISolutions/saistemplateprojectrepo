@@ -1913,4 +1913,217 @@ if (Date.now() > sessionData.expiresAt) {
 
 This ensures sessions expire at the configured time regardless of CacheService's internal TTL behavior.
 
+---
+
+## 15. Security Checklist
+
+Use this checklist when deploying the unified pattern at any security level. Items marked **(HIPAA)** are mandatory for the `hipaa` preset; all others apply to both presets.
+
+### Server-Side (GAS)
+
+- [ ] `AUTH_CONFIG` preset is set correctly (`standard` or `hipaa`)
+- [ ] Google OAuth token is validated server-side via `googleapis.com/oauth2/v3/userinfo` — never trusted from the client
+- [ ] Session tokens are opaque UUIDs (`Utilities.getUuid()`) — no user data embedded in the token itself
+- [ ] Session data is stored in `CacheService.getScriptCache()` with explicit expiry timestamps
+- [ ] `SESSION_EXPIRATION` ≤ 900 seconds (15 min) **(HIPAA)**
+- [ ] `ENABLE_DOMAIN_RESTRICTION` is `true` with `ALLOWED_DOMAINS` populated **(HIPAA)**
+- [ ] Domain check uses exact match after `split('@')` — never `includes()` or `endsWith()` on the full email
+- [ ] `ENABLE_AUDIT_LOG` is `true` and `SPREADSHEET_ID` points to a protected spreadsheet **(HIPAA)**
+- [ ] Audit log sheet is protected (admin-only edit access)
+- [ ] `ENABLE_HMAC_INTEGRITY` is `true` and `HMAC_SECRET` is set in Script Properties **(HIPAA)**
+- [ ] HMAC secret is ≥32 characters, randomly generated
+- [ ] `ENABLE_EMERGENCY_ACCESS` is `true` and `EMERGENCY_ACCESS_EMAILS` is set in Script Properties **(HIPAA)**
+- [ ] Emergency access is audit-logged regardless of the audit toggle state
+- [ ] Every server function that returns data uses the auth gate pattern (Section 7)
+- [ ] `doGet()` never returns user data without session validation
+- [ ] Web app is deployed as "Execute as: User accessing the web app" (not "Execute as me")
+
+### Client-Side (HTML)
+
+- [ ] `HTML_CONFIG.TOKEN_EXCHANGE_METHOD` matches `AUTH_CONFIG.TOKEN_EXCHANGE_METHOD`
+- [ ] `STORAGE_TYPE` is `sessionStorage` **(HIPAA)**
+- [ ] `ENABLE_INACTIVITY_TIMEOUT` is `true` with `CLIENT_INACTIVITY_TIMEOUT` ≤ session expiry **(HIPAA)**
+- [ ] `ENABLE_AUTO_SIGNOUT` is `true` **(HIPAA)**
+- [ ] postMessage `event.origin` is validated with strict equality (`=== 'https://script.google.com'`)
+- [ ] No `'*'` used as `targetOrigin` when sending tokens (ready signal with `'*'` is acceptable — it contains no sensitive data)
+- [ ] Sign-out clears storage, notifies server, and revokes Google token
+- [ ] No raw Google access tokens stored in client storage — only opaque session tokens
+- [ ] Google Identity Services loaded via `https://accounts.google.com/gsi/client`
+
+### Infrastructure
+
+- [ ] Google Workspace BAA is signed (if handling PHI) **(HIPAA)**
+- [ ] Spreadsheet containing user data has appropriate sharing restrictions
+- [ ] Apps Script project edit access is limited to administrators
+- [ ] Script Properties secrets are not exposed in client-side code
+
+---
+
+## 16. Migration Guide
+
+### From Pattern 3 → Unified (Standard Preset)
+
+**Effort**: ~1-2 hours. Pattern 3 maps directly to the standard preset.
+
+1. **Replace auth functions** — swap your `exchangeTokenForSession()`, `validateSession()`, `invalidateSession()`, and `doGet()` with the unified versions from Section 7
+2. **Add config** — add `AUTH_CONFIG` with `ACTIVE_PRESET = 'standard'` and `resolveConfig()` from Section 4
+3. **Add `auditLog()` wrapper** — even with audit disabled, the wrapper must exist (it's called throughout the code — when disabled, it's a no-op)
+4. **Update HTML** — add `HTML_CONFIG` and replace storage calls with the storage abstraction from Section 8
+5. **Test** — verify sign-in, sign-out, session resume, and silent re-auth work as before
+
+### From Pattern 4 → Unified (Standard Preset)
+
+**Effort**: ~1 hour. Pattern 4 is nearly identical to the standard preset.
+
+1. Follow the Pattern 3 steps above
+2. **Verify origin validation** — the unified pattern already uses strict `event.origin` checks
+3. **Verify re-auth fallback** — the unified pattern already includes silent-then-interactive fallback
+
+### From Pattern 5 → Unified (HIPAA Preset)
+
+**Effort**: ~1-2 hours. Pattern 5 maps directly to the HIPAA preset.
+
+1. Follow the Pattern 3 steps above, but use `ACTIVE_PRESET = 'hipaa'`
+2. **Migrate Script Properties** — ensure `HMAC_SECRET` and `EMERGENCY_ACCESS_EMAILS` are set
+3. **Migrate audit log** — the unified audit system uses the same spreadsheet format; existing logs are preserved
+4. **Update HTML** — set `HTML_CONFIG` to match the HIPAA preset's HTML section (sessionStorage, postMessage, inactivity timeout, auto-signout)
+
+### Upgrading Standard → HIPAA (Config Change Only)
+
+**Effort**: ~30 minutes. This is the primary benefit of the unified pattern.
+
+1. Change `ACTIVE_PRESET` from `'standard'` to `'hipaa'` in your `.gs` file
+2. Set `ALLOWED_DOMAINS` in `PROJECT_OVERRIDES` (the HIPAA validation will enforce this)
+3. Add Script Properties: `HMAC_SECRET` (random ≥32 chars), `EMERGENCY_ACCESS_EMAILS` (comma-separated)
+4. Update `HTML_CONFIG` to match the HIPAA preset's HTML section
+5. Run the security checklist (Section 15)
+6. **No code changes needed** — the same code handles both security levels
+
+---
+
+## 17. Feature Toggle Matrix
+
+Complete reference of every toggleable feature, its config key, default state per preset, and the HIPAA regulation it addresses (if applicable).
+
+| Feature | Config Key (GAS) | Config Key (HTML) | Standard | HIPAA | HIPAA Regulation |
+|---------|-----------------|-------------------|----------|-------|-----------------|
+| Server-side sessions | *(always on)* | — | ✅ | ✅ | Baseline |
+| Opaque session tokens | *(always on)* | — | ✅ | ✅ | Baseline |
+| Silent re-auth | *(always on)* | — | ✅ | ✅ | Baseline |
+| Interactive fallback | *(always on)* | — | ✅ | ✅ | Baseline |
+| Strict origin validation | *(always on)* | — | ✅ | ✅ | Baseline |
+| Domain restriction | `ENABLE_DOMAIN_RESTRICTION` | — | ❌ | ✅ | 164.312(d) |
+| Audit logging | `ENABLE_AUDIT_LOG` | — | ❌ | ✅ | 164.312(b) |
+| HMAC integrity | `ENABLE_HMAC_INTEGRITY` | — | ❌ | ✅ | 164.312(c)(1) |
+| Emergency access | `ENABLE_EMERGENCY_ACCESS` | — | ❌ | ✅ | 164.312(a)(2)(ii) |
+| postMessage exchange | `TOKEN_EXCHANGE_METHOD` | `TOKEN_EXCHANGE_METHOD` | `'url'` | `'postMessage'` | RFC 6750 §2.3 |
+| sessionStorage | — | `STORAGE_TYPE` | `localStorage` | `sessionStorage` | 164.312(a)(2)(iii) |
+| Inactivity timeout | — | `ENABLE_INACTIVITY_TIMEOUT` | ❌ | ✅ | 164.312(a)(2)(iii) |
+| Auto sign-out | — | `ENABLE_AUTO_SIGNOUT` | ❌ | ✅ | 164.312(a)(2)(iii) |
+| 15-min session cap | `SESSION_EXPIRATION` | — | 1800s | 900s | 164.312(a)(2)(iii) |
+
+**Legend**: ✅ = enabled by default, ❌ = disabled by default. Any toggle can be overridden per-project via `PROJECT_OVERRIDES`.
+
+---
+
+## 18. Six-Pattern Comparison
+
+How this pattern relates to all others in the series:
+
+| Aspect | Pattern 1 | Pattern 2 | Pattern 3 | Pattern 4 | Pattern 5 | Pattern 6 (This) |
+|--------|-----------|-----------|-----------|-----------|-----------|-------------------|
+| **Auth method** | Custom user/pass | Google OAuth | Google OAuth | Google OAuth | Google OAuth | Google OAuth |
+| **Token storage** | Server DB | localStorage (raw) | localStorage (opaque) | localStorage (opaque) | sessionStorage (opaque) | Configurable |
+| **Session management** | Server-side | None (stateless) | CacheService | CacheService | CacheService + HMAC | CacheService ± HMAC |
+| **Token exchange** | Form POST | URL parameter | URL parameter | URL parameter | postMessage | Configurable |
+| **Domain restriction** | Manual | None | None | None | Workspace-only | Configurable |
+| **Audit logging** | None | None | None | None | Google Sheets | Configurable |
+| **Emergency access** | N/A | N/A | N/A | N/A | Script Properties | Configurable |
+| **Session timeout** | Custom | None | Fixed | Fixed | 15-min (HIPAA) | Configurable |
+| **Inactivity timeout** | None | None | None | None | 12-min client | Configurable |
+| **Silent re-auth** | N/A | No | Yes | Yes (with fallback) | Yes (with fallback) | Yes (with fallback) |
+| **Origin validation** | N/A | Basic | Basic | Strict (`===`) | Strict (`===`) | Strict (`===`) |
+| **HIPAA compliant** | No | No | No | No | Yes | Yes (with `hipaa` preset) |
+| **Toggleable features** | No | No | No | No | No | **Yes** |
+| **Config-driven** | No | No | No | No | No | **Yes** |
+
+### When to Use Each Pattern
+
+- **Pattern 1** — When Google accounts are not available or not desired (custom auth)
+- **Pattern 2** — Quick prototypes where security is not a concern
+- **Pattern 3** — Internal tools with basic session management needs
+- **Pattern 4** — Internal tools where research-backed security practices matter
+- **Pattern 5** — Healthcare or regulated environments requiring HIPAA compliance
+- **Pattern 6 (this)** — When you want one codebase that works at any security level, or when you anticipate needing to upgrade security later without code changes
+
+---
+
+## 19. Troubleshooting
+
+### Common Issues
+
+**"Session expired" immediately after sign-in**
+
+- Check `SESSION_EXPIRATION` — is it set too low?
+- Check CacheService TTL — `cache.put()` TTL must match or exceed `SESSION_EXPIRATION`
+- Check for clock skew — `Date.now()` on the GAS server vs. the expiry timestamp stored in session data
+
+**"Domain not allowed" for valid Workspace users**
+
+- Verify `ALLOWED_DOMAINS` includes the correct domain (case-insensitive comparison)
+- Check for subdomains — `mail.corp.com` ≠ `corp.com`
+- Ensure the OAuth token userinfo returns the expected email domain (some Workspace configurations use email aliases)
+
+**Silent re-auth fails, always shows consent screen**
+
+- The Google Identity Services `prompt: ''` requires the user to have previously consented to the scopes
+- First-time users always see the consent screen — this is expected
+- Check that the OAuth client ID is configured for the correct domains in Google Cloud Console
+
+**postMessage handshake never completes**
+
+- Verify `TOKEN_EXCHANGE_METHOD` matches between GAS and HTML configs
+- Check browser console for `event.origin` mismatches
+- GAS web apps serve from `https://script.google.com` — verify this matches your origin check
+- Check that the iframe `src` is set correctly (the GAS deployment URL, not the editor URL)
+
+**HMAC verification fails after redeployment**
+
+- Did the `HMAC_SECRET` in Script Properties change? A new secret invalidates all existing sessions
+- After rotating the HMAC secret, all users must re-authenticate (existing sessions will fail integrity checks)
+- Check for encoding issues — `JSON.stringify()` must produce identical output for the same data
+
+**Audit log sheet not created**
+
+- Verify `SPREADSHEET_ID` points to an accessible spreadsheet
+- Check that the script has edit permission on the spreadsheet
+- Look for errors in the Apps Script execution log (the `try/catch` in `auditLog()` logs errors to console)
+
+**Emergency access not working**
+
+- Verify `ENABLE_EMERGENCY_ACCESS` is `true` in the active config
+- Check Script Properties — is `EMERGENCY_ACCESS_EMAILS` set with the correct key name?
+- Email comparison is case-insensitive — but check for whitespace in the comma-separated list
+- Emergency access bypasses `checkSpreadsheetAccess()` only — the user still needs a valid Google authentication
+
+**Inactivity timeout fires too quickly**
+
+- `CLIENT_INACTIVITY_TIMEOUT` is in milliseconds (720000 = 12 minutes)
+- Check that activity event listeners are attached (`mousemove`, `mousedown`, `keydown`, `touchstart`, `scroll`)
+- Activity inside the GAS iframe does NOT bubble to the parent — if the user is interacting only with the iframe, the parent's inactivity timer may fire. Solution: use `postMessage` to relay activity signals from the iframe to the parent
+
+### Debug Mode
+
+For development/testing, use the standard preset with selective overrides:
+
+```javascript
+var ACTIVE_PRESET = 'standard';
+var PROJECT_OVERRIDES = {
+  ENABLE_AUDIT_LOG: true,           // enable logging to debug auth flow
+  SESSION_EXPIRATION: 60,           // 1-minute sessions for quick testing
+};
+```
+
+> **Warning**: never deploy with `SESSION_EXPIRATION` set to testing values. The HIPAA preset validation will catch this (warns if >900s), but the standard preset has no such guard. Add your own validation if needed.
+
 Developed by: ShadowAISolutions
