@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.06w">
+  <meta name="build-version" content="v01.07w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -884,6 +884,7 @@
     var GAS_ORIGIN = 'https://script.google.com';
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
+    var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
 
     function initGoogleSignIn() {
       signInClient = google.accounts.oauth2.initTokenClient({
@@ -979,6 +980,7 @@
           var gasApp = document.getElementById('gas-app');
           var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
+            _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
           }
         } else {
@@ -988,12 +990,22 @@
 
       // GAS iframe says auth is needed (session expired/invalid)
       if (data.type === 'gas-needs-auth') {
+        if (_expectingSession) {
+          // Stale gas-needs-auth from the bare-URL srcdoc race — the iframe
+          // was still loading the old (no-session) URL while we already set
+          // a new src with the session token. Ignore this message and wait
+          // for the session-URL response instead.
+          console.log('[AUTH DEBUG] Ignoring stale gas-needs-auth (session navigation in flight)');
+          _expectingSession = false;
+          return;
+        }
         clearSession();
         showAuthWall('Session expired. Please sign in again.');
       }
 
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
+        _expectingSession = false;
         if (data.needsReauth) {
           showReauthBanner('Your session is expiring soon. Click to refresh.', true);
         }
@@ -1193,8 +1205,18 @@
         // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
         var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
-        if (gasApp && baseUrl) {
-          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+        if (gasApp) {
+          // Cancel the srcdoc navigation — same race condition as the no-session
+          // branch: the iframe IIFE's srcdoc script would navigate to the bare
+          // GAS URL (no session param), triggering gas-needs-auth and wiping
+          // the valid session from localStorage. Remove srcdoc and delete _r
+          // first, then navigate with the session token.
+          delete window._r;
+          gasApp.removeAttribute('srcdoc');
+          if (baseUrl) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+          }
         }
         showApp(session.email);
         startInactivityTimer();

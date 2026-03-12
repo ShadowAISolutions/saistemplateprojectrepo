@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v02.42r] — 2026-03-12 02:42:21 PM EST
+
+### Fixed
+- Fixed session not persisting across page refreshes — the iframe's `srcdoc` race condition also affected the session-resume path, causing `gas-needs-auth` to fire and wipe the valid session from localStorage before the session-URL navigation could complete
+- Added `_expectingSession` guard flag to ignore stale `gas-needs-auth` messages when a session navigation is in flight
+
+#### `testauth1.html` — v01.07w
+
+##### Fixed
+- Fixed page refresh dropping authenticated session — `srcdoc` is now removed in the session-resume branch (same fix as the no-session branch), and stale `gas-needs-auth` messages are ignored during session navigation
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template)
+
+##### Fixed
+- Same session persistence fix propagated to the auth template
 
 ## [v02.41r] — 2026-03-12 02:33:17 PM EST
 
