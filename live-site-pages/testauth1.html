@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.14w">
+  <meta name="build-version" content="v01.15w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1166,8 +1166,12 @@
 
     function formatCountdown(seconds) {
       if (seconds <= 0) return '0:00';
-      var m = Math.floor(seconds / 60);
+      var h = Math.floor(seconds / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
       var s = Math.floor(seconds % 60);
+      if (h > 0) {
+        return h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      }
       return m + ':' + (s < 10 ? '0' : '') + s;
     }
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-03-12 07:14:59 PM EST — v02.53r
+
+### Changed
+- Absolute session timer now shows hours format (e.g. "16:00:00") instead of minutes-only format
 
 ## [v01.14w] — 2026-03-12 07:12:02 PM EST — v02.52r
 
