@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 53/100`
+`Sections: 54/100`
 
 ## [Unreleased]
+
+## [v02.30r] — 2026-03-12 10:25:57 AM EST
+
+### Changed
+- Updated GAS Project Creator page to support new Unified Toggleable Auth Pattern (pattern 6) templates
+- Added OAuth Client ID, Auth Preset (standard/hipaa), and Allowed Domains form fields for auth configuration
+- Auth setup instructions (OAuth consent screen, client ID creation) now shown conditionally when auth is enabled
+- Updated `copyGsCode` to inject auth-specific config (preset, allowed domains, domain restriction) into auth templates
+- Updated `copyConfig` to include `CLIENT_ID`, `AUTH_PRESET`, and `ALLOWED_DOMAINS` in the JSON output for `setup-gas-project.sh`
+- Updated `setup-gas-project.sh` to parse and apply auth config fields (CLIENT_ID in HTML, ACTIVE_PRESET and ALLOWED_DOMAINS in GAS)
+
+#### `gas-project-creator.html` — v01.07w
+
+##### Changed
+- Added authentication configuration section with OAuth Client ID, preset selector, and domain restriction fields
+- Auth-specific setup steps now appear when Google Authentication checkbox is enabled
+- Copy Code.gs now injects auth preset and domain restriction settings into auth template code
+- Copy Config for Claude now includes auth settings in the JSON output
 
 ## [v02.29r] — 2026-03-12 10:10:19 AM EST
 

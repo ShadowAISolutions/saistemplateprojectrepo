@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.06w">
+  <meta name="build-version" content="v01.07w">
   <title>GAS Project Creator</title>
   <style>
 /* ══════════════ */
@@ -526,6 +526,14 @@
         <li>Enable the <strong>Apps Script API</strong> in your GCP project
           <div class="step-note">APIs &amp; Services &rarr; Library &rarr; search "Apps Script API" &rarr; Enable</div>
         </li>
+        <li class="step-group-label" id="auth-steps-label" style="display:none">OAuth Setup (Auth Only)</li>
+        <li id="auth-step-consent" style="display:none">Configure the <strong>OAuth consent screen</strong> in your GCP project
+          <div class="step-note">APIs &amp; Services &rarr; OAuth consent screen &rarr; User Type: External (or Internal for Workspace) &rarr; fill in app name and support email &rarr; Add scopes: <code>email</code>, <code>profile</code>, <code>openid</code></div>
+        </li>
+        <li id="auth-step-client" style="display:none">Create an <strong>OAuth 2.0 Client ID</strong> (Web application type)
+          <div class="step-note">APIs &amp; Services &rarr; Credentials &rarr; + Create Credentials &rarr; OAuth client ID &rarr; Application type: Web application &rarr; Authorized JavaScript origins: add your GitHub Pages URL (e.g. <code>https://yourusername.github.io</code>) &rarr; Create</div>
+          <div class="step-note" style="margin-top:6px">Copy the <strong>Client ID</strong> (ends in <code>.apps.googleusercontent.com</code>). You&rsquo;ll paste it in the Auth Settings section below.</div>
+        </li>
         <li class="step-group-label">New Apps Script Project</li>
         <li>Create a new Apps Script project via <strong>Google Sheets</strong> (recommended): open a new or existing Google Sheet &rarr; <strong>Extensions</strong> &rarr; <strong>Apps Script</strong>. This creates a script <strong>linked</strong> to that spreadsheet, which is needed for version-tracking features.
           <div class="step-note">Alternatively, for a <strong>standalone</strong> script (no spreadsheet link), create one at <a href="https://script.google.com" target="_blank" rel="noopener" style="color:#58a6ff">script.google.com</a></div>
@@ -643,9 +651,30 @@
             Include test/diagnostic features <span style="color:#6e7681;">(sound, quotas, sheet embed, buttons &mdash; for verifying Google connections, not production use. Unchecked = minimal: version display + auto-update only)</span>
           </label>
           <label style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="chk-google-auth" style="cursor:pointer;" checked>
+            <input type="checkbox" id="chk-google-auth" style="cursor:pointer;" checked onchange="toggleAuthFields()">
             Include Google Authentication <span style="color:#6e7681;">(adds sign-in gate to both GAS &amp; HTML &mdash; unchecked = no auth, open access)</span>
           </label>
+          <div id="auth-fields" style="margin-top:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
+            <div class="step-input" style="margin:0 0 10px;">
+              <label for="cfg-client-id">OAuth Client ID <em style="color:#f85149">(required for auth)</em></label>
+              <div class="input-row"><input type="text" id="cfg-client-id" placeholder="123456789.apps.googleusercontent.com" oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-client-id')" title="Clear">&times;</button></div>
+              <span class="field-hint">From Google Cloud Console &rarr; APIs &amp; Services &rarr; Credentials &rarr; OAuth 2.0 Client ID (Web application type)</span>
+            </div>
+            <div class="step-input" style="margin:0 0 10px;">
+              <label for="cfg-auth-preset">Auth Preset</label>
+              <select id="cfg-auth-preset" style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#c9d1d9;font:13px/1.4 'SFMono-Regular',Consolas,monospace;outline:none;">
+                <option value="standard">standard &mdash; 30min sessions, no HMAC, URL token exchange</option>
+                <option value="hipaa">hipaa &mdash; 15min sessions, HMAC, audit log, postMessage exchange</option>
+              </select>
+              <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
+            </div>
+            <div class="step-input" style="margin:0;">
+              <label for="cfg-allowed-domains">Allowed Domains <em>(optional)</em></label>
+              <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
+              <span class="field-hint">Comma-separated list of allowed email domains. Leave blank to allow all Google accounts. Required for HIPAA preset</span>
+            </div>
+          </div>
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
         </li>
@@ -1264,6 +1293,18 @@
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
         if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
         if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
+        // Auth-specific replacements
+        if (useAuth) {
+          var preset = (document.getElementById('cfg-auth-preset') || {}).value || 'standard';
+          code = code.replace(/var ACTIVE_PRESET\s*=\s*'[^']*'/, "var ACTIVE_PRESET = '" + preset + "'");
+          var domains = (document.getElementById('cfg-allowed-domains') || {}).value || '';
+          if (domains.trim()) {
+            var domainList = domains.split(',').map(function(d) { return "'" + d.trim() + "'"; }).join(', ');
+            code = code.replace(/ALLOWED_DOMAINS:\s*\[\]/, 'ALLOWED_DOMAINS: [' + domainList + ']');
+            // Also set the preset's ALLOWED_DOMAINS and enable domain restriction
+            code = code.replace(/ENABLE_DOMAIN_RESTRICTION:\s*false/, 'ENABLE_DOMAIN_RESTRICTION: true');
+          }
+        }
         var envName = (document.getElementById('cfg-env-name') || {}).value || '';
         if (envName.trim()) {
           // Derive GITHUB_OWNER and GITHUB_REPO from the GitHub Pages URL
@@ -1297,16 +1338,34 @@
       });
     }
 
+// ── Auth Fields Toggle ──
+    function toggleAuthFields() {
+      var authChecked = document.getElementById('chk-google-auth').checked;
+      var authFields = document.getElementById('auth-fields');
+      var authStepLabel = document.getElementById('auth-steps-label');
+      var authStepConsent = document.getElementById('auth-step-consent');
+      var authStepClient = document.getElementById('auth-step-client');
+      if (authFields) authFields.style.display = authChecked ? 'block' : 'none';
+      if (authStepLabel) authStepLabel.style.display = authChecked ? '' : 'none';
+      if (authStepConsent) authStepConsent.style.display = authChecked ? '' : 'none';
+      if (authStepClient) authStepClient.style.display = authChecked ? '' : 'none';
+      updateDeployGate();
+    }
+    // Initialize auth fields visibility on load
+    toggleAuthFields();
+
 // ── Deployment ID Gate ──
     function updateDeployGate() {
       var hasId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
       var hasEnvName = (document.getElementById('cfg-env-name').value || '').trim().length > 0;
+      var useAuth = document.getElementById('chk-google-auth').checked;
+      var hasClientId = !useAuth || (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       var applyBtn = document.getElementById('btn-apply');
       if (applyBtn) applyBtn.disabled = !hasId;
       var gsBtn = document.getElementById('btn-copy-gs');
-      if (gsBtn) gsBtn.disabled = !(hasId && hasEnvName);
+      if (gsBtn) gsBtn.disabled = !(hasId && hasEnvName && hasClientId);
       var configBtn = document.getElementById('btn-copy-config');
-      if (configBtn) configBtn.disabled = !(hasId && hasEnvName);
+      if (configBtn) configBtn.disabled = !(hasId && hasEnvName && hasClientId);
     }
 
 // ── Test GAS Connection (bottom panel) ──
@@ -1391,8 +1450,18 @@
         + '  "SOUND_FILE_ID": "' + soundId + '",\n'
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'
         + '  "INCLUDE_TEST": ' + (includeTest ? 'true' : 'false') + ',\n'
-        + '  "INCLUDE_AUTH": ' + (includeAuth ? 'true' : 'false') + '\n'
-        + '}';
+        + '  "INCLUDE_AUTH": ' + (includeAuth ? 'true' : 'false');
+      if (includeAuth) {
+        var clientId = document.getElementById('cfg-client-id').value.trim() || 'YOUR_CLIENT_ID';
+        var authPreset = document.getElementById('cfg-auth-preset').value || 'standard';
+        var allowedDomains = document.getElementById('cfg-allowed-domains').value.trim() || '';
+        json += ',\n  "CLIENT_ID": "' + clientId + '"'
+          + ',\n  "AUTH_PRESET": "' + authPreset + '"';
+        if (allowedDomains) {
+          json += ',\n  "ALLOWED_DOMAINS": "' + allowedDomains + '"';
+        }
+      }
+      json += '\n}';
 
       var command = "Set up a new GAS project. Run the script, then commit and push.\n\n"
         + "bash scripts/setup-gas-project.sh <<'CONFIG'\n" + json + "\nCONFIG";

@@ -82,6 +82,9 @@ SOUND_FILE_ID="$(parse_json SOUND_FILE_ID '')"
 SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
 INCLUDE_TEST="$(parse_json INCLUDE_TEST 'false')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
+CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
+AUTH_PRESET="$(parse_json AUTH_PRESET 'standard')"
+ALLOWED_DOMAINS="$(parse_json ALLOWED_DOMAINS '')"
 
 if [ -z "$ENV_NAME" ]; then
     err "PROJECT_ENVIRONMENT_NAME is required and cannot be empty."
@@ -188,7 +191,24 @@ CFGEOF
         else
             sed -i "s|var _e = '[^']*';|var _e = '';|" "$HTML_PAGE"
         fi
+        # Update CLIENT_ID for auth pages
+        if [ "$INCLUDE_AUTH" = "true" ] && [ "$CLIENT_ID" != "YOUR_CLIENT_ID.apps.googleusercontent.com" ] && [ -n "$CLIENT_ID" ]; then
+            sed -i "s|var CLIENT_ID = '[^']*';|var CLIENT_ID = '${CLIENT_ID}';|" "$HTML_PAGE"
+        fi
         ok "Updated $HTML_PAGE"
+    fi
+
+    # Update auth config in .gs file
+    if [ "$INCLUDE_AUTH" = "true" ] && [ -f "$GAS_FILE" ]; then
+        if [ "$AUTH_PRESET" != "standard" ] && [ -n "$AUTH_PRESET" ]; then
+            sed -i "s|var ACTIVE_PRESET = '[^']*';|var ACTIVE_PRESET = '${AUTH_PRESET}';|" "$GAS_FILE"
+        fi
+        if [ -n "$ALLOWED_DOMAINS" ]; then
+            JS_DOMAINS=$(echo "$ALLOWED_DOMAINS" | sed "s/[[:space:]]*,[[:space:]]*/\\', \\'/g" | sed "s/^/'/" | sed "s/$/'/")
+            sed -i "s|ALLOWED_DOMAINS: \[\]|ALLOWED_DOMAINS: [${JS_DOMAINS}]|g" "$GAS_FILE"
+            sed -i "s|ENABLE_DOMAIN_RESTRICTION: false|ENABLE_DOMAIN_RESTRICTION: true|g" "$GAS_FILE"
+        fi
+        ok "Updated auth config in $GAS_FILE"
     fi
 
     echo ""
@@ -256,6 +276,23 @@ fi
 # Fix template comment references: <page-name>.gs/.config.json → {env_name}.gs/.config.json
 sed -i "s|<page-name>\.gs|${ENV_NAME}.gs|g" "$GAS_FILE"
 sed -i "s|<page-name>\.config\.json|${ENV_NAME}.config.json|g" "$GAS_FILE"
+# Auth-specific config substitutions (only for auth templates)
+if [ "$INCLUDE_AUTH" = "true" ]; then
+    if [ "$AUTH_PRESET" != "standard" ] && [ -n "$AUTH_PRESET" ]; then
+        sed -i "s|var ACTIVE_PRESET = 'standard';|var ACTIVE_PRESET = '${AUTH_PRESET}';|" "$GAS_FILE"
+    fi
+    if [ -n "$ALLOWED_DOMAINS" ]; then
+        # Convert comma-separated string to JS array format: 'a.com', 'b.com'
+        JS_DOMAINS=$(echo "$ALLOWED_DOMAINS" | sed "s/[[:space:]]*,[[:space:]]*/\\', \\'/g" | sed "s/^/'/" | sed "s/$/'/")
+        sed -i "s|ALLOWED_DOMAINS: \[\]|ALLOWED_DOMAINS: [${JS_DOMAINS}]|g" "$GAS_FILE"
+        # Enable domain restriction if domains are provided
+        sed -i "s|ENABLE_DOMAIN_RESTRICTION: false|ENABLE_DOMAIN_RESTRICTION: true|g" "$GAS_FILE"
+    fi
+    # Set CLIENT_ID in the HTML auth template
+    if [ "$CLIENT_ID" != "YOUR_CLIENT_ID.apps.googleusercontent.com" ] && [ -n "$CLIENT_ID" ]; then
+        sed -i "s|var CLIENT_ID = '[^']*';|var CLIENT_ID = '${CLIENT_ID}';|" "$HTML_PAGE"
+    fi
+fi
 ok "Created $GAS_FILE"
 
 # --- Config JSON ---

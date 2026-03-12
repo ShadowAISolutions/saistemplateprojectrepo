@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-03-12 10:25:57 AM EST — v02.30r
+
+### Changed
+- Added authentication configuration section with OAuth Client ID, preset selector, and domain restriction fields
+- Auth-specific setup steps (consent screen, client ID creation) now appear when Google Authentication checkbox is enabled
+- Copy Code.gs now injects auth preset and domain restriction settings into auth template code
+- Copy Config for Claude now includes auth settings in the JSON output
 
 ## [v01.06w] — 2026-03-11 09:03:31 PM EST — v02.22r
 
