@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v02.37r] — 2026-03-12 01:30:39 PM EST
+
+### Fixed
+- Fixed Google sign-in completing but auth wall persisting — the decoded GAS deployment URL was being deleted before the auth token exchange could use it
+- Preserved GAS deployment URL in iframe `data-base-url` attribute so auth token exchange can reload the iframe after sign-in
+
+#### `testauth1.html` — v01.03w
+
+##### Fixed
+- Fixed sign-in flow failing after Google popup closes — deployment URL now persists for token exchange
+
+#### `index.html` — v01.02w
+
+##### Changed
+- Minor internal improvements
+
+#### `testenvironment.html` — v01.02w
+
+##### Changed
+- Minor internal improvements
 
 ## [v02.36r] — 2026-03-12 01:22:58 PM EST
 
