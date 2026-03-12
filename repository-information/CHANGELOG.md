@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v02.49r] — 2026-03-12 06:16:10 PM EST
+
+### Added
+- Implemented absolute session timeout — a hard ceiling that can never be extended by heartbeats, preventing infinite sessions for active users (OWASP recommendation)
+- Added `ABSOLUTE_SESSION_TIMEOUT` to GAS presets (standard: 360s/6min for testing, HIPAA: 3600s/1hr)
+- Added absolute timeout checks in both `validateSession()` and heartbeat handler — refuses to extend past the absolute limit
+- Added absolute countdown timer row in client-side timer panel
+
+#### `testauth1.html` — v01.12w
+
+##### Added
+- New "Absolute" countdown timer showing the hard session ceiling that cannot be extended
+
+#### `testauth1.gs` — v01.09g
+
+##### Added
+- Absolute session timeout enforcement — sessions now have a hard ceiling that heartbeats cannot extend past
+- New `ABSOLUTE_SESSION_TIMEOUT` configuration option in presets
 
 ## [v02.48r] — 2026-03-12 05:53:24 PM EST
 

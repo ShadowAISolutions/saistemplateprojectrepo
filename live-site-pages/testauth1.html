@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.11w">
+  <meta name="build-version" content="v01.12w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -249,6 +249,7 @@
   <div id="auth-timers">
     <div class="timer-header">Session Timers</div>
     <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
+    <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
     <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
     <div class="timer-row" id="timer-inactivity-row"><span class="timer-label">Inactivity:</span><span class="timer-value" id="timer-inactivity">--:--</span></div>
     <button class="test-gas-btn" onclick="testGasCall()">Test GAS Call</button>
@@ -1009,8 +1010,13 @@
       if (data.type === 'gas-session-created') {
         if (data.success) {
           saveSession(data.sessionToken, data.email);
-          // New session — reset the session start time
+          // New session — reset the session start time and absolute start time
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
+          getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
+          // Update absolute duration from server if provided
+          if (data.absoluteTimeout > 0) {
+            ABSOLUTE_SESSION_DURATION = data.absoluteTimeout;
+          }
           showApp(data.email, data.displayName);
           startInactivityTimer();
           startCountdownTimers();
@@ -1201,7 +1207,9 @@
     // =============================================
 
     var SERVER_SESSION_DURATION = 180;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
+    var ABSOLUTE_SESSION_DURATION = 360; // seconds — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT
     var SESSION_START_KEY = 'gas_session_start';
+    var ABSOLUTE_START_KEY = 'gas_absolute_start';
     var _timerInterval = null;
 
     function formatCountdown(seconds) {
@@ -1214,6 +1222,7 @@
     function startCountdownTimers() {
       var timersEl = document.getElementById('auth-timers');
       var sessionEl = document.getElementById('timer-session');
+      var absoluteEl = document.getElementById('timer-absolute');
       var heartbeatEl = document.getElementById('timer-heartbeat');
       var inactivityEl = document.getElementById('timer-inactivity');
       var inactivityRow = document.getElementById('timer-inactivity-row');
@@ -1222,6 +1231,19 @@
       var storage = getStorage();
       if (!storage.getItem(SESSION_START_KEY)) {
         storage.setItem(SESSION_START_KEY, String(Date.now()));
+      }
+      // Store absolute start time if not already stored (set once, never reset)
+      if (!storage.getItem(ABSOLUTE_START_KEY)) {
+        storage.setItem(ABSOLUTE_START_KEY, String(Date.now()));
+      }
+
+      // Show absolute timer status
+      if (ABSOLUTE_SESSION_DURATION > 0) {
+        absoluteEl.textContent = formatCountdown(ABSOLUTE_SESSION_DURATION);
+        absoluteEl.className = 'timer-value';
+      } else {
+        absoluteEl.textContent = 'off';
+        absoluteEl.className = 'timer-value disabled';
       }
 
       // Hide inactivity row if disabled
@@ -1259,6 +1281,26 @@
             sessionEl.className = 'timer-value warn';
           } else {
             sessionEl.className = 'timer-value';
+          }
+        }
+
+        // Absolute session countdown — hard ceiling, never resets
+        if (ABSOLUTE_SESSION_DURATION > 0) {
+          var absStartTime = parseInt(storage.getItem(ABSOLUTE_START_KEY) || '0', 10);
+          var absElapsed = (Date.now() - absStartTime) / 1000;
+          var absRemaining = ABSOLUTE_SESSION_DURATION - absElapsed;
+          if (absRemaining <= 0) {
+            absoluteEl.textContent = 'expired';
+            absoluteEl.className = 'timer-value critical';
+          } else {
+            absoluteEl.textContent = formatCountdown(absRemaining);
+            if (absRemaining <= 60) {
+              absoluteEl.className = 'timer-value critical';
+            } else if (absRemaining <= 120) {
+              absoluteEl.className = 'timer-value warn';
+            } else {
+              absoluteEl.className = 'timer-value';
+            }
           }
         }
 
@@ -1309,6 +1351,7 @@
       if (timersEl) timersEl.style.display = 'none';
       var storage = getStorage();
       storage.removeItem(SESSION_START_KEY);
+      storage.removeItem(ABSOLUTE_START_KEY);
     }
 
     // =============================================

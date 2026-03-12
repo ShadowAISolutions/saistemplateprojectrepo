@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-03-12 06:16:10 PM EST — v02.49r
+
+### Added
+- New "Absolute" countdown timer showing the hard session ceiling that cannot be extended by activity
 
 ## [v01.11w] — 2026-03-12 05:53:24 PM EST — v02.48r
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.08g";
+var VERSION = "v01.09g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -31,6 +31,7 @@ var PROJECT_OVERRIDES = {
 var PRESETS = {
   standard: {
     SESSION_EXPIRATION: 180,
+    ABSOLUTE_SESSION_TIMEOUT: 360,
     ENABLE_HEARTBEAT: true,
     HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
@@ -49,6 +50,7 @@ var PRESETS = {
   },
   hipaa: {
     SESSION_EXPIRATION: 900,
+    ABSOLUTE_SESSION_TIMEOUT: 3600,
     ENABLE_HEARTBEAT: true,
     HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
@@ -339,6 +341,7 @@ function exchangeTokenForSession(accessToken) {
     displayName: userInfo.displayName,
     accessToken: accessToken,
     createdAt: Date.now(),
+    absoluteCreatedAt: Date.now(),
     lastActivity: Date.now(),
     tokenObtainedAt: Date.now()
   };
@@ -360,7 +363,8 @@ function exchangeTokenForSession(accessToken) {
     success: true,
     sessionToken: sessionToken,
     email: userInfo.email,
-    displayName: userInfo.displayName
+    displayName: userInfo.displayName,
+    absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0
   };
 }
 
@@ -392,7 +396,18 @@ function validateSession(sessionToken) {
     }
   }
 
-  // Authoritative expiry check
+  // Absolute session timeout — hard ceiling that heartbeats cannot extend
+  if (sessionData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+    var absoluteElapsed = (Date.now() - sessionData.absoluteCreatedAt) / 1000;
+    if (absoluteElapsed > AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+      auditLog('session_expired', sessionData.email, 'absolute_timeout',
+        { elapsed: Math.round(absoluteElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's' });
+      cache.remove("session_" + sessionToken);
+      return { status: "not_signed_in" };
+    }
+  }
+
+  // Authoritative expiry check (rolling — reset by heartbeats)
   var elapsed = (Date.now() - sessionData.createdAt) / 1000;
   if (elapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
     auditLog('session_expired', sessionData.email, 'timeout',
@@ -612,7 +627,22 @@ function doGet(e) {
         .setTitle(TITLE)
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
-    // Check if already expired
+    // Check absolute session timeout — hard ceiling, heartbeats cannot extend past this
+    if (hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+      var hbAbsElapsed = (Date.now() - hbData.absoluteCreatedAt) / 1000;
+      if (hbAbsElapsed > AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+        cache.remove("session_" + heartbeatToken);
+        auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
+          { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's' });
+        var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
+          + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+          + '</' + 'script></body></html>';
+        return HtmlService.createHtmlOutput(hbAbsHtml)
+          .setTitle(TITLE)
+          .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+      }
+    }
+    // Check if already expired (rolling session timeout)
     var hbElapsed = (Date.now() - hbData.createdAt) / 1000;
     if (hbElapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
       cache.remove("session_" + heartbeatToken);
@@ -632,8 +662,11 @@ function doGet(e) {
       hbData.hmac = generateSessionHmac(hbData);
     }
     cache.put("session_" + heartbeatToken, JSON.stringify(hbData), AUTH_CONFIG.SESSION_EXPIRATION);
+    var hbAbsRemaining = hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT
+      ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
+      : 0;
     var hbOkHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + '}, "*");'
+      + 'window.top.postMessage({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}, "*");'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(hbOkHtml)
       .setTitle(TITLE)
@@ -667,7 +700,8 @@ function doGet(e) {
             sessionToken: result.sessionToken || "",
             email: result.email || "",
             displayName: result.displayName || "",
-            error: result.error || ""
+            error: result.error || "",
+            absoluteTimeout: result.absoluteTimeout || 0
           });
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
         + 'console.log("[GAS DEBUG] exchange response loaded, sending:", ' + JSON.stringify(payload.substring(0, 100)) + ');'
@@ -694,7 +728,8 @@ function doGet(e) {
       + '        sessionToken: result.sessionToken || "",'
       + '        email: result.email || "",'
       + '        displayName: result.displayName || "",'
-      + '        error: result.error || ""'
+      + '        error: result.error || "",'
+      + '        absoluteTimeout: result.absoluteTimeout || 0'
       + '      }, "*");'
       + '    })'
       + '    .withFailureHandler(function(err) {'
