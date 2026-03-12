@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.10w">
+  <meta name="build-version" content="v01.11w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1262,6 +1262,27 @@
           }
         }
 
+        // Heartbeat countdown — shows time until next heartbeat tick
+        if (HTML_CONFIG.ENABLE_HEARTBEAT && _heartbeatInterval && remaining > 0) {
+          var sinceLastTick = (Date.now() - _lastHeartbeatTick) / 1000;
+          var nextTickIn = (HTML_CONFIG.HEARTBEAT_INTERVAL / 1000) - sinceLastTick;
+          if (nextTickIn < 0) nextTickIn = 0;
+          var isActive = _lastHeartbeatActivity > (_lastHeartbeatTick - HTML_CONFIG.HEARTBEAT_INTERVAL);
+          if (_heartbeatInFlight) {
+            heartbeatEl.textContent = 'sending...';
+            heartbeatEl.className = 'timer-value warn';
+          } else if (_heartbeatIdle) {
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + ' (idle)';
+            heartbeatEl.className = 'timer-value warn';
+          } else {
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + (isActive ? ' (active)' : ' (idle)');
+            heartbeatEl.className = isActive ? 'timer-value' : 'timer-value warn';
+          }
+        } else if (remaining <= 0 && heartbeatEl) {
+          heartbeatEl.textContent = 'expired';
+          heartbeatEl.className = 'timer-value critical';
+        }
+
         // Inactivity countdown
         if (HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT && _inactivityTimer) {
           var inactivityRemaining = (_lastActivityTime + HTML_CONFIG.CLIENT_INACTIVITY_TIMEOUT - Date.now()) / 1000;
@@ -1301,30 +1322,31 @@
 
     var _heartbeatInterval = null;
     var _lastHeartbeatActivity = 0;  // timestamp of last activity seen by heartbeat
+    var _lastHeartbeatTick = 0;      // timestamp of the last interval tick (or start)
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
+    var _heartbeatIdle = false;      // true when last tick found no activity
 
     function startHeartbeat() {
       if (!HTML_CONFIG.ENABLE_HEARTBEAT) return;
 
       // Track activity for heartbeat — reuses the same events as inactivity timer
       _lastHeartbeatActivity = Date.now();
+      _lastHeartbeatTick = Date.now();
+      _heartbeatIdle = false;
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.addEventListener(evt, _onHeartbeatActivity, { passive: true });
       });
 
       _heartbeatInterval = setInterval(function() {
+        _lastHeartbeatTick = Date.now();
         // Only send heartbeat if user was active since last tick
-        var now = Date.now();
-        var lastTick = now - HTML_CONFIG.HEARTBEAT_INTERVAL;
+        var lastTick = _lastHeartbeatTick - HTML_CONFIG.HEARTBEAT_INTERVAL;
         if (_lastHeartbeatActivity < lastTick) {
           // No activity since last heartbeat tick — skip (let session expire if idle)
-          var hbEl = document.getElementById('timer-heartbeat');
-          if (hbEl) {
-            hbEl.textContent = 'idle';
-            hbEl.className = 'timer-value warn';
-          }
+          _heartbeatIdle = true;
           return;
         }
+        _heartbeatIdle = false;
         sendHeartbeat();
       }, HTML_CONFIG.HEARTBEAT_INTERVAL);
     }

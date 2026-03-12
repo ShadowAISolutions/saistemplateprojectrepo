@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v02.48r] — 2026-03-12 05:53:24 PM EST
+
+### Changed
+- Heartbeat timer row now shows a live countdown to the next heartbeat tick with (active) or (idle) status indicator
+
+#### `testauth1.html` — v01.11w
+
+##### Changed
+- Heartbeat display now counts down to the next heartbeat check, showing whether it will extend the session (active) or skip (idle)
 
 ## [v02.47r] — 2026-03-12 05:41:17 PM EST
 
