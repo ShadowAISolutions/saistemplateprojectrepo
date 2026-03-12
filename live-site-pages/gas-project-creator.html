@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <title>GAS Project Creator</title>
   <style>
 /* ══════════════ */
@@ -641,6 +641,10 @@
           <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
             <input type="checkbox" id="chk-full-template" style="cursor:pointer;">
             Include test/diagnostic features <span style="color:#6e7681;">(sound, quotas, sheet embed, buttons &mdash; for verifying Google connections, not production use. Unchecked = minimal: version display + auto-update only)</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="chk-google-auth" style="cursor:pointer;" checked>
+            Include Google Authentication <span style="color:#6e7681;">(adds sign-in gate to both GAS &amp; HTML &mdash; unchecked = no auth, open access)</span>
           </label>
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>

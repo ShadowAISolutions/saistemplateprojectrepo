@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05w] — 2026-03-11 08:06:00 PM EST — v02.21r
+
+### Added
+- New checkbox option for Google Authentication (placeholder for future integration)
 
 ## [v01.04w] — 2026-03-11 07:46:13 PM EST — v02.20r
 

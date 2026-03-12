@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v02.21r] — 2026-03-11 08:06:00 PM EST
+
+### Added
+- Google Authentication checkbox placeholder on GAS project creator page (checked by default, not yet wired up — will control auth gate in both GAS & HTML templates)
+
+#### `gas-project-creator.html` — v01.05w
+
+##### Added
+- New checkbox option for Google Authentication (placeholder for future template integration)
 
 ## [v02.20r] — 2026-03-11 07:46:13 PM EST
 
