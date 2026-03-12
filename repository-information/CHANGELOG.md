@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v02.44r] — 2026-03-12 02:58:04 PM EST
+
+### Changed
+- Bumped testauth1 GAS script version to test the self-update webhook deployment
+
+#### `testauth1.gs` — v01.06g
+
+##### Changed
+- Version bump to verify automatic code deployment via webhook
 
 ## [v02.43r] — 2026-03-12 02:50:25 PM EST
 
