@@ -4,26 +4,30 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-12 11:36:13 AM EST
-**Repo version:** v02.31r
+**Date:** 2026-03-12 03:10:47 PM EST
+**Repo version:** v02.44r
 
 ### What was done
-- **v02.29r** — Rewrote all 3 auth template files from scratch using Unified Toggleable Auth Pattern (pattern 6): `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`. Templates now use noauth counterparts as exact baseline with `AUTH START/END` and `AUTH CONFIG` section markers. Features: `PRESETS` + `resolveConfig()` + `AUTH_CONFIG` config-driven system, dual token exchange paths (URL parameter for standard, postMessage three-phase handshake for HIPAA), storage abstraction layer, dedicated `gas-signed-out` message type
-- **v02.30r** — Updated GAS Project Creator page for pattern 6: added OAuth Client ID, Auth Preset (standard/hipaa), Allowed Domains form fields. Updated `copyGsCode` to inject auth config into templates. Updated `copyConfig` JSON output with auth fields. Updated `setup-gas-project.sh` to parse and apply auth config
-- **v02.31r** — Fixed auth config injection bugs: `ALLOWED_DOMAINS` and `ENABLE_DOMAIN_RESTRICTION` replacements in `copyGsCode` now use global regex (was only replacing first match — standard preset got values but hipaa preset got empty `[]`). Guarded `SPREADSHEET_ID` replacement to only run when auth is enabled (noauth templates don't have this variable). Same guard applied to `copyConfig` JSON output and `setup-gas-project.sh`
+- **v02.32r–v02.41r** (prior session, not saved) — Set up testauth1 GAS project with auth, debugged sign-in flow across multiple iterations (iframe postMessage blocked by Apps Script sandbox, auth response not reaching page, session creation errors)
+- **v02.42r** — Fixed session not persisting across page refresh. Root cause: the session-resume branch in `testauth1.html` didn't remove the iframe's `srcdoc` attribute, so on refresh the srcdoc script navigated to the bare GAS URL, triggering `gas-needs-auth` which wiped the valid session from localStorage. Fix: (1) added srcdoc removal + `window._r` deletion in session-resume branch, (2) added `_expectingSession` guard flag to ignore stale `gas-needs-auth` during navigation. Same fix propagated to auth template
+- **v02.43r** — Fixed GAS self-update webhook not working for testauth1. The `GITHUB_OWNER`, `GITHUB_REPO`, `TITLE`, and `FILE_PATH` variables in `testauth1.gs` were still template placeholders, causing `pullAndDeployFromGitHub()` to fetch from a nonexistent GitHub path. Replaced with actual values
+- **v02.44r** — Bumped testauth1.gs to v01.06g to test the self-update webhook. Push triggers auto-merge workflow which detects the .gs change and fires `curl -L -X POST` to the GAS deployment URL with `action=deploy`
 
 ### Where we left off
-All changes committed and pushed (v02.31r). Auth templates, GAS Project Creator page, and setup script are all updated for the Unified Toggleable Auth Pattern. The "Copy Config for Claude" and "Copy Code.gs" buttons both correctly handle auth/noauth templates. User confirmed the Copy Config button was already addressed.
+All changes committed and pushed (v02.44r). Waiting to verify whether the GAS self-update webhook successfully deployed v01.06g to the live Apps Script execution environment. The user can verify by checking the GAS script's VERSION in the live app.
+
+Key findings from this session:
+- Auth template already has all fixes (srcdoc removal, `_expectingSession` guard) — propagated during v02.42r
+- `setup-gas-project.sh` already has correct `sed` substitutions for `GITHUB_OWNER`, `GITHUB_REPO`, `FILE_PATH`, etc. — verified via dry-run test that new auth environments get proper values
+- The testauth1 placeholder issue was from the original project setup (v02.32r) where the sed substitutions silently failed
 
 ### Key decisions made
-- Auth template rewrite uses noauth files as exact baseline — diff between auth and noauth templates shows only the auth additions
-- Global regex (`/pattern/g`) needed for config injection because auth templates have multiple presets (standard + hipaa) that each contain the same placeholder variables
-- `SPREADSHEET_ID` conditionally included only when auth is enabled (noauth projects don't use it)
-- `END_OF_RESPONSE_BLOCK` = `On` for this session
+- `_expectingSession` flag pattern: a boolean guard that's set `true` when navigating the iframe with a session token, cleared when `gas-auth-ok` arrives. If `gas-needs-auth` arrives while the flag is true, it's stale and gets ignored
+- srcdoc removal is needed in BOTH code paths (new session and session resume) — the iframe IIFE creates the srcdoc, and HTML spec says srcdoc always wins over src when both are present
 
 ### Active context
-- Repo version: v02.31r
-- Branch: `claude/refactor-auth-templates-khnqF`
+- Repo version: v02.44r
+- testauth1.html: v01.07w, testauth1.gs: v01.06g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -31,15 +35,15 @@ All changes committed and pushed (v02.31r). Auth templates, GAS Project Creator 
 
 ## Previous Sessions
 
-**Date:** 2026-03-12 09:40:20 AM EST
-**Repo version:** v02.28r
+**Date:** 2026-03-12 11:36:13 AM EST
+**Repo version:** v02.31r
 
 ### What was done
-- Created `6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md` (2129 lines, 19 sections) — unified config-driven authentication pattern combining patterns 3–5 into a single toggleable codebase
-- Research agent ran 8 topics — findings incorporated into the document
-- Document written in 5 batches (~300 lines each) per user request
+- **v02.29r** — Rewrote all 3 auth template files from scratch using Unified Toggleable Auth Pattern (pattern 6)
+- **v02.30r** — Updated GAS Project Creator page for pattern 6: added OAuth Client ID, Auth Preset, Allowed Domains form fields
+- **v02.31r** — Fixed auth config injection bugs: `ALLOWED_DOMAINS` and `ENABLE_DOMAIN_RESTRICTION` replacements now use global regex
 
 ### Where we left off
-All changes committed (v02.28r) and pushed. Six auth pattern documents now exist in `repository-information/` (1- through 6-)
+All changes committed and pushed (v02.31r). Auth templates, GAS Project Creator page, and setup script all updated for the Unified Toggleable Auth Pattern
 
 Developed by: ShadowAISolutions
