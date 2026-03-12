@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v02.40r] — 2026-03-12 02:21:14 PM EST
+
+### Fixed
+- Fixed auth race condition causing false "Session expired" error on initial page load — the GAS iframe was navigating to the bare deployment URL before Google Sign-In could obtain a token, triggering a premature `gas-needs-auth` message. The iframe is now held on `about:blank` until a token is available for exchange
+
+#### `testauth1.html` — v01.05w
+
+##### Fixed
+- Prevented premature iframe navigation when no local session exists — avoids the misleading "Session expired" error on first visit
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template)
+
+##### Fixed
+- Same auth initialization race condition fix propagated to the auth template
 
 ## [v02.39r] — 2026-03-12 01:53:19 PM EST
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1199,7 +1199,17 @@
         showApp(session.email);
         startInactivityTimer();
       } else {
-        // No session — initialize Google Sign-In
+        // No session — prevent the iframe from loading the bare GAS URL.
+        // The iframe IIFE navigates to the GAS deployment URL immediately,
+        // which would trigger a premature gas-needs-auth ("Session expired")
+        // before Google Sign-In has a chance to obtain a token. Cancel that
+        // navigation by replacing the src, then let initGoogleSignIn handle
+        // the auth flow — exchangeViaUrl will navigate the iframe once a
+        // token is available.
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp) gasApp.src = 'about:blank';
+        showAuthWall();
+        // Initialize Google Sign-In
         if (typeof google !== 'undefined' && google.accounts) {
           initGoogleSignIn();
         } else {

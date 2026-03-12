@@ -1195,7 +1195,17 @@
         showApp(session.email);
         startInactivityTimer();
       } else {
-        // No session — initialize Google Sign-In
+        // No session — prevent the iframe from loading the bare GAS URL.
+        // The iframe IIFE navigates to the GAS deployment URL immediately,
+        // which would trigger a premature gas-needs-auth ("Session expired")
+        // before Google Sign-In has a chance to obtain a token. Cancel that
+        // navigation by replacing the src, then let initGoogleSignIn handle
+        // the auth flow — exchangeViaUrl will navigate the iframe once a
+        // token is available.
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp) gasApp.src = 'about:blank';
+        showAuthWall();
+        // Initialize Google Sign-In
         if (typeof google !== 'undefined' && google.accounts) {
           initGoogleSignIn();
         } else {
