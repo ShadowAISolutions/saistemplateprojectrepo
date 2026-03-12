@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.09w">
+  <meta name="build-version" content="v01.10w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -249,7 +249,7 @@
   <div id="auth-timers">
     <div class="timer-header">Session Timers</div>
     <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
-    <div class="timer-row"><span class="timer-label">Refresh window:</span><span class="timer-value" id="timer-refresh">--:--</span></div>
+    <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
     <div class="timer-row" id="timer-inactivity-row"><span class="timer-label">Inactivity:</span><span class="timer-value" id="timer-inactivity">--:--</span></div>
     <button class="test-gas-btn" onclick="testGasCall()">Test GAS Call</button>
     <div class="test-gas-result" id="test-gas-result"></div>
@@ -299,7 +299,10 @@
       ENABLE_INACTIVITY_TIMEOUT: false,
       CLIENT_INACTIVITY_TIMEOUT: 720000,  // ms (12 min)
       // Auto sign-out on inactivity (standard: false / HIPAA: true)
-      ENABLE_AUTO_SIGNOUT: false
+      ENABLE_AUTO_SIGNOUT: false,
+      // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
+      ENABLE_HEARTBEAT: true,
+      HEARTBEAT_INTERVAL: 30000  // ms (30s) — how often to check for activity and send heartbeat
     };
 // ──────────────
 
@@ -1011,6 +1014,7 @@
           showApp(data.email, data.displayName);
           startInactivityTimer();
           startCountdownTimers();
+          startHeartbeat();
           // Reload iframe with session token so the app UI loads
           var gasApp = document.getElementById('gas-app');
           var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
@@ -1036,6 +1040,7 @@
         }
         clearSession();
         stopCountdownTimers();
+        stopHeartbeat();
         showAuthWall('Session expired. Please sign in again.');
       }
 
@@ -1047,10 +1052,43 @@
         }
       }
 
+      // Heartbeat OK — server extended the session
+      if (data.type === 'gas-heartbeat-ok') {
+        _heartbeatInFlight = false;
+        // Reset the client-side session start time to match the server reset
+        getStorage().setItem(SESSION_START_KEY, String(Date.now()));
+        var hbEl = document.getElementById('timer-heartbeat');
+        if (hbEl) {
+          hbEl.textContent = 'extended ✓';
+          hbEl.className = 'timer-value';
+          // Show success briefly, then revert
+          setTimeout(function() {
+            if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
+          }, 3000);
+        }
+        console.log('[AUTH DEBUG] Heartbeat OK — session extended by ' + (data.expiresIn || '?') + 's');
+      }
+
+      // Heartbeat failed — session already expired on server
+      if (data.type === 'gas-heartbeat-expired') {
+        _heartbeatInFlight = false;
+        stopHeartbeat();
+        var hbEl2 = document.getElementById('timer-heartbeat');
+        if (hbEl2) {
+          hbEl2.textContent = 'expired';
+          hbEl2.className = 'timer-value critical';
+        }
+        clearSession();
+        stopCountdownTimers();
+        showAuthWall('Session expired. Please sign in again.');
+        console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
+      }
+
       // GAS sign-out confirmation
       if (data.type === 'gas-signed-out') {
         clearSession();
         stopCountdownTimers();
+        stopHeartbeat();
         showAuthWall('You have been signed out.');
       }
     });
@@ -1157,13 +1195,12 @@
 
     // =============================================
     // AUTH — Countdown Timers
-    // Server session = 30 min hard cap from creation (GAS SESSION_EXPIRATION).
-    // Refresh window = last 5 min of session (SESSION_REFRESH_WINDOW).
+    // Server session = hard cap from creation (GAS SESSION_EXPIRATION).
+    // Heartbeat = extends session while user is active.
     // Inactivity = client-side idle timer (only when enabled).
     // =============================================
 
     var SERVER_SESSION_DURATION = 180;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
-    var SERVER_REFRESH_WINDOW = 90;      // seconds — must match GAS PRESETS.standard.SESSION_REFRESH_WINDOW
     var SESSION_START_KEY = 'gas_session_start';
     var _timerInterval = null;
 
@@ -1177,7 +1214,7 @@
     function startCountdownTimers() {
       var timersEl = document.getElementById('auth-timers');
       var sessionEl = document.getElementById('timer-session');
-      var refreshEl = document.getElementById('timer-refresh');
+      var heartbeatEl = document.getElementById('timer-heartbeat');
       var inactivityEl = document.getElementById('timer-inactivity');
       var inactivityRow = document.getElementById('timer-inactivity-row');
 
@@ -1191,6 +1228,15 @@
       if (!HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT) {
         inactivityEl.textContent = 'off';
         inactivityEl.className = 'timer-value disabled';
+      }
+
+      // Show heartbeat status
+      if (HTML_CONFIG.ENABLE_HEARTBEAT) {
+        heartbeatEl.textContent = 'waiting';
+        heartbeatEl.className = 'timer-value disabled';
+      } else {
+        heartbeatEl.textContent = 'off';
+        heartbeatEl.className = 'timer-value disabled';
       }
 
       timersEl.style.display = 'flex';
@@ -1209,29 +1255,15 @@
           sessionEl.textContent = formatCountdown(remaining);
           if (remaining <= 60) {
             sessionEl.className = 'timer-value critical';
-          } else if (remaining <= SERVER_REFRESH_WINDOW) {
+          } else if (remaining <= 90) {
             sessionEl.className = 'timer-value warn';
           } else {
             sessionEl.className = 'timer-value';
           }
         }
 
-        // Refresh window countdown — shows time until refresh window opens
-        var refreshIn = remaining - SERVER_REFRESH_WINDOW;
-        if (remaining <= 0) {
-          refreshEl.textContent = 'expired';
-          refreshEl.className = 'timer-value critical';
-        } else if (refreshIn <= 0) {
-          refreshEl.textContent = 'active';
-          refreshEl.className = 'timer-value warn';
-        } else {
-          refreshEl.textContent = 'in ' + formatCountdown(refreshIn);
-          refreshEl.className = 'timer-value';
-        }
-
         // Inactivity countdown
         if (HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT && _inactivityTimer) {
-          // We track the last reset time to compute remaining
           var inactivityRemaining = (_lastActivityTime + HTML_CONFIG.CLIENT_INACTIVITY_TIMEOUT - Date.now()) / 1000;
           if (inactivityRemaining <= 0) {
             inactivityEl.textContent = 'timed out';
@@ -1256,6 +1288,77 @@
       if (timersEl) timersEl.style.display = 'none';
       var storage = getStorage();
       storage.removeItem(SESSION_START_KEY);
+    }
+
+    // =============================================
+    // AUTH — Heartbeat (Activity-Based Session Extension)
+    // Monitors DOM activity events. On each interval tick, if the
+    // user has been active since the last heartbeat, sends a lightweight
+    // ?heartbeat=TOKEN request to the GAS server which resets createdAt,
+    // extending the session. If no activity → no heartbeat → session
+    // expires naturally at SERVER_SESSION_DURATION.
+    // =============================================
+
+    var _heartbeatInterval = null;
+    var _lastHeartbeatActivity = 0;  // timestamp of last activity seen by heartbeat
+    var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
+
+    function startHeartbeat() {
+      if (!HTML_CONFIG.ENABLE_HEARTBEAT) return;
+
+      // Track activity for heartbeat — reuses the same events as inactivity timer
+      _lastHeartbeatActivity = Date.now();
+      _ACTIVITY_EVENTS.forEach(function(evt) {
+        document.addEventListener(evt, _onHeartbeatActivity, { passive: true });
+      });
+
+      _heartbeatInterval = setInterval(function() {
+        // Only send heartbeat if user was active since last tick
+        var now = Date.now();
+        var lastTick = now - HTML_CONFIG.HEARTBEAT_INTERVAL;
+        if (_lastHeartbeatActivity < lastTick) {
+          // No activity since last heartbeat tick — skip (let session expire if idle)
+          var hbEl = document.getElementById('timer-heartbeat');
+          if (hbEl) {
+            hbEl.textContent = 'idle';
+            hbEl.className = 'timer-value warn';
+          }
+          return;
+        }
+        sendHeartbeat();
+      }, HTML_CONFIG.HEARTBEAT_INTERVAL);
+    }
+
+    function _onHeartbeatActivity() {
+      _lastHeartbeatActivity = Date.now();
+    }
+
+    function sendHeartbeat() {
+      if (_heartbeatInFlight) return;  // don't stack requests
+      var session = loadSession();
+      if (!session.token) return;
+
+      var gasApp = document.getElementById('gas-app');
+      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!gasApp || !baseUrl) return;
+
+      _heartbeatInFlight = true;
+      var hbEl = document.getElementById('timer-heartbeat');
+      if (hbEl) {
+        hbEl.textContent = 'sending...';
+        hbEl.className = 'timer-value warn';
+      }
+
+      gasApp.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token);
+      // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
+    }
+
+    function stopHeartbeat() {
+      if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
+      _ACTIVITY_EVENTS.forEach(function(evt) {
+        document.removeEventListener(evt, _onHeartbeatActivity);
+      });
+      _heartbeatInFlight = false;
     }
 
     // =============================================
@@ -1290,6 +1393,7 @@
       clearSession();
       stopInactivityTimer();
       stopCountdownTimers();
+      stopHeartbeat();
 
       // Notify GAS server to invalidate server-side session
       if (session.token) {
@@ -1387,6 +1491,7 @@
         showApp(session.email);
         startInactivityTimer();
         startCountdownTimers();
+        startHeartbeat();
       } else {
         // No session — prevent the iframe from loading the bare GAS URL.
         // The iframe IIFE navigates to the GAS deployment URL immediately,

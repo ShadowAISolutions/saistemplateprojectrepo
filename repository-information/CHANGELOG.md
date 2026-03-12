@@ -3,9 +3,38 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v02.47r] — 2026-03-12 05:41:17 PM EST
+
+### Added
+- Implemented session heartbeat system — client monitors DOM activity and sends periodic heartbeat to GAS server, which resets `createdAt` to extend active sessions
+- Added `?heartbeat=TOKEN` handler in GAS `doGet` with full validation (HMAC, expiry check) before extending
+- Added `gas-heartbeat-ok` and `gas-heartbeat-expired` postMessage handlers on client for session extension feedback
+- Added heartbeat status display in countdown timer panel (shows idle/sending/extended/expired states)
+
+### Removed
+- Removed `SESSION_REFRESH_WINDOW` from both standard and HIPAA presets — replaced by the heartbeat system
+
+#### `testauth1.html` — v01.10w
+
+##### Added
+- Session heartbeat that monitors your activity and automatically extends your session while you're using the page
+- Heartbeat status indicator in the timer panel showing when your session is being extended
+
+##### Removed
+- Removed refresh window display — replaced by the heartbeat system
+
+#### `testauth1.gs` — v01.08g
+
+##### Added
+- Server-side heartbeat handler that extends your session when you're actively using the page
+- `ENABLE_HEARTBEAT` and `HEARTBEAT_INTERVAL` configuration options
+
+##### Removed
+- Removed `SESSION_REFRESH_WINDOW` configuration — no longer needed with the heartbeat system
 
 ## [v02.46r] — 2026-03-12 05:18:55 PM EST
 

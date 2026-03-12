@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10w] — 2026-03-12 05:41:17 PM EST — v02.47r
+
+### Added
+- Session heartbeat that monitors your activity and automatically extends your session while you're using the page
+- Heartbeat status indicator in the timer panel showing when your session is being extended
+
+### Removed
+- Removed refresh window display — replaced by the heartbeat system
 
 ## [v01.09w] — 2026-03-12 05:18:55 PM EST — v02.46r
 

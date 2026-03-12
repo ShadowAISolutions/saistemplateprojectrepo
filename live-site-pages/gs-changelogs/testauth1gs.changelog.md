@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08g] — 2026-03-12 05:41:17 PM EST — v02.47r
+
+### Added
+- Server-side heartbeat handler that extends your session when you're actively using the page
+- New `ENABLE_HEARTBEAT` and `HEARTBEAT_INTERVAL` configuration options
+
+### Removed
+- Removed `SESSION_REFRESH_WINDOW` configuration — no longer needed with the heartbeat system
 
 ## [v01.07g] — 2026-03-12 05:18:55 PM EST — v02.46r
 

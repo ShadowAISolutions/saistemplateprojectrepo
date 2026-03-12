@@ -1,4 +1,4 @@
-var VERSION = "v01.07g";
+var VERSION = "v01.08g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -31,7 +31,8 @@ var PROJECT_OVERRIDES = {
 var PRESETS = {
   standard: {
     SESSION_EXPIRATION: 180,
-    SESSION_REFRESH_WINDOW: 90,
+    ENABLE_HEARTBEAT: true,
+    HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
     OAUTH_TOKEN_LIFETIME: 3600,
     OAUTH_REFRESH_BUFFER: 900,
@@ -48,7 +49,8 @@ var PRESETS = {
   },
   hipaa: {
     SESSION_EXPIRATION: 900,
-    SESSION_REFRESH_WINDOW: 180,
+    ENABLE_HEARTBEAT: true,
+    HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
     OAUTH_TOKEN_LIFETIME: 3600,
     OAUTH_REFRESH_BUFFER: 900,
@@ -577,6 +579,66 @@ function checkSpreadsheetAccess(email, opt_ss) {
 function doGet(e) {
   var sessionToken = (e && e.parameter && e.parameter.session) || "";
   var signOutToken = (e && e.parameter && e.parameter.signOut) || "";
+  var heartbeatToken = (e && e.parameter && e.parameter.heartbeat) || "";
+
+  // Heartbeat flow: validate session + reset createdAt to extend it
+  if (heartbeatToken && AUTH_CONFIG.ENABLE_HEARTBEAT) {
+    var cache = CacheService.getScriptCache();
+    var raw = cache.get("session_" + heartbeatToken);
+    if (!raw) {
+      var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + '</' + 'script></body></html>';
+      return HtmlService.createHtmlOutput(hbExpiredHtml)
+        .setTitle(TITLE)
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    var hbData;
+    try { hbData = JSON.parse(raw); } catch (err) {
+      var hbErrHtml = '<!DOCTYPE html><html><body><script>'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + '</' + 'script></body></html>';
+      return HtmlService.createHtmlOutput(hbErrHtml)
+        .setTitle(TITLE)
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    // Check HMAC if enabled
+    if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
+      cache.remove("session_" + heartbeatToken);
+      var hbHmacHtml = '<!DOCTYPE html><html><body><script>'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + '</' + 'script></body></html>';
+      return HtmlService.createHtmlOutput(hbHmacHtml)
+        .setTitle(TITLE)
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    // Check if already expired
+    var hbElapsed = (Date.now() - hbData.createdAt) / 1000;
+    if (hbElapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
+      cache.remove("session_" + heartbeatToken);
+      auditLog('session_expired', hbData.email, 'heartbeat_too_late',
+        { elapsed: Math.round(hbElapsed) + 's' });
+      var hbLateHtml = '<!DOCTYPE html><html><body><script>'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + '</' + 'script></body></html>';
+      return HtmlService.createHtmlOutput(hbLateHtml)
+        .setTitle(TITLE)
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    // Session is valid — reset createdAt to extend the session
+    hbData.createdAt = Date.now();
+    hbData.lastActivity = Date.now();
+    if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) {
+      hbData.hmac = generateSessionHmac(hbData);
+    }
+    cache.put("session_" + heartbeatToken, JSON.stringify(hbData), AUTH_CONFIG.SESSION_EXPIRATION);
+    var hbOkHtml = '<!DOCTYPE html><html><body><script>'
+      + 'window.top.postMessage({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + '}, "*");'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(hbOkHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
 
   // Sign-out flow: invalidate session and return confirmation
   if (signOutToken) {
