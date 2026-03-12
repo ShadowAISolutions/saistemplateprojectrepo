@@ -4,34 +4,35 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-11 09:59:16 PM EST
-**Repo version:** v02.24r
+**Date:** 2026-03-11 11:17:38 PM EST
+**Repo version:** v02.25r
 
 ### What was done
-- Created template variation matrix: 6 template files (4 GAS: minimal/test × auth/noauth, 2 HTML: auth/noauth) covering all gas-project-creator checkbox combinations (v02.22r)
-- Wired gas-project-creator to load all 4 GAS template variants and select based on both test and auth checkboxes (v02.22r)
-- Updated `setup-gas-project.sh` to select template based on `INCLUDE_TEST` and `INCLUDE_AUTH` config fields (v02.22r)
-- Removed old template files (`HtmlAndGasTemplateAutoUpdate.html.txt`, `gas-minimal-template-code.js.txt`, `gas-test-template-code.js.txt`) and unused template version file (v02.22r)
-- Updated imported skills rule to permit reference name updates in addition to location pointers (v02.23r)
-- Applied template filename updates to imported frontend-design skill (v02.23r)
-- Rewrote all 3 auth template files to implement IMPROVED-GOOGLE-OAUTH-PATTERN from noauth baselines (v02.24r):
-  - HTML auth template: GIS OAuth2 token flow, origin-validated postMessage, opaque UUID sessions in localStorage, auth wall overlay, inactivity timeout, silent re-auth
-  - GAS minimal auth: server-side CacheService session management, Google token validation via googleapis.com, configurable TTL, single-session enforcement
-  - GAS test auth: same auth pattern plus all test-specific features
+- Created `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` (v02.25r) — a research-validated OAuth pattern that builds on the Improved pattern with key fixes:
+  - **Origin validation**: replaced `String.includes('googleusercontent.com')` (bypassable via `evil-googleusercontent.com`) with strict `hostname.endsWith('.googleusercontent.com')` suffix match
+  - **Re-auth fallback**: added interactive re-auth banner when silent `prompt: ''` fails (user revoked access, cleared cookies, etc.) — Improved pattern silently swallowed these failures
+  - **CacheService caveats**: documented best-effort TTL eviction, max 21600s limit, no `getTimeToLive()`, and max 100KB value size
+  - **Simplified token expiry check**: replaced mutating `refreshGoogleTokenIfNeeded()` with pure boolean `checkGoogleTokenExpiry()`
+  - **URL parameter separator**: fixed `?`/`&` handling in `exchangeForSession()` and `signOut()`
+- CHANGELOG archive rotation: rotated 52 March 9 date group sections, SHA-enriched all 76 archived sections (including 24 pre-existing ones that were missing SHA links)
 
 ### Where we left off
-All changes committed and merged to main. The auth templates now implement the full IMPROVED-GOOGLE-OAUTH-PATTERN — server-side session management, opaque tokens, origin-validated postMessage, and all security features from the pattern doc.
+All changes committed and merged to main. Three auth pattern reference documents now exist:
+1. `GOOGLE-OAUTH-AUTH-PATTERN.md` — basic pattern (raw token, no sessions)
+2. `IMPROVED-GOOGLE-OAUTH-PATTERN.md` — first improvement (server sessions, opaque tokens)
+3. `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — research-validated version (strict origin, re-auth fallback, CacheService docs)
 
-The gas-project-creator page is fully functional: both checkboxes (test/diagnostic features + Google Authentication) now select the correct template variant for both GAS and HTML output.
+The auth templates (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) currently implement the Improved pattern (v02.24r). They have NOT yet been updated to implement the Researched Improved pattern — that would be the logical next step.
 
 ### Key decisions made
-- Auth templates were rewritten from noauth baselines rather than modifying existing basic auth code — cleaner result
-- The improved pattern uses GIS OAuth2 token flow (not credential/JWT), server-side CacheService sessions with opaque UUIDs, and origin-validated postMessage
-- Imported skills rule now permits reference changes (renamed filenames) without flagging — mechanical, not behavioral
+- Created the researched pattern as a separate document rather than editing the Improved pattern — preserves the progression and lets the user choose when to upgrade templates
+- All origin validation attack vectors documented in a comparison table (Section 7)
+- Re-auth uses a non-disruptive banner ("Session expiring — click Continue") rather than a full auth wall
+- `checkGoogleTokenExpiry()` is a pure function (returns boolean) rather than mutating sessionData — cleaner data flow
 
 ### Active context
-- Repo version: v02.24r
-- CHANGELOG sections: 100/100 (at rotation limit — next version section will trigger archive rotation)
+- Repo version: v02.25r
+- CHANGELOG sections: 49/100 (after rotating 52 March 9 sections to archive)
 - Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.06w), dchrcalendar, testaed
 - GAS versions: index (v01.01g), testenvironment (v01.01g)
 - No active reminders
@@ -41,14 +42,14 @@ The gas-project-creator page is fully functional: both checkboxes (test/diagnost
 
 ## Previous Sessions
 
-**Date:** 2026-03-11 08:13:17 PM EST
-**Repo version:** v02.21r
+**Date:** 2026-03-11 09:59:16 PM EST
+**Repo version:** v02.24r
 
 ### What was done
-- Clarified GAS template checkbox wording on project creator page — changed "Include full-featured UI" to "Include test/diagnostic features" (v02.20r)
-- Added Google Authentication checkbox placeholder (checked by default) to GAS project creator page (v02.21r)
+- Created template variation matrix: 6 template files (4 GAS: minimal/test × auth/noauth, 2 HTML: auth/noauth) covering all gas-project-creator checkbox combinations (v02.22r)
+- Rewrote all 3 auth template files to implement IMPROVED-GOOGLE-OAUTH-PATTERN from noauth baselines (v02.24r)
 
 ### Where we left off
-All changes committed and merged to main. Auth checkbox was a placeholder — next step was to wire it up with auth templates.
+All changes committed and merged to main. Auth templates implement the full IMPROVED-GOOGLE-OAUTH-PATTERN.
 
 Developed by: ShadowAISolutions
