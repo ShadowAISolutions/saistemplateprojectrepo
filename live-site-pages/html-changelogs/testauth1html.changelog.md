@@ -3,10 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 0/50`
+`Sections: 1/50`
 
 ## [Unreleased]
 
-*(No changes yet)*
+## [v01.01w] — 2026-03-12 01:03:01 PM EST — v02.34r
+
+### Fixed
+- Fixed Google sign-in not working — updated authentication configuration to allow sign-in from the live site
 
 Developed by: ShadowAISolutions

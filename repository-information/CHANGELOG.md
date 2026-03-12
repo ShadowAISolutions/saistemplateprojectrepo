@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 57/100`
+`Sections: 58/100`
 
 ## [Unreleased]
+
+## [v02.34r] — 2026-03-12 01:03:01 PM EST
+
+### Fixed
+- Updated testauth1 OAuth Client ID to a user-created credential with authorized JavaScript origins for GitHub Pages (Apps Script auto-generated client IDs cannot be modified)
+
+#### `testauth1.html` — v01.01w
+
+##### Fixed
+- Fixed Google OAuth sign-in — replaced locked Apps Script-managed Client ID with user-created OAuth credential that authorizes the GitHub Pages origin
 
 ## [v02.33r] — 2026-03-12 12:11:25 PM EST
 
