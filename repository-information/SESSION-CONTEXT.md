@@ -4,6 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-11 08:13:17 PM EST
+**Repo version:** v02.21r
+
+### What was done
+- Clarified GAS template checkbox wording on project creator page — changed "Include full-featured UI" to "Include test/diagnostic features" with note that it's for verifying Google connections, not production use (v02.20r)
+- Added Google Authentication checkbox placeholder (checked by default, id `chk-google-auth`) to GAS project creator page — not wired up yet, will control auth gate in both GAS & HTML templates when future template work is done (v02.21r)
+
+### Where we left off
+All changes committed and merged to main. The GAS project creator page now has two checkboxes:
+1. **Test/diagnostic features** (unchecked by default) — for verifying Google connections
+2. **Google Authentication** (checked by default) — placeholder, not yet wired to code generation
+
+Next step: wire up the Google Auth checkbox to actually generate auth-enabled GAS and HTML code based on a future template.
+
+### Key decisions made
+- "Full-featured UI" wording was inaccurate — the checked template includes test features for verifying connections, not a production UI
+- Google Auth checkbox defaults to checked (auth on by default, opt-out to remove)
+- Auth checkbox is a placeholder — will be connected when the auth-enabled template is created
+
+### Active context
+- Repo version: v02.21r
+- Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.05w), dchrcalendar, testaed
+- GAS versions: index (v01.01g), testenvironment (v01.01g)
+- No active reminders
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-11 02:53:36 PM EST
 **Repo version:** v02.12r
 
@@ -19,36 +49,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### Where we left off
 All changes committed and merged to main. README now has Commands section after Project Structure with origin indicators for each command.
-
-### Key decisions made
-- STATUS.md was removed as redundant — README tree already shows all the same information (versions, links, labels)
-- Pre-Commit item numbering shifted after STATUS.md removal (old #5 removed, #6→#5, etc.)
-- Commands section placed after Project Structure (user preference) with origin tracking
-
-### Active context
-- Repo version: v02.12r
-- Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.02w)
-- GAS versions: index (v01.01g), testenvironment (v01.01g)
-- No active reminders
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-11 09:53:21 AM EST
-**Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
-**Repo version:** v02.03r
-
-### What was done
-- Renamed ARCHITECTURE.md to REPO-ARCHITECTURE.md with 14 cross-references updated (v01.98r)
-- Simplified REPO-ARCHITECTURE.md to show environments as nodes, moved internal processes to per-environment diagrams (v01.99r)
-- Re-added auto-refresh and GAS self-update diagrams as template-level behaviors (v02.00r)
-- Combined auto-refresh and GAS loops into a single unified template behaviors diagram (v02.01r)
-- Replaced combined flowchart with stateDiagram-v2 showing template-level state machines (v02.02r)
-- Rewrote template-level state diagram for accuracy — faithful state machines for HTML polling (with maintenance as conditional), GAS polling (with anti-sync), splash/sound lifecycle, and audio unlock (v02.03r)
-
-### Where we left off
-All changes committed and merged to main. The template-level state diagram in REPO-ARCHITECTURE.md section 3 now accurately reflects the actual template source code.
 
 Developed by: ShadowAISolutions
