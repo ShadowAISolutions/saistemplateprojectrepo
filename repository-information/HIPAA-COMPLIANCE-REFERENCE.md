@@ -244,8 +244,8 @@ This section maps the HIPAA Security Rule requirements to what our project's HIP
 |---|---|---|---|
 | **Unique User Identification** (Required) | **Implemented** | Google OAuth provides unique email identity per user | Google OAuth + session token |
 | **Emergency Access Procedure** (Required) | **Implemented** | Emergency access bypass for designated email addresses | `ENABLE_EMERGENCY_ACCESS: true` |
-| **Automatic Logoff — Inactivity** (Addressable) | **Implemented** | Client-side inactivity timeout with configurable duration | `ENABLE_INACTIVITY_TIMEOUT` + heartbeat system |
-| **Automatic Logoff — Absolute** | **Implemented** | Hard session ceiling that cannot be extended by heartbeats | `ABSOLUTE_SESSION_TIMEOUT` |
+| **Automatic Logoff — Inactivity** (Addressable) | **Implemented** | Heartbeat-based: session expires on server when user stops interacting (heartbeat stops extending). Auto sign-out on expiry | `ENABLE_HEARTBEAT` + auto sign-out on timer expiry |
+| **Automatic Logoff — Absolute** | **Implemented** | Hard 16-hour session ceiling that cannot be extended by heartbeats. Auto sign-out on expiry | `ABSOLUTE_SESSION_TIMEOUT: 57600` |
 | **Encryption at Rest** (Addressable) | **Partial** | GAS CacheService is server-side on Google infrastructure; we don't control the encryption layer directly | Google-managed |
 | **Encryption in Transit** (Addressable) | **Implemented** | HTTPS enforced by both GitHub Pages and Google Apps Script | Platform-enforced |
 | **Audit Controls** (Required) | **Implemented** | Audit log writes login, logout, session events to spreadsheet | `ENABLE_AUDIT_LOG: true` |

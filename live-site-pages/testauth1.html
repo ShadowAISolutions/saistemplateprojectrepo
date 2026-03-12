@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.12w">
+  <meta name="build-version" content="v01.13w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1207,7 +1207,7 @@
     // =============================================
 
     var SERVER_SESSION_DURATION = 180;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
-    var ABSOLUTE_SESSION_DURATION = 360; // seconds — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT
+    var ABSOLUTE_SESSION_DURATION = 57600; // seconds (16 hours) — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT
     var SESSION_START_KEY = 'gas_session_start';
     var ABSOLUTE_START_KEY = 'gas_absolute_start';
     var _timerInterval = null;
@@ -1269,10 +1269,12 @@
         var elapsed = (Date.now() - startTime) / 1000;
         var remaining = SERVER_SESSION_DURATION - elapsed;
 
-        // Session countdown
+        // Session countdown — auto sign-out when session expires
         if (remaining <= 0) {
           sessionEl.textContent = 'expired';
           sessionEl.className = 'timer-value critical';
+          performSignOut('session-expired');
+          return;
         } else {
           sessionEl.textContent = formatCountdown(remaining);
           if (remaining <= 60) {
@@ -1292,6 +1294,8 @@
           if (absRemaining <= 0) {
             absoluteEl.textContent = 'expired';
             absoluteEl.className = 'timer-value critical';
+            performSignOut('absolute-expired');
+            return;
           } else {
             absoluteEl.textContent = formatCountdown(absRemaining);
             if (absRemaining <= 60) {
@@ -1479,6 +1483,10 @@
       var message = 'You have been signed out.';
       if (reason === 'inactivity') {
         message = 'Signed out due to inactivity. Click "Sign In with Google" to continue.';
+      } else if (reason === 'session-expired') {
+        message = 'Your session has expired. Click "Sign In with Google" to continue.';
+      } else if (reason === 'absolute-expired') {
+        message = 'Your session has reached the maximum duration. Click "Sign In with Google" to continue.';
       }
       showAuthWall(message);
     }

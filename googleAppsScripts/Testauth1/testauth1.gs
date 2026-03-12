@@ -1,4 +1,4 @@
-var VERSION = "v01.09g";
+var VERSION = "v01.10g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -31,7 +31,7 @@ var PROJECT_OVERRIDES = {
 var PRESETS = {
   standard: {
     SESSION_EXPIRATION: 180,
-    ABSOLUTE_SESSION_TIMEOUT: 360,
+    ABSOLUTE_SESSION_TIMEOUT: 57600,
     ENABLE_HEARTBEAT: true,
     HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
@@ -50,7 +50,7 @@ var PRESETS = {
   },
   hipaa: {
     SESSION_EXPIRATION: 900,
-    ABSOLUTE_SESSION_TIMEOUT: 3600,
+    ABSOLUTE_SESSION_TIMEOUT: 57600,
     ENABLE_HEARTBEAT: true,
     HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,

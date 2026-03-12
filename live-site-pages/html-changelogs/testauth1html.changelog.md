@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-03-12 07:03:32 PM EST — v02.51r
+
+### Changed
+- Maximum session duration increased from 6 minutes to 16 hours
+
+### Added
+- Automatic sign-out when your session expires — you'll see a clear message explaining why and can sign in again immediately
 
 ## [v01.12w] — 2026-03-12 06:16:10 PM EST — v02.49r
 

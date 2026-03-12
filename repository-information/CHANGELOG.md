@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v02.51r] — 2026-03-12 07:03:32 PM EST
+
+### Changed
+- Set absolute session timeout to 16 hours (57600s) for both standard and HIPAA presets
+- Recommend heartbeat over inactivity timeout — heartbeat handles idle session expiry naturally via server-side expiration
+- Updated HIPAA compliance reference to reflect heartbeat-based logoff approach and 16-hour absolute ceiling
+
+### Added
+- Auto sign-out when session or absolute timer expires — users are automatically signed out with a descriptive message instead of just showing "expired" in the timer
+
+#### `testauth1.html` — v01.13w
+
+##### Changed
+- Absolute session duration increased from 6 minutes to 16 hours
+
+##### Added
+- Auto sign-out on session expiry with message "Your session has expired"
+- Auto sign-out on absolute timeout with message "Your session has reached the maximum duration"
+
+#### `testauth1.gs` — v01.10g
+
+##### Changed
+- Standard preset `ABSOLUTE_SESSION_TIMEOUT`: 360s → 57600s (16 hours)
+- HIPAA preset `ABSOLUTE_SESSION_TIMEOUT`: 3600s → 57600s (16 hours)
 
 ## [v02.50r] — 2026-03-12 06:40:07 PM EST
 
