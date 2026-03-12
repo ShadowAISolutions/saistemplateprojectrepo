@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.13w">
+  <meta name="build-version" content="v01.14w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -248,10 +248,9 @@
 
   <div id="auth-timers">
     <div class="timer-header">Session Timers</div>
-    <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
     <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
+    <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
     <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
-    <div class="timer-row" id="timer-inactivity-row"><span class="timer-label">Inactivity:</span><span class="timer-value" id="timer-inactivity">--:--</span></div>
     <button class="test-gas-btn" onclick="testGasCall()">Test GAS Call</button>
     <div class="test-gas-result" id="test-gas-result"></div>
   </div>
@@ -296,11 +295,6 @@
       STORAGE_TYPE: 'localStorage',
       // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
       TOKEN_EXCHANGE_METHOD: 'url',
-      // Client-side inactivity timeout (standard: false / HIPAA: true mandatory)
-      ENABLE_INACTIVITY_TIMEOUT: false,
-      CLIENT_INACTIVITY_TIMEOUT: 720000,  // ms (12 min)
-      // Auto sign-out on inactivity (standard: false / HIPAA: true)
-      ENABLE_AUTO_SIGNOUT: false,
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
       HEARTBEAT_INTERVAL: 30000  // ms (30s) — how often to check for activity and send heartbeat
@@ -1018,7 +1012,6 @@
             ABSOLUTE_SESSION_DURATION = data.absoluteTimeout;
           }
           showApp(data.email, data.displayName);
-          startInactivityTimer();
           startCountdownTimers();
           startHeartbeat();
           // Reload iframe with session token so the app UI loads
@@ -1159,51 +1152,10 @@
     }
 
     // =============================================
-    // AUTH — Inactivity Timeout (Toggle-Gated)
-    // HIPAA: mandatory. Standard: optional (off by default).
-    // =============================================
-
-    var _inactivityTimer = null;
-    var _lastActivityTime = Date.now();
-    var _ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
-
-    function startInactivityTimer() {
-      if (!HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT) return;
-      resetInactivityTimer();
-      _ACTIVITY_EVENTS.forEach(function(evt) {
-        document.addEventListener(evt, resetInactivityTimer, { passive: true });
-      });
-    }
-
-    function resetInactivityTimer() {
-      _lastActivityTime = Date.now();
-      if (_inactivityTimer) clearTimeout(_inactivityTimer);
-      _inactivityTimer = setTimeout(function() {
-        handleInactivityTimeout();
-      }, HTML_CONFIG.CLIENT_INACTIVITY_TIMEOUT);
-    }
-
-    function stopInactivityTimer() {
-      if (_inactivityTimer) clearTimeout(_inactivityTimer);
-      _ACTIVITY_EVENTS.forEach(function(evt) {
-        document.removeEventListener(evt, resetInactivityTimer);
-      });
-    }
-
-    function handleInactivityTimeout() {
-      stopInactivityTimer();
-      if (HTML_CONFIG.ENABLE_AUTO_SIGNOUT) {
-        performSignOut('inactivity');
-      } else {
-        showReauthBanner('Session timed out due to inactivity. Click to continue.', true);
-      }
-    }
-
-    // =============================================
     // AUTH — Countdown Timers
-    // Server session = hard cap from creation (GAS SESSION_EXPIRATION).
+    // Absolute = hard session ceiling (16 hours), never resets.
+    // Session = server-side expiration, extended by heartbeats.
     // Heartbeat = extends session while user is active.
-    // Inactivity = client-side idle timer (only when enabled).
     // =============================================
 
     var SERVER_SESSION_DURATION = 180;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
@@ -1224,8 +1176,6 @@
       var sessionEl = document.getElementById('timer-session');
       var absoluteEl = document.getElementById('timer-absolute');
       var heartbeatEl = document.getElementById('timer-heartbeat');
-      var inactivityEl = document.getElementById('timer-inactivity');
-      var inactivityRow = document.getElementById('timer-inactivity-row');
 
       // Store session start time if not already stored
       var storage = getStorage();
@@ -1244,12 +1194,6 @@
       } else {
         absoluteEl.textContent = 'off';
         absoluteEl.className = 'timer-value disabled';
-      }
-
-      // Hide inactivity row if disabled
-      if (!HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT) {
-        inactivityEl.textContent = 'off';
-        inactivityEl.className = 'timer-value disabled';
       }
 
       // Show heartbeat status
@@ -1329,23 +1273,6 @@
           heartbeatEl.className = 'timer-value critical';
         }
 
-        // Inactivity countdown
-        if (HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT && _inactivityTimer) {
-          var inactivityRemaining = (_lastActivityTime + HTML_CONFIG.CLIENT_INACTIVITY_TIMEOUT - Date.now()) / 1000;
-          if (inactivityRemaining <= 0) {
-            inactivityEl.textContent = 'timed out';
-            inactivityEl.className = 'timer-value critical';
-          } else {
-            inactivityEl.textContent = formatCountdown(inactivityRemaining);
-            if (inactivityRemaining <= 60) {
-              inactivityEl.className = 'timer-value critical';
-            } else if (inactivityRemaining <= 120) {
-              inactivityEl.className = 'timer-value warn';
-            } else {
-              inactivityEl.className = 'timer-value';
-            }
-          }
-        }
       }, 1000);
     }
 
@@ -1367,6 +1294,7 @@
     // expires naturally at SERVER_SESSION_DURATION.
     // =============================================
 
+    var _ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
     var _heartbeatInterval = null;
     var _lastHeartbeatActivity = 0;  // timestamp of last activity seen by heartbeat
     var _lastHeartbeatTick = 0;      // timestamp of the last interval tick (or start)
@@ -1376,7 +1304,7 @@
     function startHeartbeat() {
       if (!HTML_CONFIG.ENABLE_HEARTBEAT) return;
 
-      // Track activity for heartbeat — reuses the same events as inactivity timer
+      // Track activity for heartbeat
       _lastHeartbeatActivity = Date.now();
       _lastHeartbeatTick = Date.now();
       _heartbeatIdle = false;
@@ -1460,7 +1388,6 @@
     function performSignOut(reason) {
       var session = loadSession();
       clearSession();
-      stopInactivityTimer();
       stopCountdownTimers();
       stopHeartbeat();
 
@@ -1481,12 +1408,11 @@
       } catch(e) {}
 
       var message = 'You have been signed out.';
-      if (reason === 'inactivity') {
-        message = 'Signed out due to inactivity. Click "Sign In with Google" to continue.';
-      } else if (reason === 'session-expired') {
+      if (reason === 'session-expired') {
         message = 'Your session has expired. Click "Sign In with Google" to continue.';
       } else if (reason === 'absolute-expired') {
-        message = 'Your session has reached the maximum duration. Click "Sign In with Google" to continue.';
+        var hours = Math.round(ABSOLUTE_SESSION_DURATION / 3600);
+        message = 'Your ' + hours + '-hour session has ended. Please sign in again.';
       }
       showAuthWall(message);
     }
@@ -1562,7 +1488,6 @@
           }
         }
         showApp(session.email);
-        startInactivityTimer();
         startCountdownTimers();
         startHeartbeat();
       } else {

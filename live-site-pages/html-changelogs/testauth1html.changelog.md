@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-03-12 07:12:02 PM EST — v02.52r
+
+### Changed
+- Session timers reordered: Absolute timeout shown first, then Session, then Heartbeat
+- When your session reaches the maximum duration, the sign-out message now tells you how long it was (e.g. "Your 16-hour session has ended")
+
+### Removed
+- Inactivity timer — session expiry is now handled entirely by the heartbeat system (stops extending when you're idle, session expires naturally on the server)
 
 ## [v01.13w] — 2026-03-12 07:03:32 PM EST — v02.51r
 

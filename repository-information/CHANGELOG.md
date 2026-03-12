@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v02.52r] — 2026-03-12 07:12:02 PM EST
+
+### Changed
+- Removed client-side inactivity timeout — heartbeat already handles idle session expiry naturally (no activity → no heartbeat → server session expires)
+- Reordered session timers: Absolute first, Session second, Heartbeat third
+- Absolute session expiry message now shows the duration (e.g. "Your 16-hour session has ended")
+
+### Removed
+- Inactivity timer row from session timers UI
+- `ENABLE_INACTIVITY_TIMEOUT`, `CLIENT_INACTIVITY_TIMEOUT`, `ENABLE_AUTO_SIGNOUT` config options
+- `startInactivityTimer()`, `resetInactivityTimer()`, `stopInactivityTimer()`, `handleInactivityTimeout()` functions
+
+#### `testauth1.html` — v01.14w
+
+##### Changed
+- Reordered session timer display: Absolute → Session → Heartbeat
+- Absolute session expiry sign-out message now indicates the duration ("Your 16-hour session has ended. Please sign in again.")
+
+##### Removed
+- Inactivity timer row and all inactivity timeout logic
+- `ENABLE_INACTIVITY_TIMEOUT`, `CLIENT_INACTIVITY_TIMEOUT`, `ENABLE_AUTO_SIGNOUT` config options
 
 ## [v02.51r] — 2026-03-12 07:03:32 PM EST
 
