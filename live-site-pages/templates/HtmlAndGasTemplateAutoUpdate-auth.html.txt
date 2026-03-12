@@ -130,17 +130,40 @@
     }
     #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
     #gcl-body li { margin-bottom: 4px; }
-    #auth-gate {
+    #auth-wall {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       z-index: 10003; display: flex; align-items: center; justify-content: center;
-      flex-direction: column; background: #1a1a2e; transition: opacity 0.3s ease;
+      flex-direction: column; background: #1a1a2e;
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
     }
-    #auth-gate .auth-title { color: #fff; font: bold 28px/1 sans-serif; margin-bottom: 12px; }
-    #auth-gate .auth-subtitle { color: #8b949e; font: 14px/1.4 sans-serif; margin-bottom: 24px; }
-    #auth-gate .auth-email { color: #7c8bff; font: 13px/1 monospace; margin-top: 12px; }
-    #auth-gate .auth-signout { background: none; border: 1px solid #444; color: #888; padding: 6px 16px;
-      border-radius: 6px; cursor: pointer; font-size: 12px; margin-top: 8px; }
-    #auth-gate .auth-signout:hover { border-color: #666; color: #ccc; }
+    #auth-wall.show { opacity: 1; pointer-events: auto; }
+    .auth-title { color: #fff; font: bold 28px/1 sans-serif; margin-bottom: 12px; }
+    .auth-subtitle { color: #8b949e; font: 14px/1.4 sans-serif; margin-bottom: 24px; text-align: center; max-width: 400px; }
+    .auth-email { color: #7c8bff; font: 13px/1 monospace; margin-top: 12px; }
+    .auth-signin-btn {
+      background: #4285f4; color: #fff; border: none; padding: 10px 24px;
+      border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold;
+      transition: background 0.2s ease;
+    }
+    .auth-signin-btn:hover { background: #3367d6; }
+    .auth-signout-btn {
+      background: none; border: 1px solid #444; color: #888; padding: 6px 16px;
+      border-radius: 6px; cursor: pointer; font-size: 12px; margin-top: 8px;
+    }
+    .auth-signout-btn:hover { border-color: #666; color: #ccc; }
+    #sign-out-btn {
+      position: fixed; top: 8px; right: 8px; z-index: 10002;
+      background: rgba(0,0,0,0.55); color: #ccc; border: none; padding: 4px 12px;
+      border-radius: 12px; font: 11px/1 monospace; cursor: pointer;
+      transition: all 0.3s ease; display: none;
+    }
+    #sign-out-btn:hover { background: rgba(0,0,0,0.75); color: #fff; }
+    #inactivity-warning {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10004;
+      background: #ff9800; color: #000; text-align: center;
+      padding: 8px 16px; font: bold 13px/1.4 sans-serif;
+      display: none; cursor: pointer;
+    }
 /* ══════════════ */
 /* TEMPLATE END */
 /* ══════════════ */
@@ -150,27 +173,19 @@
 <!-- ══════════════ -->
 <!-- TEMPLATE START -->
 <!-- ══════════════ -->
-  <div id="auth-gate">
-    <div class="auth-title">Sign In Required</div>
-    <div class="auth-subtitle">Sign in with your Google account to continue</div>
-    <div id="g_id_onload"
-      data-client_id="YOUR_GOOGLE_CLIENT_ID"
-      data-callback="handleCredentialResponse"
-      data-auto_prompt="false">
-    </div>
-    <div class="g_id_signin"
-      data-type="standard"
-      data-size="large"
-      data-theme="filled_blue"
-      data-text="sign_in_with"
-      data-shape="rectangular">
-    </div>
+  <div id="auth-wall">
+    <div class="auth-title" id="auth-title">Sign In Required</div>
+    <div class="auth-subtitle" id="auth-subtitle">Sign in with your Google account to continue</div>
+    <button class="auth-signin-btn" id="auth-signin-btn" onclick="triggerGisSignIn()">Sign In with Google</button>
     <div id="auth-email" class="auth-email"></div>
-    <button id="auth-signout" class="auth-signout" style="display:none;" onclick="authSignOut()">Sign Out</button>
+    <button id="auth-wall-signout" class="auth-signout-btn" style="display:none;" onclick="signOut()">Sign Out</button>
   </div>
+  <div id="inactivity-warning" onclick="dismissInactivityWarning()">Session expiring soon — click anywhere to stay signed in</div>
+  <button id="sign-out-btn" onclick="signOut()">Sign Out</button>
+
   <div id="splash-web" class="splash"><div class="splash-title">Website Ready</div><img id="splash-logo" src="" alt=""></div>
   <div id="splash-code" class="splash"><div class="splash-title">Code Ready</div><img id="splash-code-logo" src="" alt=""></div>
-  <div id="splash-maintenance" class="splash"><div class="splash-title">🔧This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">🔧</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
+  <div id="splash-maintenance" class="splash"><div class="splash-title">&#x1F527;This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">&#x1F527;</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
 
   <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
   <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
@@ -202,7 +217,7 @@
     // Show/hide: set to false to disable changelog popup on version indicator click
     var SHOW_CHANGELOG = true;
 
-    // Google Auth: Client ID from Google Cloud Console (required for auth gate)
+    // Google Auth: Client ID from Google Cloud Console (required for OAuth2 sign-in)
     var GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
     // Allowed domain: leave empty to allow all Google accounts, or set to restrict (e.g. "yourdomain.com")
     var ALLOWED_DOMAIN = '';
@@ -218,58 +233,249 @@
     document.getElementById('splash-code-logo').src = LOGO_URL;
     document.getElementById('maintenance-logo').src = LOGO_URL;
 
-    // ── Google Auth Gate ──
-    // Decode JWT payload without external library
-    function _decodeJwtPayload(token) {
-      try {
-        var base64Url = token.split('.')[1];
-        var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join('')));
-      } catch(e) { return null; }
-    }
+    // ── Auth State ──
+    var _sessionToken = localStorage.getItem('session-token') || '';
+    var _gasBaseUrl = ''; // Set by iframe IIFE below
+    var _gisLoaded = false;
+    var _gisCallbacks = [];
 
-    function handleCredentialResponse(response) {
-      var payload = _decodeJwtPayload(response.credential);
-      if (!payload || !payload.email) return;
-      // Domain check
-      if (ALLOWED_DOMAIN && payload.email.indexOf('@' + ALLOWED_DOMAIN) === -1) {
-        var emailEl = document.getElementById('auth-email');
-        if (emailEl) emailEl.textContent = 'Access denied — requires @' + ALLOWED_DOMAIN + ' account (signed in as ' + payload.email + ')';
+    // Load GIS library and call back when ready
+    function loadGis(callback) {
+      if (_gisLoaded && window.google && google.accounts && google.accounts.oauth2) {
+        callback();
         return;
       }
-      // Auth successful — store and dismiss gate
-      sessionStorage.setItem('auth-email', payload.email);
-      sessionStorage.setItem('auth-token', response.credential);
-      _dismissAuthGate(payload.email);
+      _gisCallbacks.push(callback);
+      // GIS script tag is already in <head> with async defer
+      // Poll until it's ready
+      var poll = setInterval(function() {
+        if (window.google && google.accounts && google.accounts.oauth2) {
+          clearInterval(poll);
+          _gisLoaded = true;
+          while (_gisCallbacks.length) _gisCallbacks.shift()();
+        }
+      }, 100);
     }
 
-    function _dismissAuthGate(email) {
-      var gate = document.getElementById('auth-gate');
-      if (gate) {
-        gate.style.opacity = '0';
-        setTimeout(function() { gate.style.display = 'none'; }, 300);
+    // ── GIS OAuth2 Token Flow (Improved Pattern) ──
+    function triggerGisSignIn() {
+      loadGis(function() {
+        var client = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'email profile',
+          callback: function(resp) {
+            if (resp && resp.access_token) {
+              // DO NOT store access_token — send to GAS for exchange
+              exchangeForSession(resp.access_token);
+            }
+          }
+        });
+        client.requestAccessToken();
+      });
+    }
+
+    // Send access token to GAS to exchange for opaque session token
+    function exchangeForSession(accessToken) {
+      var iframe = document.getElementById('gas-app');
+      if (!iframe || !_gasBaseUrl) return;
+      iframe.src = _gasBaseUrl + ((_gasBaseUrl.indexOf('?') > -1) ? '&' : '?') + 'exchangeToken=' + encodeURIComponent(accessToken);
+    }
+
+    // Reload GAS iframe with session token
+    function reloadIframe() {
+      var iframe = document.getElementById('gas-app');
+      if (!iframe || !_gasBaseUrl) return;
+      var url = _gasBaseUrl;
+      if (_sessionToken) {
+        url += ((url.indexOf('?') > -1) ? '&' : '?') + 'session=' + encodeURIComponent(_sessionToken);
+      }
+      iframe.src = url;
+    }
+
+    // ── postMessage Handler (origin-validated) ──
+    window.addEventListener('message', function(e) {
+      if (!e.data) return;
+
+      // ORIGIN VALIDATION — only accept messages from GAS iframe
+      if (e.origin && !e.origin.includes('googleusercontent.com')) {
+        return;
+      }
+
+      switch (e.data.type) {
+        case 'gas-session-created':
+          handleSessionCreated(e.data);
+          break;
+        case 'gas-needs-auth':
+          showAuthWall(e.data.authStatus, e.data.email, e.data.version);
+          break;
+        case 'gas-auth-ok':
+          handleAuthOk(e.data);
+          break;
+        case 'gas-needs-reauth':
+          silentReauth();
+          break;
+        case 'gas-reload':
+          // GAS self-update detected — reload page
+          window.location.reload();
+          break;
+        case 'manual-reload':
+          window.location.reload();
+          break;
+        case 'gas-version':
+          // Version check response (used by GAS version polling)
+          break;
+      }
+    });
+
+    function handleSessionCreated(data) {
+      if (data.success && data.sessionToken) {
+        // Store ONLY the opaque session token (not the Google token)
+        localStorage.setItem('session-token', data.sessionToken);
+        _sessionToken = data.sessionToken;
+        if (data.email) localStorage.setItem('session-email', data.email);
+
+        // Hide auth wall and reload iframe with session token
+        hideAuthWall();
+        document.getElementById('sign-out-btn').style.display = '';
+        reloadIframe();
+        resetInactivityTimer();
+      } else {
+        // Exchange failed — show appropriate auth wall
+        showAuthWall(data.error, data.email);
       }
     }
 
-    function authSignOut() {
-      sessionStorage.removeItem('auth-email');
-      sessionStorage.removeItem('auth-token');
-      var gate = document.getElementById('auth-gate');
-      if (gate) { gate.style.opacity = '1'; gate.style.display = 'flex'; }
+    function handleAuthOk(data) {
+      document.getElementById('sign-out-btn').style.display = '';
+      hideAuthWall();
+      resetInactivityTimer();
+
+      // Check if server flagged re-auth needed
+      if (data.needsReauth) {
+        silentReauth();
+      }
+    }
+
+    function showAuthWall(status, email, version) {
+      var wall = document.getElementById('auth-wall');
+      var title = document.getElementById('auth-title');
+      var subtitle = document.getElementById('auth-subtitle');
       var emailEl = document.getElementById('auth-email');
-      if (emailEl) emailEl.textContent = '';
-      document.getElementById('auth-signout').style.display = 'none';
+      var signinBtn = document.getElementById('auth-signin-btn');
+      var wallSignout = document.getElementById('auth-wall-signout');
+
+      if (status === 'not_authorized' || status === 'no_spreadsheet_access') {
+        title.textContent = 'Access Denied';
+        subtitle.textContent = 'Your account does not have access to this application.';
+        if (email) emailEl.textContent = email;
+        signinBtn.style.display = 'none';
+        wallSignout.style.display = '';
+      } else if (status === 'session_expired') {
+        title.textContent = 'Session Expired';
+        subtitle.textContent = 'Your session has expired. Please sign in again.';
+        emailEl.textContent = '';
+        signinBtn.style.display = '';
+        wallSignout.style.display = 'none';
+      } else {
+        title.textContent = 'Sign In Required';
+        subtitle.textContent = 'Sign in with your Google account to continue';
+        emailEl.textContent = '';
+        signinBtn.style.display = '';
+        wallSignout.style.display = 'none';
+      }
+
+      wall.classList.add('show');
+      document.getElementById('sign-out-btn').style.display = 'none';
+      clearInactivityTimer();
     }
 
-    // Check for existing session auth on page load
-    (function() {
-      var savedEmail = sessionStorage.getItem('auth-email');
-      if (savedEmail) {
-        _dismissAuthGate(savedEmail);
+    function hideAuthWall() {
+      var wall = document.getElementById('auth-wall');
+      wall.classList.remove('show');
+    }
+
+    // ── Silent Re-Authentication ──
+    function silentReauth() {
+      loadGis(function() {
+        var client = google.accounts.oauth2.initTokenClient({
+          client_id: GOOGLE_CLIENT_ID,
+          scope: 'email profile',
+          prompt: '', // Empty prompt = try silent auth
+          callback: function(resp) {
+            if (resp && resp.access_token) {
+              exchangeForSession(resp.access_token);
+            }
+            // If silent auth fails, current session continues until it expires
+          }
+        });
+        client.requestAccessToken();
+      });
+    }
+
+    // ── Sign-Out (Server-Side Invalidation) ──
+    function signOut() {
+      var confirmed = confirm('Sign out of this application?');
+      if (!confirmed) return;
+
+      // 1. Invalidate session on the server via iframe
+      if (_sessionToken && _gasBaseUrl) {
+        var iframe = document.getElementById('gas-app');
+        if (iframe) {
+          iframe.src = _gasBaseUrl + ((_gasBaseUrl.indexOf('?') > -1) ? '&' : '?') + 'signOut=' + encodeURIComponent(_sessionToken);
+        }
       }
-    })();
+
+      // 2. Clear client-side state
+      localStorage.removeItem('session-token');
+      localStorage.removeItem('session-email');
+      _sessionToken = '';
+
+      // 3. Show auth wall
+      showAuthWall('not_signed_in', '');
+    }
+
+    // ── Inactivity Timeout ──
+    var INACTIVITY_LIMIT = 25 * 60 * 1000;  // 25 minutes (less than server TTL of 30 min)
+    var INACTIVITY_WARNING = 2 * 60 * 1000;  // 2-minute warning before expiry
+    var _inactivityTimer = null;
+    var _warningTimer = null;
+
+    function resetInactivityTimer() {
+      clearTimeout(_inactivityTimer);
+      clearTimeout(_warningTimer);
+      dismissInactivityWarning();
+
+      _warningTimer = setTimeout(function() {
+        var warning = document.getElementById('inactivity-warning');
+        if (warning) warning.style.display = 'block';
+      }, INACTIVITY_LIMIT - INACTIVITY_WARNING);
+
+      _inactivityTimer = setTimeout(function() {
+        // Session likely expired on server — force sign-out
+        localStorage.removeItem('session-token');
+        localStorage.removeItem('session-email');
+        _sessionToken = '';
+        showAuthWall('session_expired', '');
+      }, INACTIVITY_LIMIT);
+    }
+
+    function clearInactivityTimer() {
+      clearTimeout(_inactivityTimer);
+      clearTimeout(_warningTimer);
+      dismissInactivityWarning();
+    }
+
+    function dismissInactivityWarning() {
+      var warning = document.getElementById('inactivity-warning');
+      if (warning) warning.style.display = 'none';
+    }
+
+    // Reset timer on user activity
+    ['click', 'keydown', 'mousemove', 'touchstart'].forEach(function(evt) {
+      document.addEventListener(evt, function() {
+        if (_sessionToken) resetInactivityTimer();
+      }, { passive: true });
+    });
 
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {
@@ -537,18 +743,32 @@
       checkForUpdate();
     })();
 
+    // Auth-aware iframe IIFE — creates iframe and handles initial auth check
     (function() {
       var _e = '';
       if (!_e) return;
       var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return; }
       if (!_u) return;
+
+      _gasBaseUrl = _u;
+
       // cr34t3 1fr4m3
       var f = document.createElement(atob('aWZyYW1l'));
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
-      window._r = _u;
-      f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
       document.body.appendChild(f);
+
+      // Check for existing session token
+      if (_sessionToken) {
+        // Load iframe with session token — GAS will validate
+        var url = _u + ((_u.indexOf('?') > -1) ? '&' : '?') + 'session=' + encodeURIComponent(_sessionToken);
+        f.src = url;
+        document.getElementById('sign-out-btn').style.display = '';
+        resetInactivityTimer();
+      } else {
+        // No session — show auth wall immediately
+        showAuthWall('not_signed_in', '');
+      }
     })();
 
     // GAS auto-refresh: poll <pagename>gs.version.txt for GAS version changes

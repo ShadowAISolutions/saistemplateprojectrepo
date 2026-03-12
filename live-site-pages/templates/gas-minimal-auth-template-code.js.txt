@@ -10,9 +10,21 @@ var EMBED_PAGE_URL = "YOUR_EMBED_PAGE_URL";
 // ══════════════
 // AUTH CONFIG
 // ══════════════
+// Spreadsheet ID used for authorization (editors/viewers = authorized users).
+// Leave as placeholder to skip spreadsheet access check (only Google token validation + domain check).
+var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";
 // Leave ALLOWED_DOMAIN empty to allow all signed-in Google users.
 // Set to a domain (e.g. "yourdomain.com") to restrict access to that domain only.
 var ALLOWED_DOMAIN = "";
+
+// ══════════════
+// AUTH CONSTANTS
+// ══════════════
+var SESSION_EXPIRATION = 1800;     // 30 minutes in seconds
+var SESSION_REFRESH_WINDOW = 300;  // Refresh token if <5 min remaining
+var OAUTH_TOKEN_LIFETIME = 3600;   // Google access tokens last ~1 hour
+var OAUTH_REFRESH_BUFFER = 900;    // Refresh Google token if <15 min remaining
+var MAX_SESSIONS_PER_USER = 1;     // Set to 0 for unlimited
 
 // ══════════════
 // PROJECT START
@@ -26,23 +38,292 @@ var ALLOWED_DOMAIN = "";
 // TEMPLATE START
 // ══════════════
 
-function doGet() {
-  // Auth: get signed-in user's email (requires access: "ANYONE" in appsscript.json)
-  var userEmail = Session.getActiveUser().getEmail() || "";
+// =============================================
+// AUTH — Session Management (Server-Side)
+// =============================================
 
-  // Optional domain restriction
-  if (ALLOWED_DOMAIN && userEmail && userEmail.indexOf("@" + ALLOWED_DOMAIN) === -1) {
-    return HtmlService.createHtmlOutput(
-      '<html><head><style>body{font-family:Arial;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#fafafa;}'
-      + '.msg{text-align:center;padding:40px;border-radius:12px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.1);}'
-      + 'h2{color:#d32f2f;margin:0 0 12px;}p{color:#666;margin:4px 0;}</style></head>'
-      + '<body><div class="msg"><h2>Access Denied</h2>'
-      + '<p>This app requires a <strong>@' + ALLOWED_DOMAIN + '</strong> account.</p>'
-      + '<p style="font-size:12px;color:#999;">Signed in as: ' + userEmail + '</p>'
-      + '</div></body></html>'
-    ).setTitle(TITLE).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+function exchangeTokenForSession(accessToken) {
+  if (!accessToken) {
+    return { success: false, error: "no_token" };
   }
 
+  var userInfo = validateGoogleToken(accessToken);
+  if (!userInfo || userInfo.status === "not_signed_in") {
+    return { success: false, error: "invalid_token" };
+  }
+
+  // Optional domain restriction
+  if (ALLOWED_DOMAIN && userInfo.email.indexOf("@" + ALLOWED_DOMAIN) === -1) {
+    return { success: false, error: "not_authorized", email: userInfo.email };
+  }
+
+  // Check spreadsheet access (if configured)
+  if (SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID") {
+    if (!checkSpreadsheetAccess(userInfo.email)) {
+      return { success: false, error: "not_authorized", email: userInfo.email };
+    }
+  }
+
+  // Enforce single-session
+  if (MAX_SESSIONS_PER_USER > 0) {
+    invalidateAllSessions(userInfo.email);
+  }
+
+  // Create session token (opaque UUID)
+  var sessionToken = Utilities.getUuid() + Utilities.getUuid();
+  sessionToken = sessionToken.replace(/-/g, "").substring(0, 48);
+
+  var sessionData = {
+    email: userInfo.email,
+    displayName: userInfo.displayName,
+    accessToken: accessToken,
+    createdAt: Date.now(),
+    lastActivity: Date.now(),
+    tokenObtainedAt: Date.now()
+  };
+
+  var cache = CacheService.getScriptCache();
+  cache.put("session_" + sessionToken, JSON.stringify(sessionData), SESSION_EXPIRATION);
+
+  trackUserSession(userInfo.email, sessionToken);
+
+  return {
+    success: true,
+    sessionToken: sessionToken,
+    email: userInfo.email,
+    displayName: userInfo.displayName
+  };
+}
+
+function validateSession(sessionToken) {
+  if (!sessionToken || sessionToken.length < 32) {
+    return { status: "not_signed_in" };
+  }
+
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get("session_" + sessionToken);
+  if (!raw) {
+    return { status: "not_signed_in" };
+  }
+
+  var sessionData;
+  try {
+    sessionData = JSON.parse(raw);
+  } catch (e) {
+    return { status: "not_signed_in" };
+  }
+
+  // Check session expiry (belt-and-suspenders — CacheService TTL is primary)
+  var elapsed = (Date.now() - sessionData.createdAt) / 1000;
+  if (elapsed > SESSION_EXPIRATION) {
+    cache.remove("session_" + sessionToken);
+    return { status: "not_signed_in" };
+  }
+
+  // Refresh Google token if needed
+  refreshGoogleTokenIfNeeded(sessionToken, sessionData);
+
+  // Update last activity (extends the session)
+  sessionData.lastActivity = Date.now();
+  cache.put("session_" + sessionToken, JSON.stringify(sessionData), SESSION_EXPIRATION);
+
+  return {
+    status: "authorized",
+    email: sessionData.email,
+    displayName: sessionData.displayName,
+    needsReauth: sessionData.needsReauth || false
+  };
+}
+
+function invalidateSession(sessionToken) {
+  if (!sessionToken) return;
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get("session_" + sessionToken);
+  if (raw) {
+    try {
+      var sessionData = JSON.parse(raw);
+      removeUserSession(sessionData.email, sessionToken);
+    } catch (e) {}
+  }
+  cache.remove("session_" + sessionToken);
+}
+
+function invalidateAllSessions(email) {
+  if (!email) return;
+  var cache = CacheService.getScriptCache();
+  var trackKey = "sessions_" + email.toLowerCase();
+  var raw = cache.get(trackKey);
+  if (!raw) return;
+  try {
+    var tokens = JSON.parse(raw);
+    for (var i = 0; i < tokens.length; i++) {
+      cache.remove("session_" + tokens[i]);
+    }
+  } catch (e) {}
+  cache.remove(trackKey);
+}
+
+// =============================================
+// AUTH — Google Token Operations (Server-Side Only)
+// =============================================
+
+function validateGoogleToken(accessToken) {
+  try {
+    var resp = UrlFetchApp.fetch(
+      "https://www.googleapis.com/oauth2/v3/userinfo",
+      {
+        headers: { "Authorization": "Bearer " + accessToken },
+        muteHttpExceptions: true
+      }
+    );
+    if (resp.getResponseCode() !== 200) {
+      return { status: "not_signed_in" };
+    }
+    var info = JSON.parse(resp.getContentText());
+    if (!info.email) {
+      return { status: "not_signed_in" };
+    }
+    var prefix = info.email.split("@")[0];
+    var displayName = prefix.split(/[._-]/).map(function(part) {
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    }).join(" ");
+    return { status: "authorized", email: info.email, displayName: displayName };
+  } catch (e) {
+    return { status: "not_signed_in" };
+  }
+}
+
+function refreshGoogleTokenIfNeeded(sessionToken, sessionData) {
+  var tokenAge = (Date.now() - sessionData.tokenObtainedAt) / 1000;
+  if (tokenAge < (OAUTH_TOKEN_LIFETIME - OAUTH_REFRESH_BUFFER)) {
+    return; // Token is still fresh
+  }
+  // Mark the session as needing re-authentication
+  sessionData.needsReauth = true;
+  var cache = CacheService.getScriptCache();
+  cache.put("session_" + sessionToken, JSON.stringify(sessionData), SESSION_EXPIRATION);
+}
+
+// =============================================
+// AUTH — Session Tracking (for single-session enforcement)
+// =============================================
+
+function trackUserSession(email, sessionToken) {
+  var cache = CacheService.getScriptCache();
+  var trackKey = "sessions_" + email.toLowerCase();
+  var raw = cache.get(trackKey);
+  var tokens = [];
+  if (raw) {
+    try { tokens = JSON.parse(raw); } catch (e) {}
+  }
+  tokens.push(sessionToken);
+  cache.put(trackKey, JSON.stringify(tokens), SESSION_EXPIRATION);
+}
+
+function removeUserSession(email, sessionToken) {
+  if (!email) return;
+  var cache = CacheService.getScriptCache();
+  var trackKey = "sessions_" + email.toLowerCase();
+  var raw = cache.get(trackKey);
+  if (!raw) return;
+  try {
+    var tokens = JSON.parse(raw);
+    tokens = tokens.filter(function(t) { return t !== sessionToken; });
+    if (tokens.length > 0) {
+      cache.put(trackKey, JSON.stringify(tokens), SESSION_EXPIRATION);
+    } else {
+      cache.remove(trackKey);
+    }
+  } catch (e) {}
+}
+
+// =============================================
+// AUTH — Authorization (Spreadsheet Access)
+// =============================================
+
+function checkSpreadsheetAccess(email, opt_ss) {
+  if (!email) return false;
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return true;
+  var lowerEmail = email.toLowerCase();
+
+  var cache = CacheService.getScriptCache();
+  var cacheKey = "access_" + lowerEmail;
+  var cached = cache.get(cacheKey);
+  if (cached !== null) return cached === "1";
+
+  var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
+  var editors = ss.getEditors();
+  for (var i = 0; i < editors.length; i++) {
+    if (editors[i].getEmail().toLowerCase() === lowerEmail) {
+      cache.put(cacheKey, "1", 600);
+      return true;
+    }
+  }
+  var viewers = ss.getViewers();
+  for (var i = 0; i < viewers.length; i++) {
+    if (viewers[i].getEmail().toLowerCase() === lowerEmail) {
+      cache.put(cacheKey, "1", 600);
+      return true;
+    }
+  }
+  cache.put(cacheKey, "0", 600);
+  return false;
+}
+
+// =============================================
+// WEB APP ENTRY POINT
+// =============================================
+
+function doGet(e) {
+  var sessionToken = (e && e.parameter && e.parameter.session) || "";
+  var exchangeToken = (e && e.parameter && e.parameter.exchangeToken) || "";
+  var signOutToken = (e && e.parameter && e.parameter.signOut) || "";
+
+  // Sign-out flow: invalidate session and return confirmation
+  if (signOutToken) {
+    invalidateSession(signOutToken);
+    var signOutHtml = '<!DOCTYPE html><html><body><script>'
+      + 'window.parent.postMessage({type:"gas-needs-auth",authStatus:"not_signed_in",email:"",version:"' + VERSION + '"}, "*");'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(signOutHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Token exchange flow: client sends Google access token, gets session token back
+  if (exchangeToken) {
+    var result = exchangeTokenForSession(exchangeToken);
+    var exchangeHtml = '<!DOCTYPE html><html><body><script>'
+      + 'window.parent.postMessage('
+      + JSON.stringify({
+          type: "gas-session-created",
+          success: result.success,
+          sessionToken: result.sessionToken || "",
+          email: result.email || "",
+          displayName: result.displayName || "",
+          error: result.error || ""
+        })
+      + ', "*");'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(exchangeHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Normal flow: validate session token
+  var session = validateSession(sessionToken);
+
+  if (session.status !== "authorized") {
+    // Session invalid — tell wrapper to show auth wall
+    var authHtml = '<!DOCTYPE html><html><body><script>'
+      + 'window.parent.postMessage({type:"gas-needs-auth",authStatus:"' + session.status + '",email:"' + (session.email || '') + '",version:"' + VERSION + '"}, "*");'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(authHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Session valid — build the app HTML
   var html = `
     <html>
     <head>
@@ -53,14 +334,17 @@ function doGet() {
         html, body { height: 100%; margin: 0; overflow: auto; }
         body { font-family: Arial; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: 8px; right: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
       </style>
     </head>
     <body>
       <h2 id="version">${VERSION}</h2>
-      <div id="user-email">${userEmail}</div>
+      <div id="user-email">${session.email}</div>
 
       <script>
+        // Notify wrapper that auth is OK
+        window.parent.postMessage({type: 'gas-auth-ok', version: '${VERSION}', needsReauth: ${session.needsReauth || false}}, '*');
+
         window.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
@@ -95,8 +379,12 @@ function doPost(e) {
 
 function getAppData() {
   var data = { version: VERSION, title: TITLE };
-  data.userEmail = Session.getActiveUser().getEmail() || "";
   return data;
+}
+
+function serverSignOut(sessionToken) {
+  invalidateSession(sessionToken);
+  return { success: true };
 }
 
 function pullAndDeployFromGitHub() {
