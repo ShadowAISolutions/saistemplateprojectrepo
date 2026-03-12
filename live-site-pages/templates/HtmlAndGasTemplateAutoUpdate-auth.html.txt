@@ -971,13 +971,11 @@
           saveSession(data.sessionToken, data.email);
           showApp(data.email, data.displayName);
           startInactivityTimer();
-          // For postMessage path: reload iframe with session token
-          if (HTML_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage') {
-            var gasApp = document.getElementById('gas-app');
-            var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
-            if (gasApp && baseUrl) {
-              gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
-            }
+          // Reload iframe with session token so the app UI loads
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
           }
         } else {
           showAuthWall('Authentication failed: ' + (data.error || 'Unknown error'), data.email);

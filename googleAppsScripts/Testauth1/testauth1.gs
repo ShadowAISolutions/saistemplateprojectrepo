@@ -1,4 +1,4 @@
-var VERSION = "v01.03g";
+var VERSION = "v01.04g";
 var TITLE = "YOUR_PROJECT_TITLE";
 var GITHUB_OWNER  = "YOUR_ORG_NAME";
 var GITHUB_REPO   = "YOUR_REPO_NAME";
@@ -599,17 +599,17 @@ function doGet(e) {
       } catch (err) {
         result = { success: false, error: "server_error: " + (err.message || String(err)) };
       }
-      var exchangeHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage('
-        + JSON.stringify({
+      var payload = JSON.stringify({
             type: "gas-session-created",
             success: result.success,
             sessionToken: result.sessionToken || "",
             email: result.email || "",
             displayName: result.displayName || "",
             error: result.error || ""
-          })
-        + ', "*");'
+          });
+      var exchangeHtml = '<!DOCTYPE html><html><body><script>'
+        + 'console.log("[GAS DEBUG] exchange response loaded, sending:", ' + JSON.stringify(payload.substring(0, 100)) + ');'
+        + 'try { window.top.postMessage(' + payload + ', "*"); } catch(e) { console.log("[GAS DEBUG] postMessage error:", e.message); }'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(exchangeHtml)
         .setTitle(TITLE)
