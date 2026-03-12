@@ -21,10 +21,10 @@ paths:
 - Each version file uses pipe delimiters: `|v01.08w|`. The version is always the middle field (between the pipes). The polling logic splits on `|` and reads `parts[1]`, stripping the `v` prefix for internal comparison. The pipes stay in place at all times — switching to maintenance mode only changes the first field
 - **html.version.txt is the single source of truth** — the HTML pages contain a `<meta name="build-version">` tag for informational purposes, but the polling logic does **not** read it. On page load, the polling logic immediately fetches html.version.txt, stores the version as the baseline, creates the version indicator pill, and begins the 10-second polling loop. This means bumping the version in html.version.txt alone (without editing the HTML meta tag) will trigger a reload correctly — after the reload, the page establishes the new version as its baseline, preventing an infinite loop. The meta tag is kept in sync with html.version.txt during commits for visibility, but it is never involved in the reload mechanism
 - The polling logic fetches the version file (~7 bytes) instead of the full HTML page, reducing bandwidth per poll from kilobytes to bytes
-- URL resolution: derive the version file URL relative to the current page's directory, using the page's own filename. See the template file (`live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt`) for the implementation
+- URL resolution: derive the version file URL relative to the current page's directory, using the page's own filename. See the HTML template files (`live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-noauth.html.txt` or `HtmlAndGasTemplateAutoUpdate-auth.html.txt`) for the implementation
 - **The `if (!pageName)` fallback is critical** — when a page is accessed via a directory URL (e.g. `https://example.github.io/myapp/`), `pageName` resolves to an empty string. Without the fallback to `'index'`, the poll fetches `html.version.txt` (wrong file) and triggers an infinite reload loop
 - Cache-bust with a query param: `fetch(versionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })`
-- The template in `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` already implements this pattern — use it as a starting point for new projects
+- The HTML templates in `live-site-pages/templates/` (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt`) already implement this pattern — use them as a starting point for new projects
 
 ### Maintenance Mode via html.version.txt
 The html.version.txt polling system supports a **maintenance mode** that displays a full-screen orange overlay when the first field is `maintenance`. The format always uses pipe (`|`) delimiters — you never need to add or remove pipes, just edit the fields:
@@ -61,7 +61,7 @@ The html.version.txt polling system also supports an **inactive mode** using the
 
 When creating a **new** HTML embedding page, follow every step below:
 
-1. **Copy the template** — start from `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` (the HTML page template), which already includes:
+1. **Copy the template** — start from the appropriate HTML template in `live-site-pages/templates/` (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt` for standard pages, or `HtmlAndGasTemplateAutoUpdate-auth.html.txt` for pages with Google Authentication), which already includes:
    - Version file polling logic (fetches html.version.txt on load, then polls every 10 seconds)
    - Version indicator pill (bottom-right corner)
    - Green "Website Ready" + blue "Code Ready" splash overlays + sound playback
@@ -134,9 +134,9 @@ Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-v
 
 *Rule: see Pre-Commit Checklist item #20 in CLAUDE.md.*
 
-When either template source file is modified, **propagate the same changes to all existing pages/GAS scripts** in the repo. The two template sources are:
-- **HTML template**: `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` → propagate to all `.html` pages in `live-site-pages/`
-- **GAS template**: `live-site-pages/templates/gas-minimal-template-code.js.txt` (default) → propagate to all `.gs` files in `googleAppsScripts/`. A full-featured variant (`gas-test-template-code.js.txt`) also exists but is not the propagation source
+When any template source file is modified, **propagate the same changes to all existing pages/GAS scripts** in the repo. The template sources are:
+- **HTML templates**: `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt` → propagate to all `.html` pages in `live-site-pages/`. Changes to shared template logic in either variant must be applied to both variants and to all existing pages
+- **GAS templates**: `live-site-pages/templates/gas-minimal-noauth-template-code.js.txt` (default) → propagate to all `.gs` files in `googleAppsScripts/`. Auth variants (`gas-minimal-auth-template-code.js.txt`) and test variants (`gas-test-noauth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) also exist — shared template logic changes must be propagated across all variants
 
 ### What "propagate" means
 - Apply the **same structural/feature change** (the diff) to each existing page or GAS script — do NOT blindly overwrite files. Each page has its own title, config values, deployment IDs, localStorage keys, and page-specific customizations that must be preserved
@@ -161,11 +161,11 @@ When a conflict is detected:
 
 ### Version bumps
 - Each propagated page/script gets its own version bump per Pre-Commit items #1 and #2 — the template change counts as a modification to each file
-- The template version file (`HtmlAndGasTemplateAutoUpdatehtml.version.txt`) is **never bumped** (Pre-Commit item #4)
+- Templates don't have their own version files — Pre-Commit item #4 confirms templates are exempt from version tracking
 
 ### Propagation scope
 - **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
-- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from the GAS template. The GAS template (`gas-minimal-template-code.js.txt`) uses `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
+- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from a GAS template. The GAS templates (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-noauth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) use `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
 
 ## Template vs Project Code Separation (HTML)
 
@@ -295,7 +295,7 @@ function showSplash() {
 - Same rules as GAS files: TEMPLATE markers delineate shared template code, PROJECT markers delineate page-specific code. Template updates propagate only within TEMPLATE markers, PROJECT blocks are preserved as-is
 - Inline `// PROJECT:` markers for project-specific additions that must live inside template territory (same as GAS files)
 - `PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
-- **The HTML template source** (`HtmlAndGasTemplateAutoUpdate.html.txt`) has empty PROJECT blocks — placeholders for page-specific content
+- **The HTML template sources** (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt`) have empty PROJECT blocks — placeholders for page-specific content
 - **Template propagation** (Pre-Commit #20) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched. When `PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **New pages** must include all 6 marker pairs (TEMPLATE START/END + PROJECT START/END in CSS, body HTML, and JS). The `setup-gas-project.sh` script creates pages from the template which already contains these markers
 

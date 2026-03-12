@@ -177,12 +177,18 @@ When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` wo
 
 ## GAS Template Source File
 
-`live-site-pages/templates/gas-minimal-template-code.js.txt` is the **single source of truth** for the default GAS template. It contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
+The GAS templates in `live-site-pages/templates/` are the **single source of truth** for GAS project scaffolding. Four variants exist covering the combinations of test features (yes/no) and Google auth (yes/no):
+- `gas-minimal-noauth-template-code.js.txt` — minimal, no auth (default)
+- `gas-minimal-auth-template-code.js.txt` — minimal with Google auth
+- `gas-test-noauth-template-code.js.txt` — full-featured with test UI, no auth
+- `gas-test-auth-template-code.js.txt` — full-featured with test UI and Google auth
 
-1. **Browser "Copy Code.gs" button** — GAS-enabled HTML pages fetch this file and do find-and-replace with the user's config values before copying to clipboard
-2. **Setup script template** — `scripts/setup-gas-project.sh` copies this file as the starting point for new GAS projects, then substitutes config values via sed
+Each contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
 
-There is no separate `.gs` template file — this single file eliminates the sync problem that existed when two copies had to be kept in lockstep. It lives in `live-site-pages/templates/` because it must be accessible via GitHub Pages `fetch()`, and the setup script can read it from any location in the repo.
+1. **Browser "Copy Code.gs" button** — the gas-project-creator page fetches the appropriate template based on checkbox selections and does find-and-replace with the user's config values before copying to clipboard
+2. **Setup script template** — `scripts/setup-gas-project.sh` selects the correct template based on `INCLUDE_TEST` and `INCLUDE_AUTH` config fields, copies it as the starting point for new GAS projects, then substitutes config values via sed
+
+The templates live in `live-site-pages/templates/` because they must be accessible via GitHub Pages `fetch()`, and the setup script can read them from any location in the repo.
 
 *Template source propagation: when this file is modified, changes must be propagated to all existing `.gs` files — see `.claude/rules/html-pages.md` — section "Template Source Propagation" (Pre-Commit #20)*
 
@@ -260,7 +266,7 @@ function doGet(e) {
 - `// PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
 - **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is. When `// PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **Keep clusters large** — prefer grouping related project-specific code together rather than scattering small project additions throughout the file. When practical, extract project logic into standalone functions in the PROJECT block and call them from template functions with an inline `// PROJECT:` marker
-- **The template source files** (`gas-minimal-template-code.js.txt` and `gas-test-template-code.js.txt`) have empty PROJECT blocks — they define the insertion point but contain no project code themselves
+- **The template source files** (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-noauth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) have empty PROJECT blocks — they define the insertion point but contain no project code themselves
 
 ## GAS UI Layout Awareness
 

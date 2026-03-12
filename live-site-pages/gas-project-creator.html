@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <title>GAS Project Creator</title>
   <style>
 /* ══════════════ */
@@ -1230,19 +1230,25 @@
 
 // ── Copy Code.gs ──
     (function() {
-      var _gsCodeFull = null;
-      var _gsCodeMinimal = null;
-      fetch('templates/gas-test-template-code.js.txt')
-        .then(function(r) { return r.text(); })
-        .then(function(t) { _gsCodeFull = t; })
-        .catch(function() {});
-      fetch('templates/gas-minimal-template-code.js.txt')
-        .then(function(r) { return r.text(); })
-        .then(function(t) { _gsCodeMinimal = t; })
-        .catch(function() {});
+      // Load all 4 GAS template variants (test/minimal × auth/noauth)
+      var _gsTemplates = {};
+      var _templateFiles = {
+        'minimal-noauth': 'templates/gas-minimal-noauth-template-code.js.txt',
+        'minimal-auth':   'templates/gas-minimal-auth-template-code.js.txt',
+        'test-noauth':    'templates/gas-test-noauth-template-code.js.txt',
+        'test-auth':      'templates/gas-test-auth-template-code.js.txt'
+      };
+      Object.keys(_templateFiles).forEach(function(key) {
+        fetch(_templateFiles[key])
+          .then(function(r) { return r.text(); })
+          .then(function(t) { _gsTemplates[key] = t; })
+          .catch(function() {});
+      });
       window.copyGsCode = function(btn) {
         var useFull = document.getElementById('chk-full-template').checked;
-        var source = useFull ? _gsCodeFull : _gsCodeMinimal;
+        var useAuth = document.getElementById('chk-google-auth').checked;
+        var templateKey = (useFull ? 'test' : 'minimal') + '-' + (useAuth ? 'auth' : 'noauth');
+        var source = _gsTemplates[templateKey];
         if (!source) { btn.textContent = 'Loading...'; return; }
         var code = source;
         // Inject config values from form fields into the code
@@ -1373,6 +1379,8 @@
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'YOUR_SHEET_NAME';
       var soundId = document.getElementById('cfg-sound-id').value.trim() || 'YOUR_SOUND_FILE_ID';
       var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'YOUR_SPLASH_LOGO_URL';
+      var includeTest = document.getElementById('chk-full-template').checked;
+      var includeAuth = document.getElementById('chk-google-auth').checked;
 
       var json = '{\n'
         + '  "PROJECT_ENVIRONMENT_NAME": "' + envName + '",\n'
@@ -1381,7 +1389,9 @@
         + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
         + '  "SHEET_NAME": "' + sheetName + '",\n'
         + '  "SOUND_FILE_ID": "' + soundId + '",\n'
-        + '  "SPLASH_LOGO_URL": "' + splashLogo + '"\n'
+        + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'
+        + '  "INCLUDE_TEST": ' + (includeTest ? 'true' : 'false') + ',\n'
+        + '  "INCLUDE_AUTH": ' + (includeAuth ? 'true' : 'false') + '\n'
         + '}';
 
       var command = "Set up a new GAS project. Run the script, then commit and push.\n\n"

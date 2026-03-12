@@ -4,7 +4,7 @@
 
 ## 1. Flowchart — System Overview
 
-> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqtWG1v2zYQ_iuE-qVpKzvoS9oE6AbXVhy3SmJYTreiLgxaomQ2lCiIklOvKbAfsV-4X7IjKcmyXlJvWL4EoJ57jvfw7nj0d8PlHjHOjCDB8RrN3y0iBH8iW-mFhTEjMRc05cn2DAlMRUrCmOGUxAn_Stw0gc8LQ1vJP48msEp5pLh26xXGEdkQxmOSoN94cuszflclkH8j6-PnKq6PhgxnHkFD2OzC-LKPHr4DsKsA_SdoleDIXTdAQIlM85f7hRFnAj7fg9kOQSKvY7PDSX84Qn__-RfCWcrNkCQBMbWz3jZk6HOhx5d6EPtKVL_MZ5Px2Jp9XxhT2AtKOSp2_-vC-FEPTm67MGnlUXF9IuIeOReD5fDCGn4A6iEPQ5rKpcUieosYFqkJZ-YSIYjX9FOa7thGlm3NraUzH9iWOg5GUoJotCYJTYlXKL2IHotbGiMlzVFD-H3iK36PLq3ZWBJeSgPgg_hDTKOGpcKp6G-mo4HcycUAzG5iD-QGt_shma4KuCfWuMG0s1d0o8n5ORAN18S9RQGI5FHfb2YMoPKUYXRDTCgCYsY4IKKP3DWOAuLJNJoOxpazPLcHY6BUn838K3qL0iQjDxH3AlHlGg-c5cia2teflN4x41u5hjYUIzdLGJpeO_MG385KR6eP7d2sS80SsDvUn1XPLsicQXpbqtXulAR2VQIozrNcn_J9h3l3DY5pepGt0FSKi7QsIYnSZtfY0e70a5xdyiF3qpSNaO3JR5mfNlgih6pcc9bY43eDicNZJmta9CBv1tmqR3m_syt-6d6fklH6OSR-K9rQhEcyZoEeqz0fdXcbu3bwk6uR9TuEs-tUUHMe-dZbpyGT1WvjyKNRoMRo1u_ccuZqz_sUKYGYd_sqyeawjiobPmpL1_nUbqEMsDBz_Uw3IRjunJJWVsFUf0ND_W2f-YHs4TxgBA3iWCDHTWgMIh7Stes6yjLr1DIQrWUpxXtYt5phdxiQgQn0lBkRPEug5f2nGK6u31sfPtn2_p56EQh7u2Ws2byvRvtQcB55ot8AXswv7eVHa-bsw-XxmRuSCFkyTaux02ITiAcslJ-h3eJFt1HGg3Y_dZtAdFp0n0G9lxR00FW6TwOSfd_1BWx3EHljLOb52gBGC32tqYTvpd9SmfQyWCQ9ocJYDSIRzEUJWmVhTLyWep2qgzjcpfKYK648dxTs8HrUUrAyn81iyZTDZO-rKAKQVStUye1H4GeMmT5UcZa0hZA7vJxcNf2FNKIhZp0uL_V3dW3u-cwjRE_1IJep2BGP2PbQRlL2Hx75NHjgxIf24GZkLS9rtaOXe6En95k3OmgfAoYEVa2iqcTsxrZq5dHL7-okY5B3kgqzO7wVJuPYgwbxFDImXZvChcnZQwrVMpR9mNh2BzEMc4xpZhpt-C1eQfe8yyd1pL-27NSaXjfzLikfDw9m2GgyGM8Gl06XsUkjnychlir1PYrhREK9Q3gdmJV2inDirqE-XZlZqEC2xG_N55OrcZcCJE3hQhSQVjySXuSM-ETnDWagQlvSyjn3fGLXSiQfE_rds6qSeX-kRkGGE-_QtPz5nTa5msyXznA2mdYuI12bog81k5pSbtiR3BCPoM2teYpA9Vskv1LM6B9K_9ZyXYKgN9N2clAzi83K5Z47kRVaVIFPIcfUnd_qoRIAMntqtFSH4RF51ALxJOirkWsRwT-G5fX4_LliFeqpVxRkTc-asNB0Cnqonq16mMk9yQEwIneqFSs-NQZom0pzLGzLtqNvavVAatHgqJj4_182OXJoMsVb0JBwRTyhXhLUh6IgLd7LUe-nRjsncoYt4IIkm4ZA7YDS1UOgyqRYylO-dHJ1EhoE0FmQIMzPm3q7rv_CcBddUdSFFWQDFOlWAst3rUZWn5gaeydLWhRQyaKR5ahUAIubKeaMQdup6XcIvKbmISZ72uY_-qRbqEL5QwkUDjt79BKfHnunz1zOeHL2yIcncgWmTkzjTk5WqxPcgSsV1Fjiv3rx6rgDW_3BocSf4tOS-_j4uIqX9aphvo9fPz_pgJW5UIJfH7980bGHii6HcJedJQe75PSF96YDrG7zQ4D6ej4EWe2MGv76zenxqVuJznhmhAQuT-oZZ8Z3yPw1kYV8tjA84uOMwXX8AzCyoTrbyDXO5I8WzwxdEiN9herFH_8AXIRCXw) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Flowchart]() — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 graph TB
@@ -64,10 +64,12 @@ graph TB
         end
 
         subgraph "live-site-pages/templates/ [template]"
-            TPL["[template] HtmlAndGasTemplateAutoUpdate.html.txt\n(HTML page template — never bumped)"]
-            TPL_VER["[template] HtmlAndGasTemplateAutoUpdatehtml.version.txt"]
-            GASTPL_CODE["[template] gas-test-template-code.js.txt\n(GAS script template — full-featured)"]
-            GASTPL_MIN["[template] gas-minimal-template-code.js.txt\n(Minimal GAS template — version + auto-update only)"]
+            TPL_NOAUTH["[template] HtmlAndGasTemplateAutoUpdate-noauth.html.txt\n(HTML template without auth)"]
+            TPL_AUTH["[template] HtmlAndGasTemplateAutoUpdate-auth.html.txt\n(HTML template with Google auth)"]
+            GASTPL_MIN_NOAUTH["[template] gas-minimal-noauth-template-code.js.txt\n(Minimal GAS template)"]
+            GASTPL_MIN_AUTH["[template] gas-minimal-auth-template-code.js.txt\n(Minimal GAS template with auth)"]
+            GASTPL_TEST_NOAUTH["[template] gas-test-noauth-template-code.js.txt\n(Full GAS template with test UI)"]
+            GASTPL_TEST_AUTH["[template] gas-test-auth-template-code.js.txt\n(Full GAS template with test UI &amp; auth)"]
         end
 
         subgraph "Project Config [template]"
@@ -87,9 +89,10 @@ graph TB
         end
     end
 
-    TPL -.->|"copy to create\nnew pages"| INDEX
-    GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
-    GASTPL_CODE -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
+    TPL_NOAUTH -.->|"copy to create\nnew pages"| INDEX
+    TPL_AUTH -.->|"copy to create\nnew auth pages"| INDEX
+    GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
+    GASTPL_TEST_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
     INDEX -.->|"embeds via iframe"| GAS_INDEX
     TEST_PAGE -.->|"embeds via iframe"| GAS_TEST
     LIVE -.->|"serves"| INDEX
@@ -107,7 +110,8 @@ graph TB
     style LIVE fill:#66bb6a,color:#fff
     style SHA_FILE fill:#ef5350,color:#fff
     style DELETE_STALE fill:#ef9a9a,color:#000
-    style TPL fill:#ffa726,color:#000
+    style TPL_NOAUTH fill:#ffa726,color:#000
+    style TPL_AUTH fill:#ffa726,color:#000
     style GAS_INDEX fill:#ff7043,color:#fff
     style GASTPL_PAGE fill:#ffa726,color:#000
     style CLAUDE_MD fill:#ce93d8,color:#000
@@ -199,7 +203,7 @@ sequenceDiagram
 
 ## 3. Template-Level Behaviors & Per-Environment Diagrams
 
-The following behaviors are inherited by **all pages** via the HTML/GAS templates (`HtmlAndGasTemplateAutoUpdate.html.txt` and GAS script template). They are documented here because they are template-level — they only change when the templates change, not when individual environments change.
+The following behaviors are inherited by **all pages** via the HTML/GAS templates (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt`/`HtmlAndGasTemplateAutoUpdate-auth.html.txt` and GAS script templates). They are documented here because they are template-level — they only change when the templates change, not when individual environments change.
 
 ### Template-Level State Diagram
 

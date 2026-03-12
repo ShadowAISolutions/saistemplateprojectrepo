@@ -16,7 +16,7 @@ Create a new HTML embedding page with all the required files and boilerplate.
 
 ## Steps
 
-1. **Copy the template** — start from `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt` (the HTML page template), which includes:
+1. **Copy the template** — start from the appropriate HTML template in `live-site-pages/templates/` (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt` for standard pages, or `HtmlAndGasTemplateAutoUpdate-auth.html.txt` for pages with Google Authentication), which includes:
    - Version file polling logic (fetches html.version.txt on load, polls every 10s)
    - Version indicator pill (bottom-right corner)
    - Green "Website Ready" + Blue "Code Ready" splash overlays + sound playback
@@ -39,7 +39,7 @@ Create a new HTML embedding page with all the required files and boilerplate.
 
 9. **Ask about GAS** — ask the user if this page needs a Google Apps Script project embedded. If yes:
    - Create `googleAppsScripts/<ProjectName>/` directory
-   - Copy `live-site-pages/templates/gas-minimal-template-code.js.txt` → `$0.gs`
+   - Copy the appropriate GAS template from `live-site-pages/templates/` (select based on test features and auth needs) → `$0.gs`
    - Create `$0.config.json` with placeholder values
    - Create `live-site-pages/gs-versions/$0gs.version.txt` with content `v01.00g` (GAS version file — lives in `live-site-pages/gs-versions/` only)
    - Create GAS changelogs: `$0gs.changelog.md` and `$0gs.changelog-archive.md`

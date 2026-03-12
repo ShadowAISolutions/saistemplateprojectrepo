@@ -40,7 +40,7 @@ For external contributions, open a standard pull request against `main`.
 
 ### Template Rules
 
-- The template file (`live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt`) must always remain at build-version `01.00w` — never bump the template
+- The template files in `live-site-pages/templates/` don't have their own version files — templates are exempt from version tracking
 
 See [CLAUDE.md](CLAUDE.md) for the full list of project conventions.
 

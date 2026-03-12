@@ -3,8 +3,8 @@
 # setup-gas-project.sh — Fully automated GAS project setup
 #
 # Creates all files and updates all documentation for a new GAS project:
-#   - HTML embedding page (from HtmlAndGasTemplateAutoUpdate.html.txt template)
-#   - .gs script (from gas-minimal-template-code.js.txt)
+#   - HTML embedding page (from HtmlAndGasTemplateAutoUpdate-{noauth|auth}.html.txt template)
+#   - .gs script (from gas-{minimal|test}-{noauth|auth}-template-code.js.txt)
 #   - .config.json
 #   - Version files (html + gs)
 #   - Changelogs (html + gs, plus archives) — created directly in live-site-pages/
@@ -80,6 +80,8 @@ SPREADSHEET_ID="$(parse_json SPREADSHEET_ID 'YOUR_SPREADSHEET_ID')"
 SHEET_NAME="$(parse_json SHEET_NAME 'Live_Sheet')"
 SOUND_FILE_ID="$(parse_json SOUND_FILE_ID '')"
 SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
+INCLUDE_TEST="$(parse_json INCLUDE_TEST 'false')"
+INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 
 if [ -z "$ENV_NAME" ]; then
     err "PROJECT_ENVIRONMENT_NAME is required and cannot be empty."
@@ -119,9 +121,13 @@ GAS_CL="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.md"
 GAS_CL_ARCHIVE="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog-archive.md"
 GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
-# ── Template sources ──
-TPL_HTML="live-site-pages/templates/HtmlAndGasTemplateAutoUpdate.html.txt"
-TPL_GS="live-site-pages/templates/gas-minimal-template-code.js.txt"
+# ── Template sources (selected by INCLUDE_TEST and INCLUDE_AUTH) ──
+AUTH_SUFFIX="noauth"
+if [ "$INCLUDE_AUTH" = "true" ]; then AUTH_SUFFIX="auth"; fi
+GS_PREFIX="minimal"
+if [ "$INCLUDE_TEST" = "true" ]; then GS_PREFIX="test"; fi
+TPL_HTML="live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-${AUTH_SUFFIX}.html.txt"
+TPL_GS="live-site-pages/templates/gas-${GS_PREFIX}-${AUTH_SUFFIX}-template-code.js.txt"
 
 # ── Phase 1: Pre-flight Checks ──
 info "Phase 1: Pre-flight checks..."

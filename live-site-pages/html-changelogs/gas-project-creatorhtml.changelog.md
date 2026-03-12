@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-03-11 09:03:31 PM EST — v02.22r
+
+### Changed
+- Template loading now uses all 4 GAS template variants based on both test and auth checkbox selections
+- Config output includes test and auth settings for automated project setup
 
 ## [v01.05w] — 2026-03-11 08:06:00 PM EST — v02.21r
 

@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v02.22r] — 2026-03-11 09:03:31 PM EST
+
+### Added
+- Template variation matrix: 4 GAS templates (minimal/test × auth/noauth) and 2 HTML templates (auth/noauth) covering all gas-project-creator checkbox combinations
+- Google Authentication support in GAS templates: `ALLOWED_DOMAIN` variable, domain restriction in `doGet()`, user email display, access denied page
+- Google Identity Services (GIS) sign-in gate in auth HTML template: JWT decoding, sessionStorage persistence, domain restriction, auth overlay
+- `INCLUDE_TEST` and `INCLUDE_AUTH` fields in gas-project-creator JSON config output for template selection
+
+### Changed
+- Gas-project-creator now loads 4 GAS template variants (was 2) and selects based on both test and auth checkboxes
+- `setup-gas-project.sh` selects template based on `INCLUDE_TEST` and `INCLUDE_AUTH` config fields
+- Updated all template references across CLAUDE.md, rules files, skills, CONTRIBUTING.md, README tree, REPO-ARCHITECTURE.md diagram, and IMPROVEMENTS.md
+
+### Removed
+- Deleted `HtmlAndGasTemplateAutoUpdatehtml.version.txt` (unused template version file)
+- Deleted old template files replaced by auth/noauth variants: `HtmlAndGasTemplateAutoUpdate.html.txt`, `gas-minimal-template-code.js.txt`, `gas-test-template-code.js.txt`
+
+#### `gas-project-creator.html` — v01.06w
+
+##### Changed
+- Template loading now fetches all 4 GAS template variants based on both test and auth checkbox selections
+- Config JSON output includes `INCLUDE_TEST` and `INCLUDE_AUTH` fields for automated template selection
 
 ## [v02.21r] — 2026-03-11 08:06:00 PM EST
 

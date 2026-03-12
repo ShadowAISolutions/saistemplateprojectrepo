@@ -63,7 +63,7 @@ Ideas and optimizations to explore — no commitment, investigated when time all
 **Design considerations if implemented:**
 - **Naming**: `<page-name>html.config.json` (following the existing `html.version.txt` naming pattern) or extend `<page-name>.config.json` with an `"html"` key to keep one config per page
 - **Sync rule**: would need a new Pre-Commit item (or extension of #15) to sync JSON values → HTML `<script>` CONFIG block
-- **Template**: the template file (`HtmlAndGasTemplateAutoUpdate.html.txt`) would need a corresponding template config with placeholder values
+- **Template**: the HTML template files (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt`) would need corresponding template configs with placeholder values
 - **Init script**: `scripts/init-repo.sh` would need to handle HTML config files during initialization (logo URLs, etc.)
 
 **Current status:** Not needed. Revisit when adding features that introduce new per-page configuration or cross-page shared settings.
