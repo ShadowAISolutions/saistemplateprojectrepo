@@ -1,4 +1,4 @@
-var VERSION = "v01.00g";
+var VERSION = "v01.01g";
 var TITLE = "YOUR_PROJECT_TITLE";
 var GITHUB_OWNER  = "YOUR_ORG_NAME";
 var GITHUB_REPO   = "YOUR_REPO_NAME";
@@ -667,12 +667,14 @@ function doGet(e) {
       <meta http-equiv="Expires" content="0">
       <style>
         html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; }
+        body { font-family: Arial; display: flex; justify-content: center; align-items: center; }
+        #debug-marker { font-size: 200px; color: #1565c0; font-weight: bold; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
       </style>
     </head>
     <body>
+      <div id="debug-marker">1</div>
       <h2 id="version">${VERSION}</h2>
       <div id="user-email">${session.email}</div>
 

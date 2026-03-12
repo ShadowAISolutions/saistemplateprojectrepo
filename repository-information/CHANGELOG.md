@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
 
 ## [Unreleased]
+
+## [v02.35r] — 2026-03-12 01:11:52 PM EST
+
+### Added
+- Added visible debug marker ("1") to GAS iframe output to diagnose whether iframe loads after auth
+
+#### `testauth1.gs` — v01.01g
+
+##### Added
+- Added centered debug marker to verify iframe loading after authentication
 
 ## [v02.34r] — 2026-03-12 01:03:01 PM EST
 
