@@ -1,4 +1,4 @@
-var VERSION = "v01.01g";
+var VERSION = "v01.02g";
 var TITLE = "YOUR_PROJECT_TITLE";
 var GITHUB_OWNER  = "YOUR_ORG_NAME";
 var GITHUB_REPO   = "YOUR_REPO_NAME";
@@ -593,7 +593,12 @@ function doGet(e) {
   if (AUTH_CONFIG.TOKEN_EXCHANGE_METHOD === 'url') {
     var exchangeToken = (e && e.parameter && e.parameter.exchangeToken) || "";
     if (exchangeToken) {
-      var result = exchangeTokenForSession(exchangeToken);
+      var result;
+      try {
+        result = exchangeTokenForSession(exchangeToken);
+      } catch (err) {
+        result = { success: false, error: "server_error: " + (err.message || String(err)) };
+      }
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
         + 'window.parent.postMessage('
         + JSON.stringify({

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -896,11 +896,13 @@
     }
 
     function handleTokenResponse(response) {
+      console.log('[AUTH DEBUG] handleTokenResponse called', response.error ? 'ERROR: ' + response.error : 'SUCCESS — got token');
       if (response.error) {
         // Silent auth failed — show auth wall with interactive sign-in
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
+      console.log('[AUTH DEBUG] Calling exchangeToken with access_token length:', response.access_token ? response.access_token.length : 0);
       exchangeToken(response.access_token);
     }
 
@@ -921,10 +923,11 @@
     // --- URL Parameter Path (standard) ---
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp) return;
+      if (!gasApp) { console.log('[AUTH DEBUG] exchangeViaUrl: gas-app element not found!'); return; }
       var baseUrl = window._r || gasApp.dataset.baseUrl || '';
-      if (!baseUrl) return;
+      if (!baseUrl) { console.log('[AUTH DEBUG] exchangeViaUrl: baseUrl is empty!'); return; }
 
+      console.log('[AUTH DEBUG] exchangeViaUrl: setting iframe src to', baseUrl + '?exchangeToken=<token>');
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
     }
@@ -951,6 +954,7 @@
     window.addEventListener('message', function(event) {
       var data = event.data;
       if (!data || typeof data !== 'object') return;
+      console.log('[AUTH DEBUG] postMessage received:', data.type, JSON.stringify(data).substring(0, 200));
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {

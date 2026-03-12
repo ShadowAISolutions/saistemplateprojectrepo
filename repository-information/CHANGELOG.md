@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 59/100`
+`Sections: 60/100`
 
 ## [Unreleased]
+
+## [v02.36r] — 2026-03-12 01:22:58 PM EST
+
+### Added
+- Added console.log auth flow debugging to testauth1 HTML page to trace sign-in postMessage flow
+- Added try-catch around GAS `exchangeTokenForSession()` so server errors are sent back as `gas-session-created` with error details instead of crashing silently
+
+#### `testauth1.html` — v01.02w
+
+##### Added
+- Added console.log debugging at key auth flow points (token response, exchange URL, postMessage listener)
+
+#### `testauth1.gs` — v01.02g
+
+##### Fixed
+- Wrapped token exchange in try-catch to prevent silent server errors from breaking the sign-in flow
 
 ## [v02.35r] — 2026-03-12 01:11:52 PM EST
 
