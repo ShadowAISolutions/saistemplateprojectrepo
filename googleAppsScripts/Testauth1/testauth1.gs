@@ -1,9 +1,9 @@
-var VERSION = "v01.04g";
-var TITLE = "YOUR_PROJECT_TITLE";
-var GITHUB_OWNER  = "YOUR_ORG_NAME";
-var GITHUB_REPO   = "YOUR_REPO_NAME";
+var VERSION = "v01.05g";
+var TITLE = "testauth1title";
+var GITHUB_OWNER  = "ShadowAISolutions";
+var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
-var FILE_PATH     = "googleAppsScripts/YOUR_PROJECT_FOLDER/YOUR_PAGE_NAME.gs";
+var FILE_PATH     = "googleAppsScripts/Testauth1/testauth1.gs";
 var DEPLOYMENT_ID = "AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html";
 
