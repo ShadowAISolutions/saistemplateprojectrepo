@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-03-12 02:33:17 PM EST — v02.41r
+
+### Fixed
+- Fixed "Session expired" error still appearing on first visit — strengthened the iframe cancellation to fully prevent premature navigation
 
 ## [v01.05w] — 2026-03-12 02:21:14 PM EST — v02.40r
 

@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v02.41r] — 2026-03-12 02:33:17 PM EST
+
+### Fixed
+- Strengthened auth race condition fix — removed `srcdoc` attribute and deleted `window._r` before setting iframe to `about:blank`, preventing the queued srcdoc script from navigating to the bare GAS URL (the prior `src`-only fix was ineffective because HTML spec gives `srcdoc` priority over `src`)
+
+#### `testauth1.html` — v01.06w
+
+##### Fixed
+- Prevented iframe `srcdoc` script from overriding the `about:blank` navigation — `srcdoc` is now removed and `window._r` deleted before cancelling the iframe load
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template)
+
+##### Fixed
+- Same strengthened auth race condition fix propagated to the auth template
 
 ## [v02.40r] — 2026-03-12 02:21:14 PM EST
 

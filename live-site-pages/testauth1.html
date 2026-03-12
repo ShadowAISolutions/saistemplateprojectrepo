@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1207,7 +1207,15 @@
         // the auth flow — exchangeViaUrl will navigate the iframe once a
         // token is available.
         var gasApp = document.getElementById('gas-app');
-        if (gasApp) gasApp.src = 'about:blank';
+        if (gasApp) {
+          // srcdoc takes priority over src in the HTML spec — must remove it
+          // to prevent the queued srcdoc script from calling location.replace().
+          // Also delete window._r so even if the srcdoc script already ran or
+          // is mid-execution, it finds no URL to navigate to.
+          delete window._r;
+          gasApp.removeAttribute('srcdoc');
+          gasApp.src = 'about:blank';
+        }
         showAuthWall();
         // Initialize Google Sign-In
         if (typeof google !== 'undefined' && google.accounts) {
