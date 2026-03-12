@@ -6,7 +6,7 @@ Reference implementation for Google OAuth authentication in GAS web apps embedde
 
 > **When to use this pattern**: any GAS web app that authenticates users via their Google account, where the app is embedded in an HTML wrapper page (GitHub Pages, custom domain, etc.) via an iframe. Suitable for internal tools, business apps, and any scenario where Google Workspace identity is the access control mechanism.
 
-> **Comparison with other patterns**: see [CUSTOM-AUTH-PATTERN.md](CUSTOM-AUTH-PATTERN.md) for username/password authentication and [GOOGLE-OAUTH-AUTH-PATTERN.md](GOOGLE-OAUTH-AUTH-PATTERN.md) for the basic Google OAuth pattern (which this improves upon).
+> **Comparison with other patterns**: see [1-CUSTOM-AUTH-PATTERN.md](1-CUSTOM-AUTH-PATTERN.md) for username/password authentication and [2-GOOGLE-OAUTH-AUTH-PATTERN.md](2-GOOGLE-OAUTH-AUTH-PATTERN.md) for the basic Google OAuth pattern (which this improves upon).
 
 ---
 
@@ -1028,7 +1028,7 @@ Before deploying a project using this pattern, verify:
 
 ### Migrating from the Basic Google OAuth Pattern
 
-If you have a project using the basic pattern (raw access_token in localStorage, as described in `GOOGLE-OAUTH-AUTH-PATTERN.md`), follow these steps to upgrade:
+If you have a project using the basic pattern (raw access_token in localStorage, as described in `2-GOOGLE-OAUTH-AUTH-PATTERN.md`), follow these steps to upgrade:
 
 #### Step 1: Add Session Functions to GAS
 

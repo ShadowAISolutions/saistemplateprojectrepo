@@ -482,7 +482,7 @@ function showAuthWall(d) {
 
 ## Comparison: Custom Auth vs Google OAuth
 
-| Aspect | Custom Auth (CUSTOM-AUTH-PATTERN.md) | Google OAuth (this file) |
+| Aspect | Custom Auth (1-CUSTOM-AUTH-PATTERN.md) | Google OAuth (this file) |
 |--------|--------------------------------------|--------------------------|
 | **When to use** | Need custom usernames, HIPAA compliance, full session control | Users already have Google accounts, Sheet sharing = access control |
 | **Identity provider** | Self-managed (Sheets-based credentials) | Google (GIS OAuth2) |

@@ -1,11 +1,11 @@
 # HIPAA-Compliant Google OAuth Authentication Pattern
 
-Implementation-ready reference for HIPAA-compliant Google OAuth authentication in GAS web apps embedded via iframe. This pattern builds on [RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) and addresses all identified HIPAA gaps — adding audit logging, Workspace domain restriction, reduced session timeout, postMessage-based token exchange, sessionStorage, session data integrity (HMAC), MFA verification, and emergency access procedures.
+Implementation-ready reference for HIPAA-compliant Google OAuth authentication in GAS web apps embedded via iframe. This pattern builds on [4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) and addresses all identified HIPAA gaps — adding audit logging, Workspace domain restriction, reduced session timeout, postMessage-based token exchange, sessionStorage, session data integrity (HMAC), MFA verification, and emergency access procedures.
 
 > **Relationship to other patterns**:
-> - [GOOGLE-OAUTH-AUTH-PATTERN.md](GOOGLE-OAUTH-AUTH-PATTERN.md) — basic pattern (raw token in localStorage, no server sessions)
-> - [IMPROVED-GOOGLE-OAUTH-PATTERN.md](IMPROVED-GOOGLE-OAUTH-PATTERN.md) — first improvement (server sessions, opaque tokens, silent re-auth)
-> - [RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — research-validated version with origin validation fix, re-auth fallback, CacheService caveats
+> - [2-GOOGLE-OAUTH-AUTH-PATTERN.md](2-GOOGLE-OAUTH-AUTH-PATTERN.md) — basic pattern (raw token in localStorage, no server sessions)
+> - [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — first improvement (server sessions, opaque tokens, silent re-auth)
+> - [4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — research-validated version with origin validation fix, re-auth fallback, CacheService caveats
 > - **This document** — HIPAA-compliant version with all regulatory gaps closed, ready for implementation in healthcare/ePHI contexts
 
 > **What changed from the Researched Improved pattern**: see [Section 14: Delta from Researched Improved Pattern](#14-delta-from-researched-improved-pattern) for the exact list of changes with HIPAA rationale.
@@ -187,7 +187,7 @@ Return error  ┌──┴──┐
 
 ### Token Refresh (with Interactive Fallback)
 
-Same as Researched Improved pattern — silent `prompt: ''` first, interactive banner fallback on failure. See [RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 4](RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md#4-authentication-flow).
+Same as Researched Improved pattern — silent `prompt: ''` first, interactive banner fallback on failure. See [4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 4](4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md#4-authentication-flow).
 
 **HIPAA addition**: every re-auth attempt (success or failure) is audit logged.
 
@@ -1387,7 +1387,7 @@ For HIPAA compliance documentation, record:
 
 ## 11. CacheService Behavioral Caveats
 
-Unchanged from the Researched Improved pattern — see [RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 8](RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md#8-cacheservice-behavioral-caveats).
+Unchanged from the Researched Improved pattern — see [4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 8](4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md#8-cacheservice-behavioral-caveats).
 
 **HIPAA-specific additions:**
 - CacheService should **never** store ePHI — only opaque session identifiers and non-PHI metadata

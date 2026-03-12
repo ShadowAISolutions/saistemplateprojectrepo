@@ -1,10 +1,10 @@
 # Researched & Improved Google OAuth Authentication Pattern
 
-Implementation-ready reference for Google OAuth authentication in GAS web apps embedded via iframe. This pattern builds on [IMPROVED-GOOGLE-OAUTH-PATTERN.md](IMPROVED-GOOGLE-OAUTH-PATTERN.md) and incorporates security research findings — specifically fixing the origin validation vulnerability, adding interactive re-auth fallback for `prompt: ''` failures, documenting CacheService behavioral caveats, and hardening the postMessage exchange flow.
+Implementation-ready reference for Google OAuth authentication in GAS web apps embedded via iframe. This pattern builds on [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md) and incorporates security research findings — specifically fixing the origin validation vulnerability, adding interactive re-auth fallback for `prompt: ''` failures, documenting CacheService behavioral caveats, and hardening the postMessage exchange flow.
 
 > **Relationship to other patterns**:
-> - [GOOGLE-OAUTH-AUTH-PATTERN.md](GOOGLE-OAUTH-AUTH-PATTERN.md) — basic pattern (raw token in localStorage, no server sessions)
-> - [IMPROVED-GOOGLE-OAUTH-PATTERN.md](IMPROVED-GOOGLE-OAUTH-PATTERN.md) — first improvement (server sessions, opaque tokens, silent re-auth)
+> - [2-GOOGLE-OAUTH-AUTH-PATTERN.md](2-GOOGLE-OAUTH-AUTH-PATTERN.md) — basic pattern (raw token in localStorage, no server sessions)
+> - [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — first improvement (server sessions, opaque tokens, silent re-auth)
 > - **This document** — research-validated version with all known issues fixed, ready for direct implementation
 
 > **What changed from the Improved pattern**: see [Section 12: Delta from Improved Pattern](#12-delta-from-improved-pattern) for the exact list of changes with rationale.
@@ -155,7 +155,7 @@ iframe.src = _gasBaseUrl + '&exchangeToken=' + encodeURIComponent(accessToken);
 
 ## 3. GAS vs HTML Responsibility Split
 
-Unchanged from the Improved pattern — the split remains ~80% GAS / ~20% HTML. See [IMPROVED-GOOGLE-OAUTH-PATTERN.md § 3](IMPROVED-GOOGLE-OAUTH-PATTERN.md#3-gas-vs-html-responsibility-split) for the full table.
+Unchanged from the Improved pattern — the split remains ~80% GAS / ~20% HTML. See [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 3](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md#3-gas-vs-html-responsibility-split) for the full table.
 
 The only change is in the HTML wrapper's postMessage listener (origin validation is stricter) and silent re-auth (adds interactive fallback).
 
@@ -165,7 +165,7 @@ The only change is in the HTML wrapper's postMessage listener (origin validation
 
 ### Initial Sign-In
 
-Same as the Improved pattern — see [IMPROVED-GOOGLE-OAUTH-PATTERN.md § 4](IMPROVED-GOOGLE-OAUTH-PATTERN.md#4-authentication-flow).
+Same as the Improved pattern — see [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 4](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md#4-authentication-flow).
 
 ### Token Refresh (with Interactive Fallback)
 
@@ -981,7 +981,7 @@ function signOut() {
 
 ### Optional: Inactivity Timeout
 
-Same as the Improved pattern — see [IMPROVED-GOOGLE-OAUTH-PATTERN.md § 6](IMPROVED-GOOGLE-OAUTH-PATTERN.md#6-implementation-guide--minimal-html-shell) for the inactivity timeout code.
+Same as the Improved pattern — see [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 6](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md#6-implementation-guide--minimal-html-shell) for the inactivity timeout code.
 
 ---
 
@@ -1114,7 +1114,7 @@ Before deploying a project using this pattern, verify:
 
 ### Migrating from the Basic Google OAuth Pattern
 
-Follow the same steps as [IMPROVED-GOOGLE-OAUTH-PATTERN.md § 9](IMPROVED-GOOGLE-OAUTH-PATTERN.md#9-migration-guide), plus these additional changes:
+Follow the same steps as [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 9](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md#9-migration-guide), plus these additional changes:
 
 #### Additional: Update Origin Validation
 
@@ -1178,7 +1178,7 @@ If you already implemented the Improved pattern and want to upgrade to this vers
 
 ## 12. Delta from Improved Pattern
 
-Exact list of changes from `IMPROVED-GOOGLE-OAUTH-PATTERN.md` and the rationale for each:
+Exact list of changes from `3-IMPROVED-GOOGLE-OAUTH-PATTERN.md` and the rationale for each:
 
 ### Security Fixes
 

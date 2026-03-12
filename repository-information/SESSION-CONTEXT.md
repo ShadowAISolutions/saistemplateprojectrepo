@@ -8,17 +8,18 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 **Repo version:** v02.26r
 
 ### What was done
-- Created `HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` (1555 lines, 15 sections) — complete HIPAA-compliant OAuth pattern addressing all 8 critical gaps identified in prior research
+- Created `5-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` (1555 lines, 15 sections) — complete HIPAA-compliant OAuth pattern addressing all 8 critical gaps identified in prior research
 - Written in 5 chunks (~300 lines each) to avoid large file write stalls that interrupted the previous session twice
 - All 8 HIPAA gaps addressed: audit logging (Sheet-based), MFA enforcement strategy, Workspace-only domain restriction, 15-min session timeout, postMessage token exchange (no URL params), sessionStorage (not localStorage), HMAC session data integrity, emergency access procedure
 - Includes: HIPAA compliance mapping table (all 45 CFR 164.312 subsections), five-pattern comparison table, 12-item delta from Researched Improved pattern, security checklist, troubleshooting guide
 
 ### Where we left off
-All changes committed (v02.26r) and merged to main. Four auth pattern documents now exist in `repository-information/`:
-1. `GOOGLE-OAUTH-PATTERN.md` — Basic pattern
-2. `IMPROVED-GOOGLE-OAUTH-PATTERN.md` — Improved pattern (what templates currently implement)
-3. `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — Research-validated pattern
-4. `HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — HIPAA-compliant pattern (NEW)
+All changes committed (v02.26r) and merged to main. Five auth pattern documents now exist in `repository-information/`:
+1. `1-CUSTOM-AUTH-PATTERN.md` — Custom Auth pattern (GAS + custom domain)
+2. `2-GOOGLE-OAUTH-AUTH-PATTERN.md` — Basic Google OAuth pattern
+3. `3-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — Improved pattern (what templates currently implement)
+4. `4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — Research-validated pattern
+5. `5-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — HIPAA-compliant pattern
 
 **Auth templates currently implement the Improved pattern (v02.24r)**, not yet upgraded to Researched Improved or HIPAA patterns.
 
