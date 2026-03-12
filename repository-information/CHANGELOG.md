@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v02.57r] — 2026-03-12 07:48:34 PM EST
+
+### Changed
+- Sign-in screen now shows company logo and environment title above the "Sign In Required" heading
+- Version indicator pills (HTML and GAS) are now visible on the sign-in screen — previously hidden behind the auth wall's solid background
+
+#### `testauth1.html` — v01.19w
+
+##### Changed
+- Added company logo and environment title to auth wall
+- Raised version indicator z-index so pills are visible on the login screen
+- Bumped changelog/reauth overlay z-indexes to maintain correct stacking
 
 ## [v02.56r] — 2026-03-12 07:41:03 PM EST
 

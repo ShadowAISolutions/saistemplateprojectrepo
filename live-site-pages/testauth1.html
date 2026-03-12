@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.18w">
+  <meta name="build-version" content="v01.19w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -30,7 +30,7 @@
     #splash-maintenance { background: #b04000; z-index: 9998; }
     .maintenance-timestamp { color: rgba(255,255,255,0.85); font: 16px/1.4 monospace; margin-top: 20px; }
     #version-indicator {
-      position: fixed; bottom: 8px; right: 8px; z-index: 9999;
+      position: fixed; bottom: 8px; right: 8px; z-index: 10003;
       display: flex; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
@@ -39,7 +39,7 @@
     #version-indicator:hover { background: rgba(0,0,0,0.75); }
     #changelog-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 10001; display: none;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
       align-items: center; justify-content: center;
     }
     #changelog-popup {
@@ -84,7 +84,7 @@
     #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
     #gas-pill {
-      position: fixed; bottom: 8px; right: 146px; z-index: 9999;
+      position: fixed; bottom: 8px; right: 146px; z-index: 10003;
       display: none; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
@@ -103,7 +103,7 @@
     #gas-pill .dot.error    { background: #ef5350; }
     #gcl-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 10001; display: none;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
       align-items: center; justify-content: center;
     }
     #gcl-popup {
@@ -164,7 +164,7 @@
     }
     #reauth-banner {
       position: fixed; top: 0; left: 0; width: 100%; padding: 10px 16px;
-      background: #fff3cd; border-bottom: 1px solid #ffc107; z-index: 10003;
+      background: #fff3cd; border-bottom: 1px solid #ffc107; z-index: 10005;
       display: none; align-items: center; justify-content: center; gap: 12px;
       font: 13px/1.4 sans-serif; color: #856404;
     }
@@ -234,6 +234,8 @@
 <!-- AUTH START -->
 <!-- ══════════════ -->
   <div id="auth-wall">
+    <img id="auth-wall-logo" src="" alt="" style="max-width:120px;max-height:120px;margin-bottom:20px;">
+    <div id="auth-wall-title" style="font:bold 18px/1.2 sans-serif;color:#555;margin-bottom:24px;text-align:center;"></div>
     <h2>Sign In Required</h2>
     <p>Please sign in with your Google account to continue.</p>
     <button class="auth-btn" id="auth-sign-in-btn">Sign In with Google</button>
@@ -316,6 +318,8 @@
     document.getElementById('splash-logo').src = LOGO_URL;
     document.getElementById('splash-code-logo').src = LOGO_URL;
     document.getElementById('maintenance-logo').src = LOGO_URL;
+    document.getElementById('auth-wall-logo').src = LOGO_URL;
+    document.getElementById('auth-wall-title').textContent = document.title || '';
 
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {
