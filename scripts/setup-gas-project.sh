@@ -69,7 +69,12 @@ import json, sys
 data = json.loads(sys.stdin.read())
 key = sys.argv[1]
 default = sys.argv[2] if len(sys.argv) > 2 else ''
-print(data.get(key, default))
+val = data.get(key, default)
+# Normalize Python booleans to lowercase strings for bash comparison
+if isinstance(val, bool):
+    print(str(val).lower())
+else:
+    print(val)
 " "$@" <<< "$JSON_INPUT"
 }
 
@@ -236,7 +241,8 @@ info "Phase 3: Copying and substituting templates..."
 
 # --- HTML page ---
 cp "$TPL_HTML" "$HTML_PAGE"
-sed -i "s|CHANGE THIS PROJECT TITLE TEMPLATE|${TITLE}|g" "$HTML_PAGE"
+# Replace title — use <title> tag replacement for robustness
+sed -i "s|<title>.*</title>|<title>${TITLE}</title>|" "$HTML_PAGE"
 
 # Set meta build-version (should already be v01.00w from template, but ensure)
 sed -i 's|<meta name="build-version" content="[^"]*">|<meta name="build-version" content="v01.00w">|' "$HTML_PAGE"
@@ -391,6 +397,112 @@ Developed by: ShadowAISolutions
 CLEOF
 ok "Created $GAS_CL_ARCHIVE"
 
+# ── Phase 5b: Create Per-Environment Diagram ──
+info "Phase 5b: Creating per-environment diagram..."
+DIAGRAM_FILE="repository-information/diagrams/${ENV_NAME}-diagram.md"
+if [ -f "$DIAGRAM_FILE" ]; then
+    warn "Diagram already exists: $DIAGRAM_FILE — skipping"
+else
+    AUTH_NOTE=""
+    AUTH_SECTION=""
+    if [ "$INCLUDE_AUTH" = "true" ]; then
+        AUTH_NOTE=" (Auth)"
+        AUTH_SECTION="
+    Note over Browser,Google: Google OAuth Authentication
+    HTML->>Google: Initialize GIS (Google Identity Services)
+    Google-->>HTML: GIS library loaded
+    Browser->>HTML: User clicks Sign In
+    HTML->>Google: requestAccessToken(CLIENT_ID, scopes)
+    Google-->>HTML: Access token received
+    HTML->>GAS: postMessage(gas-auth-token, token)
+    GAS->>Google: Verify token + get user info
+    Google-->>GAS: User email, name
+    GAS->>GAS: Check authorization (ACTIVE_PRESET config)
+    GAS-->>HTML: postMessage(gas-auth-result, success/fail)
+"
+    fi
+
+    GOOGLE_PARTICIPANT=""
+    if [ "$INCLUDE_AUTH" = "true" ]; then
+        GOOGLE_PARTICIPANT="    participant Google as Google OAuth"
+    fi
+
+    cat > "$DIAGRAM_FILE" <<DIAGEOF
+# ${ENV_NAME}.html — GAS Integration Sequence Diagram${AUTH_NOTE}
+
+Sequence diagram showing the dual polling systems (HTML + GAS) and the iframe injection flow.
+
+\`\`\`mermaid
+sequenceDiagram
+    participant Browser
+    participant HTML as ${ENV_NAME}.html
+    participant HV as ${ENV_NAME}html.version.txt
+    participant GV as ${ENV_NAME}gs.version.txt
+    participant GAS as GAS Web App<br>(Apps Script)
+${GOOGLE_PARTICIPANT}
+    participant CL as Changelogs
+
+    Note over Browser,HTML: Page Load
+    Browser->>HTML: Load ${ENV_NAME}.html
+    HTML->>HTML: Decode _e → reverse(atob()) → GAS deployment URL
+    HTML->>HTML: Create iframe with srcdoc bootstrap
+    HTML->>GAS: iframe navigates to deployment URL
+    GAS-->>Browser: GAS web app renders in iframe
+${AUTH_SECTION}
+    Note over Browser,HV: HTML Auto-Refresh (every 10s)
+    loop Every 10 seconds
+        HTML->>HV: GET ${ENV_NAME}html.version.txt?_cb=timestamp
+        HV-->>HTML: |v01.XXw| or maintenance|v01.XXw|timestamp
+        alt Version changed
+            HTML->>HTML: Show "Updating..." + set pending-sound
+            HTML->>Browser: window.location.reload()
+            Browser->>HTML: Reload → "Website Ready" splash + sound
+        else Maintenance mode
+            HTML->>Browser: Show orange maintenance overlay
+        else Same version
+            HTML->>HTML: Countdown dot: 5..4..3..2..1
+        end
+    end
+
+    Note over Browser,GV: GAS Auto-Refresh (15s delay, then every 10s)
+    HTML->>GV: Initial check: does ${ENV_NAME}gs.version.txt exist?
+    GV-->>HTML: v01.XXg (exists → show GAS pill)
+    loop Every 10 seconds (after 15s initial delay)
+        HTML->>GV: GET ${ENV_NAME}gs.version.txt?_cb=timestamp
+        GV-->>HTML: v01.XXg
+        alt GAS version changed
+            HTML->>HTML: "GAS updated — reloading..."
+            HTML->>Browser: window.location.reload()
+            Browser->>HTML: Reload → "Code Ready" splash + sound
+        else Same version
+            HTML->>HTML: GAS pill countdown dot
+        end
+    end
+
+    Note over HTML,GV: Anti-Sync Protection
+    HTML->>HTML: If GAS poll within 3s of HTML poll,<br>add 5s delay to GAS poll
+
+    Note over Browser,CL: Changelog Popups
+    Browser->>HTML: Click HTML version pill
+    HTML->>CL: Fetch ${ENV_NAME}html.changelog.md
+    CL-->>HTML: Markdown → parsed to HTML popup
+
+    Browser->>HTML: Click GAS version pill
+    HTML->>CL: Fetch ${ENV_NAME}gs.changelog.md
+    CL-->>HTML: Markdown → parsed to HTML popup
+\`\`\`
+
+## Key Design Notes
+
+- **GAS iframe injection** — the deployment URL is stored as a reversed+base64-encoded string in \`_e\`. The iframe uses \`srcdoc\` with a bootstrap script that reads the URL from \`parent._r\`, deletes it, then navigates — preventing the URL from being visible in page source
+- **Dual polling** — HTML and GAS versions are polled independently with anti-sync protection (if polls align within 3s, GAS poll gets a 5s delay to re-stagger them)
+- **Two splash screens** — green "Website Ready" for HTML version changes, blue "Code Ready" for GAS version changes
+- **Audio unlock via UAv2** — since the GAS iframe covers the entire page, click events don't reach the parent document. The UAv2 poll detects \`navigator.userActivation.hasBeenActive\` (propagated from cross-origin iframe clicks) and unlocks AudioContext without needing a direct click on the parent
+
+Developed by: ShadowAISolutions
+DIAGEOF
+    ok "Created $DIAGRAM_FILE"
+fi
 
 # ── Phase 6: Register in GAS Projects Table ──
 info "Phase 6: Registering in GAS Projects table..."
@@ -413,65 +525,111 @@ fi
 # ── Phase 7: Update REPO-ARCHITECTURE.md ──
 info "Phase 7: Updating REPO-ARCHITECTURE.md..."
 ARCH_FILE="repository-information/REPO-ARCHITECTURE.md"
-# Derive a short Mermaid node prefix from PROJECT_DIR (e.g. Testation2 → TSTA2)
-# Use first letter + consonants, uppercase, max 6 chars
-NODE_PREFIX=$(echo "$PROJECT_DIR" | sed 's/[aeiou]//gi' | cut -c1-4 | tr '[:lower:]' '[:upper:]')
-# Ensure at least 3 chars by falling back to first 4 chars of PROJECT_DIR
-if [ ${#NODE_PREFIX} -lt 3 ]; then
-    NODE_PREFIX=$(echo "$PROJECT_DIR" | cut -c1-4 | tr '[:lower:]' '[:upper:]')
-fi
+# Derive Mermaid node ID from ENV_NAME: uppercase, no separators
+# e.g. testauth1 → TESTAUTH1, my-app → MYAPP
+NODE_ID=$(echo "$ENV_NAME" | tr '[:lower:]' '[:upper:]' | sed 's/[_-]//g')
 
 if [ -f "$ARCH_FILE" ]; then
     # Check if already added
-    if grep -q "${NODE_PREFIX}_PAGE" "$ARCH_FILE"; then
-        warn "${NODE_PREFIX} nodes already in REPO-ARCHITECTURE.md — skipping"
+    if grep -q "GAS_${NODE_ID}" "$ARCH_FILE"; then
+        warn "GAS_${NODE_ID} already in REPO-ARCHITECTURE.md — skipping"
     else
-        # 1. Add page nodes in live-site-pages subgraph (before SND1)
-        SND_LINE=$(grep -n 'SND1\["sounds/' "$ARCH_FILE" | head -1 | cut -d: -f1)
-        if [ -n "$SND_LINE" ]; then
-            sed -i "${SND_LINE}i\\            ${NODE_PREFIX}_PAGE[\"${ENV_NAME}.html\"]\n            ${NODE_PREFIX}_VERTXT[\"${ENV_NAME}html.version.txt\"]\n            ${NODE_PREFIX}_CL[\"${ENV_NAME}html.changelog.md\"]\n            ${NODE_PREFIX}_CLARCH[\"${ENV_NAME}html.changelog-archive.md\"]\n            ${NODE_PREFIX}_GSCL[\"${ENV_NAME}gs.changelog.md\"]\n            ${NODE_PREFIX}_GSCLARCH[\"${ENV_NAME}gs.changelog-archive.md\"]\n            ${NODE_PREFIX}_GSVER[\"${ENV_NAME}gs.version.txt\"]" "$ARCH_FILE"
-            # Note: gs.version.txt lives in live-site-pages/ (no copy in googleAppsScripts/)
-            ok "Added page nodes to live-site-pages"
+        ARCH_WARNINGS=0
+
+        # 1. Add HTML page node in live-site-pages subgraph (before "end" of that subgraph)
+        # Find the last page node (INDEX, TEST_PAGE, etc.) and insert after it
+        LAST_PAGE_NODE=$(grep -n '^\s*[A-Z_]*\[".*\.html\\n' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_PAGE_NODE" ]; then
+            sed -i "${LAST_PAGE_NODE}a\\            ${NODE_ID}_PAGE\[\"[template] ${ENV_NAME}.html\\\n(${TITLE})\"\]" "$ARCH_FILE"
+            ok "Added page node: ${NODE_ID}_PAGE"
+        else
+            warn "Could not find page nodes in live-site-pages subgraph — manual edit needed"
+            ARCH_WARNINGS=$((ARCH_WARNINGS + 1))
         fi
 
-        # 2. Add GAS nodes in Google Apps Scripts subgraph (before "end" of that subgraph)
-        # Find the last GAS_*_CFG line and insert after it
-        LAST_GAS_CFG=$(grep -n 'GAS_.*_CFG\[' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_GAS_CFG" ]; then
-            sed -i "${LAST_GAS_CFG}a\\            GAS_${NODE_PREFIX}[\"googleAppsScripts/${PROJECT_DIR}/\\\n${ENV_NAME}.gs\"]\n            GAS_${NODE_PREFIX}_CFG[\"${ENV_NAME}.config.json\\\n(source of truth for\\\nTITLE, DEPLOYMENT_ID,\\\nSPREADSHEET_ID, etc.)\"]" "$ARCH_FILE"
-            ok "Added GAS nodes to Google Apps Scripts"
+        # 2. Add GAS node in Google Apps Scripts subgraph (after last GAS_* node)
+        LAST_GAS_NODE=$(grep -n '^\s*GAS_[A-Z]*\["' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_GAS_NODE" ]; then
+            sed -i "${LAST_GAS_NODE}a\\            GAS_${NODE_ID}\[\"[template] ${ENV_NAME}.gs\"\]" "$ARCH_FILE"
+            ok "Added GAS node: GAS_${NODE_ID}"
+        else
+            warn "Could not find GAS nodes in Google Apps Scripts subgraph — manual edit needed"
+            ARCH_WARNINGS=$((ARCH_WARNINGS + 1))
         fi
 
-        # 3. Add template copy edges (after last GASTPL_CODE template source edge)
-        LAST_TPL_COPY=$(grep -n 'GASTPL_CODE -\.->|"template source' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_TPL_COPY" ]; then
-            sed -i "${LAST_TPL_COPY}a\\    GASTPL_CODE -.->|\"template source\\\n(setup-gas-project.sh)\"| GAS_${NODE_PREFIX}" "$ARCH_FILE"
+        # 3. Add template source edge (auth or noauth based on INCLUDE_AUTH)
+        if [ "$INCLUDE_AUTH" = "true" ]; then
+            TPL_SOURCE="GASTPL_MIN_AUTH"
+            if [ "$INCLUDE_TEST" = "true" ]; then TPL_SOURCE="GASTPL_TEST_AUTH"; fi
+        else
+            TPL_SOURCE="GASTPL_MIN_NOAUTH"
+            if [ "$INCLUDE_TEST" = "true" ]; then TPL_SOURCE="GASTPL_TEST_NOAUTH"; fi
+        fi
+        LAST_TPL_EDGE=$(grep -n 'template source' "$ARCH_FILE" | grep 'setup-gas-project' | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_TPL_EDGE" ]; then
+            sed -i "${LAST_TPL_EDGE}a\\    ${TPL_SOURCE} -.->|\"template source\\\n(setup-gas-project.sh)\"| GAS_${NODE_ID}" "$ARCH_FILE"
+            ok "Added template source edge"
         fi
 
-        # 4. Add config sync edges (after last *_CFG sync edge pair)
-        LAST_SYNC=$(grep -n '_CFG -\.->|"syncs to' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_SYNC" ]; then
-            sed -i "${LAST_SYNC}a\\    GAS_${NODE_PREFIX}_CFG -.->|\"syncs to\\\n(Pre-Commit #15)\"| GAS_${NODE_PREFIX}\n    GAS_${NODE_PREFIX}_CFG -.->|\"syncs to\\\n(Pre-Commit #15)\"| ${NODE_PREFIX}_PAGE" "$ARCH_FILE"
-        fi
-
-        # 5. Add iframe edge (after last *_PAGE iframes edge)
-        LAST_IFRAME=$(grep -n '_PAGE -\.->|"iframes"| GAS_APP' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        # 4. Add iframe embed edge (page → GAS)
+        LAST_IFRAME=$(grep -n 'embeds via iframe' "$ARCH_FILE" | tail -1 | cut -d: -f1)
         if [ -n "$LAST_IFRAME" ]; then
-            sed -i "${LAST_IFRAME}a\\    ${NODE_PREFIX}_PAGE -.->|\"iframes\"| GAS_APP" "$ARCH_FILE"
+            sed -i "${LAST_IFRAME}a\\    ${NODE_ID}_PAGE -.->|\"embeds via iframe\"| GAS_${NODE_ID}" "$ARCH_FILE"
+            ok "Added iframe embed edge"
         fi
 
-        # 6. Add source of truth edge (after last GAS_* source of truth edge)
-        LAST_SOT=$(grep -n 'GAS_.* -\.->|"source of truth' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_SOT" ]; then
-            sed -i "${LAST_SOT}a\\    GAS_${NODE_PREFIX} -.->|\"source of truth\\\nfor GAS app\\\n(${ENV_NAME}.gs)\"| GAS_PULL" "$ARCH_FILE"
+        # 5. Add LIVE serves edge
+        LAST_SERVES=$(grep -n 'LIVE -\.->|"serves"' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_SERVES" ]; then
+            sed -i "${LAST_SERVES}a\\    LIVE -.->|\"serves\"| ${NODE_ID}_PAGE" "$ARCH_FILE"
+            ok "Added LIVE serves edge"
         fi
 
-        # 7. Add styles (after last style line)
-        LAST_STYLE=$(grep -n '    style GAS_' "$ARCH_FILE" | tail -1 | cut -d: -f1)
-        if [ -n "$LAST_STYLE" ]; then
-            sed -i "${LAST_STYLE}a\\    style GAS_${NODE_PREFIX} fill:#ff7043,color:#fff\n    style GAS_${NODE_PREFIX}_CFG fill:#ffe082,color:#000" "$ARCH_FILE"
+        # 6. Add GAS_DEPLOY triggers edge
+        LAST_DEPLOY=$(grep -n 'GAS_DEPLOY -\.->|"triggers self-update"' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_DEPLOY" ]; then
+            sed -i "${LAST_DEPLOY}a\\    GAS_DEPLOY -.->|\"triggers self-update\"| GAS_${NODE_ID}" "$ARCH_FILE"
+            ok "Added GAS deploy trigger edge"
         fi
-        ok "Added edges and styles to REPO-ARCHITECTURE.md"
+
+        # 7. Add HTML version polling edge
+        LAST_POLL=$(grep -n 'HTML_VERS -\.->|"version polling"' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_POLL" ]; then
+            sed -i "${LAST_POLL}a\\    HTML_VERS -.->|\"version polling\"| ${NODE_ID}_PAGE" "$ARCH_FILE"
+            ok "Added version polling edge"
+        fi
+
+        # 8. Add auth template HTML source edge (if auth)
+        if [ "$INCLUDE_AUTH" = "true" ]; then
+            # Find existing TPL_AUTH edge and add after it
+            LAST_AUTH_TPL=$(grep -n 'TPL_AUTH -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+            if [ -z "$LAST_AUTH_TPL" ]; then
+                LAST_AUTH_TPL=$(grep -n 'TPL_NOAUTH -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+            fi
+            if [ -n "$LAST_AUTH_TPL" ]; then
+                sed -i "${LAST_AUTH_TPL}a\\    TPL_AUTH -.->|\"copy to create\\\nnew auth pages\"| ${NODE_ID}_PAGE" "$ARCH_FILE"
+                ok "Added auth template HTML source edge"
+            fi
+        else
+            LAST_NOAUTH_TPL=$(grep -n 'TPL_NOAUTH -\.->|"copy to create' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+            if [ -n "$LAST_NOAUTH_TPL" ]; then
+                sed -i "${LAST_NOAUTH_TPL}a\\    TPL_NOAUTH -.->|\"copy to create\\\nnew pages\"| ${NODE_ID}_PAGE" "$ARCH_FILE"
+                ok "Added noauth template HTML source edge"
+            fi
+        fi
+
+        # 9. Add per-environment diagram table row
+        LAST_DIAG_ROW=$(grep -n '^| .* | \[`repository-information/diagrams/' "$ARCH_FILE" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_DIAG_ROW" ]; then
+            sed -i "${LAST_DIAG_ROW}a\\| ${TITLE} | [\`repository-information/diagrams/${ENV_NAME}-diagram.md\`](diagrams/${ENV_NAME}-diagram.md) |" "$ARCH_FILE"
+            ok "Added per-environment diagram table row"
+        fi
+
+        if [ "$ARCH_WARNINGS" -gt 0 ]; then
+            warn "REPO-ARCHITECTURE.md updated with ${ARCH_WARNINGS} warning(s) — review may be needed"
+        else
+            ok "REPO-ARCHITECTURE.md fully updated"
+        fi
     fi
 else
     warn "REPO-ARCHITECTURE.md not found — skipping"
@@ -479,64 +637,115 @@ fi
 
 # ── Phase 8: Update README.md Structure Tree ──
 info "Phase 8: Updating README.md structure tree..."
+GH_BASE="https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}"
+GH_BLOB="${GH_BASE}/blob/main"
+GH_TREE="${GH_BASE}/tree/main"
+GH_PAGES="https://${GITHUB_OWNER}.github.io/${GITHUB_REPO}"
+# Spreadsheet link (if SPREADSHEET_ID is set and not placeholder)
+SHEET_LINK="◽"
+if [ "$SPREADSHEET_ID" != "YOUR_SPREADSHEET_ID" ] && [ -n "$SPREADSHEET_ID" ]; then
+    SHEET_LINK="<a href=\"https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/\">📊</a>"
+fi
+
 if [ -f "README.md" ]; then
     # Check if already added
-    if grep -q "${ENV_NAME}.html.*GAS embedding page" "README.md"; then
+    if grep -q "${ENV_NAME}.html" "README.md"; then
         warn "${ENV_NAME} already in README.md structure tree — skipping"
     else
-        # 1. Add page files in live-site-pages section (before "└── sounds/")
-        SOUNDS_LINE=$(grep -n '│   └── sounds/' "README.md" | head -1 | cut -d: -f1)
-        if [ -n "$SOUNDS_LINE" ]; then
-            sed -i "${SOUNDS_LINE}i\\│   ├── ${ENV_NAME}.html                # ${PROJECT_DIR} GAS embedding page" "README.md"
+        README_WARNINGS=0
+
+        # 1. Add page entry in Internal Sites section (before External Sites placeholder)
+        EXT_SITES_LINE=$(grep -n 'External Sites' "README.md" | head -1 | cut -d: -f1)
+        if [ -n "$EXT_SITES_LINE" ]; then
+            # Insert before the External Sites line, with a blank separator line
+            PAGE_ENTRY="│   ├── <a href=\"${GH_BLOB}/live-site-pages/${ENV_NAME}.html\">${ENV_NAME}.html</a>  →  <a href=\"${GH_PAGES}/${ENV_NAME}.html\">🌐</a>🟢 · ${SHEET_LINK} · ◽ · <a href=\"${GH_BLOB}/googleAppsScripts/${PROJECT_DIR}/${ENV_NAME}.gs\">⛽</a> · ◽  — <a href=\"${GH_BLOB}/live-site-pages/html-changelogs/${ENV_NAME}html.changelog.md\">v01.00w</a> · <a href=\"${GH_BLOB}/live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.md\">v01.00g</a> | [template] ${TITLE} page\n│   │"
+            sed -i "${EXT_SITES_LINE}i\\${PAGE_ENTRY}" "README.md"
             ok "Added page entry to README.md tree"
-
-            # Add version/changelog files to their respective subfolder sections
-            # html-versions/
-            HV_LAST=$(grep -n '│   │   .\+html\.version\.txt' "README.md" | tail -1 | cut -d: -f1)
-            if [ -n "$HV_LAST" ]; then
-                sed -i "${HV_LAST}a\\│   │   ├── ${ENV_NAME}html.version.txt     # Version file for ${ENV_NAME} page auto-refresh" "README.md"
-                ok "Added html-versions entry"
-            fi
-            # gs-versions/
-            GV_LAST=$(grep -n '│   │   .\+gs\.version\.txt' "README.md" | tail -1 | cut -d: -f1)
-            if [ -n "$GV_LAST" ]; then
-                sed -i "${GV_LAST}a\\│   │   ├── ${ENV_NAME}gs.version.txt       # Deployed GAS version for pill polling" "README.md"
-                ok "Added gs-versions entry"
-            fi
-            # html-changelogs/
-            HC_LAST=$(grep -n '│   │   .\+html\.changelog.*\.md' "README.md" | grep -v archive | tail -1 | cut -d: -f1)
-            if [ -n "$HC_LAST" ]; then
-                sed -i "${HC_LAST}a\\│   │   ├── ${ENV_NAME}html.changelog.md           # HTML changelog for popup\n│   │   ├── ${ENV_NAME}html.changelog-archive.md   # Older changelog sections (rotated)" "README.md"
-                ok "Added html-changelogs entries"
-            fi
-            # gs-changelogs/
-            GC_LAST=$(grep -n '│   │   .\+gs\.changelog.*\.md' "README.md" | grep -v archive | tail -1 | cut -d: -f1)
-            if [ -n "$GC_LAST" ]; then
-                sed -i "${GC_LAST}a\\│   │   ├── ${ENV_NAME}gs.changelog.md             # GAS changelog for popup\n│   │   ├── ${ENV_NAME}gs.changelog-archive.md     # Older changelog sections (rotated)" "README.md"
-                ok "Added gs-changelogs entries"
-            fi
+        else
+            warn "Could not find External Sites section — page entry not added"
+            README_WARNINGS=$((README_WARNINGS + 1))
         fi
 
-        # 2. Add GAS directory in googleAppsScripts section (before the last "└──" entry)
-        # Find the last directory in googleAppsScripts (the └── line) and insert before it
-        # First, change └── to ├── for the current last entry, then add new entry before .claude/
-        CLAUDE_DIR_LINE=$(grep -n '^├── \.claude/' "README.md" | head -1 | cut -d: -f1)
-        if [ -n "$CLAUDE_DIR_LINE" ]; then
-            # Change the current └── to ├── in the googleAppsScripts section
-            LAST_GAS_DIR=$(grep -n '│   └── .*/.*# GAS for' "README.md" | tail -1 | cut -d: -f1)
-            if [ -n "$LAST_GAS_DIR" ]; then
-                sed -i "${LAST_GAS_DIR}s/│   └──/│   ├──/" "README.md"
-                # Fix the sub-items of the old last entry (change │       to │   │  )
-                NEXT=$((LAST_GAS_DIR + 1))
-                NEXT2=$((LAST_GAS_DIR + 2))
-                sed -i "${NEXT}s/│       ├──/│   │   ├──/" "README.md"
-                sed -i "${NEXT2}s/│       └──/│   │   └──/" "README.md"
+        # 2. Add html-versions entry (change last └── to ├── in section, add new └── entry)
+        HV_LAST_LINE=$(grep -n "html-versions/.*html\.version\.txt" "README.md" | tail -1 | cut -d: -f1)
+        if [ -n "$HV_LAST_LINE" ]; then
+            # Change └── to ├── on the current last entry
+            sed -i "${HV_LAST_LINE}s/└──/├──/" "README.md"
+            HV_NEW="│   │   └── <a href=\"${GH_BLOB}/live-site-pages/html-versions/${ENV_NAME}html.version.txt\">${ENV_NAME}html.version.txt</a>          — [template]"
+            sed -i "${HV_LAST_LINE}a\\${HV_NEW}" "README.md"
+            ok "Added html-versions entry"
+        fi
+
+        # 3. Add gs-versions entry
+        GV_LAST_LINE=$(grep -n "gs-versions/.*gs\.version\.txt" "README.md" | tail -1 | cut -d: -f1)
+        if [ -n "$GV_LAST_LINE" ]; then
+            sed -i "${GV_LAST_LINE}s/└──/├──/" "README.md"
+            GV_NEW="│   │   └── <a href=\"${GH_BLOB}/live-site-pages/gs-versions/${ENV_NAME}gs.version.txt\">${ENV_NAME}gs.version.txt</a>            — [template]"
+            sed -i "${GV_LAST_LINE}a\\${GV_NEW}" "README.md"
+            ok "Added gs-versions entry"
+        fi
+
+        # 4. Add html-changelogs entries (changelog + archive)
+        HC_LAST_LINE=$(grep -n "html-changelogs/.*html\.changelog" "README.md" | tail -1 | cut -d: -f1)
+        if [ -n "$HC_LAST_LINE" ]; then
+            sed -i "${HC_LAST_LINE}s/└──/├──/" "README.md"
+            HC_NEW="│   │   ├── <a href=\"${GH_BLOB}/live-site-pages/html-changelogs/${ENV_NAME}html.changelog.md\">${ENV_NAME}html.changelog.md</a>             — [template] ${PROJECT_DIR} page changelog\n│   │   └── <a href=\"${GH_BLOB}/live-site-pages/html-changelogs/${ENV_NAME}html.changelog-archive.md\">${ENV_NAME}html.changelog-archive.md</a>     — [template] Older sections (rotated)"
+            sed -i "${HC_LAST_LINE}a\\${HC_NEW}" "README.md"
+            ok "Added html-changelogs entries"
+        fi
+
+        # 5. Add gs-changelogs entries (changelog + archive)
+        GC_LAST_LINE=$(grep -n "gs-changelogs/.*gs\.changelog" "README.md" | tail -1 | cut -d: -f1)
+        if [ -n "$GC_LAST_LINE" ]; then
+            sed -i "${GC_LAST_LINE}s/└──/├──/" "README.md"
+            GC_NEW="│   │   ├── <a href=\"${GH_BLOB}/live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.md\">${ENV_NAME}gs.changelog.md</a>               — [template] ${PROJECT_DIR} GAS changelog\n│   │   └── <a href=\"${GH_BLOB}/live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog-archive.md\">${ENV_NAME}gs.changelog-archive.md</a>       — [template] Older sections (rotated)"
+            sed -i "${GC_LAST_LINE}a\\${GC_NEW}" "README.md"
+            ok "Added gs-changelogs entries"
+        fi
+
+        # 6. Add GAS directory in googleAppsScripts section
+        # Change current last └── to ├── (the current last GAS project dir)
+        LAST_GAS_DIR_LINE=$(grep -n "googleAppsScripts.*└──.*/" "README.md" | grep "GAS for" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_GAS_DIR_LINE" ]; then
+            sed -i "${LAST_GAS_DIR_LINE}s/│   └──/│   ├──/" "README.md"
+            # Fix sub-items: │       → │   │   for the 2 lines after
+            NEXT_L=$((LAST_GAS_DIR_LINE + 1))
+            NEXT_L2=$((LAST_GAS_DIR_LINE + 2))
+            sed -i "${NEXT_L}s/│       /│   │   /" "README.md"
+            sed -i "${NEXT_L2}s/│       /│   │   /" "README.md"
+        fi
+        # Find the blank line after googleAppsScripts section (│ followed by blank or next section)
+        GAS_SECTION_END=$(grep -n '^│$' "README.md" | while read -r lineinfo; do
+            LN=$(echo "$lineinfo" | cut -d: -f1)
+            # Check if the previous few lines contain googleAppsScripts content
+            PREV_CONTENT=$(sed -n "$((LN-5)),$((LN-1))p" "README.md")
+            if echo "$PREV_CONTENT" | grep -q "config\.json"; then
+                echo "$LN"
             fi
-            # Insert new entry before .claude/
-            sed -i "${CLAUDE_DIR_LINE}i\\│   └── ${PROJECT_DIR}/              # GAS for live-site-pages/${ENV_NAME}.html\n│       ├── ${ENV_NAME}.gs        # Self-updating GAS web app\n│       └── ${ENV_NAME}.config.json  # Project config (source of truth)" "README.md"
+        done | tail -1)
+        if [ -n "$GAS_SECTION_END" ]; then
+            GAS_DIR_ENTRY="│   └── <a href=\"${GH_TREE}/googleAppsScripts/${PROJECT_DIR}\">${PROJECT_DIR}/</a>             — [template] GAS for live-site-pages/${ENV_NAME}.html\n│       ├── <a href=\"${GH_BLOB}/googleAppsScripts/${PROJECT_DIR}/${ENV_NAME}.gs\">${ENV_NAME}.gs</a>              — [template] Self-updating GAS web app\n│       └── <a href=\"${GH_BLOB}/googleAppsScripts/${PROJECT_DIR}/${ENV_NAME}.config.json\">${ENV_NAME}.config.json</a>     — [template] Project config (source of truth)"
+            sed -i "${GAS_SECTION_END}i\\${GAS_DIR_ENTRY}" "README.md"
             ok "Added GAS directory to README.md tree"
+        else
+            warn "Could not find googleAppsScripts section end — GAS directory not added"
+            README_WARNINGS=$((README_WARNINGS + 1))
         fi
 
+        # 7. Add per-environment diagram entry (if diagrams section exists)
+        LAST_DIAG_LINE=$(grep -n "diagrams/.*-diagram\.md" "README.md" | tail -1 | cut -d: -f1)
+        if [ -n "$LAST_DIAG_LINE" ]; then
+            sed -i "${LAST_DIAG_LINE}s/└──/├──/" "README.md"
+            DIAG_ENTRY="│   │   └── <a href=\"${GH_BLOB}/repository-information/diagrams/${ENV_NAME}-diagram.md\">${ENV_NAME}-diagram.md</a>         — [template] ${PROJECT_DIR} page GAS integration sequence"
+            sed -i "${LAST_DIAG_LINE}a\\${DIAG_ENTRY}" "README.md"
+            ok "Added diagram entry to README.md tree"
+        fi
+
+        if [ "$README_WARNINGS" -gt 0 ]; then
+            warn "README.md updated with ${README_WARNINGS} warning(s) — review may be needed"
+        else
+            ok "README.md tree fully updated"
+        fi
     fi
 else
     warn "README.md not found — skipping"
@@ -590,6 +799,7 @@ EXPECTED_FILES=(
     "$HTML_CL_ARCHIVE"
     "$GAS_CL"
     "$GAS_CL_ARCHIVE"
+    "$DIAGRAM_FILE"
 )
 
 for f in "${EXPECTED_FILES[@]}"; do
@@ -604,7 +814,7 @@ done
 # Check for remaining template placeholders in new files
 echo ""
 info "Checking for remaining template placeholders..."
-PLACEHOLDER_CHECK=$(grep -rn "CHANGE THIS PROJECT TITLE TEMPLATE\|<page-name>\.gs\|<page-name>\.config\.json" \
+PLACEHOLDER_CHECK=$(grep -rn "CHANGE THIS PROJECT TITLE TEMPLATE\|<page-name>\.gs\|<page-name>\.config\.json\|YOUR_CLIENT_ID\|YOUR_DEPLOYMENT_ID" \
     "$HTML_PAGE" "$GAS_FILE" "$GAS_CONFIG" 2>/dev/null || true)
 
 if [ -n "$PLACEHOLDER_CHECK" ]; then
@@ -632,6 +842,7 @@ echo "Registered as: ${PROJECT_DIR} in GAS Projects table"
 echo ""
 echo "Also updated:"
 echo "  - repository-information/REPO-ARCHITECTURE.md (Mermaid diagram)"
+echo "  - repository-information/diagrams/${ENV_NAME}-diagram.md (sequence diagram)"
 echo "  - README.md (structure tree)"
 echo "  - .claude/rules/gas-scripts.md (GAS Projects table)"
 echo "  - .github/workflows/auto-merge-claude.yml (GAS deploy webhook step)"
