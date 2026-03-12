@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v02.45r] — 2026-03-12 04:38:41 PM EST
+
+### Added
+- Added countdown timer panel to testauth1 showing session expiration, refresh window status, and inactivity timeout in real-time
+
+#### `testauth1.html` — v01.08w
+
+##### Added
+- Added live countdown timers showing session time remaining, refresh window status, and inactivity timeout
 
 ## [v02.44r] — 2026-03-12 02:58:04 PM EST
 

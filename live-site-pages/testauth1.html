@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.07w">
+  <meta name="build-version" content="v01.08w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -183,6 +183,22 @@
       font: 11px/1 monospace; padding: 0 4px;
     }
     #sign-out-btn:hover { color: #f44336; }
+    #auth-timers {
+      position: fixed; bottom: 8px; left: 8px; z-index: 9999;
+      display: none; flex-direction: column; gap: 4px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 8px 12px;
+      border-radius: 8px; font: 11px/1.4 monospace; user-select: none;
+    }
+    #auth-timers .timer-row { display: flex; justify-content: space-between; gap: 12px; }
+    #auth-timers .timer-label { color: #999; }
+    #auth-timers .timer-value { color: #fff; font-weight: bold; }
+    #auth-timers .timer-value.warn { color: #ffc107; }
+    #auth-timers .timer-value.critical { color: #ef5350; }
+    #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
+    #auth-timers .timer-header {
+      color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 3px; margin-bottom: 2px;
+    }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -221,6 +237,13 @@
   <div id="user-pill">
     <span id="user-email-display"></span>
     <button id="sign-out-btn">Sign Out</button>
+  </div>
+
+  <div id="auth-timers">
+    <div class="timer-header">Session Timers</div>
+    <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
+    <div class="timer-row"><span class="timer-label">Refresh window:</span><span class="timer-value" id="timer-refresh">--:--</span></div>
+    <div class="timer-row" id="timer-inactivity-row"><span class="timer-label">Inactivity:</span><span class="timer-value" id="timer-inactivity">--:--</span></div>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -974,8 +997,11 @@
       if (data.type === 'gas-session-created') {
         if (data.success) {
           saveSession(data.sessionToken, data.email);
+          // New session — reset the session start time
+          getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           showApp(data.email, data.displayName);
           startInactivityTimer();
+          startCountdownTimers();
           // Reload iframe with session token so the app UI loads
           var gasApp = document.getElementById('gas-app');
           var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
@@ -1000,6 +1026,7 @@
           return;
         }
         clearSession();
+        stopCountdownTimers();
         showAuthWall('Session expired. Please sign in again.');
       }
 
@@ -1014,6 +1041,7 @@
       // GAS sign-out confirmation
       if (data.type === 'gas-signed-out') {
         clearSession();
+        stopCountdownTimers();
         showAuthWall('You have been signed out.');
       }
     });
@@ -1083,6 +1111,7 @@
     // =============================================
 
     var _inactivityTimer = null;
+    var _lastActivityTime = Date.now();
     var _ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
 
     function startInactivityTimer() {
@@ -1094,6 +1123,7 @@
     }
 
     function resetInactivityTimer() {
+      _lastActivityTime = Date.now();
       if (_inactivityTimer) clearTimeout(_inactivityTimer);
       _inactivityTimer = setTimeout(function() {
         handleInactivityTimeout();
@@ -1117,6 +1147,109 @@
     }
 
     // =============================================
+    // AUTH — Countdown Timers
+    // Server session = 30 min hard cap from creation (GAS SESSION_EXPIRATION).
+    // Refresh window = last 5 min of session (SESSION_REFRESH_WINDOW).
+    // Inactivity = client-side idle timer (only when enabled).
+    // =============================================
+
+    var SERVER_SESSION_DURATION = 1800;  // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
+    var SERVER_REFRESH_WINDOW = 300;     // seconds — must match GAS PRESETS.standard.SESSION_REFRESH_WINDOW
+    var SESSION_START_KEY = 'gas_session_start';
+    var _timerInterval = null;
+
+    function formatCountdown(seconds) {
+      if (seconds <= 0) return '0:00';
+      var m = Math.floor(seconds / 60);
+      var s = Math.floor(seconds % 60);
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function startCountdownTimers() {
+      var timersEl = document.getElementById('auth-timers');
+      var sessionEl = document.getElementById('timer-session');
+      var refreshEl = document.getElementById('timer-refresh');
+      var inactivityEl = document.getElementById('timer-inactivity');
+      var inactivityRow = document.getElementById('timer-inactivity-row');
+
+      // Store session start time if not already stored
+      var storage = getStorage();
+      if (!storage.getItem(SESSION_START_KEY)) {
+        storage.setItem(SESSION_START_KEY, String(Date.now()));
+      }
+
+      // Hide inactivity row if disabled
+      if (!HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT) {
+        inactivityEl.textContent = 'off';
+        inactivityEl.className = 'timer-value disabled';
+      }
+
+      timersEl.style.display = 'flex';
+
+      if (_timerInterval) clearInterval(_timerInterval);
+      _timerInterval = setInterval(function() {
+        var startTime = parseInt(storage.getItem(SESSION_START_KEY) || '0', 10);
+        var elapsed = (Date.now() - startTime) / 1000;
+        var remaining = SERVER_SESSION_DURATION - elapsed;
+
+        // Session countdown
+        if (remaining <= 0) {
+          sessionEl.textContent = 'expired';
+          sessionEl.className = 'timer-value critical';
+        } else {
+          sessionEl.textContent = formatCountdown(remaining);
+          if (remaining <= 60) {
+            sessionEl.className = 'timer-value critical';
+          } else if (remaining <= SERVER_REFRESH_WINDOW) {
+            sessionEl.className = 'timer-value warn';
+          } else {
+            sessionEl.className = 'timer-value';
+          }
+        }
+
+        // Refresh window countdown — shows time until refresh window opens
+        var refreshIn = remaining - SERVER_REFRESH_WINDOW;
+        if (remaining <= 0) {
+          refreshEl.textContent = 'expired';
+          refreshEl.className = 'timer-value critical';
+        } else if (refreshIn <= 0) {
+          refreshEl.textContent = 'active';
+          refreshEl.className = 'timer-value warn';
+        } else {
+          refreshEl.textContent = 'in ' + formatCountdown(refreshIn);
+          refreshEl.className = 'timer-value';
+        }
+
+        // Inactivity countdown
+        if (HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT && _inactivityTimer) {
+          // We track the last reset time to compute remaining
+          var inactivityRemaining = (_lastActivityTime + HTML_CONFIG.CLIENT_INACTIVITY_TIMEOUT - Date.now()) / 1000;
+          if (inactivityRemaining <= 0) {
+            inactivityEl.textContent = 'timed out';
+            inactivityEl.className = 'timer-value critical';
+          } else {
+            inactivityEl.textContent = formatCountdown(inactivityRemaining);
+            if (inactivityRemaining <= 60) {
+              inactivityEl.className = 'timer-value critical';
+            } else if (inactivityRemaining <= 120) {
+              inactivityEl.className = 'timer-value warn';
+            } else {
+              inactivityEl.className = 'timer-value';
+            }
+          }
+        }
+      }, 1000);
+    }
+
+    function stopCountdownTimers() {
+      if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+      var timersEl = document.getElementById('auth-timers');
+      if (timersEl) timersEl.style.display = 'none';
+      var storage = getStorage();
+      storage.removeItem(SESSION_START_KEY);
+    }
+
+    // =============================================
     // AUTH — Sign Out
     // =============================================
 
@@ -1124,6 +1257,7 @@
       var session = loadSession();
       clearSession();
       stopInactivityTimer();
+      stopCountdownTimers();
 
       // Notify GAS server to invalidate server-side session
       if (session.token) {
@@ -1220,6 +1354,7 @@
         }
         showApp(session.email);
         startInactivityTimer();
+        startCountdownTimers();
       } else {
         // No session — prevent the iframe from loading the bare GAS URL.
         // The iframe IIFE navigates to the GAS deployment URL immediately,

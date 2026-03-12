@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08w] — 2026-03-12 04:38:41 PM EST — v02.45r
+
+### Added
+- Added live countdown timers showing session time remaining, refresh window status, and inactivity timeout
 
 ## [v01.07w] — 2026-03-12 02:42:21 PM EST — v02.42r
 
