@@ -4,35 +4,61 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-11 11:17:38 PM EST
+**Date:** 2026-03-12 12:29:07 AM EST
 **Repo version:** v02.25r
 
 ### What was done
-- Created `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` (v02.25r) — a research-validated OAuth pattern that builds on the Improved pattern with key fixes:
-  - **Origin validation**: replaced `String.includes('googleusercontent.com')` (bypassable via `evil-googleusercontent.com`) with strict `hostname.endsWith('.googleusercontent.com')` suffix match
-  - **Re-auth fallback**: added interactive re-auth banner when silent `prompt: ''` fails (user revoked access, cleared cookies, etc.) — Improved pattern silently swallowed these failures
-  - **CacheService caveats**: documented best-effort TTL eviction, max 21600s limit, no `getTimeToLive()`, and max 100KB value size
-  - **Simplified token expiry check**: replaced mutating `refreshGoogleTokenIfNeeded()` with pure boolean `checkGoogleTokenExpiry()`
-  - **URL parameter separator**: fixed `?`/`&` handling in `exchangeForSession()` and `signOut()`
-- CHANGELOG archive rotation: rotated 52 March 9 date group sections, SHA-enriched all 76 archived sections (including 24 pre-existing ones that were missing SHA links)
+- Conducted comprehensive HIPAA compliance research on the Researched Improved Google OAuth Pattern using two parallel research agents (17 topics total)
+- Produced a detailed HIPAA compliance analysis identifying gaps, strengths, and recommended improvements
+- **Attempted to create `HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` but the large file write (~1100 lines) was interrupted twice** — the file does NOT exist yet. No changes were committed this session.
+
+### HIPAA Research Findings (KEY — needed for next session)
+
+**Critical HIPAA gaps identified in the current Researched Improved pattern:**
+
+1. **No Audit Logging** (45 CFR 164.312(b) — REQUIRED) — biggest gap. Must log all auth events (login, logout, failed attempts, session expiry, data access). Retain 6+ years. Log to Google Sheet (Workspace BAA covers Sheets).
+2. **No MFA verification** — 2025 NPRM proposes making MFA mandatory. Pattern must verify MFA was used or add secondary MFA step.
+3. **Consumer Google accounts not BAA-covered** — must restrict to Workspace domain accounts only. Add domain validation in `exchangeTokenForSession()`.
+4. **Session timeout too long** (30 min) — HIPAA industry standard is 10-15 min. Reduce `SESSION_EXPIRATION` to 900s (15 min). Make client-side inactivity timeout mandatory (not optional).
+5. **Access token in URL parameters** — RFC 6750 §2.3 discourages this. Exchange via postMessage after iframe loads instead of URL params.
+6. **localStorage vulnerable to XSS** — switch to `sessionStorage` (cleared on tab close). HttpOnly cookies not available in pure GAS architecture.
+7. **No session data integrity** — add HMAC on cached session data for tamper detection.
+8. **No emergency access procedure** — HIPAA 164.312(a)(2)(ii) REQUIRED.
+
+**Key regulatory findings:**
+- Apps Script IS covered under Google Workspace BAA (confirmed Sept 2025)
+- Consumer Google OAuth/GIS is NOT listed in either BAA
+- CacheService: no HIPAA-specific guarantees, but benefits from Google infra AES-256 encryption. Acceptable for non-PHI session identifiers only.
+- Google Cloud Identity Platform: covered under GCP BAA, has HIPAA Implementation Guide, supports MFA
+- `getActiveUser()` only works for same-domain Workspace users with "User accessing the web app" deployment
+
+**The new pattern document should include:**
+- All code from RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md as baseline
+- Audit logging system (GAS functions logging to a Sheet)
+- Domain restriction (Workspace accounts only)
+- MFA verification/enforcement strategy
+- 15-min session timeout (configurable down to 10 min)
+- postMessage-based token exchange (no URL params for initial exchange)
+- sessionStorage instead of localStorage
+- HMAC integrity on cached session data
+- Emergency access procedure
+- HIPAA compliance mapping table (each 45 CFR section → how pattern addresses it)
+- Five-pattern comparison table (adding HIPAA column)
 
 ### Where we left off
-All changes committed and merged to main. Three auth pattern reference documents now exist:
-1. `GOOGLE-OAUTH-AUTH-PATTERN.md` — basic pattern (raw token, no sessions)
-2. `IMPROVED-GOOGLE-OAUTH-PATTERN.md` — first improvement (server sessions, opaque tokens)
-3. `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — research-validated version (strict origin, re-auth fallback, CacheService docs)
-
-The auth templates (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) currently implement the Improved pattern (v02.24r). They have NOT yet been updated to implement the Researched Improved pattern — that would be the logical next step.
+**No file was created. No commits were made.** The next session should create `repository-information/HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md`. Consider writing it in chunks if the large file write stalls again.
 
 ### Key decisions made
-- Created the researched pattern as a separate document rather than editing the Improved pattern — preserves the progression and lets the user choose when to upgrade templates
-- All origin validation attack vectors documented in a comparison table (Section 7)
-- Re-auth uses a non-disruptive banner ("Session expiring — click Continue") rather than a full auth wall
-- `checkGoogleTokenExpiry()` is a pure function (returns boolean) rather than mutating sessionData — cleaner data flow
+- New pattern is a separate document (preserves the progression: Basic → Improved → Researched Improved → HIPAA Researched Improved)
+- Audit logs go to Google Sheet (Workspace BAA covers Sheets, 6+ year retention possible)
+- postMessage for token exchange instead of URL parameters
+- sessionStorage over localStorage (HttpOnly cookies not feasible in pure GAS)
+- Session timeout: 15 min default (configurable, with mandatory client-side inactivity timer)
 
 ### Active context
-- Repo version: v02.25r
-- CHANGELOG sections: 49/100 (after rotating 52 March 9 sections to archive)
+- Repo version: v02.25r (no version bump this session — nothing committed)
+- Branch: `claude/hipaa-google-auth-research-EVktK`
+- CHANGELOG sections: 49/100
 - Pages: index (v01.01w), testenvironment (v01.01w), gas-project-creator (v01.06w), dchrcalendar, testaed
 - GAS versions: index (v01.01g), testenvironment (v01.01g)
 - No active reminders
@@ -42,14 +68,14 @@ The auth templates (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`, `gas-minimal-a
 
 ## Previous Sessions
 
-**Date:** 2026-03-11 09:59:16 PM EST
-**Repo version:** v02.24r
+**Date:** 2026-03-11 11:17:38 PM EST
+**Repo version:** v02.25r
 
 ### What was done
-- Created template variation matrix: 6 template files (4 GAS: minimal/test × auth/noauth, 2 HTML: auth/noauth) covering all gas-project-creator checkbox combinations (v02.22r)
-- Rewrote all 3 auth template files to implement IMPROVED-GOOGLE-OAUTH-PATTERN from noauth baselines (v02.24r)
+- Created `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` (v02.25r) — research-validated OAuth pattern with strict origin validation, re-auth fallback, CacheService docs
+- CHANGELOG archive rotation: rotated 52 March 9 date group sections, SHA-enriched all 76 archived sections
 
 ### Where we left off
-All changes committed and merged to main. Auth templates implement the full IMPROVED-GOOGLE-OAUTH-PATTERN.
+All changes committed and merged to main. Three auth pattern documents exist. Auth templates implement the Improved pattern (v02.24r), not yet upgraded to Researched Improved.
 
 Developed by: ShadowAISolutions
