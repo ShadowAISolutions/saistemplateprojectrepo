@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "YOUR_PROJECT_TITLE";
 var GITHUB_OWNER  = "YOUR_ORG_NAME";
 var GITHUB_REPO   = "YOUR_REPO_NAME";
@@ -582,7 +582,7 @@ function doGet(e) {
   if (signOutToken) {
     invalidateSession(signOutToken);
     var signOutHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.parent.postMessage({type:"gas-signed-out",success:true}, "*");'
+      + 'window.top.postMessage({type:"gas-signed-out",success:true}, "*");'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(signOutHtml)
       .setTitle(TITLE)
@@ -600,7 +600,7 @@ function doGet(e) {
         result = { success: false, error: "server_error: " + (err.message || String(err)) };
       }
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.parent.postMessage('
+        + 'window.top.postMessage('
         + JSON.stringify({
             type: "gas-session-created",
             success: result.success,
@@ -626,7 +626,7 @@ function doGet(e) {
       + '  if (!token) return;'
       + '  google.script.run'
       + '    .withSuccessHandler(function(result) {'
-      + '      window.parent.postMessage({'
+      + '      window.top.postMessage({'
       + '        type: "gas-session-created",'
       + '        success: result.success,'
       + '        sessionToken: result.sessionToken || "",'
@@ -636,7 +636,7 @@ function doGet(e) {
       + '      }, "*");'
       + '    })'
       + '    .withFailureHandler(function(err) {'
-      + '      window.parent.postMessage({'
+      + '      window.top.postMessage({'
       + '        type: "gas-session-created",'
       + '        success: false,'
       + '        error: "server_error"'
@@ -644,7 +644,7 @@ function doGet(e) {
       + '    })'
       + '    .exchangeTokenForSession(token);'
       + '});'
-      + 'window.parent.postMessage({ type: "gas-ready-for-token" }, "*");'
+      + 'window.top.postMessage({ type: "gas-ready-for-token" }, "*");'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(listenerHtml)
       .setTitle(TITLE)
@@ -656,7 +656,7 @@ function doGet(e) {
 
   if (session.status !== "authorized") {
     var authHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.parent.postMessage({type:"gas-needs-auth",authStatus:"' + session.status + '",email:"' + (session.email || '') + '",version:"' + VERSION + '"}, "*");'
+      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + session.status + '",email:"' + (session.email || '') + '",version:"' + VERSION + '"}, "*");'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(authHtml)
       .setTitle(TITLE)
@@ -685,16 +685,16 @@ function doGet(e) {
 
       <script>
         // Notify wrapper that auth is OK
-        window.parent.postMessage({type: 'gas-auth-ok', version: '${VERSION}', needsReauth: ${session.needsReauth || false}}, '*');
+        window.top.postMessage({type: 'gas-auth-ok', version: '${VERSION}', needsReauth: ${session.needsReauth || false}}, '*');
 
         window.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
-                parent.postMessage({type: 'gas-version', version: data.version}, '*');
+                top.postMessage({type: 'gas-version', version: data.version}, '*');
               })
               .withFailureHandler(function() {
-                parent.postMessage({type: 'gas-version', version: null}, '*');
+                top.postMessage({type: 'gas-version', version: null}, '*');
               })
               .getAppData();
           }

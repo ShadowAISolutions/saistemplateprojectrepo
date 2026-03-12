@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v02.38r] — 2026-03-12 01:43:25 PM EST
+
+### Fixed
+- Fixed GAS postMessage not reaching parent page — Apps Script's sandbox iframe wrapper intercepts `window.parent.postMessage`; switched all GAS scripts and templates to use `window.top.postMessage` which bypasses the sandbox and reaches the embedding page directly
+
+#### `testauth1.gs` — v01.03g
+
+##### Fixed
+- Fixed postMessage communication being intercepted by Google's iframe sandbox — messages now reach the embedding page correctly
 
 ## [v02.37r] — 2026-03-12 01:30:39 PM EST
 

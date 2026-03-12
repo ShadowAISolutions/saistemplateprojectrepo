@@ -40,10 +40,10 @@ function doGet() {
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
-                parent.postMessage({type: 'gas-version', version: data.version}, '*');
+                top.postMessage({type: 'gas-version', version: data.version}, '*');
               })
               .withFailureHandler(function() {
-                parent.postMessage({type: 'gas-version', version: null}, '*');
+                top.postMessage({type: 'gas-version', version: null}, '*');
               })
               .getAppData();
           }
