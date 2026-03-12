@@ -1403,4 +1403,514 @@ function callServer(functionName, args) {
 > | `ENABLE_INACTIVITY_TIMEOUT` | Disabled — no timeout tracking | Active — signs out after `CLIENT_INACTIVITY_TIMEOUT` ms |
 > | `ENABLE_AUTO_SIGNOUT` | N/A (timeout disabled) | Auto sign-out on inactivity (vs. just showing a warning) |
 
+---
+
+## 9. postMessage Protocol
+
+> **When this applies**: only when `TOKEN_EXCHANGE_METHOD = 'postMessage'` (HIPAA preset). The URL-parameter path skips this entire protocol — the token is passed as a URL query parameter and the GAS `doGet()` handles everything synchronously.
+
+### Three-Phase Handshake
+
+```
+Phase 1: Load
+  Parent (HTML wrapper)                    GAS iframe
+  ─────────────────────                    ──────────
+  Sets iframe.src = GAS_URL         ──►    doGet() returns listener HTML
+
+Phase 2: Ready Signal
+  Parent                                   GAS iframe
+  ─────────────────────                    ──────────
+  Receives 'gas-ready-for-token'    ◄──    Sends: { type: 'gas-ready-for-token' }
+  Sends Google token to iframe      ──►    Sends: { type: 'google-token', token: '...' }
+
+Phase 3: Exchange Result
+  Parent                                   GAS iframe
+  ─────────────────────                    ──────────
+  Receives session result           ◄──    Calls exchangeTokenForSession()
+  Saves session, loads form                Sends: { type: 'gas-session-result', ... }
+```
+
+### Origin Validation Rules
+
+```javascript
+// PARENT — receiving messages from GAS iframe
+window.addEventListener('message', function(event) {
+  // STRICT origin check — GAS web apps serve from script.google.com
+  if (event.origin !== 'https://script.google.com') return;
+
+  // Only process known message types
+  var data = event.data;
+  if (!data || typeof data !== 'object') return;
+
+  switch (data.type) {
+    case 'gas-ready-for-token':
+      // Phase 2: iframe is ready — send the buffered token
+      break;
+    case 'gas-session-result':
+      // Phase 3: exchange complete — save session or show error
+      break;
+    case 'gas-signed-out':
+      // Sign-out confirmation
+      break;
+    default:
+      return; // Ignore unknown message types
+  }
+});
+```
+
+```javascript
+// GAS IFRAME — sending messages to parent
+// The listener page (returned by doGet when no session/token params):
+
+// Ready signal — sent when listener page loads
+window.parent.postMessage({ type: 'gas-ready-for-token' }, '*');
+// Note: targetOrigin is '*' because GAS cannot know the parent's origin.
+// Security is maintained because:
+// 1. The ready signal contains no sensitive data
+// 2. The parent validates event.origin before sending the token
+// 3. The session result is sent back to the parent (same window)
+
+// Receiving token from parent
+window.addEventListener('message', function(event) {
+  // Cannot validate parent origin from GAS iframe (CORS restrictions)
+  // Security relies on: GAS server validates the Google token server-side
+  if (event.data && event.data.type === 'google-token') {
+    // Exchange via google.script.run (server-side validation)
+    google.script.run
+      .withSuccessHandler(function(result) {
+        window.parent.postMessage({
+          type: 'gas-session-result',
+          success: result.success,
+          sessionToken: result.sessionToken,
+          email: result.email
+        }, '*');
+      })
+      .withFailureHandler(function(error) {
+        window.parent.postMessage({
+          type: 'gas-session-result',
+          success: false,
+          error: 'server_error'
+        }, '*');
+      })
+      .exchangeTokenForSession(event.data.token);
+  }
+});
+```
+
+### Message Types Reference
+
+| Type | Direction | Payload | When |
+|------|-----------|---------|------|
+| `gas-ready-for-token` | iframe → parent | `{}` (no payload) | Iframe listener page loaded |
+| `google-token` | parent → iframe | `{ token: 'access_token' }` | After receiving ready signal |
+| `gas-session-result` | iframe → parent | `{ success, sessionToken, email }` or `{ success: false, error }` | After server-side exchange |
+| `gas-session-ready` | iframe → parent | `{ sessionToken, email }` | URL-path: form page loaded with session |
+| `gas-signed-out` | iframe → parent | `{ success: true }` | Server-side sign-out complete |
+
+### Race Condition Prevention
+
+The `gas-ready-for-token` handshake solves the fundamental timing problem: the parent cannot send a token before the iframe's message listener is registered. Without the ready signal, the `postMessage` call may arrive before the iframe has set up its listener — and `postMessage` does **not** queue messages.
+
+```javascript
+// ANTI-PATTERN — race condition (DO NOT USE)
+gasFrame.src = gasUrl;
+gasFrame.contentWindow.postMessage({ token: '...' }, origin);
+// ❌ Token may arrive before iframe's listener is ready
+
+// CORRECT — wait for ready signal
+gasFrame.src = gasUrl;
+// Token is buffered in pendingToken variable
+// Sent only after 'gas-ready-for-token' is received
+```
+
+---
+
+## 10. Audit Logging System (Toggleable)
+
+> **Toggle**: `AUTH_CONFIG.ENABLE_AUDIT_LOG`
+> **HIPAA**: mandatory (45 CFR 164.312(b) — Audit controls)
+> **Standard**: optional (off by default, can be enabled per-project)
+
+### The `auditLog()` Wrapper
+
+All audit calls in the GAS backend go through this single wrapper. When the toggle is off, the function is a no-op — zero performance cost.
+
+```javascript
+// =============================================
+// AUDIT LOG — Toggle-gated wrapper.
+// When disabled: returns immediately (no-op).
+// When enabled: writes to the configured spreadsheet.
+// Failures are caught — audit logging never blocks auth.
+// =============================================
+
+function auditLog(action, email, result, details) {
+  if (!AUTH_CONFIG.ENABLE_AUDIT_LOG) return; // toggle gate
+
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(AUTH_CONFIG.AUDIT_LOG_SHEET_NAME);
+
+    if (!sheet) {
+      // Auto-create the audit sheet with headers
+      sheet = ss.insertSheet(AUTH_CONFIG.AUDIT_LOG_SHEET_NAME);
+      sheet.appendRow([
+        'Timestamp', 'Action', 'Email', 'Result',
+        'Session Token (prefix)', 'Details'
+      ]);
+      sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
+      sheet.setFrozenRows(1);
+    }
+
+    var tokenPrefix = (details && details.sessionToken)
+      ? details.sessionToken.substring(0, 8) + '...'
+      : '';
+
+    sheet.appendRow([
+      new Date(),
+      action,
+      email || 'unknown',
+      result || 'success',
+      tokenPrefix,
+      JSON.stringify(details || {})
+    ]);
+  } catch (e) {
+    // CRITICAL: audit logging must NEVER block the main operation.
+    // Log to console for debugging, but do not throw.
+    console.error('Audit log write failed: ' + e.message);
+  }
+}
+```
+
+### Logged Events
+
+| Action | When | Logged Data |
+|--------|------|-------------|
+| `login_success` | Token exchange succeeded | email, session token prefix |
+| `login_failed` | Token validation failed | email (if available), error reason |
+| `logout` | User signed out | email, session token prefix |
+| `session_validated` | Session check passed | email (only if audit is verbose) |
+| `session_expired` | Session check found expired token | email, session token prefix |
+| `session_tampered` | HMAC integrity check failed | session token prefix |
+| `data_access` | Server function returned data | email, function name |
+| `data_access_denied` | Authorization check failed | email, function name, reason |
+| `domain_rejected` | Domain restriction blocked user | email, domain |
+| `emergency_access` | Break-glass override used | email, reason |
+| `all_sessions_invalidated` | Admin cleared all sessions | triggered by email |
+
+### Performance Notes
+
+- `appendRow()` is atomic but takes ~200-500ms per call
+- Auth events happen at human speed (logins, not API calls) — this overhead is acceptable
+- The `try/catch` wrapper ensures a Sheets API failure never blocks authentication
+- **GAS limitation**: client IP addresses are not available in `doGet()` — cannot be logged
+
+### Sheet Rotation (Long-Term Retention)
+
+For HIPAA compliance (6-year retention per 45 CFR 164.316(b)(2)(i)), implement monthly rotation:
+
+```javascript
+function getAuditSheetName() {
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = ('0' + (now.getMonth() + 1)).slice(-2);
+  return AUTH_CONFIG.AUDIT_LOG_SHEET_NAME + '-' + year + '-' + month;
+}
+```
+
+Replace `AUTH_CONFIG.AUDIT_LOG_SHEET_NAME` with `getAuditSheetName()` in `auditLog()` for automatic monthly sheet creation.
+
+---
+
+## 11. HMAC Integrity (Toggleable)
+
+> **Toggle**: `AUTH_CONFIG.ENABLE_HMAC_INTEGRITY`
+> **HIPAA**: mandatory (45 CFR 164.312(c)(1) — Integrity controls)
+> **Standard**: optional (off by default)
+
+### How It Works
+
+When enabled, session data stored in CacheService is signed with HMAC-SHA256 before writing and verified on every read. This detects tampering — if anyone modifies the cached value directly, the signature won't match and the session is rejected.
+
+### Implementation
+
+The HMAC functions are already toggle-gated inside `exchangeTokenForSession()` and `validateSession()` in Section 7. Here is the standalone signing/verification logic:
+
+```javascript
+// =============================================
+// HMAC — Session data integrity signing.
+// Uses Utilities.computeHmacSha256Signature().
+// Secret is stored in Script Properties.
+// =============================================
+
+/**
+ * Convert GAS Byte[] to hex string for comparison.
+ * GAS returns signed bytes (-128 to 127), not unsigned.
+ */
+function toHex(bytes) {
+  return bytes.map(function(b) {
+    var v = (b < 0 ? b + 256 : b).toString(16);
+    return v.length === 1 ? '0' + v : v;
+  }).join('');
+}
+
+/**
+ * Sign session data with HMAC-SHA256.
+ * @param {Object} sessionData - The session data to sign
+ * @returns {string} JSON string containing data + signature
+ */
+function signSessionData(sessionData) {
+  var secret = PropertiesService.getScriptProperties()
+    .getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
+  if (!secret) {
+    console.error('HMAC secret not configured in Script Properties');
+    return JSON.stringify(sessionData); // fail open — no signing
+  }
+  var json = JSON.stringify(sessionData);
+  var sig = Utilities.computeHmacSha256Signature(json, secret);
+  return JSON.stringify({ d: json, s: toHex(sig) });
+}
+
+/**
+ * Verify and extract session data.
+ * @param {string} cached - The signed cache value
+ * @returns {Object|null} Session data if valid, null if tampered
+ */
+function verifySessionData(cached) {
+  var secret = PropertiesService.getScriptProperties()
+    .getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
+  if (!secret) {
+    // No secret configured — parse without verification
+    try { return JSON.parse(cached); } catch(e) { return null; }
+  }
+
+  try {
+    var parsed = JSON.parse(cached);
+    if (!parsed.d || !parsed.s) {
+      // Not a signed format — legacy or unsigned data
+      return parsed;
+    }
+    var expected = toHex(
+      Utilities.computeHmacSha256Signature(parsed.d, secret)
+    );
+    if (expected !== parsed.s) {
+      auditLog('session_tampered', 'unknown', 'integrity_failure',
+        { reason: 'HMAC signature mismatch' });
+      return null; // tampered — reject
+    }
+    return JSON.parse(parsed.d);
+  } catch (e) {
+    return null;
+  }
+}
+```
+
+### Setup — Generating the HMAC Secret
+
+The HMAC secret must be set in Script Properties before enabling the toggle:
+
+1. Open Apps Script editor → Project Settings → Script Properties
+2. Add key: `HMAC_SECRET` (or whatever `AUTH_CONFIG.HMAC_SECRET_PROPERTY` is set to)
+3. Value: a random string (minimum 32 characters)
+
+Generate a secret programmatically (run once):
+```javascript
+function generateHmacSecret() {
+  var secret = Utilities.getUuid() + Utilities.getUuid();
+  PropertiesService.getScriptProperties()
+    .setProperty('HMAC_SECRET', secret);
+  Logger.log('HMAC secret set: ' + secret.substring(0, 8) + '...');
+}
+```
+
+### CacheService Storage Format
+
+| HMAC Off | HMAC On |
+|----------|---------|
+| `{"email":"user@...","displayName":"...","expiry":1710000000}` | `{"d":"{\"email\":\"user@...\",\"displayName\":\"...\",\"expiry\":1710000000}","s":"a1b2c3d4..."}` |
+
+The `d` field is the stringified data; the `s` field is the hex-encoded HMAC-SHA256 signature. Total overhead is ~70 bytes per entry (well within CacheService's 100KB-per-key limit).
+
+---
+
+## 12. Domain Restriction (Toggleable)
+
+> **Toggle**: `AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION`
+> **HIPAA**: mandatory (45 CFR 164.312(d) — Person or entity authentication)
+> **Standard**: optional (off by default)
+
+### How It Works
+
+When enabled, the `exchangeTokenForSession()` function (Section 7) checks the authenticated user's email domain against `AUTH_CONFIG.ALLOWED_DOMAINS`. Users outside the allowed domains are rejected before a session is created.
+
+### Domain Extraction and Validation
+
+```javascript
+// Already implemented inside exchangeTokenForSession() in Section 7:
+
+if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION) {
+  var emailDomain = userInfo.email.split('@')[1].toLowerCase();
+  var allowed = AUTH_CONFIG.ALLOWED_DOMAINS.map(function(d) {
+    return d.toLowerCase();
+  });
+  if (allowed.indexOf(emailDomain) === -1) {
+    auditLog('domain_rejected', userInfo.email, 'rejected',
+      { domain: emailDomain, allowed: allowed });
+    return { success: false, error: 'domain_not_allowed' };
+  }
+}
+```
+
+### Security Notes
+
+- **Use exact domain matching** (`===` after `split('@')`) — never `includes()`, `indexOf()`, or `endsWith()` on the full email string. These are bypassable (e.g., `endsWith('corp.com')` would match `evilcorp.com`)
+- Subdomains are distinct: `mail.corp.com` ≠ `corp.com` — add each explicitly to `ALLOWED_DOMAINS`
+- The domain check happens **after** Google token validation — the user is already authenticated by Google; this is an authorization check
+- When domain restriction is off, any Google account can access the app (subject to spreadsheet access checks)
+
+### Configuration
+
+```javascript
+// Standard preset: domain restriction OFF
+ENABLE_DOMAIN_RESTRICTION: false,
+ALLOWED_DOMAINS: [],
+
+// HIPAA preset: domain restriction ON
+ENABLE_DOMAIN_RESTRICTION: true,
+ALLOWED_DOMAINS: [],  // ← MUST be set per-project (HIPAA validation enforces this)
+
+// Per-project override example:
+PROJECT_OVERRIDES = {
+  ALLOWED_DOMAINS: ['yourhospital.com', 'partner-clinic.org']
+};
+```
+
+---
+
+## 13. Emergency Access (Toggleable)
+
+> **Toggle**: `AUTH_CONFIG.ENABLE_EMERGENCY_ACCESS`
+> **HIPAA**: mandatory (45 CFR 164.312(a)(2)(ii) — Emergency access procedure)
+> **Standard**: optional (off by default)
+
+### How It Works
+
+Emergency access (break-glass) allows pre-designated administrators to bypass normal authorization when the standard flow fails — for example, when the spreadsheet is corrupted, permissions are misconfigured, or during a service disruption.
+
+### Implementation
+
+The check is already toggle-gated in `checkSpreadsheetAccess()` (Section 7):
+
+```javascript
+// Inside checkSpreadsheetAccess():
+if (AUTH_CONFIG.ENABLE_EMERGENCY_ACCESS) {
+  var emergencyEmails = PropertiesService.getScriptProperties()
+    .getProperty(AUTH_CONFIG.EMERGENCY_ACCESS_PROPERTY);
+  if (emergencyEmails) {
+    var emergencyList = emergencyEmails.split(',').map(function(e) {
+      return e.trim().toLowerCase();
+    });
+    if (emergencyList.indexOf(lowerEmail) > -1) {
+      auditLog('emergency_access', email, 'granted',
+        { reason: 'Emergency access override via Script Properties' });
+      return true;
+    }
+  }
+}
+```
+
+### Setup — Configuring Emergency Access
+
+1. Open Apps Script editor → Project Settings → Script Properties
+2. Add key: `EMERGENCY_ACCESS_EMAILS` (or whatever `AUTH_CONFIG.EMERGENCY_ACCESS_PROPERTY` is set to)
+3. Value: comma-separated list of admin email addresses
+
+```
+admin@yourdomain.com, backup-admin@yourdomain.com
+```
+
+### Security Safeguards
+
+- **Always audit-logged** — every emergency access event is recorded with the user's email and a reason tag, even if audit logging is otherwise disabled (the `auditLog()` call inside the emergency check runs regardless of the toggle because it's a critical security event)
+- **Stored in Script Properties** — only users with edit access to the Apps Script project can view or modify the list
+- **Not stored in code** — the email list is a runtime configuration, not a hardcoded value. It can be updated without a code deployment
+- **Separate from the enable toggle** — the toggle enables/disables the feature; the email list in Script Properties controls who has access. Disabling the toggle immediately removes all emergency access without needing to clear the email list
+
+### Break-Glass Procedure (for HIPAA documentation)
+
+1. Administrator identifies the access failure (normal auth/authorization not working)
+2. Administrator opens Apps Script editor → Project Settings → Script Properties
+3. Verifies `EMERGENCY_ACCESS_EMAILS` contains the needed user's email
+4. If not present, adds the email (temporary — remove after resolution)
+5. User accesses the app — emergency access is granted and audit-logged
+6. After resolution, administrator removes the temporary email from the list
+7. Reviews audit log for all emergency access events during the incident
+
+---
+
+## 14. CacheService Behavioral Caveats
+
+> **Critical reference for anyone implementing server-side sessions with CacheService.** These behaviors are not always obvious from the documentation and can cause subtle bugs.
+
+### Known Limits
+
+| Limit | Value | Impact |
+|-------|-------|--------|
+| Max value size | 100 KB per key | Session data with HMAC overhead must stay under this. Typical auth session: ~500 bytes — no concern |
+| Max TTL | 21,600 seconds (6 hours) | Sessions configured for >6h will expire early. `SESSION_EXPIRATION` must be ≤ 21,600 |
+| Max items | ~1,000 before eviction | High-traffic apps with >1,000 concurrent sessions may see premature eviction. Keeps ~900 farthest from expiry |
+| Eviction policy | Best-effort, not guaranteed | Items **can** be evicted before their TTL expires (Google's infrastructure may reclaim memory). Never treat CacheService as durable storage |
+| No `getTimeToLive()` | Cannot check remaining TTL | Store the expiry timestamp **inside** the session data if you need to check it (already done in Section 7's `exchangeTokenForSession`) |
+
+### Behavioral Gotchas
+
+**1. `cache.get()` returns `null` for both "key doesn't exist" and "key expired"**
+
+There is no way to distinguish between a session that never existed and one that expired. Both return `null`. This is why our `validateSession()` returns `{ status: 'expired' }` for any `null` result — it's the safe default.
+
+**2. `cache.put()` with an existing key overwrites silently**
+
+Session refresh (extending expiry) works by simply calling `put()` again with the same key and a new TTL. No delete-then-put needed.
+
+**3. Values are strings only**
+
+```javascript
+// WRONG — stores "[object Object]"
+cache.put('key', { email: 'user@example.com' });
+
+// CORRECT — stringify first
+cache.put('key', JSON.stringify({ email: 'user@example.com' }), ttl);
+```
+
+**4. `cache.remove()` is synchronous but eventual**
+
+After `remove()`, subsequent `get()` calls **should** return `null`, but in rare cases under heavy load, the old value may briefly persist. This is an edge case — sign-out invalidation works correctly in practice.
+
+**5. `CacheService.getScriptCache()` is shared across all users**
+
+Session tokens are stored in the script-scoped cache, visible to all executions of the script. This is by design — any user's session needs to be validated by any request handler. The session token (UUID) provides the per-user isolation, not the cache scope.
+
+### Session Expiry Strategy
+
+Because CacheService's TTL is best-effort (items can be evicted early), always store an explicit expiry timestamp inside the session data:
+
+```javascript
+// Inside exchangeTokenForSession():
+var sessionData = {
+  email: userInfo.email,
+  displayName: userInfo.name || '',
+  createdAt: now,
+  expiresAt: now + (AUTH_CONFIG.SESSION_EXPIRATION * 1000) // ms
+};
+
+// Inside validateSession():
+var sessionData = /* retrieved from cache */;
+if (Date.now() > sessionData.expiresAt) {
+  // Session expired by our rules, even if cache hasn't evicted it yet
+  cache.remove(sessionToken);
+  return { status: 'expired', email: sessionData.email };
+}
+```
+
+This ensures sessions expire at the configured time regardless of CacheService's internal TTL behavior.
+
 Developed by: ShadowAISolutions
