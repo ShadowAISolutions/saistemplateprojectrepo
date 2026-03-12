@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08w] — 2026-03-12 11:21:23 AM EST — v02.31r
+
+### Fixed
+- Domain settings now correctly apply to all authentication presets
+- Spreadsheet ID field no longer included in configuration when authentication is disabled
 
 ## [v01.07w] — 2026-03-12 10:25:57 AM EST — v02.30r
 

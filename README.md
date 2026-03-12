@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-12 10:25:57 AM EST` · Repo version: `v02.30r`
+Last updated: `2026-03-12 11:21:23 AM EST` · Repo version: `v02.31r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -30,7 +30,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   <b>│ ─ Internal Sites ──────────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/testenvironment.html">testenvironment.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/testenvironment.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1JSHTDKo1zknsdbQAO83EKjvGKcKp91HkuB91LrFaTzE/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testenvironment/testenvironment.gs">⛽</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testenvironment-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testenvironmenthtml.changelog.md">v01.01w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testenvironmentgs.changelog.md">v01.01g</a> | [template] Test Title page
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">🌐</a>🟢 · 🔸 · ◽ · 🔻 · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/gas-project-creator-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md">v01.07w</a> · vNoGASg | [template] GAS project creator dashboard
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">🌐</a>🟢 · 🔸 · ◽ · 🔻 · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/gas-project-creator-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md">v01.08w</a> · vNoGASg | [template] GAS project creator dashboard
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>

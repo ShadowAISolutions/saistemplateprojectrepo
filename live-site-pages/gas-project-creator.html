@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.07w">
+  <meta name="build-version" content="v01.08w">
   <title>GAS Project Creator</title>
   <style>
 /* ══════════════ */
@@ -1289,7 +1289,7 @@
         var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
         if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
         if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
-        if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
+        if (sheetId.trim() && useAuth) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
         if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
         if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
@@ -1300,9 +1300,9 @@
           var domains = (document.getElementById('cfg-allowed-domains') || {}).value || '';
           if (domains.trim()) {
             var domainList = domains.split(',').map(function(d) { return "'" + d.trim() + "'"; }).join(', ');
-            code = code.replace(/ALLOWED_DOMAINS:\s*\[\]/, 'ALLOWED_DOMAINS: [' + domainList + ']');
-            // Also set the preset's ALLOWED_DOMAINS and enable domain restriction
-            code = code.replace(/ENABLE_DOMAIN_RESTRICTION:\s*false/, 'ENABLE_DOMAIN_RESTRICTION: true');
+            code = code.replace(/ALLOWED_DOMAINS:\s*\[\]/g, 'ALLOWED_DOMAINS: [' + domainList + ']');
+            // Also enable domain restriction in all presets
+            code = code.replace(/ENABLE_DOMAIN_RESTRICTION:\s*false/g, 'ENABLE_DOMAIN_RESTRICTION: true');
           }
         }
         var envName = (document.getElementById('cfg-env-name') || {}).value || '';
@@ -1445,7 +1445,7 @@
         + '  "PROJECT_ENVIRONMENT_NAME": "' + envName + '",\n'
         + '  "TITLE": "' + title + '",\n'
         + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
-        + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
+        + (includeAuth ? '  "SPREADSHEET_ID": "' + sheetId + '",\n' : '')
         + '  "SHEET_NAME": "' + sheetName + '",\n'
         + '  "SOUND_FILE_ID": "' + soundId + '",\n'
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'

@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 54/100`
+`Sections: 55/100`
 
 ## [Unreleased]
+
+## [v02.31r] — 2026-03-12 11:21:23 AM EST
+
+### Fixed
+- Fixed `ALLOWED_DOMAINS` replacement in `copyGsCode` to use global regex — previously only injected domains into the `standard` preset, leaving `hipaa` preset with empty `[]` (causing a runtime error when hipaa was selected with domains)
+- Fixed `ENABLE_DOMAIN_RESTRICTION` replacement in `copyGsCode` to use global regex — same issue, only flipped the first preset
+- Guarded `SPREADSHEET_ID` replacement in `copyGsCode` and `setup-gas-project.sh` to only run when auth is enabled — noauth templates don't have this variable
+- Guarded `SPREADSHEET_ID` in `copyConfig` JSON output to only include when auth is enabled
+
+#### `gas-project-creator.html` — v01.08w
+
+##### Fixed
+- Domain settings now correctly apply to all authentication presets
+- Spreadsheet ID field no longer included in configuration when authentication is disabled
 
 ## [v02.30r] — 2026-03-12 10:25:57 AM EST
 
