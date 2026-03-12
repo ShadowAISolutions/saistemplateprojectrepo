@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.17w">
+  <meta name="build-version" content="v01.18w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1460,7 +1460,7 @@
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',
-              prompt: 'consent',
+              prompt: 'select_account',
               callback: handleTokenResponse
             });
           } else {
@@ -1475,13 +1475,15 @@
     // AUTH — Initialization
     // =============================================
 
-    // Sign-in button handler
+    // Sign-in button handler — always show account chooser on explicit click
     document.getElementById('auth-sign-in-btn').addEventListener('click', function() {
-      if (signInClient) {
-        signInClient.requestAccessToken();
-      } else {
-        initGoogleSignIn();
-      }
+      signInClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile',
+        prompt: 'select_account',
+        callback: handleTokenResponse
+      });
+      signInClient.requestAccessToken();
     });
 
     // Sign-out button handler

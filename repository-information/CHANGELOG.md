@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v02.56r] — 2026-03-12 07:41:03 PM EST
+
+### Changed
+- Google Sign-In now shows account chooser when clicking "Sign In with Google" instead of auto-selecting the last used account
+
+#### `testauth1.html` — v01.18w
+
+##### Changed
+- Sign-in button always presents Google account chooser for explicit account selection
+- Re-auth fallback uses account chooser instead of consent-only prompt
 
 ## [v02.55r] — 2026-03-12 07:29:04 PM EST
 
