@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.08w">
+  <meta name="build-version" content="v01.09w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -195,6 +195,13 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
+    #auth-timers .test-gas-btn {
+      margin-top: 8px; width: 100%; padding: 5px 0; background: #2196F3; color: #fff;
+      border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: monospace;
+    }
+    #auth-timers .test-gas-btn:hover { background: #1976D2; }
+    #auth-timers .test-gas-btn:active { background: #0D47A1; }
+    #auth-timers .test-gas-result { font-size: 10px; color: #aaa; margin-top: 4px; word-break: break-all; }
     #auth-timers .timer-header {
       color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
       border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 3px; margin-bottom: 2px;
@@ -244,6 +251,8 @@
     <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
     <div class="timer-row"><span class="timer-label">Refresh window:</span><span class="timer-value" id="timer-refresh">--:--</span></div>
     <div class="timer-row" id="timer-inactivity-row"><span class="timer-label">Inactivity:</span><span class="timer-value" id="timer-inactivity">--:--</span></div>
+    <button class="test-gas-btn" onclick="testGasCall()">Test GAS Call</button>
+    <div class="test-gas-result" id="test-gas-result"></div>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -1153,8 +1162,8 @@
     // Inactivity = client-side idle timer (only when enabled).
     // =============================================
 
-    var SERVER_SESSION_DURATION = 1800;  // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
-    var SERVER_REFRESH_WINDOW = 300;     // seconds — must match GAS PRESETS.standard.SESSION_REFRESH_WINDOW
+    var SERVER_SESSION_DURATION = 180;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
+    var SERVER_REFRESH_WINDOW = 90;      // seconds — must match GAS PRESETS.standard.SESSION_REFRESH_WINDOW
     var SESSION_START_KEY = 'gas_session_start';
     var _timerInterval = null;
 
@@ -1247,6 +1256,29 @@
       if (timersEl) timersEl.style.display = 'none';
       var storage = getStorage();
       storage.removeItem(SESSION_START_KEY);
+    }
+
+    // =============================================
+    // AUTH — Test GAS Call (debug button)
+    // =============================================
+
+    function testGasCall() {
+      var resultEl = document.getElementById('test-gas-result');
+      var session = loadSession();
+      if (!session.token) {
+        if (resultEl) resultEl.textContent = 'No session token — not signed in';
+        return;
+      }
+      var gasApp = document.getElementById('gas-app');
+      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!baseUrl) {
+        if (resultEl) resultEl.textContent = 'No GAS base URL available';
+        return;
+      }
+      if (resultEl) resultEl.textContent = 'Sending GAS call...';
+      // Navigate the iframe to the GAS URL with the session token — this triggers validateSession() server-side
+      gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+      if (resultEl) resultEl.textContent = 'GAS call sent — watch for auth wall if session expired';
     }
 
     // =============================================

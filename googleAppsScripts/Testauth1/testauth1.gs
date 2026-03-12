@@ -1,4 +1,4 @@
-var VERSION = "v01.06g";
+var VERSION = "v01.07g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -30,8 +30,8 @@ var PROJECT_OVERRIDES = {
 // ══════════════
 var PRESETS = {
   standard: {
-    SESSION_EXPIRATION: 1800,
-    SESSION_REFRESH_WINDOW: 300,
+    SESSION_EXPIRATION: 180,
+    SESSION_REFRESH_WINDOW: 90,
     MAX_SESSIONS_PER_USER: 1,
     OAUTH_TOKEN_LIFETIME: 3600,
     OAUTH_REFRESH_BUFFER: 900,

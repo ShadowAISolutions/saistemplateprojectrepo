@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07g] — 2026-03-12 05:18:55 PM EST — v02.46r
+
+### Changed
+- Reduced session expiration to 3 minutes and refresh window to 1.5 minutes for testing
 
 ## [v01.06g] — 2026-03-12 02:58:04 PM EST — v02.44r
 

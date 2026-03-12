@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v02.46r] — 2026-03-12 05:18:55 PM EST
+
+### Changed
+- Reduced testauth1 session expiration from 30 minutes to 3 minutes and refresh window from 5 minutes to 1.5 minutes for testing
+- Added "Test GAS Call" debug button to testauth1 timer panel to manually trigger server-side session validation
+
+#### `testauth1.html` — v01.09w
+
+##### Changed
+- Shortened session timer to 3 minutes and refresh window to 1.5 minutes for testing
+- Added "Test GAS Call" button to the session timers panel — triggers a server round-trip to test session expiry behavior
+
+#### `testauth1.gs` — v01.07g
+
+##### Changed
+- Reduced session expiration from 1800s to 180s (3 min) and refresh window from 300s to 90s (1.5 min) for testing
 
 ## [v02.45r] — 2026-03-12 04:38:41 PM EST
 
