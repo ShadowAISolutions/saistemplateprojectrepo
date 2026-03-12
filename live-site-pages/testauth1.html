@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.16w">
+  <meta name="build-version" content="v01.17w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1364,7 +1364,15 @@
         hbEl.className = 'timer-value warn';
       }
 
-      gasApp.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token);
+      // Use a hidden iframe so the heartbeat doesn't destroy the main GAS app UI
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (!hbFrame) {
+        hbFrame = document.createElement('iframe');
+        hbFrame.id = 'gas-heartbeat';
+        hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
+        document.body.appendChild(hbFrame);
+      }
+      hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token);
       // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
     }
 
@@ -1374,6 +1382,8 @@
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
       _heartbeatInFlight = false;
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (hbFrame) hbFrame.remove();
     }
 
     // =============================================

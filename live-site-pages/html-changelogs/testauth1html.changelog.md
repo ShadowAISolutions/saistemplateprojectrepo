@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-03-12 07:29:04 PM EST — v02.55r
+
+### Fixed
+- GAS app content no longer disappears every 30 seconds — session heartbeats now work in the background without affecting the visible app
 
 ## [v01.16w] — 2026-03-12 07:22:08 PM EST — v02.54r
 
