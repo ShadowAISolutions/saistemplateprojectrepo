@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.34w">
+  <meta name="build-version" content="v01.35w">
   <!-- I5: CSP removed — was blocking Google Sign-In token exchange flow.
        GAS iframe architecture (script.google.com → googleusercontent.com sandbox) requires
        broad domain allowlisting that negates most CSP benefits. Security is enforced via
@@ -1012,7 +1012,8 @@
       'gas-signed-out': true, 'gas-version': true
     };
     // H1: origin validation — GAS HtmlService serves from *.googleusercontent.com sandbox domains
-    var _allowedOriginPattern = /^https:\/\/[a-z0-9-]+\.google(usercontent|apis)?\.com$/;
+    // Multi-level subdomains: GAS uses n-{hash}.script.googleusercontent.com (not single-level)
+    var _allowedOriginPattern = /^https:\/\/[a-z0-9.-]+\.google(usercontent|apis)?\.com$/;
     var _gasIframeOrigin = null; // Captured from first trusted GAS message for C1 reply targeting
     window.addEventListener('message', function(event) {
       var data = event.data;

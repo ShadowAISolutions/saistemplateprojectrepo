@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.35w] — 2026-03-13 05:32:07 PM EST — v02.84r
+
+### Fixed
+- Fixed sign-in not completing after selecting a Google account — internal message validation was incorrectly rejecting messages from the authentication server
 
 ## [v01.34w] — 2026-03-13 05:24:04 PM EST — v02.83r
 
