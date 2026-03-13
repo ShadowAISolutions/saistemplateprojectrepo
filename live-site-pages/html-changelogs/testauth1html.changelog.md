@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.24w] — 2026-03-12 10:36:32 PM EST — v02.65r
+
+### Added
+- Signing in on one tab now automatically signs in all other open tabs of the same page
+- Signing out on one tab now instantly signs out all other open tabs (previously took up to 30 seconds)
 
 ## [v01.23w] — 2026-03-12 09:36:14 PM EST — v02.63r
 

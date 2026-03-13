@@ -1018,6 +1018,40 @@
     });
 
     // =============================================
+    // AUTH — Cross-Tab Session Sync (localStorage only)
+    // =============================================
+    // When another tab signs in or out, the storage event fires here.
+    // This gives instant cross-tab sync without polling or BroadcastChannel.
+    // sessionStorage (HIPAA) is per-tab — this event never fires for it.
+    window.addEventListener('storage', function(e) {
+      // Login sync: another tab saved a session token
+      if (e.key === SESSION_KEY && !e.oldValue && e.newValue) {
+        var session = loadSession();
+        if (session.token) {
+          showApp(session.email);
+          startCountdownTimers();
+          startHeartbeat();
+          getStorage().setItem(SESSION_START_KEY, String(Date.now()));
+          getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+          }
+        }
+      }
+
+      // Logout sync: another tab cleared the session token
+      if (e.key === SESSION_KEY && e.oldValue && !e.newValue) {
+        clearSession();
+        stopCountdownTimers();
+        stopHeartbeat();
+        showAuthWall('You have been signed out in another tab.');
+      }
+    });
+
+    // =============================================
     // AUTH — UI State Management
     // =============================================
 

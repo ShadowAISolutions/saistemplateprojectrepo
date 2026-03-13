@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v02.65r] — 2026-03-12 10:36:32 PM EST
+
+### Added
+- Cross-tab login sync — signing in on one tab now automatically signs in all other open tabs of the same page (uses the browser's native `storage` event for instant, secure same-origin sync)
+
+#### `testauth1.html` — v01.24w
+
+##### Added
+- Cross-tab session sync: signing in on one tab instantly signs in all other open tabs; signing out in one tab instantly signs out all others
 
 ## [v02.64r] — 2026-03-12 09:47:46 PM EST
 
