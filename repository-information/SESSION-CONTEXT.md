@@ -4,30 +4,31 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-13 12:37:13 PM EST
-**Repo version:** v02.71r
+**Date:** 2026-03-13 07:03:11 PM EST
+**Repo version:** v02.89r
 
 ### What was done
-- **v02.67r** (prior session, not saved) — Various work between v02.66r and v02.68r
-- **v02.68r** — Updated `gas-test-auth-template-code.js.txt` with base upgrades from `gas-minimal-auth-template-code.js.txt` (heartbeat, absolute timeout, HMAC, audit logging, preset system, etc.)
-- **v02.69r** — Attempted fix for auto sign-in on refresh after manual sign-out (SIGNED_OUT_FLAG approach — incorrect fix, was reverted)
-- **v02.70r** — Correctly fixed auto sign-in on refresh issue: removed `initGoogleSignIn()` auto-call from page load IIFE in auth HTML template and testauth1. The OAuth popup was auto-triggering on every page refresh when on the auth wall — fixed by only triggering sign-in on explicit button click
-- **v02.71r** — Created comprehensive Microsoft auth implementation plan (`repository-information/MICROSOFT-AUTH-PLAN.md`, 777 lines). Covers MSAL.js integration, Azure AD prerequisites, file-by-file implementation plan with exact line numbers and code snippets, security considerations, effort estimates (~2 hours), and verification plan. Architecture decision: `AUTH_PROVIDER` config toggle (`'google'`, `'microsoft'`, `'both'`). User explicitly said "don't start coding, I will decide later"
+- **v02.85r** (prior session) — Full repo revert to v02.74r state, undoing all v02.75r–v02.84r security hardening attempts
+- **v02.86r** (prior session) — Added protective `⚠️ CRITICAL` comment block to GAS deploy handlers and deploy handler protection rule in `.claude/rules/gas-scripts.md`
+- **v02.87r** (prior session) — Rotated 92 CHANGELOG sections to archive
+- **v02.88r** — Created comprehensive security update plan (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md`, ~930 lines). Covers 6 phases: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, error sanitization, and postMessage target origin restriction. Includes complete failure analysis of v02.75r–v02.84r with root causes. Deep research via subagents on GAS postMessage architecture, HtmlService escaping, CSP for GAS iframes, and Google Sign-In failure modes
+- **v02.89r** — **Critical correction** to the security plan based on user's insight: the GAS was stuck at v01.15g from v02.79r onward because DEPLOY_SECRET broke auto-deploy. This means all subsequent GAS-side fixes (v02.80r–v02.82r) never deployed. Key corrections: (1) PARENT_ORIGIN case mismatch (missing `.toLowerCase()`) was the real root cause of persistent sign-in failure, not origin validation per se, (2) TOKEN_EXCHANGE_METHOD='postMessage' was never properly tested (revert never deployed), (3) Fixed Phase 6 in the plan to include `.toLowerCase()` — without this, the plan would have repeated the exact v02.79r bug
 
 ### Where we left off
-All changes committed and pushed (v02.71r). Microsoft auth plan is saved but **not approved for implementation** — user said "I will decide later." No pending tasks.
+Security update plan is **ready for implementation**. The user decided to implement in the **next session** (fresh context = maximum accuracy for this third attempt). The plan file contains everything needed — current code → new code for every change point across 6 phases.
 
 ### Key decisions made
-- **Auto sign-in fix (v02.70r)**: removed `initGoogleSignIn()` from page load IIFE — sign-in only happens on explicit button click, not automatically on page refresh
-- **Microsoft auth architecture**: `AUTH_PROVIDER` toggle over separate template files (80% of auth system is already provider-agnostic)
-- **MSAL.js loading**: jsdelivr CDN recommended (`https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js`)
-- **Microsoft token validation**: server-side Graph API `/me` call (NOT local JWT validation)
-- **Default AUTH_PROVIDER**: `'google'` (backward compatible, Microsoft opt-in)
+- **Implement security plan in a fresh session** — context was heavy (compaction occurred + deep git archaeology), and this is the third attempt so accuracy is paramount
+- **PARENT_ORIGIN is valid** — just needs `.toLowerCase()`. The approach was conceptually correct in v02.79r, only the case bug and broken deploy pipeline prevented it from working
+- **Keep TOKEN_EXCHANGE_METHOD = 'url'** — for simplicity, not because postMessage was proven to fail (it was never properly tested)
+- **No CSP meta tag** — broke Google Sign-In, negligible value with GAS iframe architecture
+- **No event.origin/event.source validation on HTML side** — use message-type allowlist + cryptographic message authentication instead
 
 ### Active context
-- Repo version: v02.71r
-- testauth1.html: v01.26w, testauth1.gs: v01.13g (from version files read earlier)
-- Microsoft auth plan saved at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
+- Repo version: v02.89r
+- testauth1.html: v01.26w, testauth1.gs: v01.14g
+- **NEXT TASK: Implement the security update plan** — read `repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md` and follow it phase by phase
+- Microsoft auth plan saved at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision (separate from security work)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -35,15 +36,15 @@ All changes committed and pushed (v02.71r). Microsoft auth plan is saved but **n
 
 ## Previous Sessions
 
-**Date:** 2026-03-12 11:31:09 PM EST
-**Repo version:** v02.66r
+**Date:** 2026-03-13 12:37:13 PM EST
+**Repo version:** v02.71r
 
 ### What was done
-- **v02.45r–v02.64r** (prior sessions, not saved) — Continued testauth1 auth development: heartbeat-based session management replacing inactivity timeouts, countdown timer UI, absolute session timeout (16-hour hard ceiling), z-index stacking fixes, auth wall branding with logo/title, `select_account` sign-in UX, improved error handling in token exchange, cross-tab session sync
-- **v02.65r** — Added cross-tab login sync to testauth1 using the browser's native `StorageEvent` API
-- **v02.66r** — Propagated all heartbeat + timer upgrades from testauth1 to auth templates (GAS template + HTML template)
+- **v02.69r** — Attempted fix for auto sign-in on refresh after manual sign-out (SIGNED_OUT_FLAG approach — incorrect fix, was reverted)
+- **v02.70r** — Correctly fixed auto sign-in on refresh issue: removed `initGoogleSignIn()` auto-call from page load
+- **v02.71r** — Created comprehensive Microsoft auth implementation plan (`repository-information/MICROSOFT-AUTH-PLAN.md`, 777 lines)
 
 ### Where we left off
-All changes committed and pushed (v02.66r). Auth templates at parity with testauth1 for the heartbeat system.
+All changes committed and pushed (v02.71r). Microsoft auth plan saved but **not approved for implementation**.
 
 Developed by: ShadowAISolutions
