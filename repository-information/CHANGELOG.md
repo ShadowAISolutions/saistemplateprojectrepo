@@ -3,191 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 99/100`
 
 ## [Unreleased]
 
-## [v02.84r] — 2026-03-13 05:32:07 PM EST
+## [v02.85r] — 2026-03-13 05:44:18 PM EST
 
-### Fixed
-- Fixed sign-in not completing — origin validation regex `[a-z0-9-]+` only matched single-level subdomains but GAS uses multi-level domains like `n-{hash}.script.googleusercontent.com`. Changed to `[a-z0-9.-]+` to allow dots in subdomains
+### Changed
+- Full repo revert to v02.74r state — undoes all changes from v02.75r through v02.84r (security hardening, postMessage fixes, security action plan, template propagation)
+- Removed `repository-information/SECURITY-ACTION-PLAN.md` (created in v02.78r)
 
-#### `testauth1.html` — v01.35w
-
-##### Fixed
-- Fixed origin validation pattern to accept GAS multi-level sandbox subdomains — was silently dropping all messages from the GAS iframe
-
-## [v02.83r] — 2026-03-13 05:24:04 PM EST
-
-### Fixed
-- Fixed sign-in not completing after selecting a Google account — removed Content Security Policy meta tag that was blocking required Google authentication services
-
-#### `testauth1.html` — v01.34w
-
-##### Fixed
-- Removed CSP meta tag — was blocking Google Sign-In token exchange flow. Security is enforced via postMessage origin validation and message-type allowlisting instead
-
-## [v02.82r] — 2026-03-13 05:18:59 PM EST
-
-### Fixed
-- Fixed sign-in not completing — reverted token exchange from postMessage back to URL parameter method. The postMessage exchange is unreliable due to GAS nested iframe architecture (script.google.com → googleusercontent.com sandbox). Additionally, the deployed GAS still expected URL exchange, creating a config mismatch
-
-#### `testauth1.html` — v01.33w
-
-##### Fixed
-- Reverted token exchange method to URL parameter — matches the deployed GAS configuration and eliminates postMessage reliability issues
-
-#### `testauth1.gs` — v01.16g
+#### `testauth1.html` — v01.26w (reverted from v01.35w)
 
 ##### Changed
-- Reverted both standard and HIPAA presets from postMessage to URL token exchange — postMessage is incompatible with GAS iframe sandbox architecture
+- Reverted to v01.26w state — undoes security hardening changes (CSP meta tag, origin validation, postMessage security, CSRF token handling) that were applied in v02.75r–v02.84r
 
-## [v02.81r] — 2026-03-13 05:11:33 PM EST
-
-### Fixed
-- Fixed sign-in flow still stuck after CSP fix — postMessage reply was sent to the wrong iframe (outer `script.google.com` frame instead of the nested `googleusercontent.com` sandbox where the listener runs)
-
-#### `testauth1.html` — v01.32w
-
-##### Fixed
-- Fixed sign-in not completing after selecting a Google account — token exchange reply now reaches the correct GAS iframe
-
-## [v02.80r] — 2026-03-13 05:03:28 PM EST
-
-### Fixed
-- Fixed sign-in flow stuck on "Sign In Required" screen after security hardening — origin case mismatch caused GAS postMessage listener to silently drop `exchange-token` messages (`PARENT_ORIGIN` was mixed-case but browsers report lowercase origins)
-- Broadened CSP meta tag to include all Google Sign-In required domains (`*.googleapis.com`, `*.gstatic.com`, `accounts.google.com` frame-src)
-
-#### `testauth1.html` — v01.31w
-
-##### Fixed
-- Fixed sign-in not completing — CSP now allows all Google authentication domains
-- Updated build version meta tag
-
-#### `testauth1.gs` — v01.15g (no change)
-
-##### Fixed
-- Normalized `PARENT_ORIGIN` to lowercase — prevents case mismatch with browser-reported origins that silently dropped postMessages
-
-## [v02.79r] — 2026-03-13 04:51:10 PM EST
-
-### Security
-- **C1:** Replaced wildcard `"*"` target origin on all postMessage calls with specific GitHub Pages origin in both `testauth1.gs` and `testauth1.html`
-- **C2:** Added code comments documenting why `ALLOWALL` is required for cross-origin GAS iframe architecture
-- **C3:** Switched standard preset token exchange from URL parameters to postMessage — Google OAuth access tokens no longer exposed in URLs
-- **H1:** Added origin validation to HTML-side postMessage listener — only accepts messages from Google domains
-- **H2:** Added origin validation to GAS-side postMessage listeners — only accepts messages from the parent GitHub Pages origin
-- **H3:** Added `escapeHtml()` and `escapeJs()` XSS prevention functions; applied to all user-controlled values (email, status) in GAS HTML output
-- **M1:** Reduced `ABSOLUTE_SESSION_TIMEOUT` from 16 hours to 6 hours to match CacheService max TTL
-- **M2:** Switched HTML storage from `localStorage` to `sessionStorage` — tokens auto-clear on tab close
-- **M3:** Reduced ACL cache TTL from 600s to 120s — revoked users lose access within 2 minutes
-- **M4:** Enabled HMAC session integrity by default in standard preset
-- **M5:** Expanded HMAC payload to include all session fields (absoluteCreatedAt, displayName, tokenObtainedAt)
-- **M7:** Added authentication to `doPost` deploy endpoint — requires `DEPLOY_SECRET` from Script Properties
-- **M8:** Replaced detailed server error messages with generic ones; details logged server-side only
-- **M9:** Removed debug `console.log` statements from production GAS exchange response
-- **I5:** Added Content Security Policy meta tag restricting resource loading to trusted origins
-- **L3:** Added Google OAuth token revocation on sign-out
-- **L4:** Added immediate cleanup fallback for `window._r` GAS deployment URL
-
-### Changed
-- Added security documentation comments for L1 (rate limiting), L2 (PRNG quality), L5 (maintenance bypass), L6 (obfuscation), H4 (ID token migration), M6 (client ID management)
-- Updated security action plan status to implemented
-
-#### `testauth1.html` — v01.30w
-
-##### Security
-- Added origin validation on incoming postMessages (H1) — only accepts messages from Google domains
-- Switched token exchange to postMessage for all presets (C3) — OAuth tokens no longer in URLs
-- Switched session storage to sessionStorage (M2) — auto-clears on tab close
-- Restricted exchange-token postMessage to captured GAS iframe origin (C1)
-- Added Content Security Policy meta tag (I5)
-- Added Google OAuth token revocation on sign-out (L3)
-- Added `window._r` immediate cleanup fallback (L4)
+#### `testauth1.gs` — v01.13g (reverted from v01.17g)
 
 ##### Changed
-- Added security documentation comments for M6, L5, L6
-
-#### `testauth1.gs` — v01.15g
-
-##### Security
-- Added `escapeHtml()` and `escapeJs()` XSS prevention functions (H3)
-- Replaced wildcard postMessage target origin with specific GitHub Pages origin on all responses (C1)
-- Added origin validation to HIPAA postMessage listener (H2)
-- Added origin validation to authenticated app message listener (H2)
-- Applied XSS escaping to all user-controlled values in generated HTML (H3)
-- Switched standard preset to postMessage token exchange (C3)
-- Enabled HMAC by default in standard preset (M4)
-- Expanded HMAC payload to cover all session fields (M5)
-- Reduced ACL cache TTL from 600s to 120s (M3)
-- Reduced absolute session timeout from 16h to 6h (M1)
-- Added deploy endpoint authentication (M7)
-- Replaced detailed error messages with generic ones (M8)
-- Removed debug console.log from exchange response (M9)
-
-##### Changed
-- Added security documentation comments for L1, L2, H4
-
-## [v02.78r] — 2026-03-13 04:08:45 PM EST
-
-### Added
-- Created `repository-information/SECURITY-ACTION-PLAN.md` — comprehensive security action plan for testauth1 auth system with 27 findings (3 critical, 4 high, 9 medium, 6 low, 5 info) and 5-phase implementation roadmap
-
-## [v02.77r] — 2026-03-13 02:29:25 PM EST
-
-### Fixed
-- Fixed postMessage validation breaking auth flow — `event.source` check fails because GAS nests output in a sandbox iframe (source is the inner sandbox window, not the outer GAS iframe). Replaced with message-type allowlist that only processes known GAS message types
-
-#### `testauth1.html` — v01.29w
-
-##### Fixed
-- Restored sign-in flow — replaced window source check with message-type allowlist so GAS sandbox iframe messages are processed correctly
-
-### Changed
-- Propagated postMessage allowlist fix to auth HTML template
-
-## [v02.76r] — 2026-03-13 02:23:50 PM EST
-
-### Fixed
-- Fixed postMessage origin validation breaking auth flow — GAS iframes use srcdoc which produces a `null` origin, so switched to `event.source` window identity check instead
-- Removed unused `GAS_ORIGIN` variable
-
-#### `testauth1.html` — v01.28w
-
-##### Fixed
-- Restored sign-in flow — the page now correctly receives authentication messages from the embedded app
-
-### Changed
-- Propagated postMessage validation fix to auth HTML template
-
-## [v02.75r] — 2026-03-13 01:45:42 PM EST
-
-### Security
-- Added `event.origin` validation to postMessage listener — messages from non-GAS origins are now rejected
-- Replaced wildcard (`*`) postMessage target with explicit GAS origin for token exchange
-- Removed OAuth access token from server-side session cache — no longer stored after validation
-- Added constant-time HMAC comparison to prevent timing side-channel attacks
-- Removed debug `console.log` statements that leaked auth flow details to browser console
-- Removed broken Google OAuth token revoke call that was passing the wrong token type
-- Added error logging and audit trail when ACL spreadsheet check fails
-
-#### `testauth1.html` — v01.27w
-
-##### Security
-- Validated postMessage origin against `GAS_ORIGIN` — rejects messages from untrusted sources
-- Sent token exchange postMessage to `GAS_ORIGIN` instead of wildcard `*`
-- Removed all `[AUTH DEBUG]` console.log statements from production code
-- Removed broken `google.accounts.oauth2.revoke()` call that passed session token instead of access token
-
-#### `testauth1.gs` — v01.14g
-
-##### Security
-- Stopped storing Google OAuth access token in CacheService session data
-- Added constant-time string comparison for HMAC verification
-- Added Logger and audit log entry when ACL spreadsheet check throws an error
-
-### Changed
-- Propagated all security fixes to auth HTML template and both GAS auth templates
+- Reverted to v01.13g state — undoes server-side security hardening (state parameter validation, origin checks, action allowlists) from v02.79r–v02.84r
 
 ## [v02.74r] — 2026-03-13 12:58:17 PM EST
 
@@ -1019,4 +853,107 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Changed
 - Renamed "test" environment to "testenvironment" — all files, directories, and references updated across the repo (HTML page, GAS script, config, changelogs, version files, diagram, workflow, README tree, STATUS.md, REPO-ARCHITECTURE.md, gas-scripts.md)
 
+## [v01.94r] — 2026-03-10 01:53:27 PM EST
+
+### Changed
+- Standardized "missing resource" emoji in README project structure tree: 🔸 = no spreadsheet, ◽ = no folder, 🔻 = no GAS
+
+## [v01.93r] — 2026-03-10 01:48:24 PM EST
+
+### Changed
+- Replaced 🪫 (low battery) with ◽ (white square) for pages with no GAS project in README project structure tree
+
+## [v01.92r] — 2026-03-10 01:42:19 PM EST
+
+### Changed
+- Added spacer rows between page entries in README project structure tree for visual separation
+
+## [v01.91r] — 2026-03-10 01:36:10 PM EST
+
+### Changed
+- Reordered stoplight emoji in README project structure tree — 🌐 now comes first, status indicator (🟢/🟡/🔴) follows immediately with no space
+
+## [v01.90r] — 2026-03-10 01:13:03 PM EST
+
+### Added
+- Added 🟢/🟡/🔴 status emoji indicators to page entries in README.md project structure tree — derived from html.version.txt status field
+
+## [v01.89r] — 2026-03-10 10:24:18 AM EST
+
+### Added
+- Added page status emoji indicators to URL sections in chat output — 🟢 Active, 🟡 Maintenance, 🔴 Inactive — derived from html.version.txt first field
+- Added inactive mode support for html.version.txt (complements existing maintenance mode)
+
+### Changed
+- Updated all page label formats in chat-bookends.md and chat-bookends-reference.md to include status emoji before the 🌐 prefix
+
+## [v01.88r] — 2026-03-10 10:05:24 AM EST
+
+### Added
+- Added "Diff Rules Command" to CLAUDE.md — compares fork rules against template to identify added, modified, and removed rules
+- Added backporting workflow instructions (fork → template and template → fork) with user prompts
+
+## [v01.87r] — 2026-03-10 09:37:49 AM EST
+
+### Added
+- Added 🧜‍♀️ architecture diagram link to the root `saistemplateprojectrepo/` line in README tree
+
+## [v01.86r] — 2026-03-10 09:27:17 AM EST
+
+### Changed
+- Replaced 🔹 with 🪫 as the "no GAS file" placeholder in README tree
+
+## [v01.85r] — 2026-03-10 09:23:16 AM EST
+
+### Added
+- Added ⛽ GAS script link icon to README tree page entries (linked to corresponding .gs file, 🔹 placeholder for pages without GAS)
+
+## [v01.84r] — 2026-03-10 09:04:10 AM EST
+
+### Added
+- Repo version changelog link on the repository root line in README tree
+
+## [v01.83r] — 2026-03-10 08:50:41 AM EST
+
+### Changed
+- Reordered README tree icon cluster: webpage → spreadsheet → drive folder → diagram (🌐 · 📊 · 🔸 · 🧜‍♀️)
+
+## [v01.82r] — 2026-03-10 08:39:43 AM EST
+
+### Changed
+- Updated README tree icon cluster: 📊→🧜‍♀️ for diagrams, 📋→📊 for spreadsheets, ✕→🔻 for no spreadsheet, ◇→🔸 for no drive folder
+
+## [v01.81r] — 2026-03-10 12:30:32 AM EST
+
+### Changed
+- Replaced `╌` with `✕` (thin x) for missing spreadsheet placeholder in README tree
+- Replaced non-linked `📁` with `◇` (white diamond) for missing folder placeholder in README tree
+- Updated icon cluster rules in `repo-docs.md` with `✕` and `◇` placeholder conventions
+
+## [v01.80r] — 2026-03-10 12:20:43 AM EST
+
+### Changed
+- Restored `→` arrow before icon cluster in README tree page entries
+- Replaced 🚫 with subtle `╌` placeholder for missing spreadsheet links
+- Added 📁 Google Drive folder icon (placeholder) to all page entries in README tree
+- Updated icon cluster rule in `repo-docs.md` with 📁 and `╌` conventions
+
+## [v01.79r] — 2026-03-10 12:13:41 AM EST
+
+### Changed
+- Reorganized README tree page entries: grouped action icons (🌐 · 📊 · 📋) together with `·` separators between `—` delimiters
+- Replaced `📋✖` two-character placeholder with single 🚫 emoji for pages without a spreadsheet
+- Consolidated icon cluster rules in `repo-docs.md` into a single unified section
+
+## [v01.78r] — 2026-03-10 12:10:30 AM EST
+
+### Added
+- 📋✖ placeholder for pages without an associated spreadsheet in README tree (gas-project-creator)
+- Documented the 📋✖ no-spreadsheet placeholder convention in `repo-docs.md`
+
+## [v01.77r] — 2026-03-10 12:06:53 AM EST
+
+### Added
+- Spreadsheet 📋 emoji links in README tree for pages with associated GAS spreadsheets (index, test)
+- README tree spreadsheet links rule in `repo-docs.md` documenting the 📋 convention
 

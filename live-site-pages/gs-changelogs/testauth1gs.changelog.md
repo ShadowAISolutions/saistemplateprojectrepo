@@ -3,35 +3,9 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 13/50`
 
 ## [Unreleased]
-
-## [v01.16g] — 2026-03-13 05:18:59 PM EST — v02.82r
-
-### Changed
-- Restored original authentication handshake method for compatibility with the embedded page
-
-## [v01.15g] — 2026-03-13 04:51:10 PM EST — v02.79r
-
-### Security
-- All messages to the host page are now restricted to the specific deployment domain — no longer broadcast to all windows
-- Incoming messages are verified to come from the correct host page before processing
-- User information is now sanitized before being displayed to prevent injection attacks
-- Session integrity checks (HMAC) are now enabled by default
-- Session integrity now covers all data fields, preventing manipulation of timeout values
-- Access permission checks refresh every 2 minutes instead of 10 — revoked access takes effect faster
-- Maximum session duration reduced from 16 hours to 6 hours to match server cache limits
-- Deployment updates now require authentication — unauthorized requests are rejected
-- Error messages no longer expose server internals to the browser
-- Debug logging removed from production responses
-
-## [v01.14g] — 2026-03-13 01:45:42 PM EST — v02.75r
-
-### Security
-- Improved session integrity verification with stronger comparison method
-- Reduced unnecessary data stored during login sessions
-- Added error tracking when access control checks encounter issues
 
 ## [v01.13g] — 2026-03-12 09:47:46 PM EST — v02.64r
 

@@ -3,65 +3,9 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 26/50`
 
 ## [Unreleased]
-
-## [v01.35w] — 2026-03-13 05:32:07 PM EST — v02.84r
-
-### Fixed
-- Fixed sign-in not completing after selecting a Google account — internal message validation was incorrectly rejecting messages from the authentication server
-
-## [v01.34w] — 2026-03-13 05:24:04 PM EST — v02.83r
-
-### Fixed
-- Fixed sign-in not completing after selecting a Google account — security policy was blocking required Google authentication services
-
-## [v01.33w] — 2026-03-13 05:18:59 PM EST — v02.82r
-
-### Fixed
-- Fixed sign-in not completing after selecting a Google account — restored the original authentication method that works with the current server configuration
-
-## [v01.32w] — 2026-03-13 05:11:33 PM EST — v02.81r
-
-### Fixed
-- Fixed sign-in not completing after selecting a Google account — authentication handshake now reaches the correct internal frame
-
-## [v01.31w] — 2026-03-13 05:03:28 PM EST — v02.80r
-
-### Fixed
-- Fixed sign-in not completing after selecting a Google account — security policy was blocking required Google authentication services
-
-## [v01.30w] — 2026-03-13 04:51:10 PM EST — v02.79r
-
-### Security
-- Strengthened communication security between the page and embedded app — messages are now verified and restricted to trusted sources
-- Sign-in tokens are no longer transmitted through the browser address bar
-- Session data now auto-clears when you close the tab for better privacy
-- Added browser security policy to prevent unauthorized resource loading
-- Google account access is now revoked immediately when you sign out
-
-### Changed
-- Sign-out is now more thorough — cleans up both local and Google account sessions
-
-## [v01.29w] — 2026-03-13 02:29:25 PM EST — v02.77r
-
-### Fixed
-- Fixed sign-in flow not completing after selecting a Google account
-
-## [v01.28w] — 2026-03-13 02:23:50 PM EST — v02.76r
-
-### Fixed
-- Fixed sign-in flow not completing after selecting a Google account
-
-## [v01.27w] — 2026-03-13 01:45:42 PM EST — v02.75r
-
-### Security
-- Strengthened message security — the page now only accepts messages from the trusted Google Apps Script server
-- Removed verbose debug logging from the authentication flow
-
-### Removed
-- Removed a non-functional sign-out cleanup step that had no user-visible effect
 
 ## [v01.26w] — 2026-03-13 11:32:09 AM EST — v02.70r
 

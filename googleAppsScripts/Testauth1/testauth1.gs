@@ -1,4 +1,4 @@
-var VERSION = "v01.16g";
+var VERSION = "v01.13g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -6,9 +6,6 @@ var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Testauth1/testauth1.gs";
 var DEPLOYMENT_ID = "AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html";
-// Security: extract parent origin from EMBED_PAGE_URL for postMessage target validation (C1)
-// Lowercase: browsers normalize origins to lowercase; case mismatch silently drops postMessages
-var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLowerCase();
 
 // ══════════════
 // AUTH CONFIG
@@ -41,8 +38,7 @@ var PROJECT_OVERRIDES = {
 var PRESETS = {
   standard: {
     SESSION_EXPIRATION: 180,
-    // M1: reduced from 57600 (16h) to 21600 (6h) to match CacheService max TTL
-    ABSOLUTE_SESSION_TIMEOUT: 21600,
+    ABSOLUTE_SESSION_TIMEOUT: 57600,
     ENABLE_HEARTBEAT: true,
     HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
@@ -53,19 +49,15 @@ var PRESETS = {
     ENABLE_AUDIT_LOG: false,
     AUDIT_LOG_SHEET_NAME: 'AuditLog',
     AUDIT_LOG_RETENTION_YEARS: 6,
-    // M4: HMAC enabled by default for session integrity verification
-    ENABLE_HMAC_INTEGRITY: true,
+    ENABLE_HMAC_INTEGRITY: false,
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: false,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
-    // Token exchange via URL parameter — postMessage exchange is unreliable due to
-    // GAS nested iframe architecture (script.google.com → googleusercontent.com sandbox)
     TOKEN_EXCHANGE_METHOD: 'url'
   },
   hipaa: {
     SESSION_EXPIRATION: 900,
-    // M1: reduced from 57600 (16h) to 21600 (6h) to match CacheService max TTL
-    ABSOLUTE_SESSION_TIMEOUT: 21600,
+    ABSOLUTE_SESSION_TIMEOUT: 57600,
     ENABLE_HEARTBEAT: true,
     HEARTBEAT_INTERVAL: 30,
     MAX_SESSIONS_PER_USER: 1,
@@ -80,7 +72,7 @@ var PRESETS = {
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: true,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
-    TOKEN_EXCHANGE_METHOD: 'url'
+    TOKEN_EXCHANGE_METHOD: 'postMessage'
   }
 };
 
@@ -139,12 +131,6 @@ function doPost(e) {
   var action = (e && e.parameter && e.parameter.action) || "";
 
   if (action === "deploy") {
-    // M7: authenticate deploy requests with a secret stored in Script Properties
-    var secret = (e && e.parameter && e.parameter.secret) || "";
-    var expectedSecret = PropertiesService.getScriptProperties().getProperty('DEPLOY_SECRET');
-    if (!expectedSecret || secret !== expectedSecret) {
-      return ContentService.createTextOutput("Unauthorized");
-    }
     var result = pullAndDeployFromGitHub();
     return ContentService.createTextOutput(result);
   }
@@ -256,21 +242,6 @@ function pullAndDeployFromGitHub() {
 // ══════════════
 
 // =============================================
-// AUTH — HTML Output Escaping (H3 — XSS Prevention)
-// Prevents injection via user-controlled values (email, status) in generated HTML/JS.
-// =============================================
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-
-function escapeJs(str) {
-  if (!str) return '';
-  return String(str).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/'/g,"\\'").replace(/</g,'\\x3c').replace(/>/g,'\\x3e').replace(/\n/g,'\\n').replace(/\r/g,'\\r');
-}
-
-// =============================================
 // AUTH — Conditional Audit Logger (Toggle-Gated)
 // No-op when AUTH_CONFIG.ENABLE_AUDIT_LOG === false.
 // =============================================
@@ -309,10 +280,7 @@ function generateSessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return '';
   var secret = PropertiesService.getScriptProperties().getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
   if (!secret) return '';
-  // M5: include all session fields to prevent field tampering (e.g. absoluteCreatedAt bypass)
-  var payload = sessionData.email + '|' + sessionData.createdAt + '|' + sessionData.lastActivity
-    + '|' + (sessionData.absoluteCreatedAt || '') + '|' + (sessionData.displayName || '')
-    + '|' + (sessionData.tokenObtainedAt || '');
+  var payload = sessionData.email + '|' + sessionData.createdAt + '|' + sessionData.lastActivity;
   var signature = Utilities.computeHmacSha256Signature(payload, secret);
   return Utilities.base64Encode(signature);
 }
@@ -321,13 +289,7 @@ function verifySessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return true;
   if (!sessionData.hmac) return false;
   var expected = generateSessionHmac(sessionData);
-  // Constant-time comparison to prevent timing side-channel attacks
-  if (expected.length !== sessionData.hmac.length) return false;
-  var result = 0;
-  for (var i = 0; i < expected.length; i++) {
-    result |= expected.charCodeAt(i) ^ sessionData.hmac.charCodeAt(i);
-  }
-  return result === 0;
+  return expected === sessionData.hmac;
 }
 
 // =============================================
@@ -380,16 +342,13 @@ function exchangeTokenForSession(accessToken) {
   }
 
   // Create session token (cryptographically random UUID)
-  // L2: Utilities.getUuid() PRNG quality is undocumented by Google, but the 48-hex-char
-  // token from two concatenated UUIDs provides ~192 bits of entropy — sufficient for session IDs.
-  // L1: No rate limiting on auth attempts. Mitigated by the large token keyspace (48 hex chars).
-  // For DoS protection, consider Google Cloud Armor or Cloudflare in front of the deployment.
   var sessionToken = Utilities.getUuid() + Utilities.getUuid();
   sessionToken = sessionToken.replace(/-/g, "").substring(0, 48);
 
   var sessionData = {
     email: userInfo.email,
     displayName: userInfo.displayName,
+    accessToken: accessToken,
     createdAt: Date.now(),
     absoluteCreatedAt: Date.now(),
     lastActivity: Date.now(),
@@ -522,10 +481,6 @@ function invalidateAllSessions(email) {
 // AUTH — Google Token Operations (Server-Side Only)
 // =============================================
 
-// H4: Consider migrating to Google ID tokens (JWT) for server-side verification.
-// ID tokens can be verified locally without calling the userinfo endpoint, reducing
-// the risk of OAuth access token exposure on the server. This is a larger architectural
-// change — implement after the current security hardening is validated.
 function validateGoogleToken(accessToken) {
   try {
     var resp = UrlFetchApp.fetch(
@@ -641,8 +596,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
               if (String(data[r][0]).trim().toLowerCase() === lowerEmail) {
                 var val = data[r][colIdx];
                 if (val === true || String(val).trim().toUpperCase() === 'TRUE') {
-                  // M3: reduced from 600s to 120s — revoked users lose access within 2 minutes
-                  cache.put(cacheKey, "1", 120);
+                  cache.put(cacheKey, "1", 600);
                   return true;
                 }
                 break; // Found email but not granted — continue to method 2
@@ -651,10 +605,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
           }
         }
       }
-    } catch(e) {
-      Logger.log('ACL spreadsheet error (falling through to method 2): ' + e.message);
-      auditLog('acl_error', email, 'fallthrough', { error: e.message });
-    }
+    } catch(e) { /* ACL spreadsheet error — continue to method 2 */ }
   }
 
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
@@ -664,14 +615,14 @@ function checkSpreadsheetAccess(email, opt_ss) {
     var editors = ss.getEditors();
     for (var i = 0; i < editors.length; i++) {
       if (editors[i].getEmail().toLowerCase() === lowerEmail) {
-        cache.put(cacheKey, "1", 120);
+        cache.put(cacheKey, "1", 600);
         return true;
       }
     }
     var viewers = ss.getViewers();
     for (var i = 0; i < viewers.length; i++) {
       if (viewers[i].getEmail().toLowerCase() === lowerEmail) {
-        cache.put(cacheKey, "1", 120);
+        cache.put(cacheKey, "1", 600);
         return true;
       }
     }
@@ -679,7 +630,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
 
   // Neither method granted access (or neither is configured)
   if (!hasAcl && !hasSheet) return true; // No access control configured — allow all
-  cache.put(cacheKey, "0", 120);
+  cache.put(cacheKey, "0", 600);
   return false;
 }
 
@@ -699,9 +650,8 @@ function doGet(e) {
     var raw = cache.get("session_" + heartbeatToken);
     if (!raw) {
       var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
         + '</' + 'script></body></html>';
-      // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
       return HtmlService.createHtmlOutput(hbExpiredHtml)
         .setTitle(TITLE)
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -709,9 +659,8 @@ function doGet(e) {
     var hbData;
     try { hbData = JSON.parse(raw); } catch (err) {
       var hbErrHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
         + '</' + 'script></body></html>';
-      // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
       return HtmlService.createHtmlOutput(hbErrHtml)
         .setTitle(TITLE)
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -720,9 +669,8 @@ function doGet(e) {
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
       cache.remove("session_" + heartbeatToken);
       var hbHmacHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
         + '</' + 'script></body></html>';
-      // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
       return HtmlService.createHtmlOutput(hbHmacHtml)
         .setTitle(TITLE)
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -735,9 +683,8 @@ function doGet(e) {
         auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
           { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's' });
         var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
-          + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+          + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
           + '</' + 'script></body></html>';
-        // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
         return HtmlService.createHtmlOutput(hbAbsHtml)
           .setTitle(TITLE)
           .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -750,9 +697,8 @@ function doGet(e) {
       auditLog('session_expired', hbData.email, 'heartbeat_too_late',
         { elapsed: Math.round(hbElapsed) + 's' });
       var hbLateHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
         + '</' + 'script></body></html>';
-      // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
       return HtmlService.createHtmlOutput(hbLateHtml)
         .setTitle(TITLE)
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -768,9 +714,8 @@ function doGet(e) {
       ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
       : 0;
     var hbOkHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+      + 'window.top.postMessage({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}, "*");'
       + '</' + 'script></body></html>';
-    // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
     return HtmlService.createHtmlOutput(hbOkHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -780,9 +725,8 @@ function doGet(e) {
   if (signOutToken) {
     invalidateSession(signOutToken);
     var signOutHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-signed-out",success:true}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+      + 'window.top.postMessage({type:"gas-signed-out",success:true}, "*");'
       + '</' + 'script></body></html>';
-    // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
     return HtmlService.createHtmlOutput(signOutHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -796,9 +740,7 @@ function doGet(e) {
       try {
         result = exchangeTokenForSession(exchangeToken);
       } catch (err) {
-        // M8: generic error to client — details logged server-side only
-        Logger.log("Token exchange error: " + (err.message || String(err)));
-        result = { success: false, error: "server_error" };
+        result = { success: false, error: "server_error: " + (err.message || String(err)) };
       }
       var payload = JSON.stringify({
             type: "gas-session-created",
@@ -809,11 +751,10 @@ function doGet(e) {
             error: result.error || "",
             absoluteTimeout: result.absoluteTimeout || 0
           });
-      // M9: Debug logging removed from production
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
-        + 'try { window.top.postMessage(' + payload + ', ' + JSON.stringify(PARENT_ORIGIN) + '); } catch(e) {}'
+        + 'console.log("[GAS DEBUG] exchange response loaded, sending:", ' + JSON.stringify(payload.substring(0, 100)) + ');'
+        + 'try { window.top.postMessage(' + payload + ', "*"); } catch(e) { console.log("[GAS DEBUG] postMessage error:", e.message); }'
         + '</' + 'script></body></html>';
-      // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
       return HtmlService.createHtmlOutput(exchangeHtml)
         .setTitle(TITLE)
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -823,9 +764,7 @@ function doGet(e) {
   // postMessage token exchange (HIPAA mode)
   if (AUTH_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage' && !sessionToken) {
     var listenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
-      + 'var _parentOrigin = ' + JSON.stringify(PARENT_ORIGIN) + ';'
       + 'window.addEventListener("message", function(e) {'
-      + '  if (e.origin !== _parentOrigin) return;'  // H2: origin validation
       + '  if (!e.data || e.data.type !== "exchange-token") return;'
       + '  var token = e.data.accessToken;'
       + '  if (!token) return;'
@@ -839,20 +778,19 @@ function doGet(e) {
       + '        displayName: result.displayName || "",'
       + '        error: result.error || "",'
       + '        absoluteTimeout: result.absoluteTimeout || 0'
-      + '      }, _parentOrigin);'  // C1: restricted target origin
+      + '      }, "*");'
       + '    })'
       + '    .withFailureHandler(function(err) {'
       + '      window.top.postMessage({'
       + '        type: "gas-session-created",'
       + '        success: false,'
       + '        error: "server_error"'
-      + '      }, _parentOrigin);'  // C1: restricted target origin
+      + '      }, "*");'
       + '    })'
       + '    .exchangeTokenForSession(token);'
       + '});'
-      + 'window.top.postMessage({ type: "gas-ready-for-token" }, _parentOrigin);'  // C1
+      + 'window.top.postMessage({ type: "gas-ready-for-token" }, "*");'
       + '</' + 'script></body></html>';
-    // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
     return HtmlService.createHtmlOutput(listenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -862,11 +800,9 @@ function doGet(e) {
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {
-    // H3: escape user-controlled values to prevent XSS injection
     var authHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + escapeJs(session.status) + '",email:"' + escapeJs(session.email || '') + '",version:"' + escapeJs(VERSION) + '"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + session.status + '",email:"' + (session.email || '') + '",version:"' + VERSION + '"}, "*");'
       + '</' + 'script></body></html>';
-    // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io)
     return HtmlService.createHtmlOutput(authHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -889,24 +825,21 @@ function doGet(e) {
     </head>
     <body>
       <div id="debug-marker">1</div>
-      <h2 id="version">${escapeHtml(VERSION)}</h2>
-      <div id="user-email">${escapeHtml(session.email)}</div>
+      <h2 id="version">${VERSION}</h2>
+      <div id="user-email">${session.email}</div>
 
       <script>
-        // Notify wrapper that auth is OK (C1: restricted target origin)
-        window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}, '${PARENT_ORIGIN}');
+        // Notify wrapper that auth is OK
+        window.top.postMessage({type: 'gas-auth-ok', version: '${VERSION}', needsReauth: ${session.needsReauth || false}}, '*');
 
-        var _parentOrigin = '${PARENT_ORIGIN}';
         window.addEventListener('message', function(e) {
-          // H2: validate origin of incoming messages
-          if (e.origin !== _parentOrigin) return;
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
-                top.postMessage({type: 'gas-version', version: data.version}, _parentOrigin);
+                top.postMessage({type: 'gas-version', version: data.version}, '*');
               })
               .withFailureHandler(function() {
-                top.postMessage({type: 'gas-version', version: null}, _parentOrigin);
+                top.postMessage({type: 'gas-version', version: null}, '*');
               })
               .getAppData();
           }
@@ -915,9 +848,6 @@ function doGet(e) {
     </body>
     </html>
   `;
-  // C2: ALLOWALL required — GAS iframe is cross-origin (script.google.com → github.io).
-  // Mitigated by C1 (postMessage restricted to PARENT_ORIGIN) — even if embedded
-  // by an attacker, no sensitive data leaks via postMessage.
   return HtmlService.createHtmlOutput(html)
     .setTitle(TITLE)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

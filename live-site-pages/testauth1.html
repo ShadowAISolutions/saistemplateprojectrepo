@@ -4,11 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.35w">
-  <!-- I5: CSP removed — was blocking Google Sign-In token exchange flow.
-       GAS iframe architecture (script.google.com → googleusercontent.com sandbox) requires
-       broad domain allowlisting that negates most CSP benefits. Security is enforced via
-       postMessage origin validation and message-type allowlisting instead. -->
+  <meta name="build-version" content="v01.26w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -297,17 +293,14 @@
 // AUTH CONFIG
 // ══════════════
     // Google OAuth Client ID — obtain from Google Cloud Console
-    // M6: Client IDs are public identifiers, not secrets. However, hardcoding prevents
-    // rotation without code deployment. Consider fetching from a config endpoint for
-    // production use. Ensure authorized JS origins are restricted in Google Cloud Console.
     var CLIENT_ID = '216764502068-sbc57ft6fjl8n1jovu54j4l42v0ei0i4.apps.googleusercontent.com';
 
     // HTML-side auth configuration (unified toggleable pattern)
     // Must match the GAS-side AUTH_CONFIG preset
     var HTML_CONFIG = {
-      // M2: sessionStorage for all presets — auto-clears on tab close, reducing XSS token exposure
-      STORAGE_TYPE: 'sessionStorage',
-      // Token exchange via URL parameter — GAS doGet handles the exchange server-side
+      // 'localStorage' (standard) or 'sessionStorage' (HIPAA — cleared on tab close)
+      STORAGE_TYPE: 'localStorage',
+      // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
       TOKEN_EXCHANGE_METHOD: 'url',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
@@ -326,9 +319,6 @@
     document.getElementById('auth-wall-logo').src = LOGO_URL;
     document.getElementById('auth-wall-title').textContent = document.title || '';
 
-    // L5: Maintenance bypass is client-side only — no server-side enforcement.
-    // Any user can bypass by manipulating the DOM or sessionStorage. This is
-    // a known limitation of GitHub Pages (static hosting, no server logic).
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {
       var bp = document.getElementById('maint-bypass');
@@ -596,8 +586,6 @@
     })();
 
     (function() {
-      // L6: Base64 + string reversal is obfuscation for casual inspection only, not security.
-      // The deployment URL is a public GAS endpoint — obfuscation prevents casual URL scraping.
       var _e = 'Y2V4ZS93Xy1MTnB4N0otNGU0cUJtcDJLMVNoMkdYdy02Vk1XTWM2UEllTTZ3MFp0OGFIb0dhbklwS2l6NVNDZHBYNzNRbUtjemJjeWZLQS9zL3NvcmNhbS9tb2MuZWxnb29nLnRwaXJjcy8vOnNwdHRo';
       if (!_e) return;
       var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return; }
@@ -607,11 +595,8 @@
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
       f.dataset.baseUrl = _u;
-      // L4: window._r is set briefly for the srcdoc bootstrap script, then deleted immediately
-      // The srcdoc script reads and deletes it; we also schedule a cleanup in case srcdoc is cancelled
       window._r = _u;
       f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
-      setTimeout(function() { delete window._r; }, 0); // L4: immediate cleanup fallback
       document.body.appendChild(f);
     })();
 
@@ -937,7 +922,7 @@
     // Silent re-auth with interactive fallback (pattern 4+).
     // =============================================
 
-
+    var GAS_ORIGIN = 'https://script.google.com';
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
@@ -954,11 +939,13 @@
     }
 
     function handleTokenResponse(response) {
+      console.log('[AUTH DEBUG] handleTokenResponse called', response.error ? 'ERROR: ' + response.error : 'SUCCESS — got token');
       if (response.error) {
         // Silent auth failed — show auth wall with interactive sign-in
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
+      console.log('[AUTH DEBUG] Calling exchangeToken with access_token length:', response.access_token ? response.access_token.length : 0);
       exchangeToken(response.access_token);
     }
 
@@ -979,9 +966,11 @@
     // --- URL Parameter Path (standard) ---
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp) return;
+      if (!gasApp) { console.log('[AUTH DEBUG] exchangeViaUrl: gas-app element not found!'); return; }
       var baseUrl = window._r || gasApp.dataset.baseUrl || '';
-      if (!baseUrl) return;
+      if (!baseUrl) { console.log('[AUTH DEBUG] exchangeViaUrl: baseUrl is empty!'); return; }
+
+      console.log('[AUTH DEBUG] exchangeViaUrl: setting iframe src to', baseUrl + '?exchangeToken=<token>');
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
     }
@@ -1005,36 +994,19 @@
     // Handles all auth-related messages from the GAS iframe.
     // =============================================
 
-    var _gasMessageTypes = {
-      'gas-ready-for-token': true, 'gas-session-created': true,
-      'gas-needs-auth': true, 'gas-auth-ok': true,
-      'gas-heartbeat-ok': true, 'gas-heartbeat-expired': true,
-      'gas-signed-out': true, 'gas-version': true
-    };
-    // H1: origin validation — GAS HtmlService serves from *.googleusercontent.com sandbox domains
-    // Multi-level subdomains: GAS uses n-{hash}.script.googleusercontent.com (not single-level)
-    var _allowedOriginPattern = /^https:\/\/[a-z0-9.-]+\.google(usercontent|apis)?\.com$/;
-    var _gasIframeOrigin = null; // Captured from first trusted GAS message for C1 reply targeting
     window.addEventListener('message', function(event) {
       var data = event.data;
       if (!data || typeof data !== 'object') return;
-      // Only process known GAS message types (allowlist — defense-in-depth with origin check)
-      if (!_gasMessageTypes[data.type]) return;
-      // H1: validate origin — accept Google domains; 'null' from srcdoc bootstrap phase
-      if (event.origin !== 'null' && !_allowedOriginPattern.test(event.origin)) return;
+      console.log('[AUTH DEBUG] postMessage received:', data.type, JSON.stringify(data).substring(0, 200));
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
-        // C1: capture GAS iframe origin from this trusted message for targeted replies
-        _gasIframeOrigin = event.origin;
-        // Reply via event.source — GAS nests HtmlOutput in a googleusercontent.com sandbox
-        // iframe inside the script.google.com frame; gasApp.contentWindow is the outer frame,
-        // but the listener runs in the nested sandbox. event.source is the actual sender.
-        if (event.source) {
-          event.source.postMessage({
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp && gasApp.contentWindow) {
+          gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, _gasIframeOrigin);  // C1: restricted target origin (not '*')
+          }, '*');
           _pendingToken = null;
         }
       }
@@ -1072,7 +1044,7 @@
           // was still loading the old (no-session) URL while we already set
           // a new src with the session token. Ignore this message and wait
           // for the session-URL response instead.
-          // Stale gas-needs-auth — session navigation already in flight
+          console.log('[AUTH DEBUG] Ignoring stale gas-needs-auth (session navigation in flight)');
           _expectingSession = false;
           return;
         }
@@ -1105,6 +1077,7 @@
             if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
           }, 3000);
         }
+        console.log('[AUTH DEBUG] Heartbeat OK — session extended by ' + (data.expiresIn || '?') + 's');
       }
 
       // Heartbeat failed — session already expired on server
@@ -1120,6 +1093,7 @@
         stopCountdownTimers();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
+        console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
       }
 
       // GAS sign-out confirmation
@@ -1472,13 +1446,6 @@
       stopCountdownTimers();
       stopHeartbeat();
 
-      // L3: Revoke Google OAuth token to prevent lingering access after sign-out
-      try {
-        if (google && google.accounts && google.accounts.oauth2) {
-          google.accounts.oauth2.revoke(session.token, function() {});
-        }
-      } catch(e) { /* best-effort — token will expire naturally within ~1 hour */ }
-
       // Notify GAS server to invalidate server-side session
       if (session.token) {
         var gasApp = document.getElementById('gas-app');
@@ -1487,6 +1454,13 @@
           gasApp.src = baseUrl + '?signOut=' + encodeURIComponent(session.token);
         }
       }
+
+      // Revoke Google OAuth token
+      try {
+        if (google && google.accounts && google.accounts.oauth2) {
+          google.accounts.oauth2.revoke(session.token, function() {});
+        }
+      } catch(e) {}
 
       var message = 'You have been signed out.';
       if (reason === 'session-expired') {
