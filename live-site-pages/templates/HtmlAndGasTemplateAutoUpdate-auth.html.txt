@@ -30,7 +30,7 @@
     #splash-maintenance { background: #b04000; z-index: 9998; }
     .maintenance-timestamp { color: rgba(255,255,255,0.85); font: 16px/1.4 monospace; margin-top: 20px; }
     #version-indicator {
-      position: fixed; bottom: 8px; right: 8px; z-index: 9999;
+      position: fixed; bottom: 8px; right: 8px; z-index: 10003;
       display: flex; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
@@ -39,7 +39,7 @@
     #version-indicator:hover { background: rgba(0,0,0,0.75); }
     #changelog-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 10001; display: none;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
       align-items: center; justify-content: center;
     }
     #changelog-popup {
@@ -84,7 +84,7 @@
     #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
     #gas-pill {
-      position: fixed; bottom: 8px; right: 146px; z-index: 9999;
+      position: fixed; bottom: 8px; right: 146px; z-index: 10003;
       display: none; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
@@ -103,7 +103,7 @@
     #gas-pill .dot.error    { background: #ef5350; }
     #gcl-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 10001; display: none;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
       align-items: center; justify-content: center;
     }
     #gcl-popup {
@@ -164,7 +164,7 @@
     }
     #reauth-banner {
       position: fixed; top: 0; left: 0; width: 100%; padding: 10px 16px;
-      background: #fff3cd; border-bottom: 1px solid #ffc107; z-index: 10003;
+      background: #fff3cd; border-bottom: 1px solid #ffc107; z-index: 10005;
       display: none; align-items: center; justify-content: center; gap: 12px;
       font: 13px/1.4 sans-serif; color: #856404;
     }
@@ -183,6 +183,34 @@
       font: 11px/1 monospace; padding: 0 4px;
     }
     #sign-out-btn:hover { color: #f44336; }
+    #auth-timers {
+      position: fixed; bottom: 8px; left: 120px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
+    }
+    #auth-timers:hover { background: rgba(0,0,0,0.75); }
+    #auth-timers .timer-pill-label { color: #fff; font-weight: bold; }
+    #auth-timers .timer-pill-label.warn { color: #ffc107; }
+    #auth-timers .timer-pill-label.critical { color: #ef5350; }
+    #auth-timers .timer-body {
+      display: none; flex-direction: column; gap: 4px;
+      border-top: 1px solid rgba(255,255,255,0.15); margin-top: 4px; padding-top: 4px;
+    }
+    #auth-timers .timer-body.expanded { display: flex; }
+    #auth-timers.expanded {
+      flex-direction: column; align-items: stretch;
+      border-radius: 8px; padding: 8px 12px;
+    }
+    #auth-timers .timer-header { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    #auth-timers .timer-header .toggle-icon { font-size: 8px; color: #aaa; }
+    #auth-timers .timer-row { display: flex; justify-content: space-between; gap: 12px; }
+    #auth-timers .timer-label { color: #999; }
+    #auth-timers .timer-value { color: #fff; font-weight: bold; }
+    #auth-timers .timer-value.warn { color: #ffc107; }
+    #auth-timers .timer-value.critical { color: #ef5350; }
+    #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -206,7 +234,8 @@
 <!-- AUTH START -->
 <!-- ══════════════ -->
   <div id="auth-wall">
-    <h2>Sign In Required</h2>
+    <img id="auth-wall-logo" src="" alt="" style="max-width:120px;max-height:120px;margin-bottom:20px;">
+    <div id="auth-wall-title" style="font:bold 18px/1.2 sans-serif;color:#555;margin-bottom:24px;text-align:center;"></div>
     <p>Please sign in with your Google account to continue.</p>
     <button class="auth-btn" id="auth-sign-in-btn">Sign In with Google</button>
     <div class="auth-error" id="auth-error"></div>
@@ -221,6 +250,15 @@
   <div id="user-pill">
     <span id="user-email-display"></span>
     <button id="sign-out-btn">Sign Out</button>
+  </div>
+
+  <div id="auth-timers" onclick="toggleTimers()">
+    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
+    <div class="timer-body" id="timer-body">
+      <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
+      <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
+      <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
+    </div>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -263,11 +301,9 @@
       STORAGE_TYPE: 'localStorage',
       // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
       TOKEN_EXCHANGE_METHOD: 'url',
-      // Client-side inactivity timeout (standard: false / HIPAA: true mandatory)
-      ENABLE_INACTIVITY_TIMEOUT: false,
-      CLIENT_INACTIVITY_TIMEOUT: 720000,  // ms (12 min)
-      // Auto sign-out on inactivity (standard: false / HIPAA: true)
-      ENABLE_AUTO_SIGNOUT: false
+      // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
+      ENABLE_HEARTBEAT: true,
+      HEARTBEAT_INTERVAL: 30000  // ms (30s) — how often to check for activity and send heartbeat
     };
 // ──────────────
 
@@ -279,6 +315,8 @@
     document.getElementById('splash-logo').src = LOGO_URL;
     document.getElementById('splash-code-logo').src = LOGO_URL;
     document.getElementById('maintenance-logo').src = LOGO_URL;
+    document.getElementById('auth-wall-logo').src = YOUR_ORG_LOGO_URL;
+    document.getElementById('auth-wall-title').textContent = document.title || '';
 
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {
@@ -972,8 +1010,16 @@
       if (data.type === 'gas-session-created') {
         if (data.success) {
           saveSession(data.sessionToken, data.email);
+          // New session — reset the session start time and absolute start time
+          getStorage().setItem(SESSION_START_KEY, String(Date.now()));
+          getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
+          // Update absolute duration from server if provided
+          if (data.absoluteTimeout > 0) {
+            ABSOLUTE_SESSION_DURATION = data.absoluteTimeout;
+          }
           showApp(data.email, data.displayName);
-          startInactivityTimer();
+          startCountdownTimers();
+          startHeartbeat();
           // Reload iframe with session token so the app UI loads
           var gasApp = document.getElementById('gas-app');
           var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
@@ -998,6 +1044,8 @@
           return;
         }
         clearSession();
+        stopCountdownTimers();
+        stopHeartbeat();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
       }
@@ -1010,9 +1058,44 @@
         }
       }
 
+      // Heartbeat OK — server extended the session
+      if (data.type === 'gas-heartbeat-ok') {
+        _heartbeatInFlight = false;
+        // Reset the client-side session start time to match the server reset
+        getStorage().setItem(SESSION_START_KEY, String(Date.now()));
+        var hbEl = document.getElementById('timer-heartbeat');
+        if (hbEl) {
+          hbEl.textContent = 'extended \u2713';
+          hbEl.className = 'timer-value';
+          // Show success briefly, then revert
+          setTimeout(function() {
+            if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
+          }, 3000);
+        }
+        console.log('[AUTH DEBUG] Heartbeat OK — session extended by ' + (data.expiresIn || '?') + 's');
+      }
+
+      // Heartbeat failed — session already expired on server
+      if (data.type === 'gas-heartbeat-expired') {
+        _heartbeatInFlight = false;
+        stopHeartbeat();
+        var hbEl2 = document.getElementById('timer-heartbeat');
+        if (hbEl2) {
+          hbEl2.textContent = 'expired';
+          hbEl2.className = 'timer-value critical';
+        }
+        clearSession();
+        stopCountdownTimers();
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
+        showAuthWall('Session expired. Please sign in again.');
+        console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
+      }
+
       // GAS sign-out confirmation
       if (data.type === 'gas-signed-out') {
         clearSession();
+        stopCountdownTimers();
+        stopHeartbeat();
         showAuthWall('You have been signed out.');
       }
     });
@@ -1111,42 +1194,241 @@
     }
 
     // =============================================
-    // AUTH — Inactivity Timeout (Toggle-Gated)
-    // HIPAA: mandatory. Standard: optional (off by default).
+    // AUTH — Countdown Timers
+    // Absolute = hard session ceiling (16 hours), never resets.
+    // Session = server-side expiration, extended by heartbeats.
+    // Heartbeat = extends session while user is active.
     // =============================================
 
-    var _inactivityTimer = null;
-    var _ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
-
-    function startInactivityTimer() {
-      if (!HTML_CONFIG.ENABLE_INACTIVITY_TIMEOUT) return;
-      resetInactivityTimer();
-      _ACTIVITY_EVENTS.forEach(function(evt) {
-        document.addEventListener(evt, resetInactivityTimer, { passive: true });
-      });
+    function toggleTimers(e) {
+      if (e) e.stopPropagation();
+      var container = document.getElementById('auth-timers');
+      var body = document.getElementById('timer-body');
+      var icon = document.getElementById('timer-toggle-icon');
+      var expanded = body.classList.toggle('expanded');
+      container.classList.toggle('expanded', expanded);
+      icon.innerHTML = expanded ? '&#9662;' : '&#9656;';
     }
 
-    function resetInactivityTimer() {
-      if (_inactivityTimer) clearTimeout(_inactivityTimer);
-      _inactivityTimer = setTimeout(function() {
-        handleInactivityTimeout();
-      }, HTML_CONFIG.CLIENT_INACTIVITY_TIMEOUT);
-    }
+    var SERVER_SESSION_DURATION = 1800;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
+    var ABSOLUTE_SESSION_DURATION = 57600; // seconds (16 hours) — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT
+    var SESSION_START_KEY = 'gas_session_start';
+    var ABSOLUTE_START_KEY = 'gas_absolute_start';
+    var _timerInterval = null;
 
-    function stopInactivityTimer() {
-      if (_inactivityTimer) clearTimeout(_inactivityTimer);
-      _ACTIVITY_EVENTS.forEach(function(evt) {
-        document.removeEventListener(evt, resetInactivityTimer);
-      });
-    }
-
-    function handleInactivityTimeout() {
-      stopInactivityTimer();
-      if (HTML_CONFIG.ENABLE_AUTO_SIGNOUT) {
-        performSignOut('inactivity');
-      } else {
-        showReauthBanner('Session timed out due to inactivity. Click to continue.', true);
+    function formatCountdown(seconds) {
+      if (seconds <= 0) return '0:00';
+      var h = Math.floor(seconds / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
+      var s = Math.floor(seconds % 60);
+      if (h > 0) {
+        return h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
       }
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function startCountdownTimers() {
+      var timersEl = document.getElementById('auth-timers');
+      var sessionEl = document.getElementById('timer-session');
+      var absoluteEl = document.getElementById('timer-absolute');
+      var heartbeatEl = document.getElementById('timer-heartbeat');
+      var pillLabel = document.getElementById('timer-pill-label');
+
+      // Store session start time if not already stored
+      var storage = getStorage();
+      if (!storage.getItem(SESSION_START_KEY)) {
+        storage.setItem(SESSION_START_KEY, String(Date.now()));
+      }
+      // Store absolute start time if not already stored (set once, never reset)
+      if (!storage.getItem(ABSOLUTE_START_KEY)) {
+        storage.setItem(ABSOLUTE_START_KEY, String(Date.now()));
+      }
+
+      // Show absolute timer status
+      if (ABSOLUTE_SESSION_DURATION > 0) {
+        absoluteEl.textContent = formatCountdown(ABSOLUTE_SESSION_DURATION);
+        absoluteEl.className = 'timer-value';
+      } else {
+        absoluteEl.textContent = 'off';
+        absoluteEl.className = 'timer-value disabled';
+      }
+
+      // Show heartbeat status
+      if (HTML_CONFIG.ENABLE_HEARTBEAT) {
+        heartbeatEl.textContent = 'waiting';
+        heartbeatEl.className = 'timer-value disabled';
+      } else {
+        heartbeatEl.textContent = 'off';
+        heartbeatEl.className = 'timer-value disabled';
+      }
+
+      timersEl.style.display = 'flex';
+
+      if (_timerInterval) clearInterval(_timerInterval);
+      _timerInterval = setInterval(function() {
+        var startTime = parseInt(storage.getItem(SESSION_START_KEY) || '0', 10);
+        var elapsed = (Date.now() - startTime) / 1000;
+        var remaining = SERVER_SESSION_DURATION - elapsed;
+
+        // Session countdown — auto sign-out when session expires
+        if (remaining <= 0) {
+          sessionEl.textContent = 'expired';
+          sessionEl.className = 'timer-value critical';
+          pillLabel.textContent = 'expired';
+          pillLabel.className = 'timer-pill-label critical';
+          performSignOut('session-expired');
+          return;
+        } else {
+          sessionEl.textContent = formatCountdown(remaining);
+          pillLabel.textContent = formatCountdown(remaining);
+          if (remaining <= 60) {
+            sessionEl.className = 'timer-value critical';
+            pillLabel.className = 'timer-pill-label critical';
+          } else if (remaining <= 90) {
+            sessionEl.className = 'timer-value warn';
+            pillLabel.className = 'timer-pill-label warn';
+          } else {
+            sessionEl.className = 'timer-value';
+            pillLabel.className = 'timer-pill-label';
+          }
+        }
+
+        // Absolute session countdown — hard ceiling, never resets
+        if (ABSOLUTE_SESSION_DURATION > 0) {
+          var absStartTime = parseInt(storage.getItem(ABSOLUTE_START_KEY) || '0', 10);
+          var absElapsed = (Date.now() - absStartTime) / 1000;
+          var absRemaining = ABSOLUTE_SESSION_DURATION - absElapsed;
+          if (absRemaining <= 0) {
+            absoluteEl.textContent = 'expired';
+            absoluteEl.className = 'timer-value critical';
+            performSignOut('absolute-expired');
+            return;
+          } else {
+            absoluteEl.textContent = formatCountdown(absRemaining);
+            if (absRemaining <= 60) {
+              absoluteEl.className = 'timer-value critical';
+            } else if (absRemaining <= 120) {
+              absoluteEl.className = 'timer-value warn';
+            } else {
+              absoluteEl.className = 'timer-value';
+            }
+          }
+        }
+
+        // Heartbeat countdown — shows time until next heartbeat tick
+        if (HTML_CONFIG.ENABLE_HEARTBEAT && _heartbeatInterval && remaining > 0) {
+          var sinceLastTick = (Date.now() - _lastHeartbeatTick) / 1000;
+          var nextTickIn = (HTML_CONFIG.HEARTBEAT_INTERVAL / 1000) - sinceLastTick;
+          if (nextTickIn < 0) nextTickIn = 0;
+          var isActive = _lastHeartbeatActivity > (_lastHeartbeatTick - HTML_CONFIG.HEARTBEAT_INTERVAL);
+          if (_heartbeatInFlight) {
+            heartbeatEl.textContent = 'sending...';
+            heartbeatEl.className = 'timer-value warn';
+          } else if (_heartbeatIdle) {
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + ' (idle)';
+            heartbeatEl.className = 'timer-value warn';
+          } else {
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + (isActive ? ' (active)' : ' (idle)');
+            heartbeatEl.className = isActive ? 'timer-value' : 'timer-value warn';
+          }
+        } else if (remaining <= 0 && heartbeatEl) {
+          heartbeatEl.textContent = 'expired';
+          heartbeatEl.className = 'timer-value critical';
+        }
+
+      }, 1000);
+    }
+
+    function stopCountdownTimers() {
+      if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+      var timersEl = document.getElementById('auth-timers');
+      if (timersEl) timersEl.style.display = 'none';
+      var storage = getStorage();
+      storage.removeItem(SESSION_START_KEY);
+      storage.removeItem(ABSOLUTE_START_KEY);
+    }
+
+    // =============================================
+    // AUTH — Heartbeat (Activity-Based Session Extension)
+    // Monitors DOM activity events. On each interval tick, if the
+    // user has been active since the last heartbeat, sends a lightweight
+    // ?heartbeat=TOKEN request to the GAS server which resets createdAt,
+    // extending the session. If no activity → no heartbeat → session
+    // expires naturally at SERVER_SESSION_DURATION.
+    // =============================================
+
+    var _ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
+    var _heartbeatInterval = null;
+    var _lastHeartbeatActivity = 0;  // timestamp of last activity seen by heartbeat
+    var _lastHeartbeatTick = 0;      // timestamp of the last interval tick (or start)
+    var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
+    var _heartbeatIdle = false;      // true when last tick found no activity
+
+    function startHeartbeat() {
+      if (!HTML_CONFIG.ENABLE_HEARTBEAT) return;
+
+      // Track activity for heartbeat
+      _lastHeartbeatActivity = Date.now();
+      _lastHeartbeatTick = Date.now();
+      _heartbeatIdle = false;
+      _ACTIVITY_EVENTS.forEach(function(evt) {
+        document.addEventListener(evt, _onHeartbeatActivity, { passive: true });
+      });
+
+      _heartbeatInterval = setInterval(function() {
+        _lastHeartbeatTick = Date.now();
+        // Only send heartbeat if user was active since last tick
+        var lastTick = _lastHeartbeatTick - HTML_CONFIG.HEARTBEAT_INTERVAL;
+        if (_lastHeartbeatActivity < lastTick) {
+          // No activity since last heartbeat tick — skip (let session expire if idle)
+          _heartbeatIdle = true;
+          return;
+        }
+        _heartbeatIdle = false;
+        sendHeartbeat();
+      }, HTML_CONFIG.HEARTBEAT_INTERVAL);
+    }
+
+    function _onHeartbeatActivity() {
+      _lastHeartbeatActivity = Date.now();
+    }
+
+    function sendHeartbeat() {
+      if (_heartbeatInFlight) return;  // don't stack requests
+      var session = loadSession();
+      if (!session.token) return;
+
+      var gasApp = document.getElementById('gas-app');
+      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!gasApp || !baseUrl) return;
+
+      _heartbeatInFlight = true;
+      var hbEl = document.getElementById('timer-heartbeat');
+      if (hbEl) {
+        hbEl.textContent = 'sending...';
+        hbEl.className = 'timer-value warn';
+      }
+
+      // Use a hidden iframe so the heartbeat doesn't destroy the main GAS app UI
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (!hbFrame) {
+        hbFrame = document.createElement('iframe');
+        hbFrame.id = 'gas-heartbeat';
+        hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
+        document.body.appendChild(hbFrame);
+      }
+      hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token);
+      // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
+    }
+
+    function stopHeartbeat() {
+      if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
+      _ACTIVITY_EVENTS.forEach(function(evt) {
+        document.removeEventListener(evt, _onHeartbeatActivity);
+      });
+      _heartbeatInFlight = false;
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (hbFrame) hbFrame.remove();
     }
 
     // =============================================
@@ -1156,7 +1438,8 @@
     function performSignOut(reason) {
       var session = loadSession();
       clearSession();
-      stopInactivityTimer();
+      stopCountdownTimers();
+      stopHeartbeat();
 
       // Notify GAS server to invalidate server-side session
       if (session.token) {
@@ -1175,8 +1458,12 @@
       } catch(e) {}
 
       var message = 'You have been signed out.';
-      if (reason === 'inactivity') {
-        message = 'Signed out due to inactivity. Click "Sign In with Google" to continue.';
+      if (reason === 'session-expired') {
+        message = 'Your session has expired. Click "Sign In with Google" to continue.';
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
+      } else if (reason === 'absolute-expired') {
+        var hours = Math.round(ABSOLUTE_SESSION_DURATION / 3600);
+        message = 'Your ' + hours + '-hour session has ended. Please sign in again.';
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
       }
       showAuthWall(message);
@@ -1197,7 +1484,7 @@
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',
-              prompt: 'consent',
+              prompt: 'select_account',
               callback: handleTokenResponse
             });
           } else {
@@ -1212,13 +1499,15 @@
     // AUTH — Initialization
     // =============================================
 
-    // Sign-in button handler
+    // Sign-in button handler — always show account chooser on explicit click
     document.getElementById('auth-sign-in-btn').addEventListener('click', function() {
-      if (signInClient) {
-        signInClient.requestAccessToken();
-      } else {
-        initGoogleSignIn();
-      }
+      signInClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile',
+        prompt: 'select_account',
+        callback: handleTokenResponse
+      });
+      signInClient.requestAccessToken();
     });
 
     // Sign-out button handler
@@ -1253,7 +1542,8 @@
           }
         }
         showApp(session.email);
-        startInactivityTimer();
+        startCountdownTimers();
+        startHeartbeat();
       } else {
         // No session — prevent the iframe from loading the bare GAS URL.
         // The iframe IIFE navigates to the GAS deployment URL immediately,
