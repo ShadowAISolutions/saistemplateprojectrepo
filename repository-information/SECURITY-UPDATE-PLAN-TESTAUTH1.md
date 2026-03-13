@@ -12,10 +12,12 @@
 
 This is the **third attempt** at security hardening for testauth1. The previous two attempts (v02.75r–v02.84r) were fully reverted because they broke critical functionality:
 
-1. **v02.79r broke the GAS auto-deploy pipeline** — a `DEPLOY_SECRET` check was added to `doPost(action=deploy)`, which silently blocked all automatic code updates from GitHub
-2. **v02.75r–v02.84r broke Google Sign-In** — origin validation, CSP, and token exchange changes caused the sign-in flow to get stuck on the "Sign In Required" page with no errors
+1. **v02.79r broke the GAS auto-deploy pipeline** — a `DEPLOY_SECRET` check was added to `doPost(action=deploy)`, which silently blocked all automatic code updates from GitHub. This caused the live GAS to be **permanently stuck at v01.15g** — every subsequent GAS-side fix (v02.80r, v02.82r) never reached the live environment
+2. **v02.75r–v02.84r broke Google Sign-In** — origin validation, CSP, and a PARENT_ORIGIN case mismatch caused the sign-in flow to get stuck on the "Sign In Required" page with no errors. The case mismatch (`ShadowAISolutions` vs browser-normalized `shadowaisolutions`) silently dropped all GAS→parent postMessages from v02.79r onward, and the fix (`.toLowerCase()`) never deployed because auto-deploy was already broken
 
-This plan is designed from the ground up with those two failure modes as hard constraints.
+**Key insight from post-mortem:** Several "lessons" from v02.80r–v02.84r were drawn from a state where the HTML and GAS were **desynchronized** — HTML changes deployed via GitHub Pages, but GAS remained frozen at v01.15g. This plan corrects those false conclusions (see "Corrected root cause analysis" below).
+
+This plan is designed from the ground up with those failure modes as hard constraints.
 
 ---
 
@@ -59,18 +61,58 @@ User clicks "Sign In with Google"
 
 ## Lessons from Previous Failures (v02.75r–v02.84r)
 
+### Critical context: GAS was stuck at v01.15g
+
+The GAS auto-deploy mechanism (`pullAndDeployFromGitHub()`) compares the fetched VERSION against the running VERSION — if they match, it returns "Already up to date" and does **not** update. This is crucial for understanding which "fixes" were actually tested live.
+
+**Deploy timeline:**
+
+| Version | GAS VERSION | Actually deployed? | Why |
+|---------|------------|-------------------|-----|
+| v02.74r (base) | v01.13g | — | Starting state |
+| v02.75r | v01.14g | **YES** | Old v01.13g code had no deploy guard — webhook succeeded |
+| v02.76r | v01.14g (no GAS changes) | N/A | HTML-only fix |
+| v02.77r | v01.14g (no GAS changes) | N/A | HTML-only fix |
+| v02.79r | v01.15g | **YES** | Old v01.14g code had no deploy guard — but v01.15g itself added `DEPLOY_SECRET` which **bricked all future deploys** |
+| v02.80r | v01.15g (VERSION NOT BUMPED despite code change) | **NO** | Version not bumped (so even without the broken handler, `pullAndDeployFromGitHub` would have said "Already up to date") AND deploy handler already broken |
+| v02.81r | v01.15g (no GAS changes) | N/A | HTML-only fix |
+| v02.82r | v01.16g | **NO** | Deploy handler still broken at v01.15g — webhook returns "Unauthorized" |
+| v02.83r | v01.16g (no GAS changes) | N/A | HTML-only fix |
+| v02.84r | v01.16g (no GAS changes) | N/A | HTML-only fix |
+
+**Consequence:** From v02.79r onward, the live GAS was **permanently stuck at v01.15g**. Every subsequent GAS-side "fix" (v02.80r's `.toLowerCase()` for PARENT_ORIGIN, v02.82r's TOKEN_EXCHANGE_METHOD revert to 'url') **never reached the live environment**. Only HTML-side changes (deployed via GitHub Pages) were actually tested live after v02.79r.
+
+This means several "lessons" from the previous attempts were drawn from a state where the HTML and GAS were **out of sync** — the HTML was being updated but the GAS was frozen at v01.15g.
+
 ### What was tried and what broke
 
-| Version | What was done | What broke | Root cause |
-|---------|--------------|------------|------------|
-| v02.75r | Added `if (event.origin !== GAS_ORIGIN) return;` where `GAS_ORIGIN = 'https://script.google.com'` | All postMessages silently dropped — sign-in never completed | GAS HtmlService does NOT serve from `script.google.com`. It serves from a **sandbox subdomain** like `n-{hash}.script.googleusercontent.com`. The origin is NOT `script.google.com` |
-| v02.76r | Switched to `event.source !== gasApp.contentWindow` | Still broken — messages still dropped | GAS double-wraps iframes. The `contentWindow` of the visible iframe is Google's wrapper, not the actual HTML content. `event.source` doesn't match `gasApp.contentWindow` because there's an inner sandbox iframe |
-| v02.77r | Switched to message-type allowlist (no origin/source check) | Worked for auth but was incomplete security | Allowlist approach only prevents processing unknown message types — any origin can still send known message types. Partial fix only |
-| v02.79r | Added `DEPLOY_SECRET` check to `doPost(action=deploy)` | GAS auto-deploy silently stopped working | `!expectedSecret` is true when no secret is configured → returns "Unauthorized" for all deploy calls |
-| v02.79r | Changed `TOKEN_EXCHANGE_METHOD` to `'postMessage'` for standard preset | Added complexity, later reverted in v02.82r | postMessage exchange path has more moving parts — when combined with other changes, harder to debug |
-| v02.80r | Fixed origin case mismatch, relaxed CSP | Partial fix — some flows still broken | Multiple issues layered on top of each other |
-| v02.83r | Removed CSP meta tag entirely | CSP was blocking Google Sign-In scripts | The CSP didn't include all the origins Google Sign-In needs (multiple Google domains, dynamic script loading, popup window communication) |
-| v02.84r | Fixed origin validation regex for multi-level subdomains | Still fragile — GAS sandbox URLs are unpredictable | Google can change the sandbox URL format at any time. Regex-based origin validation against Google's internal URL patterns is inherently fragile |
+| Version | What was done | What broke | Root cause | Actually deployed? |
+|---------|--------------|------------|------------|-------------------|
+| v02.75r | Added `if (event.origin !== GAS_ORIGIN) return;` where `GAS_ORIGIN = 'https://script.google.com'` (HTML-side) | All postMessages silently dropped — sign-in never completed | GAS HtmlService does NOT serve from `script.google.com`. It serves from a **sandbox subdomain** like `n-{hash}.script.googleusercontent.com`. The origin is NOT `script.google.com` | HTML: yes (GitHub Pages). GAS v01.14g: yes (deployed) |
+| v02.76r | Switched to `event.source !== gasApp.contentWindow` (HTML-side) | Still broken — messages still dropped | GAS double-wraps iframes. The `contentWindow` of the visible iframe is Google's wrapper, not the actual HTML content. `event.source` doesn't match `gasApp.contentWindow` because there's an inner sandbox iframe | HTML: yes. GAS: no changes |
+| v02.77r | Switched to message-type allowlist — no origin/source check (HTML-side) | Worked for auth but was incomplete security | Allowlist approach only prevents processing unknown message types — any origin can still send known message types. Partial fix only | HTML: yes. GAS: no changes |
+| v02.79r | Added `DEPLOY_SECRET` check to `doPost(action=deploy)` (GAS-side) | GAS auto-deploy silently stopped working | `!expectedSecret` is true when no secret is configured → returns "Unauthorized" for all deploy calls | GAS v01.15g: yes (this is the version that got stuck) |
+| v02.79r | Changed `TOKEN_EXCHANGE_METHOD` to `'postMessage'` + added `PARENT_ORIGIN` without `.toLowerCase()` (GAS-side) | Sign-in broken — all GAS→parent postMessages silently dropped | `PARENT_ORIGIN` resolved to `https://ShadowAISolutions.github.io` (mixed case from EMBED_PAGE_URL) but browsers normalize origins to lowercase `https://shadowaisolutions.github.io`. The browser rejects `postMessage(data, targetOrigin)` when `targetOrigin` doesn't match the actual origin — messages were silently discarded | GAS v01.15g: yes — **and this case mismatch was never fixed on the live GAS** |
+| v02.80r | Fixed PARENT_ORIGIN case mismatch with `.toLowerCase()` (GAS-side); relaxed CSP (HTML-side) | **GAS fix never deployed** — GAS remained stuck at v01.15g with wrong-case PARENT_ORIGIN. HTML CSP relaxation deployed but GAS→parent messages still dropped | GAS deploy was already broken. The `.toLowerCase()` fix never reached the live environment | HTML: yes. **GAS: NO** — version not even bumped |
+| v02.82r | Reverted `TOKEN_EXCHANGE_METHOD` to `'url'` in GAS code | **GAS revert never deployed** — live GAS still had `TOKEN_EXCHANGE_METHOD = 'postMessage'`. HTML expected URL exchange but GAS was still serving postMessage exchange | GAS deploy was broken. The HTML and GAS were now **desynchronized** — HTML sending token via URL, GAS expecting postMessage | HTML: yes. **GAS: NO** |
+| v02.83r | Removed CSP meta tag entirely (HTML-side) | CSP was blocking Google Sign-In scripts | The CSP didn't include all the origins Google Sign-In needs (multiple Google domains, dynamic script loading, popup window communication) | HTML: yes. GAS: no changes |
+| v02.84r | Fixed origin validation regex for multi-level subdomains (HTML-side) | Sign-in still stuck — even with correct HTML-side validation, GAS was still sending all postMessages to wrong-case PARENT_ORIGIN, so nothing was received | The GAS was frozen at v01.15g. No HTML-side fix could compensate for the GAS-side case mismatch | HTML: yes. GAS: no changes |
+
+### Corrected root cause analysis
+
+The persistent sign-in failure from v02.79r onward had **two independent causes**, and the second was never resolved live:
+
+1. **HTML-side origin/source validation** (v02.75r–v02.77r) — adding `event.origin` or `event.source` checks on the receiving side. These were correctly identified and resolved (switched to message-type allowlist in v02.77r). **Lesson is valid.**
+
+2. **GAS-side PARENT_ORIGIN case mismatch** (v02.79r onward) — `PARENT_ORIGIN` was derived from `EMBED_PAGE_URL` without `.toLowerCase()`, producing `https://ShadowAISolutions.github.io` instead of `https://shadowaisolutions.github.io`. The browser's `postMessage(data, targetOrigin)` API silently drops messages when `targetOrigin` doesn't match the recipient's actual origin (case-sensitive). **This was the real reason sign-in remained broken after v02.79r.** The fix (`.toLowerCase()`) was written in v02.80r but never deployed because the auto-deploy pipeline was already broken.
+
+### What the "stuck GAS" means for this plan
+
+- **PARENT_ORIGIN is a valid and good approach** — it just needs `.toLowerCase()`. The v02.79r implementation of PARENT_ORIGIN was conceptually correct (restrict who receives messages) but had a case-sensitivity bug that was never fixed live
+- **TOKEN_EXCHANGE_METHOD = 'postMessage' was never properly tested** — it was deployed alongside the broken PARENT_ORIGIN, so all its postMessages were silently dropped. We cannot conclude that postMessage exchange "doesn't work." However, URL exchange works reliably and is simpler, so this plan keeps it as 'url' for pragmatic reasons (not because postMessage was proven to fail)
+- **escapeHtml/escapeJs helpers worked correctly** — they deployed in v02.79r and did not contribute to any breakage. Safe to re-implement
+- **Error message sanitization worked correctly** — deployed in v02.79r, no issues. Safe to re-implement
+- **ABSOLUTE_SESSION_TIMEOUT reduction to 21600** — this deployed in v02.79r and did not cause issues by itself. However, the 57600 value is safe because heartbeats re-put session data (resetting the CacheService TTL), so the 6-hour CacheService limit is never actually reached
 
 ### Key architectural insight
 
@@ -117,7 +159,7 @@ Return generic error codes to the client, log details server-side only.
 - ~~Origin validation via `event.origin`~~ — broke sign-in in v02.75r. GAS sandbox URLs are unpredictable
 - ~~`event.source` validation~~ — broke in v02.76r. GAS double-wraps iframes
 - ~~Deploy handler authentication~~ — broke auto-deploy in v02.79r. No security benefit
-- ~~Switching standard preset to postMessage exchange~~ — reverted in v02.82r. URL exchange works reliably and the token is a short-lived Google OAuth token that GAS validates server-side immediately
+- ~~Switching standard preset to postMessage exchange~~ — tried in v02.79r but never properly tested (PARENT_ORIGIN case mismatch broke all messages; the v02.82r revert never deployed). URL exchange works reliably and is simpler. The token is a short-lived Google OAuth token that GAS validates server-side immediately
 
 ---
 
@@ -597,8 +639,14 @@ var exchangeHtml = '<!DOCTYPE html><html><body><script>'
 // postMessage calls from the GAS iframe to the parent page use this as the targetOrigin
 // to restrict who can receive the messages. This is safer than "*" because it ensures
 // only the intended embedding page can intercept session tokens and auth state.
-var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1');
-// Result: "https://ShadowAISolutions.github.io"
+// CRITICAL: .toLowerCase() is MANDATORY — browsers normalize origins to lowercase,
+// but EMBED_PAGE_URL may contain mixed-case (e.g. "ShadowAISolutions"). Without
+// toLowerCase(), the browser silently drops ALL postMessages because the targetOrigin
+// doesn't match the actual lowercase origin. This exact bug (missing toLowerCase)
+// broke sign-in in v02.79r and was never fixed live (the v02.80r fix never deployed
+// because the auto-deploy pipeline was already broken).
+var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLowerCase();
+// Result: "https://shadowaisolutions.github.io" (lowercase — matches browser origin)
 ```
 
 ### 6B. Replace `"*"` with `PARENT_ORIGIN` in All postMessage Calls
@@ -647,13 +695,17 @@ The GAS listener that receives the `exchange-token` message from the parent does
 
 **Why this is safe now (when it wasn't before):**
 
-In v02.75r-v02.84r, the problem was on the **receiving side** (HTML page rejecting messages because `event.origin` didn't match). This change is on the **sending side** (GAS restricting who can receive). The `PARENT_ORIGIN` value is:
+In v02.75r-v02.84r, there were two separate problems:
+1. **Receiving side** (v02.75r-v02.77r) — HTML page rejecting messages because `event.origin` didn't match GAS sandbox URLs. This plan does NOT add receiving-side origin validation
+2. **Sending side** (v02.79r) — GAS using `PARENT_ORIGIN` without `.toLowerCase()`, causing case mismatch. This plan fixes that with `.toLowerCase()`
+
+The corrected `PARENT_ORIGIN` value is:
 - Derived from `EMBED_PAGE_URL` which is hardcoded in the `.gs` file
-- The actual GitHub Pages URL (`https://ShadowAISolutions.github.io`)
+- Lowercased to match browser origin normalization (`https://shadowaisolutions.github.io`)
 - Stable — it only changes if the GitHub org name or Pages domain changes
 - NOT dependent on Google's sandbox URL format
 
-If `PARENT_ORIGIN` were wrong (e.g., the embedding page URL changed), the symptom would be that postMessages are silently dropped — same as the v02.75r failure. To protect against this:
+If `PARENT_ORIGIN` were wrong (e.g., the embedding page URL changed or `.toLowerCase()` were removed), the symptom would be that postMessages are silently dropped — this is exactly what happened in v02.79r. To protect against this:
 
 1. **Fallback behavior:** If the first sign-in attempt times out (no `gas-session-created` received within 10 seconds), fall back to warning the user rather than failing silently. This is an enhancement for a future phase.
 
@@ -869,9 +921,9 @@ window.addEventListener('message', function(event) {
 
 | Item | Why NOT changed |
 |------|----------------|
-| `TOKEN_EXCHANGE_METHOD` stays `'url'` for standard preset | Switching to `postMessage` was tried in v02.79r and reverted in v02.82r. URL exchange works reliably. The OAuth token in the URL is short-lived and consumed immediately by the GAS server |
+| `TOKEN_EXCHANGE_METHOD` stays `'url'` for standard preset | Switching to `postMessage` was tried in v02.79r but was never properly tested — the PARENT_ORIGIN case mismatch (deployed in the same commit) silently dropped all GAS→parent messages, and the v02.82r revert never deployed because auto-deploy was broken. We cannot conclude postMessage exchange "doesn't work" — it was tested in a broken state. However, URL exchange works reliably and is simpler, so this plan keeps it as `'url'` for pragmatic reasons. The OAuth token in the URL is short-lived and consumed immediately by the GAS server |
 | `STORAGE_TYPE` stays `'localStorage'` for standard preset | `sessionStorage` would clear on tab close. For the standard preset, persistence across tabs is a feature. HIPAA preset should use `sessionStorage` |
-| `ABSOLUTE_SESSION_TIMEOUT` stays at 57600 (16 hours) | v02.79r reduced this to 21600 to match CacheService max TTL, but CacheService auto-extends on put() — the heartbeat re-puts the session data, so the 6-hour CacheService limit is not actually hit. The 16-hour value is correct |
+| `ABSOLUTE_SESSION_TIMEOUT` stays at 57600 (16 hours) | v02.79r reduced this to 21600 to match CacheService max TTL, and that change actually deployed to the live GAS (v01.15g). It did not cause issues by itself. However, the reduction is unnecessary — CacheService auto-extends on put(), and the heartbeat re-puts the session data, so the 6-hour CacheService limit is never actually hit. The 16-hour value is correct |
 | No CSP meta tag added | Broke Google Sign-In in v02.83r. GAS iframe architecture needs so many Google domains whitelisted that CSP provides negligible value |
 | No `event.origin` validation on HTML side | Broke sign-in in v02.75r. GAS sandbox origin is unpredictable |
 | No `event.source` validation on HTML side | Broke in v02.76r. GAS double-wraps iframes |
