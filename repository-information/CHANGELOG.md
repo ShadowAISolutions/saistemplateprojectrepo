@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v02.70r] — 2026-03-13 11:32:09 AM EST
+
+### Fixed
+- Removed automatic silent OAuth sign-in on page load — the Google account picker popup no longer fires when refreshing the auth wall page; sign-in only triggers when the user clicks "Sign In with Google"
+- Reverted incorrect SIGNED_OUT_FLAG approach from v02.69r
+
+#### `testauth1.html` — v01.26w
+
+##### Fixed
+- Page refresh on "Sign In Required" screen no longer auto-triggers Google sign-in popup
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — v01.26w (no change)
+
+##### Fixed
+- Same fix applied to auth HTML template for future pages
 
 ## [v02.69r] — 2026-03-13 11:23:50 AM EST
 

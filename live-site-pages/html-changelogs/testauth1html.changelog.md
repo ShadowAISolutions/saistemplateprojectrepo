@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
 
 ## [Unreleased]
+
+## [v01.26w] — 2026-03-13 11:32:09 AM EST — v02.70r
+
+### Fixed
+- Refreshing the sign-in page no longer auto-triggers the Google sign-in popup — you must click "Sign In with Google" to choose your account
 
 ## [v01.25w] — 2026-03-13 11:23:50 AM EST — v02.69r
 
