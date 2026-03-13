@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v02.71r] — 2026-03-13 12:32:54 PM EST
+
+### Added
+- Comprehensive Microsoft authentication implementation plan (`MICROSOFT-AUTH-PLAN.md`) — covers MSAL.js integration, Azure AD setup, provider toggle architecture, GAS-side token validation via Microsoft Graph, and HTML-side dual sign-in UI
 
 ## [v02.70r] — 2026-03-13 11:32:09 AM EST
 

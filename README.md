@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-13 11:32:09 AM EST` · Repo version: `v02.70r`
+Last updated: `2026-03-13 12:32:54 PM EST` · Repo version: `v02.71r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -112,6 +112,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/GOVERNANCE.md">GOVERNANCE.md</a>           — [template] Project governance
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-COMPLIANCE-REFERENCE.md">HIPAA-COMPLIANCE-REFERENCE.md</a> — HIPAA Security Rule compliance reference (all safeguards, implementation status)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/MICROSOFT-AUTH-PLAN.md">MICROSOFT-AUTH-PLAN.md</a>  — [template] Microsoft auth implementation plan (MSAL.js + Azure AD)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TODO.md">TODO.md</a>                 — [template] Actionable to-do items
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/readme-qr-code.png">readme-qr-code.png</a>             — [template] QR code linking to this repo
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REMINDERS.md">REMINDERS.md</a>            — [template] Reminders for Developer (developer's own notes)
