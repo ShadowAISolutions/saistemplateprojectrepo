@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -289,7 +289,13 @@ function verifySessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return true;
   if (!sessionData.hmac) return false;
   var expected = generateSessionHmac(sessionData);
-  return expected === sessionData.hmac;
+  // Constant-time comparison to prevent timing side-channel attacks
+  if (expected.length !== sessionData.hmac.length) return false;
+  var result = 0;
+  for (var i = 0; i < expected.length; i++) {
+    result |= expected.charCodeAt(i) ^ sessionData.hmac.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 // =============================================
@@ -348,7 +354,6 @@ function exchangeTokenForSession(accessToken) {
   var sessionData = {
     email: userInfo.email,
     displayName: userInfo.displayName,
-    accessToken: accessToken,
     createdAt: Date.now(),
     absoluteCreatedAt: Date.now(),
     lastActivity: Date.now(),
@@ -605,7 +610,10 @@ function checkSpreadsheetAccess(email, opt_ss) {
           }
         }
       }
-    } catch(e) { /* ACL spreadsheet error — continue to method 2 */ }
+    } catch(e) {
+      Logger.log('ACL spreadsheet error (falling through to method 2): ' + e.message);
+      auditLog('acl_error', email, 'fallthrough', { error: e.message });
+    }
   }
 
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID

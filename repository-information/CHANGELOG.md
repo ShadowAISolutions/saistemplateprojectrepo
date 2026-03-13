@@ -3,9 +3,38 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v02.75r] — 2026-03-13 01:45:42 PM EST
+
+### Security
+- Added `event.origin` validation to postMessage listener — messages from non-GAS origins are now rejected
+- Replaced wildcard (`*`) postMessage target with explicit GAS origin for token exchange
+- Removed OAuth access token from server-side session cache — no longer stored after validation
+- Added constant-time HMAC comparison to prevent timing side-channel attacks
+- Removed debug `console.log` statements that leaked auth flow details to browser console
+- Removed broken Google OAuth token revoke call that was passing the wrong token type
+- Added error logging and audit trail when ACL spreadsheet check fails
+
+#### `testauth1.html` — v01.27w
+
+##### Security
+- Validated postMessage origin against `GAS_ORIGIN` — rejects messages from untrusted sources
+- Sent token exchange postMessage to `GAS_ORIGIN` instead of wildcard `*`
+- Removed all `[AUTH DEBUG]` console.log statements from production code
+- Removed broken `google.accounts.oauth2.revoke()` call that passed session token instead of access token
+
+#### `testauth1.gs` — v01.14g
+
+##### Security
+- Stopped storing Google OAuth access token in CacheService session data
+- Added constant-time string comparison for HMAC verification
+- Added Logger and audit log entry when ACL spreadsheet check throws an error
+
+### Changed
+- Propagated all security fixes to auth HTML template and both GAS auth templates
 
 ## [v02.74r] — 2026-03-13 12:58:17 PM EST
 

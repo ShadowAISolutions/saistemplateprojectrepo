@@ -991,6 +991,7 @@
     // =============================================
 
     window.addEventListener('message', function(event) {
+      if (event.origin !== GAS_ORIGIN) return;
       var data = event.data;
       if (!data || typeof data !== 'object') return;
 
@@ -1001,7 +1002,7 @@
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, '*');
+          }, GAS_ORIGIN);
           _pendingToken = null;
         }
       }
@@ -1039,7 +1040,7 @@
           // was still loading the old (no-session) URL while we already set
           // a new src with the session token. Ignore this message and wait
           // for the session-URL response instead.
-          console.log('[AUTH DEBUG] Ignoring stale gas-needs-auth (session navigation in flight)');
+          // Stale gas-needs-auth — session navigation already in flight
           _expectingSession = false;
           return;
         }
@@ -1072,7 +1073,6 @@
             if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
           }, 3000);
         }
-        console.log('[AUTH DEBUG] Heartbeat OK — session extended by ' + (data.expiresIn || '?') + 's');
       }
 
       // Heartbeat failed — session already expired on server
@@ -1088,7 +1088,6 @@
         stopCountdownTimers();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
-        console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
       }
 
       // GAS sign-out confirmation
@@ -1449,13 +1448,6 @@
           gasApp.src = baseUrl + '?signOut=' + encodeURIComponent(session.token);
         }
       }
-
-      // Revoke Google OAuth token
-      try {
-        if (google && google.accounts && google.accounts.oauth2) {
-          google.accounts.oauth2.revoke(session.token, function() {});
-        }
-      } catch(e) {}
 
       var message = 'You have been signed out.';
       if (reason === 'session-expired') {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.26w">
+  <meta name="build-version" content="v01.27w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -939,13 +939,11 @@
     }
 
     function handleTokenResponse(response) {
-      console.log('[AUTH DEBUG] handleTokenResponse called', response.error ? 'ERROR: ' + response.error : 'SUCCESS — got token');
       if (response.error) {
         // Silent auth failed — show auth wall with interactive sign-in
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
-      console.log('[AUTH DEBUG] Calling exchangeToken with access_token length:', response.access_token ? response.access_token.length : 0);
       exchangeToken(response.access_token);
     }
 
@@ -966,11 +964,9 @@
     // --- URL Parameter Path (standard) ---
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp) { console.log('[AUTH DEBUG] exchangeViaUrl: gas-app element not found!'); return; }
+      if (!gasApp) return;
       var baseUrl = window._r || gasApp.dataset.baseUrl || '';
-      if (!baseUrl) { console.log('[AUTH DEBUG] exchangeViaUrl: baseUrl is empty!'); return; }
-
-      console.log('[AUTH DEBUG] exchangeViaUrl: setting iframe src to', baseUrl + '?exchangeToken=<token>');
+      if (!baseUrl) return;
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
     }
@@ -995,9 +991,9 @@
     // =============================================
 
     window.addEventListener('message', function(event) {
+      if (event.origin !== GAS_ORIGIN) return;
       var data = event.data;
       if (!data || typeof data !== 'object') return;
-      console.log('[AUTH DEBUG] postMessage received:', data.type, JSON.stringify(data).substring(0, 200));
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
@@ -1006,7 +1002,7 @@
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, '*');
+          }, GAS_ORIGIN);
           _pendingToken = null;
         }
       }
@@ -1044,7 +1040,7 @@
           // was still loading the old (no-session) URL while we already set
           // a new src with the session token. Ignore this message and wait
           // for the session-URL response instead.
-          console.log('[AUTH DEBUG] Ignoring stale gas-needs-auth (session navigation in flight)');
+          // Stale gas-needs-auth — session navigation already in flight
           _expectingSession = false;
           return;
         }
@@ -1077,7 +1073,6 @@
             if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
           }, 3000);
         }
-        console.log('[AUTH DEBUG] Heartbeat OK — session extended by ' + (data.expiresIn || '?') + 's');
       }
 
       // Heartbeat failed — session already expired on server
@@ -1093,7 +1088,6 @@
         stopCountdownTimers();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
-        console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
       }
 
       // GAS sign-out confirmation
@@ -1454,13 +1448,6 @@
           gasApp.src = baseUrl + '?signOut=' + encodeURIComponent(session.token);
         }
       }
-
-      // Revoke Google OAuth token
-      try {
-        if (google && google.accounts && google.accounts.oauth2) {
-          google.accounts.oauth2.revoke(session.token, function() {});
-        }
-      } catch(e) {}
 
       var message = 'You have been signed out.';
       if (reason === 'session-expired') {

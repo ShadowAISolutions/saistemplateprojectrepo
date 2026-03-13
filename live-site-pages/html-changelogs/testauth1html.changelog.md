@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
 
 ## [Unreleased]
+
+## [v01.27w] — 2026-03-13 01:45:42 PM EST — v02.75r
+
+### Security
+- Strengthened message security — the page now only accepts messages from the trusted Google Apps Script server
+- Removed verbose debug logging from the authentication flow
+
+### Removed
+- Removed a non-functional sign-out cleanup step that had no user-visible effect
 
 ## [v01.26w] — 2026-03-13 11:32:09 AM EST — v02.70r
 
