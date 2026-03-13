@@ -3,9 +3,21 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v01.30w] — 2026-03-13 04:51:10 PM EST — v02.79r
+
+### Security
+- Strengthened communication security between the page and embedded app — messages are now verified and restricted to trusted sources
+- Sign-in tokens are no longer transmitted through the browser address bar
+- Session data now auto-clears when you close the tab for better privacy
+- Added browser security policy to prevent unauthorized resource loading
+- Google account access is now revoked immediately when you sign out
+
+### Changed
+- Sign-out is now more thorough — cleans up both local and Google account sessions
 
 ## [v01.29w] — 2026-03-13 02:29:25 PM EST — v02.77r
 

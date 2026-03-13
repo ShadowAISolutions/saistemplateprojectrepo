@@ -3,9 +3,68 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v02.79r] — 2026-03-13 04:51:10 PM EST
+
+### Security
+- **C1:** Replaced wildcard `"*"` target origin on all postMessage calls with specific GitHub Pages origin in both `testauth1.gs` and `testauth1.html`
+- **C2:** Added code comments documenting why `ALLOWALL` is required for cross-origin GAS iframe architecture
+- **C3:** Switched standard preset token exchange from URL parameters to postMessage — Google OAuth access tokens no longer exposed in URLs
+- **H1:** Added origin validation to HTML-side postMessage listener — only accepts messages from Google domains
+- **H2:** Added origin validation to GAS-side postMessage listeners — only accepts messages from the parent GitHub Pages origin
+- **H3:** Added `escapeHtml()` and `escapeJs()` XSS prevention functions; applied to all user-controlled values (email, status) in GAS HTML output
+- **M1:** Reduced `ABSOLUTE_SESSION_TIMEOUT` from 16 hours to 6 hours to match CacheService max TTL
+- **M2:** Switched HTML storage from `localStorage` to `sessionStorage` — tokens auto-clear on tab close
+- **M3:** Reduced ACL cache TTL from 600s to 120s — revoked users lose access within 2 minutes
+- **M4:** Enabled HMAC session integrity by default in standard preset
+- **M5:** Expanded HMAC payload to include all session fields (absoluteCreatedAt, displayName, tokenObtainedAt)
+- **M7:** Added authentication to `doPost` deploy endpoint — requires `DEPLOY_SECRET` from Script Properties
+- **M8:** Replaced detailed server error messages with generic ones; details logged server-side only
+- **M9:** Removed debug `console.log` statements from production GAS exchange response
+- **I5:** Added Content Security Policy meta tag restricting resource loading to trusted origins
+- **L3:** Added Google OAuth token revocation on sign-out
+- **L4:** Added immediate cleanup fallback for `window._r` GAS deployment URL
+
+### Changed
+- Added security documentation comments for L1 (rate limiting), L2 (PRNG quality), L5 (maintenance bypass), L6 (obfuscation), H4 (ID token migration), M6 (client ID management)
+- Updated security action plan status to implemented
+
+#### `testauth1.html` — v01.30w
+
+##### Security
+- Added origin validation on incoming postMessages (H1) — only accepts messages from Google domains
+- Switched token exchange to postMessage for all presets (C3) — OAuth tokens no longer in URLs
+- Switched session storage to sessionStorage (M2) — auto-clears on tab close
+- Restricted exchange-token postMessage to captured GAS iframe origin (C1)
+- Added Content Security Policy meta tag (I5)
+- Added Google OAuth token revocation on sign-out (L3)
+- Added `window._r` immediate cleanup fallback (L4)
+
+##### Changed
+- Added security documentation comments for M6, L5, L6
+
+#### `testauth1.gs` — v01.15g
+
+##### Security
+- Added `escapeHtml()` and `escapeJs()` XSS prevention functions (H3)
+- Replaced wildcard postMessage target origin with specific GitHub Pages origin on all responses (C1)
+- Added origin validation to HIPAA postMessage listener (H2)
+- Added origin validation to authenticated app message listener (H2)
+- Applied XSS escaping to all user-controlled values in generated HTML (H3)
+- Switched standard preset to postMessage token exchange (C3)
+- Enabled HMAC by default in standard preset (M4)
+- Expanded HMAC payload to cover all session fields (M5)
+- Reduced ACL cache TTL from 600s to 120s (M3)
+- Reduced absolute session timeout from 16h to 6h (M1)
+- Added deploy endpoint authentication (M7)
+- Replaced detailed error messages with generic ones (M8)
+- Removed debug console.log from exchange response (M9)
+
+##### Changed
+- Added security documentation comments for L1, L2, H4
 
 ## [v02.78r] — 2026-03-13 04:08:45 PM EST
 

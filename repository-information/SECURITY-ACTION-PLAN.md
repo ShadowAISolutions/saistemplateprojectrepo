@@ -2,7 +2,7 @@
 
 > **Created:** 2026-03-13 04:05 PM EST
 > **Source:** Comprehensive security review of `testauth1.html` and `testauth1.gs`
-> **Status:** Pending implementation
+> **Status:** Implemented (v02.79r) — all phases applied
 > **Files in scope:**
 > - `live-site-pages/testauth1.html` (1593 lines)
 > - `googleAppsScripts/Testauth1/testauth1.gs` (873 lines)
