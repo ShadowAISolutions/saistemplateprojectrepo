@@ -4,33 +4,30 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-12 11:31:09 PM EST
-**Repo version:** v02.66r
+**Date:** 2026-03-13 12:37:13 PM EST
+**Repo version:** v02.71r
 
 ### What was done
-- **v02.45r–v02.64r** (prior sessions, not saved) — Continued testauth1 auth development: heartbeat-based session management replacing inactivity timeouts, countdown timer UI, absolute session timeout (16-hour hard ceiling), z-index stacking fixes, auth wall branding with logo/title, `select_account` sign-in UX, improved error handling in token exchange, cross-tab session sync
-- **v02.65r** — Added cross-tab login sync to testauth1 using the browser's native `StorageEvent` API. Signing in on one tab now instantly signs in all other open tabs. Works only in standard mode (localStorage); HIPAA mode (sessionStorage) is per-tab by design. Also propagated the cross-tab storage listener to the auth HTML template
-- **v02.66r** — Propagated all heartbeat + timer upgrades from testauth1 to auth templates:
-  - **GAS template** (`gas-minimal-auth-template-code.js.txt`): added `ABSOLUTE_SESSION_TIMEOUT`, `ENABLE_HEARTBEAT`, `HEARTBEAT_INTERVAL` to presets; replaced `SESSION_REFRESH_WINDOW`; added `absoluteCreatedAt` to session data; added absolute timeout validation in `validateSession()`; added full heartbeat handler in `doGet()`; added `absoluteTimeout` to token exchange responses; wrapped URL exchange in try-catch
-  - **HTML template** (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`): z-index fixes (10003/10004/10005); timer CSS + timer UI HTML; auth wall branding (logo + title); replaced `HTML_CONFIG` inactivity settings with heartbeat settings; added ~230 lines of countdown timer + heartbeat functions (replacing 37-line inactivity section); added `gas-heartbeat-ok`/`gas-heartbeat-expired` message handlers; updated `gas-session-created` to set start times and call timers; updated `performSignOut` with session-expired/absolute-expired reasons; changed `prompt: 'consent'` → `prompt: 'select_account'`; sign-in button reinits tokenClient on every click
+- **v02.67r** (prior session, not saved) — Various work between v02.66r and v02.68r
+- **v02.68r** — Updated `gas-test-auth-template-code.js.txt` with base upgrades from `gas-minimal-auth-template-code.js.txt` (heartbeat, absolute timeout, HMAC, audit logging, preset system, etc.)
+- **v02.69r** — Attempted fix for auto sign-in on refresh after manual sign-out (SIGNED_OUT_FLAG approach — incorrect fix, was reverted)
+- **v02.70r** — Correctly fixed auto sign-in on refresh issue: removed `initGoogleSignIn()` auto-call from page load IIFE in auth HTML template and testauth1. The OAuth popup was auto-triggering on every page refresh when on the auth wall — fixed by only triggering sign-in on explicit button click
+- **v02.71r** — Created comprehensive Microsoft auth implementation plan (`repository-information/MICROSOFT-AUTH-PLAN.md`, 777 lines). Covers MSAL.js integration, Azure AD prerequisites, file-by-file implementation plan with exact line numbers and code snippets, security considerations, effort estimates (~2 hours), and verification plan. Architecture decision: `AUTH_PROVIDER` config toggle (`'google'`, `'microsoft'`, `'both'`). User explicitly said "don't start coding, I will decide later"
 
 ### Where we left off
-All changes committed and pushed (v02.66r). Auth templates are now at parity with testauth1 for the heartbeat system. Verified:
-- No `inactivityTimer` or `SESSION_REFRESH_WINDOW` references remain in either auth template
-- GAS template keeps `SESSION_EXPIRATION: 1800` (standard) / `900` (hipaa) — NOT testauth1's test value of 180
-- `gas-test-auth-template-code.js.txt` still has old `SESSION_REFRESH_WINDOW` — that's a different template file (test variant), not part of this propagation
-- `setup-gas-project.sh` and `gas-project-creator.html` don't need changes — they copy templates as-is and only substitute project-specific config values
+All changes committed and pushed (v02.71r). Microsoft auth plan is saved but **not approved for implementation** — user said "I will decide later." No pending tasks.
 
 ### Key decisions made
-- Cross-tab login sync uses `StorageEvent` API (`!e.oldValue && e.newValue` for login, `e.oldValue && !e.newValue` for logout) — no BroadcastChannel or polling needed
-- HIPAA mode naturally prevents cross-tab sync because sessionStorage is per-tab
-- Standard mode multi-tab is a convenience feature; HIPAA mode enforces single-session via `MAX_SESSIONS_PER_USER: 1` (server-side invalidation within ~30s via heartbeat)
-- Template `SERVER_SESSION_DURATION` is 1800s (30 min), not testauth1's 180s (3 min test value)
-- Template `ABSOLUTE_SESSION_DURATION` is 57600s (16 hours) matching GAS preset
+- **Auto sign-in fix (v02.70r)**: removed `initGoogleSignIn()` from page load IIFE — sign-in only happens on explicit button click, not automatically on page refresh
+- **Microsoft auth architecture**: `AUTH_PROVIDER` toggle over separate template files (80% of auth system is already provider-agnostic)
+- **MSAL.js loading**: jsdelivr CDN recommended (`https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js`)
+- **Microsoft token validation**: server-side Graph API `/me` call (NOT local JWT validation)
+- **Default AUTH_PROVIDER**: `'google'` (backward compatible, Microsoft opt-in)
 
 ### Active context
-- Repo version: v02.66r
-- testauth1.html: v01.24w, testauth1.gs: v01.13g
+- Repo version: v02.71r
+- testauth1.html: v01.26w, testauth1.gs: v01.13g (from version files read earlier)
+- Microsoft auth plan saved at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -38,16 +35,15 @@ All changes committed and pushed (v02.66r). Auth templates are now at parity wit
 
 ## Previous Sessions
 
-**Date:** 2026-03-12 03:10:47 PM EST
-**Repo version:** v02.44r
+**Date:** 2026-03-12 11:31:09 PM EST
+**Repo version:** v02.66r
 
 ### What was done
-- **v02.32r–v02.41r** (prior session, not saved) — Set up testauth1 GAS project with auth, debugged sign-in flow across multiple iterations (iframe postMessage blocked by Apps Script sandbox, auth response not reaching page, session creation errors)
-- **v02.42r** — Fixed session not persisting across page refresh. Root cause: the session-resume branch in `testauth1.html` didn't remove the iframe's `srcdoc` attribute, so on refresh the srcdoc script navigated to the bare GAS URL, triggering `gas-needs-auth` which wiped the valid session from localStorage. Fix: (1) added srcdoc removal + `window._r` deletion in session-resume branch, (2) added `_expectingSession` guard flag to ignore stale `gas-needs-auth` during navigation. Same fix propagated to auth template
-- **v02.43r** — Fixed GAS self-update webhook not working for testauth1. The `GITHUB_OWNER`, `GITHUB_REPO`, `TITLE`, and `FILE_PATH` variables in `testauth1.gs` were still template placeholders, causing `pullAndDeployFromGitHub()` to fetch from a nonexistent GitHub path. Replaced with actual values
-- **v02.44r** — Bumped testauth1.gs to v01.06g to test the self-update webhook. Push triggers auto-merge workflow which detects the .gs change and fires `curl -L -X POST` to the GAS deployment URL with `action=deploy`
+- **v02.45r–v02.64r** (prior sessions, not saved) — Continued testauth1 auth development: heartbeat-based session management replacing inactivity timeouts, countdown timer UI, absolute session timeout (16-hour hard ceiling), z-index stacking fixes, auth wall branding with logo/title, `select_account` sign-in UX, improved error handling in token exchange, cross-tab session sync
+- **v02.65r** — Added cross-tab login sync to testauth1 using the browser's native `StorageEvent` API
+- **v02.66r** — Propagated all heartbeat + timer upgrades from testauth1 to auth templates (GAS template + HTML template)
 
 ### Where we left off
-All changes committed and pushed (v02.44r). Auth template propagation from testauth1 completed in later sessions (v02.45r–v02.66r).
+All changes committed and pushed (v02.66r). Auth templates at parity with testauth1 for the heartbeat system.
 
 Developed by: ShadowAISolutions
