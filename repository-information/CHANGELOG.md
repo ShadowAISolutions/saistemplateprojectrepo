@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v02.58r] — 2026-03-12 08:30:29 PM EST
+
+### Removed
+- Removed "Test GAS Call" debug button from session timers panel
+
+#### `testauth1.html` — v01.20w
+
+##### Removed
+- Removed debug button and result display from session timers
 
 ## [v02.57r] — 2026-03-12 07:48:34 PM EST
 

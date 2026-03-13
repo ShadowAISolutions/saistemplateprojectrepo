@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20w] — 2026-03-12 08:30:29 PM EST — v02.58r
+
+### Removed
+- Removed debug test button from session timers
 
 ## [v01.19w] — 2026-03-12 07:48:34 PM EST — v02.57r
 
