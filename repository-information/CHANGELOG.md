@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v02.74r] — 2026-03-13 12:58:17 PM EST
+
+### Changed
+- Removed "Back to Table of Contents" link from Project Structure section since it's directly adjacent to the TOC
 
 ## [v02.73r] — 2026-03-13 12:55:44 PM EST
 
