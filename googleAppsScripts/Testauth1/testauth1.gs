@@ -1,4 +1,4 @@
-var VERSION = "v01.11g";
+var VERSION = "v01.12g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -575,53 +575,61 @@ function checkSpreadsheetAccess(email, opt_ss) {
   var cached = cache.get(cacheKey);
   if (cached !== null) return cached === "1";
 
-  // Master ACL spreadsheet: row-based lookup (email in col A, TRUE/FALSE per page column)
+  // Method 1: Master ACL spreadsheet (row-based lookup — email in col A, TRUE/FALSE per page column)
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
   if (hasAcl) {
-    var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
-    if (!aclSheet) { cache.put(cacheKey, "0", 600); return false; }
-    var data = aclSheet.getDataRange().getValues();
-    if (data.length < 2) { cache.put(cacheKey, "0", 600); return false; }
-    // Find the column index for this page
-    var headers = data[0];
-    var colIdx = -1;
-    for (var c = 0; c < headers.length; c++) {
-      if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
-        colIdx = c; break;
+    try {
+      var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+      var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
+      if (aclSheet) {
+        var data = aclSheet.getDataRange().getValues();
+        if (data.length >= 2) {
+          var headers = data[0];
+          var colIdx = -1;
+          for (var c = 0; c < headers.length; c++) {
+            if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
+              colIdx = c; break;
+            }
+          }
+          if (colIdx !== -1) {
+            for (var r = 1; r < data.length; r++) {
+              if (String(data[r][0]).trim().toLowerCase() === lowerEmail) {
+                var val = data[r][colIdx];
+                if (val === true || String(val).trim().toUpperCase() === 'TRUE') {
+                  cache.put(cacheKey, "1", 600);
+                  return true;
+                }
+                break; // Found email but not granted — continue to method 2
+              }
+            }
+          }
+        }
       }
-    }
-    if (colIdx === -1) { cache.put(cacheKey, "0", 600); return false; }
-    // Check rows for matching email
-    for (var r = 1; r < data.length; r++) {
-      if (String(data[r][0]).trim().toLowerCase() === lowerEmail) {
-        var val = data[r][colIdx];
-        var granted = (val === true || String(val).trim().toUpperCase() === 'TRUE');
-        cache.put(cacheKey, granted ? "1" : "0", 600);
-        return granted;
-      }
-    }
-    cache.put(cacheKey, "0", 600);
-    return false;
+    } catch(e) { /* ACL spreadsheet error — continue to method 2 */ }
   }
 
-  // Fallback: legacy editor/viewer sharing-list check on SPREADSHEET_ID
-  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return true;
-  var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
-  var editors = ss.getEditors();
-  for (var i = 0; i < editors.length; i++) {
-    if (editors[i].getEmail().toLowerCase() === lowerEmail) {
-      cache.put(cacheKey, "1", 600);
-      return true;
+  // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
+  if (hasSheet) {
+    var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
+    var editors = ss.getEditors();
+    for (var i = 0; i < editors.length; i++) {
+      if (editors[i].getEmail().toLowerCase() === lowerEmail) {
+        cache.put(cacheKey, "1", 600);
+        return true;
+      }
+    }
+    var viewers = ss.getViewers();
+    for (var i = 0; i < viewers.length; i++) {
+      if (viewers[i].getEmail().toLowerCase() === lowerEmail) {
+        cache.put(cacheKey, "1", 600);
+        return true;
+      }
     }
   }
-  var viewers = ss.getViewers();
-  for (var i = 0; i < viewers.length; i++) {
-    if (viewers[i].getEmail().toLowerCase() === lowerEmail) {
-      cache.put(cacheKey, "1", 600);
-      return true;
-    }
-  }
+
+  // Neither method granted access (or neither is configured)
+  if (!hasAcl && !hasSheet) return true; // No access control configured — allow all
   cache.put(cacheKey, "0", 600);
   return false;
 }

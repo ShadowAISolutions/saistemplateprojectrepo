@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v02.62r] — 2026-03-12 09:29:51 PM EST
+
+### Changed
+- Auth access check now uses dual OR logic — either master ACL spreadsheet TRUE or editor/viewer sharing-list grants access (both methods work simultaneously)
+- Auth template updated to match the OR-based dual access method
+
+#### `testauth1.gs` — v01.12g
+
+##### Changed
+- Access check uses dual OR logic — master ACL TRUE or editor/viewer sharing-list grants access (previously fallback-only)
+- ACL lookup wrapped in try/catch so errors fall through to method 2 instead of blocking access
 
 ## [v02.61r] — 2026-03-12 09:18:49 PM EST
 
