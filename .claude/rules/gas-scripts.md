@@ -132,6 +132,19 @@ The GAS sandbox iframe blocks programmatic navigation from async callbacks. Solu
 6. Embedding page detects version change via `gs.version.txt` polling
 7. App shows new version — zero manual clicks
 
+### ⚠️ Deploy Handler Protection (NEVER break this)
+The `doPost(action=deploy)` handler is the critical link in the auto-update pipeline. **It must remain completely unauthenticated and unguarded.** Specifically:
+
+- **Do NOT** add secret/token/password checks to the deploy action
+- **Do NOT** add origin validation, IP allowlists, or rate limiting
+- **Do NOT** wrap it in any conditional that could return early before calling `pullAndDeployFromGitHub()`
+
+**Why it's safe without auth:** the deploy action only calls `pullAndDeployFromGitHub()`, which fetches the `.gs` file from the GitHub repo and overwrites the GAS project with it. GitHub is the source of truth — an attacker calling `doPost(action=deploy)` can only trigger a re-pull of the *same code that's already on GitHub*. There is no abuse vector: no arbitrary code execution, no data exfiltration, no state mutation beyond what GitHub already contains.
+
+**What happened when auth was added (v02.79r):** a `DEPLOY_SECRET` check was added to the deploy handler. Since no secret was configured in Script Properties (`!expectedSecret` was true), every deploy request returned "Unauthorized" — silently breaking auto-updates. The GAS script stopped pulling new code from GitHub, and no error was visible in the workflow logs (the HTTP call succeeded, it just returned "Unauthorized" as text). This went undetected for multiple versions.
+
+**The pattern to watch for:** security hardening of GAS scripts that adds guards to `doPost()`. When reviewing or applying security changes to `.gs` files, **always verify the deploy handler remains bare** — no auth, no guards, just the direct `pullAndDeployFromGitHub()` call. The in-code `⚠️ CRITICAL` comment block serves as a last line of defense.
+
 ### Version Limit Management (200 Version Cap)
 Apps Script has a hard 200 version limit. The API does NOT support deleting versions. When 180+ is reached, a warning appears. Manually clean up: Apps Script editor → Project History → Bulk delete.
 

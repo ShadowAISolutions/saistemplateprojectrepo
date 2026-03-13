@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -130,6 +130,12 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 function doPost(e) {
   var action = (e && e.parameter && e.parameter.action) || "";
 
+  // ⚠️ CRITICAL: Do NOT add authentication, secret checks, or any guards to this deploy handler.
+  // The GitHub Actions workflow calls doPost(action=deploy) via webhook to trigger GAS self-update.
+  // Adding auth here (e.g. DEPLOY_SECRET check) will silently break auto-updates — the workflow
+  // gets "Unauthorized" and the GAS script never pulls new code from GitHub.
+  // The deploy action only calls pullAndDeployFromGitHub() which is safe — it overwrites the
+  // script with whatever is on GitHub (the source of truth), so there is no abuse vector.
   if (action === "deploy") {
     var result = pullAndDeployFromGitHub();
     return ContentService.createTextOutput(result);
