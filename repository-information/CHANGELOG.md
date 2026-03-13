@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 100/100`
+`Sections: 101/100`
 
 ## [Unreleased]
+
+## [v02.77r] — 2026-03-13 02:29:25 PM EST
+
+### Fixed
+- Fixed postMessage validation breaking auth flow — `event.source` check fails because GAS nests output in a sandbox iframe (source is the inner sandbox window, not the outer GAS iframe). Replaced with message-type allowlist that only processes known GAS message types
+
+#### `testauth1.html` — v01.29w
+
+##### Fixed
+- Restored sign-in flow — replaced window source check with message-type allowlist so GAS sandbox iframe messages are processed correctly
+
+### Changed
+- Propagated postMessage allowlist fix to auth HTML template
 
 ## [v02.76r] — 2026-03-13 02:23:50 PM EST
 

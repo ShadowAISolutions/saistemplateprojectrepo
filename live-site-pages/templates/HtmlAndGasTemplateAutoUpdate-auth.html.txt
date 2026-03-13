@@ -989,16 +989,22 @@
     // Handles all auth-related messages from the GAS iframe.
     // =============================================
 
+    var _gasMessageTypes = {
+      'gas-ready-for-token': true, 'gas-session-created': true,
+      'gas-needs-auth': true, 'gas-auth-ok': true,
+      'gas-heartbeat-ok': true, 'gas-heartbeat-expired': true,
+      'gas-signed-out': true
+    };
     window.addEventListener('message', function(event) {
-      // Validate message source — only accept from the GAS iframe window
-      var gasApp = document.getElementById('gas-app');
-      if (!gasApp || event.source !== gasApp.contentWindow) return;
       var data = event.data;
       if (!data || typeof data !== 'object') return;
+      // Only process known GAS message types (allowlist)
+      if (!_gasMessageTypes[data.type]) return;
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
-        if (gasApp.contentWindow) {
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp && gasApp.contentWindow) {
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
