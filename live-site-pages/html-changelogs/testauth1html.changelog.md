@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 30/50`
+`Sections: 31/50`
 
 ## [Unreleased]
+
+## [v01.31w] — 2026-03-13 05:03:28 PM EST — v02.80r
+
+### Fixed
+- Fixed sign-in not completing after selecting a Google account — security policy was blocking required Google authentication services
 
 ## [v01.30w] — 2026-03-13 04:51:10 PM EST — v02.79r
 

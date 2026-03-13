@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v02.80r] — 2026-03-13 05:03:28 PM EST
+
+### Fixed
+- Fixed sign-in flow stuck on "Sign In Required" screen after security hardening — origin case mismatch caused GAS postMessage listener to silently drop `exchange-token` messages (`PARENT_ORIGIN` was mixed-case but browsers report lowercase origins)
+- Broadened CSP meta tag to include all Google Sign-In required domains (`*.googleapis.com`, `*.gstatic.com`, `accounts.google.com` frame-src)
+
+#### `testauth1.html` — v01.31w
+
+##### Fixed
+- Fixed sign-in not completing — CSP now allows all Google authentication domains
+- Updated build version meta tag
+
+#### `testauth1.gs` — v01.15g (no change)
+
+##### Fixed
+- Normalized `PARENT_ORIGIN` to lowercase — prevents case mismatch with browser-reported origins that silently dropped postMessages
 
 ## [v02.79r] — 2026-03-13 04:51:10 PM EST
 

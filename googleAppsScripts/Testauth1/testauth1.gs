@@ -7,7 +7,8 @@ var FILE_PATH     = "googleAppsScripts/Testauth1/testauth1.gs";
 var DEPLOYMENT_ID = "AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html";
 // Security: extract parent origin from EMBED_PAGE_URL for postMessage target validation (C1)
-var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1');
+// Lowercase: browsers normalize origins to lowercase; case mismatch silently drops postMessages
+var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLowerCase();
 
 // ══════════════
 // AUTH CONFIG
