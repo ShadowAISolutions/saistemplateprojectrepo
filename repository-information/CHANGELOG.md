@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v02.64r] — 2026-03-12 09:47:46 PM EST
+
+### Changed
+- GAS script version bump to test auto-refresh and session expiry account chooser fix
+
+#### `testauth1.gs` — v01.13g
+
+##### Changed
+- Minor internal improvements
 
 ## [v02.63r] — 2026-03-12 09:36:14 PM EST
 
