@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v02.63r] — 2026-03-12 09:36:14 PM EST
+
+### Fixed
+- After auto-refresh when a session has timed out, users now see the sign-in screen with account chooser instead of being silently re-authenticated
+
+#### `testauth1.html` — v01.23w
+
+##### Fixed
+- Auto-refresh after session timeout no longer skips the account chooser — users can select which Google account to sign in with
 
 ## [v02.62r] — 2026-03-12 09:29:51 PM EST
 

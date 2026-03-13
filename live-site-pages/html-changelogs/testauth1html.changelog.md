@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23w] — 2026-03-12 09:36:14 PM EST — v02.63r
+
+### Fixed
+- After auto-refresh when your session has timed out, you now see the sign-in screen where you can choose which account to use, instead of being automatically signed back in
 
 ## [v01.22w] — 2026-03-12 08:48:00 PM EST — v02.60r
 

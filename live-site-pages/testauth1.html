@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.22w">
+  <meta name="build-version" content="v01.23w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -909,6 +909,8 @@
       };
     }
 
+    var SESSION_EXPIRED_FLAG = 'auth_session_expired';
+
     function clearSession() {
       var storage = getStorage();
       storage.removeItem(SESSION_KEY);
@@ -1049,6 +1051,7 @@
         clearSession();
         stopCountdownTimers();
         stopHeartbeat();
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
       }
 
@@ -1088,6 +1091,7 @@
         }
         clearSession();
         stopCountdownTimers();
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
         console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
       }
@@ -1427,9 +1431,11 @@
       var message = 'You have been signed out.';
       if (reason === 'session-expired') {
         message = 'Your session has expired. Click "Sign In with Google" to continue.';
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
       } else if (reason === 'absolute-expired') {
         var hours = Math.round(ABSOLUTE_SESSION_DURATION / 3600);
         message = 'Your ' + hours + '-hour session has ended. Please sign in again.';
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
       }
       showAuthWall(message);
     }
@@ -1527,6 +1533,17 @@
           gasApp.removeAttribute('srcdoc');
           gasApp.src = 'about:blank';
         }
+
+        // If the session expired before this reload (e.g. auto-refresh after
+        // timeout), skip silent re-auth so the user can choose which account
+        // to sign in with. The sign-in button uses prompt: 'select_account'.
+        var sessionWasExpired = sessionStorage.getItem(SESSION_EXPIRED_FLAG);
+        sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
+        if (sessionWasExpired) {
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+
         showAuthWall();
         // Initialize Google Sign-In
         if (typeof google !== 'undefined' && google.accounts) {

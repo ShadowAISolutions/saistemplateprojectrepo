@@ -870,6 +870,8 @@
       };
     }
 
+    var SESSION_EXPIRED_FLAG = 'auth_session_expired';
+
     function clearSession() {
       var storage = getStorage();
       storage.removeItem(SESSION_KEY);
@@ -996,6 +998,7 @@
           return;
         }
         clearSession();
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
       }
 
@@ -1140,6 +1143,7 @@
       var message = 'You have been signed out.';
       if (reason === 'inactivity') {
         message = 'Signed out due to inactivity. Click "Sign In with Google" to continue.';
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
       }
       showAuthWall(message);
     }
@@ -1234,6 +1238,17 @@
           gasApp.removeAttribute('srcdoc');
           gasApp.src = 'about:blank';
         }
+
+        // If the session expired before this reload (e.g. auto-refresh after
+        // timeout), skip silent re-auth so the user can choose which account
+        // to sign in with. The sign-in button uses prompt: 'select_account'.
+        var sessionWasExpired = sessionStorage.getItem(SESSION_EXPIRED_FLAG);
+        sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
+        if (sessionWasExpired) {
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+
         showAuthWall();
         // Initialize Google Sign-In
         if (typeof google !== 'undefined' && google.accounts) {
