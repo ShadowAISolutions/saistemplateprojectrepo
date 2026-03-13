@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v02.60r] — 2026-03-12 08:48:00 PM EST
+
+### Fixed
+- Session timer pill no longer overlaps the GAS version display in the bottom-left corner
+
+#### `testauth1.html` — v01.22w
+
+##### Fixed
+- Moved session timer pill to the right to avoid overlapping the GAS layer version text
 
 ## [v02.59r] — 2026-03-12 08:36:16 PM EST
 
