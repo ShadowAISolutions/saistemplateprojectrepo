@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v02.81r] — 2026-03-13 05:11:33 PM EST
+
+### Fixed
+- Fixed sign-in flow still stuck after CSP fix — postMessage reply was sent to the wrong iframe (outer `script.google.com` frame instead of the nested `googleusercontent.com` sandbox where the listener runs)
+
+#### `testauth1.html` — v01.32w
+
+##### Fixed
+- Fixed sign-in not completing after selecting a Google account — token exchange reply now reaches the correct GAS iframe
 
 ## [v02.80r] — 2026-03-13 05:03:28 PM EST
 

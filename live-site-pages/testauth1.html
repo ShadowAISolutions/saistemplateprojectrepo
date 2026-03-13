@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.31w">
+  <meta name="build-version" content="v01.32w">
   <!-- I5: Content Security Policy — restricts resource loading to trusted origins -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src https://script.google.com https://*.googleusercontent.com https://accounts.google.com; connect-src 'self' https://accounts.google.com https://*.googleapis.com https://*.google.com https://*.github.io; img-src 'self' https: data:;">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
@@ -1024,9 +1024,11 @@
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         // C1: capture GAS iframe origin from this trusted message for targeted replies
         _gasIframeOrigin = event.origin;
-        var gasApp = document.getElementById('gas-app');
-        if (gasApp && gasApp.contentWindow) {
-          gasApp.contentWindow.postMessage({
+        // Reply via event.source — GAS nests HtmlOutput in a googleusercontent.com sandbox
+        // iframe inside the script.google.com frame; gasApp.contentWindow is the outer frame,
+        // but the listener runs in the nested sandbox. event.source is the actual sender.
+        if (event.source) {
+          event.source.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
           }, _gasIframeOrigin);  // C1: restricted target origin (not '*')
