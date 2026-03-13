@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v02.68r] — 2026-03-12 11:49:35 PM EST
+
+### Changed
+- Propagated base auth upgrades from `gas-minimal-auth-template-code.js.txt` to `gas-test-auth-template-code.js.txt`: Master ACL spreadsheet support, heartbeat-based session management, absolute session timeout, improved error handling in token exchange, and debug logging
 
 ## [v02.67r] — 2026-03-12 11:38:39 PM EST
 
