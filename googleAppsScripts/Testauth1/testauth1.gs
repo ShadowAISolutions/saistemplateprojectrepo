@@ -1,4 +1,4 @@
-var VERSION = "v01.14g";
+var VERSION = "v01.15g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -6,6 +6,18 @@ var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Testauth1/testauth1.gs";
 var DEPLOYMENT_ID = "AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html";
+
+// Derive the parent page's origin from EMBED_PAGE_URL for postMessage targeting.
+// postMessage calls from the GAS iframe to the parent page use this as the targetOrigin
+// to restrict who can receive the messages. This is safer than "*" because it ensures
+// only the intended embedding page can intercept session tokens and auth state.
+// CRITICAL: .toLowerCase() is MANDATORY — browsers normalize origins to lowercase,
+// but EMBED_PAGE_URL may contain mixed-case (e.g. "ShadowAISolutions"). Without
+// toLowerCase(), the browser silently drops ALL postMessages because the targetOrigin
+// doesn't match the actual lowercase origin. This exact bug (missing toLowerCase)
+// broke sign-in in v02.79r and was never fixed live (the v02.80r fix never deployed
+// because the auto-deploy pipeline was already broken).
+var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLowerCase();
 
 // ══════════════
 // AUTH CONFIG
@@ -248,6 +260,33 @@ function pullAndDeployFromGitHub() {
 // ══════════════
 
 // =============================================
+// AUTH — HTML/JS Output Escaping (XSS Prevention)
+// Prevents injection via user-controlled values in generated HTML/JS strings.
+// =============================================
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeJs(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"')
+    .replace(/'/g, "\\'")
+    .replace(/</g, '\\x3c')
+    .replace(/>/g, '\\x3e')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r');
+}
+
+// =============================================
 // AUTH — Conditional Audit Logger (Toggle-Gated)
 // No-op when AUTH_CONFIG.ENABLE_AUDIT_LOG === false.
 // =============================================
@@ -286,7 +325,12 @@ function generateSessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return '';
   var secret = PropertiesService.getScriptProperties().getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
   if (!secret) return '';
-  var payload = sessionData.email + '|' + sessionData.createdAt + '|' + sessionData.lastActivity;
+  var payload = sessionData.email
+    + '|' + sessionData.createdAt
+    + '|' + sessionData.lastActivity
+    + '|' + (sessionData.absoluteCreatedAt || '')
+    + '|' + (sessionData.displayName || '')
+    + '|' + (sessionData.tokenObtainedAt || '');
   var signature = Utilities.computeHmacSha256Signature(payload, secret);
   return Utilities.base64Encode(signature);
 }
@@ -351,14 +395,20 @@ function exchangeTokenForSession(accessToken) {
   var sessionToken = Utilities.getUuid() + Utilities.getUuid();
   sessionToken = sessionToken.replace(/-/g, "").substring(0, 48);
 
+  // Generate a per-session message signing key for cryptographic message authentication.
+  // GAS signs outgoing postMessages with this key; the HTML parent verifies signatures.
+  var messageKey = Utilities.getUuid().replace(/-/g, '');
+
   var sessionData = {
     email: userInfo.email,
     displayName: userInfo.displayName,
-    accessToken: accessToken,
+    // accessToken intentionally NOT stored — only needed for the initial
+    // validateGoogleToken() call above, then discarded (least privilege)
     createdAt: Date.now(),
     absoluteCreatedAt: Date.now(),
     lastActivity: Date.now(),
-    tokenObtainedAt: Date.now()
+    tokenObtainedAt: Date.now(),
+    messageKey: messageKey
   };
 
   // HMAC integrity (toggle-gated)
@@ -379,7 +429,8 @@ function exchangeTokenForSession(accessToken) {
     sessionToken: sessionToken,
     email: userInfo.email,
     displayName: userInfo.displayName,
-    absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0
+    absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0,
+    messageKey: messageKey
   };
 }
 
@@ -650,13 +701,16 @@ function doGet(e) {
   var signOutToken = (e && e.parameter && e.parameter.signOut) || "";
   var heartbeatToken = (e && e.parameter && e.parameter.heartbeat) || "";
 
+  // Message signing key from URL parameter (used by heartbeat iframe for signing)
+  var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
+
   // Heartbeat flow: validate session + reset createdAt to extend it
   if (heartbeatToken && AUTH_CONFIG.ENABLE_HEARTBEAT) {
     var cache = CacheService.getScriptCache();
     var raw = cache.get("session_" + heartbeatToken);
     if (!raw) {
       var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbExpiredHtml)
         .setTitle(TITLE)
@@ -665,7 +719,7 @@ function doGet(e) {
     var hbData;
     try { hbData = JSON.parse(raw); } catch (err) {
       var hbErrHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbErrHtml)
         .setTitle(TITLE)
@@ -675,7 +729,7 @@ function doGet(e) {
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
       cache.remove("session_" + heartbeatToken);
       var hbHmacHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbHmacHtml)
         .setTitle(TITLE)
@@ -689,7 +743,7 @@ function doGet(e) {
         auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
           { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's' });
         var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
-          + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+          + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
           + '</' + 'script></body></html>';
         return HtmlService.createHtmlOutput(hbAbsHtml)
           .setTitle(TITLE)
@@ -703,7 +757,7 @@ function doGet(e) {
       auditLog('session_expired', hbData.email, 'heartbeat_too_late',
         { elapsed: Math.round(hbElapsed) + 's' });
       var hbLateHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, "*");'
+        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbLateHtml)
         .setTitle(TITLE)
@@ -720,7 +774,9 @@ function doGet(e) {
       ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
       : 0;
     var hbOkHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}, "*");'
+      + 'var k=' + JSON.stringify(msgKey) + ';'
+      + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+      + 'window.top.postMessage(s({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(hbOkHtml)
       .setTitle(TITLE)
@@ -729,9 +785,16 @@ function doGet(e) {
 
   // Sign-out flow: invalidate session and return confirmation
   if (signOutToken) {
+    // Read messageKey before invalidation (for signing the response)
+    var soCache = CacheService.getScriptCache();
+    var soRaw = soCache.get("session_" + signOutToken);
+    var soMsgKey = '';
+    if (soRaw) { try { soMsgKey = JSON.parse(soRaw).messageKey || ''; } catch(e) {} }
     invalidateSession(signOutToken);
     var signOutHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-signed-out",success:true}, "*");'
+      + 'var k=' + JSON.stringify(soMsgKey) + ';'
+      + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+      + 'window.top.postMessage(s({type:"gas-signed-out",success:true}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(signOutHtml)
       .setTitle(TITLE)
@@ -746,7 +809,8 @@ function doGet(e) {
       try {
         result = exchangeTokenForSession(exchangeToken);
       } catch (err) {
-        result = { success: false, error: "server_error: " + (err.message || String(err)) };
+        Logger.log("Token exchange error: " + (err.message || String(err)));
+        result = { success: false, error: "server_error" };
       }
       var payload = JSON.stringify({
             type: "gas-session-created",
@@ -755,11 +819,11 @@ function doGet(e) {
             email: result.email || "",
             displayName: result.displayName || "",
             error: result.error || "",
-            absoluteTimeout: result.absoluteTimeout || 0
+            absoluteTimeout: result.absoluteTimeout || 0,
+            messageKey: result.messageKey || ""
           });
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
-        + 'console.log("[GAS DEBUG] exchange response loaded, sending:", ' + JSON.stringify(payload.substring(0, 100)) + ');'
-        + 'try { window.top.postMessage(' + payload + ', "*"); } catch(e) { console.log("[GAS DEBUG] postMessage error:", e.message); }'
+        + 'try { window.top.postMessage(' + payload + ', ' + JSON.stringify(PARENT_ORIGIN) + '); } catch(e) {}'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(exchangeHtml)
         .setTitle(TITLE)
@@ -783,19 +847,20 @@ function doGet(e) {
       + '        email: result.email || "",'
       + '        displayName: result.displayName || "",'
       + '        error: result.error || "",'
-      + '        absoluteTimeout: result.absoluteTimeout || 0'
-      + '      }, "*");'
+      + '        absoluteTimeout: result.absoluteTimeout || 0,'
+      + '        messageKey: result.messageKey || ""'
+      + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .withFailureHandler(function(err) {'
       + '      window.top.postMessage({'
       + '        type: "gas-session-created",'
       + '        success: false,'
       + '        error: "server_error"'
-      + '      }, "*");'
+      + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .exchangeTokenForSession(token);'
       + '});'
-      + 'window.top.postMessage({ type: "gas-ready-for-token" }, "*");'
+      + 'window.top.postMessage({ type: "gas-ready-for-token" }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(listenerHtml)
       .setTitle(TITLE)
@@ -807,12 +872,20 @@ function doGet(e) {
 
   if (session.status !== "authorized") {
     var authHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + session.status + '",email:"' + (session.email || '') + '",version:"' + VERSION + '"}, "*");'
+      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + escapeJs(session.status) + '",email:"' + escapeJs(session.email || '') + '",version:"' + escapeJs(VERSION) + '"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(authHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
+
+  // Retrieve messageKey from session data for signing outgoing messages
+  var appMsgKey = '';
+  try {
+    var appCache = CacheService.getScriptCache();
+    var appRaw = appCache.get("session_" + sessionToken);
+    if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
+  } catch(e) {}
 
   // Session valid — build the app HTML (same as noauth doGet but with user context)
   var html = `
@@ -831,21 +904,32 @@ function doGet(e) {
     </head>
     <body>
       <div id="debug-marker">1</div>
-      <h2 id="version">${VERSION}</h2>
-      <div id="user-email">${session.email}</div>
+      <h2 id="version">${escapeHtml(VERSION)}</h2>
+      <div id="user-email">${escapeHtml(session.email)}</div>
 
       <script>
+        // Message signing for cryptographic authentication
+        var _mk = '${escapeJs(appMsgKey)}';
+        function _s(m) {
+          if (!_mk) return m;
+          var p = JSON.stringify(m) + '|' + _mk;
+          var h = 0;
+          for (var i = 0; i < p.length; i++) { h = ((h << 5) - h) + p.charCodeAt(i); h |= 0; }
+          m._sig = h.toString(36);
+          return m;
+        }
+
         // Notify wrapper that auth is OK
-        window.top.postMessage({type: 'gas-auth-ok', version: '${VERSION}', needsReauth: ${session.needsReauth || false}}, '*');
+        window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');
 
         window.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
-                top.postMessage({type: 'gas-version', version: data.version}, '*');
+                top.postMessage(_s({type: 'gas-version', version: data.version}), '${PARENT_ORIGIN}');
               })
               .withFailureHandler(function() {
-                top.postMessage({type: 'gas-version', version: null}, '*');
+                top.postMessage(_s({type: 'gas-version', version: null}), '${PARENT_ORIGIN}');
               })
               .getAppData();
           }

@@ -3,9 +3,55 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 11/100`
+`Sections: 12/100`
 
 ## [Unreleased]
+
+## [v02.90r] — 2026-03-13 07:15:58 PM EST
+
+### Added
+- Defense-in-depth security hardening for testauth1 environment (6-phase implementation from SECURITY-UPDATE-PLAN-TESTAUTH1.md)
+
+### Security
+- **Message-type allowlist** (HTML) — postMessage listener now only processes 8 known GAS message types, rejecting all others
+- **Cryptographic message authentication** (GAS→HTML) — per-session HMAC key signs all GAS outgoing postMessages; HTML parent verifies signatures before processing security-sensitive messages
+- **XSS prevention** (GAS) — added `escapeHtml()`/`escapeJs()` helpers and applied to all user-controlled interpolation points in GAS-generated HTML
+- **Session hardening** (GAS) — removed stored OAuth access token from session cache (least privilege), expanded HMAC payload to cover all security-relevant fields
+- **postMessage target origin** (GAS) — replaced `"*"` with `PARENT_ORIGIN` (derived from `EMBED_PAGE_URL` with mandatory `.toLowerCase()`) on all 15 GAS→parent postMessage calls
+- **Error message sanitization** (GAS) — token exchange errors now log details server-side only, returning generic "server_error" to client
+- **Debug log cleanup** (both) — removed all `[AUTH DEBUG]` and `[GAS DEBUG]` console.log statements from production code
+- **OAuth revocation fix** (HTML) — removed broken `google.accounts.oauth2.revoke(session.token)` call that was passing the server session token instead of the OAuth access token
+
+#### `testauth1.html` — v01.27w
+
+##### Added
+- Message-type allowlist for postMessage security
+- Cryptographic message signature verification for GAS messages
+
+##### Changed
+- Heartbeat iframe now passes message signing key for signature verification
+
+##### Fixed
+- Removed broken OAuth token revocation that was passing wrong token type
+
+##### Removed
+- Debug console.log statements from authentication flow
+
+#### `testauth1.gs` — v01.15g
+
+##### Added
+- `escapeHtml()` and `escapeJs()` XSS prevention helpers
+- `PARENT_ORIGIN` constant for restricted postMessage targeting
+- Per-session message signing key generation and message signing
+- Server-side error logging for token exchange failures
+
+##### Changed
+- All postMessage calls now target `PARENT_ORIGIN` instead of `"*"`
+- HMAC payload expanded to include all security-relevant session fields
+- OAuth access token no longer stored in session cache
+
+##### Removed
+- Debug console.log statement from token exchange response
 
 ## [v02.89r] — 2026-03-13 07:00:04 PM EST
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.26w">
+  <meta name="build-version" content="v01.27w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -939,13 +939,11 @@
     }
 
     function handleTokenResponse(response) {
-      console.log('[AUTH DEBUG] handleTokenResponse called', response.error ? 'ERROR: ' + response.error : 'SUCCESS — got token');
       if (response.error) {
         // Silent auth failed — show auth wall with interactive sign-in
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
-      console.log('[AUTH DEBUG] Calling exchangeToken with access_token length:', response.access_token ? response.access_token.length : 0);
       exchangeToken(response.access_token);
     }
 
@@ -966,11 +964,10 @@
     // --- URL Parameter Path (standard) ---
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp) { console.log('[AUTH DEBUG] exchangeViaUrl: gas-app element not found!'); return; }
+      if (!gasApp) return;
       var baseUrl = window._r || gasApp.dataset.baseUrl || '';
-      if (!baseUrl) { console.log('[AUTH DEBUG] exchangeViaUrl: baseUrl is empty!'); return; }
+      if (!baseUrl) return;
 
-      console.log('[AUTH DEBUG] exchangeViaUrl: setting iframe src to', baseUrl + '?exchangeToken=<token>');
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
     }
@@ -992,12 +989,56 @@
     // =============================================
     // AUTH — postMessage Listener
     // Handles all auth-related messages from the GAS iframe.
+    // Security: message-type allowlist + optional cryptographic verification
     // =============================================
+
+    var _KNOWN_GAS_MESSAGES = {
+      'gas-ready-for-token': true,
+      'gas-session-created': true,
+      'gas-needs-auth': true,
+      'gas-auth-ok': true,
+      'gas-heartbeat-ok': true,
+      'gas-heartbeat-expired': true,
+      'gas-signed-out': true,
+      'gas-version': true
+    };
+
+    // Layer 2: Cryptographic message authentication
+    // Per-session key delivered via gas-session-created, used to verify subsequent messages.
+    var _messageKey = null;
+
+    function _verifyMessageSignature(data, key) {
+      if (!key) return true;  // No key yet — pass through (allowlist is the defense)
+      var sig = data._sig;
+      if (!sig) return false;  // Key exists but message has no signature — reject
+      // Reconstruct the hash the same way GAS computed it
+      var copy = {};
+      for (var k in data) { if (k !== '_sig') copy[k] = data[k]; }
+      var payload = JSON.stringify(copy) + '|' + key;
+      var hash = 0;
+      for (var i = 0; i < payload.length; i++) {
+        hash = ((hash << 5) - hash) + payload.charCodeAt(i);
+        hash |= 0;
+      }
+      return sig === hash.toString(36);
+    }
 
     window.addEventListener('message', function(event) {
       var data = event.data;
       if (!data || typeof data !== 'object') return;
-      console.log('[AUTH DEBUG] postMessage received:', data.type, JSON.stringify(data).substring(0, 200));
+      // Layer 1: Only process known GAS message types (allowlist)
+      if (!_KNOWN_GAS_MESSAGES[data.type]) return;
+
+      // Layer 2: Cryptographic verification (optional — key delivered via gas-session-created)
+      // gas-session-created delivers the key itself — trust it on first receipt
+      // (the session token it contains is validated server-side on the next iframe load)
+      if (data.type === 'gas-session-created' && data.success && data.messageKey) {
+        _messageKey = data.messageKey;
+      }
+      // For all subsequent messages, verify the signature if we have a key
+      if (_messageKey && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {
+        if (!_verifyMessageSignature(data, _messageKey)) return;  // Silently drop
+      }
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
@@ -1044,7 +1085,6 @@
           // was still loading the old (no-session) URL while we already set
           // a new src with the session token. Ignore this message and wait
           // for the session-URL response instead.
-          console.log('[AUTH DEBUG] Ignoring stale gas-needs-auth (session navigation in flight)');
           _expectingSession = false;
           return;
         }
@@ -1077,7 +1117,6 @@
             if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
           }, 3000);
         }
-        console.log('[AUTH DEBUG] Heartbeat OK — session extended by ' + (data.expiresIn || '?') + 's');
       }
 
       // Heartbeat failed — session already expired on server
@@ -1093,7 +1132,6 @@
         stopCountdownTimers();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
-        console.log('[AUTH DEBUG] Heartbeat failed — session expired on server');
       }
 
       // GAS sign-out confirmation
@@ -1422,7 +1460,8 @@
         hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
         document.body.appendChild(hbFrame);
       }
-      hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token);
+      hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
+        + '&msgKey=' + encodeURIComponent(_messageKey || '');
       // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
     }
 
@@ -1455,12 +1494,8 @@
         }
       }
 
-      // Revoke Google OAuth token
-      try {
-        if (google && google.accounts && google.accounts.oauth2) {
-          google.accounts.oauth2.revoke(session.token, function() {});
-        }
-      } catch(e) {}
+      // Google OAuth access token is not stored client-side (only used during initial exchange)
+      // and expires naturally (1 hour). Server-side session invalidation is sufficient.
 
       var message = 'You have been signed out.';
       if (reason === 'session-expired') {

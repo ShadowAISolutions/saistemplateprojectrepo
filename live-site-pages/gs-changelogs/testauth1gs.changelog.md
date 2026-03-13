@@ -3,9 +3,23 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15g] — 2026-03-13 07:15:58 PM EST — v02.90r
+
+### Added
+- Cryptographic message signing for all outgoing messages
+- Input sanitization to prevent code injection
+
+### Changed
+- Messages now only reach the intended embedding page
+- Error details are logged server-side only, not sent to the browser
+- Improved session security by removing stored credentials
+
+### Removed
+- Debug logging from token exchange
 
 ## [v01.14g] — 2026-03-13 06:03:16 PM EST — v02.86r
 

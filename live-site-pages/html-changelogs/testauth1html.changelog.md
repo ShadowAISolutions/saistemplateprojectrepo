@@ -3,9 +3,20 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
 
 ## [Unreleased]
+
+## [v01.27w] — 2026-03-13 07:15:58 PM EST — v02.90r
+
+### Added
+- Enhanced security for messages received from the app backend
+
+### Changed
+- Improved session handling and authentication flow reliability
+
+### Removed
+- Verbose debug logging from sign-in and session management
 
 ## [v01.26w] — 2026-03-13 11:32:09 AM EST — v02.70r
 
