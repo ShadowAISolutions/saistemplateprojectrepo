@@ -74,6 +74,110 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v01.94r] — 2026-03-10 01:53:27 PM EST
+
+### Changed
+- Standardized "missing resource" emoji in README project structure tree: 🔸 = no spreadsheet, ◽ = no folder, 🔻 = no GAS
+
+## [v01.93r] — 2026-03-10 01:48:24 PM EST
+
+### Changed
+- Replaced 🪫 (low battery) with ◽ (white square) for pages with no GAS project in README project structure tree
+
+## [v01.92r] — 2026-03-10 01:42:19 PM EST
+
+### Changed
+- Added spacer rows between page entries in README project structure tree for visual separation
+
+## [v01.91r] — 2026-03-10 01:36:10 PM EST
+
+### Changed
+- Reordered stoplight emoji in README project structure tree — 🌐 now comes first, status indicator (🟢/🟡/🔴) follows immediately with no space
+
+## [v01.90r] — 2026-03-10 01:13:03 PM EST
+
+### Added
+- Added 🟢/🟡/🔴 status emoji indicators to page entries in README.md project structure tree — derived from html.version.txt status field
+
+## [v01.89r] — 2026-03-10 10:24:18 AM EST
+
+### Added
+- Added page status emoji indicators to URL sections in chat output — 🟢 Active, 🟡 Maintenance, 🔴 Inactive — derived from html.version.txt first field
+- Added inactive mode support for html.version.txt (complements existing maintenance mode)
+
+### Changed
+- Updated all page label formats in chat-bookends.md and chat-bookends-reference.md to include status emoji before the 🌐 prefix
+
+## [v01.88r] — 2026-03-10 10:05:24 AM EST
+
+### Added
+- Added "Diff Rules Command" to CLAUDE.md — compares fork rules against template to identify added, modified, and removed rules
+- Added backporting workflow instructions (fork → template and template → fork) with user prompts
+
+## [v01.87r] — 2026-03-10 09:37:49 AM EST
+
+### Added
+- Added 🧜‍♀️ architecture diagram link to the root `saistemplateprojectrepo/` line in README tree
+
+## [v01.86r] — 2026-03-10 09:27:17 AM EST
+
+### Changed
+- Replaced 🔹 with 🪫 as the "no GAS file" placeholder in README tree
+
+## [v01.85r] — 2026-03-10 09:23:16 AM EST
+
+### Added
+- Added ⛽ GAS script link icon to README tree page entries (linked to corresponding .gs file, 🔹 placeholder for pages without GAS)
+
+## [v01.84r] — 2026-03-10 09:04:10 AM EST
+
+### Added
+- Repo version changelog link on the repository root line in README tree
+
+## [v01.83r] — 2026-03-10 08:50:41 AM EST
+
+### Changed
+- Reordered README tree icon cluster: webpage → spreadsheet → drive folder → diagram (🌐 · 📊 · 🔸 · 🧜‍♀️)
+
+## [v01.82r] — 2026-03-10 08:39:43 AM EST
+
+### Changed
+- Updated README tree icon cluster: 📊→🧜‍♀️ for diagrams, 📋→📊 for spreadsheets, ✕→🔻 for no spreadsheet, ◇→🔸 for no drive folder
+
+## [v01.81r] — 2026-03-10 12:30:32 AM EST
+
+### Changed
+- Replaced `╌` with `✕` (thin x) for missing spreadsheet placeholder in README tree
+- Replaced non-linked `📁` with `◇` (white diamond) for missing folder placeholder in README tree
+- Updated icon cluster rules in `repo-docs.md` with `✕` and `◇` placeholder conventions
+
+## [v01.80r] — 2026-03-10 12:20:43 AM EST
+
+### Changed
+- Restored `→` arrow before icon cluster in README tree page entries
+- Replaced 🚫 with subtle `╌` placeholder for missing spreadsheet links
+- Added 📁 Google Drive folder icon (placeholder) to all page entries in README tree
+- Updated icon cluster rule in `repo-docs.md` with 📁 and `╌` conventions
+
+## [v01.79r] — 2026-03-10 12:13:41 AM EST
+
+### Changed
+- Reorganized README tree page entries: grouped action icons (🌐 · 📊 · 📋) together with `·` separators between `—` delimiters
+- Replaced `📋✖` two-character placeholder with single 🚫 emoji for pages without a spreadsheet
+- Consolidated icon cluster rules in `repo-docs.md` into a single unified section
+
+## [v01.78r] — 2026-03-10 12:10:30 AM EST
+
+### Added
+- 📋✖ placeholder for pages without an associated spreadsheet in README tree (gas-project-creator)
+- Documented the 📋✖ no-spreadsheet placeholder convention in `repo-docs.md`
+
+## [v01.77r] — 2026-03-10 12:06:53 AM EST
+
+### Added
+- Spreadsheet 📋 emoji links in README tree for pages with associated GAS spreadsheets (index, test)
+- README tree spreadsheet links rule in `repo-docs.md` documenting the 📋 convention
+
 ## [v01.76r] — 2026-03-09 11:58:02 PM EST — [323ba00](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/323ba00a319c326ddca44ed20d2a460b951aa543)
 
 ### Changed
