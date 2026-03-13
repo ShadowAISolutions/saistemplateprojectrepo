@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.27w">
+  <meta name="build-version" content="v01.28w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -922,7 +922,7 @@
     // Silent re-auth with interactive fallback (pattern 4+).
     // =============================================
 
-    var GAS_ORIGIN = 'https://script.google.com';
+
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
@@ -991,7 +991,9 @@
     // =============================================
 
     window.addEventListener('message', function(event) {
-      if (event.origin !== GAS_ORIGIN) return;
+      // Validate message source — only accept from the GAS iframe window
+      var gasApp = document.getElementById('gas-app');
+      if (!gasApp || event.source !== gasApp.contentWindow) return;
       var data = event.data;
       if (!data || typeof data !== 'object') return;
 
@@ -1002,7 +1004,7 @@
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, GAS_ORIGIN);
+          }, '*');
           _pendingToken = null;
         }
       }

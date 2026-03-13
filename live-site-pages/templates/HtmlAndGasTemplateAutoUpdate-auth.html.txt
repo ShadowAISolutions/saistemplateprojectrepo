@@ -921,7 +921,6 @@
     // Silent re-auth with interactive fallback (pattern 4+).
     // =============================================
 
-    var GAS_ORIGIN = 'https://script.google.com';
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
@@ -991,18 +990,19 @@
     // =============================================
 
     window.addEventListener('message', function(event) {
-      if (event.origin !== GAS_ORIGIN) return;
+      // Validate message source — only accept from the GAS iframe window
+      var gasApp = document.getElementById('gas-app');
+      if (!gasApp || event.source !== gasApp.contentWindow) return;
       var data = event.data;
       if (!data || typeof data !== 'object') return;
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
-        var gasApp = document.getElementById('gas-app');
-        if (gasApp && gasApp.contentWindow) {
+        if (gasApp.contentWindow) {
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, GAS_ORIGIN);
+          }, '*');
           _pendingToken = null;
         }
       }

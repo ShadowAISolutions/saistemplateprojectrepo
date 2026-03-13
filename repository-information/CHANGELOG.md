@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v02.76r] — 2026-03-13 02:23:50 PM EST
+
+### Fixed
+- Fixed postMessage origin validation breaking auth flow — GAS iframes use srcdoc which produces a `null` origin, so switched to `event.source` window identity check instead
+- Removed unused `GAS_ORIGIN` variable
+
+#### `testauth1.html` — v01.28w
+
+##### Fixed
+- Restored sign-in flow — the page now correctly receives authentication messages from the embedded app
+
+### Changed
+- Propagated postMessage validation fix to auth HTML template
 
 ## [v02.75r] — 2026-03-13 01:45:42 PM EST
 
