@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v02.69r] — 2026-03-13 11:23:50 AM EST
+
+### Fixed
+- Fixed auto sign-in after manual sign-out on auth pages — signing out and refreshing no longer silently re-authenticates; the account picker is now shown
+
+#### `testauth1.html` — v01.25w
+
+##### Fixed
+- Fixed sign-out followed by page refresh auto-signing back in without account picker
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — v01.25w (no change)
+
+##### Fixed
+- Same sign-out fix applied to auth HTML template for future pages
 
 ## [v02.68r] — 2026-03-12 11:49:35 PM EST
 
