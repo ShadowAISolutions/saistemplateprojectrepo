@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.21w] — 2026-03-12 08:36:16 PM EST — v02.59r
+
+### Changed
+- Session timers are now a compact pill showing the session countdown — click to expand for full timer details
 
 ## [v01.20w] — 2026-03-12 08:30:29 PM EST — v02.58r
 

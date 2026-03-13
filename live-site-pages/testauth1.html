@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.20w">
+  <meta name="build-version" content="v01.21w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -184,26 +184,33 @@
     }
     #sign-out-btn:hover { color: #f44336; }
     #auth-timers {
-      position: fixed; bottom: 8px; left: 8px; z-index: 9999;
-      display: none; flex-direction: column; gap: 4px;
-      background: rgba(0,0,0,0.55); color: #ccc; padding: 8px 12px;
-      border-radius: 8px; font: 11px/1.4 monospace; user-select: none;
+      position: fixed; bottom: 8px; left: 8px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
     }
+    #auth-timers:hover { background: rgba(0,0,0,0.75); }
+    #auth-timers .timer-pill-label { color: #fff; font-weight: bold; }
+    #auth-timers .timer-pill-label.warn { color: #ffc107; }
+    #auth-timers .timer-pill-label.critical { color: #ef5350; }
+    #auth-timers .timer-body {
+      display: none; flex-direction: column; gap: 4px;
+      border-top: 1px solid rgba(255,255,255,0.15); margin-top: 4px; padding-top: 4px;
+    }
+    #auth-timers .timer-body.expanded { display: flex; }
+    #auth-timers.expanded {
+      flex-direction: column; align-items: stretch;
+      border-radius: 8px; padding: 8px 12px;
+    }
+    #auth-timers .timer-header { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    #auth-timers .timer-header .toggle-icon { font-size: 8px; color: #aaa; }
     #auth-timers .timer-row { display: flex; justify-content: space-between; gap: 12px; }
     #auth-timers .timer-label { color: #999; }
     #auth-timers .timer-value { color: #fff; font-weight: bold; }
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
-    #auth-timers .timer-header {
-      color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
-      border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 3px; margin-bottom: 2px;
-      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    }
-    #auth-timers .timer-header:hover { color: #fff; }
-    #auth-timers .timer-header .toggle-icon { font-size: 8px; }
-    #auth-timers .timer-body { display: none; flex-direction: column; gap: 4px; }
-    #auth-timers .timer-body.expanded { display: flex; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -246,8 +253,8 @@
     <button id="sign-out-btn">Sign Out</button>
   </div>
 
-  <div id="auth-timers">
-    <div class="timer-header" onclick="toggleTimers()"><span>Session Timers</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
+  <div id="auth-timers" onclick="toggleTimers()">
+    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
     <div class="timer-body" id="timer-body">
       <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
@@ -1160,10 +1167,13 @@
     // Heartbeat = extends session while user is active.
     // =============================================
 
-    function toggleTimers() {
+    function toggleTimers(e) {
+      if (e) e.stopPropagation();
+      var container = document.getElementById('auth-timers');
       var body = document.getElementById('timer-body');
       var icon = document.getElementById('timer-toggle-icon');
       var expanded = body.classList.toggle('expanded');
+      container.classList.toggle('expanded', expanded);
       icon.innerHTML = expanded ? '&#9662;' : '&#9656;';
     }
 
@@ -1189,6 +1199,7 @@
       var sessionEl = document.getElementById('timer-session');
       var absoluteEl = document.getElementById('timer-absolute');
       var heartbeatEl = document.getElementById('timer-heartbeat');
+      var pillLabel = document.getElementById('timer-pill-label');
 
       // Store session start time if not already stored
       var storage = getStorage();
@@ -1230,16 +1241,22 @@
         if (remaining <= 0) {
           sessionEl.textContent = 'expired';
           sessionEl.className = 'timer-value critical';
+          pillLabel.textContent = 'expired';
+          pillLabel.className = 'timer-pill-label critical';
           performSignOut('session-expired');
           return;
         } else {
           sessionEl.textContent = formatCountdown(remaining);
+          pillLabel.textContent = formatCountdown(remaining);
           if (remaining <= 60) {
             sessionEl.className = 'timer-value critical';
+            pillLabel.className = 'timer-pill-label critical';
           } else if (remaining <= 90) {
             sessionEl.className = 'timer-value warn';
+            pillLabel.className = 'timer-pill-label warn';
           } else {
             sessionEl.className = 'timer-value';
+            pillLabel.className = 'timer-pill-label';
           }
         }
 
