@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v02.61r] — 2026-03-12 09:18:49 PM EST
+
+### Added
+- Centralized master ACL spreadsheet for auth — row-based email lookup replaces sharing-list check, keeping the data spreadsheet hidden from users' Google Drive
+- Master ACL config variables: `MASTER_ACL_SPREADSHEET_ID`, `ACL_SHEET_NAME`, `ACL_PAGE_NAME`
+- GAS Project Creator form fields for master ACL configuration
+
+### Changed
+- Auth access check now uses master ACL spreadsheet when configured, with fallback to legacy editor/viewer check
+
+#### `testauth1.gs` — v01.11g
+
+##### Added
+- Master ACL spreadsheet support — checks email against row-based ACL instead of spreadsheet sharing list
+- Fallback to legacy editor/viewer check when master ACL is not configured
+
+#### `gas-project-creator.html` — v01.09w
+
+##### Added
+- Master ACL Spreadsheet ID, ACL Sheet Name, and ACL Page Name form fields in auth settings
 
 ## [v02.60r] — 2026-03-12 08:48:00 PM EST
 

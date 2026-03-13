@@ -1,4 +1,4 @@
-var VERSION = "v01.10g";
+var VERSION = "v01.11g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -10,9 +10,16 @@ var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrep
 // ══════════════
 // AUTH CONFIG
 // ══════════════
-// Spreadsheet ID used for authorization (editors/viewers = authorized users).
-// Leave as placeholder to skip spreadsheet access check (only Google token validation + domain check).
+// Spreadsheet ID for project data (the GAS app reads/writes user data here).
 var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
+
+// Master ACL spreadsheet — centralized access control for all GAS-powered pages.
+// Row 1 = headers (Email, page1, page2, ...). Rows 2+ = email in col A, TRUE/FALSE per page column.
+// If configured, this replaces the old editor/viewer sharing-list check.
+// Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
+var MASTER_ACL_SPREADSHEET_ID = "YOUR_MASTER_ACL_SPREADSHEET_ID";
+var ACL_SHEET_NAME = "ACL";
+var ACL_PAGE_NAME  = "testauth1";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
@@ -318,8 +325,10 @@ function exchangeTokenForSession(accessToken) {
     }
   }
 
-  // Check spreadsheet access (with emergency access if enabled)
-  if (SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID") {
+  // Check access via master ACL spreadsheet (or fall back to SPREADSHEET_ID editor/viewer list)
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
+  if (hasAcl || hasSheet) {
     if (!checkSpreadsheetAccess(userInfo.email)) {
       auditLog('login_failed', userInfo.email, 'access_denied',
         { reason: 'No spreadsheet access' });
@@ -543,7 +552,6 @@ function removeUserSession(email, sessionToken) {
 
 function checkSpreadsheetAccess(email, opt_ss) {
   if (!email) return false;
-  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return true;
   var lowerEmail = email.toLowerCase();
 
   // Emergency access override (toggle-gated)
@@ -567,6 +575,38 @@ function checkSpreadsheetAccess(email, opt_ss) {
   var cached = cache.get(cacheKey);
   if (cached !== null) return cached === "1";
 
+  // Master ACL spreadsheet: row-based lookup (email in col A, TRUE/FALSE per page column)
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (hasAcl) {
+    var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
+    if (!aclSheet) { cache.put(cacheKey, "0", 600); return false; }
+    var data = aclSheet.getDataRange().getValues();
+    if (data.length < 2) { cache.put(cacheKey, "0", 600); return false; }
+    // Find the column index for this page
+    var headers = data[0];
+    var colIdx = -1;
+    for (var c = 0; c < headers.length; c++) {
+      if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
+        colIdx = c; break;
+      }
+    }
+    if (colIdx === -1) { cache.put(cacheKey, "0", 600); return false; }
+    // Check rows for matching email
+    for (var r = 1; r < data.length; r++) {
+      if (String(data[r][0]).trim().toLowerCase() === lowerEmail) {
+        var val = data[r][colIdx];
+        var granted = (val === true || String(val).trim().toUpperCase() === 'TRUE');
+        cache.put(cacheKey, granted ? "1" : "0", 600);
+        return granted;
+      }
+    }
+    cache.put(cacheKey, "0", 600);
+    return false;
+  }
+
+  // Fallback: legacy editor/viewer sharing-list check on SPREADSHEET_ID
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return true;
   var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
   var editors = ss.getEditors();
   for (var i = 0; i < editors.length; i++) {

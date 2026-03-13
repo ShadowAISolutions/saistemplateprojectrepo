@@ -90,6 +90,9 @@ INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
 AUTH_PRESET="$(parse_json AUTH_PRESET 'standard')"
 ALLOWED_DOMAINS="$(parse_json ALLOWED_DOMAINS '')"
+MASTER_ACL_SPREADSHEET_ID="$(parse_json MASTER_ACL_SPREADSHEET_ID 'YOUR_MASTER_ACL_SPREADSHEET_ID')"
+ACL_SHEET_NAME="$(parse_json ACL_SHEET_NAME 'ACL')"
+ACL_PAGE_NAME="$(parse_json ACL_PAGE_NAME '')"
 
 if [ -z "$ENV_NAME" ]; then
     err "PROJECT_ENVIRONMENT_NAME is required and cannot be empty."
@@ -162,7 +165,22 @@ if [ "$UPDATE_MODE" = true ]; then
 
     # Update config.json
     if [ -f "$GAS_CONFIG" ]; then
-        cat > "$GAS_CONFIG" <<CFGEOF
+        if [ "$INCLUDE_AUTH" = "true" ]; then
+            ACL_PAGE_NAME="${ACL_PAGE_NAME:-$ENV_NAME}"
+            cat > "$GAS_CONFIG" <<CFGEOF
+{
+  "TITLE": "${TITLE}",
+  "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
+  "SPREADSHEET_ID": "${SPREADSHEET_ID}",
+  "SHEET_NAME": "${SHEET_NAME}",
+  "SOUND_FILE_ID": "${SOUND_FILE_ID}",
+  "MASTER_ACL_SPREADSHEET_ID": "${MASTER_ACL_SPREADSHEET_ID}",
+  "ACL_SHEET_NAME": "${ACL_SHEET_NAME}",
+  "ACL_PAGE_NAME": "${ACL_PAGE_NAME}"
+}
+CFGEOF
+        else
+            cat > "$GAS_CONFIG" <<CFGEOF
 {
   "TITLE": "${TITLE}",
   "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
@@ -171,6 +189,7 @@ if [ "$UPDATE_MODE" = true ]; then
   "SOUND_FILE_ID": "${SOUND_FILE_ID}"
 }
 CFGEOF
+        fi
         ok "Updated $GAS_CONFIG"
     fi
 
@@ -183,6 +202,17 @@ CFGEOF
         fi
         sed -i "s|var SHEET_NAME     = .*;|var SHEET_NAME     = \"${SHEET_NAME}\";|" "$GAS_FILE"
         sed -i "s|var SOUND_FILE_ID = .*;|var SOUND_FILE_ID = \"${SOUND_FILE_ID}\";|" "$GAS_FILE"
+        # Master ACL config (auth projects only)
+        if [ "$INCLUDE_AUTH" = "true" ]; then
+            if [ "$MASTER_ACL_SPREADSHEET_ID" != "YOUR_MASTER_ACL_SPREADSHEET_ID" ] && [ -n "$MASTER_ACL_SPREADSHEET_ID" ]; then
+                sed -i "s|var MASTER_ACL_SPREADSHEET_ID = .*;|var MASTER_ACL_SPREADSHEET_ID = \"${MASTER_ACL_SPREADSHEET_ID}\";|" "$GAS_FILE"
+            fi
+            if [ -n "$ACL_SHEET_NAME" ]; then
+                sed -i "s|var ACL_SHEET_NAME = .*;|var ACL_SHEET_NAME = \"${ACL_SHEET_NAME}\";|" "$GAS_FILE"
+            fi
+            ACL_PAGE_NAME="${ACL_PAGE_NAME:-$ENV_NAME}"
+            sed -i "s|var ACL_PAGE_NAME  = .*;|var ACL_PAGE_NAME  = \"${ACL_PAGE_NAME}\";|" "$GAS_FILE"
+        fi
         ok "Updated config vars in $GAS_FILE"
     fi
 
@@ -302,11 +332,36 @@ if [ "$INCLUDE_AUTH" = "true" ]; then
     if [ "$CLIENT_ID" != "YOUR_CLIENT_ID.apps.googleusercontent.com" ] && [ -n "$CLIENT_ID" ]; then
         sed -i "s|var CLIENT_ID = '[^']*';|var CLIENT_ID = '${CLIENT_ID}';|" "$HTML_PAGE"
     fi
+    # Master ACL spreadsheet config
+    if [ "$MASTER_ACL_SPREADSHEET_ID" != "YOUR_MASTER_ACL_SPREADSHEET_ID" ] && [ -n "$MASTER_ACL_SPREADSHEET_ID" ]; then
+        sed -i "s|var MASTER_ACL_SPREADSHEET_ID = .*;|var MASTER_ACL_SPREADSHEET_ID = \"${MASTER_ACL_SPREADSHEET_ID}\";|" "$GAS_FILE"
+    fi
+    if [ -n "$ACL_SHEET_NAME" ]; then
+        sed -i "s|var ACL_SHEET_NAME = .*;|var ACL_SHEET_NAME = \"${ACL_SHEET_NAME}\";|" "$GAS_FILE"
+    fi
+    # Default ACL_PAGE_NAME to ENV_NAME if not specified
+    ACL_PAGE_NAME="${ACL_PAGE_NAME:-$ENV_NAME}"
+    sed -i "s|var ACL_PAGE_NAME  = .*;|var ACL_PAGE_NAME  = \"${ACL_PAGE_NAME}\";|" "$GAS_FILE"
 fi
 ok "Created $GAS_FILE"
 
 # --- Config JSON ---
-cat > "$GAS_CONFIG" <<CFGEOF
+if [ "$INCLUDE_AUTH" = "true" ]; then
+    ACL_PAGE_NAME="${ACL_PAGE_NAME:-$ENV_NAME}"
+    cat > "$GAS_CONFIG" <<CFGEOF
+{
+  "TITLE": "${TITLE}",
+  "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
+  "SPREADSHEET_ID": "${SPREADSHEET_ID}",
+  "SHEET_NAME": "${SHEET_NAME}",
+  "SOUND_FILE_ID": "${SOUND_FILE_ID}",
+  "MASTER_ACL_SPREADSHEET_ID": "${MASTER_ACL_SPREADSHEET_ID}",
+  "ACL_SHEET_NAME": "${ACL_SHEET_NAME}",
+  "ACL_PAGE_NAME": "${ACL_PAGE_NAME}"
+}
+CFGEOF
+else
+    cat > "$GAS_CONFIG" <<CFGEOF
 {
   "TITLE": "${TITLE}",
   "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
@@ -315,6 +370,7 @@ cat > "$GAS_CONFIG" <<CFGEOF
   "SOUND_FILE_ID": "${SOUND_FILE_ID}"
 }
 CFGEOF
+fi
 ok "Created $GAS_CONFIG"
 
 # ── Phase 4: Create Version Files ──

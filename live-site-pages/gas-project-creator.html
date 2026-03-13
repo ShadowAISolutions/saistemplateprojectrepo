@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.08w">
+  <meta name="build-version" content="v01.09w">
   <title>GAS Project Creator</title>
   <style>
 /* ══════════════ */
@@ -669,10 +669,26 @@
               </select>
               <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
             </div>
-            <div class="step-input" style="margin:0;">
+            <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-allowed-domains">Allowed Domains <em>(optional)</em></label>
               <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
               <span class="field-hint">Comma-separated list of allowed email domains. Leave blank to allow all Google accounts. Required for HIPAA preset</span>
+            </div>
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#58a6ff;margin:14px 0 10px;">Master ACL Spreadsheet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6e7681;">(optional &mdash; centralized access control)</span></div>
+            <div class="step-input" style="margin:0 0 10px;">
+              <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
+              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-master-acl-id')" title="Clear">&times;</button></div>
+              <span class="field-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
+            </div>
+            <div class="step-input" style="margin:0 0 10px;">
+              <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
+              <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="ACL" value="ACL"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
+              <span class="field-hint">The sheet tab name in the master ACL spreadsheet where authorized emails are listed</span>
+            </div>
+            <div class="step-input" style="margin:0;">
+              <label for="cfg-acl-page-name">ACL Page Name</label>
+              <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
+              <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
             </div>
           </div>
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
@@ -1304,6 +1320,15 @@
             // Also enable domain restriction in all presets
             code = code.replace(/ENABLE_DOMAIN_RESTRICTION:\s*false/g, 'ENABLE_DOMAIN_RESTRICTION: true');
           }
+          // Master ACL spreadsheet config
+          var masterAclId = (document.getElementById('cfg-master-acl-id') || {}).value || '';
+          if (masterAclId.trim()) code = code.replace(/var MASTER_ACL_SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var MASTER_ACL_SPREADSHEET_ID = "' + masterAclId.trim() + '"');
+          var aclSheetName = (document.getElementById('cfg-acl-sheet-name') || {}).value || 'ACL';
+          if (aclSheetName.trim()) code = code.replace(/var ACL_SHEET_NAME\s*=\s*"[^"]*"/, 'var ACL_SHEET_NAME = "' + aclSheetName.trim().replace(/"/g, '\\"') + '"');
+          var aclPageName = (document.getElementById('cfg-acl-page-name') || {}).value || '';
+          var envNameVal = (document.getElementById('cfg-env-name') || {}).value || '';
+          var resolvedAclPage = aclPageName.trim() || envNameVal.trim();
+          if (resolvedAclPage) code = code.replace(/var ACL_PAGE_NAME\s*=\s*"[^"]*"/, 'var ACL_PAGE_NAME  = "' + resolvedAclPage + '"');
         }
         var envName = (document.getElementById('cfg-env-name') || {}).value || '';
         if (envName.trim()) {
@@ -1459,6 +1484,16 @@
           + ',\n  "AUTH_PRESET": "' + authPreset + '"';
         if (allowedDomains) {
           json += ',\n  "ALLOWED_DOMAINS": "' + allowedDomains + '"';
+        }
+        var masterAclId = document.getElementById('cfg-master-acl-id').value.trim() || '';
+        var aclSheetName = document.getElementById('cfg-acl-sheet-name').value.trim() || 'ACL';
+        var aclPageName = document.getElementById('cfg-acl-page-name').value.trim() || '';
+        if (masterAclId) {
+          json += ',\n  "MASTER_ACL_SPREADSHEET_ID": "' + masterAclId + '"';
+        }
+        json += ',\n  "ACL_SHEET_NAME": "' + aclSheetName + '"';
+        if (aclPageName) {
+          json += ',\n  "ACL_PAGE_NAME": "' + aclPageName + '"';
         }
       }
       json += '\n}';
