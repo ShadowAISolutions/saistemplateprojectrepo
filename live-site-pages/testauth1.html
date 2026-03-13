@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.32w">
+  <meta name="build-version" content="v01.33w">
   <!-- I5: Content Security Policy — restricts resource loading to trusted origins -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src https://script.google.com https://*.googleusercontent.com https://accounts.google.com; connect-src 'self' https://accounts.google.com https://*.googleapis.com https://*.google.com https://*.github.io; img-src 'self' https: data:;">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
@@ -305,8 +305,8 @@
     var HTML_CONFIG = {
       // M2: sessionStorage for all presets — auto-clears on tab close, reducing XSS token exposure
       STORAGE_TYPE: 'sessionStorage',
-      // C3: postMessage for all presets — prevents OAuth access token exposure in URL params
-      TOKEN_EXCHANGE_METHOD: 'postMessage',
+      // Token exchange via URL parameter — GAS doGet handles the exchange server-side
+      TOKEN_EXCHANGE_METHOD: 'url',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
       HEARTBEAT_INTERVAL: 30000  // ms (30s) — how often to check for activity and send heartbeat

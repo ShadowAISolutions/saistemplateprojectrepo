@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -58,8 +58,9 @@ var PRESETS = {
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: false,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
-    // C3: postMessage prevents OAuth access token exposure in URL params/logs/history
-    TOKEN_EXCHANGE_METHOD: 'postMessage'
+    // Token exchange via URL parameter — postMessage exchange is unreliable due to
+    // GAS nested iframe architecture (script.google.com → googleusercontent.com sandbox)
+    TOKEN_EXCHANGE_METHOD: 'url'
   },
   hipaa: {
     SESSION_EXPIRATION: 900,
@@ -79,7 +80,7 @@ var PRESETS = {
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: true,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
-    TOKEN_EXCHANGE_METHOD: 'postMessage'
+    TOKEN_EXCHANGE_METHOD: 'url'
   }
 };
 

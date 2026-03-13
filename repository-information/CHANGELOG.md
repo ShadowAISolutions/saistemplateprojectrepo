@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v02.82r] — 2026-03-13 05:18:59 PM EST
+
+### Fixed
+- Fixed sign-in not completing — reverted token exchange from postMessage back to URL parameter method. The postMessage exchange is unreliable due to GAS nested iframe architecture (script.google.com → googleusercontent.com sandbox). Additionally, the deployed GAS still expected URL exchange, creating a config mismatch
+
+#### `testauth1.html` — v01.33w
+
+##### Fixed
+- Reverted token exchange method to URL parameter — matches the deployed GAS configuration and eliminates postMessage reliability issues
+
+#### `testauth1.gs` — v01.16g
+
+##### Changed
+- Reverted both standard and HIPAA presets from postMessage to URL token exchange — postMessage is incompatible with GAS iframe sandbox architecture
 
 ## [v02.81r] — 2026-03-13 05:11:33 PM EST
 
