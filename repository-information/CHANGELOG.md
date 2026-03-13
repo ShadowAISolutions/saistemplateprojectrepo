@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v02.83r] — 2026-03-13 05:24:04 PM EST
+
+### Fixed
+- Fixed sign-in not completing after selecting a Google account — removed Content Security Policy meta tag that was blocking required Google authentication services
+
+#### `testauth1.html` — v01.34w
+
+##### Fixed
+- Removed CSP meta tag — was blocking Google Sign-In token exchange flow. Security is enforced via postMessage origin validation and message-type allowlisting instead
 
 ## [v02.82r] — 2026-03-13 05:18:59 PM EST
 
