@@ -1,6 +1,6 @@
 # Custom Authentication Pattern — GAS + Custom Domain HTML Wrapper
 
-Reference implementation derived from `dchrcalendar.gs` + `dchrcalendar.html`. Use this pattern when implementing custom username/password authentication for any Google Apps Script web app served via a custom domain. This is NOT Google OAuth/SSO — it is a fully custom auth system using credentials stored in a Google Sheet with server-side session tokens.
+Reference implementation originally derived from `dchrcalendar.gs` + `dchrcalendar.html` (source files removed). Use this pattern when implementing custom username/password authentication for any Google Apps Script web app served via a custom domain. This is NOT Google OAuth/SSO — it is a fully custom auth system using credentials stored in a Google Sheet with server-side session tokens.
 
 ## Architecture Overview
 
@@ -352,8 +352,9 @@ This way, anyone with Sheet access sees hashes instead of raw passwords. The res
 
 ## Source Files
 
-- **HTML wrapper**: `live-site-pages/dchrcalendar.html`
-- **GAS script**: `googleAppsScripts/dchrcalendar.gs`
-- Auth functions start at line ~2403 in the `.gs` file
+> **Note:** The original source files have been removed from the repo. This document preserves the implementation pattern for reference.
+>
+> - ~~**HTML wrapper**: `live-site-pages/dchrcalendar.html`~~ (removed)
+> - ~~**GAS script**: `googleAppsScripts/dchrcalendar.gs`~~ (removed)
 
 Developed by: ShadowAISolutions

@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v02.67r] — 2026-03-12 11:38:39 PM EST
+
+### Removed
+- Removed `dchrcalendar.gs`, `dchrcalendar.html`, `testaed.gs`, and `testaed.html` — unused standalone files that were only kept as auth pattern reference implementations
+- Updated `1-CUSTOM-AUTH-PATTERN.md` and `2-GOOGLE-OAUTH-AUTH-PATTERN.md` to note source files have been removed (pattern documentation preserved)
 
 ## [v02.66r] — 2026-03-12 11:19:23 PM EST
 

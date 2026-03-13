@@ -1,6 +1,6 @@
 # Google OAuth Authentication Pattern — GIS + GAS + Custom Domain HTML Wrapper
 
-Reference implementation derived from `testaed.gs` + `testaed.html`. Use this pattern when implementing Google account-based authentication for a Google Apps Script web app where authorization is determined by the user's access to the backing Google Sheet. This uses **Google Identity Services (GIS) OAuth2** — the user signs in with their real Google account, and no custom credentials are stored.
+Reference implementation originally derived from `testaed.gs` + `testaed.html` (source files removed). Use this pattern when implementing Google account-based authentication for a Google Apps Script web app where authorization is determined by the user's access to the backing Google Sheet. This uses **Google Identity Services (GIS) OAuth2** — the user signs in with their real Google account, and no custom credentials are stored.
 
 ## Architecture Overview
 
@@ -499,8 +499,9 @@ function showAuthWall(d) {
 
 ## Source Files
 
-- **HTML wrapper**: `live-site-pages/testaed.html`
-- **GAS script**: `googleAppsScripts/testaed.gs`
-- Auth functions: `getUserInfo()` at line ~60, `checkSpreadsheetAccess()` at line ~95
+> **Note:** The original source files have been removed from the repo. This document preserves the implementation pattern for reference.
+>
+> - ~~**HTML wrapper**: `live-site-pages/testaed.html`~~ (removed)
+> - ~~**GAS script**: `googleAppsScripts/testaed.gs`~~ (removed)
 
 Developed by: ShadowAISolutions
