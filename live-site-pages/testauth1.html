@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.61w">
+  <meta name="build-version" content="v01.62w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1173,6 +1173,9 @@
         _heartbeatIdle = true;  // reset to idle after extend — next tick decides if still active
         // Reset the client-side session start time to match the server reset
         getStorage().setItem(SESSION_START_KEY, String(Date.now()));
+        // Hide expiry warning and reset flag — session was extended
+        _expiryWarningShown = false;
+        hideReauthBanner();
       }
 
       // Heartbeat failed — session already expired on server
@@ -1428,6 +1431,10 @@
           if (remaining <= 60) {
             sessionEl.className = 'timer-value critical';
             pillLabel.className = 'timer-pill-label critical';
+            if (!_expiryWarningShown) {
+              _expiryWarningShown = true;
+              showReauthBanner('Your session is expiring soon. Click to refresh.', true);
+            }
           } else if (remaining <= 90) {
             sessionEl.className = 'timer-value warn';
             pillLabel.className = 'timer-pill-label warn';
@@ -1510,6 +1517,7 @@
     var _lastHeartbeatTick = 0;      // timestamp of the last interval tick (or start)
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatIdle = false;      // true when last tick found no activity
+    var _expiryWarningShown = false; // prevents repeated "expiring soon" banner displays
 
     function startHeartbeat() {
       if (!HTML_CONFIG.ENABLE_HEARTBEAT) return;

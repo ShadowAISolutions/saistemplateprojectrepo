@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v03.42r] — 2026-03-14 06:43:09 PM EST
+
+### Fixed
+- Session expiry warning banner now triggers automatically when ≤60 seconds remain, instead of only appearing on page refresh — banner also auto-hides when a heartbeat extends the session
+
+#### `testauth1.html` — v01.62w
+
+##### Fixed
+- "Session expiring soon" warning now appears automatically when less than 60 seconds remain, instead of only showing on page refresh
 
 ## [v03.41r] — 2026-03-14 06:35:29 PM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.62w] — 2026-03-14 06:43:09 PM EST — v03.42r
+
+### Fixed
+- "Session expiring soon" warning now appears automatically when less than 60 seconds remain, instead of only showing on page refresh
 
 ## [v01.61w] — 2026-03-14 06:35:29 PM EST — v03.41r
 
