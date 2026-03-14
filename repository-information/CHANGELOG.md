@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 43/100`
+`Sections: 44/100`
 
 ## [Unreleased]
+
+## [v03.22r] — 2026-03-14 01:52:33 PM EST
+
+### Changed
+- Renamed `KNOWN-CONSTRAINTS.md` → `KNOWN-CONSTRAINTS-AND-FIXES.md` to reflect both architectural constraints and resolved bug documentation
+- Added Resolved Fixes section documenting the 3 hipaa sign-in bugs and their fixes (postMessage targeting, HMAC verification, stale message key)
+- Updated all references to the renamed file across the repo
+
+#### `testauth1.html` — v01.52w
+
+##### Changed
+- Minor internal improvements
 
 ## [v03.21r] — 2026-03-14 01:52:33 PM EST
 
@@ -38,7 +50,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Fixed hipaa postMessage token exchange — sign-in was stuck because `gasApp.contentWindow` targets the outer script.google.com shell frame, not the inner sandbox frame where the listener runs; switched to `event.source` to reply directly to the sandbox
 
 ### Added
-- Created `KNOWN-CONSTRAINTS.md` documenting architectural constraints that must not be changed (GAS double-iframe `'*'` targetOrigin, `event.source` for HTML→GAS replies, unauthenticated deploy webhook, sign-in flow chain, PARENT_ORIGIN for GAS→HTML)
+- Created `KNOWN-CONSTRAINTS-AND-FIXES.md` documenting architectural constraints that must not be changed (GAS double-iframe `'*'` targetOrigin, `event.source` for HTML→GAS replies, unauthenticated deploy webhook, sign-in flow chain, PARENT_ORIGIN for GAS→HTML)
 
 #### `testauth1.html` — v01.50w
 

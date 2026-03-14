@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-14 01:52:33 PM EST` · Repo version: `v03.21r`
+Last updated: `2026-03-14 01:52:33 PM EST` · Repo version: `v03.22r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -41,7 +41,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gas-project-creator.html">gas-project-creator.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/gas-project-creator.html">🌐</a>🟢 · 🔸 · ◽ · 🔻 · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/gas-project-creator-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/gas-project-creatorhtml.changelog.md">v01.10w</a> · vNoGASg | [template] GAS project creator dashboard
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/testauth1.html">testauth1.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testauth1html.changelog.md">v01.51w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog.md">v01.23g</a> | [template] testauth1title page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/testauth1.html">testauth1.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testauth1html.changelog.md">v01.52w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog.md">v01.23g</a> | [template] testauth1title page
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>
@@ -121,7 +121,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/GOVERNANCE.md">GOVERNANCE.md</a>           — [template] Project governance
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-COMPLIANCE-REFERENCE.md">HIPAA-COMPLIANCE-REFERENCE.md</a> — HIPAA Security Rule compliance reference (all safeguards, implementation status)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/KNOWN-CONSTRAINTS.md">KNOWN-CONSTRAINTS.md</a>    — Architectural constraints that must not be changed (GAS double-iframe, postMessage, deploy webhook)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/KNOWN-CONSTRAINTS-AND-FIXES.md">KNOWN-CONSTRAINTS-AND-FIXES.md</a>    — Architectural constraints &amp; resolved bug fixes (GAS double-iframe, postMessage, HMAC, deploy webhook)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/MICROSOFT-AUTH-PLAN.md">MICROSOFT-AUTH-PLAN.md</a>  — [template] Microsoft auth implementation plan (MSAL.js + Azure AD)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/7-SECURITY-UPDATE-PLAN-TESTAUTH1.md">7-SECURITY-UPDATE-PLAN-TESTAUTH1.md</a> — [template] Security hardening plan for testauth1 (6 phases, implemented)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/8-SECURITY-UPDATE-PLAN-TESTAUTH1.md">8-SECURITY-UPDATE-PLAN-TESTAUTH1.md</a> — [template] Security update plan II for testauth1 (7 phases, 19 vulnerabilities — ready for implementation)

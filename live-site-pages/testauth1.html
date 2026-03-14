@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.51w">
+  <meta name="build-version" content="v01.52w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1054,7 +1054,7 @@
         // gasApp.contentWindow.postMessage() sends to the shell — the sandbox never receives it.
         // event.source is the WindowProxy of the frame that sent gas-ready-for-token (the sandbox),
         // so replying via event.source reaches the correct listener.
-        // '*' targetOrigin is required — see KNOWN-CONSTRAINTS.md Constraint A.
+        // '*' targetOrigin is required — see KNOWN-CONSTRAINTS-AND-FIXES.md Constraint A.
         if (event.source) {
           event.source.postMessage({
             type: 'exchange-token',
