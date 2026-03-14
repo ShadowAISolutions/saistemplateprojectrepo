@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.60w">
+  <meta name="build-version" content="v01.61w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1770,7 +1770,7 @@
 
       // Test 2: Changelog sanitization
       if (typeof sanitizeChangelogHtml === 'function') {
-        var testHtml = '<b>Safe</b><script>alert("xss")</' + 'script><img onerror="alert(1)" src="x"><iframe src="evil"></iframe>';
+        var testHtml = '<b>Safe</b><script>alert("xss")</' + 'script><img onerror="alert(1)" src="data:,"><iframe srcdoc="evil"></iframe>';
         var sanitized = sanitizeChangelogHtml(testHtml);
         var hasScript = sanitized.indexOf('<script') !== -1 || sanitized.indexOf('<iframe') !== -1;
         var hasHandler = sanitized.indexOf('onerror') !== -1;
