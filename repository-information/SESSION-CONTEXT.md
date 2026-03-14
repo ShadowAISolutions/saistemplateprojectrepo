@@ -4,32 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-13 10:51:48 PM EST
-**Repo version:** v03.04r
+**Date:** 2026-03-13 11:03:12 PM EST
+**Repo version:** v03.05r
 
 ### What was done
-- **v03.00r** — Fixed heartbeat ready indicator not clearing idle on activity — `_heartbeatIdle` was not being cleared when user became active, so display stayed stuck on `(idle)` until the next 30s tick
-- **v03.01r** — After heartbeat extend (`gas-heartbeat-ok`), set `_heartbeatIdle = true` so display resets to "(idle)" instead of the old "extended ✓" → "active" setTimeout flash that was getting overwritten by the 1-second timer
-- **v03.02r** — Added iframe focus detection (polling `document.activeElement` for iframe + `_onHeartbeatActivity()`) to catch keyboard interaction inside cross-origin GAS iframe
+- **v03.00r** — Fixed heartbeat ready indicator not clearing idle on activity — `_heartbeatIdle` was not being cleared when user became active
+- **v03.01r** — After heartbeat extend (`gas-heartbeat-ok`), set `_heartbeatIdle = true` so display resets to "(idle)" instead of the old "extended ✓" → "active" setTimeout flash
+- **v03.02r** — Added iframe focus detection to catch keyboard interaction inside cross-origin GAS iframe
 - **v03.03r** — Gated iframe focus detection on `document.hasFocus()` to prevent false positives when browser tab not focused
-- **v03.04r** — Removed iframe focus polling entirely — it falsely reported activity whenever iframe had focus even if user was idle. No reliable way to detect keyboard-only activity inside a cross-origin iframe from the parent
+- **v03.04r** — Removed iframe focus polling entirely — falsely reported activity whenever iframe had focus even if user was idle
+- **v03.05r** — Removed 15s grace period for in-flight heartbeats (urgent heartbeat makes it unnecessary). Propagated testauth1 improvements to auth template: urgent heartbeat for last-30s activity, `▶ ready` indicator replacing `(active)` label
 
 ### Where we left off
-All heartbeat display fixes are complete and deployed. The net changes from this session:
-1. After heartbeat extend, display resets to idle (new behavior)
-2. Removed the old "extended ✓" → "active" setTimeout hack (was getting overwritten)
-3. Keyboard-only interaction inside the GAS iframe remains a known limitation — cross-origin iframes swallow keyboard events and there's no false-positive-free way to detect them from the parent. Mouse movement on the host page covers most real usage
+All heartbeat display and timing fixes complete and deployed. Template is now in sync with testauth1 for heartbeat features. Net changes from this session:
+1. After heartbeat extend, display resets to idle (new)
+2. Removed "extended ✓" → "active" setTimeout hack
+3. Removed 15s grace period — urgent heartbeat covers the edge case
+4. Template now has: urgent heartbeat, `▶ ready` indicator, idle-after-extend behavior
+5. Keyboard-only interaction inside GAS iframe remains a known limitation (cross-origin iframes swallow keyboard events)
 
 ### Key decisions made
-- **Iframe focus polling is not viable** — tried two approaches (raw polling, then gated on `document.hasFocus()`), both produced false positives. The fundamental problem: `document.activeElement === iframe` is true even when the user is completely idle, as long as focus remains in the iframe
-- **Accepted the limitation** — keyboard-only interaction in the GAS iframe won't trigger heartbeat. The only solution would be having the GAS script itself post activity messages back to the parent, which adds GAS-side complexity
-- **Post-extend state should be idle** — after a successful heartbeat extend, the display resets to "(idle)" and the next tick determines if the user is still active. This is correct because the extend just happened — there's no pending activity to report
+- **Iframe focus polling is not viable** — tried two approaches (raw polling, then gated on `document.hasFocus()`), both produced false positives. `document.activeElement === iframe` stays true even when user is completely idle
+- **Grace period removed** — the urgent heartbeat (instant send when <30s remain + user active) closes the gap that the grace period was designed for
+- **Post-extend state should be idle** — after a successful heartbeat extend, display resets to "(idle)" and the next tick determines activity
+- **Accepted iframe keyboard limitation** — only solution would be having the GAS script post activity messages to the parent, adding GAS-side complexity
 
 ### Active context
-- Repo version: v03.04r
-- testauth1.html: v01.39w, testauth1.gs: v01.16g
-- Security update plan still exists at `repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md` — status unknown from this session (was ready for implementation as of v02.89r context)
-- Microsoft auth plan saved at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
+- Repo version: v03.05r
+- testauth1.html: v01.40w, testauth1.gs: v01.16g
+- Security update plan at `repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md` — was ready for implementation as of v02.89r
+- Microsoft auth plan at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
