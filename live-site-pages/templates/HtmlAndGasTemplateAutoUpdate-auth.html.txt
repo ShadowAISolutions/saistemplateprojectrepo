@@ -1445,7 +1445,7 @@
       if (_iframeFocusInterval) return;
       _iframeFocusInterval = setInterval(function() {
         var el = document.activeElement;
-        if (el && el.tagName === 'IFRAME') _onHeartbeatActivity();
+        if (el && el.tagName === 'IFRAME' && document.hasFocus()) _onHeartbeatActivity();
       }, 1000);
     }
     function _stopIframeFocusDetection() {

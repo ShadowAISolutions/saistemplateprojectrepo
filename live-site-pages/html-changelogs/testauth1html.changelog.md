@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.38w] — 2026-03-13 10:39:53 PM EST — v03.03r
+
+### Fixed
+- Session no longer falsely shows activity when you switch to another tab or window
 
 ## [v01.37w] — 2026-03-13 10:34:59 PM EST — v03.02r
 

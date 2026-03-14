@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 24/100`
+`Sections: 25/100`
 
 ## [Unreleased]
+
+## [v03.03r] — 2026-03-13 10:39:53 PM EST
+
+### Fixed
+- Iframe focus detection now requires `document.hasFocus()` — prevents false activity when the browser tab is not focused
+
+#### `testauth1.html` — v01.38w
+
+##### Fixed
+- Session no longer falsely shows activity when you switch to another tab or window
 
 ## [v03.02r] — 2026-03-13 10:34:59 PM EST
 
