@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 4/100`
+`Sections: 5/100`
 
 ## [Unreleased]
+
+## [v01.05w] — 2026-03-14 05:16:28 PM EST — v03.31r
+
+### Changed
+- Portal dashboard now loads inside the GAS iframe instead of being built into the page directly
+- Sign-in now uses server-side session management through Google Apps Script
+- Added GAS version indicator pill showing the current script version
 
 ## [v01.04w] — 2026-03-14 03:19:37 PM EST — v03.29r
 

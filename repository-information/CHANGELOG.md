@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
 ## [Unreleased]
+
+## [v03.31r] — 2026-03-14 05:16:28 PM EST
+
+### Changed
+- Portal page architecture: moved dashboard UI (app cards, toggle, gradient theme) from HTML layer to GAS layer — portal.html is now a standard template page with GAS iframe integration
+- Portal authentication switched from client-side master token to server-side GAS session management (token exchange via iframe)
+
+### Added
+- GAS version polling and GAS version pill on the portal page
+- GAS iframe injection with encoded deployment URL on the portal page
+- GAS changelog popup accessible from the GAS version pill
+
+#### `portal.html` — v01.05w
+
+##### Changed
+- Replaced custom client-side auth with standard template GAS-based auth (token exchange, session management)
+- Removed portal dashboard HTML/CSS/JS from the HTML layer (now served by GAS iframe)
+- Added GAS iframe injection, GAS version polling, and GAS changelog popup from template
+
+#### `portal.gs` — v01.01g
+
+##### Changed
+- Portal dashboard UI now rendered by GAS: gradient background, app cards grid, open-in-tab/window toggle, user info display
 
 ## [v03.30r] — 2026-03-14 04:56:37 PM EST
 

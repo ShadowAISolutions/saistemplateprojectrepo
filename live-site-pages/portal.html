@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <title>Portal Title</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -84,6 +84,59 @@
     #version-indicator .dot.found    { background: #66bb6a; }
     #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+    #gas-pill {
+      position: fixed; bottom: 34px; right: 8px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
+    }
+    #gas-pill:hover { background: rgba(0,0,0,0.75); }
+    #gas-pill .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #888; transition: background 0.3s ease;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6px; line-height: 1; color: #fff;
+    }
+    #gas-pill .dot.checking { background: #42a5f5; animation: pulse 0.6s infinite alternate; }
+    #gas-pill .dot.counting { background: #888; }
+    #gas-pill .dot.found    { background: #66bb6a; }
+    #gas-pill .dot.error    { background: #ef5350; }
+    #gcl-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
+      align-items: center; justify-content: center;
+    }
+    #gcl-popup {
+      background: #1a1a2e; color: #e0e0e0; border-radius: 12px;
+      max-width: 480px; width: 90%; max-height: 70vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #gcl-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #gcl-title { font: bold 16px/1 sans-serif; color: #fff; }
+    #gcl-close {
+      background: none; border: none; color: #888; font-size: 24px;
+      cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    #gcl-close:hover { color: #fff; }
+    #gcl-body {
+      padding: 16px 20px; overflow-y: auto; font: 13px/1.5 sans-serif;
+    }
+    #gcl-body h3 {
+      font-size: 14px; color: #7c8bff; margin: 16px 0 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;
+    }
+    #gcl-body h3:first-child { margin-top: 0; }
+    #gcl-body h4 {
+      font-size: 12px; color: #a0a0a0; margin: 10px 0 4px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
+    #gcl-body li { margin-bottom: 4px; }
 /* ══════════════ */
 /* TEMPLATE END */
 /* ══════════════ */
@@ -128,101 +181,6 @@
 /* ══════════════ */
 /* PROJECT START */
 /* ══════════════ */
-    #portal-dashboard {
-      display: none; flex-direction: column; align-items: center;
-      justify-content: center; min-height: 100vh;
-      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-      font-family: sans-serif; padding: 20px;
-    }
-    #portal-dashboard.visible { display: flex; }
-
-    .portal-header {
-      text-align: center; margin-bottom: 40px;
-    }
-    .portal-header img {
-      max-width: 80px; max-height: 80px; margin-bottom: 16px;
-      border-radius: 12px;
-    }
-    .portal-header h1 {
-      color: #fff; font-size: 28px; font-weight: bold; margin: 0 0 8px;
-    }
-    .portal-header .portal-subtitle {
-      color: rgba(255,255,255,0.6); font-size: 14px;
-    }
-    .portal-user-info {
-      color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 12px;
-      background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px;
-    }
-
-    .portal-apps {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px; max-width: 720px; width: 100%;
-    }
-    .portal-app-card {
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px; padding: 24px 20px;
-      text-decoration: none; color: #fff;
-      transition: all 0.2s ease; cursor: pointer;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .portal-app-card:hover {
-      background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25);
-      transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-    }
-    .portal-app-card .app-icon {
-      font-size: 32px; margin-bottom: 4px;
-    }
-    .portal-app-card .app-name {
-      font-size: 16px; font-weight: bold;
-    }
-    .portal-app-card .app-desc {
-      font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.4;
-    }
-    .portal-app-card .app-status {
-      font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px;
-    }
-    .portal-app-card .app-status.connected { color: #66bb6a; }
-
-    .portal-footer {
-      margin-top: 40px; text-align: center;
-      color: rgba(255,255,255,0.3); font-size: 11px;
-    }
-
-    .portal-open-toggle {
-      display: flex; align-items: center; justify-content: flex-end;
-      gap: 10px; max-width: 720px; width: 100%; margin-bottom: 12px;
-      color: rgba(255,255,255,0.6); font-size: 13px;
-    }
-    .portal-open-toggle label {
-      display: flex; align-items: center; gap: 8px; cursor: pointer;
-    }
-    .portal-open-toggle input[type="checkbox"] { display: none; }
-    .toggle-track {
-      width: 36px; height: 20px; background: rgba(255,255,255,0.2);
-      border-radius: 10px; position: relative; transition: background 0.2s;
-    }
-    .toggle-track::after {
-      content: ''; position: absolute; top: 2px; left: 2px;
-      width: 16px; height: 16px; background: #fff; border-radius: 50%;
-      transition: transform 0.2s;
-    }
-    .portal-open-toggle input:checked + .toggle-track {
-      background: #66bb6a;
-    }
-    .portal-open-toggle input:checked + .toggle-track::after {
-      transform: translateX(16px);
-    }
-
-    .portal-config-banner {
-      background: rgba(255,193,7,0.15); border: 1px solid rgba(255,193,7,0.3);
-      border-radius: 8px; padding: 12px 20px; margin-bottom: 24px;
-      color: #ffd54f; font-size: 13px; max-width: 720px; width: 100%;
-      text-align: center; line-height: 1.5;
-    }
-    .portal-config-banner code {
-      background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;
-      font-family: monospace; font-size: 12px;
-    }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -235,6 +193,8 @@
   <div id="splash-web" class="splash"><div class="splash-title">Website Ready</div><img id="splash-logo" src="" alt=""></div>
   <div id="splash-code" class="splash"><div class="splash-title">Code Ready</div><img id="splash-code-logo" src="" alt=""></div>
   <div id="splash-maintenance" class="splash"><div class="splash-title">🔧This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">🔧</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
+  <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
+  <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
 <!-- ══════════════ -->
 <!-- TEMPLATE END -->
 <!-- ══════════════ -->
@@ -263,34 +223,6 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <div id="portal-dashboard">
-    <div class="portal-header">
-      <img id="portal-logo" src="" alt="">
-      <h1>Application Portal</h1>
-      <div class="portal-subtitle">Central authentication gateway</div>
-      <div class="portal-user-info" id="portal-user-info"></div>
-    </div>
-
-    <div class="portal-config-banner" id="portal-config-banner" style="display:none;">
-      ⚠️ Portal is in <strong>standalone mode</strong> — no <code>auth.gs</code> backend configured yet.
-      Authentication is handled client-side only. Set up the GAS project to enable server-side SSO.
-    </div>
-
-    <div class="portal-open-toggle">
-      <label>
-        <span>Open in new tab</span>
-        <input type="checkbox" id="portal-window-toggle">
-        <span class="toggle-track"></span>
-        <span>New window</span>
-      </label>
-    </div>
-
-    <div class="portal-apps" id="portal-apps"></div>
-
-    <div class="portal-footer">
-      Developed by: ShadowAISolutions
-    </div>
-  </div>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -320,60 +252,11 @@
     var HTML_CONFIG = {
       // 'localStorage' (standard) or 'sessionStorage' (HIPAA — cleared on tab close)
       STORAGE_TYPE: 'localStorage',
-      // Portal uses localStorage by default for cross-page SSO —
-      // master token must be readable by all same-origin app pages.
-      // Switch to 'sessionStorage' for HIPAA mode (token passed via URL param instead).
+      // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
+      TOKEN_EXCHANGE_METHOD: 'url',
+      // Heartbeat: enable to keep server session alive while user is active
+      ENABLE_HEARTBEAT: true,
     };
-
-    // ═══════════════════════════════════════════════
-    // PORTAL CONFIG — Application Registry
-    // ═══════════════════════════════════════════════
-    // Each entry defines an app page accessible from the portal.
-    // - name: display name on the card
-    // - url: relative URL to the app page (same GitHub Pages origin)
-    // - icon: emoji icon for the card
-    // - description: brief description shown on the card
-    // - requiresAuth: if true, master token is passed (via storage or URL param)
-    var PORTAL_APPS = [
-      {
-        name: 'Test Auth 1',
-        url: 'testauth1.html',
-        icon: '🔐',
-        description: 'Authentication testing environment with full security features.',
-        requiresAuth: true
-      },
-      {
-        name: 'Test Environment',
-        url: 'testenvironment.html',
-        icon: '🧪',
-        description: 'General testing environment for development.',
-        requiresAuth: false
-      },
-      {
-        name: 'Homepage',
-        url: 'index.html',
-        icon: '🏠',
-        description: 'Main landing page.',
-        requiresAuth: false
-      },
-      {
-        name: 'GAS Project Creator',
-        url: 'gas-project-creator.html',
-        icon: '⚙️',
-        description: 'Create and configure new Google Apps Script projects.',
-        requiresAuth: false
-      }
-    ];
-
-    // Master token storage keys (shared namespace — app pages read these)
-    var MASTER_TOKEN_KEY = 'portal_master_token';
-    var MASTER_EMAIL_KEY = 'portal_master_email';
-    var MASTER_NAME_KEY = 'portal_master_name';
-    var MASTER_EXPIRY_KEY = 'portal_master_expiry';
-
-    // Master token lifetime (seconds) — in standalone mode, this is the
-    // client-side-only token lifetime. With auth.gs, the server controls expiry.
-    var MASTER_TOKEN_LIFETIME = 3600; // 1 hour
 // ──────────────
 
 // ══════════════
@@ -386,7 +269,6 @@
     document.getElementById('maintenance-logo').src = LOGO_URL;
     document.getElementById('auth-wall-logo').src = LOGO_URL;
     document.getElementById('auth-wall-title').textContent = document.title || '';
-    document.getElementById('portal-logo').src = LOGO_URL;
 
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {
@@ -644,6 +526,190 @@
       if (document.visibilityState === 'visible') requestWakeLock();
     });
 
+    (function() {
+      var _e = 'Y2V4ZS9tWDdFUWxWR082UWFOemZxNEFTM2N4UHRCTGQzUkhKb1c1MDRzMTJSOE9SQ2N5V24tZ3RCYTR5T201aktCZkV3S3piY3lmS0Evcy9zb3JjYW0vbW9jLmVsZ29vZy50cGlyY3MvLzpzcHR0aA==';
+      if (!_e) return;
+      var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return; }
+      if (!_u) return;
+      // cr34t3 1fr4m3
+      var f = document.createElement(atob('aWZyYW1l'));
+      f.id = 'gas-app';
+      f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
+      f.dataset.baseUrl = _u;
+      window._r = _u;
+      f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
+      document.body.appendChild(f);
+    })();
+
+    // GAS auto-refresh: poll <pagename>gs.version.txt for GAS version changes
+    // Also drives the GAS version pill (bottom-right, above HTML pill) with countdown dot
+    (function() {
+      var GAS_POLL_INTERVAL = 10000;
+      var GAS_INITIAL_DELAY = 15000;
+      if (!AUTO_REFRESH) return;
+
+      var basePath = window.location.href.split('?')[0].split('#')[0];
+      var pageName = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
+      if (!pageName) pageName = 'index';
+      var gasVersionUrl = basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-versions/' + pageName + 'gs.version.txt';
+
+      var currentGasVersion = null;
+      var pill = document.getElementById('gas-pill');
+      var pillLabel = document.getElementById('gas-pill-label');
+      var dot = pill ? pill.querySelector('.dot') : null;
+      var countdownSeconds = 0;
+      var countdownTimer = null;
+
+      function startCountdown(interval) {
+        countdownSeconds = (interval || GAS_POLL_INTERVAL) / 1000;
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(function() {
+          countdownSeconds--;
+          if (countdownSeconds <= 0) {
+            clearInterval(countdownTimer);
+            if (dot) { dot.textContent = ''; dot.className = 'dot'; }
+          } else if (countdownSeconds <= 5) {
+            if (dot) { dot.textContent = countdownSeconds; dot.className = 'dot counting'; }
+          }
+        }, 1000);
+      }
+
+      function checkGasUpdate() {
+        if (countdownTimer) clearInterval(countdownTimer);
+        if (dot) { dot.textContent = ''; dot.className = 'dot checking'; }
+        fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
+          .then(function(res) { return res.text(); })
+          .then(function(v) {
+            var fetched = v.trim();
+            if (!currentGasVersion) {
+              currentGasVersion = fetched;
+              if (pill) { pill.style.display = 'flex'; }
+              if (pillLabel) pillLabel.textContent = 'GAS ' + fetched;
+            } else if (fetched !== currentGasVersion) {
+              // GAS version changed on GitHub — reload immediately
+              if (dot) dot.className = 'dot found';
+              if (pillLabel) pillLabel.textContent = 'GAS updated — reloading...';
+              sessionStorage.setItem('gas-pending-sound', '1');
+              setTimeout(function() { window.location.reload(); }, 1500);
+              return;
+            }
+            if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
+            // Anti-sync: if GAS poll fired within 3s of HTML poll, add 5s delay to re-establish gap
+            var _gasPollDelay = GAS_POLL_INTERVAL;
+            if (window._htmlPollTime && Math.abs(Date.now() - window._htmlPollTime) < 3000) {
+              _gasPollDelay += 5000;
+            }
+            startCountdown(_gasPollDelay);
+            setTimeout(checkGasUpdate, _gasPollDelay);
+          })
+          .catch(function() {
+            if (dot) {
+              dot.className = 'dot error';
+              setTimeout(function() { dot.className = 'dot'; }, 2000);
+            }
+            startCountdown();
+            setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
+          });
+      }
+
+      // Fetch version immediately — only show GAS pill and start polling if gs.version.txt exists
+      fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
+        .then(function(res) {
+          if (!res.ok) throw new Error('no gs.version.txt');
+          return res.text();
+        })
+        .then(function(v) {
+          currentGasVersion = v.trim();
+          if (pillLabel) pillLabel.textContent = 'GAS ' + currentGasVersion;
+          if (pill) pill.style.display = 'flex';
+          startCountdown(GAS_INITIAL_DELAY);
+          setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);
+        })
+        .catch(function() { /* no gs.version.txt — GAS pill stays hidden, no polling */ });
+
+      // GAS changelog popup — click pill to view GAS changelog
+      var gclOverlay = document.getElementById('gcl-overlay');
+      var gclBody = document.getElementById('gcl-body');
+      var gclCache = null;
+
+      if (pill) {
+        if (SHOW_CHANGELOG) {
+          pill.addEventListener('click', function(e) {
+            e.stopPropagation();
+            gclOverlay.style.display = 'flex';
+            if (!gclCache) fetchGasChangelog();
+          });
+        } else {
+          pill.style.cursor = 'default';
+        }
+      }
+
+      document.getElementById('gcl-close').addEventListener('click', function() { gclOverlay.style.display = 'none'; });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && gclOverlay.style.display === 'flex') gclOverlay.style.display = 'none'; });
+
+      function getGasChangelogUrl() {
+        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-changelogs/' + pageName + 'gs.changelog.md';
+      }
+
+      function parseGasChangelog(md) {
+        var lines = md.split('\n');
+        var html = '';
+        var inList = false;
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (line.match(/^# /) || line.match(/^`Sections:/) || line.match(/^All notable/)
+              || line.match(/^Format follows/) || line.match(/^Developed by:/)) continue;
+          if (line.match(/^## \[Unreleased\]/)) continue;
+          if (line.match(/^## \[/)) {
+            if (inList) { html += '</ul>'; inList = false; }
+            var m = line.match(/^## \[(v[\d.]+g)\].*?— (.+)/);
+            if (m) html += '<h3>' + m[1] + ' &mdash; ' + m[2] + '</h3>';
+            continue;
+          }
+          if (line.match(/^### /)) {
+            if (inList) { html += '</ul>'; inList = false; }
+            html += '<h4>' + line.substring(4) + '</h4>';
+            continue;
+          }
+          if (line.match(/^- /)) {
+            if (!inList) { html += '<ul>'; inList = true; }
+            html += '<li>' + line.substring(2) + '</li>';
+            continue;
+          }
+        }
+        if (inList) html += '</ul>';
+        return html || '<p style="color:#888">No changelog entries yet.</p>';
+      }
+
+      function fetchGasChangelog() {
+        gclBody.innerHTML = '<p style="color:#888">Loading changelog\u2026</p>';
+        fetch(getGasChangelogUrl())
+          .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
+          .then(function(md) {
+            gclCache = parseGasChangelog(md);
+            gclBody.innerHTML = gclCache;
+            var titleEl = document.getElementById('gcl-title');
+            if (titleEl && currentGasVersion) titleEl.textContent = 'GAS Changelog \u2014 ' + currentGasVersion;
+          })
+          .catch(function() {
+            gclBody.innerHTML = '<p style="color:#888">Could not load changelog.</p>';
+          });
+      }
+    })();
+
+    // After reload: show blue "Code Ready" splash if GAS update pending
+    if (sessionStorage.getItem('gas-pending-sound')) {
+      sessionStorage.removeItem('gas-pending-sound');
+      var codeSplash = document.getElementById('splash-code');
+      if (codeSplash) {
+        codeSplash.style.display = 'flex';
+        setTimeout(function() {
+          codeSplash.style.opacity = '0';
+          setTimeout(function() { codeSplash.style.display = 'none'; }, 300);
+        }, 1000);
+      }
+    }
+
 // ══════════════
 // TEMPLATE END
 // ══════════════
@@ -653,10 +719,13 @@
 // ══════════════
 
     // =============================================
-    // AUTH — Storage Abstraction
-    // Portal uses localStorage for cross-page SSO by default.
-    // HIPAA mode uses sessionStorage + URL param passing.
+    // AUTH — Storage Abstraction (Toggle-Gated)
+    // sessionStorage clears on tab close (HIPAA).
+    // localStorage persists across sessions (standard).
     // =============================================
+
+    var SESSION_KEY = 'gas_session_token';
+    var EMAIL_KEY = 'gas_user_email';
 
     function getStorage() {
       return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
@@ -664,49 +733,36 @@
         : window.localStorage;
     }
 
-    function saveMasterToken(token, email, displayName, expiresAt) {
+    function saveSession(sessionToken, email) {
       var storage = getStorage();
-      storage.setItem(MASTER_TOKEN_KEY, token);
-      storage.setItem(MASTER_EMAIL_KEY, email);
-      storage.setItem(MASTER_NAME_KEY, displayName || email);
-      storage.setItem(MASTER_EXPIRY_KEY, String(expiresAt));
+      storage.setItem(SESSION_KEY, sessionToken);
+      storage.setItem(EMAIL_KEY, email);
     }
 
-    function loadMasterToken() {
+    function loadSession() {
       var storage = getStorage();
       return {
-        token: storage.getItem(MASTER_TOKEN_KEY),
-        email: storage.getItem(MASTER_EMAIL_KEY),
-        name: storage.getItem(MASTER_NAME_KEY),
-        expiresAt: parseInt(storage.getItem(MASTER_EXPIRY_KEY) || '0', 10)
+        token: storage.getItem(SESSION_KEY),
+        email: storage.getItem(EMAIL_KEY)
       };
     }
 
-    function clearMasterToken() {
+    function clearSession() {
       var storage = getStorage();
-      storage.removeItem(MASTER_TOKEN_KEY);
-      storage.removeItem(MASTER_EMAIL_KEY);
-      storage.removeItem(MASTER_NAME_KEY);
-      storage.removeItem(MASTER_EXPIRY_KEY);
-    }
-
-    function isMasterTokenValid() {
-      var master = loadMasterToken();
-      if (!master.token) return false;
-      if (master.expiresAt && Date.now() > master.expiresAt) {
-        clearMasterToken();
-        return false;
-      }
-      return true;
+      storage.removeItem(SESSION_KEY);
+      storage.removeItem(EMAIL_KEY);
+      _messageKey = null;
     }
 
     // =============================================
     // AUTH — Google Sign-In (GIS)
-    // Standalone mode: Google OAuth token → client-side master token.
-    // With auth.gs: Google OAuth token → server-side master session.
+    // Silent re-auth with interactive fallback.
     // =============================================
 
+    var GAS_ORIGIN = 'https://script.google.com';
+    var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
+    var _expectingSession = false;
 
     function initGoogleSignIn() {
       signInClient = google.accounts.oauth2.initTokenClient({
@@ -715,7 +771,6 @@
         prompt: '',
         callback: handleTokenResponse
       });
-      // Attempt silent sign-in on load
       signInClient.requestAccessToken();
     }
 
@@ -724,31 +779,172 @@
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
-      // Got a Google access token — fetch user info and create master token
-      fetchUserInfo(response.access_token);
+      exchangeToken(response.access_token);
     }
 
-    function fetchUserInfo(accessToken) {
-      // Use Google's userinfo endpoint to get email and name
-      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { 'Authorization': 'Bearer ' + accessToken }
-      })
-      .then(function(res) {
-        if (!res.ok) throw new Error('Failed to fetch user info');
-        return res.json();
-      })
-      .then(function(userInfo) {
-        // Standalone mode: create a client-side master token
-        // The "token" in standalone mode is the Google access_token itself,
-        // stored locally for session continuity. When auth.gs is configured,
-        // this will be replaced with a server-issued master session token.
-        var expiresAt = Date.now() + (MASTER_TOKEN_LIFETIME * 1000);
-        saveMasterToken(accessToken, userInfo.email, userInfo.name, expiresAt);
-        showPortalDashboard(userInfo.email, userInfo.name);
-      })
-      .catch(function(err) {
-        showAuthWall('Sign-in failed: ' + err.message);
-      });
+    // =============================================
+    // AUTH — Token Exchange (Toggle-Gated: url vs postMessage)
+    // =============================================
+
+    function exchangeToken(googleAccessToken) {
+      if (HTML_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage') {
+        exchangeViaPostMessage(googleAccessToken);
+      } else {
+        exchangeViaUrl(googleAccessToken);
+      }
+    }
+
+    function exchangeViaUrl(googleAccessToken) {
+      var gasApp = document.getElementById('gas-app');
+      if (!gasApp) return;
+      var baseUrl = window._r || gasApp.dataset.baseUrl || '';
+      if (!baseUrl) return;
+      gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
+    }
+
+    var _pendingToken = null;
+
+    function exchangeViaPostMessage(googleAccessToken) {
+      _pendingToken = googleAccessToken;
+      var gasApp = document.getElementById('gas-app');
+      if (!gasApp) return;
+      var baseUrl = window._r || gasApp.dataset.baseUrl || '';
+      if (!baseUrl) return;
+      gasApp.src = baseUrl;
+    }
+
+    // =============================================
+    // AUTH — postMessage Listener
+    // =============================================
+
+    var _KNOWN_GAS_MESSAGES = {
+      'gas-ready-for-token': true,
+      'gas-session-created': true,
+      'gas-needs-auth': true,
+      'gas-auth-ok': true,
+      'gas-heartbeat-ok': true,
+      'gas-heartbeat-expired': true,
+      'gas-signed-out': true,
+      'gas-version': true
+    };
+
+    var _messageKey = null;
+
+    function _verifyMessageSignature(data, key) {
+      if (!key) return true;
+      var sig = data._sig;
+      if (!sig) return false;
+      var copy = {};
+      for (var k in data) { if (k !== '_sig') copy[k] = data[k]; }
+      var payload = JSON.stringify(copy) + '|' + key;
+      var hash = 0;
+      for (var i = 0; i < payload.length; i++) {
+        hash = ((hash << 5) - hash) + payload.charCodeAt(i);
+        hash |= 0;
+      }
+      return sig === hash.toString(36);
+    }
+
+    window.addEventListener('message', function(event) {
+      var data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (!_KNOWN_GAS_MESSAGES[data.type]) return;
+
+      if (data.type === 'gas-session-created' && data.success && data.messageKey) {
+        _messageKey = data.messageKey;
+      }
+      if (_messageKey && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {
+        if (!_verifyMessageSignature(data, _messageKey)) return;
+      }
+
+      // GAS iframe signals ready for token (postMessage exchange path)
+      if (data.type === 'gas-ready-for-token' && _pendingToken) {
+        if (event.source) {
+          event.source.postMessage({
+            type: 'exchange-token',
+            accessToken: _pendingToken
+          }, '*');
+          _pendingToken = null;
+        }
+      }
+
+      // GAS iframe created a session
+      if (data.type === 'gas-session-created') {
+        if (data.success) {
+          saveSession(data.sessionToken, data.email);
+          showApp(data.email, data.displayName);
+          // Reload iframe with session token so the app UI loads
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+          }
+        } else {
+          showAuthWall('Authentication failed: ' + (data.error || 'Unknown error'), data.email);
+        }
+      }
+
+      // GAS iframe says auth is needed
+      if (data.type === 'gas-needs-auth') {
+        if (_expectingSession) {
+          _expectingSession = false;
+          return;
+        }
+        clearSession();
+        showAuthWall('Session expired. Please sign in again.');
+      }
+
+      // GAS iframe confirms auth is OK
+      if (data.type === 'gas-auth-ok') {
+        _expectingSession = false;
+      }
+
+      // Heartbeat expired
+      if (data.type === 'gas-heartbeat-expired') {
+        clearSession();
+        showAuthWall('Session expired. Please sign in again.');
+      }
+
+      // GAS sign-out confirmation
+      if (data.type === 'gas-signed-out') {
+        clearSession();
+        showAuthWall('You have been signed out.');
+      }
+    });
+
+    // =============================================
+    // AUTH — Cross-Tab Session Sync
+    // =============================================
+
+    window.addEventListener('storage', function(e) {
+      if (e.key === SESSION_KEY && !e.oldValue && e.newValue) {
+        var session = loadSession();
+        if (session.token) {
+          showApp(session.email);
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+          }
+        }
+      }
+      if (e.key === SESSION_KEY && e.oldValue && !e.newValue) {
+        clearSession();
+        showAuthWall('You have been signed out in another tab.');
+      }
+    });
+
+    var _signOutChannel = null;
+    if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' && typeof BroadcastChannel !== 'undefined') {
+      _signOutChannel = new BroadcastChannel('portal-sign-out');
+      _signOutChannel.onmessage = function(e) {
+        if (e.data && e.data.type === 'sign-out') {
+          clearSession();
+          showAuthWall('You have been signed out in another tab.');
+        }
+      };
     }
 
     // =============================================
@@ -760,11 +956,9 @@
       var errorEl = document.getElementById('auth-error');
       var emailEl = document.getElementById('auth-email');
       var userPill = document.getElementById('user-pill');
-      var dashboard = document.getElementById('portal-dashboard');
 
       wall.classList.remove('hidden');
       userPill.style.display = 'none';
-      dashboard.classList.remove('visible');
 
       if (message) {
         errorEl.textContent = message;
@@ -780,161 +974,47 @@
       }
     }
 
-    function showPortalDashboard(email, displayName) {
+    function showApp(email, displayName) {
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
       var emailDisplay = document.getElementById('user-email-display');
-      var dashboard = document.getElementById('portal-dashboard');
-      var userInfo = document.getElementById('portal-user-info');
-      var configBanner = document.getElementById('portal-config-banner');
 
       wall.classList.add('hidden');
-      dashboard.classList.add('visible');
 
       if (email) {
         emailDisplay.textContent = email;
         userPill.style.display = 'flex';
-        userInfo.textContent = (displayName || email) + ' — ' + email;
       }
-
-      // Show standalone mode banner (no auth.gs configured yet)
-      configBanner.style.display = 'block';
-
-      // Init toggle and render app cards
-      initOpenToggle();
-      renderAppCards();
     }
 
     // =============================================
-    // AUTH — Sign Out
+    // AUTH — Sign Out (via GAS)
     // =============================================
 
     function performSignOut() {
-      clearMasterToken();
+      var session = loadSession();
+      if (session.token) {
+        // Tell GAS to invalidate the server-side session
+        var gasApp = document.getElementById('gas-app');
+        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+        if (gasApp && baseUrl) {
+          gasApp.src = baseUrl + '?signOut=' + encodeURIComponent(session.token);
+        }
+      }
+      clearSession();
 
       // Cross-tab sign-out
       if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' && _signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out' });
       }
-      // For localStorage, clearing the keys fires the storage event automatically
 
       showAuthWall('You have been signed out.');
     }
 
     // =============================================
-    // AUTH — Cross-Tab Session Sync
-    // =============================================
-
-    // Mechanism 1: storage event (localStorage / standard)
-    window.addEventListener('storage', function(e) {
-      if (e.key === MASTER_TOKEN_KEY && !e.oldValue && e.newValue) {
-        // Another tab signed in
-        var master = loadMasterToken();
-        if (master.token) {
-          showPortalDashboard(master.email, master.name);
-        }
-      }
-      if (e.key === MASTER_TOKEN_KEY && e.oldValue && !e.newValue) {
-        // Another tab signed out
-        clearMasterToken();
-        showAuthWall('You have been signed out in another tab.');
-      }
-    });
-
-    // Mechanism 2: BroadcastChannel (sessionStorage / hipaa)
-    var _signOutChannel = null;
-    if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' && typeof BroadcastChannel !== 'undefined') {
-      _signOutChannel = new BroadcastChannel('portal-sign-out');
-      _signOutChannel.onmessage = function(e) {
-        if (e.data && e.data.type === 'sign-out') {
-          clearMasterToken();
-          showAuthWall('You have been signed out in another tab.');
-        }
-      };
-    }
-
-    // =============================================
-    // PORTAL — App Card Rendering
-    // =============================================
-
-    // Open-mode toggle persistence
-    var PORTAL_OPEN_MODE_KEY = 'portal_open_mode';
-    function getOpenInWindow() {
-      return localStorage.getItem(PORTAL_OPEN_MODE_KEY) === 'window';
-    }
-    function initOpenToggle() {
-      var toggle = document.getElementById('portal-window-toggle');
-      toggle.checked = getOpenInWindow();
-      toggle.addEventListener('change', function() {
-        localStorage.setItem(PORTAL_OPEN_MODE_KEY, this.checked ? 'window' : 'tab');
-      });
-    }
-
-    function renderAppCards() {
-      var container = document.getElementById('portal-apps');
-      container.innerHTML = '';
-
-      var master = loadMasterToken();
-      var isHipaa = HTML_CONFIG.STORAGE_TYPE === 'sessionStorage';
-
-      PORTAL_APPS.forEach(function(app) {
-        var card = document.createElement('a');
-        card.className = 'portal-app-card';
-
-        // Build the URL — for HIPAA mode, append master token as URL param
-        var targetUrl = app.url;
-        if (app.requiresAuth && master.token && isHipaa) {
-          targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&')
-            + 'masterToken=' + encodeURIComponent(master.token);
-        }
-        card.href = targetUrl;
-        card.addEventListener('click', function(e) {
-          if (getOpenInWindow()) {
-            e.preventDefault();
-            var w = Math.round(screen.width * 0.8);
-            var h = Math.round(screen.height * 0.8);
-            var left = Math.round((screen.width - w) / 2);
-            var top = Math.round((screen.height - h) / 2);
-            window.open(this.href, '_blank',
-              'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top
-              + ',noopener,noreferrer');
-          }
-          // Default: normal <a> behavior with target="_blank" (new tab)
-        });
-        card.target = '_blank';
-        card.rel = 'noopener noreferrer';
-
-        card.innerHTML = '<span class="app-icon">' + app.icon + '</span>'
-          + '<span class="app-name">' + app.name + '</span>'
-          + '<span class="app-desc">' + app.description + '</span>'
-          + '<span class="app-status' + (app.requiresAuth ? ' connected' : '') + '">'
-          + (app.requiresAuth ? '🔒 Auth-enabled' : '🌐 Public') + '</span>';
-
-        container.appendChild(card);
-      });
-    }
-
-    // =============================================
-    // PORTAL — Master Token Expiry Check
-    // =============================================
-
-    (function() {
-      // Periodically check if master token has expired
-      setInterval(function() {
-        if (!isMasterTokenValid()) {
-          var dashboard = document.getElementById('portal-dashboard');
-          if (dashboard.classList.contains('visible')) {
-            showAuthWall('Your session has expired. Please sign in again.');
-          }
-        }
-      }, 30000); // Check every 30 seconds
-    })();
-
-    // =============================================
     // AUTH — Initialization
     // =============================================
 
-    // Sign-in button handler — always show account chooser on explicit click
     document.getElementById('auth-sign-in-btn').addEventListener('click', function() {
       signInClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
@@ -945,16 +1025,22 @@
       signInClient.requestAccessToken();
     });
 
-    // Sign-out button handler
     document.getElementById('sign-out-btn').addEventListener('click', function() {
       performSignOut();
     });
 
-    // On page load: check for existing master token or wait for sign-in
+    // On page load: check for existing session or wait for sign-in
     (function() {
-      if (isMasterTokenValid()) {
-        var master = loadMasterToken();
-        showPortalDashboard(master.email, master.name);
+      var session = loadSession();
+      if (session.token) {
+        showApp(session.email);
+        // Resume session — load GAS iframe with session token
+        var gasApp = document.getElementById('gas-app');
+        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+        if (gasApp && baseUrl) {
+          _expectingSession = true;
+          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+        }
       } else {
         showAuthWall();
       }
