@@ -4,7 +4,7 @@
 
 ## 1. Flowchart — System Overview
 
-> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqlWOtum0gUfpURlVbNbrHTW9pk1V1Rm9jeEseyne5WdWWNYcA0A4MYSOptKu1D7BPuk-yZGcBgwHFa_7EE3_nO_cwZvmo2c4h2pnkxjtZo_nYRIvjxdKUeLLQpiRj3ExZvzhDHPk9IEFGckChmn4mdxPB6oSkp8XP8GJ76LJRc2-clxj65IZRFJEZ_svjapey2TCB-ffP9xzKui3oUpw5BPTB2oX2qontvAWxLQPdntIpxaK9rIKBEuv7b3UKLUg6v70BsiyCh02Jsb9Tt9dF___yLcJowPSCxR3SlrLMJKPqYx-PTrhPVSJTfzKejwcCcfl1oE7AFJQzl1v--0L7tOifMzkUaeaRfHwi_Q7OhsewNzd47oO6xIPAT8WixCN8ginmiQ85swjlx6noK0S1b37TMubmczQ3LlOmgJCHID9ck9hPi5JFehI_5tR8hGZqjWuCrxGN2hy7M6UAQXggB4AP_A-yHNUmJk95fTfqGsGRogNhV5EC4QW3VJd2WDnf4GteYtvKSrj86Pwei3prY18iDIDm-69YrBlBZyVD_hujQBESPsEd4F9lrHHrEEWU0MQbmbHluGQOglK_17C16g5I4JfuIOx4vcw2M2bJvTqzLDzLeEWUb8Qzd-BjZaUzR5HI2r_FtpZR3Km1vp23RLADbpN7XPVsnMwahbSmftpcksMsWQFFW5SrLdy3i7T048JNhukITEVykwhKQMKlPjS3tNn613CUMaqdMWfPWGr0X9WmBJJr5stZma-ywW2M0YzQVPc07UDfrdNXxWbd1Kn5qt0-GUeg5xH8zvPFjFgqfOXosbT5qnzbWTuJH4775F7iznVTQcw750lknARXda-HQ8UNPBqPev3NzNpc2VykSAj5v7SrI5vAclQw-airX-cRqoPQw17P46XZMMJw5Ba3ogol6h3rqXbOpxtV8-LTFXpjg66dVSw14hJ5WqfYUImMeJciIIo5mduxHkI9DDoDdlIiObU2Lxxs7XDi3PwV7BGVU2gKyI9fuPjRBDGNtSjhLY5i63-X7-PIP890Hy6pa0wkht9cbSuvnx7hfhYLy0OHdGnA4v7CW783prAoX6dZvSMxF19alBrMGGY_vkZB6elaDFjXJKfOa9ezKeLxVoj0Hu-Msp4PB1p4N0W_jS1EEVQuGYLUROgPM59kz6AemDlg9ZKI8ZLt0ki-JaBnhOsrF0S1MQJYmYjFaNzQj6HygxgP0oawFm3Vmo-ViNG50VwyYwA_9ANPMOz1_qYs1uPOZ55ovFEyevjlmr7792h6sSzm710s5mNvcFN19n4_nKW1SKkTR1Wi_3j1af0An-gkH0a8Nbrf3Q3EosND1vT090LOMq765vNiZJupxJ3CEddnpA4OYw-Ym5xevx2F6ZZk7A6OTLVBxSqETBRWmt3jDdcqwAyPzFxRhiAq34TrjIIlq2JTfjSyrhRg2bEoVsx_esGu8gia4za5PSL1tsNScXIrxVuWMixtdJ5tyMjv1NdUYTI2LWZuw7ocuiwMsotR1fAwZCZSFcGXTSwcTwrG9hollJ2lMUI5s8N-cz0fjQVsESJLAlsKhmFgotIjF_Wd1K8MUokCc5svH-cja2QWy3a3bfoGQYa7ec5CX4tg5tCzv3w5G49F8OetNR5OdY50r0S5MhUQX4QaLhEEshMG_ZgmCqF8j8dbH1P9bxr-xWZcQ0KtJMzlEM4300saVKRGtmXeB60ONyUWsUUPJAaR35L4vk-EQkWqOWOx15R68COGPYrEwPHsmWbm8f-cNuRPPncBuz65cCzTRRl6ahWliOQ_JLYrUJn-n1t2t6L2CYthspasrpKKpnSo5XzHD1D4kb8INcT3Kr3Yl0-oz_HtJBUXNzh8llCFQrNLonIsEK-JweR_1Xehi0uBacWG4V2hrejXsBwmWTBT3qFyGk_imVgjNgMLQfaDSbeU-roa6Ke7lWSpi3_Ng5CJOqKun6kNGY3E8QLBSAA-UKwUxH5W5KPQIjL6NQBefcBSy_DVFYW_FoOQ5VLAoZLGS58DsvEERoxSG-U6aDoHvJO0QkVoKD9VTTmj2XTTZwEwU3xJhjNGzRy_w6bFz-sRmlMVnj1zXLcNkpSjcyclqdYJbcEXkFZa4L5-_PG7Blr_JFfhTfFpwHx8fl_Gl6anQrotfPTvZgz4UW9RsAX51_OJ5i9mlFBzCXRwNGdgmp8-d1y1guY4dAlT71SHI8tGm4K9enx6f2iXvtCdaQGD78R3tTPsKnbYmYj6dLTSHuDilsE99A4w4EWeb0NbOxKfAJ5pqwb7agdTDb_8DWO1Nnw) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqlWOtu2zYUfhVCBYZmq-z0ljYZusG1Fdur4hiW062oC4OWaFkNJQqilNRrCuwh9oR7kh2Skqyr47T-Y0D6znfuh4f6qtnMIdqZ5kY43KD520WA4MeTlXqw0GYkZNyLWbQ9Qxx7PCZ-SHFMwoh9JnYcweuFpqTEz_EieOqxQHLtnhcYB-SGUBaSCP3Jous1ZbdFAvEbGO8_FnFd1Kc4cQjqg7EL7VMZ3X8LYFsCuj-jVYQDe1MDASXS9d_uFlqYcHh9B2I7BAmcFmP7425_gP7751-Ek5jpPolcoitlna1P0ccsHp-qTpQjUXwzn42HQ2P2daFNwRYUM5RZ__tC-1Z1TpidiTTySL8-EH6HrFFv2R8Z_XdA3We-78Xi0WIRvEEU81iHnNmEc-LU9eSiO7aBYRpzY2nNe6Yh00FJTJAXbEjkxcTJIr0IHvNrL0QyNEe1wJeJJ-wOXRizoSC8EALAB_772AtqkhInvb-aDnrCklEPxK5CB8INassu6bZ0uMM3uMa0k5d0g_H5ORD1N8S-Ri4EyfHW63rFACotGerdEB2agOghdgnvInuDA5c4ooymvaFhLc_N3hAo5Ws9fYveoDhKyD7ijsuLXMOetRwYU_Pyg4x3SNlWPEM3HkZ2ElE0vbTmNb6dlPJOpe3trC2aOWCX1Pu6Z-dkyiC0LeXT9pIEdtkCKEyrXGX5rkW8vQeHXjxKVmgqgotUWHwSxPWpsaPdxa-Wu5hB7RQpa96a4_eiPk2QRJYna83aYIfd9sYWo4noad6Butkkq47Huq1T8VO7fTKMQs8h_hvBjRexQPjM0WNp81H7tDEriR9PBsZf4M5uUkHPOeRLZxP7VHSviQPHC1wZjHr_zg1rLm0uU8QEfN7ZlZPN4TkqGHzUVK7zqdlA6WKup_HT7YhgOHNyWtEFU_UO9dW7ZlN7V_PR0xZ7YYJvnpYt7cEj9LRONb2cwdhr4AlZFGOak1jWJZrKR2WOPcXMmEsJ6oUhR5YdeSHk9JBDpJpW0fWtqXV545QQAdqfxj2CMrJtQa3ItbsPjRTBaJwRzpIIJvd3-T65_MN498E0y9Z0AqiP6y2l9TNoMihDQXng8G4NOJpfmMv3xswqw0W29RsScdH5damh1SDj8j0SUk_fbNCiTgPK3GY9VRmXt0q056A6EjM6GI7t2RA9O7kURVC2YARW9wJniPk8fQY9xdQhrQdMlIfslk78JRYdI1xHmTi6hSnKklgsV5uGhgadD9R4gD6UtmCzznQ8XYwnje6KIeV7gedjmnqnZy91sUp3PvNM84WCyRM8w-zVt1_bg3UpZ_d6KYd7m5uiu-_z8TyhTUqFKLoa79e7R-sP6EQ_YT_8tcHt9n7IDxYWrD13Tw_0zd7VwFheVKaJetzxHWFdeoLBIOaw_cn5xetxmF2ZRmVgdNIlLEoodKKgwvQWb7lOGXZgZP6CQgxR4TZciRwkUQ3b9ruxabYQw5ZOqWL2ght2jVfQBLfpFQyptw2WGtNLMd7KnFF-K-ykU05mp77q9oaz3oXVJqx7wZpFPhZR6joehoz4ykK49umFgwnhyN7AxLLjJCIoQzb4b8zn48mwLQIkjmHT4VBMLBBaxPL_s7rZYQpRIE7zBeZ8bFb2gHT_67ZfQmSYy3cl5CY4cg4ty_u3g_FkPF9a_dl4WjnWuRLtwlSIdRFusEgYxAIY_BsWI4j6NRJvPUy9v2X8G5t1CQG9mjaTQzSTUC9sbakS0ZpZF6w9qDG5zDVqKDiA9I68M8hkOESkmiMWuV25Sy8C-KNYLAzPnklWLu_wWUNW4lkJ7O7syrRAE23lxVuYJhb8gNyiUN0G7tTKvBO9V1AMm510eQ39bprCCqo4aidTRpbPQbVTyRt5Q26Ositmwb36OfC9pIKiZuePEsowKlZpdMZF_BVxuLwXe2uYBKTBtfzicq_QzvRy6g4SLJgo7nOZDCfRTa2YmgG5oftAhVvTfVzV2mtGNpVX_hkhzVjkuS5Md8QJXeuJ-u7SWEMPECzVyQPlCrHOpnImCn0EU3Yr0PkXJ4UsfvxR2Fsxk3kGFSwKmW__GTA92uDSRymcG5VsHgKv5PYQkVqmD9VTzfshcqUqSL_9xluY2eJ7KYxZevboBT49dk6f2Iyy6OzRer0uwmRtKdzJyWp1gltweboUlqxfPn953IItfnfM8af4NOc-Pj4u4gvTXaHXa_zq2cke9KHYvNBz8KvjF89bzC7k7RDu_OhKwTY5fe68bgHLdfEQoNr_DkEWj14Ff_X69PjULninPdF8AtuZ52hn2ldozw0Rs-9soTlkjRMK-943wIgT29oGtnYmPnc-0VTfDtSOph5--x_whZRE) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 graph TB
@@ -46,6 +46,7 @@ graph TB
             TEST_PAGE["[template] testenvironment.html\n(Test Environment)"]
             GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
             TESTAUTH1_PAGE["[template] testauth1.html\n(Test Auth 1)"]
+            PORTAL_PAGE["[template] portal.html\n(SSO Portal)"]
         end
 
         subgraph "Google Apps Scripts [template]"
@@ -93,6 +94,7 @@ graph TB
 
     TPL_NOAUTH -.->|"copy to create\nnew pages"| INDEX
     TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTH1_PAGE
+    TPL_AUTH -.->|"copy to create\nnew auth pages"| PORTAL_PAGE
     GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
     GASTPL_TEST_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
@@ -103,6 +105,7 @@ graph TB
     LIVE -.->|"serves"| TEST_PAGE
     LIVE -.->|"serves"| GASTPL_PAGE
     LIVE -.->|"serves"| TESTAUTH1_PAGE
+    LIVE -.->|"serves"| PORTAL_PAGE
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INDEX
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TEST
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
@@ -112,6 +115,7 @@ graph TB
     HTML_VERS -.->|"version polling"| TEST_PAGE
     HTML_VERS -.->|"version polling"| GASTPL_PAGE
     HTML_VERS -.->|"version polling"| TESTAUTH1_PAGE
+    HTML_VERS -.->|"version polling"| PORTAL_PAGE
 
     style DEV fill:#4a90d9,color:#fff
     style LIVE fill:#66bb6a,color:#fff

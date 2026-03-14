@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 46/100`
+`Sections: 47/100`
 
 ## [Unreleased]
+
+## [v03.25r] — 2026-03-14 02:55:57 PM EST
+
+### Added
+- Created `portal.html` — central authentication gateway for cross-page SSO (Architecture 1). Standalone mode with Google Sign-In, master token storage (localStorage for standard, sessionStorage for HIPAA), cross-tab session sync, app navigation cards, and token expiry management. No GAS backend yet — `auth.gs` will be configured separately
+
+#### `portal.html` — v01.00w (new)
+
+##### Added
+- Central sign-in page with Google authentication
+- Application portal dashboard with navigation cards to app pages
+- Cross-tab session synchronization (storage event + BroadcastChannel)
 
 ## [v03.24r] — 2026-03-14 02:42:56 PM EST
 

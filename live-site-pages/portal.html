@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta name="template-id" content="sais-aut-7f3e9b2d">
+  <meta name="build-version" content="v01.00w">
+  <title>Portal — Sign In</title>
+<!-- ══════════════ -->
+<!-- AUTH START -->
+<!-- ══════════════ -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- ══════════════ -->
+<!-- AUTH END -->
+<!-- ══════════════ -->
+  <style>
+/* ══════════════ */
+/* TEMPLATE START */
+/* ══════════════ */
+    html, body { margin: 0; padding: 0; height: 100%; }
+    .splash {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 10000; display: none; align-items: center; justify-content: center;
+      flex-direction: column; transition: opacity 0.3s ease;
+    }
+    .splash .splash-title { color: #fff; font: bold 36px/1 sans-serif; margin-bottom: 20px; }
+    .splash img { max-width: 500px; max-height: 500px; }
+    #splash-web { background: #1b5e20; }
+    #splash-code { background: #0d47a1; }
+    #splash-maintenance { background: #b04000; z-index: 9998; }
+    .maintenance-timestamp { color: rgba(255,255,255,0.85); font: 16px/1.4 monospace; margin-top: 20px; }
+    #version-indicator {
+      position: fixed; bottom: 8px; right: 8px; z-index: 10003;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
+    }
+    #version-indicator:hover { background: rgba(0,0,0,0.75); }
+    #changelog-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
+      align-items: center; justify-content: center;
+    }
+    #changelog-popup {
+      background: #1a1a2e; color: #e0e0e0; border-radius: 12px;
+      max-width: 480px; width: 90%; max-height: 70vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #changelog-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #changelog-title { font: bold 16px/1 sans-serif; color: #fff; }
+    #changelog-close {
+      background: none; border: none; color: #888; font-size: 24px;
+      cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    #changelog-close:hover { color: #fff; }
+    #changelog-body {
+      padding: 16px 20px; overflow-y: auto; font: 13px/1.5 sans-serif;
+    }
+    #changelog-body h3 {
+      font-size: 14px; color: #7c8bff; margin: 16px 0 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;
+    }
+    #changelog-body h3:first-child { margin-top: 0; }
+    #changelog-body h4 {
+      font-size: 12px; color: #a0a0a0; margin: 10px 0 4px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    #changelog-body ul { margin: 0 0 8px; padding-left: 20px; }
+    #changelog-body li { margin-bottom: 4px; }
+    #version-indicator .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #888; transition: background 0.3s ease;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6px; line-height: 1; color: #fff;
+    }
+    #version-indicator .dot.checking { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    #version-indicator .dot.counting { background: #888; }
+    #version-indicator .dot.found    { background: #66bb6a; }
+    #version-indicator .dot.error    { background: #ef5350; }
+    @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+/* ══════════════ */
+/* TEMPLATE END */
+/* ══════════════ */
+
+/* ══════════════ */
+/* AUTH START */
+/* ══════════════ */
+    #auth-wall {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 10002; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; background: #f5f5f5;
+    }
+    #auth-wall.hidden { display: none; }
+    #auth-wall h2 { font: bold 24px/1 sans-serif; color: #333; margin-bottom: 16px; }
+    #auth-wall p { font: 14px/1.4 sans-serif; color: #666; margin-bottom: 24px; }
+    #auth-wall .auth-btn {
+      background: #4285f4; color: #fff; border: none; padding: 12px 24px;
+      border-radius: 6px; cursor: pointer; font-size: 16px;
+    }
+    #auth-wall .auth-btn:hover { background: #3367d6; }
+    #auth-wall .auth-error {
+      color: #d32f2f; font: 13px/1.4 sans-serif; margin-top: 12px; display: none;
+    }
+    #auth-wall .auth-email {
+      color: #999; font: 12px/1 monospace; margin-top: 8px; display: none;
+    }
+    #user-pill {
+      position: fixed; top: 8px; right: 8px; z-index: 9999;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+    }
+    #sign-out-btn {
+      background: none; border: none; color: #ef5350; cursor: pointer;
+      font: 11px/1 monospace; padding: 0 4px;
+    }
+    #sign-out-btn:hover { color: #f44336; }
+/* ══════════════ */
+/* AUTH END */
+/* ══════════════ */
+
+/* ══════════════ */
+/* PROJECT START */
+/* ══════════════ */
+    #portal-dashboard {
+      display: none; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      font-family: sans-serif; padding: 20px;
+    }
+    #portal-dashboard.visible { display: flex; }
+
+    .portal-header {
+      text-align: center; margin-bottom: 40px;
+    }
+    .portal-header img {
+      max-width: 80px; max-height: 80px; margin-bottom: 16px;
+      border-radius: 12px;
+    }
+    .portal-header h1 {
+      color: #fff; font-size: 28px; font-weight: bold; margin: 0 0 8px;
+    }
+    .portal-header .portal-subtitle {
+      color: rgba(255,255,255,0.6); font-size: 14px;
+    }
+    .portal-user-info {
+      color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 12px;
+      background: rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px;
+    }
+
+    .portal-apps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; max-width: 720px; width: 100%;
+    }
+    .portal-app-card {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; padding: 24px 20px;
+      text-decoration: none; color: #fff;
+      transition: all 0.2s ease; cursor: pointer;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .portal-app-card:hover {
+      background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25);
+      transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .portal-app-card .app-icon {
+      font-size: 32px; margin-bottom: 4px;
+    }
+    .portal-app-card .app-name {
+      font-size: 16px; font-weight: bold;
+    }
+    .portal-app-card .app-desc {
+      font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.4;
+    }
+    .portal-app-card .app-status {
+      font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px;
+    }
+    .portal-app-card .app-status.connected { color: #66bb6a; }
+
+    .portal-footer {
+      margin-top: 40px; text-align: center;
+      color: rgba(255,255,255,0.3); font-size: 11px;
+    }
+
+    .portal-config-banner {
+      background: rgba(255,193,7,0.15); border: 1px solid rgba(255,193,7,0.3);
+      border-radius: 8px; padding: 12px 20px; margin-bottom: 24px;
+      color: #ffd54f; font-size: 13px; max-width: 720px; width: 100%;
+      text-align: center; line-height: 1.5;
+    }
+    .portal-config-banner code {
+      background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;
+      font-family: monospace; font-size: 12px;
+    }
+/* ══════════════ */
+/* PROJECT END */
+/* ══════════════ */
+  </style>
+</head>
+<body>
+<!-- ══════════════ -->
+<!-- TEMPLATE START -->
+<!-- ══════════════ -->
+  <div id="splash-web" class="splash"><div class="splash-title">Website Ready</div><img id="splash-logo" src="" alt=""></div>
+  <div id="splash-code" class="splash"><div class="splash-title">Code Ready</div><img id="splash-code-logo" src="" alt=""></div>
+  <div id="splash-maintenance" class="splash"><div class="splash-title">🔧This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">🔧</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
+<!-- ══════════════ -->
+<!-- TEMPLATE END -->
+<!-- ══════════════ -->
+
+<!-- ══════════════ -->
+<!-- AUTH START -->
+<!-- ══════════════ -->
+  <div id="auth-wall">
+    <img id="auth-wall-logo" src="" alt="" style="max-width:120px;max-height:120px;margin-bottom:20px;">
+    <div id="auth-wall-title" style="font:bold 18px/1.2 sans-serif;color:#555;margin-bottom:24px;text-align:center;"></div>
+    <h2>Sign In Required</h2>
+    <p>Sign in with your Google account to access your applications.</p>
+    <button class="auth-btn" id="auth-sign-in-btn">Sign In with Google</button>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-email" id="auth-email"></div>
+  </div>
+
+  <div id="user-pill">
+    <span id="user-email-display"></span>
+    <button id="sign-out-btn">Sign Out</button>
+  </div>
+<!-- ══════════════ -->
+<!-- AUTH END -->
+<!-- ══════════════ -->
+
+<!-- ══════════════ -->
+<!-- PROJECT START -->
+<!-- ══════════════ -->
+  <div id="portal-dashboard">
+    <div class="portal-header">
+      <img id="portal-logo" src="" alt="">
+      <h1>Application Portal</h1>
+      <div class="portal-subtitle">Central authentication gateway</div>
+      <div class="portal-user-info" id="portal-user-info"></div>
+    </div>
+
+    <div class="portal-config-banner" id="portal-config-banner" style="display:none;">
+      ⚠️ Portal is in <strong>standalone mode</strong> — no <code>auth.gs</code> backend configured yet.
+      Authentication is handled client-side only. Set up the GAS project to enable server-side SSO.
+    </div>
+
+    <div class="portal-apps" id="portal-apps"></div>
+
+    <div class="portal-footer">
+      Developed by: ShadowAISolutions
+    </div>
+  </div>
+<!-- ══════════════ -->
+<!-- PROJECT END -->
+<!-- ══════════════ -->
+
+  <script>
+/* tpl:7f3e9b2d */ // ── CONFIG ──
+    // Logo shown on the "Website Ready" splash screen
+    var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
+    var YOUR_ORG_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
+    var LOGO_URL = DEVELOPER_LOGO_URL;
+
+    // Auto-refresh: set to false to disable build-version polling
+    var AUTO_REFRESH = true;
+
+    // Show/hide: set to false to hide the website version indicator
+    var SHOW_WEB_VERSION = true;
+    // Show/hide: set to false to disable changelog popup on version indicator click
+    var SHOW_CHANGELOG = true;
+
+// ══════════════
+// AUTH CONFIG
+// ══════════════
+    // Google OAuth Client ID — obtain from Google Cloud Console
+    var CLIENT_ID = '216764502068-sbc57ft6fjl8n1jovu54j4l42v0ei0i4.apps.googleusercontent.com';
+
+    // HTML-side auth configuration (unified toggleable pattern)
+    var HTML_CONFIG = {
+      // 'localStorage' (standard) or 'sessionStorage' (HIPAA — cleared on tab close)
+      STORAGE_TYPE: 'localStorage',
+      // Portal uses localStorage by default for cross-page SSO —
+      // master token must be readable by all same-origin app pages.
+      // Switch to 'sessionStorage' for HIPAA mode (token passed via URL param instead).
+    };
+
+    // ═══════════════════════════════════════════════
+    // PORTAL CONFIG — Application Registry
+    // ═══════════════════════════════════════════════
+    // Each entry defines an app page accessible from the portal.
+    // - name: display name on the card
+    // - url: relative URL to the app page (same GitHub Pages origin)
+    // - icon: emoji icon for the card
+    // - description: brief description shown on the card
+    // - requiresAuth: if true, master token is passed (via storage or URL param)
+    var PORTAL_APPS = [
+      {
+        name: 'Test Auth 1',
+        url: 'testauth1.html',
+        icon: '🔐',
+        description: 'Authentication testing environment with full security features.',
+        requiresAuth: true
+      },
+      {
+        name: 'Test Environment',
+        url: 'testenvironment.html',
+        icon: '🧪',
+        description: 'General testing environment for development.',
+        requiresAuth: false
+      },
+      {
+        name: 'Homepage',
+        url: 'index.html',
+        icon: '🏠',
+        description: 'Main landing page.',
+        requiresAuth: false
+      }
+    ];
+
+    // Master token storage keys (shared namespace — app pages read these)
+    var MASTER_TOKEN_KEY = 'portal_master_token';
+    var MASTER_EMAIL_KEY = 'portal_master_email';
+    var MASTER_NAME_KEY = 'portal_master_name';
+    var MASTER_EXPIRY_KEY = 'portal_master_expiry';
+
+    // Master token lifetime (seconds) — in standalone mode, this is the
+    // client-side-only token lifetime. With auth.gs, the server controls expiry.
+    var MASTER_TOKEN_LIFETIME = 3600; // 1 hour
+// ──────────────
+
+// ══════════════
+// TEMPLATE START
+// ══════════════
+
+    // Set splash logo from config variable
+    document.getElementById('splash-logo').src = LOGO_URL;
+    document.getElementById('splash-code-logo').src = LOGO_URL;
+    document.getElementById('maintenance-logo').src = LOGO_URL;
+    document.getElementById('auth-wall-logo').src = LOGO_URL;
+    document.getElementById('auth-wall-title').textContent = document.title || '';
+    document.getElementById('portal-logo').src = LOGO_URL;
+
+    // Hidden maintenance bypass — triple-click the second wrench to dismiss
+    (function() {
+      var bp = document.getElementById('maint-bypass');
+      if (!bp) return;
+      bp.addEventListener('click', function(e) {
+        if (e.detail !== 3) return;
+        e.stopPropagation();
+        var overlay = document.getElementById('splash-maintenance');
+        if (overlay && overlay.style.display === 'flex') {
+          sessionStorage.setItem('maint-bypassed', '1');
+          overlay.style.opacity = '0';
+          setTimeout(function() { overlay.style.display = 'none'; }, 300);
+        }
+      });
+    })();
+
+    // Auto-refresh: poll <pagename>html.version.txt for version changes and maintenance mode
+    (function() {
+      var POLL_INTERVAL = 10000;
+      if (!AUTO_REFRESH) return;
+
+      var basePath = window.location.href.split('?')[0].split('#')[0];
+      var pageName = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
+      if (!pageName) pageName = 'index';
+      var versionUrl = basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'html-versions/' + pageName + 'html.version.txt';
+
+      var currentVersion = null;
+      var currentTimestamp = null;
+      var indicator = null;
+      var dot = null;
+      var countdownSeconds = 0;
+      var countdownTimer = null;
+
+      function parseVersionTxt(raw) {
+        var parts = raw.split('|');
+        return {
+          maintenance: parts[0].toLowerCase() === 'maintenance',
+          version: (parts[1] || '').replace(/^v/, ''),
+          timestamp: parts[2] || ''
+        };
+      }
+
+      function createIndicator(version) {
+        indicator = document.createElement('div');
+        indicator.id = 'version-indicator';
+        indicator.innerHTML = '<span class="dot"></span><span class="label">v' + version + '</span>';
+        if (SHOW_WEB_VERSION) document.body.appendChild(indicator);
+        dot = indicator.querySelector('.dot');
+      }
+
+      function startCountdown() {
+        countdownSeconds = POLL_INTERVAL / 1000;
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(function() {
+          countdownSeconds--;
+          if (countdownSeconds <= 0) {
+            clearInterval(countdownTimer);
+            if (dot) { dot.textContent = ''; dot.className = 'dot'; }
+          } else if (countdownSeconds <= 5) {
+            if (dot) { dot.textContent = countdownSeconds; dot.className = 'dot counting'; }
+          }
+        }, 1000);
+      }
+
+      function schedulePoll() {
+        startCountdown();
+        setTimeout(checkForUpdate, POLL_INTERVAL);
+      }
+
+      function checkForUpdate() {
+        window._htmlPollTime = Date.now();
+        if (countdownTimer) clearInterval(countdownTimer);
+        if (dot) dot.textContent = '';
+        if (dot) dot.className = 'dot checking';
+        fetch(versionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
+          .then(function(res) { return res.text(); })
+          .then(function(v) {
+            var parsed = parseVersionTxt(v.trim());
+            var maintenanceSplash = document.getElementById('splash-maintenance');
+
+            if (!currentVersion) {
+              currentVersion = parsed.version;
+              createIndicator(currentVersion);
+              if (parsed.maintenance && indicator) indicator.querySelector('.label').textContent = '\uD83D\uDD27 v' + currentVersion;
+            }
+
+            if (parsed.maintenance) {
+              if (maintenanceSplash && !sessionStorage.getItem('maint-bypassed')) {
+                maintenanceSplash.style.display = 'flex'; maintenanceSplash.style.opacity = '1';
+                if (parsed.timestamp !== currentTimestamp) {
+                  currentTimestamp = parsed.timestamp;
+                  var tsEl = document.getElementById('maintenance-timestamp');
+                  if (tsEl) tsEl.textContent = parsed.timestamp || '';
+                }
+              }
+              if (parsed.version && parsed.version !== currentVersion) {
+                if (dot) dot.className = 'dot found';
+                if (indicator) indicator.querySelector('.label').textContent = 'Updating...';
+                if (sessionStorage.getItem('maint-bypassed')) sessionStorage.setItem('web-pending-sound', '1');
+                setTimeout(function() { window.location.reload(); }, 2000);
+                return;
+              }
+              if (indicator) indicator.querySelector('.label').textContent = '\uD83D\uDD27 v' + currentVersion;
+              if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
+              schedulePoll();
+            } else if (parsed.version && parsed.version !== currentVersion) {
+              sessionStorage.removeItem('maint-bypassed');
+              if (maintenanceSplash) maintenanceSplash.style.display = 'none';
+              if (dot) dot.className = 'dot found';
+              if (indicator) indicator.querySelector('.label').textContent = 'Updating...';
+              sessionStorage.setItem('web-pending-sound', '1');
+              setTimeout(function() { window.location.reload(); }, 2000);
+            } else {
+              sessionStorage.removeItem('maint-bypassed');
+              if (maintenanceSplash && maintenanceSplash.style.display === 'flex') {
+                maintenanceSplash.style.opacity = '0';
+                setTimeout(function() { maintenanceSplash.style.display = 'none'; }, 300);
+              }
+              if (indicator) indicator.querySelector('.label').textContent = 'v' + currentVersion;
+              if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
+              schedulePoll();
+            }
+          })
+          .catch(function() {
+            if (dot) {
+              dot.className = 'dot error';
+              setTimeout(function() { dot.className = 'dot'; }, 2000);
+            }
+            schedulePoll();
+          });
+      }
+
+      checkForUpdate();
+    })();
+
+    // Show splash on update-triggered reloads
+    if (sessionStorage.getItem('web-pending-sound')) {
+      sessionStorage.removeItem('web-pending-sound');
+      var splash = document.getElementById('splash-web');
+      if (splash) {
+        splash.style.display = 'flex';
+        setTimeout(function() {
+          splash.style.opacity = '0';
+          setTimeout(function() { splash.style.display = 'none'; }, 300);
+        }, 1000);
+      }
+    }
+
+    // Changelog popup — click version indicator to view page changelog
+    (function() {
+      var overlay = document.createElement('div');
+      overlay.id = 'changelog-overlay';
+      overlay.innerHTML = '<div id="changelog-popup"><div id="changelog-header">'
+        + '<span id="changelog-title">Changelog</span>'
+        + '<button id="changelog-close">&times;</button></div>'
+        + '<div id="changelog-body"></div></div>';
+      document.body.appendChild(overlay);
+
+      var closeBtn = document.getElementById('changelog-close');
+      var body = document.getElementById('changelog-body');
+      var changelogCache = null;
+
+      function show() { overlay.style.display = 'flex'; if (!changelogCache) fetchChangelog(); }
+      function hide() { overlay.style.display = 'none'; }
+
+      closeBtn.addEventListener('click', hide);
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.style.display === 'flex') hide();
+      });
+
+      function getChangelogUrl() {
+        var basePath = window.location.href.split('?')[0].split('#')[0];
+        var pn = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
+        if (!pn) pn = 'index';
+        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'html-changelogs/' + pn + 'html.changelog.md';
+      }
+
+      function parseChangelog(md) {
+        var lines = md.split('\n');
+        var html = '';
+        var inList = false;
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (line.match(/^# /) || line.match(/^`Sections:/) || line.match(/^All notable/)
+              || line.match(/^Format follows/) || line.match(/^Developed by:/)) continue;
+          if (line.match(/^## \[Unreleased\]/)) continue;
+          if (line.match(/^## \[v/)) {
+            if (inList) { html += '</ul>'; inList = false; }
+            var m = line.match(/^## \[(v[\d.]+w)\].*?— (.+)/);
+            if (m) html += '<h3>' + m[1] + ' &mdash; ' + m[2] + '</h3>';
+            continue;
+          }
+          if (line.match(/^### /)) {
+            if (inList) { html += '</ul>'; inList = false; }
+            html += '<h4>' + line.substring(4) + '</h4>';
+            continue;
+          }
+          if (line.match(/^- /)) {
+            if (!inList) { html += '<ul>'; inList = true; }
+            html += '<li>' + line.substring(2) + '</li>';
+            continue;
+          }
+        }
+        if (inList) html += '</ul>';
+        return html || '<p style="color:#888">No changelog entries yet.</p>';
+      }
+
+      function fetchChangelog() {
+        body.innerHTML = '<p style="color:#888">Loading changelog\u2026</p>';
+        fetch(getChangelogUrl())
+          .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
+          .then(function(md) {
+            changelogCache = parseChangelog(md);
+            body.innerHTML = changelogCache;
+            var titleEl = document.getElementById('changelog-title');
+            var ind = document.getElementById('version-indicator');
+            if (ind && titleEl) {
+              var lbl = ind.querySelector('.label');
+              if (lbl) titleEl.textContent = 'Changelog \u2014 ' + lbl.textContent;
+            }
+          })
+          .catch(function() {
+            body.innerHTML = '<p style="color:#888">Could not load changelog.</p>';
+          });
+      }
+
+      var obs = new MutationObserver(function() {
+        var ind = document.getElementById('version-indicator');
+        if (ind && !ind._clBound) {
+          ind._clBound = true;
+          if (SHOW_CHANGELOG) {
+            ind.addEventListener('click', function(e) { e.stopPropagation(); show(); });
+          } else {
+            ind.style.cursor = 'default';
+          }
+          obs.disconnect();
+        }
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+    })();
+
+    // Screen Wake Lock — keep screen on while page is visible
+    var _wakeLock = null;
+    async function requestWakeLock() {
+      try {
+        if (navigator.wakeLock) {
+          _wakeLock = await navigator.wakeLock.request('screen');
+          _wakeLock.addEventListener('release', function() { _wakeLock = null; });
+        }
+      } catch(e) {}
+    }
+    requestWakeLock();
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') requestWakeLock();
+    });
+
+// ══════════════
+// TEMPLATE END
+// ══════════════
+
+// ══════════════
+// AUTH START
+// ══════════════
+
+    // =============================================
+    // AUTH — Storage Abstraction
+    // Portal uses localStorage for cross-page SSO by default.
+    // HIPAA mode uses sessionStorage + URL param passing.
+    // =============================================
+
+    function getStorage() {
+      return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
+        ? window.sessionStorage
+        : window.localStorage;
+    }
+
+    function saveMasterToken(token, email, displayName, expiresAt) {
+      var storage = getStorage();
+      storage.setItem(MASTER_TOKEN_KEY, token);
+      storage.setItem(MASTER_EMAIL_KEY, email);
+      storage.setItem(MASTER_NAME_KEY, displayName || email);
+      storage.setItem(MASTER_EXPIRY_KEY, String(expiresAt));
+    }
+
+    function loadMasterToken() {
+      var storage = getStorage();
+      return {
+        token: storage.getItem(MASTER_TOKEN_KEY),
+        email: storage.getItem(MASTER_EMAIL_KEY),
+        name: storage.getItem(MASTER_NAME_KEY),
+        expiresAt: parseInt(storage.getItem(MASTER_EXPIRY_KEY) || '0', 10)
+      };
+    }
+
+    function clearMasterToken() {
+      var storage = getStorage();
+      storage.removeItem(MASTER_TOKEN_KEY);
+      storage.removeItem(MASTER_EMAIL_KEY);
+      storage.removeItem(MASTER_NAME_KEY);
+      storage.removeItem(MASTER_EXPIRY_KEY);
+    }
+
+    function isMasterTokenValid() {
+      var master = loadMasterToken();
+      if (!master.token) return false;
+      if (master.expiresAt && Date.now() > master.expiresAt) {
+        clearMasterToken();
+        return false;
+      }
+      return true;
+    }
+
+    // =============================================
+    // AUTH — Google Sign-In (GIS)
+    // Standalone mode: Google OAuth token → client-side master token.
+    // With auth.gs: Google OAuth token → server-side master session.
+    // =============================================
+
+    var signInClient = null;
+
+    function initGoogleSignIn() {
+      signInClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile',
+        prompt: '',
+        callback: handleTokenResponse
+      });
+      // Attempt silent sign-in on load
+      signInClient.requestAccessToken();
+    }
+
+    function handleTokenResponse(response) {
+      if (response.error) {
+        showAuthWall('Click "Sign In with Google" to continue.');
+        return;
+      }
+      // Got a Google access token — fetch user info and create master token
+      fetchUserInfo(response.access_token);
+    }
+
+    function fetchUserInfo(accessToken) {
+      // Use Google's userinfo endpoint to get email and name
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      })
+      .then(function(res) {
+        if (!res.ok) throw new Error('Failed to fetch user info');
+        return res.json();
+      })
+      .then(function(userInfo) {
+        // Standalone mode: create a client-side master token
+        // The "token" in standalone mode is the Google access_token itself,
+        // stored locally for session continuity. When auth.gs is configured,
+        // this will be replaced with a server-issued master session token.
+        var expiresAt = Date.now() + (MASTER_TOKEN_LIFETIME * 1000);
+        saveMasterToken(accessToken, userInfo.email, userInfo.name, expiresAt);
+        showPortalDashboard(userInfo.email, userInfo.name);
+      })
+      .catch(function(err) {
+        showAuthWall('Sign-in failed: ' + err.message);
+      });
+    }
+
+    // =============================================
+    // AUTH — UI State Management
+    // =============================================
+
+    function showAuthWall(message, email) {
+      var wall = document.getElementById('auth-wall');
+      var errorEl = document.getElementById('auth-error');
+      var emailEl = document.getElementById('auth-email');
+      var userPill = document.getElementById('user-pill');
+      var dashboard = document.getElementById('portal-dashboard');
+
+      wall.classList.remove('hidden');
+      userPill.style.display = 'none';
+      dashboard.classList.remove('visible');
+
+      if (message) {
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+      } else {
+        errorEl.style.display = 'none';
+      }
+      if (email) {
+        emailEl.textContent = email;
+        emailEl.style.display = 'block';
+      } else {
+        emailEl.style.display = 'none';
+      }
+    }
+
+    function showPortalDashboard(email, displayName) {
+      var wall = document.getElementById('auth-wall');
+      var userPill = document.getElementById('user-pill');
+      var emailDisplay = document.getElementById('user-email-display');
+      var dashboard = document.getElementById('portal-dashboard');
+      var userInfo = document.getElementById('portal-user-info');
+      var configBanner = document.getElementById('portal-config-banner');
+
+      wall.classList.add('hidden');
+      dashboard.classList.add('visible');
+
+      if (email) {
+        emailDisplay.textContent = email;
+        userPill.style.display = 'flex';
+        userInfo.textContent = (displayName || email) + ' — ' + email;
+      }
+
+      // Show standalone mode banner (no auth.gs configured yet)
+      configBanner.style.display = 'block';
+
+      // Render app cards
+      renderAppCards();
+    }
+
+    // =============================================
+    // AUTH — Sign Out
+    // =============================================
+
+    function performSignOut() {
+      clearMasterToken();
+
+      // Cross-tab sign-out
+      if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' && _signOutChannel) {
+        _signOutChannel.postMessage({ type: 'sign-out' });
+      }
+      // For localStorage, clearing the keys fires the storage event automatically
+
+      showAuthWall('You have been signed out.');
+    }
+
+    // =============================================
+    // AUTH — Cross-Tab Session Sync
+    // =============================================
+
+    // Mechanism 1: storage event (localStorage / standard)
+    window.addEventListener('storage', function(e) {
+      if (e.key === MASTER_TOKEN_KEY && !e.oldValue && e.newValue) {
+        // Another tab signed in
+        var master = loadMasterToken();
+        if (master.token) {
+          showPortalDashboard(master.email, master.name);
+        }
+      }
+      if (e.key === MASTER_TOKEN_KEY && e.oldValue && !e.newValue) {
+        // Another tab signed out
+        clearMasterToken();
+        showAuthWall('You have been signed out in another tab.');
+      }
+    });
+
+    // Mechanism 2: BroadcastChannel (sessionStorage / hipaa)
+    var _signOutChannel = null;
+    if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' && typeof BroadcastChannel !== 'undefined') {
+      _signOutChannel = new BroadcastChannel('portal-sign-out');
+      _signOutChannel.onmessage = function(e) {
+        if (e.data && e.data.type === 'sign-out') {
+          clearMasterToken();
+          showAuthWall('You have been signed out in another tab.');
+        }
+      };
+    }
+
+    // =============================================
+    // PORTAL — App Card Rendering
+    // =============================================
+
+    function renderAppCards() {
+      var container = document.getElementById('portal-apps');
+      container.innerHTML = '';
+
+      var master = loadMasterToken();
+      var isHipaa = HTML_CONFIG.STORAGE_TYPE === 'sessionStorage';
+
+      PORTAL_APPS.forEach(function(app) {
+        var card = document.createElement('a');
+        card.className = 'portal-app-card';
+
+        // Build the URL — for HIPAA mode, append master token as URL param
+        var targetUrl = app.url;
+        if (app.requiresAuth && master.token && isHipaa) {
+          targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&')
+            + 'masterToken=' + encodeURIComponent(master.token);
+        }
+        card.href = targetUrl;
+
+        card.innerHTML = '<span class="app-icon">' + app.icon + '</span>'
+          + '<span class="app-name">' + app.name + '</span>'
+          + '<span class="app-desc">' + app.description + '</span>'
+          + '<span class="app-status' + (app.requiresAuth ? ' connected' : '') + '">'
+          + (app.requiresAuth ? '🔒 Auth-enabled' : '🌐 Public') + '</span>';
+
+        container.appendChild(card);
+      });
+    }
+
+    // =============================================
+    // PORTAL — Master Token Expiry Check
+    // =============================================
+
+    (function() {
+      // Periodically check if master token has expired
+      setInterval(function() {
+        if (!isMasterTokenValid()) {
+          var dashboard = document.getElementById('portal-dashboard');
+          if (dashboard.classList.contains('visible')) {
+            showAuthWall('Your session has expired. Please sign in again.');
+          }
+        }
+      }, 30000); // Check every 30 seconds
+    })();
+
+    // =============================================
+    // AUTH — Initialization
+    // =============================================
+
+    // Sign-in button handler — always show account chooser on explicit click
+    document.getElementById('auth-sign-in-btn').addEventListener('click', function() {
+      signInClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile',
+        prompt: 'select_account',
+        callback: handleTokenResponse
+      });
+      signInClient.requestAccessToken();
+    });
+
+    // Sign-out button handler
+    document.getElementById('sign-out-btn').addEventListener('click', function() {
+      performSignOut();
+    });
+
+    // On page load: check for existing master token or wait for sign-in
+    (function() {
+      if (isMasterTokenValid()) {
+        var master = loadMasterToken();
+        showPortalDashboard(master.email, master.name);
+      } else {
+        showAuthWall();
+      }
+    })();
+
+// ══════════════
+// AUTH END
+// ══════════════
+
+// ══════════════
+// PROJECT START
+// ══════════════
+
+// ══════════════
+// PROJECT END
+// ══════════════
+  </script>
+</body>
+</html>
+<!-- Developed by: ShadowAISolutions -->
