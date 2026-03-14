@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v03.43r] — 2026-03-14 06:52:15 PM EST
+
+### Added
+- Expanded testauth1 security test panel from 23 to 65 tests — added CSP connect/style/img-src audits, OAuth client ID validation, session duration configuration checks, all sanitizer deep tests (event handlers, nested XSS, form injection, CSS injection), auth function existence checks, UI state exclusivity verification, code safety scans (no eval, no document.write), storage key naming audit, open redirect check, clickjacking protection, and more
+
+#### `testauth1.html` — v01.63w
+
+##### Added
+- Expanded security tests from 23 to 65 — added CSP directive audits, OAuth configuration checks, sanitizer deep tests, session lifecycle verification, UI state checks, code safety scans, and storage security audits
 
 ## [v03.42r] — 2026-03-14 06:43:09 PM EST
 
