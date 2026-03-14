@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v03.44r] — 2026-03-14 07:12:06 PM EST
+
+### Fixed
+- Fixed three false-positive security test warnings: tests 52/53 (document.write/eval) now skip the test runner script itself to avoid self-detection, and test 65 (clickjacking) correctly reports frame-ancestors as an HTTP-header-only directive that doesn't belong in meta CSP tags
+
+#### `testauth1.html` — v01.64w
+
+##### Fixed
+- Fixed three security test false positives: "document.write" and "eval()" tests no longer flag themselves, and clickjacking test correctly reports that frame-ancestors is an HTTP-header-only directive
 
 ## [v03.43r] — 2026-03-14 06:52:15 PM EST
 
