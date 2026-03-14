@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.57w] — 2026-03-14 06:10:46 PM EST — v03.37r
+
+### Security
+- Added protection against unauthorized sign-in attempts from other websites (CSRF defense)
 
 ## [v01.56w] — 2026-03-14 06:03:06 PM EST — v03.36r
 

@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
 
 ## [Unreleased]
+
+## [v03.37r] — 2026-03-14 06:10:46 PM EST
+
+### Security
+- Added client-side CSRF nonce protection for the OAuth sign-in flow in testauth1 — ensures token callbacks only process tokens from sign-in flows initiated by the current page (VULN-14)
+- Documented Google MFA limitation: Google's OAuth ID tokens do not include `amr` claim, so MFA enforcement must happen at Workspace admin level (VULN-16)
+
+#### `testauth1.html` — v01.57w
+
+##### Security
+- Added `_authNonce` CSRF protection: a nonce is generated before each `requestAccessToken()` call and verified in `handleTokenResponse()` — rejects unsolicited token callbacks
+- Nonce is consumed (nulled) after use to prevent replay
 
 ## [v03.36r] — 2026-03-14 06:03:06 PM EST
 
