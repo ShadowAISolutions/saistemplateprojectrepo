@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.33w">
+  <meta name="build-version" content="v01.34w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1390,7 +1390,10 @@
             heartbeatEl.textContent = formatCountdown(nextTickIn) + ' (idle)';
             heartbeatEl.className = 'timer-value warn';
           } else {
-            heartbeatEl.textContent = formatCountdown(nextTickIn) + (isActive ? ' (active)' : ' (idle)');
+            // isActive already tells us if the next tick will fire (activity within
+            // the current interval window = what the heartbeat interval checks).
+            var indicator = isActive ? ' \u25B6 ready' : ' (idle)';
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + indicator;
             heartbeatEl.className = isActive ? 'timer-value' : 'timer-value warn';
           }
         } else if (remaining <= 0 && heartbeatEl) {

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.34w] — 2026-03-13 10:03:03 PM EST — v02.99r
+
+### Changed
+- Heartbeat countdown now shows a "ready" indicator when your session will be extended on the next heartbeat
 
 ## [v01.33w] — 2026-03-13 09:43:38 PM EST — v02.98r
 

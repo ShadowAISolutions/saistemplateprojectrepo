@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 20/100`
+`Sections: 21/100`
 
 ## [Unreleased]
+
+## [v02.99r] — 2026-03-13 10:03:03 PM EST
+
+### Changed
+- Heartbeat countdown now shows `▶ ready` indicator when it will fire on the next tick, replacing the generic `(active)` label
+
+#### `testauth1.html` — v01.34w
+
+##### Changed
+- Heartbeat countdown shows a clear "ready" indicator when your session will be extended on the next heartbeat
 
 ## [v02.98r] — 2026-03-13 09:43:38 PM EST
 
