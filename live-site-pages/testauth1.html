@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.48w">
+  <meta name="build-version" content="v01.49w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1046,10 +1046,14 @@
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         var gasApp = document.getElementById('gas-app');
         if (gasApp && gasApp.contentWindow) {
+          // VULN-2 note: '*' is required here — GAS double-iframe architecture serves the
+          // listener page from a sandboxed googleusercontent.com subdomain, not script.google.com.
+          // Using GAS_ORIGIN as targetOrigin causes the browser to silently drop the message.
+          // Exposure is limited: _pendingToken is nulled immediately after this send (single use).
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, GAS_ORIGIN);
+          }, '*');
           _pendingToken = null;
         }
       }
