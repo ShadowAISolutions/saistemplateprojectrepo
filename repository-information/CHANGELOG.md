@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v03.40r] — 2026-03-14 06:29:20 PM EST
+
+### Added
+- Expanded security test panel from 12 to 23 tests in testauth1 — added signature verification logic test, GAS iframe presence, postMessage exchange check, CSP script/frame source audit, plugin injection prevention, GAS origin constant, SVG/MathML XSS vector test, session flag isolation, activity event tracking, and session cleanup verification
+
+#### `testauth1.html` — v01.60w
+
+##### Added
+- Added 11 new security tests: signature hash verification with known values, GAS iframe check, postMessage exchange mode, CSP script-src/frame-src domain audit, object-src plugin blocking, GAS_ORIGIN validation, SVG/Math XSS sanitization, sessionStorage flag isolation, activity event completeness, and clearSession key reset verification
 
 ## [v03.39r] — 2026-03-14 06:25:11 PM EST
 

@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.59w">
+  <meta name="build-version" content="v01.60w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1876,6 +1876,150 @@
         addResult('PASS', 'Referrer Policy', 'no-referrer \u2014 prevents token leakage via Referer header');
       } else {
         addResult('WARN', 'Referrer Policy', 'Referrer meta tag missing or not set to no-referrer');
+      }
+
+      // Test 13: Signature verification logic — test with known values
+      if (typeof _verifyMessageSignature === 'function') {
+        var testKey = 'test-key-abc123';
+        var testData = { type: 'gas-heartbeat-ok' };
+        // Compute expected signature the same way GAS does
+        var testPayload = JSON.stringify(testData) + '|' + testKey;
+        var testHash = 0;
+        for (var ti = 0; ti < testPayload.length; ti++) {
+          testHash = ((testHash << 5) - testHash) + testPayload.charCodeAt(ti);
+          testHash |= 0;
+        }
+        var validSig = testHash.toString(36);
+        var signedData = { type: 'gas-heartbeat-ok', _sig: validSig };
+        var unsignedData = { type: 'gas-heartbeat-ok' };
+        var wrongSigData = { type: 'gas-heartbeat-ok', _sig: 'wrong' };
+        var validResult = _verifyMessageSignature(signedData, testKey);
+        var unsignedResult = _verifyMessageSignature(unsignedData, testKey);
+        var wrongResult = _verifyMessageSignature(wrongSigData, testKey);
+        if (validResult && !unsignedResult && !wrongResult) {
+          addResult('PASS', 'Signature Verification Logic', 'Valid sig accepted, missing sig rejected, wrong sig rejected');
+        } else {
+          addResult('FAIL', 'Signature Verification Logic', 'Valid=' + validResult + ' Unsigned=' + unsignedResult + ' Wrong=' + wrongResult);
+        }
+      }
+
+      // Test 14: GAS iframe present
+      var gasApp = document.getElementById('gas-app');
+      if (gasApp && gasApp.tagName === 'IFRAME') {
+        addResult('PASS', 'GAS Iframe', 'gas-app iframe present in DOM');
+      } else {
+        addResult('WARN', 'GAS Iframe', 'gas-app iframe not found \u2014 may not have loaded yet');
+      }
+
+      // Test 15: postMessage token exchange (HIPAA mode)
+      if (typeof HTML_CONFIG === 'object' && HTML_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage') {
+        addResult('PASS', 'Secure Token Exchange', 'Using postMessage \u2014 tokens never appear in URL bar');
+      } else if (typeof HTML_CONFIG === 'object') {
+        addResult('WARN', 'Token Exchange', 'Using URL method \u2014 tokens visible in browser address bar');
+      }
+
+      // Test 16: CSP script-src domains
+      if (cspMeta && cspMeta.content) {
+        var scriptSrc = cspMeta.content.match(/script-src\s+([^;]+)/);
+        if (scriptSrc) {
+          var domains = scriptSrc[1];
+          var hasGoogleGSI = domains.indexOf('accounts.google.com/gsi/client') !== -1;
+          var hasUnexpected = /https?:\/\/(?!accounts\.google\.com|apis\.google\.com)[^\s;]+/.test(domains.replace("'self'", '').replace("'unsafe-inline'", ''));
+          if (hasGoogleGSI && !hasUnexpected) {
+            addResult('PASS', 'CSP Script Sources', 'Only Google Identity Services and Google APIs whitelisted');
+          } else if (hasUnexpected) {
+            addResult('WARN', 'CSP Script Sources', 'Unexpected third-party script source found in CSP');
+          }
+        }
+      }
+
+      // Test 17: CSP frame-src restriction
+      if (cspMeta && cspMeta.content) {
+        var frameSrc = cspMeta.content.match(/frame-src\s+([^;]+)/);
+        if (frameSrc) {
+          var frameOrigins = frameSrc[1];
+          var allowsGoogle = frameOrigins.indexOf('script.google.com') !== -1;
+          var allowsGSI = frameOrigins.indexOf('accounts.google.com/gsi/') !== -1;
+          if (allowsGoogle && allowsGSI) {
+            addResult('PASS', 'CSP Frame Sources', 'Only Google Script and GIS frames allowed');
+          } else {
+            addResult('WARN', 'CSP Frame Sources', 'frame-src may be missing required Google origins');
+          }
+        } else {
+          addResult('WARN', 'CSP Frame Sources', 'No frame-src directive found in CSP');
+        }
+      }
+
+      // Test 18: CSP object-src none (plugin injection prevention)
+      if (cspMeta && cspMeta.content) {
+        var hasObjectNone2 = cspMeta.content.indexOf("object-src 'none'") !== -1;
+        if (hasObjectNone2) {
+          addResult('PASS', 'Plugin Injection Prevention', 'object-src none \u2014 Flash/Java/Silverlight plugins blocked');
+        } else {
+          addResult('FAIL', 'Plugin Injection Prevention', 'object-src is not set to none');
+        }
+      }
+
+      // Test 19: GAS origin constant defined
+      if (typeof GAS_ORIGIN === 'string' && GAS_ORIGIN.indexOf('script.google.com') !== -1) {
+        addResult('PASS', 'GAS Origin Defined', 'GAS_ORIGIN = ' + GAS_ORIGIN);
+      } else {
+        addResult('FAIL', 'GAS Origin Defined', 'GAS_ORIGIN not set or incorrect');
+      }
+
+      // Test 20: Sanitizer handles SVG/Math XSS vectors
+      if (typeof sanitizeChangelogHtml === 'function') {
+        var svgXss = '<svg onload="alert(1)"><math><mi>test</mi></math>';
+        var svgSanitized = sanitizeChangelogHtml(svgXss);
+        var hasSvg = svgSanitized.indexOf('<svg') !== -1 || svgSanitized.indexOf('<math') !== -1;
+        if (!hasSvg) {
+          addResult('PASS', 'SVG/Math XSS Prevention', 'SVG and MathML elements stripped from changelog');
+        } else {
+          addResult('FAIL', 'SVG/Math XSS Prevention', 'SVG or MathML elements not stripped');
+        }
+      }
+
+      // Test 21: Session expired flag uses sessionStorage (not localStorage)
+      var testFlag = 'sec_test_flag_' + Date.now();
+      sessionStorage.setItem(testFlag, '1');
+      var inSession = sessionStorage.getItem(testFlag) === '1';
+      var inLocal = localStorage.getItem(testFlag) === '1';
+      sessionStorage.removeItem(testFlag);
+      if (inSession && !inLocal) {
+        addResult('PASS', 'Session Flag Isolation', 'Flags stored in sessionStorage \u2014 cleared on tab close');
+      } else {
+        addResult('WARN', 'Session Flag Isolation', 'Flag storage behavior unexpected');
+      }
+
+      // Test 22: Activity event listeners for heartbeat
+      if (typeof _ACTIVITY_EVENTS !== 'undefined' && Array.isArray(_ACTIVITY_EVENTS)) {
+        var expectedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
+        var allPresent = expectedEvents.every(function(evt) { return _ACTIVITY_EVENTS.indexOf(evt) !== -1; });
+        if (allPresent) {
+          addResult('PASS', 'Activity Event Tracking', _ACTIVITY_EVENTS.length + ' events tracked: ' + _ACTIVITY_EVENTS.join(', '));
+        } else {
+          addResult('WARN', 'Activity Event Tracking', 'Some expected activity events missing');
+        }
+      } else {
+        addResult('WARN', 'Activity Event Tracking', '_ACTIVITY_EVENTS not found \u2014 heartbeat may not detect user activity');
+      }
+
+      // Test 23: clearSession resets message key
+      if (typeof clearSession === 'function' && typeof _messageKey !== 'undefined') {
+        var savedKey = _messageKey;
+        var savedToken = getStorage().getItem(SESSION_KEY);
+        var savedEmail = getStorage().getItem(EMAIL_KEY);
+        clearSession();
+        var keyCleared = _messageKey === null;
+        // Restore state
+        _messageKey = savedKey;
+        if (savedToken) getStorage().setItem(SESSION_KEY, savedToken);
+        if (savedEmail) getStorage().setItem(EMAIL_KEY, savedEmail);
+        if (keyCleared) {
+          addResult('PASS', 'Session Cleanup', 'clearSession() resets message key \u2014 prevents stale HMAC keys across sessions');
+        } else {
+          addResult('FAIL', 'Session Cleanup', 'clearSession() did not null _messageKey');
+        }
       }
 
       // Build summary

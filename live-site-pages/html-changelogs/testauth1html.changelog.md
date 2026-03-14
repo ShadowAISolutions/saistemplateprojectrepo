@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v01.60w] — 2026-03-14 06:29:20 PM EST — v03.40r
+
+### Added
+- Added 11 more security tests covering signature verification, iframe presence, token exchange method, CSP auditing, XSS vector testing, and session cleanup
 
 ## [v01.59w] — 2026-03-14 06:25:11 PM EST — v03.39r
 
