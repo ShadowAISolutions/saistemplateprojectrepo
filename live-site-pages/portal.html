@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <title>Portal Title</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1033,15 +1033,32 @@
     (function() {
       var session = loadSession();
       if (session.token) {
-        showApp(session.email);
-        // Resume session — load GAS iframe with session token
+        // Resume existing session — cancel the srcdoc navigation and load
+        // the GAS iframe with the session token instead.
         var gasApp = document.getElementById('gas-app');
         var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
-        if (gasApp && baseUrl) {
-          _expectingSession = true;
-          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+        if (gasApp) {
+          delete window._r;
+          gasApp.removeAttribute('srcdoc');
+          if (baseUrl) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+          }
         }
+        showApp(session.email);
       } else {
+        // No session — prevent the iframe from loading the bare GAS URL.
+        // The iframe IIFE navigates to the GAS deployment URL immediately,
+        // which would trigger a premature gas-needs-auth ("Session expired")
+        // before Google Sign-In has a chance to obtain a token. Cancel that
+        // navigation, then let the sign-in button handle the auth flow —
+        // exchangeViaUrl will navigate the iframe once a token is available.
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp) {
+          delete window._r;
+          gasApp.removeAttribute('srcdoc');
+          gasApp.src = 'about:blank';
+        }
         showAuthWall();
       }
     })();

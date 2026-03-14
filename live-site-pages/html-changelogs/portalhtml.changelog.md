@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 5/100`
+`Sections: 6/100`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-03-14 05:29:45 PM EST — v03.32r
+
+### Fixed
+- Fixed false "Session expired" message appearing on fresh page load
+- Sign-in now works correctly on first visit without needing to reload
 
 ## [v01.05w] — 2026-03-14 05:16:28 PM EST — v03.31r
 
