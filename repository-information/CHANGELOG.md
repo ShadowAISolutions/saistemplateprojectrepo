@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 41/100`
+`Sections: 42/100`
 
 ## [Unreleased]
+
+## [v03.20r] — 2026-03-14 01:25:57 PM EST
+
+### Fixed
+- Fixed re-sign-in after sign-out getting stuck on "Sign In Required" — the HMAC message signing key (`_messageKey`) from the previous session persisted after sign-out, causing unsigned bootstrap messages (`gas-ready-for-token`) from the new sign-in attempt to be silently dropped by HMAC verification
+
+#### `testauth1.html` — v01.51w
+
+##### Fixed
+- Signing out and signing back in no longer gets stuck on the sign-in page
 
 ## [v03.19r] — 2026-03-14 01:18:46 PM EST
 

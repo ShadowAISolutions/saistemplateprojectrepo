@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.50w">
+  <meta name="build-version" content="v01.51w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -917,6 +917,10 @@
       var storage = getStorage();
       storage.removeItem(SESSION_KEY);
       storage.removeItem(EMAIL_KEY);
+      // Clear the HMAC message key from the previous session — if it persists,
+      // unsigned bootstrap messages (gas-ready-for-token) from a new sign-in
+      // attempt are silently dropped by the HMAC verification layer.
+      _messageKey = null;
     }
 
     // =============================================
