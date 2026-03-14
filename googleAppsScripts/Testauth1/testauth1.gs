@@ -1,4 +1,4 @@
-var VERSION = "v01.21g";
+var VERSION = "v01.22g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -35,13 +35,10 @@ var ACL_PAGE_NAME  = "testauth1";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
-var ACTIVE_PRESET = 'standard';  // 'standard' or 'hipaa'
+var ACTIVE_PRESET = 'hipaa';     // 'standard' or 'hipaa'
 var PROJECT_OVERRIDES = {
-  // Uncomment to override specific preset values:
-  // ENABLE_AUDIT_LOG: true,
-  // SESSION_EXPIRATION: 1200,
-  // ENABLE_DOMAIN_RESTRICTION: true,
-  // ALLOWED_DOMAINS: ['yourdomain.com'],
+  ENABLE_DOMAIN_RESTRICTION: false,  // allow any Google account (override hipaa default)
+  // ALLOWED_DOMAINS: ['yourdomain.com'],  // set this if you enable domain restriction
 };
 
 // ══════════════
@@ -114,8 +111,9 @@ function resolveConfig(presetName, overrides) {
     if (overrides.hasOwnProperty(key)) resolved[key] = overrides[key];
   }
   if (presetName === 'hipaa') {
-    if (!resolved.ALLOWED_DOMAINS || resolved.ALLOWED_DOMAINS.length === 0) {
-      throw new Error('HIPAA preset requires ALLOWED_DOMAINS — set your Workspace domain(s)');
+    if (resolved.ENABLE_DOMAIN_RESTRICTION &&
+        (!resolved.ALLOWED_DOMAINS || resolved.ALLOWED_DOMAINS.length === 0)) {
+      throw new Error('HIPAA preset with ENABLE_DOMAIN_RESTRICTION requires ALLOWED_DOMAINS — set your Workspace domain(s)');
     }
     if (resolved.SESSION_EXPIRATION > 900) {
       Logger.log('WARNING: HIPAA recommends SESSION_EXPIRATION ≤ 900s (15 min). Current: '
