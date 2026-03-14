@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.16g] — 2026-03-13 08:58:37 PM EST — v02.94r
+
+### Added
+- Added a text input field for testing typing during heartbeat activity
 
 ## [v01.15g] — 2026-03-13 07:15:58 PM EST — v02.90r
 

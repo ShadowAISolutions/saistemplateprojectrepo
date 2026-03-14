@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 15/100`
+`Sections: 16/100`
 
 ## [Unreleased]
+
+## [v02.94r] — 2026-03-13 08:58:37 PM EST
+
+### Added
+- Added text input field to testauth1 GAS app for testing whether heartbeat iframe reloads disrupt user typing
+
+#### `testauth1.gs` — v01.16g
+
+##### Added
+- Added text input field for heartbeat interruption testing
 
 ## [v02.93r] — 2026-03-13 08:37:51 PM EST
 

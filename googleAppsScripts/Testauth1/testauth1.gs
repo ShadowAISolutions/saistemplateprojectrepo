@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -900,10 +900,18 @@ function doGet(e) {
         #debug-marker { font-size: 200px; color: #1565c0; font-weight: bold; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        #hb-test-area { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; text-align: center; }
+        #hb-test-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
+        #hb-test-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #1565c0; border-radius: 6px; outline: none; }
+        #hb-test-input:focus { border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(21,101,192,0.2); }
       </style>
     </head>
     <body>
       <div id="debug-marker">1</div>
+      <div id="hb-test-area">
+        <label>Type here to test heartbeat interruption</label>
+        <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off">
+      </div>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
 
