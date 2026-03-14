@@ -1,4 +1,4 @@
-var VERSION = "v01.25g";
+var VERSION = "v01.26g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -63,7 +63,7 @@ var PRESETS = {
     ENABLE_AUDIT_LOG: false,
     AUDIT_LOG_SHEET_NAME: 'AuditLog',
     AUDIT_LOG_RETENTION_YEARS: 6,
-    ENABLE_HMAC_INTEGRITY: false,
+    ENABLE_HMAC_INTEGRITY: true,
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: false,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',

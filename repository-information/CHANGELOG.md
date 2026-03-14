@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 57/100`
+`Sections: 58/100`
 
 ## [Unreleased]
+
+## [v03.36r] — 2026-03-14 06:03:06 PM EST
+
+### Security
+- Enabled HMAC-SHA256 session integrity verification for standard preset in testauth1 — both presets now verify session data has not been tampered with (VULN-9)
+- Added bootstrap timestamp validation to reject replayed gas-session-created messages older than 30 seconds (VULN-10)
+- Added first-write-wins protection for message signing key — prevents attacker from overwriting the key after initial delivery (VULN-10)
+- BroadcastChannel cross-tab session revocation confirmed already implemented (VULN-18)
+
+#### `testauth1.html` — v01.56w
+
+##### Security
+- Added iframe load timestamp tracking for bootstrap validation
+- Added 30-second freshness check on gas-session-created messages — rejects stale/replayed bootstrap messages
+- Added first-write-wins guard: once the message signing key is set, subsequent gas-session-created messages cannot overwrite it
+
+#### `testauth1.gs` — v01.26g
+
+##### Security
+- Enabled ENABLE_HMAC_INTEGRITY for standard preset (was already enabled for hipaa preset)
 
 ## [v03.35r] — 2026-03-14 05:58:39 PM EST
 

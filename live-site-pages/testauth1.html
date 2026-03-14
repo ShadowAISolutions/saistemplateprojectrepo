@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.55w">
+  <meta name="build-version" content="v01.56w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -979,7 +979,10 @@
     // 'postMessage' → Secure handshake via window.postMessage (HIPAA)
     // =============================================
 
+    var _iframeLoadTime = null;
+
     function exchangeToken(googleAccessToken) {
+      _iframeLoadTime = Date.now();
       if (HTML_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage') {
         exchangeViaPostMessage(googleAccessToken);
       } else {
@@ -1059,7 +1062,15 @@
       // gas-session-created delivers the key itself — trust it on first receipt
       // (the session token it contains is validated server-side on the next iframe load)
       if (data.type === 'gas-session-created' && data.success && data.messageKey) {
-        _messageKey = data.messageKey;
+        // Bootstrap validation: reject messages arriving >30s after iframe load (possible replay)
+        if (_iframeLoadTime && (Date.now() - _iframeLoadTime) > 30000) {
+          console.warn('gas-session-created received too late — possible replay');
+          return;
+        }
+        // First-write-wins: only accept the first gas-session-created (prevent overwrite by attacker)
+        if (!_messageKey) {
+          _messageKey = data.messageKey;
+        }
       }
       // For all subsequent messages, verify the signature if we have a key
       if (_messageKey && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {

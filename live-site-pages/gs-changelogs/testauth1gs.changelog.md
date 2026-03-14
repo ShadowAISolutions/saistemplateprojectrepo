@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
 
 ## [Unreleased]
+
+## [v01.26g] — 2026-03-14 06:03:06 PM EST — v03.36r
+
+### Security
+- Session data integrity verification is now enabled for all security modes
 
 ## [v01.25g] — 2026-03-14 05:58:39 PM EST — v03.35r
 
