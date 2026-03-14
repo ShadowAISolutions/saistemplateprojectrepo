@@ -1314,6 +1314,16 @@
 
         // Session countdown — auto sign-out when session expires
         if (remaining <= 0) {
+          // Grace period: if a heartbeat is in-flight, wait up to 15s for the
+          // server response before signing out. This prevents the race condition
+          // where the countdown hits 0 during the heartbeat round-trip.
+          if (_heartbeatInFlight && remaining > -15) {
+            sessionEl.textContent = 'extending...';
+            sessionEl.className = 'timer-value warn';
+            pillLabel.textContent = 'extending...';
+            pillLabel.className = 'timer-pill-label warn';
+            return;
+          }
           sessionEl.textContent = 'expired';
           sessionEl.className = 'timer-value critical';
           pillLabel.textContent = 'expired';

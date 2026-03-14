@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 14/100`
+`Sections: 15/100`
 
 ## [Unreleased]
+
+## [v02.93r] — 2026-03-13 08:37:51 PM EST
+
+### Fixed
+- Fixed session timeout race condition — when a heartbeat was in-flight and the countdown hit 0, the client would sign the user out before the server response could extend the session. Added a 15-second grace period that shows "extending..." while waiting for the heartbeat response
+
+#### `testauth1.html` — v01.29w
+
+##### Fixed
+- Session no longer times out while a heartbeat response is in transit — shows "extending..." instead of immediately signing out
 
 ## [v02.92r] — 2026-03-13 08:14:29 PM EST
 
