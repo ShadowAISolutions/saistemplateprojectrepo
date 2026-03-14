@@ -1,7 +1,7 @@
 # Security Update Plan — testauth1 Environment
 
 **Created:** 2026-03-13
-**Status:** Ready for implementation
+**Status:** Implemented (v02.90r–v02.91r)
 **Scope:** `testauth1.gs` + `testauth1.html` (if successful, propagate to templates)
 **Base version:** v02.74r state (v01.14g GAS / v01.26w HTML)
 **Reference:** `6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`

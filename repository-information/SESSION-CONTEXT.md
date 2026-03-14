@@ -25,7 +25,7 @@ All session config and UI changes are deployed. The three pins now stack vertica
 ### Active context
 - Repo version: v03.09r
 - testauth1.html: v01.44w, testauth1.gs: v01.18g
-- Security update plan at `repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md` — ready for implementation
+- Security update plan at `repository-information/7-SECURITY-UPDATE-PLAN-TESTAUTH1.md` — implemented (v02.90r–v02.91r)
 - Microsoft auth plan at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders

@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 31/100`
+`Sections: 32/100`
 
 ## [Unreleased]
+
+## [v03.10r] — 2026-03-14 11:26:51 AM EST
+
+### Changed
+- Renamed `SECURITY-UPDATE-PLAN-TESTAUTH1.md` → `7-SECURITY-UPDATE-PLAN-TESTAUTH1.md` and updated status to "Implemented" — the 6-phase security hardening was fully implemented in v02.90r–v02.91r
+- Updated all cross-references (README tree, CHANGELOG entries, SESSION-CONTEXT.md)
 
 ## [v03.09r] — 2026-03-13 11:38:31 PM EST
 
@@ -234,7 +240,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v02.90r] — 2026-03-13 07:15:58 PM EST
 
 ### Added
-- Defense-in-depth security hardening for testauth1 environment (6-phase implementation from SECURITY-UPDATE-PLAN-TESTAUTH1.md)
+- Defense-in-depth security hardening for testauth1 environment (6-phase implementation from 7-SECURITY-UPDATE-PLAN-TESTAUTH1.md)
 
 ### Security
 - **Message-type allowlist** (HTML) — postMessage listener now only processes 8 known GAS message types, rejecting all others
