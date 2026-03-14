@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 33/100`
+`Sections: 34/100`
 
 ## [Unreleased]
+
+## [v03.12r] — 2026-03-14 12:32:39 PM EST
+
+### Security
+
+#### `testauth1.html` — v01.45w
+
+##### Security
+- Added `Referrer-Policy: no-referrer` meta tag to prevent OAuth and session tokens from leaking via HTTP referrer headers (VULN-1, VULN-6)
+- Replaced wildcard `'*'` postMessage target origin with `GAS_ORIGIN` (`https://script.google.com`) when sending access tokens to the GAS iframe, preventing token broadcast to unintended recipients (VULN-2)
 
 ## [v03.11r] — 2026-03-14 12:13:26 PM EST
 

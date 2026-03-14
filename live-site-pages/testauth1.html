@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.44w">
+  <meta name="build-version" content="v01.45w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1047,7 +1048,7 @@
           gasApp.contentWindow.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
-          }, '*');
+          }, GAS_ORIGIN);
           _pendingToken = null;
         }
       }
