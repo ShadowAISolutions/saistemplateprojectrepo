@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 17/100`
+`Sections: 18/100`
 
 ## [Unreleased]
+
+## [v02.96r] — 2026-03-13 09:15:09 PM EST
+
+### Fixed
+- Fixed heartbeat cursor flicker by batching DOM updates with requestAnimationFrame and adding CSS containment to the timer pill
+
+#### `testauth1.html` — v01.31w
+
+##### Fixed
+- Fixed cursor flickering from caret to pointer when heartbeat status updates
 
 ## [v02.95r] — 2026-03-13 09:08:32 PM EST
 
