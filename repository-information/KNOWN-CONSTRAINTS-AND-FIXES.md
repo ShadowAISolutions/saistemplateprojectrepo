@@ -158,6 +158,68 @@ On sign-out, `clearSession()` removed the session data from storage but **did no
 
 ---
 
+---
+
+# Future Architecture
+
+Design decisions and architectural plans that have been discussed and agreed upon but not yet implemented. These serve as reference when the time comes to build the feature.
+
+---
+
+## Architecture 1 — Portal/SSO: Cross-page authentication via central auth GAS
+
+**Status:** Planned (not yet implemented)
+
+**Goal:** A main login page (portal) authenticates the user once. Other pages with their own GAS backends accept the portal's session without requiring the user to sign in again.
+
+**The problem:** Each page (`testauth1.html`, `dashboard.html`, etc.) has its own GAS deployment with its own session store. A Google OAuth token exchanged on the portal's GAS backend creates a session only the portal recognizes — other GAS backends have no way to validate it.
+
+**The solution — central `auth.gs`:**
+
+```
+User → portal.html → Google Sign-In → auth.gs (creates master session)
+                                           ↓
+         portal.html stores master token in localStorage
+                                           ↓
+User clicks link → app-page.html reads master token from localStorage
+                                           ↓
+         app-page.html sends master token to app-page.gs
+                                           ↓
+         app-page.gs calls auth.gs via UrlFetchApp to validate master token
+                                           ↓
+         app-page.gs creates local session (user is in — no sign-in prompt)
+```
+
+**Key components:**
+
+1. **`auth.gs`** — a dedicated GAS deployment that handles only authentication. Exchanges Google OAuth tokens for master sessions, stores them, and exposes a validation endpoint. All other GAS backends delegate auth to this service rather than managing their own.
+
+2. **`portal.html`** — the login page. Authenticates via `auth.gs`, stores the master session token in `localStorage` (accessible to all same-origin pages on GitHub Pages).
+
+3. **App pages** (`testauth1.html`, `dashboard.html`, etc.) — on load, read the master token from `localStorage`. If present, send it to their own GAS backend for validation against `auth.gs`. If valid, skip the sign-in wall entirely.
+
+4. **Cross-GAS validation** — GAS scripts can call other GAS deployments server-to-server via `UrlFetchApp.fetch()`. This means `testauth1.gs` can hit `auth.gs`'s web app URL to validate a token — no browser involvement, no CORS issues.
+
+**How it works with each preset:**
+
+- **Standard (`localStorage`):** The master token sits in `localStorage`, readable by all pages on the same GitHub Pages origin. Each page reads it on load and validates with its GAS backend. Cross-tab sync via the `storage` event means signing in on the portal auto-authenticates other open pages.
+
+- **Hipaa (`sessionStorage`):** `sessionStorage` doesn't share across pages, so the master token is passed via URL parameter when navigating from the portal. Link format: `testauth1.html?masterToken=TOKEN`. The receiving page reads the parameter, validates with its GAS backend, creates its own per-tab session, and strips the token from the URL (via `history.replaceState`). The token exposure in the URL is brief, same-origin, and not logged by the server (GitHub Pages is static).
+
+**What needs to be built:**
+1. `auth.gs` — new GAS project with `createMasterSession()`, `validateMasterToken()`, and `revokeMasterSession()` endpoints
+2. Portal page — login UI + master token storage logic
+3. Token-reading logic on each app page — check `localStorage` (or URL param for hipaa) before showing auth wall
+4. Modify each app page's `.gs` to call `auth.gs` for validation instead of managing auth independently
+5. Master session sign-out propagation — signing out of the portal revokes the master session and broadcasts sign-out to all tabs (via `BroadcastChannel` and/or `storage` event, depending on preset)
+
+**Design decisions to make when implementing:**
+- Master session expiration policy — should it match the individual page session timers, or have its own longer/shorter duration?
+- Should app pages create their own local sessions (double session — master + local), or validate the master token on every GAS request (single session — master only)?
+- Should the portal page itself host a GAS app, or be a pure authentication gateway?
+
+---
+
 ## Adding New Entries
 
 **Constraints:** When a debugging session reveals an architectural limitation:
@@ -168,5 +230,10 @@ On sign-out, `clearSession()` removed the session data from storage but **did no
 **Fixes:** When a bug is diagnosed and resolved:
 1. Add a new fix section with: Version, Symptom, Root cause, Fix, Affected code
 2. The fix number (1, 2, 3, ...) is permanent — do not renumber
+
+**Future Architecture:** When a design is discussed and agreed upon but not yet built:
+1. Add an architecture section with: Status, Goal, Problem, Solution, What needs to be built, Design decisions
+2. Update the Status field as work progresses (`Planned` → `In Progress` → `Implemented`)
+3. The architecture number (1, 2, 3, ...) is permanent — do not renumber
 
 Developed by: ShadowAISolutions
