@@ -1,4 +1,4 @@
-var VERSION = "v01.22g";
+var VERSION = "v01.23g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -332,7 +332,7 @@ function _writeAuditLogEntry(event, user, result, details) {
 function generateSessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return '';
   var secret = PropertiesService.getScriptProperties().getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
-  if (!secret) return '';
+  if (!secret) return '';  // No secret configured — HMAC is a no-op (see verifySessionHmac)
   var payload = sessionData.email
     + '|' + sessionData.createdAt
     + '|' + sessionData.lastActivity
@@ -345,7 +345,12 @@ function generateSessionHmac(sessionData) {
 
 function verifySessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return true;
-  if (!sessionData.hmac) return false;
+  // If the HMAC secret is not configured, both generation and verification are no-ops.
+  // generateSessionHmac returns '' when secret is missing, so sessionData.hmac will be ''.
+  // Treat missing-secret as "HMAC not available" rather than "HMAC failed".
+  var secret = PropertiesService.getScriptProperties().getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
+  if (!secret) return true;  // No secret → cannot verify → pass through (same as generation)
+  if (!sessionData.hmac) return false;  // Secret exists but session has no HMAC → reject
   var expected = generateSessionHmac(sessionData);
   return expected === sessionData.hmac;
 }
