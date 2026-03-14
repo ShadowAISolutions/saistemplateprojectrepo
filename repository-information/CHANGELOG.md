@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 39/100`
+`Sections: 40/100`
 
 ## [Unreleased]
+
+## [v03.18r] — 2026-03-14 01:09:05 PM EST
+
+### Fixed
+- Fixed hipaa postMessage token exchange — sign-in was stuck because `gasApp.contentWindow` targets the outer script.google.com shell frame, not the inner sandbox frame where the listener runs; switched to `event.source` to reply directly to the sandbox
+
+### Added
+- Created `KNOWN-CONSTRAINTS.md` documenting architectural constraints that must not be changed (GAS double-iframe `'*'` targetOrigin, `event.source` for HTML→GAS replies, unauthenticated deploy webhook, sign-in flow chain, PARENT_ORIGIN for GAS→HTML)
+
+#### `testauth1.html` — v01.50w
+
+##### Fixed
+- Fixed sign-in getting stuck when using the hipaa security preset
 
 ## [v03.17r] — 2026-03-14 12:59:12 PM EST
 

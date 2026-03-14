@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.50w] — 2026-03-14 01:09:05 PM EST — v03.18r
+
+### Fixed
+- Fixed sign-in getting stuck when using the hipaa security preset
 
 ## [v01.49w] — 2026-03-14 12:59:12 PM EST — v03.17r
 

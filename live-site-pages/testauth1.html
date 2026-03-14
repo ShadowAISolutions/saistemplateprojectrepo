@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.49w">
+  <meta name="build-version" content="v01.50w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1044,13 +1044,15 @@
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
-        var gasApp = document.getElementById('gas-app');
-        if (gasApp && gasApp.contentWindow) {
-          // VULN-2 note: '*' is required here — GAS double-iframe architecture serves the
-          // listener page from a sandboxed googleusercontent.com subdomain, not script.google.com.
-          // Using GAS_ORIGIN as targetOrigin causes the browser to silently drop the message.
-          // Exposure is limited: _pendingToken is nulled immediately after this send (single use).
-          gasApp.contentWindow.postMessage({
+        // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
+        // GAS double-iframe architecture: the <iframe> contentWindow is the outer script.google.com
+        // shell, but the actual listener runs in an inner googleusercontent.com sandbox frame.
+        // gasApp.contentWindow.postMessage() sends to the shell — the sandbox never receives it.
+        // event.source is the WindowProxy of the frame that sent gas-ready-for-token (the sandbox),
+        // so replying via event.source reaches the correct listener.
+        // '*' targetOrigin is required — see KNOWN-CONSTRAINTS.md Constraint A.
+        if (event.source) {
+          event.source.postMessage({
             type: 'exchange-token',
             accessToken: _pendingToken
           }, '*');
