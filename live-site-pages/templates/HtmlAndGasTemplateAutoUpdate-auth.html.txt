@@ -303,7 +303,7 @@
       TOKEN_EXCHANGE_METHOD: 'url',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
-      HEARTBEAT_INTERVAL: 30000  // ms (30s) — how often to check for activity and send heartbeat
+      HEARTBEAT_INTERVAL: 300000  // ms (5min) — how often to check for activity and send heartbeat
     };
 // ──────────────
 
@@ -1244,7 +1244,7 @@
       icon.innerHTML = expanded ? '&#9662;' : '&#9656;';
     }
 
-    var SERVER_SESSION_DURATION = 1800;   // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION
+    var SERVER_SESSION_DURATION = 3600;   // seconds (1 hour) — must match GAS PRESETS.standard.SESSION_EXPIRATION
     var ABSOLUTE_SESSION_DURATION = 57600; // seconds (16 hours) — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT
     var SESSION_START_KEY = 'gas_session_start';
     var ABSOLUTE_START_KEY = 'gas_absolute_start';

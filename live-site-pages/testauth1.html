@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.41w">
+  <meta name="build-version" content="v01.42w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -304,7 +304,7 @@
       TOKEN_EXCHANGE_METHOD: 'url',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
-      HEARTBEAT_INTERVAL: 600000  // ms (10min) — how often to check for activity and send heartbeat
+      HEARTBEAT_INTERVAL: 300000  // ms (5min) — how often to check for activity and send heartbeat
     };
 // ──────────────
 
@@ -1245,7 +1245,7 @@
       icon.innerHTML = expanded ? '&#9662;' : '&#9656;';
     }
 
-    var SERVER_SESSION_DURATION = 7200;   // seconds (2 hours) — must match GAS PRESETS.standard.SESSION_EXPIRATION
+    var SERVER_SESSION_DURATION = 3600;   // seconds (1 hour) — must match GAS PRESETS.standard.SESSION_EXPIRATION
     var ABSOLUTE_SESSION_DURATION = 57600; // seconds (16 hours) — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT
     var SESSION_START_KEY = 'gas_session_start';
     var ABSOLUTE_START_KEY = 'gas_absolute_start';

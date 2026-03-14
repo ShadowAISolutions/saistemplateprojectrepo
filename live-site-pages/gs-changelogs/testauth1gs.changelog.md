@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.18g] — 2026-03-13 11:17:21 PM EST — v03.07r
+
+### Changed
+- Session expiration changed to 1 hour
+- Heartbeat interval changed to 5 minutes
 
 ## [v01.17g] — 2026-03-13 11:12:06 PM EST — v03.06r
 
