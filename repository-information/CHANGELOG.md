@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 22/100`
+`Sections: 23/100`
 
 ## [Unreleased]
+
+## [v03.01r] — 2026-03-13 10:24:41 PM EST
+
+### Fixed
+- Heartbeat display no longer shows "▶ ready" immediately after extending — resets to idle so the next tick decides the state, removing the confusing "extended ✓" → "active" flash
+
+#### `testauth1.html` — v01.36w
+
+##### Fixed
+- Heartbeat indicator resets to idle after session extension instead of immediately showing "ready"
 
 ## [v03.00r] — 2026-03-13 10:08:56 PM EST
 

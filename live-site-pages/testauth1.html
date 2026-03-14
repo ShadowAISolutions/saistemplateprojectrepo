@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.35w">
+  <meta name="build-version" content="v01.36w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1106,17 +1106,9 @@
       // Heartbeat OK — server extended the session
       if (data.type === 'gas-heartbeat-ok') {
         _heartbeatInFlight = false;
+        _heartbeatIdle = true;  // reset to idle after extend — next tick decides if still active
         // Reset the client-side session start time to match the server reset
         getStorage().setItem(SESSION_START_KEY, String(Date.now()));
-        var hbEl = document.getElementById('timer-heartbeat');
-        if (hbEl) {
-          hbEl.textContent = 'extended ✓';
-          hbEl.className = 'timer-value';
-          // Show success briefly, then revert
-          setTimeout(function() {
-            if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
-          }, 3000);
-        }
       }
 
       // Heartbeat failed — session already expired on server

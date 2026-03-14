@@ -1105,17 +1105,9 @@
       // Heartbeat OK — server extended the session
       if (data.type === 'gas-heartbeat-ok') {
         _heartbeatInFlight = false;
+        _heartbeatIdle = true;  // reset to idle after extend — next tick decides if still active
         // Reset the client-side session start time to match the server reset
         getStorage().setItem(SESSION_START_KEY, String(Date.now()));
-        var hbEl = document.getElementById('timer-heartbeat');
-        if (hbEl) {
-          hbEl.textContent = 'extended ✓';
-          hbEl.className = 'timer-value';
-          // Show success briefly, then revert
-          setTimeout(function() {
-            if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
-          }, 3000);
-        }
       }
 
       // Heartbeat failed — session already expired on server

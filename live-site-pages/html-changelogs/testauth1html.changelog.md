@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v01.36w] — 2026-03-13 10:24:41 PM EST — v03.01r
+
+### Fixed
+- Heartbeat indicator now resets to idle after session extension instead of briefly flashing "ready"
 
 ## [v01.35w] — 2026-03-13 10:08:56 PM EST — v03.00r
 
