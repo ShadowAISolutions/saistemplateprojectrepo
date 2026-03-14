@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 18/100`
+`Sections: 19/100`
 
 ## [Unreleased]
+
+## [v02.97r] — 2026-03-13 09:25:41 PM EST
+
+### Changed
+- Reverted cursor flicker fix attempts (v02.95r, v02.96r) — restored heartbeat to v01.29w behavior (persistent iframe, direct DOM writes)
+
+#### `testauth1.html` — v01.32w
+
+##### Changed
+- Reverted heartbeat to original approach — minor cursor flicker during heartbeat is acceptable
 
 ## [v02.96r] — 2026-03-13 09:15:09 PM EST
 
