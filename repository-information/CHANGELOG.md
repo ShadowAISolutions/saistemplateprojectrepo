@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v03.39r] — 2026-03-14 06:25:11 PM EST
+
+### Fixed
+- Fixed security test panel's changelog sanitization test failing because `sanitizeChangelogHtml` was scoped inside a closure — moved to top-level scope so both changelog rendering and the security test can access it
+
+#### `testauth1.html` — v01.59w
+
+##### Fixed
+- Moved `sanitizeChangelogHtml` from IIFE-scoped to top-level scope to fix the security test "Changelog Sanitization" check
 
 ## [v03.38r] — 2026-03-14 06:21:23 PM EST
 
