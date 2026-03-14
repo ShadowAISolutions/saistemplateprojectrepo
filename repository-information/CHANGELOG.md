@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 25/100`
+`Sections: 26/100`
 
 ## [Unreleased]
+
+## [v03.04r] — 2026-03-13 10:46:46 PM EST
+
+### Removed
+- Removed iframe focus polling for heartbeat activity — it falsely reported activity whenever focus was inside the iframe, even when the user was idle. Keyboard-only interaction inside the GAS iframe is a narrow edge case; mouse movement on the host page already covers most real usage
+
+#### `testauth1.html` — v01.39w
+
+##### Removed
+- Removed false activity detection that kept the session active even when you weren't interacting
 
 ## [v03.03r] — 2026-03-13 10:39:53 PM EST
 

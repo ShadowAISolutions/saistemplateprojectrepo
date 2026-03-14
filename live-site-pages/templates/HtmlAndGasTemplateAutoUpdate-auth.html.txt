@@ -1418,8 +1418,6 @@
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.addEventListener(evt, _onHeartbeatActivity, { passive: true });
       });
-      _startIframeFocusDetection();
-
       _heartbeatInterval = setInterval(function() {
         _lastHeartbeatTick = Date.now();
         // Only send heartbeat if user was active since last tick
@@ -1437,19 +1435,6 @@
     function _onHeartbeatActivity() {
       _lastHeartbeatActivity = Date.now();
       _heartbeatIdle = false;  // clear idle so display immediately shows ▶ ready
-    }
-
-    // Cross-origin iframes swallow keyboard events — detect iframe focus as activity
-    var _iframeFocusInterval = null;
-    function _startIframeFocusDetection() {
-      if (_iframeFocusInterval) return;
-      _iframeFocusInterval = setInterval(function() {
-        var el = document.activeElement;
-        if (el && el.tagName === 'IFRAME' && document.hasFocus()) _onHeartbeatActivity();
-      }, 1000);
-    }
-    function _stopIframeFocusDetection() {
-      if (_iframeFocusInterval) { clearInterval(_iframeFocusInterval); _iframeFocusInterval = null; }
     }
 
     function sendHeartbeat() {
@@ -1483,7 +1468,6 @@
 
     function stopHeartbeat() {
       if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
-      _stopIframeFocusDetection();
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
