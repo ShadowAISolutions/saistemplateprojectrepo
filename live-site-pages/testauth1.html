@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.27w">
+  <meta name="build-version" content="v01.28w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -722,7 +722,7 @@
           if (line.match(/^## \[Unreleased\]/)) continue;
           if (line.match(/^## \[/)) {
             if (inList) { html += '</ul>'; inList = false; }
-            var m = line.match(/^## \[([\d.]+g)\].*?— (.+)/);
+            var m = line.match(/^## \[(v[\d.]+g)\].*?— (.+)/);
             if (m) html += '<h3>' + m[1] + ' &mdash; ' + m[2] + '</h3>';
             continue;
           }

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10w] — 2026-03-13 08:14:29 PM EST — v02.92r
+
+### Fixed
+- Version headers now appear in the GAS changelog popup with timestamps
 
 ## [v01.09w] — 2026-03-12 09:18:49 PM EST — v02.61r
 
