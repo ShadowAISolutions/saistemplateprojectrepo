@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.03w">
+  <meta name="build-version" content="v01.04w">
   <title>Portal — Sign In</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -188,6 +188,31 @@
       color: rgba(255,255,255,0.3); font-size: 11px;
     }
 
+    .portal-open-toggle {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 10px; max-width: 720px; width: 100%; margin-bottom: 12px;
+      color: rgba(255,255,255,0.6); font-size: 13px;
+    }
+    .portal-open-toggle label {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+    }
+    .portal-open-toggle input[type="checkbox"] { display: none; }
+    .toggle-track {
+      width: 36px; height: 20px; background: rgba(255,255,255,0.2);
+      border-radius: 10px; position: relative; transition: background 0.2s;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; background: #fff; border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .portal-open-toggle input:checked + .toggle-track {
+      background: #66bb6a;
+    }
+    .portal-open-toggle input:checked + .toggle-track::after {
+      transform: translateX(16px);
+    }
+
     .portal-config-banner {
       background: rgba(255,193,7,0.15); border: 1px solid rgba(255,193,7,0.3);
       border-radius: 8px; padding: 12px 20px; margin-bottom: 24px;
@@ -249,6 +274,15 @@
     <div class="portal-config-banner" id="portal-config-banner" style="display:none;">
       ⚠️ Portal is in <strong>standalone mode</strong> — no <code>auth.gs</code> backend configured yet.
       Authentication is handled client-side only. Set up the GAS project to enable server-side SSO.
+    </div>
+
+    <div class="portal-open-toggle">
+      <label>
+        <span>Open in new tab</span>
+        <input type="checkbox" id="portal-window-toggle">
+        <span class="toggle-track"></span>
+        <span>New window</span>
+      </label>
     </div>
 
     <div class="portal-apps" id="portal-apps"></div>
@@ -766,7 +800,8 @@
       // Show standalone mode banner (no auth.gs configured yet)
       configBanner.style.display = 'block';
 
-      // Render app cards
+      // Init toggle and render app cards
+      initOpenToggle();
       renderAppCards();
     }
 
@@ -822,6 +857,19 @@
     // PORTAL — App Card Rendering
     // =============================================
 
+    // Open-mode toggle persistence
+    var PORTAL_OPEN_MODE_KEY = 'portal_open_mode';
+    function getOpenInWindow() {
+      return localStorage.getItem(PORTAL_OPEN_MODE_KEY) === 'window';
+    }
+    function initOpenToggle() {
+      var toggle = document.getElementById('portal-window-toggle');
+      toggle.checked = getOpenInWindow();
+      toggle.addEventListener('change', function() {
+        localStorage.setItem(PORTAL_OPEN_MODE_KEY, this.checked ? 'window' : 'tab');
+      });
+    }
+
     function renderAppCards() {
       var container = document.getElementById('portal-apps');
       container.innerHTML = '';
@@ -841,15 +889,20 @@
         }
         card.href = targetUrl;
         card.addEventListener('click', function(e) {
-          e.preventDefault();
-          var w = Math.round(screen.width * 0.8);
-          var h = Math.round(screen.height * 0.8);
-          var left = Math.round((screen.width - w) / 2);
-          var top = Math.round((screen.height - h) / 2);
-          window.open(this.href, '_blank',
-            'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top
-            + ',noopener,noreferrer');
+          if (getOpenInWindow()) {
+            e.preventDefault();
+            var w = Math.round(screen.width * 0.8);
+            var h = Math.round(screen.height * 0.8);
+            var left = Math.round((screen.width - w) / 2);
+            var top = Math.round((screen.height - h) / 2);
+            window.open(this.href, '_blank',
+              'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top
+              + ',noopener,noreferrer');
+          }
+          // Default: normal <a> behavior with target="_blank" (new tab)
         });
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
 
         card.innerHTML = '<span class="app-icon">' + app.icon + '</span>'
           + '<span class="app-name">' + app.name + '</span>'

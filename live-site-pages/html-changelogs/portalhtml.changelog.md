@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 3/100`
+`Sections: 4/100`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-03-14 03:19:37 PM EST — v03.29r
+
+### Added
+- Toggle to choose between opening applications in a new tab or a new window — preference is remembered
 
 ## [v01.03w] — 2026-03-14 03:15:42 PM EST — v03.28r
 
