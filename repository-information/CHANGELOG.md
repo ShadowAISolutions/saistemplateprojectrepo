@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 36/100`
+`Sections: 37/100`
 
 ## [Unreleased]
+
+## [v03.15r] — 2026-03-14 12:46:13 PM EST
+
+### Changed
+- Added commented-out production values above each test value in GAS and HTML config — to revert, uncomment the original lines and delete the ⚡ TEST VALUE lines
+
+#### `testauth1.gs` — v01.21g
+
+##### Changed
+- Added commented-out production values above each ⚡ TEST VALUE line in both standard and hipaa presets for easy revert
+
+#### `testauth1.html` — v01.47w
+
+##### Changed
+- Added commented-out production values above each ⚡ TEST VALUE line for easy revert
 
 ## [v03.14r] — 2026-03-14 12:43:08 PM EST
 
