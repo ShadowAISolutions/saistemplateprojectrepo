@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <title>Portal — Sign In</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -840,6 +840,8 @@
             + 'masterToken=' + encodeURIComponent(master.token);
         }
         card.href = targetUrl;
+        card.target = '_blank';
+        card.rel = 'noopener noreferrer';
 
         card.innerHTML = '<span class="app-icon">' + app.icon + '</span>'
           + '<span class="app-name">' + app.name + '</span>'

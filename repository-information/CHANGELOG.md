@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 48/100`
+`Sections: 49/100`
 
 ## [Unreleased]
+
+## [v03.27r] — 2026-03-14 03:12:36 PM EST
+
+### Changed
+- Application portal now opens projects in new windows instead of redirecting the current page
+
+#### `portal.html` — v01.02w
+
+##### Changed
+- App cards now open in a new browser tab/window
 
 ## [v03.26r] — 2026-03-14 03:06:27 PM EST
 
