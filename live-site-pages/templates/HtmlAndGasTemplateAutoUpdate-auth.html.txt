@@ -1304,18 +1304,17 @@
         var elapsed = (Date.now() - startTime) / 1000;
         var remaining = SERVER_SESSION_DURATION - elapsed;
 
+        // Urgent heartbeat: if <30s remain and the user has been active recently,
+        // send a heartbeat immediately instead of waiting for the next 30s interval.
+        // This closes the gap where activity in the last 30s before expiry goes unnoticed.
+        if (HTML_CONFIG.ENABLE_HEARTBEAT && _heartbeatInterval && remaining > 0 && remaining < 30
+            && !_heartbeatInFlight && !_heartbeatIdle
+            && _lastHeartbeatActivity > Date.now() - 30000) {
+          sendHeartbeat();
+        }
+
         // Session countdown — auto sign-out when session expires
         if (remaining <= 0) {
-          // Grace period: if a heartbeat is in-flight, wait up to 15s for the
-          // server response before signing out. This prevents the race condition
-          // where the countdown hits 0 during the heartbeat round-trip.
-          if (_heartbeatInFlight && remaining > -15) {
-            sessionEl.textContent = 'extending...';
-            sessionEl.className = 'timer-value warn';
-            pillLabel.textContent = 'extending...';
-            pillLabel.className = 'timer-pill-label warn';
-            return;
-          }
           sessionEl.textContent = 'expired';
           sessionEl.className = 'timer-value critical';
           pillLabel.textContent = 'expired';
@@ -1372,7 +1371,10 @@
             heartbeatEl.textContent = formatCountdown(nextTickIn) + ' (idle)';
             heartbeatEl.className = 'timer-value warn';
           } else {
-            heartbeatEl.textContent = formatCountdown(nextTickIn) + (isActive ? ' (active)' : ' (idle)');
+            // isActive already tells us if the next tick will fire (activity within
+            // the current interval window = what the heartbeat interval checks).
+            var indicator = isActive ? ' \u25B6 ready' : ' (idle)';
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + indicator;
             heartbeatEl.className = isActive ? 'timer-value' : 'timer-value warn';
           }
         } else if (remaining <= 0 && heartbeatEl) {

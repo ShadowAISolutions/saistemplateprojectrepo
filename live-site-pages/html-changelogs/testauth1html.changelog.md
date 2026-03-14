@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
 
 ## [Unreleased]
+
+## [v01.40w] — 2026-03-13 11:00:25 PM EST — v03.05r
+
+### Removed
+- Removed grace period delay before session expiry — sessions now expire immediately when the timer runs out
 
 ## [v01.39w] — 2026-03-13 10:46:46 PM EST — v03.04r
 

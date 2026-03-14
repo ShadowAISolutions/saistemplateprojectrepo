@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.39w">
+  <meta name="build-version" content="v01.40w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1316,16 +1316,6 @@
 
         // Session countdown — auto sign-out when session expires
         if (remaining <= 0) {
-          // Grace period: if a heartbeat is in-flight, wait up to 15s for the
-          // server response before signing out. This prevents the race condition
-          // where the countdown hits 0 during the heartbeat round-trip.
-          if (_heartbeatInFlight && remaining > -15) {
-            sessionEl.textContent = 'extending...';
-            sessionEl.className = 'timer-value warn';
-            pillLabel.textContent = 'extending...';
-            pillLabel.className = 'timer-pill-label warn';
-            return;
-          }
           sessionEl.textContent = 'expired';
           sessionEl.className = 'timer-value critical';
           pillLabel.textContent = 'expired';

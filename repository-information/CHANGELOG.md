@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 26/100`
+`Sections: 27/100`
 
 ## [Unreleased]
+
+## [v03.05r] — 2026-03-13 11:00:25 PM EST
+
+### Removed
+- Removed 15-second grace period for in-flight heartbeats — the urgent heartbeat (instant send in the last 30s) makes this unnecessary
+
+### Changed
+- Propagated testauth1 improvements to the auth template: urgent heartbeat for last-30s activity, `▶ ready` indicator replacing `(active)` label
+
+#### `testauth1.html` — v01.40w
+
+##### Removed
+- Removed grace period delay before session expiry — sessions now expire immediately when the timer runs out
 
 ## [v03.04r] — 2026-03-13 10:46:46 PM EST
 
