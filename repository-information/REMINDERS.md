@@ -4,7 +4,7 @@ Notes and reminders the developer wants surfaced at the start of the next sessio
 
 ## Active Reminders
 
-- `2026-03-14 01:52:00 PM EST` — **Hipaa preset sign-in flow confirmed working (v01.51w / v01.23g)** — All 3 bugs fixed: (1) `event.source` instead of `gasApp.contentWindow` for postMessage exchange, (2) HMAC verification pass-through when secret not configured, (3) clear `_messageKey` on sign-out. Ready to proceed with security update phases 2-7. Test timer values still active (⚡) — restore to production values when done testing
+*(No active reminders)*
 
 ## Completed Reminders
 
