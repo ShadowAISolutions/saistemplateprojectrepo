@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 16/100`
+`Sections: 17/100`
 
 ## [Unreleased]
+
+## [v02.95r] — 2026-03-13 09:08:32 PM EST
+
+### Fixed
+- Fixed heartbeat iframe cursor flicker — heartbeat now uses a disposable iframe with src pre-set before DOM insertion instead of navigating an existing iframe
+
+#### `testauth1.html` — v01.30w
+
+##### Fixed
+- Fixed cursor flickering from caret to pointer during heartbeat requests
 
 ## [v02.94r] — 2026-03-13 08:58:37 PM EST
 
