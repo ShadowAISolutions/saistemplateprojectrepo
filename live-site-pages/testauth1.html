@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.31w">
+  <meta name="build-version" content="v01.32w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -189,7 +189,6 @@
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
       pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
-      contain: layout style;
     }
     #auth-timers:hover { background: rgba(0,0,0,0.75); }
     #auth-timers .timer-pill-label { color: #fff; font-weight: bold; }
@@ -1111,18 +1110,11 @@
         getStorage().setItem(SESSION_START_KEY, String(Date.now()));
         var hbEl = document.getElementById('timer-heartbeat');
         if (hbEl) {
-          requestAnimationFrame(function() {
-            hbEl.textContent = 'extended ✓';
-            hbEl.className = 'timer-value';
-          });
+          hbEl.textContent = 'extended ✓';
+          hbEl.className = 'timer-value';
           // Show success briefly, then revert
           setTimeout(function() {
-            if (hbEl) {
-              requestAnimationFrame(function() {
-                hbEl.textContent = 'active';
-                hbEl.className = 'timer-value';
-              });
-            }
+            if (hbEl) { hbEl.textContent = 'active'; hbEl.className = 'timer-value'; }
           }, 3000);
         }
       }
@@ -1133,10 +1125,8 @@
         stopHeartbeat();
         var hbEl2 = document.getElementById('timer-heartbeat');
         if (hbEl2) {
-          requestAnimationFrame(function() {
-            hbEl2.textContent = 'expired';
-            hbEl2.className = 'timer-value critical';
-          });
+          hbEl2.textContent = 'expired';
+          hbEl2.className = 'timer-value critical';
         }
         clearSession();
         stopCountdownTimers();
@@ -1468,22 +1458,20 @@
       _heartbeatInFlight = true;
       var hbEl = document.getElementById('timer-heartbeat');
       if (hbEl) {
-        requestAnimationFrame(function() {
-          hbEl.textContent = 'sending...';
-          hbEl.className = 'timer-value warn';
-        });
+        hbEl.textContent = 'sending...';
+        hbEl.className = 'timer-value warn';
       }
 
-      // Disposable hidden iframe — create fresh each heartbeat with src pre-set
-      // before DOM insertion to avoid cursor flicker from navigating an existing iframe
-      var oldFrame = document.getElementById('gas-heartbeat');
-      if (oldFrame) oldFrame.remove();
-      var hbFrame = document.createElement('iframe');
-      hbFrame.id = 'gas-heartbeat';
-      hbFrame.style.cssText = 'position:fixed;left:-9999px;width:0;height:0;border:0;visibility:hidden';
+      // Use a hidden iframe so the heartbeat doesn't destroy the main GAS app UI
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (!hbFrame) {
+        hbFrame = document.createElement('iframe');
+        hbFrame.id = 'gas-heartbeat';
+        hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
+        document.body.appendChild(hbFrame);
+      }
       hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
         + '&msgKey=' + encodeURIComponent(_messageKey || '');
-      document.body.appendChild(hbFrame);
       // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
     }
 
