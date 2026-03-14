@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 21/100`
+`Sections: 22/100`
 
 ## [Unreleased]
+
+## [v03.00r] — 2026-03-13 10:08:56 PM EST
+
+### Fixed
+- Fixed heartbeat ready indicator not appearing on activity — `_heartbeatIdle` was not cleared when user became active, so display stayed stuck on `(idle)` until the next 30s tick
+
+#### `testauth1.html` — v01.35w
+
+##### Fixed
+- Heartbeat "ready" indicator now appears immediately when you interact with the page, instead of staying on "idle" until the next heartbeat cycle
 
 ## [v02.99r] — 2026-03-13 10:03:03 PM EST
 

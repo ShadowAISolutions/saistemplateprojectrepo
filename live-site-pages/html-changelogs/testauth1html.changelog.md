@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.35w] — 2026-03-13 10:08:56 PM EST — v03.00r
+
+### Fixed
+- Heartbeat "ready" indicator now appears immediately when you interact with the page
 
 ## [v01.34w] — 2026-03-13 10:03:03 PM EST — v02.99r
 
