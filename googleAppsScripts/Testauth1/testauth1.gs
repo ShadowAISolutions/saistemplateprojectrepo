@@ -1,4 +1,4 @@
-var VERSION = "v01.19g";
+var VERSION = "v01.20g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -49,13 +49,13 @@ var PROJECT_OVERRIDES = {
 // ══════════════
 var PRESETS = {
   standard: {
-    SESSION_EXPIRATION: 3600,
-    ABSOLUTE_SESSION_TIMEOUT: 57600,
+    SESSION_EXPIRATION: 180,           // seconds — rolling session lifetime, reset by heartbeats (prod: 3600 = 1hr)
+    ABSOLUTE_SESSION_TIMEOUT: 300,     // seconds — hard ceiling, never resets regardless of activity (prod: 57600 = 16hr)
     ENABLE_HEARTBEAT: true,
-    HEARTBEAT_INTERVAL: 300,
+    HEARTBEAT_INTERVAL: 30,            // seconds — how often GAS checks/extends the session when user is active (prod: 300 = 5min)
     MAX_SESSIONS_PER_USER: 1,
-    OAUTH_TOKEN_LIFETIME: 3600,
-    OAUTH_REFRESH_BUFFER: 300,
+    OAUTH_TOKEN_LIFETIME: 180,         // seconds — expected lifetime of the Google OAuth access token (prod: 3600 = 1hr)
+    OAUTH_REFRESH_BUFFER: 60,          // seconds — show "expiring soon" banner this long before token expires (prod: 300 = 5min)
     ENABLE_DOMAIN_RESTRICTION: false,
     ALLOWED_DOMAINS: [],
     ENABLE_AUDIT_LOG: false,
@@ -68,13 +68,13 @@ var PRESETS = {
     TOKEN_EXCHANGE_METHOD: 'url'
   },
   hipaa: {
-    SESSION_EXPIRATION: 900,
-    ABSOLUTE_SESSION_TIMEOUT: 57600,
+    SESSION_EXPIRATION: 180,           // seconds — rolling session lifetime, reset by heartbeats (prod: 900 = 15min)
+    ABSOLUTE_SESSION_TIMEOUT: 300,     // seconds — hard ceiling, never resets regardless of activity (prod: 57600 = 16hr)
     ENABLE_HEARTBEAT: true,
-    HEARTBEAT_INTERVAL: 300,
+    HEARTBEAT_INTERVAL: 30,            // seconds — how often GAS checks/extends the session when user is active (prod: 300 = 5min)
     MAX_SESSIONS_PER_USER: 1,
-    OAUTH_TOKEN_LIFETIME: 3600,
-    OAUTH_REFRESH_BUFFER: 300,
+    OAUTH_TOKEN_LIFETIME: 180,         // seconds — expected lifetime of the Google OAuth access token (prod: 3600 = 1hr)
+    OAUTH_REFRESH_BUFFER: 60,          // seconds — show "expiring soon" banner this long before token expires (prod: 300 = 5min)
     ENABLE_DOMAIN_RESTRICTION: true,
     ALLOWED_DOMAINS: [],
     ENABLE_AUDIT_LOG: true,

@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 35/100`
+`Sections: 36/100`
 
 ## [Unreleased]
+
+## [v03.14r] — 2026-03-14 12:43:08 PM EST
+
+### Changed
+- Set all timed auth config values to fast-test values for rapid testing (sessions, heartbeats, OAuth lifetime)
+- Added inline comments documenting every timed config value with its production default
+
+#### `testauth1.gs` — v01.20g
+
+##### Changed
+- Session expiration: 1 hour → 3 minutes (for testing)
+- Absolute session timeout: 16 hours → 5 minutes (for testing)
+- Heartbeat interval: 5 minutes → 30 seconds (for testing)
+- OAuth token lifetime: 1 hour → 3 minutes (for testing)
+- OAuth refresh buffer: 5 minutes → 1 minute (for testing)
+- Added inline comments to all timed values showing production defaults
+
+#### `testauth1.html` — v01.46w
+
+##### Changed
+- Heartbeat interval: 5 minutes → 30 seconds (for testing)
+- Session countdown duration: 1 hour → 3 minutes (for testing)
+- Absolute session countdown: 16 hours → 5 minutes (for testing)
+- Added inline comments to all timed values showing production defaults
 
 ## [v03.13r] — 2026-03-14 12:39:17 PM EST
 

@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20g] — 2026-03-14 12:43:08 PM EST — v03.14r
+
+### Changed
+- Session now expires after 3 minutes (for testing — production: 1 hour)
+- Absolute session limit reduced to 5 minutes (for testing — production: 16 hours)
+- Activity checks now happen every 30 seconds (for testing — production: 5 minutes)
+- Sign-in token lifetime reduced to 3 minutes (for testing — production: 1 hour)
+- "Expiring soon" warning now shows 1 minute before token expires (for testing — production: 5 minutes)
 
 ## [v01.19g] — 2026-03-14 12:39:17 PM EST — v03.13r
 
