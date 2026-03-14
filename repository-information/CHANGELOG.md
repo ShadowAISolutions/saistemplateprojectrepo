@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 29/100`
+`Sections: 30/100`
 
 ## [Unreleased]
+
+## [v03.08r] — 2026-03-13 11:23:52 PM EST
+
+### Added
+- Session pin now shows ▶ indicator in minimized state when heartbeat is active
+- Propagated ▶ minimized pill indicator to the auth HTML template
+
+#### `testauth1.html` — v01.43w
+
+##### Added
+- Session countdown pill now shows ▶ when your activity is being tracked
 
 ## [v03.07r] — 2026-03-13 11:17:21 PM EST
 

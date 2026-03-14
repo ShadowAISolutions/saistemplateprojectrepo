@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.42w">
+  <meta name="build-version" content="v01.43w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1324,7 +1324,9 @@
           return;
         } else {
           sessionEl.textContent = formatCountdown(remaining);
-          pillLabel.textContent = formatCountdown(remaining);
+          // Show ▶ on the minimized pill when heartbeat is active (not idle)
+          var pillReady = HTML_CONFIG.ENABLE_HEARTBEAT && _heartbeatInterval && !_heartbeatIdle && !_heartbeatInFlight;
+          pillLabel.textContent = formatCountdown(remaining) + (pillReady ? ' \u25B6' : '');
           if (remaining <= 60) {
             sessionEl.className = 'timer-value critical';
             pillLabel.className = 'timer-pill-label critical';

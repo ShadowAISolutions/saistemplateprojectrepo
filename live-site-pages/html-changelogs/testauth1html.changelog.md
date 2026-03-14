@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 42/50`
+`Sections: 43/50`
 
 ## [Unreleased]
+
+## [v01.43w] — 2026-03-13 11:23:52 PM EST — v03.08r
+
+### Added
+- Session countdown pill now shows ▶ when your activity is being tracked
 
 ## [v01.42w] — 2026-03-13 11:17:21 PM EST — v03.07r
 
