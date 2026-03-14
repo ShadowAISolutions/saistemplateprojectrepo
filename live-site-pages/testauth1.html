@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.52w">
+  <meta name="build-version" content="v01.53w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1148,11 +1148,28 @@
     });
 
     // =============================================
-    // AUTH — Cross-Tab Session Sync (localStorage only)
+    // AUTH — Cross-Tab Session Sync
     // =============================================
-    // When another tab signs in or out, the storage event fires here.
-    // This gives instant cross-tab sync without polling or BroadcastChannel.
-    // sessionStorage (HIPAA) is per-tab — this event never fires for it.
+    // Two mechanisms handle cross-tab sign-out, matched to their storage type:
+    //
+    // 1. localStorage (standard preset): the browser's `storage` event fires automatically
+    //    in other same-origin tabs when localStorage is modified. Sign-out clears the session
+    //    key from localStorage, which triggers the event in other tabs for free — no explicit
+    //    signaling code needed. This is the most elegant approach for localStorage because
+    //    cross-tab sync is a natural byproduct of the storage mechanism itself.
+    //
+    // 2. sessionStorage (hipaa preset): sessionStorage is per-tab by design — changes never
+    //    fire cross-tab `storage` events. However, duplicating a tab clones its sessionStorage
+    //    (per HTML spec), so a duplicated tab inherits the session. Without explicit signaling,
+    //    signing out of one tab leaves duplicated tabs still authenticated. BroadcastChannel
+    //    solves this: sign-out broadcasts a message, and all same-origin tabs receive it and
+    //    clear their own sessions. BroadcastChannel is purpose-built for cross-tab communication
+    //    and works regardless of storage type.
+    //
+    // Each mechanism is the right tool for its storage type — localStorage gets free sync via
+    // storage events, sessionStorage needs explicit signaling via BroadcastChannel.
+
+    // --- Mechanism 1: storage event (localStorage / standard preset) ---
     window.addEventListener('storage', function(e) {
       // Login sync: another tab saved a session token
       if (e.key === SESSION_KEY && !e.oldValue && e.newValue) {
@@ -1180,6 +1197,21 @@
         showAuthWall('You have been signed out in another tab.');
       }
     });
+
+    // --- Mechanism 2: BroadcastChannel (sessionStorage / hipaa preset) ---
+    // Only active when using sessionStorage, since localStorage already has cross-tab sync.
+    var _signOutChannel = null;
+    if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' && typeof BroadcastChannel !== 'undefined') {
+      _signOutChannel = new BroadcastChannel('auth-sign-out');
+      _signOutChannel.onmessage = function(e) {
+        if (e.data && e.data.type === 'sign-out') {
+          clearSession();
+          stopCountdownTimers();
+          stopHeartbeat();
+          showAuthWall('You have been signed out in another tab.');
+        }
+      };
+    }
 
     // =============================================
     // AUTH — UI State Management
@@ -1504,6 +1536,12 @@
       clearSession();
       stopCountdownTimers();
       stopHeartbeat();
+
+      // Notify other tabs (sessionStorage/hipaa mode — BroadcastChannel)
+      // For localStorage/standard mode, cross-tab sync happens automatically via the storage event.
+      if (_signOutChannel) {
+        _signOutChannel.postMessage({ type: 'sign-out' });
+      }
 
       // Notify GAS server to invalidate server-side session
       if (session.token) {

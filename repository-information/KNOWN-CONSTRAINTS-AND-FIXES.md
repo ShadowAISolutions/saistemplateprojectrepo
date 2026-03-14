@@ -141,6 +141,23 @@ On sign-out, `clearSession()` removed the session data from storage but **did no
 
 ---
 
+## Constraint F — Cross-tab sign-out requires two mechanisms
+
+**Rule:** Cross-tab sign-out uses **two** different mechanisms, matched to their storage type. Do NOT consolidate them into one — each is the correct tool for its context.
+
+**Why:** The two auth presets use different browser storage:
+- **Standard preset** (`localStorage`): the browser's `storage` event fires automatically in other same-origin tabs when `localStorage` is modified. Sign-out clears the session key, which triggers the event for free — no explicit signaling needed. This is the most elegant approach because cross-tab sync is a natural byproduct of the storage mechanism itself.
+- **Hipaa preset** (`sessionStorage`): `sessionStorage` is per-tab by design — changes **never** fire cross-tab `storage` events. However, duplicating a tab (Ctrl+Shift+D) clones its `sessionStorage` (per HTML spec), so a duplicated tab inherits the authenticated session. Without explicit signaling, signing out in one tab leaves duplicated tabs still authenticated. `BroadcastChannel` solves this — sign-out broadcasts a message, and all same-origin tabs receive it and clear their own sessions.
+
+**Why not use `BroadcastChannel` for both?** For `localStorage`, the `storage` event is free and automatic — adding `BroadcastChannel` would be redundant signaling code on top of something that already works. For `sessionStorage`, `BroadcastChannel` is necessary because no free mechanism exists. Each approach is optimal for its storage type.
+
+**Affected code:**
+- `testauth1.html` — `storage` event listener (Mechanism 1, standard preset)
+- `testauth1.html` — `BroadcastChannel` `auth-sign-out` (Mechanism 2, hipaa preset)
+- `testauth1.html` — `performSignOut()` broadcasts via `_signOutChannel` when active
+
+---
+
 ## Adding New Entries
 
 **Constraints:** When a debugging session reveals an architectural limitation:

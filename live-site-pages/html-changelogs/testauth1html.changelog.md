@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 28/50`
+`Sections: 29/50`
 
 ## [Unreleased]
+
+## [v01.53w] — 2026-03-14 02:11:03 PM EST — v03.23r
+
+### Added
+- Signing out now signs you out of all open tabs (previously only worked with the standard security mode)
 
 ## [v01.52w] — 2026-03-14 01:52:33 PM EST — v03.21r
 
