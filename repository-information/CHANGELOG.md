@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 27/100`
+`Sections: 28/100`
 
 ## [Unreleased]
+
+## [v03.06r] — 2026-03-13 11:12:06 PM EST
+
+### Changed
+- Increased testauth1 session countdown from 3 minutes to 2 hours and heartbeat interval from 30 seconds to 10 minutes
+
+#### `testauth1.html` — v01.41w
+
+##### Changed
+- Session now lasts 2 hours instead of 3 minutes
+- Heartbeat checks happen every 10 minutes instead of every 30 seconds
+
+#### `testauth1.gs` — v01.17g
+
+##### Changed
+- Session expiration extended from 3 minutes to 2 hours
+- Heartbeat interval increased from 30 seconds to 10 minutes
 
 ## [v03.05r] — 2026-03-13 11:00:25 PM EST
 

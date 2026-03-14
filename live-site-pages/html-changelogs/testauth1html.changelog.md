@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v01.41w] — 2026-03-13 11:12:06 PM EST — v03.06r
+
+### Changed
+- Session now lasts 2 hours instead of 3 minutes
+- Heartbeat checks happen every 10 minutes instead of every 30 seconds
 
 ## [v01.40w] — 2026-03-13 11:00:25 PM EST — v03.05r
 
