@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 54/100`
+`Sections: 55/100`
 
 ## [Unreleased]
+
+## [v03.33r] — 2026-03-14 05:46:37 PM EST
+
+### Security
+- Added Content Security Policy (CSP) meta tag to testauth1 — blocks unauthorized script sources, object/embed injection, and base-URI hijacking while whitelisting Google Identity Services and GAS iframe origins
+- Added HTML sanitization for changelog popups — strips dangerous elements (script, iframe, object, embed, form, svg) and event handler attributes from externally-fetched changelog content before innerHTML rendering
+
+#### `testauth1.html` — v01.54w
+
+##### Security
+- Added Content-Security-Policy meta tag with directives for script-src, connect-src, frame-src, style-src, img-src, object-src, and base-uri
+- Added sanitizeChangelogHtml() function that strips dangerous HTML elements and event handler attributes
+- Applied changelog sanitization to both GAS changelog and HTML changelog innerHTML assignments
 
 ## [v03.32r] — 2026-03-14 05:29:45 PM EST
 

@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.53w">
+  <meta name="build-version" content="v01.54w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -709,6 +710,25 @@
       document.getElementById('gcl-close').addEventListener('click', function() { gclOverlay.style.display = 'none'; });
       document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && gclOverlay.style.display === 'flex') gclOverlay.style.display = 'none'; });
 
+      function sanitizeChangelogHtml(html) {
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        var dangerous = tmp.querySelectorAll('script, iframe, object, embed, form, input, textarea, link, style, svg, math');
+        for (var i = dangerous.length - 1; i >= 0; i--) {
+          dangerous[i].parentNode.removeChild(dangerous[i]);
+        }
+        var all = tmp.querySelectorAll('*');
+        for (var j = 0; j < all.length; j++) {
+          var attrs = all[j].attributes;
+          for (var k = attrs.length - 1; k >= 0; k--) {
+            if (attrs[k].name.toLowerCase().indexOf('on') === 0) {
+              all[j].removeAttribute(attrs[k].name);
+            }
+          }
+        }
+        return tmp.innerHTML;
+      }
+
       function getGasChangelogUrl() {
         return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-changelogs/' + pageName + 'gs.changelog.md';
       }
@@ -748,7 +768,7 @@
         fetch(getGasChangelogUrl())
           .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
           .then(function(md) {
-            gclCache = parseGasChangelog(md);
+            gclCache = sanitizeChangelogHtml(parseGasChangelog(md));
             gclBody.innerHTML = gclCache;
             var titleEl = document.getElementById('gcl-title');
             if (titleEl && currentGasVersion) titleEl.textContent = 'GAS Changelog \u2014 ' + currentGasVersion;
@@ -829,7 +849,7 @@
         fetch(getChangelogUrl())
           .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
           .then(function(md) {
-            changelogCache = parseChangelog(md);
+            changelogCache = sanitizeChangelogHtml(parseChangelog(md));
             body.innerHTML = changelogCache;
             var titleEl = document.getElementById('changelog-title');
             var ind = document.getElementById('version-indicator');
