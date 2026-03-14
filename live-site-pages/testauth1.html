@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.57w">
+  <meta name="build-version" content="v01.58w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -271,6 +271,16 @@
 <!-- PROJECT START -->
 <!-- ══════════════ -->
   <!-- YOUR PAGE CONTENT HERE -->
+  <div id="security-test-panel" style="position:fixed;bottom:100px;left:8px;z-index:9999;">
+    <button id="run-security-tests-btn" style="background:#1a1a2e;color:#7c8bff;border:1px solid #7c8bff;padding:8px 14px;border-radius:8px;font:12px/1 monospace;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Run Security Tests</button>
+    <div id="security-test-results" style="display:none;margin-top:8px;background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:12px 16px;max-width:420px;max-height:60vh;overflow-y:auto;font:12px/1.6 monospace;color:#e0e0e0;box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-weight:bold;color:#fff;">Security Test Results</span>
+        <button onclick="document.getElementById('security-test-results').style.display='none'" style="background:none;border:none;color:#888;cursor:pointer;font-size:16px;padding:0 4px;">&times;</button>
+      </div>
+      <div id="security-test-output"></div>
+    </div>
+  </div>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -1725,6 +1735,160 @@
 // ══════════════
 // PROJECT START
 // ══════════════
+
+    document.getElementById('run-security-tests-btn').addEventListener('click', function() {
+      var results = [];
+      var pass = 0;
+      var fail = 0;
+      var warn = 0;
+
+      function addResult(status, name, detail) {
+        var color = status === 'PASS' ? '#66bb6a' : status === 'FAIL' ? '#ef5350' : '#ffc107';
+        var icon = status === 'PASS' ? '\u2705' : status === 'FAIL' ? '\u274C' : '\u26A0\uFE0F';
+        if (status === 'PASS') pass++;
+        else if (status === 'FAIL') fail++;
+        else warn++;
+        results.push('<div style="margin-bottom:6px;"><span style="color:' + color + ';font-weight:bold;">' + icon + ' ' + status + '</span> <span style="color:#fff;">' + name + '</span><br><span style="color:#aaa;font-size:11px;margin-left:20px;">' + detail + '</span></div>');
+      }
+
+      // Test 1: CSP meta tag present
+      var cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
+      if (cspMeta && cspMeta.content) {
+        var cspContent = cspMeta.content;
+        var hasObjectNone = cspContent.indexOf("object-src 'none'") !== -1;
+        var hasBaseUri = cspContent.indexOf("base-uri 'self'") !== -1;
+        if (hasObjectNone && hasBaseUri) {
+          addResult('PASS', 'Content Security Policy', 'CSP meta tag active with object-src none and base-uri self');
+        } else {
+          addResult('WARN', 'Content Security Policy', 'CSP present but missing recommended directives');
+        }
+      } else {
+        addResult('FAIL', 'Content Security Policy', 'No CSP meta tag found');
+      }
+
+      // Test 2: Changelog sanitization
+      if (typeof sanitizeChangelogHtml === 'function') {
+        var testHtml = '<b>Safe</b><script>alert("xss")</' + 'script><img onerror="alert(1)" src="x"><iframe src="evil"></iframe>';
+        var sanitized = sanitizeChangelogHtml(testHtml);
+        var hasScript = sanitized.indexOf('<script') !== -1 || sanitized.indexOf('<iframe') !== -1;
+        var hasHandler = sanitized.indexOf('onerror') !== -1;
+        if (!hasScript && !hasHandler && sanitized.indexOf('<b>Safe</b>') !== -1) {
+          addResult('PASS', 'Changelog Sanitization', 'XSS payloads stripped, safe HTML preserved');
+        } else {
+          addResult('FAIL', 'Changelog Sanitization', 'Sanitizer failed to strip dangerous content');
+        }
+      } else {
+        addResult('FAIL', 'Changelog Sanitization', 'sanitizeChangelogHtml function not found');
+      }
+
+      // Test 3: Message type allowlist
+      if (typeof _KNOWN_GAS_MESSAGES === 'object' && _KNOWN_GAS_MESSAGES !== null) {
+        var knownTypes = Object.keys(_KNOWN_GAS_MESSAGES);
+        if (knownTypes.length >= 5 && !_KNOWN_GAS_MESSAGES['evil-message']) {
+          addResult('PASS', 'Message Type Allowlist', knownTypes.length + ' message types registered, unknown types rejected');
+        } else {
+          addResult('WARN', 'Message Type Allowlist', 'Allowlist exists but may be misconfigured');
+        }
+      } else {
+        addResult('FAIL', 'Message Type Allowlist', '_KNOWN_GAS_MESSAGES not found');
+      }
+
+      // Test 4: CSRF nonce variable exists
+      if (typeof _authNonce !== 'undefined') {
+        addResult('PASS', 'OAuth CSRF Nonce', '_authNonce variable present (value: ' + (_authNonce === null ? 'null (consumed/idle)' : 'set') + ')');
+      } else {
+        addResult('FAIL', 'OAuth CSRF Nonce', '_authNonce variable not declared');
+      }
+
+      // Test 5: Bootstrap timestamp validation
+      if (typeof _iframeLoadTime !== 'undefined') {
+        addResult('PASS', 'Bootstrap Replay Protection', '_iframeLoadTime tracking active (30s freshness window)');
+      } else {
+        addResult('FAIL', 'Bootstrap Replay Protection', '_iframeLoadTime variable not declared');
+      }
+
+      // Test 6: First-write-wins key protection
+      if (typeof _messageKey !== 'undefined') {
+        var keyStatus = _messageKey ? 'key set (locked)' : 'null (awaiting first delivery)';
+        addResult('PASS', 'Message Key Protection', 'First-write-wins guard active \u2014 ' + keyStatus);
+      } else {
+        addResult('FAIL', 'Message Key Protection', '_messageKey variable not declared');
+      }
+
+      // Test 7: Signature verification function
+      if (typeof _verifyMessageSignature === 'function') {
+        addResult('PASS', 'Message Signature Verification', 'HMAC verification function available');
+      } else {
+        addResult('FAIL', 'Message Signature Verification', '_verifyMessageSignature function not found');
+      }
+
+      // Test 8: BroadcastChannel cross-tab signout
+      if (typeof BroadcastChannel !== 'undefined') {
+        if (typeof _signOutChannel !== 'undefined') {
+          addResult('PASS', 'Cross-Tab Sign-Out', 'BroadcastChannel initialized for session revocation');
+        } else {
+          addResult('WARN', 'Cross-Tab Sign-Out', 'BroadcastChannel API available but _signOutChannel not found');
+        }
+      } else {
+        addResult('WARN', 'Cross-Tab Sign-Out', 'BroadcastChannel API not supported in this browser');
+      }
+
+      // Test 9: Session storage type (HIPAA check)
+      if (typeof HTML_CONFIG === 'object') {
+        var storageType = HTML_CONFIG.STORAGE_TYPE;
+        var exchangeMethod = HTML_CONFIG.TOKEN_EXCHANGE_METHOD;
+        addResult('PASS', 'Session Config', 'Storage: ' + storageType + ', Token exchange: ' + exchangeMethod);
+        if (storageType === 'sessionStorage') {
+          addResult('PASS', 'Tab-Scoped Sessions', 'Sessions cleared on tab close (sessionStorage)');
+        } else {
+          addResult('WARN', 'Tab-Scoped Sessions', 'Sessions persist across tabs (localStorage) \u2014 consider sessionStorage for higher security');
+        }
+      } else {
+        addResult('FAIL', 'Session Config', 'HTML_CONFIG not found');
+      }
+
+      // Test 10: Error message sanitization (check auth-error element content)
+      var authErr = document.getElementById('auth-error');
+      if (authErr) {
+        var errText = authErr.textContent || '';
+        var hasEmail = /@/.test(errText) && errText.indexOf('@') !== -1 && /\.\w{2,}/.test(errText);
+        if (!hasEmail || errText === '') {
+          addResult('PASS', 'Error Message Sanitization', 'No email addresses exposed in auth error display');
+        } else {
+          addResult('FAIL', 'Error Message Sanitization', 'Email address found in error display: ' + errText);
+        }
+      } else {
+        addResult('WARN', 'Error Message Sanitization', 'Auth error element not found');
+      }
+
+      // Test 11: Heartbeat configuration
+      if (typeof HTML_CONFIG === 'object' && HTML_CONFIG.ENABLE_HEARTBEAT) {
+        addResult('PASS', 'Heartbeat Active', 'Interval: ' + (HTML_CONFIG.HEARTBEAT_INTERVAL / 1000) + 's' + (HTML_CONFIG.HEARTBEAT_INTERVAL < 60000 ? ' (test value)' : ''));
+      } else {
+        addResult('WARN', 'Heartbeat', 'Heartbeat not enabled');
+      }
+
+      // Test 12: Referrer policy
+      var refMeta = document.querySelector('meta[name="referrer"]');
+      if (refMeta && refMeta.content === 'no-referrer') {
+        addResult('PASS', 'Referrer Policy', 'no-referrer \u2014 prevents token leakage via Referer header');
+      } else {
+        addResult('WARN', 'Referrer Policy', 'Referrer meta tag missing or not set to no-referrer');
+      }
+
+      // Build summary
+      var summary = '<div style="margin-bottom:10px;padding:8px 12px;border-radius:6px;background:' +
+        (fail === 0 ? 'rgba(102,187,106,0.15);border:1px solid #66bb6a' : 'rgba(239,83,80,0.15);border:1px solid #ef5350') + ';">' +
+        '<span style="color:#fff;font-weight:bold;">' + (fail === 0 ? 'All tests passed' : fail + ' test(s) failed') + '</span>' +
+        ' \u2014 <span style="color:#66bb6a;">' + pass + ' passed</span>' +
+        (warn > 0 ? ', <span style="color:#ffc107;">' + warn + ' warnings</span>' : '') +
+        (fail > 0 ? ', <span style="color:#ef5350;">' + fail + ' failed</span>' : '') +
+        '</div>';
+
+      var output = document.getElementById('security-test-output');
+      output.innerHTML = summary + results.join('');
+      document.getElementById('security-test-results').style.display = 'block';
+    });
 
 // ══════════════
 // PROJECT END

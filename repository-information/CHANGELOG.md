@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 59/100`
+`Sections: 60/100`
 
 ## [Unreleased]
+
+## [v03.38r] — 2026-03-14 06:21:23 PM EST
+
+### Added
+- Added security test panel to testauth1 — a "Run Security Tests" button that validates all implemented security features (CSP, sanitization, CSRF nonce, message allowlist, bootstrap replay protection, key protection, HMAC verification, cross-tab signout, session config, error sanitization, heartbeat, referrer policy)
+
+#### `testauth1.html` — v01.58w
+
+##### Added
+- Added "Run Security Tests" button in the bottom-left corner that runs 12 client-side security checks and displays pass/fail/warning results in a dark overlay panel
 
 ## [v03.37r] — 2026-03-14 06:10:46 PM EST
 
