@@ -1,4 +1,4 @@
-var VERSION = "v01.24g";
+var VERSION = "v01.25g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -170,6 +170,19 @@ function getAppData() {
 }
 
 function pullAndDeployFromGitHub() {
+  // Audit: Log every deploy trigger for security monitoring
+  var auditCache = CacheService.getScriptCache();
+  var deployLog = auditCache.get('deploy_audit_log') || '[]';
+  var log;
+  try { log = JSON.parse(deployLog); } catch(e) { log = []; }
+  log.push({
+    timestamp: new Date().toISOString(),
+    trigger: 'doPost(action=deploy)',
+    currentVersion: VERSION
+  });
+  if (log.length > 20) log = log.slice(-20);
+  auditCache.put('deploy_audit_log', JSON.stringify(log), 21600);
+
   var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
 
   var apiUrl = "https://api.github.com/repos/"

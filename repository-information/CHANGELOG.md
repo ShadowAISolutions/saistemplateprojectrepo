@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 56/100`
+`Sections: 57/100`
 
 ## [Unreleased]
+
+## [v03.35r] — 2026-03-14 05:58:39 PM EST
+
+### Security
+- Added deploy audit logging to testauth1 — every deploy trigger is now recorded in a rolling 20-entry cache log with timestamps and version info for security monitoring (VULN-3 detection)
+- Master ACL placeholder validation confirmed already implemented — prevents API calls with unconfigured spreadsheet ID (VULN-19)
+- Deployment ID and spreadsheet ID exposure in source code documented as accepted risk — these are identifiers, not secrets (VULN-12)
+
+#### `testauth1.gs` — v01.25g
+
+##### Security
+- Added rolling deploy audit log (20 entries, 6hr TTL) at the start of pullAndDeployFromGitHub() — records timestamp, trigger source, and current version for each deploy event
 
 ## [v03.34r] — 2026-03-14 05:54:36 PM EST
 
