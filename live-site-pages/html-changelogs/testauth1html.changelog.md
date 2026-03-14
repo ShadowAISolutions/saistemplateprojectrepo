@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 36/50`
+`Sections: 37/50`
 
 ## [Unreleased]
+
+## [v01.37w] — 2026-03-13 10:34:59 PM EST — v03.02r
+
+### Fixed
+- Typing in text boxes inside the app now keeps your session active
 
 ## [v01.36w] — 2026-03-13 10:24:41 PM EST — v03.01r
 

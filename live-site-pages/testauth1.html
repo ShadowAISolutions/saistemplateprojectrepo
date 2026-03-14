@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.36w">
+  <meta name="build-version" content="v01.37w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1431,6 +1431,7 @@
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.addEventListener(evt, _onHeartbeatActivity, { passive: true });
       });
+      _startIframeFocusDetection();
 
       _heartbeatInterval = setInterval(function() {
         _lastHeartbeatTick = Date.now();
@@ -1449,6 +1450,19 @@
     function _onHeartbeatActivity() {
       _lastHeartbeatActivity = Date.now();
       _heartbeatIdle = false;  // clear idle so display immediately shows ▶ ready
+    }
+
+    // Cross-origin iframes swallow keyboard events — detect iframe focus as activity
+    var _iframeFocusInterval = null;
+    function _startIframeFocusDetection() {
+      if (_iframeFocusInterval) return;
+      _iframeFocusInterval = setInterval(function() {
+        var el = document.activeElement;
+        if (el && el.tagName === 'IFRAME') _onHeartbeatActivity();
+      }, 1000);
+    }
+    function _stopIframeFocusDetection() {
+      if (_iframeFocusInterval) { clearInterval(_iframeFocusInterval); _iframeFocusInterval = null; }
     }
 
     function sendHeartbeat() {
@@ -1482,6 +1496,7 @@
 
     function stopHeartbeat() {
       if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
+      _stopIframeFocusDetection();
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.removeEventListener(evt, _onHeartbeatActivity);
       });

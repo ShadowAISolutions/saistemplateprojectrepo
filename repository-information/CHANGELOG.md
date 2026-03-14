@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 23/100`
+`Sections: 24/100`
 
 ## [Unreleased]
+
+## [v03.02r] — 2026-03-13 10:34:59 PM EST
+
+### Fixed
+- Typing inside the GAS iframe now counts as activity for heartbeat — added iframe focus detection since cross-origin iframes swallow keyboard events
+
+#### `testauth1.html` — v01.37w
+
+##### Fixed
+- Typing in text boxes inside the app now keeps your session active
 
 ## [v03.01r] — 2026-03-13 10:24:41 PM EST
 
