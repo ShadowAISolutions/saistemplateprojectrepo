@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-14 03:19:37 PM EST` · Repo version: `v03.29r`
+Last updated: `2026-03-14 04:56:37 PM EST` · Repo version: `v03.30r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -43,7 +43,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/testauth1.html">testauth1.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/testauth1html.changelog.md">v01.53w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog.md">v01.23g</a> | [template] testauth1title page
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/portal.html">portal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/portal.html">🌐</a>🟢 · 🔸 · ◽ · 🔻 · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/portalhtml.changelog.md">v01.04w</a> · vNoGASg | [template] SSO portal &amp; authentication gateway
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/portal.html">portal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/portal.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Portal/portal.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/portalhtml.changelog.md">v01.04w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/portalgs.changelog.md">v01.00g</a> | [template] SSO portal &amp; authentication gateway
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>
@@ -66,7 +66,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-versions">gs-versions/</a>             — [template] GAS version files for GAS version pill polling
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/indexgs.version.txt">indexgs.version.txt</a>            — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testenvironmentgs.version.txt">testenvironmentgs.version.txt</a>      — [template]
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testauth1gs.version.txt">testauth1gs.version.txt</a>            — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testauth1gs.version.txt">testauth1gs.version.txt</a>            — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/portalgs.version.txt">portalgs.version.txt</a>               — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-changelogs">html-changelogs/</a>         — [template] HTML changelogs (source of truth + deployed)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">indexhtml.changelog.md</a>                 — [template] Homepage changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog-archive.md">indexhtml.changelog-archive.md</a>         — [template] Older sections (rotated)
@@ -84,7 +85,9 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testenvironmentgs.changelog.md">testenvironmentgs.changelog.md</a>         — [template] Testenvironment GAS changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testenvironmentgs.changelog-archive.md">testenvironmentgs.changelog-archive.md</a> — [template] Older sections (rotated)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog.md">testauth1gs.changelog.md</a>               — [template] Testauth1 GAS changelog
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog-archive.md">testauth1gs.changelog-archive.md</a>       — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog-archive.md">testauth1gs.changelog-archive.md</a>       — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/portalgs.changelog.md">portalgs.changelog.md</a>                  — [template] Portal GAS changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/portalgs.changelog-archive.md">portalgs.changelog-archive.md</a>          — [template] Older sections (rotated)
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/sounds">sounds/</a>                 — [template] Audio feedback files
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Website_Ready_Voice_1.mp3">Website_Ready_Voice_1.mp3</a>   — [template] "Website Ready" splash sound
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Code_Ready_Voice_1.mp3">Code_Ready_Voice_1.mp3</a>      — [template] "Code Ready" splash sound
@@ -97,9 +100,12 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Testenvironment">Testenvironment/</a>       — [template] GAS for live-site-pages/testenvironment.html
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testenvironment/testenvironment.gs">testenvironment.gs</a>            — [template] Self-updating GAS web app
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testenvironment/testenvironment.config.json">testenvironment.config.json</a>   — [template] Project config (source of truth)
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Testauth1">Testauth1/</a>             — [template] GAS for live-site-pages/testauth1.html
-│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">testauth1.gs</a>              — [template] Self-updating GAS web app (auth)
-│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.config.json">testauth1.config.json</a>     — [template] Project config (source of truth)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Testauth1">Testauth1/</a>             — [template] GAS for live-site-pages/testauth1.html
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">testauth1.gs</a>              — [template] Self-updating GAS web app (auth)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.config.json">testauth1.config.json</a>     — [template] Project config (source of truth)
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Portal">Portal/</a>                — [template] GAS for live-site-pages/portal.html
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Portal/portal.gs">portal.gs</a>                 — [template] Self-updating GAS web app (auth)
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Portal/portal.config.json">portal.config.json</a>        — [template] Project config (source of truth)
 │
 <b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
@@ -113,7 +119,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/gas-project-creator-diagram.md">gas-project-creator-diagram.md</a> — [template] GAS Project Creator user flow
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/index-diagram.md">index-diagram.md</a>              — [template] Homepage component interaction
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testenvironment-diagram.md">testenvironment-diagram.md</a>    — [template] Testenvironment page GAS integration sequence
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testauth1-diagram.md">testauth1-diagram.md</a>         — [template] Testauth1 page GAS integration sequence (auth)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testauth1-diagram.md">testauth1-diagram.md</a>         — [template] Testauth1 page GAS integration sequence (auth)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/portal-diagram.md">portal-diagram.md</a>            — [template] Portal page GAS integration sequence (auth)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md">CHANGELOG-archive.md</a>    — [template] Older changelog sections (rotated from CHANGELOG.md)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md">CODING-GUIDELINES.md</a>    — [template] Domain-specific coding knowledge

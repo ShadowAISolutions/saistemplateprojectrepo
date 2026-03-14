@@ -1,6 +1,6 @@
-# Changelog Archive — Portal Title
+# Changelog Archive — Portal Title (Google Apps Script)
 
-Older version sections rotated from [portalhtml.changelog.md](portalhtml.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [portalgs.changelog.md](portalgs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

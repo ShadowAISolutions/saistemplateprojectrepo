@@ -46,7 +46,7 @@ graph TB
             TEST_PAGE["[template] testenvironment.html\n(Test Environment)"]
             GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
             TESTAUTH1_PAGE["[template] testauth1.html\n(Test Auth 1)"]
-            PORTAL_PAGE["[template] portal.html\n(SSO Portal)"]
+            PORTAL_PAGE["[template] portal.html\n(Portal Title)"]
         end
 
         subgraph "Google Apps Scripts [template]"
@@ -88,6 +88,7 @@ graph TB
         subgraph "Scripts [template]"
             INIT_SCRIPT["[template] scripts/init-repo.sh\n(one-shot fork initialization)"]
             GAS_SETUP["[template] scripts/setup-gas-project.sh\n(GAS project file creation)"]
+            GAS_PORTAL["[template] portal.gs"]
             INIT_SCRIPT -.->|"auto-detects org/repo\nreplaces 22 files"| CLAUDE_MD
         end
     end
@@ -98,6 +99,7 @@ graph TB
     GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
     GASTPL_TEST_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
+    GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_PORTAL
     INDEX -.->|"embeds via iframe"| GAS_INDEX
     TEST_PAGE -.->|"embeds via iframe"| GAS_TEST
     TESTAUTH1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTH1
@@ -109,6 +111,7 @@ graph TB
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INDEX
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TEST
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_PORTAL
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| INDEX
@@ -329,6 +332,7 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Test Environment | [`repository-information/diagrams/testenvironment-diagram.md`](diagrams/testenvironment-diagram.md) |
 | GAS Project Creator | [`repository-information/diagrams/gas-project-creator-diagram.md`](diagrams/gas-project-creator-diagram.md) |
 | Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
+| Portal Title | [`repository-information/diagrams/portal-diagram.md`](diagrams/portal-diagram.md) |
 
 ## 4. Git Graph — Branching Strategy
 
@@ -520,6 +524,7 @@ classDiagram
 
     HTMLPage "1" --> "1" VersionFile : html.version.txt
     HTMLPage "1" --> "0..1" GASScript : embeds via iframe
+    PORTAL_PAGE -.->|"embeds via iframe"| GAS_PORTAL
     HTMLPage "1" --> "1" Changelog : html changelog
     HTMLPage "1" --> "1" EnvironmentDiagram : internals documented in
     GASScript "1" --> "1" VersionFile : gs.version.txt

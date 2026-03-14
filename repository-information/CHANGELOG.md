@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 51/100`
+`Sections: 52/100`
 
 ## [Unreleased]
+
+## [v03.30r] — 2026-03-14 04:56:37 PM EST
+
+### Added
+- Set up Portal GAS project with auth support — `portal.gs`, `portal.config.json`, version files, changelogs, per-environment diagram, workflow deploy step, and GAS Projects table registration
+
+#### `portal.html` — v01.04w (no change)
+
+##### Changed
+- Updated title to "Portal Title" and CLIENT_ID to new GAS project credentials
 
 ## [v03.29r] — 2026-03-14 03:19:37 PM EST
 
