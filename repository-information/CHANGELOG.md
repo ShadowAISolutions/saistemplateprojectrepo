@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 47/100`
+`Sections: 48/100`
 
 ## [Unreleased]
+
+## [v03.26r] — 2026-03-14 03:06:27 PM EST
+
+### Changed
+- Added all site pages to the portal dashboard — GAS Project Creator was missing from the navigation cards
+
+#### `portal.html` — v01.01w
+
+##### Changed
+- Portal now lists all site pages: Test Auth 1, Test Environment, Homepage, and GAS Project Creator
 
 ## [v03.25r] — 2026-03-14 02:55:57 PM EST
 
