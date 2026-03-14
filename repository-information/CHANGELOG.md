@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v03.46r] — 2026-03-14 07:47:04 PM EST
+
+### Fixed
+- Fixed security tests destroying active sessions when run — tests for performSignOut, showAuthWall, exchangeToken, and handleTokenResponse now use safe code inspection instead of calling the functions directly (which stopped timers, reloaded the iframe, and showed the sign-in wall)
+
+#### `testauth1.html` — v01.66w
+
+##### Fixed
+- Fixed security tests causing sign-out and "Access denied" when clicking "Run Security Tests" — destructive function calls replaced with safe code inspection
 
 ## [v03.45r] — 2026-03-14 07:24:28 PM EST
 
