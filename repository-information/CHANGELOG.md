@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
 
 ## [Unreleased]
+
+## [v03.34r] — 2026-03-14 05:54:36 PM EST
+
+### Security
+- Removed email addresses from authentication error responses to prevent email enumeration (VULN-7)
+- Added per-token rate limiting (5 attempts/5min) on login and per-session rate limiting (20 requests/5min) on heartbeat to prevent brute force attacks (VULN-8)
+- Reduced absolute session timeout from 16 hours to 8 hours to shrink stolen session exposure window (VULN-17)
+- Updated authentication error display to show generic "Access denied" message instead of exposing error codes or email addresses
+
+#### `testauth1.html` — v01.55w
+
+##### Security
+- Changed authentication failure message from detailed error code + email to generic "Access denied. Contact your administrator."
+
+#### `testauth1.gs` — v01.24g
+
+##### Security
+- Removed email field from domain_not_allowed and not_authorized error responses
+- Added rate limiting: max 5 failed login attempts per token fingerprint per 5-minute window with automatic counter reset on success
+- Added heartbeat rate limiting: max 20 requests per session per 5-minute window
+- Reduced ABSOLUTE_SESSION_TIMEOUT production value from 57600s (16hr) to 28800s (8hr) in both standard and hipaa presets
 
 ## [v03.33r] — 2026-03-14 05:46:37 PM EST
 

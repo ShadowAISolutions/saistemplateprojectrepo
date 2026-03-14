@@ -1,4 +1,4 @@
-var VERSION = "v01.23g";
+var VERSION = "v01.24g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -48,7 +48,7 @@ var PRESETS = {
   standard: {
     // SESSION_EXPIRATION: 3600,       // seconds — rolling session lifetime, reset by heartbeats (1hr)
     SESSION_EXPIRATION: 180,           // ⚡ TEST VALUE (3min) — uncomment line above and delete this line to restore
-    // ABSOLUTE_SESSION_TIMEOUT: 57600, // seconds — hard ceiling, never resets regardless of activity (16hr)
+    // ABSOLUTE_SESSION_TIMEOUT: 28800, // seconds — hard ceiling, never resets regardless of activity (8hr)
     ABSOLUTE_SESSION_TIMEOUT: 300,     // ⚡ TEST VALUE (5min) — uncomment line above and delete this line to restore
     ENABLE_HEARTBEAT: true,
     // HEARTBEAT_INTERVAL: 300,        // seconds — how often GAS checks/extends the session when user is active (5min)
@@ -72,7 +72,7 @@ var PRESETS = {
   hipaa: {
     // SESSION_EXPIRATION: 900,        // seconds — rolling session lifetime, reset by heartbeats (15min)
     SESSION_EXPIRATION: 180,           // ⚡ TEST VALUE (3min) — uncomment line above and delete this line to restore
-    // ABSOLUTE_SESSION_TIMEOUT: 57600, // seconds — hard ceiling, never resets regardless of activity (16hr)
+    // ABSOLUTE_SESSION_TIMEOUT: 28800, // seconds — hard ceiling, never resets regardless of activity (8hr)
     ABSOLUTE_SESSION_TIMEOUT: 300,     // ⚡ TEST VALUE (5min) — uncomment line above and delete this line to restore
     ENABLE_HEARTBEAT: true,
     // HEARTBEAT_INTERVAL: 300,        // seconds — how often GAS checks/extends the session when user is active (5min)
@@ -365,9 +365,20 @@ function exchangeTokenForSession(accessToken) {
     return { success: false, error: "no_token" };
   }
 
+  // Rate limiting: max 5 failed attempts per token fingerprint per 5-minute window
+  var rlCache = CacheService.getScriptCache();
+  var tokenFingerprint = 'ratelimit_' + accessToken.substring(0, 16);
+  var attempts = rlCache.get(tokenFingerprint);
+  var attemptCount = attempts ? parseInt(attempts, 10) : 0;
+  if (attemptCount >= 5) {
+    auditLog('login_failed', '', 'rate_limited', { fingerprint: tokenFingerprint.substring(0, 20) });
+    return { success: false, error: "rate_limited" };
+  }
+
   var userInfo = validateGoogleToken(accessToken);
   if (!userInfo || userInfo.status === "not_signed_in") {
     auditLog('login_failed', '', 'invalid_token', { reason: 'Google token validation failed' });
+    rlCache.put(tokenFingerprint, String(attemptCount + 1), 300);
     return { success: false, error: "invalid_token" };
   }
 
@@ -384,7 +395,8 @@ function exchangeTokenForSession(accessToken) {
     if (!domainAllowed) {
       auditLog('login_failed', userInfo.email, 'domain_rejected',
         { domain: emailDomain, allowed: AUTH_CONFIG.ALLOWED_DOMAINS.join(',') });
-      return { success: false, error: "domain_not_allowed", email: userInfo.email };
+      rlCache.put(tokenFingerprint, String(attemptCount + 1), 300);
+      return { success: false, error: "domain_not_allowed" };
     }
   }
 
@@ -395,7 +407,8 @@ function exchangeTokenForSession(accessToken) {
     if (!checkSpreadsheetAccess(userInfo.email)) {
       auditLog('login_failed', userInfo.email, 'access_denied',
         { reason: 'No spreadsheet access' });
-      return { success: false, error: "not_authorized", email: userInfo.email };
+      rlCache.put(tokenFingerprint, String(attemptCount + 1), 300);
+      return { success: false, error: "not_authorized" };
     }
   }
 
@@ -433,6 +446,9 @@ function exchangeTokenForSession(accessToken) {
   cache.put("session_" + sessionToken, JSON.stringify(sessionData), AUTH_CONFIG.SESSION_EXPIRATION);
 
   trackUserSession(userInfo.email, sessionToken);
+
+  // Clear rate limit on successful login
+  rlCache.remove(tokenFingerprint);
 
   auditLog('login_success', userInfo.email, 'session_created',
     { sessionId: sessionToken.substring(0, 8) + '...' });
@@ -720,6 +736,21 @@ function doGet(e) {
   // Heartbeat flow: validate session + reset createdAt to extend it
   if (heartbeatToken && AUTH_CONFIG.ENABLE_HEARTBEAT) {
     var cache = CacheService.getScriptCache();
+
+    // Rate limit heartbeat: max 20 per session per 5-minute window
+    var hbRlKey = 'hb_ratelimit_' + heartbeatToken.substring(0, 16);
+    var hbAttempts = cache.get(hbRlKey);
+    var hbCount = hbAttempts ? parseInt(hbAttempts, 10) : 0;
+    if (hbCount >= 20) {
+      var hbRlHtml = '<!DOCTYPE html><html><body><script>'
+        + 'window.top.postMessage({type:"gas-heartbeat-error"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + '</' + 'script></body></html>';
+      return HtmlService.createHtmlOutput(hbRlHtml)
+        .setTitle(TITLE)
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    cache.put(hbRlKey, String(hbCount + 1), 300);
+
     var raw = cache.get("session_" + heartbeatToken);
     if (!raw) {
       var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
