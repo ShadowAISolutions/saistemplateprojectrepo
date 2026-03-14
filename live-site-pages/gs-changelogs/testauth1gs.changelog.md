@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
 
 ## [Unreleased]
+
+## [v01.19g] — 2026-03-14 12:39:17 PM EST — v03.13r
+
+### Changed
+- "Session expiring soon" notification now only appears in the last 5 minutes instead of the last 15 minutes
 
 ## [v01.18g] — 2026-03-13 11:17:21 PM EST — v03.07r
 

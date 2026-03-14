@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 34/100`
+`Sections: 35/100`
 
 ## [Unreleased]
+
+## [v03.13r] — 2026-03-14 12:39:17 PM EST
+
+### Changed
+
+#### `testauth1.gs` — v01.19g
+
+##### Changed
+- Reduced OAuth token refresh buffer from 15 minutes to 5 minutes — the "session is expiring soon" reauth banner now only appears in the last 5 minutes of OAuth token lifetime instead of the last 15
 
 ## [v03.12r] — 2026-03-14 12:32:39 PM EST
 
