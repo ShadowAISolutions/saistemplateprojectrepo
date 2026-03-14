@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.32w">
+  <meta name="build-version" content="v01.33w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1312,6 +1312,15 @@
         var startTime = parseInt(storage.getItem(SESSION_START_KEY) || '0', 10);
         var elapsed = (Date.now() - startTime) / 1000;
         var remaining = SERVER_SESSION_DURATION - elapsed;
+
+        // Urgent heartbeat: if <30s remain and the user has been active recently,
+        // send a heartbeat immediately instead of waiting for the next 30s interval.
+        // This closes the gap where activity in the last 30s before expiry goes unnoticed.
+        if (HTML_CONFIG.ENABLE_HEARTBEAT && _heartbeatInterval && remaining > 0 && remaining < 30
+            && !_heartbeatInFlight && !_heartbeatIdle
+            && _lastHeartbeatActivity > Date.now() - 30000) {
+          sendHeartbeat();
+        }
 
         // Session countdown — auto sign-out when session expires
         if (remaining <= 0) {

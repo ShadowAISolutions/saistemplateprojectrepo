@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 19/100`
+`Sections: 20/100`
 
 ## [Unreleased]
+
+## [v02.98r] — 2026-03-13 09:43:38 PM EST
+
+### Added
+- Added urgent heartbeat — when session has <30s remaining and user is active, sends heartbeat immediately instead of waiting for the next 30s interval tick
+
+#### `testauth1.html` — v01.33w
+
+##### Added
+- Session now extends immediately when you're active in the last 30 seconds before expiry
 
 ## [v02.97r] — 2026-03-13 09:25:41 PM EST
 

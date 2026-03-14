@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.33w] — 2026-03-13 09:43:38 PM EST — v02.98r
+
+### Added
+- Session now extends immediately when you're active in the last 30 seconds before expiry, preventing unexpected sign-outs
 
 ## [v01.32w] — 2026-03-13 09:25:41 PM EST — v02.97r
 
