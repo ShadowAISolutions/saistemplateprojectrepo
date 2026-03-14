@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 30/100`
+`Sections: 31/100`
 
 ## [Unreleased]
+
+## [v03.09r] — 2026-03-13 11:38:31 PM EST
+
+### Changed
+- Stacked the session timer, GAS version, and HTML version pins vertically in the bottom-right corner instead of spreading them horizontally
+- Propagated vertical pin stacking to the auth HTML template
+
+#### `testauth1.html` — v01.44w
+
+##### Changed
+- Status pins now stack vertically in the bottom-right corner — session timer on top, GAS version in the middle, HTML version on the bottom
 
 ## [v03.08r] — 2026-03-13 11:23:52 PM EST
 

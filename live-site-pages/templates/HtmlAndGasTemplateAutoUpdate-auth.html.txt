@@ -84,7 +84,7 @@
     #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
     #gas-pill {
-      position: fixed; bottom: 8px; right: 146px; z-index: 10003;
+      position: fixed; bottom: 34px; right: 8px; z-index: 10003;
       display: none; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
@@ -184,7 +184,7 @@
     }
     #sign-out-btn:hover { color: #f44336; }
     #auth-timers {
-      position: fixed; bottom: 8px; left: 120px; z-index: 10003;
+      position: fixed; bottom: 60px; right: 8px; z-index: 10003;
       display: none; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;

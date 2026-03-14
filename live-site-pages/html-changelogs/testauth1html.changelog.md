@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v01.44w] — 2026-03-13 11:38:31 PM EST — v03.09r
+
+### Changed
+- Status pins now stack vertically in the bottom-right corner — session timer on top, GAS version in the middle, HTML version on the bottom
 
 ## [v01.43w] — 2026-03-13 11:23:52 PM EST — v03.08r
 
