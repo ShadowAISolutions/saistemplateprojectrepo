@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v03.55r] — 2026-03-14 09:18:31 PM EST
+
+### Fixed
+- Fixed accessibility issue in testauth1 GAS script — `<label>` element now properly associated with heartbeat test input via `for` attribute
+
+#### `testauth1.gs` — v01.27g
+
+##### Fixed
+- Associated label with heartbeat test input field — resolves browser accessibility warning
 
 ## [v03.54r] — 2026-03-14 08:59:29 PM EST
 

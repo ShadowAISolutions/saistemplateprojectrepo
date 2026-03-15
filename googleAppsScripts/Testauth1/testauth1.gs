@@ -1,4 +1,4 @@
-var VERSION = "v01.26g";
+var VERSION = "v01.27g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -966,7 +966,7 @@ function doGet(e) {
     <body>
       <div id="debug-marker">1</div>
       <div id="hb-test-area">
-        <label>Type here to test heartbeat interruption</label>
+        <label for="hb-test-input">Type here to test heartbeat interruption</label>
         <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off">
       </div>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
