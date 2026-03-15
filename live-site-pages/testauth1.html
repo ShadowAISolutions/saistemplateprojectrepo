@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.84w">
+  <meta name="build-version" content="v01.85w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1108,6 +1108,8 @@
       'gas-auth-ok': true,
       'gas-heartbeat-ok': true,
       'gas-heartbeat-expired': true,
+      'gas-heartbeat-error': true,
+      'gas-user-activity': true,
       'gas-signed-out': true,
       'gas-version': true
     };
@@ -1281,6 +1283,14 @@
         clearSession();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
+      }
+
+      // GAS iframe user activity — trigger immediate heartbeat to catch expired sessions
+      // before the user submits data (prevents data loss on evicted sessions)
+      if (data.type === 'gas-user-activity') {
+        if (!_heartbeatInFlight) {
+          sendHeartbeat();
+        }
       }
 
       // GAS sign-out confirmation

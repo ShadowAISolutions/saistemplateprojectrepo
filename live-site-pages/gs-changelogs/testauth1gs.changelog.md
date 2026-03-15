@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 30/50`
+`Sections: 31/50`
 
 ## [Unreleased]
+
+## [v01.31g] — 2026-03-15 03:36:50 PM EST — v03.75r
+
+### Added
+- "Save Note" test button for simulating EMR data entry — lets you verify that session checks trigger before data actions
+- Interacting with the app now notifies the host page, which triggers an immediate session validity check
 
 ## [v01.30g] — 2026-03-15 12:35:33 PM EST — v03.71r
 

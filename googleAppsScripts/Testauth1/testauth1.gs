@@ -1,4 +1,4 @@
-var VERSION = "v01.30g";
+var VERSION = "v01.31g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -986,10 +986,24 @@ function doGet(e) {
         #hb-test-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
         #hb-test-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #1565c0; border-radius: 6px; outline: none; }
         #hb-test-input:focus { border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(21,101,192,0.2); }
+        #save-note-area { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; text-align: center; }
+        #save-note-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
+        #save-note-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #2e7d32; border-radius: 6px; outline: none; margin-bottom: 6px; }
+        #save-note-input:focus { border-color: #1b5e20; box-shadow: 0 0 0 3px rgba(46,125,50,0.2); }
+        #save-note-btn { background: #2e7d32; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font: 13px/1 monospace; cursor: pointer; }
+        #save-note-btn:hover { background: #1b5e20; }
+        #save-note-status { font-size: 11px; color: #999; margin-top: 4px; font-family: monospace; min-height: 16px; }
       </style>
     </head>
     <body>
       <div id="debug-marker">1</div>
+      <div id="save-note-area">
+        <label for="save-note-input">Patient note (test — triggers session check on interaction)</label>
+        <input type="text" id="save-note-input" placeholder="Type a note and click Save..." autocomplete="off">
+        <br>
+        <button id="save-note-btn">Save Note</button>
+        <div id="save-note-status"></div>
+      </div>
       <div id="hb-test-area">
         <label for="hb-test-input">Type here to test heartbeat interruption</label>
         <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off">
@@ -1023,6 +1037,41 @@ function doGet(e) {
               })
               .getAppData();
           }
+        });
+
+        // Activity detection — notify host page on user interaction so it can
+        // trigger an immediate heartbeat (catches expired sessions before data loss)
+        var _lastActivityNotify = 0;
+        function _notifyActivity() {
+          var now = Date.now();
+          if (now - _lastActivityNotify < 5000) return; // 5s debounce
+          _lastActivityNotify = now;
+          window.top.postMessage(_s({type: 'gas-user-activity'}), '${PARENT_ORIGIN}');
+        }
+        document.addEventListener('keydown', _notifyActivity, true);
+        document.addEventListener('click', _notifyActivity, true);
+        document.addEventListener('input', _notifyActivity, true);
+
+        // Save Note button — simulates an EMR data entry action
+        document.getElementById('save-note-btn').addEventListener('click', function() {
+          var noteInput = document.getElementById('save-note-input');
+          var statusEl = document.getElementById('save-note-status');
+          var note = noteInput.value.trim();
+          if (!note) {
+            statusEl.textContent = 'Enter a note first.';
+            statusEl.style.color = '#f57c00';
+            return;
+          }
+          // Notify host of activity (triggers session check before "save")
+          _notifyActivity();
+          statusEl.textContent = 'Checking session...';
+          statusEl.style.color = '#999';
+          // Brief delay to let the heartbeat fire and detect expiry before confirming
+          setTimeout(function() {
+            statusEl.textContent = 'Saved: "' + note + '"';
+            statusEl.style.color = '#2e7d32';
+            noteInput.value = '';
+          }, 2000);
         });
       </script>
     </body>

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v01.85w] — 2026-03-15 03:36:50 PM EST — v03.75r
+
+### Added
+- Interacting with the app (typing, clicking) now triggers an immediate session check — if your session was ended by another device, you see the overlay within seconds instead of waiting for the next automatic check
 
 ## [v01.84w] — 2026-03-15 01:22:15 PM EST — v03.74r
 

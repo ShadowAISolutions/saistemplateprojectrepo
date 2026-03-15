@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v03.75r] — 2026-03-15 03:36:50 PM EST
+
+### Added
+- GAS iframe activity detection: user interactions (typing, clicking) now trigger an immediate heartbeat on the host page, catching expired sessions before data loss
+- "Save Note" test button in GAS UI for simulating EMR data entry with session validation
+
+#### `testauth1.html` — v01.85w
+
+##### Added
+- `gas-user-activity` message handler that triggers immediate heartbeat when user interacts with GAS iframe content
+
+#### `testauth1.gs` — v01.31g
+
+##### Added
+- Activity detection listeners (keydown, click, input) that post `gas-user-activity` to the host page with 5-second debounce
+- "Save Note" test button simulating EMR data entry — triggers session check before confirming save
 
 ## [v03.74r] — 2026-03-15 01:22:15 PM EST
 
