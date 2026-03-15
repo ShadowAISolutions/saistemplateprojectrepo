@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v03.58r] — 2026-03-14 10:16:16 PM EST
+
+### Changed
+- Documented efficient SHA lookup approach for page/GAS changelog archive rotation — use the repo version cross-reference in section headers instead of trying to match page versions to commits
+- Added batch optimization tip: run `git log` once and match in-memory instead of N separate calls
 
 ## [v03.57r] — 2026-03-14 10:06:00 PM EST
 
