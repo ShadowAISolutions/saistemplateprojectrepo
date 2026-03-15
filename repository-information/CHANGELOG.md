@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v03.57r] — 2026-03-14 10:06:00 PM EST
+
+### Changed
+- Split single reauth banner into separate session and absolute expiry warning banners with distinct messaging and behavior
+- Session warning banner now prompts user to interact with the page (no sign-in button) instead of asking to re-authenticate
+- Absolute expiry warning banner shows sign-in button only when the hard session ceiling is about to expire
+- Warning banners now appear below the sign-out pill instead of overlapping it at the top of the page
+- Both banners stack dynamically when both are active so they never overlap each other
+
+#### `testauth1.html` — v01.75w
+
+##### Changed
+- Session expiry warning now says "interact with the page to stay signed in" instead of prompting to sign in again
+- Absolute session expiry now shows its own warning banner with a sign-in button when time is nearly up
+- Warning banners appear below the user info pill instead of across the top of the page
+- Both banners stack neatly when both are visible at the same time
 
 ## [v03.56r] — 2026-03-14 09:30:14 PM EST
 

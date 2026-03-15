@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.74w">
+  <meta name="build-version" content="v01.75w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -165,15 +165,25 @@
     #auth-wall .auth-email {
       color: #999; font: 12px/1 monospace; margin-top: 8px; display: none;
     }
-    #reauth-banner {
-      position: fixed; top: 0; left: 0; width: 100%; padding: 10px 16px;
-      background: #fff3cd; border-bottom: 1px solid #ffc107; z-index: 10005;
-      display: none; align-items: center; justify-content: center; gap: 12px;
-      font: 13px/1.4 sans-serif; color: #856404;
+    .warning-banner {
+      position: fixed; right: 8px; z-index: 9998;
+      padding: 8px 14px; border-radius: 8px;
+      display: none; align-items: center; gap: 10px;
+      font: 12px/1.4 sans-serif; user-select: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      max-width: 340px;
     }
-    #reauth-banner button {
-      background: #4285f4; color: #fff; border: none; padding: 6px 16px;
-      border-radius: 4px; cursor: pointer; font-size: 13px;
+    .warning-banner button {
+      background: #4285f4; color: #fff; border: none; padding: 4px 12px;
+      border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;
+    }
+    #session-warning-banner {
+      top: 40px;
+      background: rgba(255,243,205,0.95); border: 1px solid #ffc107; color: #856404;
+    }
+    #absolute-warning-banner {
+      top: 40px;
+      background: rgba(248,215,218,0.95); border: 1px solid #f5c6cb; color: #721c24;
     }
     #user-pill {
       position: fixed; top: 8px; right: 8px; z-index: 9999;
@@ -246,9 +256,13 @@
     <div class="auth-email" id="auth-email"></div>
   </div>
 
-  <div id="reauth-banner">
-    <span id="reauth-text"></span>
-    <button id="reauth-btn" style="display:none;">Sign In</button>
+  <div id="session-warning-banner" class="warning-banner">
+    <span id="session-warning-text"></span>
+  </div>
+
+  <div id="absolute-warning-banner" class="warning-banner">
+    <span id="absolute-warning-text"></span>
+    <button id="reauth-btn">Sign In</button>
   </div>
 
   <div id="user-pill">
@@ -1174,7 +1188,7 @@
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
         if (data.needsReauth) {
-          showReauthBanner('Your session is expiring soon. Click to refresh.', true);
+          showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
         }
       }
 
@@ -1184,9 +1198,9 @@
         _heartbeatIdle = true;  // reset to idle after extend — next tick decides if still active
         // Reset the client-side session start time to match the server reset
         getStorage().setItem(SESSION_START_KEY, String(Date.now()));
-        // Hide expiry warning and reset flag — session was extended
+        // Hide session warning and reset flag — session was extended
         _expiryWarningShown = false;
-        hideReauthBanner();
+        hideSessionWarning();
       }
 
       // Heartbeat failed — session already expired on server
@@ -1288,10 +1302,9 @@
       var errorEl = document.getElementById('auth-error');
       var emailEl = document.getElementById('auth-email');
       var userPill = document.getElementById('user-pill');
-      var reauthBanner = document.getElementById('reauth-banner');
 
       wall.classList.remove('hidden');
-      reauthBanner.style.display = 'none';
+      hideAllWarningBanners();
       userPill.style.display = 'none';
 
       if (message) {
@@ -1313,10 +1326,9 @@
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
       var emailDisplay = document.getElementById('user-email-display');
-      var reauthBanner = document.getElementById('reauth-banner');
 
       wall.classList.add('hidden');
-      reauthBanner.style.display = 'none';
+      hideAllWarningBanners();
 
       if (email) {
         emailDisplay.textContent = email;
@@ -1324,18 +1336,52 @@
       }
     }
 
-    function showReauthBanner(message, showButton) {
-      var banner = document.getElementById('reauth-banner');
-      var bannerText = document.getElementById('reauth-text');
-      var bannerBtn = document.getElementById('reauth-btn');
-
-      bannerText.textContent = message;
-      bannerBtn.style.display = showButton ? 'inline-block' : 'none';
-      banner.style.display = 'flex';
+    // Banner positioning — stack banners so they don't overlap each other or the user pill.
+    // Session banner sits just below the user pill; absolute banner sits below session banner
+    // (or below user pill if session banner is hidden).
+    function _positionWarningBanners() {
+      var pill = document.getElementById('user-pill');
+      var sessionBanner = document.getElementById('session-warning-banner');
+      var absoluteBanner = document.getElementById('absolute-warning-banner');
+      var pillBottom = 8; // default top offset if pill not visible
+      if (pill && pill.style.display !== 'none') {
+        pillBottom = pill.offsetTop + pill.offsetHeight + 4;
+      }
+      sessionBanner.style.top = pillBottom + 'px';
+      var absTop = pillBottom;
+      if (sessionBanner.style.display === 'flex') {
+        absTop = sessionBanner.offsetTop + sessionBanner.offsetHeight + 4;
+      }
+      absoluteBanner.style.top = absTop + 'px';
     }
 
-    function hideReauthBanner() {
-      document.getElementById('reauth-banner').style.display = 'none';
+    function showSessionWarning(message) {
+      var banner = document.getElementById('session-warning-banner');
+      document.getElementById('session-warning-text').textContent = message;
+      banner.style.display = 'flex';
+      _positionWarningBanners();
+    }
+
+    function hideSessionWarning() {
+      document.getElementById('session-warning-banner').style.display = 'none';
+      _positionWarningBanners();
+    }
+
+    function showAbsoluteWarning(message) {
+      var banner = document.getElementById('absolute-warning-banner');
+      document.getElementById('absolute-warning-text').textContent = message;
+      banner.style.display = 'flex';
+      _positionWarningBanners();
+    }
+
+    function hideAbsoluteWarning() {
+      document.getElementById('absolute-warning-banner').style.display = 'none';
+      _positionWarningBanners();
+    }
+
+    function hideAllWarningBanners() {
+      document.getElementById('session-warning-banner').style.display = 'none';
+      document.getElementById('absolute-warning-banner').style.display = 'none';
     }
 
     // =============================================
@@ -1444,7 +1490,7 @@
             pillLabel.className = 'timer-pill-label critical';
             if (!_expiryWarningShown) {
               _expiryWarningShown = true;
-              showReauthBanner('Your session is expiring soon. Click to refresh.', true);
+              showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
             }
           } else if (remaining <= 90) {
             sessionEl.className = 'timer-value warn';
@@ -1469,6 +1515,10 @@
             absoluteEl.textContent = formatCountdown(absRemaining);
             if (absRemaining <= 60) {
               absoluteEl.className = 'timer-value critical';
+              if (!_absoluteWarningShown) {
+                _absoluteWarningShown = true;
+                showAbsoluteWarning('Session ending soon \u2014 you will need to sign in again.');
+              }
             } else if (absRemaining <= 120) {
               absoluteEl.className = 'timer-value warn';
             } else {
@@ -1528,7 +1578,8 @@
     var _lastHeartbeatTick = 0;      // timestamp of the last interval tick (or start)
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatIdle = false;      // true when last tick found no activity
-    var _expiryWarningShown = false; // prevents repeated "expiring soon" banner displays
+    var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
+    var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
     function startHeartbeat() {
       if (!HTML_CONFIG.ENABLE_HEARTBEAT) return;
@@ -1649,7 +1700,7 @@
         prompt: '',
         callback: function(response) {
           if (response.error) {
-            showReauthBanner('Session expired. Click "Sign In" to continue.', true);
+            showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',
@@ -1687,9 +1738,9 @@
       performSignOut('manual');
     });
 
-    // Re-auth button handler
+    // Re-auth button handler (on absolute warning banner)
     document.getElementById('reauth-btn').addEventListener('click', function() {
-      hideReauthBanner();
+      hideAbsoluteWarning();
       attemptReauth();
     });
 
@@ -2144,11 +2195,11 @@
         var fnSrc33 = showAuthWall.toString();
         var removesHidden = fnSrc33.indexOf('classList.remove') !== -1 && fnSrc33.indexOf('hidden') !== -1;
         var setsMessage = fnSrc33.indexOf('textContent') !== -1 && fnSrc33.indexOf('message') !== -1;
-        var hidesBanner = fnSrc33.indexOf('reauth-banner') !== -1;
-        if (removesHidden && setsMessage && hidesBanner) {
-          addResult('PASS', 'Auth Wall UI', 'showAuthWall() removes hidden class, sets message via textContent, hides reauth banner');
+        var hidesBanners = fnSrc33.indexOf('hideAllWarningBanners') !== -1;
+        if (removesHidden && setsMessage && hidesBanners) {
+          addResult('PASS', 'Auth Wall UI', 'showAuthWall() removes hidden class, sets message via textContent, hides warning banners');
         } else {
-          addResult('FAIL', 'Auth Wall UI', 'showAuthWall pattern: removesHidden=' + removesHidden + ' setsMessage=' + setsMessage + ' hidesBanner=' + hidesBanner);
+          addResult('FAIL', 'Auth Wall UI', 'showAuthWall pattern: removesHidden=' + removesHidden + ' setsMessage=' + setsMessage + ' hidesBanners=' + hidesBanners);
         }
       } else if (authWall && authError && authSignInBtn) {
         addResult('WARN', 'Auth Wall UI', 'Elements present but showAuthWall function not found');
@@ -2158,25 +2209,36 @@
       }
     });
 
-    // Test 34: Reauth banner — verify elements exist and showReauthBanner manipulates them (code inspection, non-destructive)
-    _registerTest('Reauth Banner UI', function(addResult) {
-      var reauthBanner = document.getElementById('reauth-banner');
-      var reauthText = document.getElementById('reauth-text');
+    // Test 34: Warning banners — verify both session and absolute warning banners exist and functions manipulate them
+    _registerTest('Warning Banners UI', function(addResult) {
+      var sessionBanner = document.getElementById('session-warning-banner');
+      var sessionText = document.getElementById('session-warning-text');
+      var absoluteBanner = document.getElementById('absolute-warning-banner');
+      var absoluteText = document.getElementById('absolute-warning-text');
       var reauthBtn = document.getElementById('reauth-btn');
-      if (reauthBanner && reauthText && reauthBtn && typeof showReauthBanner === 'function') {
-        var fnSrc34 = showReauthBanner.toString();
-        var setsText34 = fnSrc34.indexOf('textContent') !== -1;
-        var showsBanner34 = fnSrc34.indexOf("display") !== -1 && fnSrc34.indexOf("flex") !== -1;
-        var togglesBtn34 = fnSrc34.indexOf('showButton') !== -1 || fnSrc34.indexOf('display') !== -1;
-        if (setsText34 && showsBanner34) {
-          addResult('PASS', 'Reauth Banner UI', 'showReauthBanner() sets text via textContent, displays banner with flex, toggles button visibility');
+      var hasSessionFn = typeof showSessionWarning === 'function' && typeof hideSessionWarning === 'function';
+      var hasAbsFn = typeof showAbsoluteWarning === 'function' && typeof hideAbsoluteWarning === 'function';
+      var hasHideAll = typeof hideAllWarningBanners === 'function';
+      if (sessionBanner && sessionText && absoluteBanner && absoluteText && reauthBtn && hasSessionFn && hasAbsFn && hasHideAll) {
+        var fnSrc34s = showSessionWarning.toString();
+        var fnSrc34a = showAbsoluteWarning.toString();
+        var setsText34 = fnSrc34s.indexOf('textContent') !== -1 && fnSrc34a.indexOf('textContent') !== -1;
+        var showsFlex34 = fnSrc34s.indexOf('flex') !== -1 && fnSrc34a.indexOf('flex') !== -1;
+        var positions34 = fnSrc34s.indexOf('_positionWarningBanners') !== -1;
+        if (setsText34 && showsFlex34 && positions34) {
+          addResult('PASS', 'Warning Banners UI', 'Session + absolute warning banners present with show/hide functions, dynamic positioning, and Sign In button on absolute banner');
         } else {
-          addResult('FAIL', 'Reauth Banner UI', 'showReauthBanner pattern: setsText=' + setsText34 + ' showsBanner=' + showsBanner34);
+          addResult('FAIL', 'Warning Banners UI', 'Banner function pattern: setsText=' + setsText34 + ' showsFlex=' + showsFlex34 + ' positions=' + positions34);
         }
-      } else if (reauthBanner && reauthText && reauthBtn) {
-        addResult('WARN', 'Reauth Banner UI', 'Elements present but showReauthBanner function not found');
       } else {
-        addResult('FAIL', 'Reauth Banner UI', 'Missing reauth banner elements');
+        var missing = [];
+        if (!sessionBanner) missing.push('session-warning-banner');
+        if (!absoluteBanner) missing.push('absolute-warning-banner');
+        if (!reauthBtn) missing.push('reauth-btn');
+        if (!hasSessionFn) missing.push('showSessionWarning/hideSessionWarning');
+        if (!hasAbsFn) missing.push('showAbsoluteWarning/hideAbsoluteWarning');
+        if (!hasHideAll) missing.push('hideAllWarningBanners');
+        addResult('FAIL', 'Warning Banners UI', 'Missing: ' + missing.join(', '));
       }
     });
 
