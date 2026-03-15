@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v01.88w] — 2026-03-15 06:58:02 PM EST — v03.84r
+
+### Fixed
+- Clicking "Use Here" on a tab whose session was ended (by signing in on another tab) now properly shows the sign-in screen instead of a blank page
 
 ## [v01.87w] — 2026-03-15 06:46:09 PM EST — v03.83r
 

@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.87w">
+  <meta name="build-version" content="v01.88w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1926,7 +1926,10 @@
         var gasApp = document.getElementById('gas-app');
         var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          _expectingSession = true;
+          // Do NOT set _expectingSession here — that guard is for the initial
+          // page-load srcdoc race only.  In the "Use Here" flow the iframe is
+          // explicitly reloaded; if the token is server-side-invalid the
+          // resulting gas-needs-auth must NOT be suppressed.
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {
