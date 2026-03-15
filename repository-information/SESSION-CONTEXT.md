@@ -4,33 +4,37 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-15 02:03:23 AM EST
-**Repo version:** v03.68r
+**Date:** 2026-03-15 06:20:13 PM EST
+**Repo version:** v03.80r
 
 ### What was done
-- **v03.65r** — Created original cross-device session enforcement plan (`09-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — hidden iframe + `doGet(?check=)` polling approach
-- **v03.66r** — Created revised plan (`09.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — `google.script.run` approach eliminates 30x `doGet` overhead
-- **v03.67r** — Created Drive file plan (`9.1.1-CROSS-DEVICE-SESSION-ENFORCEMENT-DRIVE-PLAN.md`) — zero server polling cost via public Drive file + `<script>` tag injection, with CDN caching and XSS caveats
-- **v03.68r** — Created heartbeat piggyback plan (`09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — simplest approach, zero new polling loops, ~60 lines of code. Uses eviction tombstones in CacheService + reason codes in existing heartbeat-expired responses
-- **Research & comparison** — compared all 4 plans across security, quota cost, detection latency, complexity, and suitability for EMR/HIPAA systems. Evaluated Spring Security concurrent session patterns, CacheService consistency guarantees, activity-gated detection tradeoffs, browser background tab throttling
+- **v03.69r–v03.77r** — Multiple sessions implemented Plan 9.2 (cross-device session enforcement via heartbeat piggyback), renamed plan files from single-digit to zero-padded prefixes, CHANGELOG archive rotation
+- **v03.78r** — CHANGELOG archive rotation (86 sections moved, SHA enrichment)
+- **v03.79r** — Updated EMR security hardening plan (`10-EMR-SECURITY-HARDENING-PLAN.md`) to be fully preset-aware — all 8 phases now explicitly document behavior under both `standard` and `hipaa` presets. Added Preset Behavior Matrix, preset transition rules, 5 new config toggles with explicit values, toggle guards in all code examples
+- **v03.80r** — Added "Implementation Risk Areas (Toggle Architecture)" section to EMR hardening plan documenting three specific integration risks with mitigations: Phase 3 stub return value, Phase 4 server/client config boundary, Phase 6 branching flow control
 
 ### Where we left off
-All 4 cross-device enforcement plans are written and compared. Developer chose **Plan 9.2 (Heartbeat Piggyback)** for implementation next session.
+The EMR Security Hardening Plan (Plan 10) is complete and ready for implementation. The plan covers 8 phases of HIPAA Technical Safeguard compliance across `testauth1.html` and `testauth1.gs`.
 
-**NEXT SESSION: Implement Plan 9.2** — `repository-information/9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`
-- 9 phases, ~103 lines of code across `testauth1.gs` and `testauth1.html`
-- Key changes: tombstone in `invalidateAllSessions()`, reason codes in heartbeat-expired responses, HMAC signing all expired responses (security fix), client-side eviction UI differentiation, `ENABLE_CROSS_DEVICE_ENFORCEMENT` toggle in AUTH_CONFIG and HTML_CONFIG
+**NEXT SESSION: Implement EMR Security Hardening Plan** — `repository-information/10-EMR-SECURITY-HARDENING-PLAN.md`
+- 8 phases, organized into 4 implementation batches:
+  - **Batch 1 (P0 — Critical):** Phases 1 (HMAC enforcement) + 2 (domain restriction) — configuration enforcement, low risk
+  - **Batch 2 (P1 — High):** Phases 3 (data op validation) + 4 (DOM clearing) — most impactful security improvement
+  - **Batch 3 (P2 — Medium):** Phases 5 (emergency access) + 6 (account lockout) — access control enhancements
+  - **Batch 4 (P3 — Recommended):** Phases 7 (IP logging) + 8 (data audit log) — audit logging enhancements
+- 5 new toggles: `ENABLE_DATA_OP_VALIDATION`, `ENABLE_DOM_CLEARING_ON_EXPIRY`, `ENABLE_ESCALATING_LOCKOUT`, `ENABLE_IP_LOGGING`, `ENABLE_DATA_AUDIT_LOG`
+- **Watch for 3 risk areas** (documented in plan): Phase 3 stub return value consumption, Phase 4 server/client config transfer, Phase 6 branching flow control
 
 ### Key decisions made
-- **Plan 9.2 chosen over 9, 9.1, 9.1.1** — developer accepted 30s/5min detection latency in exchange for zero new polling loops, zero quota cost, zero new attack surface, and minimal code complexity
-- **EMR/HIPAA suitability** — discussed that server-side session invalidation is already instant (Device A can't access data after Device B signs in), so the detection delay only affects when the UI overlay appears, not when access is revoked
-- **Plan 9.1 can layer on top later** — if faster UI feedback becomes a hard requirement, Plan 9.1's `google.script.run` polling can be added alongside 9.2's tombstone mechanism (they're compatible)
+- **Preset-aware design** — every hardening feature is behind a toggle guard; `standard` preset preserves pre-hardening behavior exactly; `hipaa` enables all features
+- **`ENABLE_IP_LOGGING` not `ENABLE_IP_BINDING`** — renamed because GAS cannot do server-side IP detection; client-reported IP is logging-only, not enforcement
+- **Implementation confidence: 8/10** — toggle architecture reduces risk vs HIPAA-only approach; three specific integration seams need careful attention (documented in plan)
 
 ### Active context
-- Repo version: v03.68r
-- testauth1.html: v01.81w (38 security tests), testauth1.gs: v01.27g
+- Repo version: v03.80r
+- testauth1.html: v01.85w, testauth1.gs: v01.27g
 - portal.html: v01.08w, portal.gs: v01.01g
-- 4 cross-device enforcement plans at `repository-information/9-`, `9.1-`, `9.1.1-`, `09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-*.md`
+- Plan files: `repository-information/01-` through `10-EMR-SECURITY-HARDENING-PLAN.md` (all zero-padded)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -38,11 +42,11 @@ All 4 cross-device enforcement plans are written and compared. Developer chose *
 
 ## Previous Sessions
 
-**Date:** 2026-03-14 09:53:14 PM EST
-**Repo version:** v03.56r
+**Date:** 2026-03-15 02:03:23 AM EST
+**Repo version:** v03.68r
 
 ### What was done
-- **v03.52r–v03.56r** — Console warning cleanup: fixed CSRF nonce guard, favicon, accessibility label, AudioContext autoplay warning. Research confirmed Permissions-Policy warnings from GAS iframes are unfixable (Google's server headers)
-- Prior session: security test suite (v03.34r–v03.51r) — 38 real behavioral tests
+- **v03.65r–v03.68r** — Created 4 cross-device session enforcement plans (9, 9.1, 9.1.1, 9.2). Developer chose Plan 9.2 (heartbeat piggyback) for implementation
+- Research & comparison across security, quota cost, detection latency, complexity, EMR/HIPAA suitability
 
 Developed by: ShadowAISolutions
