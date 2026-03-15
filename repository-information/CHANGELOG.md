@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v03.59r] — 2026-03-14 10:25:03 PM EST
+
+### Fixed
+- Fixed re-auth race condition where clicking the Sign In button on the absolute warning banner triggered OAuth but did not reload the GAS iframe or reset countdown timers afterward
+
+#### `testauth1.html` — v01.76w
+
+##### Fixed
+- Clicking "Sign In" on the session expiry banner now properly reloads the app and resets all timers after re-authentication
+- Countdown timers and heartbeat are stopped before starting the OAuth flow so they cannot trigger sign-out mid-authentication
 
 ## [v03.58r] — 2026-03-14 10:16:16 PM EST
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 31/50`
+`Sections: 32/50`
 
 ## [Unreleased]
+
+## [v01.76w] — 2026-03-14 10:25:03 PM EST — v03.59r
+
+### Fixed
+- Clicking "Sign In" on the session expiry banner now properly reloads the app and resets all timers after re-authentication
+- Countdown timers and heartbeat are stopped before starting the sign-in flow so they cannot trigger sign-out mid-authentication
 
 ## [v01.75w] — 2026-03-14 10:06:00 PM EST — v03.57r
 
