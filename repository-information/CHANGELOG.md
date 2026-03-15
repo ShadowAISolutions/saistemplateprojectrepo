@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v03.62r] — 2026-03-14 11:05:05 PM EST
+
+### Changed
+- Session warning banner now appears at 30 seconds remaining instead of 60, matching the urgent heartbeat threshold so user interaction actually extends the session
+
+#### `testauth1.html` — v01.79w
+
+##### Changed
+- Session expiry banner triggers at 30 seconds remaining to match when the urgent heartbeat is active
 
 ## [v03.61r] — 2026-03-14 10:50:11 PM EST
 

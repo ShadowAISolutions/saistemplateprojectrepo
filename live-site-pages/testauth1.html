@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.78w">
+  <meta name="build-version" content="v01.79w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1489,7 +1489,7 @@
           // Show ▶ on the minimized pill when heartbeat is active (not idle)
           var pillReady = HTML_CONFIG.ENABLE_HEARTBEAT && _heartbeatInterval && !_heartbeatIdle && !_heartbeatInFlight;
           pillLabel.textContent = formatCountdown(remaining) + (pillReady ? ' \u25B6' : '');
-          if (remaining <= 60) {
+          if (remaining <= 30) {
             sessionEl.className = 'timer-value critical';
             pillLabel.className = 'timer-pill-label critical';
             if (!_expiryWarningShown) {
@@ -1498,6 +1498,9 @@
             } else if (document.getElementById('session-warning-banner').style.display === 'flex') {
               document.getElementById('session-warning-text').textContent = 'Session expiring in ' + formatCountdown(remaining) + ' \u2014 interact with the page to stay signed in.';
             }
+          } else if (remaining <= 60) {
+            sessionEl.className = 'timer-value critical';
+            pillLabel.className = 'timer-pill-label critical';
           } else if (remaining <= 90) {
             sessionEl.className = 'timer-value warn';
             pillLabel.className = 'timer-pill-label warn';
