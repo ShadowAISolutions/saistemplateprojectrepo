@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v03.52r] — 2026-03-14 08:45:29 PM EST
+
+### Fixed
+- Fixed noisy console warning "Unexpected token response — no pending sign-in" caused by GIS automatic token renewal callbacks — downgraded to debug-level log
+
+#### `testauth1.html` — v01.71w
+
+##### Fixed
+- Fixed console warning appearing during normal sign-in flow when Google's identity services fires automatic token callbacks
 
 ## [v03.51r] — 2026-03-14 08:33:42 PM EST
 

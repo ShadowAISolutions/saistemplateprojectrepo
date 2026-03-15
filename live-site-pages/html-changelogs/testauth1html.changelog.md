@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v01.71w] — 2026-03-14 08:45:29 PM EST — v03.52r
+
+### Fixed
+- Fixed console warning appearing during normal sign-in flow
 
 ## [v01.70w] — 2026-03-14 08:31:03 PM EST — v03.50r
 

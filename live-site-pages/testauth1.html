@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.70w">
+  <meta name="build-version" content="v01.71w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -982,9 +982,11 @@
     }
 
     function handleTokenResponse(response) {
-      // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated
+      // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated.
+      // GIS may fire the callback for automatic token renewal or when detecting a returning
+      // user — these are legitimate but unsolicited, so silently ignore them.
       if (!_authNonce) {
-        console.warn('Unexpected token response — no pending sign-in');
+        console.debug('Token response without pending sign-in — ignored (GIS auto-renewal)');
         return;
       }
       _authNonce = null; // Consume the nonce
