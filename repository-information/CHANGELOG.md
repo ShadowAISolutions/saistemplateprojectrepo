@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v03.63r] — 2026-03-14 11:28:52 PM EST
+
+### Added
+- Added single-tab enforcement feature (toggleable via `SINGLE_TAB_ENFORCEMENT` in HTML_CONFIG, default off) — when enabled, only one browser tab can be active at a time per session
+
+#### `testauth1.html` — v01.80w
+
+##### Added
+- Single-tab enforcement with "Session Active Elsewhere" overlay and "Use Here" button to reclaim the session from another tab (off by default, toggle `SINGLE_TAB_ENFORCEMENT` to enable)
 
 ## [v03.62r] — 2026-03-14 11:05:05 PM EST
 

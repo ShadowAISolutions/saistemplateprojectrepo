@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v01.80w] — 2026-03-14 11:28:52 PM EST — v03.63r
+
+### Added
+- Single-tab enforcement — when enabled, only one browser tab can be active at a time (toggle in settings, off by default)
 
 ## [v01.79w] — 2026-03-14 11:05:05 PM EST — v03.62r
 
