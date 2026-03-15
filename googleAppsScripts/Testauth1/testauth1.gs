@@ -1,4 +1,4 @@
-var VERSION = "v01.27g";
+var VERSION = "v01.28g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -567,6 +567,11 @@ function invalidateAllSessions(email) {
     var tokens = JSON.parse(raw);
     for (var i = 0; i < tokens.length; i++) {
       cache.remove("session_" + tokens[i]);
+      // Leave a tombstone so the heartbeat handler knows WHY the session
+      // disappeared. Short TTL (5 minutes) — just needs to survive until
+      // the old device's next heartbeat fires. After that, natural expiry
+      // is assumed (no tombstone = timed out normally).
+      cache.put("evicted_" + tokens[i], "new_sign_in", 300);
     }
     if (tokens.length > 0) {
       auditLog('session_management', email, 'all_sessions_invalidated',
