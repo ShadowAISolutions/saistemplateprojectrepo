@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v03.65r] — 2026-03-15 12:06:26 AM EST
+
+### Added
+- Added cross-device single-session enforcement plan (`9-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — 6-phase implementation covering GAS session check endpoint, client-side short polling, lifecycle wiring, and security considerations
 
 ## [v03.64r] — 2026-03-14 11:31:37 PM EST
 
