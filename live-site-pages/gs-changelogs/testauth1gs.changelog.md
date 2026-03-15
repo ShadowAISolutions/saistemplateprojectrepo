@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v01.30g] — 2026-03-15 12:35:33 PM EST — v03.71r
+
+### Added
+- Cross-device session enforcement toggle: administrators can now enable or disable detection of sessions started on other devices
 
 ## [v01.29g] — 2026-03-15 12:31:39 PM EST — v03.70r
 

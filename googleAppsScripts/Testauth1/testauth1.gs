@@ -1,4 +1,4 @@
-var VERSION = "v01.29g";
+var VERSION = "v01.30g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -67,7 +67,8 @@ var PRESETS = {
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: false,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
-    TOKEN_EXCHANGE_METHOD: 'url'
+    TOKEN_EXCHANGE_METHOD: 'url',
+    ENABLE_CROSS_DEVICE_ENFORCEMENT: true
   },
   hipaa: {
     // SESSION_EXPIRATION: 900,        // seconds — rolling session lifetime, reset by heartbeats (15min)
@@ -91,7 +92,8 @@ var PRESETS = {
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
     ENABLE_EMERGENCY_ACCESS: true,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
-    TOKEN_EXCHANGE_METHOD: 'postMessage'
+    TOKEN_EXCHANGE_METHOD: 'postMessage',
+    ENABLE_CROSS_DEVICE_ENFORCEMENT: true
   }
 };
 
@@ -571,7 +573,9 @@ function invalidateAllSessions(email) {
       // disappeared. Short TTL (5 minutes) — just needs to survive until
       // the old device's next heartbeat fires. After that, natural expiry
       // is assumed (no tombstone = timed out normally).
-      cache.put("evicted_" + tokens[i], "new_sign_in", 300);
+      if (AUTH_CONFIG.ENABLE_CROSS_DEVICE_ENFORCEMENT) {
+        cache.put("evicted_" + tokens[i], "new_sign_in", 300);
+      }
     }
     if (tokens.length > 0) {
       auditLog('session_management', email, 'all_sessions_invalidated',
