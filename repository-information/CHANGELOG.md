@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v03.47r] — 2026-03-14 08:05:17 PM EST
+
+### Changed
+- Restructured security test runner to two-phase UI — "Security Tests" button shows all 66 tests as pending, then "Run All" executes them one-by-one with live pass/fail transitions (previously all tests ran immediately on button click)
+
+#### `testauth1.html` — v01.67w
+
+##### Changed
+- "Run Security Tests" button now shows all 66 tests as pending first, then a "Run All" button runs them one-by-one with live pass/fail transitions
 
 ## [v03.46r] — 2026-03-14 07:47:04 PM EST
 
