@@ -1,4 +1,4 @@
-var VERSION = "v01.32g";
+var VERSION = "v01.33g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -907,8 +907,12 @@ function doGet(e) {
       try {
         result = exchangeTokenForSession(exchangeToken);
       } catch (err) {
-        Logger.log("Token exchange error: " + (err.message || String(err)));
-        result = { success: false, error: "server_error" };
+        var errMsg = err.message || String(err);
+        Logger.log("Token exchange error: " + errMsg);
+        // Surface specific misconfiguration errors so the admin sees what to fix
+        var errorCode = "server_error";
+        if (errMsg.indexOf('HMAC_SECRET') !== -1) errorCode = "hmac_secret_missing";
+        result = { success: false, error: errorCode };
       }
       var payload = JSON.stringify({
             type: "gas-session-created",
@@ -950,10 +954,12 @@ function doGet(e) {
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .withFailureHandler(function(err) {'
+      + '      var code = "server_error";'
+      + '      if (err && err.message && err.message.indexOf("HMAC_SECRET") !== -1) code = "hmac_secret_missing";'
       + '      window.top.postMessage({'
       + '        type: "gas-session-created",'
       + '        success: false,'
-      + '        error: "server_error"'
+      + '        error: code'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .exchangeTokenForSession(token);'

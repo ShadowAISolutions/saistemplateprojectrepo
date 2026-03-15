@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 17/100`
+`Sections: 18/100`
 
 ## [Unreleased]
+
+## [v03.82r] — 2026-03-15 06:35:54 PM EST
+
+### Changed
+- Sign-in error messages now surface specific misconfiguration details instead of generic "Access denied" — HMAC secret missing, domain restriction misconfigured, and domain not allowed each show distinct setup instructions
+
+#### `testauth1.gs` — v01.33g
+
+##### Changed
+- URL and postMessage token exchange error handlers now detect HMAC-specific errors and pass `hmac_secret_missing` error code instead of generic `server_error`
+
+#### `testauth1.html` — v01.86w
+
+##### Changed
+- Auth wall now shows specific setup instructions for `hmac_secret_missing`, `domain_not_configured`, and `domain_not_allowed` errors instead of generic "Access denied"
 
 ## [v03.81r] — 2026-03-15 06:26:01 PM EST
 

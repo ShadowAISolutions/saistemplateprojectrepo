@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.33g] — 2026-03-15 06:35:54 PM EST — v03.82r
+
+### Changed
+- Sign-in errors now include specific error codes (like missing security key) so the page can show you exactly what to fix instead of a generic "Access denied"
 
 ## [v01.32g] — 2026-03-15 06:26:01 PM EST — v03.81r
 

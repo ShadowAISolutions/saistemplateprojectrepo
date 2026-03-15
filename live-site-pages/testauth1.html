@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.85w">
+  <meta name="build-version" content="v01.86w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1204,7 +1204,19 @@
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
           }
         } else {
-          showAuthWall('Access denied. Contact your administrator.');
+          // Surface specific misconfiguration errors so the admin knows what to fix
+          var authError = data.error || '';
+          var authMsg = 'Access denied. Contact your administrator.';
+          if (authError === 'hmac_secret_missing') {
+            authMsg = 'Setup required: HMAC_SECRET is not configured in Script Properties. '
+              + 'Open GAS Editor → Project Settings → Script Properties → Add: HMAC_SECRET = <random-64-char-hex-string> (run: openssl rand -hex 32). Then redeploy.';
+          } else if (authError === 'domain_not_configured') {
+            authMsg = 'Setup required: Domain restriction is enabled but ALLOWED_DOMAINS is empty. '
+              + 'Set ALLOWED_DOMAINS in the GAS preset config or disable ENABLE_DOMAIN_RESTRICTION via PROJECT_OVERRIDES.';
+          } else if (authError === 'domain_not_allowed') {
+            authMsg = 'Access denied: your email domain is not in the allowed list. Contact your administrator.';
+          }
+          showAuthWall(authMsg);
         }
       }
 

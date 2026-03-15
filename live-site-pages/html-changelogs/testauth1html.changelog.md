@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v01.86w] — 2026-03-15 06:35:54 PM EST — v03.82r
+
+### Changed
+- Sign-in errors now show specific setup instructions instead of generic "Access denied" — tells you exactly what's missing (e.g. HMAC secret, domain configuration)
 
 ## [v01.85w] — 2026-03-15 03:36:50 PM EST — v03.75r
 
