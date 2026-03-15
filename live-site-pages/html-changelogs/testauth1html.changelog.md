@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.82w] — 2026-03-15 12:39:33 PM EST — v03.72r
+
+### Added
+- Cross-device session detection: if you sign in on another device or browser, this page now shows a "Session Active Elsewhere" overlay with a "Sign In Here" button instead of a generic expiration message
+- Same-browser tab conflicts continue to show the original "session active in another tab" message with the "Use Here" reclaim button
 
 ## [v01.81w] — 2026-03-14 11:31:37 PM EST — v03.64r
 

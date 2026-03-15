@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.81w">
+  <meta name="build-version" content="v01.82w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -358,7 +358,11 @@
       // Single-tab enforcement: only one tab can be active at a time.
       // When enabled, opening the page in a new tab claims the session and
       // shows a "session active elsewhere" overlay on the old tab.
-      SINGLE_TAB_ENFORCEMENT: true
+      SINGLE_TAB_ENFORCEMENT: true,
+      // Cross-device session enforcement: detect when another device signs in
+      // and show the "Session Active Elsewhere" overlay. Requires server-side
+      // AUTH_CONFIG.ENABLE_CROSS_DEVICE_ENFORCEMENT = true.
+      CROSS_DEVICE_ENFORCEMENT: true
     };
 // ──────────────
 
@@ -971,6 +975,7 @@
     // Single-tab enforcement — unique ID for this tab instance
     var _tabId = Math.random().toString(36).substring(2) + Date.now().toString(36);
     var _tabSurrendered = false;  // true when another tab claimed the session
+    var _evictedByRemote = false;  // true when heartbeat detects cross-device eviction
 
     function getStorage() {
       return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
@@ -1243,8 +1248,34 @@
           hbEl2.textContent = 'expired';
           hbEl2.className = 'timer-value critical';
         }
-        clearSession();
         stopCountdownTimers();
+
+        // Cross-device eviction: another device signed in
+        if (data.reason === 'new_sign_in' && HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT) {
+          _evictedByRemote = true;
+          _tabSurrendered = true;
+          clearSession();
+          hideAllWarningBanners();
+
+          var takeoverWall = document.getElementById('tab-takeover-wall');
+          if (takeoverWall) {
+            var takeoverText = takeoverWall.querySelector('p');
+            if (takeoverText) {
+              takeoverText.textContent =
+                'This session was started on another device or browser. '
+                + 'Only one session can be active at a time.';
+            }
+            var useHereBtn = document.getElementById('tab-use-here-btn');
+            if (useHereBtn) {
+              useHereBtn.textContent = 'Sign In Here';
+            }
+            takeoverWall.style.display = 'flex';
+          }
+          return;  // Don't show auth wall — show takeover overlay instead
+        }
+
+        // Normal expiration (timeout, absolute timeout, corrupt session, etc.)
+        clearSession();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
       }
@@ -1330,9 +1361,24 @@
         if (e.data.type === 'tab-claim' && HTML_CONFIG.SINGLE_TAB_ENFORCEMENT) {
           if (e.data.tabId !== _tabId) {
             _tabSurrendered = true;
+            _evictedByRemote = false;  // Ensure correct overlay text for same-browser claim
             stopCountdownTimers();
             stopHeartbeat();
             hideAllWarningBanners();
+            // Reset overlay text to same-browser message (in case it was changed
+            // by a previous cross-device eviction)
+            var takeoverWall = document.getElementById('tab-takeover-wall');
+            if (takeoverWall) {
+              var takeoverText = takeoverWall.querySelector('p');
+              if (takeoverText) {
+                takeoverText.textContent =
+                  'This session is active in another tab. Only one tab can be active at a time.';
+              }
+              var useHereBtn = document.getElementById('tab-use-here-btn');
+              if (useHereBtn) {
+                useHereBtn.textContent = 'Use Here';
+              }
+            }
             document.getElementById('tab-takeover-wall').style.display = 'flex';
           }
         }
@@ -1814,9 +1860,21 @@
 
     // "Use Here" button handler (single-tab enforcement — reclaim session from other tab)
     document.getElementById('tab-use-here-btn').addEventListener('click', function() {
-      if (!HTML_CONFIG.SINGLE_TAB_ENFORCEMENT) return;
       _tabSurrendered = false;
       document.getElementById('tab-takeover-wall').style.display = 'none';
+
+      // Cross-device eviction: session was invalidated by another device.
+      // Cannot reclaim — must sign in fresh.
+      if (_evictedByRemote) {
+        _evictedByRemote = false;
+        _messageKey = null;  // Clear HMAC key — old session's key is invalid
+        clearSession();
+        showAuthWall();
+        return;
+      }
+
+      // Same-browser tab claim: session still exists, just reclaim it.
+      if (!HTML_CONFIG.SINGLE_TAB_ENFORCEMENT) return;
       var session = loadSession();
       if (session.token) {
         showApp(session.email);
