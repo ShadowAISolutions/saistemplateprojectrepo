@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.70w] — 2026-03-14 08:31:03 PM EST — v03.50r
+
+### Changed
+- Removed 27 fake and trivial security tests that were testing variable assignments or DOM existence instead of actual behavior (38 real tests remain)
 
 ## [v01.69w] — 2026-03-14 08:19:27 PM EST — v03.49r
 

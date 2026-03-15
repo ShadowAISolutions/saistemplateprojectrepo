@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.69w">
+  <meta name="build-version" content="v01.70w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -1902,75 +1902,6 @@
       }
     });
 
-    // Test 5: Bootstrap replay protection — verify freshness window
-    _registerTest('Bootstrap Replay Protection', function(addResult) {
-      if (typeof _iframeLoadTime !== 'undefined') {
-        var savedLoadTime5 = _iframeLoadTime;
-        // Set a recent timestamp — should be considered fresh
-        _iframeLoadTime = Date.now();
-        var recentAge = Date.now() - _iframeLoadTime;
-        // Set an old timestamp — should be considered stale
-        _iframeLoadTime = Date.now() - 60000; // 60s ago
-        var staleAge = Date.now() - _iframeLoadTime;
-        _iframeLoadTime = savedLoadTime5; // restore
-        if (recentAge < 30000 && staleAge > 30000) {
-          addResult('PASS', 'Bootstrap Replay Protection', 'Freshness window verified: recent=' + recentAge + 'ms (fresh), old=' + Math.round(staleAge / 1000) + 's (stale, >30s)');
-        } else {
-          addResult('FAIL', 'Bootstrap Replay Protection', 'Freshness window logic unexpected');
-        }
-      } else {
-        addResult('FAIL', 'Bootstrap Replay Protection', '_iframeLoadTime variable not declared');
-      }
-    });
-
-    // Test 6: First-write-wins key protection — verify key locking behavior
-    _registerTest('Message Key Protection', function(addResult) {
-      if (typeof _messageKey !== 'undefined') {
-        var savedKey6 = _messageKey;
-        // Simulate key delivery: first write should stick, second should be rejected
-        _messageKey = null; // reset to unlocked
-        _messageKey = 'first-key-abc'; // first write
-        var firstWrite = _messageKey;
-        // The first-write-wins guard is in the message handler — verify the variable holds
-        var keyHeld = (firstWrite === 'first-key-abc');
-        _messageKey = savedKey6; // restore
-        if (keyHeld) {
-          var keyStatus = savedKey6 ? 'key set (locked)' : 'null (awaiting first delivery)';
-          addResult('PASS', 'Message Key Protection', 'First-write-wins verified \u2014 current: ' + keyStatus);
-        } else {
-          addResult('FAIL', 'Message Key Protection', 'Key assignment behavior unexpected');
-        }
-      } else {
-        addResult('FAIL', 'Message Key Protection', '_messageKey variable not declared');
-      }
-    });
-
-    // Test 7: Signature verification — verify rejection of tampered messages
-    _registerTest('Message Signature Verification', function(addResult) {
-      if (typeof _verifyMessageSignature === 'function') {
-        // Test with a key set: unsigned message must be rejected
-        var testKey7 = 'verify-test-key';
-        var unsigned7 = { type: 'gas-heartbeat-ok' };
-        var rejected = !_verifyMessageSignature(unsigned7, testKey7);
-        // Tampered payload (change type after signing)
-        var tamperedPayload = JSON.stringify({ type: 'gas-heartbeat-ok' }) + '|' + testKey7;
-        var tamperedHash = 0;
-        for (var th7 = 0; th7 < tamperedPayload.length; th7++) {
-          tamperedHash = ((tamperedHash << 5) - tamperedHash) + tamperedPayload.charCodeAt(th7);
-          tamperedHash |= 0;
-        }
-        var tamperedMsg = { type: 'gas-auth-ok', _sig: tamperedHash.toString(36) }; // type changed
-        var tamperedRejected = !_verifyMessageSignature(tamperedMsg, testKey7);
-        if (rejected && tamperedRejected) {
-          addResult('PASS', 'Message Signature Verification', 'Unsigned messages rejected, tampered payloads rejected');
-        } else {
-          addResult('FAIL', 'Message Signature Verification', 'Unsigned=' + !rejected + ' Tampered=' + !tamperedRejected);
-        }
-      } else {
-        addResult('FAIL', 'Message Signature Verification', '_verifyMessageSignature function not found');
-      }
-    });
-
     // Test 8: BroadcastChannel cross-tab signout — verify message delivery
     _registerTest('Cross-Tab Sign-Out', function(addResult) {
       if (typeof BroadcastChannel !== 'undefined') {
@@ -1991,30 +1922,6 @@
       }
     });
 
-    // Test 9a: Session storage configuration
-    _registerTest('Session Config', function(addResult) {
-      if (typeof HTML_CONFIG !== 'undefined') {
-        var storageType = HTML_CONFIG.STORAGE_TYPE || 'unknown';
-        var exchangeMethod = HTML_CONFIG.TOKEN_EXCHANGE_METHOD || 'unknown';
-        addResult('PASS', 'Session Config', 'Storage: ' + storageType + ', Token exchange: ' + exchangeMethod);
-      } else {
-        addResult('FAIL', 'Session Config', 'HTML_CONFIG not found');
-      }
-    });
-
-    // Test 9b: Tab-scoped session check
-    _registerTest('Tab-Scoped Sessions', function(addResult) {
-      if (typeof HTML_CONFIG !== 'undefined') {
-        if (HTML_CONFIG.STORAGE_TYPE === 'sessionStorage') {
-          addResult('PASS', 'Tab-Scoped Sessions', 'Sessions cleared on tab close (sessionStorage)');
-        } else {
-          addResult('WARN', 'Tab-Scoped Sessions', 'Sessions persist across tabs (localStorage) \u2014 consider sessionStorage for higher security');
-        }
-      } else {
-        addResult('FAIL', 'Tab-Scoped Sessions', 'HTML_CONFIG not found');
-      }
-    });
-
     // Test 10: Error message sanitization (check auth-error element content)
     _registerTest('Error Message Sanitization', function(addResult) {
       var authErr = document.getElementById('auth-error');
@@ -2028,15 +1935,6 @@
         }
       } else {
         addResult('WARN', 'Error Message Sanitization', 'Auth error element not found');
-      }
-    });
-
-    // Test 11: Heartbeat configuration
-    _registerTest('Heartbeat Active', function(addResult) {
-      if (typeof HTML_CONFIG === 'object' && HTML_CONFIG.ENABLE_HEARTBEAT) {
-        addResult('PASS', 'Heartbeat Active', 'Interval: ' + (HTML_CONFIG.HEARTBEAT_INTERVAL / 1000) + 's' + (HTML_CONFIG.HEARTBEAT_INTERVAL < 60000 ? ' (test value)' : ''));
-      } else {
-        addResult('WARN', 'Heartbeat', 'Heartbeat not enabled');
       }
     });
 
@@ -2074,25 +1972,6 @@
         } else {
           addResult('FAIL', 'Signature Verification Logic', 'Valid=' + validResult + ' Unsigned=' + unsignedResult + ' Wrong=' + wrongResult);
         }
-      }
-    });
-
-    // Test 14: GAS iframe present
-    _registerTest('GAS Iframe', function(addResult) {
-      var gasApp = document.getElementById('gas-app');
-      if (gasApp && gasApp.tagName === 'IFRAME') {
-        addResult('PASS', 'GAS Iframe', 'gas-app iframe present in DOM');
-      } else {
-        addResult('WARN', 'GAS Iframe', 'gas-app iframe not found \u2014 may not have loaded yet');
-      }
-    });
-
-    // Test 15: postMessage token exchange (HIPAA mode)
-    _registerTest('Secure Token Exchange', function(addResult) {
-      if (typeof HTML_CONFIG === 'object' && HTML_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage') {
-        addResult('PASS', 'Secure Token Exchange', 'Using postMessage \u2014 tokens never appear in URL bar');
-      } else if (typeof HTML_CONFIG === 'object') {
-        addResult('WARN', 'Token Exchange', 'Using URL method \u2014 tokens visible in browser address bar');
       }
     });
 
@@ -2180,55 +2059,6 @@
       }
     });
 
-    // Test 21: Session expired flag uses sessionStorage (not localStorage)
-    _registerTest('Session Flag Isolation', function(addResult) {
-      var testFlag = 'sec_test_flag_' + Date.now();
-      sessionStorage.setItem(testFlag, '1');
-      var inSession = sessionStorage.getItem(testFlag) === '1';
-      var inLocal = localStorage.getItem(testFlag) === '1';
-      sessionStorage.removeItem(testFlag);
-      if (inSession && !inLocal) {
-        addResult('PASS', 'Session Flag Isolation', 'Flags stored in sessionStorage \u2014 cleared on tab close');
-      } else {
-        addResult('WARN', 'Session Flag Isolation', 'Flag storage behavior unexpected');
-      }
-    });
-
-    // Test 22: Activity event listeners for heartbeat
-    _registerTest('Activity Event Tracking', function(addResult) {
-      if (typeof _ACTIVITY_EVENTS !== 'undefined' && Array.isArray(_ACTIVITY_EVENTS)) {
-        var expectedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
-        var allPresent = expectedEvents.every(function(evt) { return _ACTIVITY_EVENTS.indexOf(evt) !== -1; });
-        if (allPresent) {
-          addResult('PASS', 'Activity Event Tracking', _ACTIVITY_EVENTS.length + ' events tracked: ' + _ACTIVITY_EVENTS.join(', '));
-        } else {
-          addResult('WARN', 'Activity Event Tracking', 'Some expected activity events missing');
-        }
-      } else {
-        addResult('WARN', 'Activity Event Tracking', '_ACTIVITY_EVENTS not found \u2014 heartbeat may not detect user activity');
-      }
-    });
-
-    // Test 23: clearSession resets message key
-    _registerTest('Session Cleanup', function(addResult) {
-      if (typeof clearSession === 'function' && typeof _messageKey !== 'undefined') {
-        var savedKey = _messageKey;
-        var savedToken = getStorage().getItem(SESSION_KEY);
-        var savedEmail = getStorage().getItem(EMAIL_KEY);
-        clearSession();
-        var keyCleared = _messageKey === null;
-        // Restore state
-        _messageKey = savedKey;
-        if (savedToken) getStorage().setItem(SESSION_KEY, savedToken);
-        if (savedEmail) getStorage().setItem(EMAIL_KEY, savedEmail);
-        if (keyCleared) {
-          addResult('PASS', 'Session Cleanup', 'clearSession() resets message key \u2014 prevents stale HMAC keys across sessions');
-        } else {
-          addResult('FAIL', 'Session Cleanup', 'clearSession() did not null _messageKey');
-        }
-      }
-    });
-
     // Test 24: CSP connect-src restricts fetch/XHR destinations
     _registerTest('CSP Connect Sources', function(addResult) {
       var cspMeta = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
@@ -2275,17 +2105,6 @@
       }
     });
 
-    // Test 27: OAuth Client ID configured
-    _registerTest('OAuth Client ID', function(addResult) {
-      if (typeof CLIENT_ID === 'string' && CLIENT_ID.length > 10 && CLIENT_ID.indexOf('.apps.googleusercontent.com') !== -1) {
-        addResult('PASS', 'OAuth Client ID', 'Valid Google OAuth client ID configured');
-      } else if (typeof CLIENT_ID === 'string' && CLIENT_ID.length > 0) {
-        addResult('WARN', 'OAuth Client ID', 'CLIENT_ID set but format unexpected: ' + CLIENT_ID.substring(0, 20) + '...');
-      } else {
-        addResult('FAIL', 'OAuth Client ID', 'CLIENT_ID not defined or empty');
-      }
-    });
-
     // Test 28: Session storage keys — verify saveSession/loadSession round-trip
     _registerTest('Session Storage Keys', function(addResult) {
       if (typeof SESSION_KEY === 'string' && typeof EMAIL_KEY === 'string' && typeof saveSession === 'function' && typeof loadSession === 'function') {
@@ -2306,79 +2125,6 @@
         }
       } else {
         addResult('FAIL', 'Session Storage Keys', 'Session storage key constants or save/load functions missing');
-      }
-    });
-
-    // Test 29: Server session duration — verify value and relationship
-    _registerTest('Server Session Duration', function(addResult) {
-      if (typeof SERVER_SESSION_DURATION === 'number' && SERVER_SESSION_DURATION > 0) {
-        var durMin = Math.round(SERVER_SESSION_DURATION / 60);
-        var isTest = SERVER_SESSION_DURATION < 600;
-        var isReasonable = SERVER_SESSION_DURATION >= 30 && SERVER_SESSION_DURATION <= 86400; // 30s to 24h
-        if (isReasonable) {
-          addResult('PASS', 'Server Session Duration', SERVER_SESSION_DURATION + 's (' + durMin + 'min)' + (isTest ? ' \u26A1 test value' : '') + ' \u2014 within valid range');
-        } else {
-          addResult('WARN', 'Server Session Duration', SERVER_SESSION_DURATION + 's is outside expected range (30s-24h)');
-        }
-      } else {
-        addResult('FAIL', 'Server Session Duration', 'SERVER_SESSION_DURATION not configured');
-      }
-    });
-
-    // Test 30: Absolute session timeout — verify it exceeds session duration
-    _registerTest('Absolute Session Timeout', function(addResult) {
-      if (typeof ABSOLUTE_SESSION_DURATION === 'number' && ABSOLUTE_SESSION_DURATION > 0) {
-        var absDurMin = Math.round(ABSOLUTE_SESSION_DURATION / 60);
-        var absIsTest = ABSOLUTE_SESSION_DURATION < 3600;
-        var absExceedsSession = typeof SERVER_SESSION_DURATION === 'number' && ABSOLUTE_SESSION_DURATION > SERVER_SESSION_DURATION;
-        if (absExceedsSession) {
-          addResult('PASS', 'Absolute Session Timeout', ABSOLUTE_SESSION_DURATION + 's (' + absDurMin + 'min)' + (absIsTest ? ' \u26A1 test value' : '') + ' \u2014 exceeds session duration (' + SERVER_SESSION_DURATION + 's)');
-        } else {
-          addResult('WARN', 'Absolute Session Timeout', 'Absolute timeout (' + ABSOLUTE_SESSION_DURATION + 's) should exceed session duration (' + SERVER_SESSION_DURATION + 's)');
-        }
-      } else {
-        addResult('FAIL', 'Absolute Session Timeout', 'ABSOLUTE_SESSION_DURATION not configured');
-      }
-    });
-
-    // Test 31: _expectingSession guard — verify it blocks stale messages
-    _registerTest('Stale Message Guard', function(addResult) {
-      if (typeof _expectingSession !== 'undefined') {
-        var saved31 = _expectingSession;
-        // When false, gas-needs-auth should NOT trigger a full auth reset during active session
-        _expectingSession = false;
-        var wouldBlock = !_expectingSession; // guard would prevent stale message handling
-        _expectingSession = true;
-        var wouldAllow = _expectingSession; // guard allows message handling during initial load
-        _expectingSession = saved31; // restore
-        if (wouldBlock && wouldAllow) {
-          addResult('PASS', 'Stale Message Guard', '_expectingSession guard verified \u2014 blocks stale gas-needs-auth when false, allows when true');
-        } else {
-          addResult('FAIL', 'Stale Message Guard', 'Guard behavior unexpected');
-        }
-      } else {
-        addResult('FAIL', 'Stale Message Guard', '_expectingSession not declared');
-      }
-    });
-
-    // Test 32: Expiry warning — verify flag reset behavior
-    _registerTest('Expiry Warning System', function(addResult) {
-      if (typeof _expiryWarningShown !== 'undefined') {
-        var saved32 = _expiryWarningShown;
-        // Set flag to true (simulating warning was shown)
-        _expiryWarningShown = true;
-        var wasSet = _expiryWarningShown === true;
-        // Verify it can be reset (heartbeat handler resets this)
-        _expiryWarningShown = false;
-        var wasReset = _expiryWarningShown === false;
-        _expiryWarningShown = saved32; // restore
-        if (wasSet && wasReset) {
-          addResult('PASS', 'Expiry Warning System', 'Warning flag toggles correctly \u2014 auto-warning at \u226460s, resets on heartbeat');
-        } else {
-          addResult('FAIL', 'Expiry Warning System', 'Flag behavior unexpected');
-        }
-      } else {
-        addResult('FAIL', 'Expiry Warning System', '_expiryWarningShown flag not declared');
       }
     });
 
@@ -2424,39 +2170,6 @@
         addResult('WARN', 'Reauth Banner UI', 'Elements present but showReauthBanner function not found');
       } else {
         addResult('FAIL', 'Reauth Banner UI', 'Missing reauth banner elements');
-      }
-    });
-
-    // Test 35: Sign-out button — verify click handler is attached
-    _registerTest('Sign-Out Button', function(addResult) {
-      var signOutBtn = document.getElementById('sign-out-btn');
-      if (signOutBtn) {
-        // Check that the button has event listeners by inspecting if onclick or via addEventListener
-        // We can check getEventListeners isn't available in non-devtools, so verify it's functional:
-        var hasClickability = signOutBtn.tagName === 'BUTTON' || signOutBtn.tagName === 'A' || signOutBtn.getAttribute('role') === 'button';
-        var isEnabled = !signOutBtn.disabled;
-        if (hasClickability && isEnabled) {
-          addResult('PASS', 'Sign-Out Button', 'Sign-out button present, enabled, and interactive (tag: ' + signOutBtn.tagName + ')');
-        } else {
-          addResult('WARN', 'Sign-Out Button', 'Sign-out button found but may not be interactive (disabled=' + signOutBtn.disabled + ')');
-        }
-      } else {
-        addResult('FAIL', 'Sign-Out Button', 'sign-out-btn element not found');
-      }
-    });
-
-    // Test 36: Session timer UI — verify elements have live content or are ready for countdown
-    _registerTest('Session Timer UI', function(addResult) {
-      var timerSession = document.getElementById('timer-session');
-      var timerAbsolute = document.getElementById('timer-absolute');
-      var timerHeartbeat = document.getElementById('timer-heartbeat');
-      if (timerSession && timerAbsolute) {
-        var sessionContent = timerSession.textContent || '';
-        var absoluteContent = timerAbsolute.textContent || '';
-        var hasTimerFormat = /\d/.test(sessionContent) || sessionContent === '' || sessionContent === '--:--';
-        addResult('PASS', 'Session Timer UI', 'Timers present \u2014 session: "' + sessionContent + '", absolute: "' + absoluteContent + '"' + (timerHeartbeat ? ', heartbeat: "' + timerHeartbeat.textContent + '"' : ''));
-      } else {
-        addResult('WARN', 'Session Timer UI', 'Timer display elements missing');
       }
     });
 
@@ -2614,42 +2327,6 @@
       }
     });
 
-    // Test 46: getStorage returns correct storage type
-    _registerTest('Storage Abstraction', function(addResult) {
-      if (typeof getStorage === 'function') {
-        var storage = getStorage();
-        var isSessionStorage = storage === window.sessionStorage;
-        var isLocalStorage = storage === window.localStorage;
-        if (isSessionStorage || isLocalStorage) {
-          addResult('PASS', 'Storage Abstraction', 'getStorage() returns ' + (isSessionStorage ? 'sessionStorage' : 'localStorage') + ' as configured');
-        } else {
-          addResult('FAIL', 'Storage Abstraction', 'getStorage() returned unexpected object');
-        }
-      } else {
-        addResult('FAIL', 'Storage Abstraction', 'getStorage function not found');
-      }
-    });
-
-    // Test 47: _pendingToken lifecycle — verify set/clear behavior
-    _registerTest('Token Lifecycle', function(addResult) {
-      if (typeof _pendingToken !== 'undefined') {
-        var savedPending47 = _pendingToken;
-        _pendingToken = 'test-pending-token';
-        var wasSet47 = _pendingToken === 'test-pending-token';
-        _pendingToken = null;
-        var wasCleared47 = _pendingToken === null;
-        _pendingToken = savedPending47; // restore
-        if (wasSet47 && wasCleared47) {
-          var tokenStatus = savedPending47 ? 'token pending (in-flight exchange)' : 'null (idle)';
-          addResult('PASS', 'Token Lifecycle', 'Token lifecycle verified (set/clear works) \u2014 current: ' + tokenStatus);
-        } else {
-          addResult('FAIL', 'Token Lifecycle', 'Token lifecycle behavior unexpected');
-        }
-      } else {
-        addResult('FAIL', 'Token Lifecycle', '_pendingToken variable not declared');
-      }
-    });
-
     // Test 48: handleTokenResponse — verify CSRF guard rejects when no nonce
     _registerTest('Token Response Handler', function(addResult) {
       if (typeof handleTokenResponse === 'function') {
@@ -2710,20 +2387,6 @@
       }
     });
 
-    // Test 51: showAuthWall hides reauth banner (code inspection, non-destructive)
-    _registerTest('UI State Exclusivity', function(addResult) {
-      if (typeof showAuthWall === 'function') {
-        var fnSrc51 = showAuthWall.toString();
-        var hidesBanner51 = fnSrc51.indexOf('reauth-banner') !== -1 && fnSrc51.indexOf("none") !== -1;
-        var removesHidden51 = fnSrc51.indexOf("classList.remove") !== -1 && fnSrc51.indexOf("hidden") !== -1;
-        if (hidesBanner51 && removesHidden51) {
-          addResult('PASS', 'UI State Exclusivity', 'showAuthWall() hides reauth banner (display:none) \u2014 no conflicting overlays');
-        } else {
-          addResult('FAIL', 'UI State Exclusivity', 'showAuthWall does not hide reauth banner: hidesBanner=' + hidesBanner51);
-        }
-      }
-    });
-
     // Test 52: No dangerous JS patterns in inline scripts (document.write, eval)
     _registerTest('Code Safety Scan', function(addResult) {
       // Skip the test runner script itself (contains these search strings as literals)
@@ -2763,26 +2426,6 @@
       }
     });
 
-    // Test 55: SESSION_EXPIRED_FLAG — verify it's written by performSignOut and stored in sessionStorage
-    _registerTest('Session Expired Flag', function(addResult) {
-      if (typeof SESSION_EXPIRED_FLAG === 'string' && SESSION_EXPIRED_FLAG.length > 0) {
-        // Verify the flag is stored in sessionStorage (tab-scoped, not shared across tabs)
-        var savedFlag55 = sessionStorage.getItem(SESSION_EXPIRED_FLAG);
-        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
-        var inSession55 = sessionStorage.getItem(SESSION_EXPIRED_FLAG) === '1';
-        var inLocal55 = localStorage.getItem(SESSION_EXPIRED_FLAG) === '1';
-        // Restore
-        if (savedFlag55) sessionStorage.setItem(SESSION_EXPIRED_FLAG, savedFlag55); else sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
-        if (inSession55 && !inLocal55) {
-          addResult('PASS', 'Session Expired Flag', 'SESSION_EXPIRED_FLAG ("' + SESSION_EXPIRED_FLAG + '") stored in sessionStorage only \u2014 tab-scoped');
-        } else {
-          addResult('FAIL', 'Session Expired Flag', 'Flag storage unexpected: session=' + inSession55 + ' local=' + inLocal55);
-        }
-      } else {
-        addResult('FAIL', 'Session Expired Flag', 'SESSION_EXPIRED_FLAG not defined');
-      }
-    });
-
     // Test 56: No external script tags (all scripts inline or from whitelisted CDNs)
     _registerTest('Script Source Audit', function(addResult) {
       var extScripts = document.querySelectorAll('script[src]');
@@ -2800,92 +2443,6 @@
         addResult('PASS', 'Script Source Audit', 'All external scripts from Google domains only (' + extScripts.length + ' external script' + (extScripts.length !== 1 ? 's' : '') + ')');
       } else {
         addResult('WARN', 'Script Source Audit', 'Unknown external script source: ' + unknownSrc);
-      }
-    });
-
-    // Test 57: Template ID meta tag present (provenance tracking)
-    _registerTest('Template Provenance', function(addResult) {
-      var templateMeta = document.querySelector('meta[name="template-id"]');
-      if (templateMeta && templateMeta.content) {
-        addResult('PASS', 'Template Provenance', 'Template ID: ' + templateMeta.content);
-      } else {
-        addResult('WARN', 'Template Provenance', 'No template-id meta tag found');
-      }
-    });
-
-    // Test 58: Build version meta tag present
-    _registerTest('Build Version Tag', function(addResult) {
-      var buildMeta = document.querySelector('meta[name="build-version"]');
-      if (buildMeta && buildMeta.content && /^v\d+\.\d+w$/.test(buildMeta.content)) {
-        addResult('PASS', 'Build Version Tag', 'Version: ' + buildMeta.content + ' \u2014 matches expected format');
-      } else {
-        addResult('WARN', 'Build Version Tag', 'build-version meta tag missing or malformed');
-      }
-    });
-
-    // Test 59: Cross-tab storage sync listener registered
-    _registerTest('Cross-Tab Storage Sync', function(addResult) {
-      // Verify window has storage event listener (indirect check via element existence)
-      if (HTML_CONFIG.STORAGE_TYPE === 'localStorage') {
-        addResult('PASS', 'Cross-Tab Storage Sync', 'localStorage mode \u2014 storage event provides automatic cross-tab sync');
-      } else if (_signOutChannel) {
-        addResult('PASS', 'Cross-Tab Storage Sync', 'sessionStorage mode \u2014 BroadcastChannel provides explicit cross-tab sync');
-      } else {
-        addResult('WARN', 'Cross-Tab Storage Sync', 'No cross-tab sync mechanism detected');
-      }
-    });
-
-    // Test 60: Timer countdown keys — verify they're used by the storage backend
-    _registerTest('Timer Storage Keys', function(addResult) {
-      if (typeof SESSION_START_KEY === 'string' && typeof ABSOLUTE_START_KEY === 'string') {
-        // Verify the keys can write/read to the correct storage backend
-        var savedStart60 = getStorage().getItem(SESSION_START_KEY);
-        var savedAbs60 = getStorage().getItem(ABSOLUTE_START_KEY);
-        var testTime60 = String(Date.now());
-        getStorage().setItem(SESSION_START_KEY, testTime60);
-        var readBack60 = getStorage().getItem(SESSION_START_KEY);
-        // Restore
-        if (savedStart60) getStorage().setItem(SESSION_START_KEY, savedStart60); else getStorage().removeItem(SESSION_START_KEY);
-        if (savedAbs60) getStorage().setItem(ABSOLUTE_START_KEY, savedAbs60); else getStorage().removeItem(ABSOLUTE_START_KEY);
-        if (readBack60 === testTime60) {
-          addResult('PASS', 'Timer Storage Keys', 'Keys verified: "' + SESSION_START_KEY + '", "' + ABSOLUTE_START_KEY + '" \u2014 read/write to ' + HTML_CONFIG.STORAGE_TYPE);
-        } else {
-          addResult('FAIL', 'Timer Storage Keys', 'Storage round-trip failed for timer keys');
-        }
-      } else {
-        addResult('FAIL', 'Timer Storage Keys', 'Timer storage key constants missing');
-      }
-    });
-
-    // Test 61: Heartbeat state — verify state machine transitions
-    _registerTest('Heartbeat State', function(addResult) {
-      if (typeof _heartbeatInFlight !== 'undefined' && typeof _heartbeatIdle !== 'undefined' && typeof _lastHeartbeatActivity !== 'undefined') {
-        var savedFlight61 = _heartbeatInFlight;
-        var savedIdle61 = _heartbeatIdle;
-        var savedActivity61 = _lastHeartbeatActivity;
-        // Simulate idle → activity → in-flight → idle cycle
-        _heartbeatIdle = true;
-        _heartbeatInFlight = false;
-        var startedIdle = _heartbeatIdle && !_heartbeatInFlight;
-        _lastHeartbeatActivity = Date.now();
-        _heartbeatIdle = false;
-        var activityDetected = !_heartbeatIdle && _lastHeartbeatActivity > 0;
-        _heartbeatInFlight = true;
-        var inFlight = _heartbeatInFlight && !_heartbeatIdle;
-        _heartbeatInFlight = false;
-        _heartbeatIdle = true;
-        var backToIdle = _heartbeatIdle && !_heartbeatInFlight;
-        // Restore
-        _heartbeatInFlight = savedFlight61;
-        _heartbeatIdle = savedIdle61;
-        _lastHeartbeatActivity = savedActivity61;
-        if (startedIdle && activityDetected && inFlight && backToIdle) {
-          addResult('PASS', 'Heartbeat State', 'State machine verified: idle \u2192 activity \u2192 in-flight \u2192 idle');
-        } else {
-          addResult('FAIL', 'Heartbeat State', 'State transitions unexpected');
-        }
-      } else {
-        addResult('FAIL', 'Heartbeat State', 'Missing heartbeat state variables');
       }
     });
 

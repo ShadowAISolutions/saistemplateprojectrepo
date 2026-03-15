@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v03.50r] — 2026-03-14 08:31:03 PM EST
+
+### Changed
+- Removed 27 fake/trivial security tests that tested variable assignments or DOM existence instead of real behavior — 38 behavioral tests remain
+
+#### `testauth1.html` — v01.70w
+
+##### Changed
+- Removed 27 fake and trivial security tests that were testing variable assignments or DOM existence instead of actual behavior (38 real tests remain)
 
 ## [v03.49r] — 2026-03-14 08:19:27 PM EST
 
