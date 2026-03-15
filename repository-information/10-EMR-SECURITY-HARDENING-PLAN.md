@@ -3,6 +3,7 @@
 **Created:** 2026-03-15
 **Status:** Ready for implementation
 **Scope:** `testauth1.html`, `testauth1.gs`
+**Preset-aware:** All phases work under both `standard` and `hipaa` presets — behavior is controlled by the existing `ACTIVE_PRESET` toggle system (see [06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)). Each phase documents its preset values explicitly.
 **Prerequisites:** Plans 7, 8, 9.2 fully implemented (security hardening I & II, cross-device enforcement)
 **References:**
 - [07-SECURITY-UPDATE-PLAN-TESTAUTH1.md](07-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
@@ -20,6 +21,8 @@
 The current authentication system (plans 6–9.2) provides a solid foundation: Google OAuth sign-in, server-side session management via CacheService, heartbeat-based session extension, cross-device single-session enforcement, HMAC session integrity, and audit logging. However, **using this system for an EMR (Electronic Medical Records) application that stores patient information (PHI) requires additional hardening** to meet HIPAA Technical Safeguards (45 CFR § 164.312).
 
 This plan addresses every security gap identified during the EMR readiness assessment, organized by implementation priority. Each phase includes exact code locations, current/modified code blocks, and design decisions — matching the quality standard established by plan 9.2.
+
+**Preset-aware design:** The codebase uses a `standard` / `hipaa` preset toggle system (`ACTIVE_PRESET` in `testauth1.gs`). Every hardening phase in this plan respects the existing toggle architecture — each feature checks its `AUTH_CONFIG` toggle before executing. The `hipaa` preset enables all hardening features by default; the `standard` preset leaves them off (preserving current behavior). No code breaks regardless of which preset is active. Switching presets is a code-level change (not a runtime toggle) — this is intentional, as HIPAA compliance is an organizational commitment that shouldn't be accidentally toggled off.
 
 ### Key Architecture Principle
 
@@ -50,6 +53,28 @@ This plan addresses every security gap identified during the EMR readiness asses
 | **P2 — Medium** | Defense-in-depth measures recommended by NIST | Phase 5 (emergency access), Phase 6 (account lockout), Phase 7 (IP binding) |
 | **P3 — Recommended** | Enhanced auditing for compliance posture | Phase 8 (data-level audit logging) |
 
+### Preset Behavior Matrix
+
+Every phase's behavior is governed by `AUTH_CONFIG` toggles that differ between presets. The code always checks the toggle — no HIPAA-specific code paths exist outside of toggle guards. Switching `ACTIVE_PRESET` from `'hipaa'` to `'standard'` (or vice versa) cleanly enables/disables each feature with no code changes needed beyond the preset selection.
+
+| Phase | Toggle(s) | `standard` Preset | `hipaa` Preset | Standard Mode Behavior |
+|-------|-----------|-------------------|----------------|----------------------|
+| **1 — HMAC Enforcement** | `ENABLE_HMAC_INTEGRITY` | `true` (existing) | `true` (existing) | **Both presets already have this `true`** — fail-closed applies equally. If a standard deployment doesn't want HMAC, set `ENABLE_HMAC_INTEGRITY: false` via `PROJECT_OVERRIDES` (HMAC functions return early, no secret needed) |
+| **2 — Domain Restriction** | `ENABLE_DOMAIN_RESTRICTION` | `false` (existing) | `true` (existing) | Validation skipped entirely — the `if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION)` guard exits before the empty-allowlist check |
+| **3 — Data Op Validation** | `ENABLE_DATA_OP_VALIDATION` | `false` (new) | `true` (new) | `validateSessionForData()` returns immediately without checking session — data operations execute as they do today (no session gate) |
+| **4 — DOM Clearing** | `ENABLE_DOM_CLEARING_ON_EXPIRY` | `false` (new) | `true` (new) | `showAuthWall()` shows the overlay without destroying the iframe — current behavior preserved |
+| **5 — Emergency Access** | `ENABLE_EMERGENCY_ACCESS` | `false` (existing) | `true` (existing) | Emergency access check skipped — ACL denial is final, no break-glass fallback |
+| **6 — Account Lockout** | `ENABLE_ESCALATING_LOCKOUT` | `false` (new) | `true` (new) | Uses existing flat rate limit (5 failures / 5 min) — no escalation tiers |
+| **7 — IP Logging** | `ENABLE_IP_LOGGING` | `false` (new) | `true` (new) | Client IP not fetched, not included in heartbeats or audit entries |
+| **8 — Data Audit Log** | `ENABLE_DATA_AUDIT_LOG` | `false` (new) | `true` (new) | `dataAuditLog()` returns immediately — no per-operation audit records written |
+
+**Key design principle:** The `standard` preset preserves the pre-hardening behavior exactly. No existing functionality changes when `ACTIVE_PRESET = 'standard'`. The hardening features are additive — they only activate under the `hipaa` preset (or when explicitly enabled via `PROJECT_OVERRIDES`).
+
+**Preset transition rules:**
+- **`standard` → `hipaa`**: Set `ACTIVE_PRESET = 'hipaa'`, configure required Script Properties (`HMAC_SECRET`, `EMERGENCY_ACCESS_EMAILS`, `ALLOWED_DOMAINS`), redeploy. All existing sessions will be invalidated on next heartbeat (HMAC verification will fail against sessions created without HMAC enforcement). Users re-authenticate and get HIPAA-hardened sessions. No data migration needed.
+- **`hipaa` → `standard`**: Set `ACTIVE_PRESET = 'standard'`, redeploy. Hardening features deactivate immediately. Existing HIPAA sessions continue to work (HMAC verification is skipped when `ENABLE_HMAC_INTEGRITY: false`) but new sessions won't have HMAC signatures. Audit logs are retained in Google Sheets regardless of preset — they are permanent records.
+- **`PROJECT_OVERRIDES` interaction**: Overrides take precedence over preset values (existing behavior). An admin running `standard` can selectively enable individual hardening features (e.g., `PROJECT_OVERRIDES: { ENABLE_DATA_AUDIT_LOG: true }`) without switching to the full `hipaa` preset. This allows incremental adoption.
+
 ---
 
 ## Architecture Overview
@@ -57,7 +82,7 @@ This plan addresses every security gap identified during the EMR readiness asses
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                 EMR Security Architecture                             │
-│              (Post-Hardening — All Phases Applied)                    │
+│        (Post-Hardening — HIPAA Preset, All Phases Active)            │
 │                                                                      │
 │  ┌─────────────────────────────────────────────────────────────┐     │
 │  │  Browser (HTML Host Page — testauth1.html)                   │     │
@@ -124,6 +149,11 @@ This plan addresses every security gap identified during the EMR readiness asses
 **Files:** `testauth1.gs`
 **HIPAA:** 45 CFR § 164.312(c)(1) Integrity, § 164.312(e)(2)(i) Integrity Controls
 **What:** The HMAC integrity system is enabled in the HIPAA preset (`ENABLE_HMAC_INTEGRITY: true`) but **silently degrades to a no-op** when `HMAC_SECRET` is not set in GAS Script Properties. This means session tokens can be tampered with undetected. Change to fail-closed: if HMAC is enabled but no secret is configured, refuse to create sessions.
+
+**Preset behavior:**
+- **Both presets** currently have `ENABLE_HMAC_INTEGRITY: true` — the fail-closed change applies to both. This is correct: if you've opted into HMAC, it should actually work, regardless of preset.
+- **To disable HMAC entirely** (e.g., for a non-sensitive standard deployment), set `ENABLE_HMAC_INTEGRITY: false` via `PROJECT_OVERRIDES`. The `if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY)` guard exits both functions early — no secret needed, no error thrown.
+- **No new toggle needed** — this phase fixes the behavior of an existing toggle, not adding a new one.
 
 **Current code** (`testauth1.gs` lines 347–371):
 ```javascript
@@ -204,6 +234,11 @@ function verifySessionHmac(sessionData) {
 **HIPAA:** 45 CFR § 164.312(d) Person or Entity Authentication
 **What:** The HIPAA preset enables domain restriction (`ENABLE_DOMAIN_RESTRICTION: true`) but `ALLOWED_DOMAINS` is empty (`[]`). Add explicit validation: if domain restriction is enabled with an empty allowlist, reject all logins with a clear error.
 
+**Preset behavior:**
+- **`standard`**: `ENABLE_DOMAIN_RESTRICTION: false` — the entire domain check block is skipped. No change from current behavior.
+- **`hipaa`**: `ENABLE_DOMAIN_RESTRICTION: true` — the new empty-allowlist validation fires. Admins must configure `ALLOWED_DOMAINS` or override to `false`.
+- **No new toggle needed** — this phase adds validation inside the existing `ENABLE_DOMAIN_RESTRICTION` guard.
+
 **Current domain check** (`testauth1.gs` lines 400–416):
 ```javascript
 if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION) {
@@ -269,6 +304,20 @@ if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION) {
 **HIPAA:** 45 CFR § 164.312(a)(1) Access Control, § 164.312(d) Authentication
 **What:** Currently, `google.script.run` calls from the GAS iframe execute **without validating the session**. The authenticated app HTML is rendered once at load time with a valid session, but subsequent `google.script.run` calls (which would read/write patient data) have no session check. If a session expires or is evicted between page load and a data operation, the operation still succeeds. This is the most critical security gap for EMR use.
 
+**New config toggle** (add to both presets):
+```javascript
+// standard preset:
+ENABLE_DATA_OP_VALIDATION: false,  // Data ops execute without session re-validation (current behavior)
+
+// hipaa preset:
+ENABLE_DATA_OP_VALIDATION: true,   // Every google.script.run data op validates session first
+```
+
+**Preset behavior:**
+- **`standard`**: `validateSessionForData()` checks the toggle first — `if (!AUTH_CONFIG.ENABLE_DATA_OP_VALIDATION) return { email: 'unvalidated', displayName: '' };` — and returns a stub identity, allowing data operations to proceed without session re-validation (current behavior preserved).
+- **`hipaa`**: Full session validation on every data operation. Expired/evicted sessions are rejected before any data access.
+- **Why toggle this?** Standard deployments may not handle sensitive data and the per-operation session check adds latency (~10ms per CacheService read). HIPAA deployments need the gate; standard deployments can opt in via `PROJECT_OVERRIDES` if desired.
+
 **The problem:**
 ```
 1. User loads GAS app (session valid at load time)
@@ -295,6 +344,11 @@ Every `google.script.run` function that reads or writes patient data must first 
 // =============================================
 
 function validateSessionForData(sessionToken, operationName) {
+  // Toggle check — standard preset skips validation entirely
+  if (!AUTH_CONFIG.ENABLE_DATA_OP_VALIDATION) {
+    return { email: 'unvalidated', displayName: '' };
+  }
+
   if (!sessionToken || sessionToken.length < 32) {
     auditLog('security_alert', 'unknown', 'data_access_no_token',
       { operation: operationName });
@@ -466,6 +520,20 @@ withSessionToken(function(token) {
 **HIPAA:** 45 CFR § 164.312(a)(2)(iii) Automatic Logoff, § 164.312(c)(1) Integrity
 **What:** When a session expires, the auth wall overlays the page content but does **not destroy the GAS iframe**. The iframe's DOM still contains any patient data that was rendered. A determined user could use browser DevTools to inspect the DOM and read PHI after session expiry. For EMR compliance, the iframe must be destroyed (not just hidden) when the session ends.
 
+**New config toggle** (add to both presets):
+```javascript
+// standard preset:
+ENABLE_DOM_CLEARING_ON_EXPIRY: false,  // Auth wall overlay only (current behavior)
+
+// hipaa preset:
+ENABLE_DOM_CLEARING_ON_EXPIRY: true,   // Destroy GAS iframe content on session expiry
+```
+
+**Preset behavior:**
+- **`standard`**: `showAuthWall()` shows the overlay without touching the iframe — current behavior preserved. The iframe content persists behind the overlay (acceptable for non-PHI applications).
+- **`hipaa`**: `showAuthWall()` sets `gasFrame.src = 'about:blank'` to destroy PHI in the DOM before showing the overlay.
+- **Why toggle this?** DOM clearing requires iframe reload on re-auth (adds ~2-3s latency to the re-authentication flow). Standard deployments that don't display sensitive data in the GAS iframe don't need this tradeoff.
+
 **Current behavior** (`testauth1.html` lines 1412–1449):
 ```javascript
 function showAuthWall(message, email) {
@@ -494,9 +562,12 @@ function showAuthWall(message, email) {
   // The auth wall overlay alone is insufficient — DevTools can still inspect
   // the iframe's content. Replacing the iframe's src with 'about:blank'
   // destroys its document tree, including any patient data rendered by GAS.
-  var gasFrame = document.getElementById('gas-app');
-  if (gasFrame) {
-    gasFrame.src = 'about:blank';
+  // Toggle-gated: only active when ENABLE_DOM_CLEARING_ON_EXPIRY is true.
+  if (AUTH_CONFIG.ENABLE_DOM_CLEARING_ON_EXPIRY) {
+    var gasFrame = document.getElementById('gas-app');
+    if (gasFrame) {
+      gasFrame.src = 'about:blank';
+    }
   }
 
   wall.classList.remove('hidden');
@@ -568,6 +639,11 @@ function showApp(email, displayName) {
 **Files:** `testauth1.gs`
 **HIPAA:** 45 CFR § 164.312(a)(2)(ii) Emergency Access Procedure
 **What:** HIPAA requires an "emergency access procedure" — a mechanism to access PHI in emergencies even when normal access controls might block it. The config flags exist (`ENABLE_EMERGENCY_ACCESS: true`, `EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS'`) in the HIPAA preset but **no code implements them**. Implement a break-glass mechanism that bypasses normal ACL checks with enhanced audit logging.
+
+**Preset behavior:**
+- **`standard`**: `ENABLE_EMERGENCY_ACCESS: false` (existing) — the `if (AUTH_CONFIG.ENABLE_EMERGENCY_ACCESS)` guard skips the break-glass check entirely. ACL denial is final.
+- **`hipaa`**: `ENABLE_EMERGENCY_ACCESS: true` (existing) — break-glass path activates when normal ACL fails. Requires `EMERGENCY_ACCESS_EMAILS` in Script Properties.
+- **No new toggle needed** — the existing toggle and property key are already in both presets. This phase implements the code behind them.
 
 **How it works:**
 
@@ -686,6 +762,19 @@ if (hbData.absoluteCreatedAt && effectiveAbsoluteTimeout) {
 **NIST:** SP 800-63B § 5.2.2 — Rate limiting / lockout mechanisms
 **What:** The current system has rate limiting (5 failed attempts per 5-minute window per token fingerprint) but no permanent or semi-permanent lockout. After the 5-minute window expires, an attacker can retry indefinitely. Add escalating lockout: temporary → extended → requires admin unlock.
 
+**New config toggle** (add to both presets):
+```javascript
+// standard preset:
+ENABLE_ESCALATING_LOCKOUT: false,  // Use existing flat rate limit (5/5min)
+
+// hipaa preset:
+ENABLE_ESCALATING_LOCKOUT: true,   // Escalating lockout tiers (5min → 30min → 6hr)
+```
+
+**Preset behavior:**
+- **`standard`**: `ENABLE_ESCALATING_LOCKOUT: false` — the existing flat rate limit code runs as-is (5 failures / 5 min window). No escalation tiers.
+- **`hipaa`**: `ENABLE_ESCALATING_LOCKOUT: true` — the escalating lockout code replaces the flat rate limit with three tiers.
+
 **Current rate limiting** (`testauth1.gs` lines 383–391):
 ```javascript
 var rlCache = CacheService.getScriptCache();
@@ -705,7 +794,16 @@ var tokenFingerprint = 'ratelimit_' + accessToken.substring(0, 16);
 var attempts = rlCache.get(tokenFingerprint);
 var attemptCount = attempts ? parseInt(attempts, 10) : 0;
 
-// Escalating lockout thresholds
+// When escalating lockout is disabled (standard preset), use existing flat rate limit
+if (!AUTH_CONFIG.ENABLE_ESCALATING_LOCKOUT) {
+  if (attemptCount >= 5) {
+    auditLog('login_failed', '', 'rate_limited', { fingerprint: tokenFingerprint.substring(0, 20) });
+    return { success: false, error: "rate_limited" };
+  }
+  // ... rest of login flow (existing behavior) ...
+}
+
+// Escalating lockout thresholds (hipaa preset)
 // Tier 1: 5 failures in 5 min → 5 min lockout (existing behavior, just made explicit)
 // Tier 2: 10 cumulative failures → 30 min lockout
 // Tier 3: 20 cumulative failures → account flagged for admin review
@@ -770,9 +868,18 @@ rlCache.put(tokenFingerprint, String(attemptCount + 1), lockoutDuration);
 
 **New config toggle** (add to both presets):
 ```javascript
-ENABLE_IP_BINDING: true,         // Bind sessions to originating IP
-IP_BINDING_MODE: 'strict',       // 'strict' = exact IP match, 'subnet' = /24 subnet match
+// standard preset:
+ENABLE_IP_LOGGING: false,        // Do not fetch or log client IP
+
+// hipaa preset:
+ENABLE_IP_LOGGING: true,         // Fetch client IP and include in audit log entries
 ```
+
+**Preset behavior:**
+- **`standard`**: `ENABLE_IP_LOGGING: false` — the client-side IP fetch (`api.ipify.org`) is skipped, no `clientIp` parameter in heartbeat URLs, audit entries have no IP data. Zero external API calls.
+- **`hipaa`**: `ENABLE_IP_LOGGING: true` — client IP is fetched and included in heartbeats and audit entries for post-incident investigation.
+
+**Original toggle revised** — the initial plan proposed `ENABLE_IP_BINDING` with strict/subnet modes, but the GAS platform limitation (see below) prevents actual binding. The toggle is renamed to `ENABLE_IP_LOGGING` to accurately reflect its logging-only capability.
 
 **Capturing the IP** — in `exchangeTokenForSession()`, store the client IP in session data:
 
@@ -804,13 +911,15 @@ Google Apps Script does **not** expose the client IP address for `google.script.
 Given the GAS platform limitation, convert this phase to **IP logging** rather than binding:
 
 ```javascript
-// In the authenticated app HTML, fetch the client IP and include it in activity reports
-fetch('https://api.ipify.org?format=json')
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    _clientIp = data.ip;
-  })
-  .catch(function() { _clientIp = 'unknown'; });
+// In the authenticated app HTML, fetch the client IP (only when IP logging is enabled)
+if (AUTH_CONFIG.ENABLE_IP_LOGGING) {
+  fetch('https://api.ipify.org?format=json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      _clientIp = data.ip;
+    })
+    .catch(function() { _clientIp = 'unknown'; });
+}
 
 // Include _clientIp in the gas-user-activity postMessage
 window.top.postMessage(_s({
@@ -858,9 +967,18 @@ var clientIp = (e && e.parameter && e.parameter.clientIp) || 'unknown';
 
 **New config toggle** (add to both presets):
 ```javascript
+// standard preset:
+ENABLE_DATA_AUDIT_LOG: false,     // No per-operation audit logging (current behavior)
+DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog',
+
+// hipaa preset:
 ENABLE_DATA_AUDIT_LOG: true,      // Log individual data access events (reads, writes)
-DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog',  // Separate sheet from session audit log
+DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog',
 ```
+
+**Preset behavior:**
+- **`standard`**: `ENABLE_DATA_AUDIT_LOG: false` — `dataAuditLog()` returns immediately on the first line (`if (!AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG) return;`). No Sheets writes, no quota impact. Session-level audit logging (`ENABLE_AUDIT_LOG`) is a separate toggle and is independently controlled.
+- **`hipaa`**: `ENABLE_DATA_AUDIT_LOG: true` — every data operation writes an audit record to the `DataAuditLog` sheet. See Quota Impact Analysis for volume estimates.
 
 **New audit function:**
 ```javascript
@@ -1014,17 +1132,17 @@ For 50 concurrent users (enterprise scale):
 
 ## What Changed Since Plan 9.2
 
-| Aspect | Plan 9.2 State | After This Plan |
-|--------|---------------|-----------------|
-| HMAC integrity | Enabled but silently no-op without secret | **Fail-closed** — refuses sessions if secret missing |
-| Domain restriction | Enabled but empty allowlist + override to disabled | **Explicit validation** — empty allowlist = fail-closed with audit alert |
-| Data operation auth | No session check on `google.script.run` calls | **Every data op validates session** via `validateSessionForData()` |
-| DOM on session expiry | Auth wall overlay (GAS iframe content persists) | **GAS iframe destroyed** (`about:blank`) — PHI cleared from DOM |
-| Emergency access | Config flags exist, no implementation | **Full break-glass** with shortened timeout + enhanced audit |
-| Account lockout | 5 failures / 5 min window only | **Escalating lockout** — 5min → 30min → 6hr tiers |
-| IP tracking | None | **Client-reported IP in audit logs** (logging only — GAS limitation) |
-| Data audit logging | Login/logout events only | **Per-operation audit** — who accessed what patient data, when |
-| PHI storage | Not explicitly restricted | **Architecture rule** — PHI only in Google Sheets (BAA-covered), never in CacheService or browser storage |
+| Aspect | Plan 9.2 State | After This Plan (HIPAA) | Standard Preset |
+|--------|---------------|------------------------|-----------------|
+| HMAC integrity | Enabled but silently no-op without secret | **Fail-closed** — refuses sessions if secret missing | Same (both presets have `ENABLE_HMAC_INTEGRITY: true`; disable via override if unwanted) |
+| Domain restriction | Enabled but empty allowlist + override to disabled | **Explicit validation** — empty allowlist = fail-closed with audit alert | Skipped (`ENABLE_DOMAIN_RESTRICTION: false`) |
+| Data operation auth | No session check on `google.script.run` calls | **Every data op validates session** via `validateSessionForData()` | Skipped (`ENABLE_DATA_OP_VALIDATION: false`) — current behavior |
+| DOM on session expiry | Auth wall overlay (GAS iframe content persists) | **GAS iframe destroyed** (`about:blank`) — PHI cleared from DOM | Overlay only (`ENABLE_DOM_CLEARING_ON_EXPIRY: false`) — current behavior |
+| Emergency access | Config flags exist, no implementation | **Full break-glass** with shortened timeout + enhanced audit | Disabled (`ENABLE_EMERGENCY_ACCESS: false`) |
+| Account lockout | 5 failures / 5 min window only | **Escalating lockout** — 5min → 30min → 6hr tiers | Flat rate limit (`ENABLE_ESCALATING_LOCKOUT: false`) — current behavior |
+| IP tracking | None | **Client-reported IP in audit logs** (logging only — GAS limitation) | Disabled (`ENABLE_IP_LOGGING: false`) |
+| Data audit logging | Login/logout events only | **Per-operation audit** — who accessed what patient data, when | Disabled (`ENABLE_DATA_AUDIT_LOG: false`) |
+| PHI storage | Not explicitly restricted | **Architecture rule** — PHI only in Google Sheets (BAA-covered), never in CacheService or browser storage | Same rule (applies regardless of preset) |
 
 ---
 
@@ -1090,8 +1208,9 @@ Phase 8 (Data audit) ────────────────► Require
 
 ## Configuration Checklist for EMR Deployment
 
-Before deploying this system for EMR use, the administrator must complete:
+Before deploying this system for EMR use, the administrator must set `ACTIVE_PRESET = 'hipaa'` and complete the following. (For `standard` preset deployments, these items are not required — all hardening features default to `false`/off.)
 
+- [ ] **Verify preset selection** — confirm `ACTIVE_PRESET = 'hipaa'` in `testauth1.gs` (line 38). If using `standard` with selective hardening, document which features are enabled via `PROJECT_OVERRIDES` and why
 - [ ] **Set HMAC secret** — GAS Editor → Project Settings → Script Properties → Add `HMAC_SECRET` with value from `openssl rand -hex 32`
 - [ ] **Configure domain restriction** — either set `ALLOWED_DOMAINS: ['yourhospital.com']` in the HIPAA preset, or explicitly set `ENABLE_DOMAIN_RESTRICTION: false` in `PROJECT_OVERRIDES` with documented justification
 - [ ] **Configure emergency access list** — GAS Editor → Project Settings → Script Properties → Add `EMERGENCY_ACCESS_EMAILS` with comma-separated admin emails
