@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.73w">
+  <meta name="build-version" content="v01.74w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -360,13 +360,16 @@
       sessionStorage.removeItem('audio-unlocked');
     }
 
-    // AudioContext for sound playback — created at load to probe browser audio policy
+    // AudioContext for sound playback — deferred to first user gesture to avoid
+    // Chrome's autoplay policy warning ("AudioContext was not allowed to start")
     var _audioCtx = null;
-    try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
-    if (_audioCtx) _audioCtx.onstatechange = function() { updateAudioStatus(); };
-    // Attempt auto-resume — browsers allow it if a prior gesture exists for this origin
-    var _resumePromise = null;
-    if (_audioCtx && _audioCtx.state === 'suspended') _resumePromise = _audioCtx.resume().catch(function() {});
+
+    function _ensureAudioCtx() {
+      if (_audioCtx) return _audioCtx;
+      try { _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { return null; }
+      if (_audioCtx) _audioCtx.onstatechange = function() { updateAudioStatus(); };
+      return _audioCtx;
+    }
 
     function updateAudioStatus() {
       var el = document.getElementById('audio-status');
@@ -386,8 +389,9 @@
     }
 
     function unlockAudio() {
-      if (!_audioCtx || _audioCtx.state === 'running') return;
-      _audioCtx.resume().then(function() { updateAudioStatus(); }).catch(function() {});
+      var ctx = _ensureAudioCtx();
+      if (!ctx || ctx.state === 'running') return;
+      ctx.resume().then(function() { updateAudioStatus(); }).catch(function() {});
     }
     document.addEventListener('click', unlockAudio, { once: false });
     document.addEventListener('touchstart', unlockAudio, { once: false });
@@ -406,8 +410,8 @@
 
     function playSoundFromDataUrl(dataUrl) {
       try {
-        var ctx = _audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state !== 'running') return;
+        var ctx = _ensureAudioCtx();
+        if (!ctx || ctx.state !== 'running') return;
         var base64 = dataUrl.split(',')[1];
         var binary = atob(base64);
         var bytes = new Uint8Array(binary.length);
@@ -438,17 +442,18 @@
     function showUpdateSplash(splashId, soundKey, soundFallback) {
       if (navigator.vibrate) navigator.vibrate(200);
       var splash = document.getElementById(splashId);
-      if (_audioCtx && !_soundPlayed) {
+      var ctx = _ensureAudioCtx();
+      if (ctx && !_soundPlayed) {
         _soundPlayed = true;
         var _playNow = function() {
           var soundData = localStorage.getItem(soundKey);
           if (soundData) { playSoundFromDataUrl(soundData); }
           else { var a = new Audio(soundFallback); a.play().catch(function() {}); }
         };
-        if (_audioCtx.state === 'running') {
+        if (ctx.state === 'running') {
           _playNow();
-        } else if (_resumePromise) {
-          _resumePromise.then(function() { if (_audioCtx.state === 'running') _playNow(); });
+        } else {
+          ctx.resume().then(function() { if (ctx.state === 'running') _playNow(); }).catch(function() {});
         }
       }
       if (splash) {
@@ -500,7 +505,6 @@
         indicator.innerHTML = '<span class="dot"></span><span class="label">v' + version + '</span><span id="audio-status"></span>';
         if (SHOW_WEB_VERSION) document.body.appendChild(indicator);
         updateAudioStatus();
-        if (_resumePromise) _resumePromise.then(function() { updateAudioStatus(); });
         dot = indicator.querySelector('.dot');
       }
 

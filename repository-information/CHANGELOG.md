@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v03.56r] — 2026-03-14 09:30:14 PM EST
+
+### Fixed
+- Fixed AudioContext console warning — sound context is now created on first user gesture instead of at page load, eliminating Chrome's autoplay policy warning
+
+#### `testauth1.html` — v01.74w
+
+##### Fixed
+- Sound system no longer triggers a console warning on page load
 
 ## [v03.55r] — 2026-03-14 09:18:31 PM EST
 
