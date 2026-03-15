@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v03.64r] — 2026-03-14 11:31:37 PM EST
+
+### Changed
+- Enabled single-tab enforcement on testauth1 (`SINGLE_TAB_ENFORCEMENT` toggled from `false` to `true`)
+
+#### `testauth1.html` — v01.81w
+
+##### Changed
+- Enabled single-tab enforcement — only one browser tab can be active at a time
 
 ## [v03.63r] — 2026-03-14 11:28:52 PM EST
 
