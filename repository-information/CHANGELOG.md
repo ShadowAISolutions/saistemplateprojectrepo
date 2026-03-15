@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v03.54r] — 2026-03-14 08:59:29 PM EST
+
+### Changed
+- Replaced inline SVG data URI favicon with a file-based `favicon.ico` placeholder in `live-site-pages/` — swap the file to use your own icon
+
+#### `index.html` — v01.05w
+
+##### Changed
+- Favicon now loads from file instead of inline data
+
+#### `portal.html` — v01.08w
+
+##### Changed
+- Favicon now loads from file instead of inline data
+
+#### `testauth1.html` — v01.73w
+
+##### Changed
+- Favicon now loads from file instead of inline data
+
+#### `gas-project-creator.html` — v01.12w
+
+##### Changed
+- Favicon now loads from file instead of inline data
+
+#### `testenvironment.html` — v01.05w
+
+##### Changed
+- Favicon now loads from file instead of inline data
 
 ## [v03.53r] — 2026-03-14 08:53:11 PM EST
 
