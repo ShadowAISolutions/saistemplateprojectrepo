@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.90w">
+  <meta name="build-version" content="v01.91w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1412,6 +1412,15 @@
             stopCountdownTimers();
             stopHeartbeat();
             hideAllWarningBanners();
+            // Save the claiming tab's session credentials so "Use Here" can
+            // reclaim with a valid token instead of the stale one.
+            if (e.data.token && e.data.email) {
+              saveSession(e.data.token, e.data.email);
+              // Accept the new message key so GAS responses can be verified
+              // after reclaim.  Reset to null first so the first-write-wins
+              // guard in gas-session-created accepts the next key delivery.
+              _messageKey = e.data.messageKey || null;
+            }
             // Reset overlay text to same-browser message (in case it was changed
             // by a previous cross-device eviction)
             var takeoverWall = document.getElementById('tab-takeover-wall');
@@ -1433,9 +1442,19 @@
     }
 
     // Broadcast tab-claim to other tabs (single-tab enforcement)
+    // Includes the current session credentials so the surrendering tab can
+    // update its own sessionStorage — when it clicks "Use Here" later it
+    // will already have a valid token instead of a stale one.
     function broadcastTabClaim() {
       if (HTML_CONFIG.SINGLE_TAB_ENFORCEMENT && _signOutChannel) {
-        _signOutChannel.postMessage({ type: 'tab-claim', tabId: _tabId });
+        var session = loadSession();
+        _signOutChannel.postMessage({
+          type: 'tab-claim',
+          tabId: _tabId,
+          token: session.token || null,
+          email: session.email || null,
+          messageKey: _messageKey || null
+        });
       }
     }
 
@@ -1936,7 +1955,10 @@
         showApp(session.email);
         startCountdownTimers();
         startHeartbeat();
-        // Reload GAS iframe with the session token
+        // Reload GAS iframe with the session token.
+        // Clear _messageKey so the new GAS app's gas-session-created can
+        // deliver a fresh signing key (first-write-wins guard).
+        _messageKey = null;
         var gasApp = document.getElementById('gas-app');
         var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
