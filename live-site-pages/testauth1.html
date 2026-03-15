@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.82w">
+  <meta name="build-version" content="v01.83w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -2758,6 +2758,66 @@
         }
       }
 
+    });
+
+    // Test 39: Cross-device enforcement config toggle
+    _registerTest('Cross-Device Config', function(addResult) {
+      if (typeof HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT === 'boolean') {
+        addResult('PASS', 'Cross-Device Config', 'HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT exists and is boolean (' + HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT + ')');
+      } else if (HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT === undefined) {
+        addResult('FAIL', 'Cross-Device Config', 'HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT is missing');
+      } else {
+        addResult('FAIL', 'Cross-Device Config', 'HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT is not boolean: ' + typeof HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT);
+      }
+    });
+
+    // Test 40: Cross-device eviction state variable
+    _registerTest('Cross-Device State', function(addResult) {
+      if (typeof _evictedByRemote === 'boolean') {
+        addResult('PASS', 'Cross-Device State', '_evictedByRemote state variable exists and is boolean (initial: ' + _evictedByRemote + ')');
+      } else if (typeof _evictedByRemote === 'undefined') {
+        addResult('FAIL', 'Cross-Device State', '_evictedByRemote variable is not declared');
+      } else {
+        addResult('FAIL', 'Cross-Device State', '_evictedByRemote is not boolean: ' + typeof _evictedByRemote);
+      }
+    });
+
+    // Test 41: Heartbeat-expired handler processes reason field
+    _registerTest('Heartbeat Reason Codes', function(addResult) {
+      // Check that the gas-heartbeat-expired handler references data.reason
+      var scripts = document.querySelectorAll('script');
+      var found = false;
+      for (var si = 0; si < scripts.length; si++) {
+        var src = scripts[si].textContent || '';
+        if (src.indexOf('gas-heartbeat-expired') !== -1 && src.indexOf('data.reason') !== -1) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        addResult('PASS', 'Heartbeat Reason Codes', 'gas-heartbeat-expired handler checks data.reason for eviction differentiation');
+      } else {
+        addResult('FAIL', 'Heartbeat Reason Codes', 'gas-heartbeat-expired handler does not reference data.reason \u2014 cross-device eviction detection may not work');
+      }
+    });
+
+    // Test 42: Tab-takeover overlay text reset on same-browser claim
+    _registerTest('Overlay Text Reset', function(addResult) {
+      // Check that the tab-claim handler resets the overlay text
+      var scripts = document.querySelectorAll('script');
+      var found = false;
+      for (var si = 0; si < scripts.length; si++) {
+        var src = scripts[si].textContent || '';
+        if (src.indexOf('tab-claim') !== -1 && src.indexOf('active in another tab') !== -1) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        addResult('PASS', 'Overlay Text Reset', 'Tab-claim handler resets overlay text to same-browser message after cross-device eviction');
+      } else {
+        addResult('FAIL', 'Overlay Text Reset', 'Tab-claim handler does not reset overlay text \u2014 stale cross-device message may persist');
+      }
     });
 
 // ══════════════

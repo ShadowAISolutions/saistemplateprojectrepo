@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v01.83w] — 2026-03-15 12:44:45 PM EST — v03.73r
+
+### Added
+- 4 new security tests for cross-device session enforcement: configuration toggle, state tracking, heartbeat reason processing, and overlay text management (42 tests total)
 
 ## [v01.82w] — 2026-03-15 12:39:33 PM EST — v03.72r
 
