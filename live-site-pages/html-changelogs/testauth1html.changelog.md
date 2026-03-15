@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 42/50`
+`Sections: 43/50`
 
 ## [Unreleased]
+
+## [v01.87w] — 2026-03-15 06:46:09 PM EST — v03.83r
+
+### Added
+- If a data operation (like Save Note) detects your session is no longer valid, the sign-in screen now appears automatically with a specific reason message
 
 ## [v01.86w] — 2026-03-15 06:35:54 PM EST — v03.82r
 

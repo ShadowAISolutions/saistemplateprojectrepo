@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.34g] — 2026-03-15 06:46:09 PM EST — v03.83r
+
+### Added
+- Save Note now validates your session on the server before saving — if your session expired or was ended on another device, the save is blocked and you're prompted to sign in again
+- New security setting to require session checks before every data action (enabled by default in HIPAA mode)
+
+### Changed
+- Save Note button now performs a real server-side save instead of a client-side simulation
 
 ## [v01.33g] — 2026-03-15 06:35:54 PM EST — v03.82r
 

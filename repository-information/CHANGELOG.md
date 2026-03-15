@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 18/100`
+`Sections: 19/100`
 
 ## [Unreleased]
+
+## [v03.83r] — 2026-03-15 06:46:09 PM EST
+
+### Added
+- EMR Security Hardening Phase 3: Server-side data operation validation — every `google.script.run` data function now validates the session before executing
+- New `ENABLE_DATA_OP_VALIDATION` toggle in both presets (off for standard, on for HIPAA)
+- New `validateSessionForData()` gate function with HMAC verification, absolute/rolling timeout checks, and eviction detection
+- New server-side `saveNote()` function using the session gate (replaces client-side simulation)
+- New `gas-session-invalid` postMessage type for data operation session failures
+- Session token now embedded in authenticated app HTML for `google.script.run` calls
+
+#### `testauth1.gs` — v01.34g
+
+##### Added
+- `ENABLE_DATA_OP_VALIDATION` config toggle — gates server-side session re-validation on data operations
+- `validateSessionForData()` — session gate function that validates token, HMAC, and timeouts before any data access
+- `saveNote()` — server-side data operation with session validation and audit logging
+
+##### Changed
+- Save Note button now calls server-side `saveNote()` via `google.script.run` instead of client-side simulation
+
+#### `testauth1.html` — v01.87w
+
+##### Added
+- `gas-session-invalid` message type in whitelist and handler — triggers auth wall with specific reason when a data operation detects an invalid session
 
 ## [v03.82r] — 2026-03-15 06:35:54 PM EST
 

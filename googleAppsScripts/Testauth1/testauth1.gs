@@ -1,4 +1,4 @@
-var VERSION = "v01.33g";
+var VERSION = "v01.34g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -68,7 +68,8 @@ var PRESETS = {
     ENABLE_EMERGENCY_ACCESS: false,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
     TOKEN_EXCHANGE_METHOD: 'url',
-    ENABLE_CROSS_DEVICE_ENFORCEMENT: true
+    ENABLE_CROSS_DEVICE_ENFORCEMENT: true,
+    ENABLE_DATA_OP_VALIDATION: false   // Data ops execute without session re-validation (current behavior)
   },
   hipaa: {
     // SESSION_EXPIRATION: 900,        // seconds — rolling session lifetime, reset by heartbeats (15min)
@@ -93,7 +94,8 @@ var PRESETS = {
     ENABLE_EMERGENCY_ACCESS: true,
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
     TOKEN_EXCHANGE_METHOD: 'postMessage',
-    ENABLE_CROSS_DEVICE_ENFORCEMENT: true
+    ENABLE_CROSS_DEVICE_ENFORCEMENT: true,
+    ENABLE_DATA_OP_VALIDATION: true    // Every google.script.run data op validates session first
   }
 };
 
@@ -558,6 +560,92 @@ function validateSession(sessionToken) {
     displayName: sessionData.displayName,
     needsReauth: needsReauth
   };
+}
+
+// =============================================
+// AUTH — Data Operation Session Gate
+// Every google.script.run that touches patient data must call this first.
+// Returns the validated session data (email, etc.) or throws if invalid.
+// HIPAA: 45 CFR § 164.312(a)(1) — verify identity before every data access
+// =============================================
+
+function validateSessionForData(sessionToken, operationName) {
+  // Toggle check — standard preset skips validation entirely
+  if (!AUTH_CONFIG.ENABLE_DATA_OP_VALIDATION) {
+    return { email: 'unvalidated', displayName: '' };
+  }
+
+  if (!sessionToken || sessionToken.length < 32) {
+    auditLog('security_alert', 'unknown', 'data_access_no_token',
+      { operation: operationName });
+    throw new Error('SESSION_EXPIRED');
+  }
+
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get("session_" + sessionToken);
+  if (!raw) {
+    // Check for eviction tombstone
+    var evicted = cache.get("evicted_" + sessionToken);
+    auditLog('security_alert', 'unknown', 'data_access_expired_session',
+      { operation: operationName, reason: evicted || 'timeout' });
+    throw new Error(evicted ? 'SESSION_EVICTED' : 'SESSION_EXPIRED');
+  }
+
+  var sessionData;
+  try {
+    sessionData = JSON.parse(raw);
+  } catch (e) {
+    auditLog('security_alert', 'unknown', 'data_access_corrupt_session',
+      { operation: operationName });
+    throw new Error('SESSION_CORRUPT');
+  }
+
+  // HMAC verification
+  if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(sessionData)) {
+    auditLog('security_alert', sessionData.email || 'unknown', 'data_access_hmac_failed',
+      { operation: operationName });
+    cache.remove("session_" + sessionToken);
+    throw new Error('SESSION_INTEGRITY_VIOLATION');
+  }
+
+  // Absolute timeout check
+  if (sessionData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+    var absElapsed = (Date.now() - sessionData.absoluteCreatedAt) / 1000;
+    if (absElapsed > AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+      auditLog('security_alert', sessionData.email, 'data_access_absolute_timeout',
+        { operation: operationName, elapsed: Math.round(absElapsed) + 's' });
+      cache.remove("session_" + sessionToken);
+      throw new Error('SESSION_EXPIRED');
+    }
+  }
+
+  // Rolling timeout check
+  var elapsed = (Date.now() - sessionData.createdAt) / 1000;
+  if (elapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
+    auditLog('security_alert', sessionData.email, 'data_access_rolling_timeout',
+      { operation: operationName, elapsed: Math.round(elapsed) + 's' });
+    cache.remove("session_" + sessionToken);
+    throw new Error('SESSION_EXPIRED');
+  }
+
+  // Session is valid — return user identity for audit logging
+  return {
+    email: sessionData.email,
+    displayName: sessionData.displayName
+  };
+}
+
+// =============================================
+// DATA OPERATIONS — Session-gated
+// Every function that reads/writes data must call validateSessionForData() first.
+// =============================================
+
+function saveNote(sessionToken, noteText) {
+  var user = validateSessionForData(sessionToken, 'saveNote');
+  // Data operation (only runs if session is valid)
+  auditLog('data_access', user.email, 'write',
+    { operation: 'saveNote', noteLength: (noteText || '').length });
+  return { success: true, email: user.email, note: noteText };
 }
 
 function invalidateSession(sessionToken) {
@@ -1034,6 +1122,8 @@ function doGet(e) {
       <div id="user-email">${escapeHtml(session.email)}</div>
 
       <script>
+        // Session token for data operation validation (Phase 3)
+        var _sessionToken = '${escapeJs(sessionToken)}';
         // Message signing for cryptographic authentication
         var _mk = '${escapeJs(appMsgKey)}';
         function _s(m) {
@@ -1074,7 +1164,7 @@ function doGet(e) {
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // Save Note button — simulates an EMR data entry action
+        // Save Note button — real EMR data entry action with server-side session validation
         document.getElementById('save-note-btn').addEventListener('click', function() {
           var noteInput = document.getElementById('save-note-input');
           var statusEl = document.getElementById('save-note-status');
@@ -1084,16 +1174,32 @@ function doGet(e) {
             statusEl.style.color = '#f57c00';
             return;
           }
-          // Notify host of activity (triggers session check before "save")
           _notifyActivity();
-          statusEl.textContent = 'Checking session...';
+          statusEl.textContent = 'Validating session & saving...';
           statusEl.style.color = '#999';
-          // Brief delay to let the heartbeat fire and detect expiry before confirming
-          setTimeout(function() {
-            statusEl.textContent = 'Saved: "' + note + '"';
-            statusEl.style.color = '#2e7d32';
-            noteInput.value = '';
-          }, 2000);
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result.success) {
+                statusEl.textContent = 'Saved: "' + result.note + '" (validated as ' + result.email + ')';
+                statusEl.style.color = '#2e7d32';
+                noteInput.value = '';
+              } else {
+                statusEl.textContent = 'Save failed.';
+                statusEl.style.color = '#c62828';
+              }
+            })
+            .withFailureHandler(function(err) {
+              var msg = err.message || '';
+              if (msg.indexOf('SESSION_') === 0) {
+                statusEl.textContent = 'Session invalid — re-authenticate to save.';
+                statusEl.style.color = '#c62828';
+                window.top.postMessage(_s({type: 'gas-session-invalid', reason: msg}), '${PARENT_ORIGIN}');
+              } else {
+                statusEl.textContent = 'Error: ' + msg;
+                statusEl.style.color = '#c62828';
+              }
+            })
+            .saveNote(_sessionToken, note);
         });
       </script>
     </body>

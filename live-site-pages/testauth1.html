@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.86w">
+  <meta name="build-version" content="v01.87w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1111,7 +1111,8 @@
       'gas-heartbeat-error': true,
       'gas-user-activity': true,
       'gas-signed-out': true,
-      'gas-version': true
+      'gas-version': true,
+      'gas-session-invalid': true
     };
 
     // Layer 2: Cryptographic message authentication
@@ -1295,6 +1296,22 @@
         clearSession();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
         showAuthWall('Session expired. Please sign in again.');
+      }
+
+      // GAS data operation detected invalid session (Phase 3 — server-side validation gate)
+      if (data.type === 'gas-session-invalid') {
+        stopHeartbeat();
+        stopCountdownTimers();
+        clearSession();
+        sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
+        var reason = data.reason || 'SESSION_EXPIRED';
+        var msg = 'Session expired during data operation. Please sign in again.';
+        if (reason === 'SESSION_EVICTED') {
+          msg = 'Your session was ended (signed in elsewhere). Please sign in again.';
+        } else if (reason === 'SESSION_INTEGRITY_VIOLATION') {
+          msg = 'Session integrity check failed. Please sign in again.';
+        }
+        showAuthWall(msg);
       }
 
       // GAS iframe user activity — trigger immediate heartbeat to catch expired sessions
