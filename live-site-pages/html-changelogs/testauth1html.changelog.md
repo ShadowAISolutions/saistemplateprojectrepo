@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v01.68w] — 2026-03-14 08:15:12 PM EST — v03.48r
+
+### Fixed
+- Fixed "No eval() Usage" security test failing with "allScripts is not defined" error
 
 ## [v01.67w] — 2026-03-14 08:05:17 PM EST — v03.47r
 

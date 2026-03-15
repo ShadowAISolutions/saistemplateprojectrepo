@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v03.48r] — 2026-03-14 08:15:12 PM EST
+
+### Fixed
+- Fixed "No eval() Usage" security test failing — `allScripts` variable was not declared in the test's isolated scope after the test runner restructure
+
+#### `testauth1.html` — v01.68w
+
+##### Fixed
+- Fixed "No eval() Usage" security test failing with "allScripts is not defined" error
 
 ## [v03.47r] — 2026-03-14 08:05:17 PM EST
 

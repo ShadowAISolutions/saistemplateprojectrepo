@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.67w">
+  <meta name="build-version" content="v01.68w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -2746,6 +2746,7 @@
     // Test 53: No eval() usage in inline scripts
     _registerTest('No eval() Usage', function(addResult) {
       // Skip the test runner script itself (contains eval regex as a literal)
+      var allScripts = document.querySelectorAll('script');
       var usesEval = false;
       for (var ei = 0; ei < allScripts.length; ei++) {
         if (allScripts[ei].textContent.indexOf('run-security-tests-btn') !== -1) continue;
