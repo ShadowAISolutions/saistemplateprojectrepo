@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 21/100`
+`Sections: 22/100`
 
 ## [Unreleased]
+
+## [v03.86r] — 2026-03-15 07:40:16 PM EST
+
+### Changed
+- GAS iframe user activity now updates the heartbeat activity timestamp instead of forcing an immediate heartbeat — the regular interval tick and urgent <30s heartbeat handle session extension, eliminating unnecessary server requests during normal interaction
+
+#### `testauth1.html` — v01.90w
+
+##### Changed
+- Interacting with the app (typing, clicking) no longer forces an immediate heartbeat — activity is tracked and the regular heartbeat cycle handles session extension naturally
 
 ## [v03.85r] — 2026-03-15 07:29:52 PM EST
 

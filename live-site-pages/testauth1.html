@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.89w">
+  <meta name="build-version" content="v01.90w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1319,13 +1319,12 @@
       // GAS iframe user activity — trigger immediate heartbeat to catch expired sessions
       // before the user submits data (prevents data loss on evicted sessions)
       if (data.type === 'gas-user-activity') {
-        // Cooldown: skip if a heartbeat was sent recently (within half the interval)
-        // to avoid flooding the server with requests on every user interaction
-        var hbCooldown = HTML_CONFIG.HEARTBEAT_INTERVAL / 2;
-        var timeSinceLastHb = Date.now() - (_lastHeartbeatSentAt || 0);
-        if (!_heartbeatInFlight && timeSinceLastHb >= hbCooldown) {
-          sendHeartbeat();
-        }
+        // Bridge the cross-origin gap: host page activity listeners can't see
+        // events inside the GAS iframe, so update the heartbeat activity
+        // timestamp here.  The regular interval tick and the urgent <30s
+        // heartbeat will use this to decide when to send.
+        _lastHeartbeatActivity = Date.now();
+        _heartbeatIdle = false;
       }
 
       // GAS sign-out confirmation
@@ -1732,7 +1731,6 @@
     var _lastHeartbeatTick = 0;      // timestamp of the last interval tick (or start)
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatInFlightTimer = null;  // timeout to auto-clear _heartbeatInFlight if response never arrives
-    var _lastHeartbeatSentAt = 0;    // timestamp of last heartbeat send (for activity-trigger cooldown)
     var _heartbeatIdle = false;      // true when last tick found no activity
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
@@ -1776,7 +1774,6 @@
       if (!gasApp || !baseUrl) return;
 
       _heartbeatInFlight = true;
-      _lastHeartbeatSentAt = Date.now();
       // Safety timeout: if no response arrives within 15s, clear the in-flight
       // flag so future heartbeats aren't permanently blocked by a dropped response
       if (_heartbeatInFlightTimer) clearTimeout(_heartbeatInFlightTimer);

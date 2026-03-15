@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.90w] — 2026-03-15 07:40:16 PM EST — v03.86r
+
+### Changed
+- Interacting with the app no longer forces an immediate heartbeat — activity is tracked and the regular heartbeat cycle handles session extension naturally
 
 ## [v01.89w] — 2026-03-15 07:29:52 PM EST — v03.85r
 
