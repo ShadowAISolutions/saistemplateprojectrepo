@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v03.74r] — 2026-03-15 01:22:15 PM EST
+
+### Added
+- Added "Force Heartbeat" button for on-demand session validity testing without waiting for the automatic heartbeat interval
+
+#### `testauth1.html` — v01.84w
+
+##### Added
+- "Force Heartbeat" button for testing session validity on demand without waiting for the automatic heartbeat interval
 
 ## [v03.73r] — 2026-03-15 12:44:45 PM EST
 
