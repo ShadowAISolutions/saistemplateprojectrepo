@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v01.89w] — 2026-03-15 07:29:52 PM EST — v03.85r
+
+### Fixed
+- Interacting with the app no longer causes constant "sending..." in the heartbeat display — heartbeats are now rate-limited during active use
+- Heartbeat can no longer get permanently stuck on "sending..." if a server response is lost
 
 ## [v01.88w] — 2026-03-15 06:58:02 PM EST — v03.84r
 

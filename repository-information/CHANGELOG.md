@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 20/100`
+`Sections: 21/100`
 
 ## [Unreleased]
+
+## [v03.85r] — 2026-03-15 07:29:52 PM EST
+
+### Fixed
+- Activity-triggered heartbeats now respect a cooldown (half the heartbeat interval) to prevent flooding the server with requests on every user interaction — previously every GAS iframe action triggered an immediate heartbeat every 5 seconds
+- Heartbeat requests now auto-clear after 15 seconds if the server response never arrives, preventing the heartbeat from getting permanently stuck on "sending..."
+
+#### `testauth1.html` — v01.89w
+
+##### Fixed
+- Interacting with the app no longer causes constant "sending..." in the heartbeat display — heartbeats are now rate-limited to once per 15 seconds during active use
+- Heartbeat can no longer get permanently stuck on "sending..." if a server response is lost
 
 ## [v03.84r] — 2026-03-15 06:58:02 PM EST
 
