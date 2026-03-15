@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 28/50`
+`Sections: 29/50`
 
 ## [Unreleased]
+
+## [v01.29g] — 2026-03-15 12:31:39 PM EST — v03.70r
+
+### Added
+- Session expiration notifications now include a reason explaining why the session ended
+
+### Security
+- All session expiration notifications are now cryptographically signed to prevent tampering
 
 ## [v01.28g] — 2026-03-15 12:23:04 PM EST — v03.69r
 

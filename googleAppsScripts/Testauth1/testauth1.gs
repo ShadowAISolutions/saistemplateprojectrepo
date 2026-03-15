@@ -1,4 +1,4 @@
-var VERSION = "v01.28g";
+var VERSION = "v01.29g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -771,8 +771,16 @@ function doGet(e) {
 
     var raw = cache.get("session_" + heartbeatToken);
     if (!raw) {
+      // Check for eviction tombstone — tells us WHY the session disappeared
+      var evictionReason = cache.get("evicted_" + heartbeatToken) || 'timeout';
+      // Clean up the tombstone after reading (one-time use)
+      if (evictionReason !== 'timeout') {
+        cache.remove("evicted_" + heartbeatToken);
+      }
       var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'var k=' + JSON.stringify(msgKey) + ';'
+        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:' + JSON.stringify(evictionReason) + '}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbExpiredHtml)
         .setTitle(TITLE)
@@ -781,7 +789,9 @@ function doGet(e) {
     var hbData;
     try { hbData = JSON.parse(raw); } catch (err) {
       var hbErrHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'var k=' + JSON.stringify(msgKey) + ';'
+        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"corrupt_session"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbErrHtml)
         .setTitle(TITLE)
@@ -791,7 +801,9 @@ function doGet(e) {
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
       cache.remove("session_" + heartbeatToken);
       var hbHmacHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'var k=' + JSON.stringify(msgKey) + ';'
+        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"integrity_violation"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbHmacHtml)
         .setTitle(TITLE)
@@ -805,7 +817,9 @@ function doGet(e) {
         auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
           { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's' });
         var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
-          + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+          + 'var k=' + JSON.stringify(msgKey) + ';'
+          + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+          + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"absolute_timeout"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
           + '</' + 'script></body></html>';
         return HtmlService.createHtmlOutput(hbAbsHtml)
           .setTitle(TITLE)
@@ -819,7 +833,9 @@ function doGet(e) {
       auditLog('session_expired', hbData.email, 'heartbeat_too_late',
         { elapsed: Math.round(hbElapsed) + 's' });
       var hbLateHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-expired"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'var k=' + JSON.stringify(msgKey) + ';'
+        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
+        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"timeout"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbLateHtml)
         .setTitle(TITLE)

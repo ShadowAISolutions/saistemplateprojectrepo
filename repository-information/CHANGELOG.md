@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v03.70r] — 2026-03-15 12:31:39 PM EST
+
+### Added
+- Implemented Phase 2 of cross-device session enforcement (Plan 9.2): heartbeat handler now checks for eviction tombstone when session is missing and includes a `reason` field in `gas-heartbeat-expired` responses (`new_sign_in`, `timeout`, `corrupt_session`, `integrity_violation`, `absolute_timeout`)
+
+### Security
+- All `gas-heartbeat-expired` postMessage responses are now HMAC-signed (Phase 8) — previously only `gas-heartbeat-ok` was signed, allowing potential injection of fake expiration messages
+
+#### `testauth1.gs` — v01.29g
+
+##### Added
+- Heartbeat expired responses now include a reason code indicating why the session ended
+- Eviction tombstone lookup: heartbeat checks for `evicted_TOKEN` cache entry when session is missing
+
+##### Security
+- All session expiration notifications are now cryptographically signed to prevent message injection
 
 ## [v03.69r] — 2026-03-15 12:23:04 PM EST
 
