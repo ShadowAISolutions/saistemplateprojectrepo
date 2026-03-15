@@ -299,6 +299,24 @@ function showSplash() {
 - **Template propagation** (Pre-Commit #20) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched. When `PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **New pages** must include all 6 marker pairs (TEMPLATE START/END + PROJECT START/END in CSS, body HTML, and JS). The `setup-gas-project.sh` script creates pages from the template which already contains these markers
 
+## Test Quality — No Fake or Trivial Tests
+
+When writing security tests, feature tests, or any automated verification:
+
+- **Every test must verify real behavior** — call actual functions, feed real inputs, and check real outputs or side effects. Never write a test that assigns a variable and then checks that variable, or that queries the DOM for an element's existence without verifying its behavior
+- **Banned patterns** (these produce false confidence and waste the developer's time auditing them):
+  - Setting a variable to a value and asserting it equals that value (tests the test, not the code)
+  - Checking `typeof fn === 'function'` or `document.getElementById(x) !== null` as the sole assertion (existence ≠ correctness)
+  - Checking config constants match expected values (the test just hardcodes the same value — proves nothing)
+  - Creating test-only objects/arrays to verify instead of testing the actual runtime data
+- **Required patterns** (every test must do at least one of these):
+  - Call a real function with controlled inputs and verify the output or side effect (e.g. `sanitizeChangelogHtml('<img onerror=alert(1)>')` → verify script stripped)
+  - Inspect actual code via `fn.toString()` for destructive functions that can't be safely called (e.g. verify `performSignOut` calls `clearSession`)
+  - Parse real runtime state (e.g. read the actual CSP meta tag content and verify directives)
+  - Execute a real operation and verify state change (e.g. call `clearSession()`, verify storage cleared, then restore)
+- **When in doubt, ask**: "if this test passed on broken code, would it catch the bug?" If the answer is no, the test is fake — rewrite it or remove it
+- This applies to **all** test creation — security tests, unit tests, integration checks, validation scripts. The developer should never need to audit tests for legitimacy after the fact
+
 ## GAS UI Layout Awareness
 
 *Rule: see `.claude/rules/gas-scripts.md` — section "GAS UI Layout Awareness". GAS elements are guests in the host HTML page and must defer to its layout.*

@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v03.51r] — 2026-03-14 08:33:42 PM EST
+
+### Added
+- Added "Test Quality — No Fake or Trivial Tests" rule to html-pages rules — codifies that all tests must verify real behavior, bans variable-assignment and existence-only checks
 
 ## [v03.50r] — 2026-03-14 08:31:03 PM EST
 
