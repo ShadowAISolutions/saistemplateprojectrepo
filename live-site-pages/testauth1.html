@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.68w">
+  <meta name="build-version" content="v01.69w">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
@@ -2724,41 +2724,25 @@
       }
     });
 
-    // Test 52: No inline scripts use document.write
-    _registerTest('No document.write', function(addResult) {
+    // Test 52: No dangerous JS patterns in inline scripts (document.write, eval)
+    _registerTest('Code Safety Scan', function(addResult) {
       // Skip the test runner script itself (contains these search strings as literals)
       var allScripts = document.querySelectorAll('script');
       var usesDocWrite = false;
+      var usesEval = false;
       for (var si = 0; si < allScripts.length; si++) {
         if (allScripts[si].textContent.indexOf('run-security-tests-btn') !== -1) continue;
-        if (allScripts[si].textContent.indexOf('document.write') !== -1) {
-          usesDocWrite = true;
-          break;
-        }
+        var src = allScripts[si].textContent;
+        if (src.indexOf('document.write') !== -1) usesDocWrite = true;
+        if (/\beval\s*\(/.test(src)) usesEval = true;
       }
-      if (!usesDocWrite) {
-        addResult('PASS', 'No document.write', 'No inline scripts use document.write \u2014 prevents DOM clobbering');
+      var issues = [];
+      if (usesDocWrite) issues.push('document.write');
+      if (usesEval) issues.push('eval()');
+      if (issues.length === 0) {
+        addResult('PASS', 'Code Safety Scan', 'No document.write or eval() in inline scripts \u2014 prevents DOM clobbering and code injection');
       } else {
-        addResult('WARN', 'document.write Detected', 'document.write found in inline script \u2014 consider safer alternatives');
-      }
-    });
-
-    // Test 53: No eval() usage in inline scripts
-    _registerTest('No eval() Usage', function(addResult) {
-      // Skip the test runner script itself (contains eval regex as a literal)
-      var allScripts = document.querySelectorAll('script');
-      var usesEval = false;
-      for (var ei = 0; ei < allScripts.length; ei++) {
-        if (allScripts[ei].textContent.indexOf('run-security-tests-btn') !== -1) continue;
-        if (/\beval\s*\(/.test(allScripts[ei].textContent)) {
-          usesEval = true;
-          break;
-        }
-      }
-      if (!usesEval) {
-        addResult('PASS', 'No eval() Usage', 'No eval() calls in inline scripts \u2014 reduces code injection risk');
-      } else {
-        addResult('WARN', 'eval() Detected', 'eval() found in inline script \u2014 potential code injection vector');
+        addResult('WARN', 'Code Safety Scan', 'Found: ' + issues.join(', ') + ' in inline scripts');
       }
     });
 

@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v03.49r] — 2026-03-14 08:19:27 PM EST
+
+### Changed
+- Merged duplicate document.write and eval() security tests into a single "Code Safety Scan" test — eliminates redundant script enumeration (65 tests total)
+
+#### `testauth1.html` — v01.69w
+
+##### Changed
+- Merged "No document.write" and "No eval() Usage" tests into a single "Code Safety Scan" test (65 tests total)
 
 ## [v03.48r] — 2026-03-14 08:15:12 PM EST
 

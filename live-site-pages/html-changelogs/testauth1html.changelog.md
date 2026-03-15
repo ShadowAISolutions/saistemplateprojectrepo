@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v01.69w] — 2026-03-14 08:19:27 PM EST — v03.49r
+
+### Changed
+- Merged "No document.write" and "No eval() Usage" tests into a single "Code Safety Scan" test (65 tests total)
 
 ## [v01.68w] — 2026-03-14 08:15:12 PM EST — v03.48r
 
