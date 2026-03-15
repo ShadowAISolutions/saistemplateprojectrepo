@@ -1,4 +1,4 @@
-var VERSION = "v01.31g";
+var VERSION = "v01.32g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -347,7 +347,15 @@ function _writeAuditLogEntry(event, user, result, details) {
 function generateSessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return '';
   var secret = PropertiesService.getScriptProperties().getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
-  if (!secret) return '';  // No secret configured — HMAC is a no-op (see verifySessionHmac)
+  if (!secret) {
+    // FAIL CLOSED: HMAC is enabled but secret is missing — this is a misconfiguration.
+    // Log a security alert and throw to prevent session creation without integrity protection.
+    auditLog('security_alert', sessionData.email || 'system', 'hmac_secret_missing',
+      { property: AUTH_CONFIG.HMAC_SECRET_PROPERTY });
+    throw new Error('HMAC integrity is enabled but HMAC_SECRET is not configured in Script Properties. '
+      + 'Set the secret via: GAS Editor → Project Settings → Script Properties → Add: '
+      + AUTH_CONFIG.HMAC_SECRET_PROPERTY + ' = <random-64-char-hex-string>');
+  }
   var payload = sessionData.email
     + '|' + sessionData.createdAt
     + '|' + sessionData.lastActivity
@@ -360,11 +368,13 @@ function generateSessionHmac(sessionData) {
 
 function verifySessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return true;
-  // If the HMAC secret is not configured, both generation and verification are no-ops.
-  // generateSessionHmac returns '' when secret is missing, so sessionData.hmac will be ''.
-  // Treat missing-secret as "HMAC not available" rather than "HMAC failed".
   var secret = PropertiesService.getScriptProperties().getProperty(AUTH_CONFIG.HMAC_SECRET_PROPERTY);
-  if (!secret) return true;  // No secret → cannot verify → pass through (same as generation)
+  if (!secret) {
+    // FAIL CLOSED: cannot verify without a secret — reject the session
+    auditLog('security_alert', sessionData.email || 'unknown', 'hmac_secret_missing_verify',
+      { property: AUTH_CONFIG.HMAC_SECRET_PROPERTY });
+    return false;
+  }
   if (!sessionData.hmac) return false;  // Secret exists but session has no HMAC → reject
   var expected = generateSessionHmac(sessionData);
   return expected === sessionData.hmac;
@@ -399,6 +409,12 @@ function exchangeTokenForSession(accessToken) {
 
   // Domain restriction (toggle-gated)
   if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION) {
+    // Fail closed: empty allowlist with domain restriction enabled is a misconfiguration
+    if (!AUTH_CONFIG.ALLOWED_DOMAINS || AUTH_CONFIG.ALLOWED_DOMAINS.length === 0) {
+      auditLog('security_alert', userInfo.email, 'domain_restriction_misconfigured',
+        { reason: 'ENABLE_DOMAIN_RESTRICTION is true but ALLOWED_DOMAINS is empty' });
+      return { success: false, error: "domain_not_configured" };
+    }
     var emailDomain = userInfo.email.split('@')[1].toLowerCase();
     var domainAllowed = false;
     for (var i = 0; i < AUTH_CONFIG.ALLOWED_DOMAINS.length; i++) {

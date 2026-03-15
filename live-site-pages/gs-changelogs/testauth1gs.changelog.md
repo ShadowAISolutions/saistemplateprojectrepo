@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 31/50`
+`Sections: 32/50`
 
 ## [Unreleased]
+
+## [v01.32g] — 2026-03-15 06:26:01 PM EST — v03.81r
+
+### Changed
+- Session security now fails safely when the integrity key is not configured — sign-in is blocked with a clear setup message instead of silently skipping protection
+- Domain restriction now detects when no allowed domains are configured — shows a configuration error instead of silently rejecting all users
 
 ## [v01.31g] — 2026-03-15 03:36:50 PM EST — v03.75r
 

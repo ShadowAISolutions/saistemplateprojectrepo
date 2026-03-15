@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 16/100`
+`Sections: 17/100`
 
 ## [Unreleased]
+
+## [v03.81r] — 2026-03-15 06:26:01 PM EST
+
+### Changed
+- Implemented EMR Security Hardening Phase 1: HMAC secret enforcement — `generateSessionHmac()` now throws when HMAC is enabled but secret is missing (fail-closed), `verifySessionHmac()` returns false instead of passing through
+- Implemented EMR Security Hardening Phase 2: Domain restriction validation — empty allowlist with `ENABLE_DOMAIN_RESTRICTION: true` now returns `domain_not_configured` error with security alert audit log instead of silently rejecting all domains
+
+#### `testauth1.gs` — v01.32g
+
+##### Changed
+- HMAC generation now fails closed when secret is missing — throws error with setup instructions instead of silently returning empty string
+- HMAC verification now fails closed when secret is missing — rejects sessions instead of passing through
+- Domain restriction check now explicitly validates non-empty allowlist before iterating — distinguishes misconfiguration from domain rejection
 
 ## [v03.80r] — 2026-03-15 06:17:29 PM EST
 
