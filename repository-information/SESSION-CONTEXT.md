@@ -4,39 +4,33 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-14 09:53:14 PM EST
-**Repo version:** v03.56r
+**Date:** 2026-03-15 02:03:23 AM EST
+**Repo version:** v03.68r
 
 ### What was done
-- **v03.52r** — Fixed "Unexpected token response — no pending sign-in" console warning — changed CSRF nonce guard from `console.warn` to `console.debug` for expected GIS auto-renewal callbacks
-- **v03.53r** — Created placeholder `favicon.ico` file in `live-site-pages/`, updated all 5 HTML pages and both templates with `<link rel="icon" href="favicon.ico">` — eliminates 404 console error
-- **v03.54r** — Replaced inline SVG data URI favicon with file-based approach per developer request (wanted a replaceable file, not inline code)
-- **v03.55r** — Fixed accessibility warning in testauth1.gs — added `for="hb-test-input"` to heartbeat test label
-- **v03.56r** — Fixed AudioContext console warning — deferred `new AudioContext()` creation from page load to first user gesture via `_ensureAudioCtx()` helper, eliminating Chrome's autoplay policy warning
-- **Research** — Deep research (10+ web searches) on Permissions-Policy warnings from GAS iframes (`speaker`, `vibrate`, `vr`, `ambient-light-sensor`). Confirmed these are unfixable — they come from Google's `script.google.com` server headers using deprecated feature names. No workaround exists: GitHub Pages can't set custom headers, `<meta>` tags don't support Permissions-Policy, iframe `allow` can only restrict further, service workers can't intercept cross-origin iframe responses. DevTools `-Permissions-Policy` filter is the only option
+- **v03.65r** — Created original cross-device session enforcement plan (`9-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — hidden iframe + `doGet(?check=)` polling approach
+- **v03.66r** — Created revised plan (`9.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — `google.script.run` approach eliminates 30x `doGet` overhead
+- **v03.67r** — Created Drive file plan (`9.1.1-CROSS-DEVICE-SESSION-ENFORCEMENT-DRIVE-PLAN.md`) — zero server polling cost via public Drive file + `<script>` tag injection, with CDN caching and XSS caveats
+- **v03.68r** — Created heartbeat piggyback plan (`9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — simplest approach, zero new polling loops, ~60 lines of code. Uses eviction tombstones in CacheService + reason codes in existing heartbeat-expired responses
+- **Research & comparison** — compared all 4 plans across security, quota cost, detection latency, complexity, and suitability for EMR/HIPAA systems. Evaluated Spring Security concurrent session patterns, CacheService consistency guarantees, activity-gated detection tradeoffs, browser background tab throttling
 
 ### Where we left off
-Console warnings on testauth1.html are now as clean as possible. All fixable warnings have been addressed. The remaining Permissions-Policy warnings are from Google's servers and cannot be suppressed.
+All 4 cross-device enforcement plans are written and compared. Developer chose **Plan 9.2 (Heartbeat Piggyback)** for implementation next session.
 
-**NEXT SESSION priorities (in order):**
-1. Restore test timer values to production (SESSION_EXPIRATION, ABSOLUTE_SESSION_TIMEOUT, HEARTBEAT_INTERVAL — still have test values active on testauth1)
-2. Codify the mature auth pattern into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
-3. Propagate security hardening to all other pages
-4. Single-tab enforcement (developer wants only one authenticated tab at a time)
-5. Microsoft auth plan (at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting decision)
+**NEXT SESSION: Implement Plan 9.2** — `repository-information/9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`
+- 9 phases, ~103 lines of code across `testauth1.gs` and `testauth1.html`
+- Key changes: tombstone in `invalidateAllSessions()`, reason codes in heartbeat-expired responses, HMAC signing all expired responses (security fix), client-side eviction UI differentiation, `ENABLE_CROSS_DEVICE_ENFORCEMENT` toggle in AUTH_CONFIG and HTML_CONFIG
 
 ### Key decisions made
-- **Console cleanup scope** — developer wanted every console warning investigated thoroughly. Pushed back on quick dismissal of Google-origin warnings, requesting deep online research to verify. Research confirmed 5 of 6 warnings are from Google's infrastructure (unfixable)
-- **Favicon as file, not inline** — developer explicitly wanted a repo file they can replace later, not an inline data URI
-- **Token callback logging** — `console.debug` (not `console.warn`) for expected GIS auto-renewal callbacks that don't match a pending sign-in
+- **Plan 9.2 chosen over 9, 9.1, 9.1.1** — developer accepted 30s/5min detection latency in exchange for zero new polling loops, zero quota cost, zero new attack surface, and minimal code complexity
+- **EMR/HIPAA suitability** — discussed that server-side session invalidation is already instant (Device A can't access data after Device B signs in), so the detection delay only affects when the UI overlay appears, not when access is revoked
+- **Plan 9.1 can layer on top later** — if faster UI feedback becomes a hard requirement, Plan 9.1's `google.script.run` polling can be added alongside 9.2's tombstone mechanism (they're compatible)
 
 ### Active context
-- Repo version: v03.56r
-- testauth1.html: v01.74w (38 security tests), testauth1.gs: v01.27g
+- Repo version: v03.68r
+- testauth1.html: v01.81w (38 security tests), testauth1.gs: v01.27g
 - portal.html: v01.08w, portal.gs: v01.01g
-- testauth1html.changelog.md at 50/50 sections — next version bump will trigger archive rotation
-- Security update plan II at `repository-information/8-SECURITY-UPDATE-PLAN-TESTAUTH1.md` — deferred until testauth1 improvements done
-- Microsoft auth plan at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
+- 4 cross-device enforcement plans at `repository-information/9-`, `9.1-`, `9.1.1-`, `9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-*.md`
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -44,11 +38,11 @@ Console warnings on testauth1.html are now as clean as possible. All fixable war
 
 ## Previous Sessions
 
-**Date:** 2026-03-14 08:36:04 PM EST
-**Repo version:** v03.51r
+**Date:** 2026-03-14 09:53:14 PM EST
+**Repo version:** v03.56r
 
 ### What was done
-- **v03.34r–v03.51r** — Security test suite: built 65 tests, developer audited and removed 27 fake/trivial ones, 38 real behavioral tests remain. Added test quality rule to prevent recurrence
-- Prior session: portal.html environment build (v03.25r–v03.32r)
+- **v03.52r–v03.56r** — Console warning cleanup: fixed CSRF nonce guard, favicon, accessibility label, AudioContext autoplay warning. Research confirmed Permissions-Policy warnings from GAS iframes are unfixable (Google's server headers)
+- Prior session: security test suite (v03.34r–v03.51r) — 38 real behavioral tests
 
 Developed by: ShadowAISolutions
