@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.77w">
+  <meta name="build-version" content="v01.78w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1494,7 +1494,9 @@
             pillLabel.className = 'timer-pill-label critical';
             if (!_expiryWarningShown) {
               _expiryWarningShown = true;
-              showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
+              showSessionWarning('Session expiring in ' + formatCountdown(remaining) + ' \u2014 interact with the page to stay signed in.');
+            } else if (document.getElementById('session-warning-banner').style.display === 'flex') {
+              document.getElementById('session-warning-text').textContent = 'Session expiring in ' + formatCountdown(remaining) + ' \u2014 interact with the page to stay signed in.';
             }
           } else if (remaining <= 90) {
             sessionEl.className = 'timer-value warn';
@@ -1521,7 +1523,9 @@
               absoluteEl.className = 'timer-value critical';
               if (!_absoluteWarningShown) {
                 _absoluteWarningShown = true;
-                showAbsoluteWarning('Session ending soon \u2014 you will need to sign in again.');
+                showAbsoluteWarning('Session ending in ' + formatCountdown(absRemaining) + ' \u2014 you will need to sign in again.');
+              } else if (document.getElementById('absolute-warning-banner').style.display === 'flex') {
+                document.getElementById('absolute-warning-text').textContent = 'Session ending in ' + formatCountdown(absRemaining) + ' \u2014 you will need to sign in again.';
               }
             } else if (absRemaining <= 120) {
               absoluteEl.className = 'timer-value warn';

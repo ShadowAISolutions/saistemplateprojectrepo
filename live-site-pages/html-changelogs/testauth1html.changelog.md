@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.78w] — 2026-03-14 10:50:11 PM EST — v03.61r
+
+### Changed
+- Session and absolute expiry warning banners now display a live countdown showing time remaining
 
 ## [v01.77w] — 2026-03-14 10:39:09 PM EST — v03.60r
 
