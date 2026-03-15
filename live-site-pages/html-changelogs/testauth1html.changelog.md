@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.77w] — 2026-03-14 10:39:09 PM EST — v03.60r
+
+### Fixed
+- Re-authentication now properly reloads the app after clicking Sign In on the expiry banner
 
 ## [v01.76w] — 2026-03-14 10:25:03 PM EST — v03.59r
 

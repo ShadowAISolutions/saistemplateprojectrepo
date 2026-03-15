@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.76w">
+  <meta name="build-version" content="v01.77w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1744,10 +1744,12 @@
 
     // Re-auth button handler (on absolute warning banner)
     // Stop timers first to prevent performSignOut from firing during the OAuth flow.
+    // Clear HMAC key so the new session's key is accepted (first-write-wins guard).
     document.getElementById('reauth-btn').addEventListener('click', function() {
       hideAllWarningBanners();
       stopCountdownTimers();
       stopHeartbeat();
+      _messageKey = null;
       attemptReauth();
     });
 

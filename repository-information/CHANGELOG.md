@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v03.60r] — 2026-03-14 10:39:09 PM EST
+
+### Fixed
+- Fixed GAS iframe not reloading after re-authentication — HMAC message key from the previous session was blocking the new session's signed messages, causing the app to appear unloaded after clicking Sign In
+
+#### `testauth1.html` — v01.77w
+
+##### Fixed
+- Re-authentication now properly resets the message verification key so the new session's messages are accepted and the app reloads correctly
 
 ## [v03.59r] — 2026-03-14 10:25:03 PM EST
 
