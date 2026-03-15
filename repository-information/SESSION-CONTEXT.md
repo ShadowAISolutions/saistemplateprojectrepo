@@ -4,6 +4,48 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-14 08:36:04 PM EST
+**Repo version:** v03.51r
+
+### What was done
+- **v03.34r–v03.37r** — Security hardening: generic error messages ("Access denied"), CSP + changelog sanitization, CSRF defense
+- **v03.38r–v03.39r** — Added "Run Security Tests" button with 12 initial tests, fixed 404 console error
+- **v03.40r–v03.43r** — Expanded from 12 to 65 security tests (CSP audits, OAuth checks, sanitizer deep tests, session lifecycle, UI state, code safety, storage audits)
+- **v03.44r–v03.46r** — Fixed 3 test false positives, upgraded all tests from existence-only to behavioral verification, fixed tests causing sign-out by replacing destructive calls with code inspection
+- **v03.47r** — Restructured test runner: "Security Tests" button shows all tests as pending, then "Run All" executes them live with pass/fail transitions
+- **v03.48r** — Fixed "allScripts is not defined" in eval() test (cross-scope variable reference)
+- **v03.49r** — Merged document.write + eval() tests into single "Code Safety Scan"
+- **v03.50r** — **Major cleanup**: removed 27 fake/trivial security tests per developer audit. Tests that faked variable assignments (9), checked DOM existence without behavioral verification (15), or overlapped with other tests (3) were all removed. 38 real behavioral tests remain
+- **v03.51r** — Added "Test Quality — No Fake or Trivial Tests" rule to `.claude/rules/html-pages.md` as a self-improvement measure — all future tests must verify real behavior
+
+### Where we left off
+Security test suite is clean — 38 real behavioral tests, all passing. Test quality rule encoded.
+
+**NEXT SESSION priorities (in order):**
+1. Restore test timer values to production (SESSION_EXPIRATION, ABSOLUTE_SESSION_TIMEOUT, HEARTBEAT_INTERVAL — still have ⚡ TEST VALUES active on testauth1)
+2. Codify the mature auth pattern into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
+3. Propagate security hardening to all other pages
+4. Single-tab enforcement (developer wants only one authenticated tab at a time)
+5. Microsoft auth plan (at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting decision)
+
+### Key decisions made
+- **Tests must be real behavioral verifications** — developer audited all 65 tests, found 27 faking it. Rule now encoded so this never happens again. Litmus test: "if this test passed on broken code, would it catch the bug?"
+- **Finish testauth1 first, then propagate** — testauth1 is the proving ground
+- **Developer wants single-tab enforcement** — only one authenticated tab at a time (not yet implemented)
+
+### Active context
+- Repo version: v03.51r
+- testauth1.html: v01.70w (38 security tests), testauth1.gs: v01.26g
+- portal.html: v01.06w, portal.gs: v01.01g
+- Security update plan II at `repository-information/8-SECURITY-UPDATE-PLAN-TESTAUTH1.md` — deferred until testauth1 improvements done
+- Microsoft auth plan at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-14 05:39:23 PM EST
 **Repo version:** v03.32r
 
@@ -13,42 +55,6 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 - **v03.32r** — Fixed critical fresh-load bug: "Session expired" false alarm on page load. Root cause was GAS iframe srcdoc navigating to bare deployment URL before auth init, triggering premature `gas-needs-auth`. Fix: cancel srcdoc navigation and set iframe to `about:blank` when no session exists (matching testauth1 pattern)
 
 ### Where we left off
-Portal.html is functional — GAS project deployed, dashboard UI served from GAS layer, auth flow working.
-
-**NEXT SESSION: Finish testauth1 improvements, THEN propagate to all pages.** Developer agreed with this approach:
-1. Finish testauth1 (fix test timer values, finalize auth pattern)
-2. Codify the mature pattern into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
-3. Propagate to all other pages in one clean pass
-
-Test timer values are still active on testauth1 (⚡ TEST VALUES) — restore to production values when done testing.
-
-### Key decisions made
-- **Finish testauth1 first, then propagate** — testauth1 is the proving ground; propagating incomplete work would spread a moving target across all pages. Template propagation system (Pre-Commit #19) handles the outward flow once the reference is solid
-- **Portal architecture: GAS serves UI** — dashboard HTML/CSS/JS lives in portal.gs doGet (authorized response), not in the HTML layer. portal.html is a thin auth shell
-- **Developer wants single-tab enforcement** — only one authenticated tab at a time (discussed but not yet implemented)
-
-### Active context
-- Repo version: v03.32r
-- portal.html: v01.06w, portal.gs: v01.01g
-- testauth1.html: v01.53w, testauth1.gs: v01.23g
-- **Security update plan II at `repository-information/8-SECURITY-UPDATE-PLAN-TESTAUTH1.md`** — Phase 1 complete, phases 2-7 pending (DEFERRED until testauth1 improvements are done)
-- Security update plan I at `repository-information/7-SECURITY-UPDATE-PLAN-TESTAUTH1.md` — implemented (v02.90r–v02.91r)
-- Microsoft auth plan at `repository-information/MICROSOFT-AUTH-PLAN.md` — awaiting user decision
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-14 02:44:38 PM EST
-**Repo version:** v03.24r
-
-### What was done
-- **v03.18r–v03.23r** — Fixed 3 hipaa sign-in bugs, added BroadcastChannel cross-tab sign-out, documented constraints
-- **v03.24r** — Documented future portal/SSO architecture (Architecture 1) in `KNOWN-CONSTRAINTS-AND-FIXES.md`
-
-### Where we left off
-Phase 1 of security update plan complete. Next priority was creating the portal.html environment (done in the latest session).
+Portal.html was functional. Next priority was finishing testauth1 improvements (done in the latest session).
 
 Developed by: ShadowAISolutions
