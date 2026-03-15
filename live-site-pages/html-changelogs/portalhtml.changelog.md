@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 6/100`
+`Sections: 7/100`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-03-14 08:53:11 PM EST — v03.53r
+
+### Added
+- Added placeholder favicon — no more missing icon in browser tab
 
 ## [v01.06w] — 2026-03-14 05:29:45 PM EST — v03.32r
 

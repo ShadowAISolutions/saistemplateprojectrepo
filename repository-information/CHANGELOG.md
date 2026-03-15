@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v03.53r] — 2026-03-14 08:53:11 PM EST
+
+### Added
+- Added inline SVG placeholder favicon to all pages and templates — stops browser 404 error for `/favicon.ico`
+
+#### `index.html` — v01.04w
+
+##### Added
+- Added placeholder favicon — no more missing icon in browser tab
+
+#### `portal.html` — v01.07w
+
+##### Added
+- Added placeholder favicon — no more missing icon in browser tab
+
+#### `testauth1.html` — v01.72w
+
+##### Added
+- Added placeholder favicon — no more missing icon in browser tab
+
+#### `gas-project-creator.html` — v01.11w
+
+##### Added
+- Added placeholder favicon — no more missing icon in browser tab
+
+#### `testenvironment.html` — v01.04w
+
+##### Added
+- Added placeholder favicon — no more missing icon in browser tab
 
 ## [v03.52r] — 2026-03-14 08:45:29 PM EST
 
