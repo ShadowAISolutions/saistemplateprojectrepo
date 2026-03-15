@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v03.66r] — 2026-03-15 12:41:10 AM EST
+
+### Added
+- Added revised cross-device session enforcement plan (`9.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — replaces `doGet(?check=)` polling with `google.script.run` internal RPC channel, eliminating 30x `doGet` overhead while maintaining the same detection speed and improving eviction message security (signed vs unsigned)
 
 ## [v03.65r] — 2026-03-15 12:06:26 AM EST
 

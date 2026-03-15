@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-15 12:06:26 AM EST` · Repo version: `v03.65r`
+Last updated: `2026-03-15 12:41:10 AM EST` · Repo version: `v03.66r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -139,6 +139,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/7-SECURITY-UPDATE-PLAN-TESTAUTH1.md">7-SECURITY-UPDATE-PLAN-TESTAUTH1.md</a> — [template] Security hardening plan for testauth1 (6 phases, implemented)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/8-SECURITY-UPDATE-PLAN-TESTAUTH1.md">8-SECURITY-UPDATE-PLAN-TESTAUTH1.md</a> — [template] Security update plan II for testauth1 (7 phases, 19 vulnerabilities — ready for implementation)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/9-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md">9-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md</a> — [template] Cross-device single-session enforcement plan (6 phases — ready for implementation)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/9.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md">9.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md</a> — [template] Revised cross-device enforcement plan (google.script.run approach — zero doGet overhead)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TODO.md">TODO.md</a>                 — [template] Actionable to-do items
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/readme-qr-code.png">readme-qr-code.png</a>             — [template] QR code linking to this repo
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REMINDERS.md">REMINDERS.md</a>            — [template] Reminders for Developer (developer's own notes)
