@@ -675,7 +675,7 @@ Each GAS project's `.config.json` gains new optional fields:
 
 ### 7. Documentation Updates
 
-#### 7a. `repository-information/6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
+#### 7a. `repository-information/06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
 Add new section covering:
 - The `AUTH_PROVIDER` toggle and its three values
 - Microsoft-specific configuration variables

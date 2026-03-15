@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v03.77r] — 2026-03-15 05:40:03 PM EST
+
+### Changed
+- Renamed all plan files from single-digit prefixes (1- through 9.2-) to zero-padded prefixes (01- through 09.2-) for correct alphabetical sorting on GitHub — 10-EMR plan now appears last as intended
+- Updated all cross-references across 20+ files (plan files, README tree, CHANGELOG, CHANGELOG-archive, SESSION-CONTEXT, MICROSOFT-AUTH-PLAN)
 
 ## [v03.76r] — 2026-03-15 05:33:32 PM EST
 
@@ -104,22 +110,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v03.68r] — 2026-03-15 01:50:59 AM EST
 
 ### Added
-- Added heartbeat piggyback plan (`9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — cross-device session enforcement by enhancing the existing heartbeat with eviction tombstones and reason codes, requiring zero new polling loops, zero new server functions, and ~60 lines of code vs ~200-300 in previous plans
+- Added heartbeat piggyback plan (`09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — cross-device session enforcement by enhancing the existing heartbeat with eviction tombstones and reason codes, requiring zero new polling loops, zero new server functions, and ~60 lines of code vs ~200-300 in previous plans
 
 ## [v03.67r] — 2026-03-15 01:12:08 AM EST
 
 ### Added
-- Added Drive file approach plan (`9.1.1-CROSS-DEVICE-SESSION-ENFORCEMENT-DRIVE-PLAN.md`) — alternative cross-device enforcement using public Google Drive beacon file polled via `<script>` tag injection, achieving zero server polling cost with documented tradeoffs (CDN caching unpredictability, XSS attack surface)
+- Added Drive file approach plan (`09.1.1-CROSS-DEVICE-SESSION-ENFORCEMENT-DRIVE-PLAN.md`) — alternative cross-device enforcement using public Google Drive beacon file polled via `<script>` tag injection, achieving zero server polling cost with documented tradeoffs (CDN caching unpredictability, XSS attack surface)
 
 ## [v03.66r] — 2026-03-15 12:41:10 AM EST
 
 ### Added
-- Added revised cross-device session enforcement plan (`9.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — replaces `doGet(?check=)` polling with `google.script.run` internal RPC channel, eliminating 30x `doGet` overhead while maintaining the same detection speed and improving eviction message security (signed vs unsigned)
+- Added revised cross-device session enforcement plan (`09.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — replaces `doGet(?check=)` polling with `google.script.run` internal RPC channel, eliminating 30x `doGet` overhead while maintaining the same detection speed and improving eviction message security (signed vs unsigned)
 
 ## [v03.65r] — 2026-03-15 12:06:26 AM EST
 
 ### Added
-- Added cross-device single-session enforcement plan (`9-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — 6-phase implementation covering GAS session check endpoint, client-side short polling, lifecycle wiring, and security considerations
+- Added cross-device single-session enforcement plan (`09-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — 6-phase implementation covering GAS session check endpoint, client-side short polling, lifecycle wiring, and security considerations
 
 ## [v03.64r] — 2026-03-14 11:31:37 PM EST
 
@@ -761,12 +767,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v03.11r] — 2026-03-14 12:13:26 PM EST
 
 ### Added
-- Comprehensive security update plan II for testauth1 (`repository-information/8-SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — adversarial audit covering 19 vulnerabilities across 7 implementation phases: referrer policy + postMessage origin fix, token exposure reduction (postMessage exchange, sessionStorage, key namespacing), Content Security Policy + innerHTML sanitization, error sanitization + rate limiting + session timeout reduction, deploy audit logging + information exposure documentation, HMAC enablement + bootstrap hardening + cross-tab session revocation via BroadcastChannel, and OAuth flow hardening. Includes complete attack chain analysis, hard constraints inherited from the first plan, CSP directives validated against Google Identity Services documentation, and full regression testing protocol
+- Comprehensive security update plan II for testauth1 (`repository-information/08-SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — adversarial audit covering 19 vulnerabilities across 7 implementation phases: referrer policy + postMessage origin fix, token exposure reduction (postMessage exchange, sessionStorage, key namespacing), Content Security Policy + innerHTML sanitization, error sanitization + rate limiting + session timeout reduction, deploy audit logging + information exposure documentation, HMAC enablement + bootstrap hardening + cross-tab session revocation via BroadcastChannel, and OAuth flow hardening. Includes complete attack chain analysis, hard constraints inherited from the first plan, CSP directives validated against Google Identity Services documentation, and full regression testing protocol
 
 ## [v03.10r] — 2026-03-14 11:26:51 AM EST
 
 ### Changed
-- Renamed `SECURITY-UPDATE-PLAN-TESTAUTH1.md` → `7-SECURITY-UPDATE-PLAN-TESTAUTH1.md` and updated status to "Implemented" — the 6-phase security hardening was fully implemented in v02.90r–v02.91r
+- Renamed `SECURITY-UPDATE-PLAN-TESTAUTH1.md` → `07-SECURITY-UPDATE-PLAN-TESTAUTH1.md` and updated status to "Implemented" — the 6-phase security hardening was fully implemented in v02.90r–v02.91r
 - Updated all cross-references (README tree, CHANGELOG entries, SESSION-CONTEXT.md)
 
 ## [v03.09r] — 2026-03-13 11:38:31 PM EST
@@ -996,7 +1002,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ## [v02.90r] — 2026-03-13 07:15:58 PM EST
 
 ### Added
-- Defense-in-depth security hardening for testauth1 environment (6-phase implementation from 7-SECURITY-UPDATE-PLAN-TESTAUTH1.md)
+- Defense-in-depth security hardening for testauth1 environment (6-phase implementation from 07-SECURITY-UPDATE-PLAN-TESTAUTH1.md)
 
 ### Security
 - **Message-type allowlist** (HTML) — postMessage listener now only processes 8 known GAS message types, rejecting all others

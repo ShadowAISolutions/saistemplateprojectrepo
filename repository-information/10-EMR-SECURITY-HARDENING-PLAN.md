@@ -5,10 +5,10 @@
 **Scope:** `testauth1.html`, `testauth1.gs`
 **Prerequisites:** Plans 7, 8, 9.2 fully implemented (security hardening I & II, cross-device enforcement)
 **References:**
-- [7-SECURITY-UPDATE-PLAN-TESTAUTH1.md](7-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
-- [8-SECURITY-UPDATE-PLAN-TESTAUTH1.md](8-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan II (implemented)
-- [9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md](9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md) — Cross-device enforcement (implemented)
-- [6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md) — Auth preset system
+- [07-SECURITY-UPDATE-PLAN-TESTAUTH1.md](07-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
+- [08-SECURITY-UPDATE-PLAN-TESTAUTH1.md](08-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan II (implemented)
+- [09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md](09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md) — Cross-device enforcement (implemented)
+- [06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md) — Auth preset system
 - HIPAA Security Rule — 45 CFR § 164.312 (Technical Safeguards)
 - NIST SP 800-63B — Digital Identity Guidelines, Authentication & Lifecycle Management
 - Google Workspace BAA — Business Associate Agreement coverage

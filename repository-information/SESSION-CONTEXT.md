@@ -8,10 +8,10 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 **Repo version:** v03.68r
 
 ### What was done
-- **v03.65r** — Created original cross-device session enforcement plan (`9-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — hidden iframe + `doGet(?check=)` polling approach
-- **v03.66r** — Created revised plan (`9.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — `google.script.run` approach eliminates 30x `doGet` overhead
+- **v03.65r** — Created original cross-device session enforcement plan (`09-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — hidden iframe + `doGet(?check=)` polling approach
+- **v03.66r** — Created revised plan (`09.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — `google.script.run` approach eliminates 30x `doGet` overhead
 - **v03.67r** — Created Drive file plan (`9.1.1-CROSS-DEVICE-SESSION-ENFORCEMENT-DRIVE-PLAN.md`) — zero server polling cost via public Drive file + `<script>` tag injection, with CDN caching and XSS caveats
-- **v03.68r** — Created heartbeat piggyback plan (`9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — simplest approach, zero new polling loops, ~60 lines of code. Uses eviction tombstones in CacheService + reason codes in existing heartbeat-expired responses
+- **v03.68r** — Created heartbeat piggyback plan (`09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — simplest approach, zero new polling loops, ~60 lines of code. Uses eviction tombstones in CacheService + reason codes in existing heartbeat-expired responses
 - **Research & comparison** — compared all 4 plans across security, quota cost, detection latency, complexity, and suitability for EMR/HIPAA systems. Evaluated Spring Security concurrent session patterns, CacheService consistency guarantees, activity-gated detection tradeoffs, browser background tab throttling
 
 ### Where we left off
@@ -30,7 +30,7 @@ All 4 cross-device enforcement plans are written and compared. Developer chose *
 - Repo version: v03.68r
 - testauth1.html: v01.81w (38 security tests), testauth1.gs: v01.27g
 - portal.html: v01.08w, portal.gs: v01.01g
-- 4 cross-device enforcement plans at `repository-information/9-`, `9.1-`, `9.1.1-`, `9.2-CROSS-DEVICE-SESSION-ENFORCEMENT-*.md`
+- 4 cross-device enforcement plans at `repository-information/9-`, `9.1-`, `9.1.1-`, `09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-*.md`
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`

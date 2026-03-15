@@ -4,7 +4,7 @@
 **Status:** Implemented (v02.90r–v02.91r)
 **Scope:** `testauth1.gs` + `testauth1.html` (if successful, propagate to templates)
 **Base version:** v02.74r state (v01.14g GAS / v01.26w HTML)
-**Reference:** `6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
+**Reference:** `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
 
 ---
 
@@ -947,7 +947,7 @@ If testauth1 implementation is successful:
    - `gas-minimal-auth-template-code.js.txt`: Add `escapeHtml`/`escapeJs`, `PARENT_ORIGIN`, replace `"*"` with `PARENT_ORIGIN`, sanitize error messages, remove access token from session
    - `gas-test-auth-template-code.js.txt`: Same changes
 
-3. **Update `6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`**:
+3. **Update `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`**:
    - Correct the origin validation guidance — document that `event.origin !== 'https://script.google.com'` does NOT work
    - Add the message-type allowlist pattern as the recommended approach
    - Document the `PARENT_ORIGIN` derivation pattern for GAS→parent postMessage

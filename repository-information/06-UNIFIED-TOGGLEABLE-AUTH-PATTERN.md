@@ -3,11 +3,11 @@
 Implementation-ready reference for a **config-driven** Google OAuth authentication system in GAS web apps embedded via iframe. This pattern unifies patterns 3–5 into a single codebase where every HIPAA/security feature is controlled by a configuration object — deploy as standard or HIPAA-compliant by changing config values, not code.
 
 > **Relationship to other patterns**:
-> - [1-CUSTOM-AUTH-PATTERN.md](1-CUSTOM-AUTH-PATTERN.md) — custom username/password auth (separate architecture, not unified here)
-> - [2-GOOGLE-OAUTH-AUTH-PATTERN.md](2-GOOGLE-OAUTH-AUTH-PATTERN.md) — basic pattern (raw token in localStorage, no server sessions)
-> - [3-IMPROVED-GOOGLE-OAUTH-PATTERN.md](3-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — server sessions, opaque tokens, silent re-auth
-> - [4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — research-validated (strict origin, re-auth fallback, CacheService caveats)
-> - [5-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](5-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — HIPAA-compliant (audit logging, domain restriction, HMAC integrity)
+> - [01-CUSTOM-AUTH-PATTERN.md](01-CUSTOM-AUTH-PATTERN.md) — custom username/password auth (separate architecture, not unified here)
+> - [02-GOOGLE-OAUTH-AUTH-PATTERN.md](02-GOOGLE-OAUTH-AUTH-PATTERN.md) — basic pattern (raw token in localStorage, no server sessions)
+> - [03-IMPROVED-GOOGLE-OAUTH-PATTERN.md](03-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — server sessions, opaque tokens, silent re-auth
+> - [04-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](04-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — research-validated (strict origin, re-auth fallback, CacheService caveats)
+> - [05-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md](05-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md) — HIPAA-compliant (audit logging, domain restriction, HMAC integrity)
 > - **This document** — unified version with toggleable features, one codebase for all security levels
 
 > **Design philosophy**: implement the superset (pattern 5), then gate every HIPAA-specific feature behind a config toggle. The code always contains all features — the config determines which are active. This eliminates code drift between security levels and makes upgrades a config change, not a code migration.
@@ -426,7 +426,7 @@ Return err  [HMAC if ENABLE_HMAC_INTEGRITY]
 
 ### Token Refresh (with Interactive Fallback)
 
-Unchanged from patterns 4/5 — silent `prompt: ''` first, interactive banner fallback on failure. See [4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 4](4-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md#4-authentication-flow).
+Unchanged from patterns 4/5 — silent `prompt: ''` first, interactive banner fallback on failure. See [04-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md § 4](04-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md#4-authentication-flow).
 
 When `ENABLE_AUDIT_LOG` is `true`, every re-auth attempt (success or failure) is logged.
 

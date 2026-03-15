@@ -4,14 +4,14 @@
 **Status:** Ready for implementation
 **Scope:** `testauth1.gs` + `testauth1.html` (if successful, propagate to auth templates)
 **Base version:** v03.10r state (v01.18g GAS / v01.44w HTML)
-**Reference:** `7-SECURITY-UPDATE-PLAN-TESTAUTH1.md` (implemented v02.90r–v02.91r), `6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
+**Reference:** `07-SECURITY-UPDATE-PLAN-TESTAUTH1.md` (implemented v02.90r–v02.91r), `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
 **Methodology:** Adversarial audit — all vulnerabilities identified by reasoning as an attacker with full source access and Claude Opus 4.6
 
 ---
 
 ## Why This Document Exists
 
-The first security update plan (`7-SECURITY-UPDATE-PLAN-TESTAUTH1.md`, implemented v02.90r–v02.91r) successfully hardened testauth1 with 6 defense layers: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, and error sanitization.
+The first security update plan (`07-SECURITY-UPDATE-PLAN-TESTAUTH1.md`, implemented v02.90r–v02.91r) successfully hardened testauth1 with 6 defense layers: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, and error sanitization.
 
 However, an adversarial audit on 2026-03-14 — conducted by reasoning as an attacker who has Claude Opus 4.6, full repo source access, and web research capability — identified **19 additional vulnerabilities** that the first plan either missed, explicitly deferred, or partially addressed. Several of these chain together into high-impact attack sequences.
 

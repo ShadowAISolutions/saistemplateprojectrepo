@@ -5,9 +5,9 @@
 **Scope:** `testauth1.html`, `testauth1.gs`
 **Base version:** v01.81w (HTML), v01.27g (GAS), v03.64r (repo)
 **References:**
-- [7-SECURITY-UPDATE-PLAN-TESTAUTH1.md](7-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
-- [8-SECURITY-UPDATE-PLAN-TESTAUTH1.md](8-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan II (implemented)
-- [6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md) — Auth preset system
+- [07-SECURITY-UPDATE-PLAN-TESTAUTH1.md](07-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
+- [08-SECURITY-UPDATE-PLAN-TESTAUTH1.md](08-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan II (implemented)
+- [06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md) — Auth preset system
 
 ---
 
