@@ -1182,6 +1182,44 @@ For 50 concurrent users (enterprise scale):
 
 ---
 
+## Implementation Risk Areas (Toggle Architecture)
+
+Overall implementation confidence is **high** — the toggle-gated pattern is already battle-tested in the codebase (HMAC, domain restriction, emergency access all use it), and the `standard` preset code paths are mostly no-ops (early returns). However, three specific integration seams require careful attention during implementation:
+
+### Risk 1: Phase 3 — `validateSessionForData()` stub return value (Medium)
+
+**Problem:** When `ENABLE_DATA_OP_VALIDATION` is `false`, the function returns `{ email: 'unvalidated', displayName: '' }` immediately. Any downstream code that uses the returned `email` for display, logging, or spreadsheet filtering will encounter the literal string `'unvalidated'` instead of a real email address. If a spreadsheet column filters by email and encounters `'unvalidated'`, it could produce unexpected results or silently drop records.
+
+**Mitigation:** During implementation, grep every call site of `validateSessionForData()` and trace how the return value is consumed. Verify that:
+- Audit log entries handle `'unvalidated'` gracefully (or skip logging when validation is disabled)
+- Any UI that displays the email doesn't show `'unvalidated'` to the user
+- Spreadsheet filtering/querying logic doesn't break on a non-email string
+
+### Risk 2: Phase 4 — `AUTH_CONFIG` server/client boundary (Medium)
+
+**Problem:** The toggle `ENABLE_DOM_CLEARING_ON_EXPIRY` needs to be accessible in the HTML layer (client-side), but `AUTH_CONFIG` lives in the GAS server-side code. The existing pattern passes auth config to the client during `checkLoginStatus()`. If `ENABLE_DOM_CLEARING_ON_EXPIRY` is omitted from that config transfer, the client-side `if` guard will see `undefined` (falsy) and silently skip DOM clearing even under the `hipaa` preset — a silent security failure with no error.
+
+**Mitigation:** During implementation, verify the config transfer function (in the `checkLoginStatus` response path) explicitly includes `ENABLE_DOM_CLEARING_ON_EXPIRY` in the client-facing config object. Test by:
+1. Setting `hipaa` preset → confirming `ENABLE_DOM_CLEARING_ON_EXPIRY` arrives client-side as `true`
+2. Setting `standard` preset → confirming it arrives as `false`
+3. Deliberately omitting it from the transfer → confirming the guard fails safe (should it default to clearing or not-clearing? Document the decision)
+
+### Risk 3: Phase 6 — Branching flow control in login function (Low-Medium)
+
+**Problem:** The escalating lockout replaces the existing flat rate limit with a multi-tier system. The `if (!AUTH_CONFIG.ENABLE_ESCALATING_LOCKOUT)` branch must contain the **complete** existing rate-limit logic as a fallback, not just a subset. If the existing logic gets partially duplicated or a code path is missed, `standard` preset users could experience either no rate limiting (security regression) or double rate limiting (usability bug).
+
+**Mitigation:** During implementation:
+1. Extract the existing rate-limit logic verbatim before any refactoring
+2. Paste it intact inside the `!ENABLE_ESCALATING_LOCKOUT` branch
+3. Add the escalating logic in the `else` branch (hipaa path)
+4. Verify the `standard` path produces identical behavior to the pre-change code by tracing: 5 failures → rate limited, 4 failures → allowed, counter reset → allowed
+
+### Why these are manageable
+
+All three risks are at **integration seams** (config transfer, return value contracts, flow control branching) — not fundamental design problems. The toggle architecture actually *reduces* overall risk compared to a HIPAA-only approach because every feature has an explicit off switch, and `standard` preset behavior is verified independently from `hipaa` behavior. Each risk has a concrete, testable mitigation.
+
+---
+
 ## Implementation Order
 
 The phases should be implemented in priority order, but some phases have dependencies:
