@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 24/100`
+`Sections: 25/100`
 
 ## [Unreleased]
+
+## [v03.89r] — 2026-03-15 08:03:31 PM EST
+
+### Fixed
+- "Use Here" tab reclaim no longer resets the absolute session timer — the absolute timer now continues from the original sign-in time instead of restarting, preventing indefinite session extension via tab switching
+
+#### `testauth1.html` — v01.93w
+
+##### Fixed
+- Reclaiming a session with "Use Here" no longer resets the absolute session timer — the timer continues from when you originally signed in
 
 ## [v03.88r] — 2026-03-15 07:59:08 PM EST
 

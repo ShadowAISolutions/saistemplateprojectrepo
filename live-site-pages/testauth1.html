@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.92w">
+  <meta name="build-version" content="v01.93w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1183,9 +1183,14 @@
       if (data.type === 'gas-session-created') {
         if (data.success) {
           saveSession(data.sessionToken, data.email);
-          // New session — reset the session start time and absolute start time
+          // Reset the rolling session timer (activity extends it).
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
-          getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
+          // Only reset the absolute timer on a genuine new sign-in.
+          // "Use Here" reclaims an existing session — the absolute timer
+          // must continue from the original sign-in, not restart.
+          if (!_directSessionLoad) {
+            getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
+          }
           // Reset warning flags so banners can fire again in the new session
           _expiryWarningShown = false;
           _absoluteWarningShown = false;
