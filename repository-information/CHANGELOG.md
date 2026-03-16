@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 31/100`
+`Sections: 32/100`
 
 ## [Unreleased]
+
+## [v03.96r] — 2026-03-15 09:59:28 PM EST
+
+### Fixed
+- Fixed client IP always blank in audit logs — moved IP fetch from GAS iframe (blocked by sandbox CSP) to host page, then forwarded to GAS iframe via `host-client-ip` postMessage
+- Added `api.ipify.org` to host page CSP `connect-src` directive
+- `saveNote()` now receives `clientIp` directly as a parameter from the GAS iframe, with fallback to session-stored IP from heartbeat
+
+#### `testauth1.gs` — v01.37g
+
+##### Fixed
+- Client IP now reliably reaches audit logs — `saveNote()` accepts `clientIp` as direct parameter instead of relying on heartbeat round-trip
+- Removed `api.ipify.org` fetch from GAS iframe (sandbox blocks it), replaced with `host-client-ip` postMessage listener
+
+#### `testauth1.html` — v01.99w
+
+##### Fixed
+- Client IP fetch moved to host page level where CSP allows it
+- IP forwarded to GAS iframe via `host-client-ip` postMessage on `gas-auth-ok`
 
 ## [v03.95r] — 2026-03-15 09:38:50 PM EST
 

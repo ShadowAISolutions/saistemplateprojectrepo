@@ -1,4 +1,4 @@
-var VERSION = "v01.36g";
+var VERSION = "v01.37g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -736,17 +736,19 @@ function validateSessionForData(sessionToken, operationName) {
 // Every function that reads/writes data must call validateSessionForData() first.
 // =============================================
 
-function saveNote(sessionToken, noteText) {
+function saveNote(sessionToken, noteText, clientIp) {
   var user = validateSessionForData(sessionToken, 'saveNote');
+  // Use directly-passed clientIp (from GAS iframe), fall back to session-stored IP (from heartbeat)
+  var ip = clientIp || user.clientIp || '';
   // Data operation (only runs if session is valid)
   auditLog('data_access', user.email, 'write',
-    { operation: 'saveNote', noteLength: (noteText || '').length, clientIp: user.clientIp });
+    { operation: 'saveNote', noteLength: (noteText || '').length, clientIp: ip });
   // Data-level audit log (Phase 8 — HIPAA per-operation logging)
   dataAuditLog(user, 'write', 'patient_note', '', {
     sessionId: sessionToken,
     isEmergencyAccess: user.isEmergencyAccess,
     noteLength: (noteText || '').length,
-    clientIp: user.clientIp
+    clientIp: ip
   });
   return { success: true, email: user.email, note: noteText };
 }
@@ -1246,18 +1248,17 @@ function doGet(e) {
         }
 
         // Client IP for audit logging (Phase 7 — IP Logging)
+        // Populated by host page via host-client-ip postMessage (avoids GAS iframe sandbox issues)
         var _clientIp = '';
-        if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
-          fetch('https://api.ipify.org?format=json')
-            .then(function(r) { return r.json(); })
-            .then(function(data) { _clientIp = data.ip || 'unknown'; })
-            .catch(function() { _clientIp = 'unknown'; });
-        }
 
         // Notify wrapper that auth is OK
         window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');
 
         window.addEventListener('message', function(e) {
+          // Receive client IP from host page (Phase 7 — IP Logging)
+          if (e.data && e.data.type === 'host-client-ip') {
+            _clientIp = e.data.ip || '';
+          }
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
@@ -1277,7 +1278,7 @@ function doGet(e) {
           var now = Date.now();
           if (now - _lastActivityNotify < 5000) return; // 5s debounce
           _lastActivityNotify = now;
-          window.top.postMessage(_s({type: 'gas-user-activity', clientIp: _clientIp}), '${PARENT_ORIGIN}');
+          window.top.postMessage(_s({type: 'gas-user-activity'}), '${PARENT_ORIGIN}');
         }
         document.addEventListener('keydown', _notifyActivity, true);
         document.addEventListener('click', _notifyActivity, true);
@@ -1318,7 +1319,7 @@ function doGet(e) {
                 statusEl.style.color = '#c62828';
               }
             })
-            .saveNote(_sessionToken, note);
+            .saveNote(_sessionToken, note, _clientIp);
         });
       </script>
     </body>
