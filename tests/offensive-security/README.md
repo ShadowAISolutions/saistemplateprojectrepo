@@ -21,6 +21,11 @@ python tests/offensive-security/test_01_xss_postmessage.py
 python tests/offensive-security/test_02_session_forgery.py
 python tests/offensive-security/test_03_message_type_injection.py
 python tests/offensive-security/test_04_csrf_token_replay.py
+python tests/offensive-security/test_05_clickjacking_iframe_embedding.py
+python tests/offensive-security/test_06_deploy_endpoint_abuse.py
+python tests/offensive-security/test_07_session_race_timing.py
+python tests/offensive-security/test_08_csp_bypass_resource_injection.py
+python tests/offensive-security/test_09_auth_state_manipulation.py
 ```
 
 ## What These Tests Do
@@ -31,6 +36,11 @@ python tests/offensive-security/test_04_csrf_token_replay.py
 | 02 | Session token forgery & fixation | Forged session tokens are rejected by the GAS backend; localStorage can't be poisoned |
 | 03 | Message type spoofing | Attacker-crafted messages mimicking legitimate GAS types are rejected by signature verification |
 | 04 | OAuth token replay & CSRF | Replayed/fabricated OAuth tokens fail server-side validation; nonce prevents CSRF |
+| 05 | Clickjacking & iframe embedding | CSP frame-ancestors, X-Frame-Options, and framebusting prevent unauthorized framing |
+| 06 | Deploy endpoint abuse | doPost(action=deploy) doesn't leak secrets; error messages are safe; no hidden actions |
+| 07 | Session race conditions & timing | First-write-wins prevents flood attacks; BroadcastChannel can't hijack sessions; server-side timeout is authoritative |
+| 08 | CSP bypass & resource injection | CSP policy audit; eval availability; data exfiltration vectors; base URI hijack prevention |
+| 09 | Auth state manipulation | DOM bypass doesn't expose data; monkey-patching security functions requires XSS; server validates all sessions |
 
 ## Safety
 
