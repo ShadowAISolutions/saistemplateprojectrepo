@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-16 03:19:06 PM EST` · Repo version: `v04.31r`
+Last updated: `2026-03-16 03:24:43 PM EST` · Repo version: `v04.32r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -117,10 +117,17 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests">tests/</a>                     — [template] Security &amp; integration tests
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests/offensive-security">offensive-security/</a>    — [template] Offensive security tests (Playwright)
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/README.md">README.md</a>                         — [template] Test suite documentation
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/SECURITY-FINDINGS.md">SECURITY-FINDINGS.md</a>              — [template] Comprehensive findings from all tests
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/XSS-EXPLAINER.md">XSS-EXPLAINER.md</a>                  — [template] XSS explanation, Playwright god mode, threat model context
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_01_xss_postmessage.py">test_01_xss_postmessage.py</a>        — [template] XSS via postMessage injection
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_02_session_forgery.py">test_02_session_forgery.py</a>         — [template] Session token forgery &amp; fixation
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_03_message_type_injection.py">test_03_message_type_injection.py</a>  — [template] Message type spoofing &amp; protocol confusion
-│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_04_csrf_token_replay.py">test_04_csrf_token_replay.py</a>       — [template] OAuth token replay &amp; CSRF attacks
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_04_csrf_token_replay.py">test_04_csrf_token_replay.py</a>       — [template] OAuth token replay &amp; CSRF attacks
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_05_clickjacking_iframe_embedding.py">test_05_clickjacking_iframe_embedding.py</a> — [template] Clickjacking &amp; iframe embedding
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_06_deploy_endpoint_abuse.py">test_06_deploy_endpoint_abuse.py</a>   — [template] Deploy endpoint probing &amp; flood
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_07_session_race_timing.py">test_07_session_race_timing.py</a>     — [template] Session race conditions &amp; timing
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_08_csp_bypass_resource_injection.py">test_08_csp_bypass_resource_injection.py</a> — [template] CSP bypass &amp; resource injection
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_09_auth_state_manipulation.py">test_09_auth_state_manipulation.py</a> — [template] Auth state manipulation &amp; privilege escalation
 │
 <b>─── Repository Information ───────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]

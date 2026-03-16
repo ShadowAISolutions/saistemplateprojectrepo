@@ -3,9 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v04.32r] — 2026-03-16 03:24:43 PM EST
+
+### Added
+- XSS-EXPLAINER.md — comprehensive explanation of XSS in context of our security tests, Playwright god mode vs real attackers, whether XSS is catastrophic, and why tests mention it as a prerequisite
+- README tree updated with all missing test files (tests 05–09, SECURITY-FINDINGS.md, XSS-EXPLAINER.md)
 
 ## [v04.31r] — 2026-03-16 03:19:06 PM EST
 
