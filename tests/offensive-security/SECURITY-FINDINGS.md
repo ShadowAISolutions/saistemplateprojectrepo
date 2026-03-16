@@ -2,7 +2,7 @@
 
 Comprehensive findings from offensive security testing of the testauth1 authentication system. Each section documents what was tested, what was found, the defense posture, and any known limitations.
 
-Last updated: 2026-03-16 (v04.20r)
+Last updated: 2026-03-16 (v04.29r)
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ Last updated: 2026-03-16 (v04.20r)
 | 06 — Deploy Endpoint Abuse | **MOSTLY BLOCKED** | Medium | No secret leaks; global rate limit caps audit log flooding; /dev shell loads but GAS backend requires editor auth |
 | 07 — Session Race Conditions | **BLOCKED** | Low | First-write-wins, server-side timeouts, BroadcastChannel isolation |
 | 08 — CSP Bypass | **HARDENED** | Low | Comprehensive CSP with `default-src 'none'`, restricted `img-src`, `worker-src 'none'`, `form-action 'self'`; `unsafe-inline` required for GAS but no injection point exists |
-| 09 — Auth State Manipulation | **BLOCKED** | Low | DOM manipulation can't bypass server-side session validation |
+| 09 — Auth State Manipulation | **MOSTLY BLOCKED** | Low | 8/11 attacks blocked; 3 partial (monkey-patch, OAuth intercept, IP spoof) — all require XSS or are platform limitations |
 
 ---
 
@@ -282,19 +282,76 @@ upgrade-insecure-requests
 - Forged `gas-auth-ok` messages to skip authentication
 - Session timer manipulation (clearing intervals, overriding Date.now)
 - Monkey-patching security functions (`_verifyMessageSignature`, `clearSession`, `performSignOut`, `_KNOWN_GAS_MESSAGES`)
-- Fake heartbeat iframe injection
-- OAuth callback interception
-- Version spoofing
-- Emergency access probing
-- Client IP spoofing
+- Fake heartbeat iframe injection with forged tokens
+- OAuth callback interception via `handleTokenResponse` override
+- Version message spoofing (`gas-version` with fake version string)
+- Emergency access probing (client-side exposure check)
+- Client IP spoofing via `_clientIp` variable override
 
 **Defense layers:**
-1. Server-side session validation — every data request requires a valid server-side session
-2. DOM manipulation can't bypass server validation — even if the auth wall is hidden, the server won't return data
+1. Server-side session validation — every data request requires a valid HMAC-signed session token
+2. DOM manipulation can't bypass server validation — hiding the auth wall doesn't make the server return data
 3. Function monkey-patching requires XSS first — if an attacker has XSS, they already have control
-4. Heartbeat iframe must authenticate with the GAS backend
+4. Heartbeat iframe tokens validated against CacheService server-side
+5. Message signature verification blocks forged `gas-version` messages
+6. Emergency access is server-side only (Script Properties) — no client-side exposure
 
-**Result:** All attacks blocked. The critical insight: DOM bypass can make the page *look* authenticated, but the server validates every request independently. No data is returned without a valid HMAC-signed session token. Monkey-patching security functions is a post-exploitation technique that requires XSS as a prerequisite.
+**Actual run results (8/11 BLOCKED, 3 partial):**
+
+| # | Attack | Result | Detail |
+|---|--------|--------|--------|
+| 1 | Auth Wall DOM Bypass (x3 methods) | **BLOCKED** | DOM modified but no authenticated content exposed — GAS iframe requires server-side session |
+| 2 | Forge gas-auth-ok | **BLOCKED** | Auth wall hidden and app visible, but GAS iframe shows `gas-needs-auth` — server rejects forged token |
+| 3 | Session Timer Manipulation | **MITIGATED** | Timers and intervals overridable/clearable, but server-side CacheService timeout is authoritative — client timers are advisory only |
+| 4 | Monkey-Patch Security Functions | **PATCHABLE** | `_verifyMessageSignature`, `clearSession`, `performSignOut` all patchable; `_KNOWN_GAS_MESSAGES` modifiable. Requires XSS first. Server-side session management is the authoritative defense |
+| 5 | Fake Heartbeat Iframe Injection | **BLOCKED** | Iframe injected successfully but GAS backend rejects forged token — no matching session in CacheService |
+| 6 | OAuth Callback Interception | **INTERCEPTABLE** | `handleTokenResponse` is in global scope and overridable. Requires XSS first. CSP limits XSS vectors; nonce prevents CSRF on OAuth flow |
+| 7 | Version Spoofing (Cache Poisoning) | **BLOCKED** | Fake `gas-version` message with `v99.99g` had no effect — signature verification rejects unsigned messages |
+| 8 | Emergency Access Probing | **SAFE** | No emergency access properties or functions exposed in client scope — entirely server-side (Script Properties) |
+| 9 | Client IP Spoofing | **SPOOFABLE** | `_clientIp` is a global variable modifiable from client-side — audit logs record attacker-controlled IP value |
+
+### Detailed analysis of the 3 partial-success attacks:
+
+#### Attack 4 — Monkey-Patching Security Functions (PATCHABLE)
+
+All client-side security functions are overridable because JavaScript has no native code integrity mechanism. Specifically:
+- `_verifyMessageSignature` — patchable (could disable signature checks)
+- `clearSession` — patchable (could prevent session cleanup)
+- `performSignOut` — patchable (could block sign-out)
+- `_messageKey` — accessible (could read the per-session signing key)
+- `_KNOWN_GAS_MESSAGES` — modifiable (could add custom message types)
+
+**Why this is acceptable:** These are all defense-in-depth / UX convenience functions. The server validates every request independently via HMAC-signed session tokens. An attacker who has XSS (prerequisite for monkey-patching) already has full control of the client context — patching these functions gains nothing beyond what XSS already provides. The message allowlist modification is mitigated by signature verification (added custom types would still fail signature checks).
+
+**Possible hardening:** `Object.freeze(_KNOWN_GAS_MESSAGES)` after initialization to prevent allowlist modification. This is a minor improvement — it stops casual modification but can be bypassed by an attacker with XSS (they can override `Object.freeze` itself). **Recommendation: optional hardening, not a priority.**
+
+#### Attack 6 — OAuth Callback Interception (INTERCEPTABLE)
+
+`handleTokenResponse` is declared in global scope because Google Identity Services (GIS) requires a globally-accessible callback function name. An attacker with XSS could:
+1. Override the function to capture the Google OAuth credential (JWT)
+2. Optionally call the original to avoid detection
+3. Exfiltrate the captured token
+
+**Why this is acceptable:** Requires XSS as a prerequisite (CSP limits vectors significantly). The captured token is a Google ID token with a nonce — it cannot be replayed from a different origin because the GAS backend validates the token's audience and nonce. Moving `handleTokenResponse` out of global scope would break the GIS callback pattern.
+
+**Possible hardening:** None practical. The function must be globally accessible for GIS. `Object.defineProperty` with `configurable: false` could prevent casual overrides but is bypassable with XSS. **Recommendation: accepted risk — CSP is the primary defense against the XSS prerequisite.**
+
+#### Attack 9 — Client IP Spoofing (SPOOFABLE)
+
+`_clientIp` is fetched from `api.ipify.org` via client-side JavaScript and stored in a global variable. An attacker can:
+1. Override `_clientIp` to any string value
+2. All subsequent audit log entries record the spoofed IP
+3. GAS runs on Google's servers and has no way to see the real client IP
+
+**Why this is a platform limitation:** GAS web apps execute on Google's infrastructure. The request IP that GAS sees is Google's own infrastructure IP, not the end user's. The only way to obtain client IP is via client-side detection (inherently spoofable).
+
+**Possible hardening:**
+1. **IP format validation** — validate `_clientIp` against IPv4/IPv6 regex before use. Prevents injection of arbitrary strings (XSS payloads, oversized data) into audit logs via the IP field
+2. **Length truncation** — cap at 45 characters (max IPv6 length) to prevent log injection
+3. **"client-reported" marker** — prefix IP values in audit logs with `[client]` to make it explicit that the value is untrusted
+4. **Dual logging** — log both the client-reported IP and a note that it's unverified, so audit log consumers know not to trust it for attribution
+
+**Recommendation: implement IP format validation and length truncation as a low-effort hardening measure. The IP field is used for audit logging only (not security decisions), so spoofing has limited impact — it can only pollute logs, not bypass access controls.**
 
 ---
 
@@ -414,6 +471,7 @@ The testauth1 system uses multiple overlapping defense layers:
 1. GitHub Pages framing (platform limitation — no HTTP header control, `frame-ancestors` cannot be set via meta tag)
 2. GAS DDoS exposure (platform limitation — no network-level defenses)
 3. `unsafe-inline` in CSP script-src and style-src (required for GAS — mitigated by no injection points and `default-src 'none'` fallback)
+4. Client-reported IP address (platform limitation — GAS cannot see real client IP; audit log IP values are untrusted)
 
 **The strongest links:**
 1. Server-side HMAC validation (cryptographic — no client-side bypass possible)
