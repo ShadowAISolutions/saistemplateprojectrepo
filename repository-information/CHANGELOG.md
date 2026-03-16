@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
 
 ## [Unreleased]
+
+## [v04.23r] — 2026-03-16 02:16:05 PM EST
+
+### Changed
+- Sign-in page now shows "Reconnecting… Verifying your session" instead of "Sign In Required" when resuming a valid session on page reload or tab reclaim — reduces confusion about what's happening during session verification
+
+#### `testauth1.html` — v02.06w
+
+##### Changed
+- Added "Reconnecting…" visual state during session verification on page reload and tab reclaim
 
 ## [v04.22r] — 2026-03-16 02:08:13 PM EST
 
