@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.00w">
+  <meta name="build-version" content="v02.01w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1203,6 +1203,13 @@
 
       // GAS iframe created a session (both url and postMessage paths)
       if (data.type === 'gas-session-created') {
+        // First-write-wins: if messageKey is already set, this is a duplicate/forged
+        // gas-session-created — reject it entirely (don't save session data or show app).
+        // Only the first gas-session-created after a fresh page load is accepted.
+        if (_messageKey && data.messageKey && data.messageKey !== _messageKey) {
+          console.warn('Duplicate gas-session-created rejected — messageKey already set');
+          return;
+        }
         if (data.success) {
           saveSession(data.sessionToken, data.email);
           // Reset the rolling session timer (activity extends it).
@@ -1303,8 +1310,9 @@
           _expiryWarningShown = false;
           hideAllWarningBanners();
         } else if (_pendingSessionShow) {
-          // Normal OAuth sign-in — gas-session-created deferred the UI show
-          // until the GAS backend confirmed the session via gas-auth-ok.
+          // Deferred UI show — gas-session-created, page-load resume, or cross-tab
+          // sync deferred the showApp call until the GAS backend confirmed the
+          // session is valid via gas-auth-ok.
           showApp(_pendingSessionShow.email, _pendingSessionShow.displayName);
           startCountdownTimers();
           startHeartbeat();
@@ -1433,9 +1441,10 @@
       if (e.key === SESSION_KEY && !e.oldValue && e.newValue) {
         var session = loadSession();
         if (session.token) {
-          showApp(session.email);
-          startCountdownTimers();
-          startHeartbeat();
+          // Defer showApp until gas-auth-ok confirms the session server-side.
+          // The iframe will load with the session token and the GAS backend will
+          // validate it — only then does the auth wall come down.
+          _pendingSessionShow = { email: session.email, displayName: null };
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
           var gasApp = document.getElementById('gas-app');
@@ -2102,10 +2111,10 @@
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
           }
         }
-        showApp(session.email);
-        startCountdownTimers();
-        startHeartbeat();
-        broadcastTabClaim();
+        // Defer showApp until gas-auth-ok confirms the session is still valid
+        // server-side. Without this, an attacker who injects a forged token into
+        // storage can trick the page into hiding the auth wall on reload.
+        _pendingSessionShow = { email: session.email, displayName: null };
       } else {
         // No session — prevent the iframe from loading the bare GAS URL.
         // The iframe IIFE navigates to the GAS deployment URL immediately,

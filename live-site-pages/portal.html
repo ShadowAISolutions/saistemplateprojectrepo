@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.09w">
+  <meta name="build-version" content="v01.10w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Portal Title</title>
 <!-- ══════════════ -->
@@ -872,6 +872,13 @@
 
       // GAS iframe created a session
       if (data.type === 'gas-session-created') {
+        // First-write-wins: if messageKey is already set, this is a duplicate/forged
+        // gas-session-created — reject it entirely (don't save session data or show app).
+        // Only the first gas-session-created after a fresh page load is accepted.
+        if (_messageKey && data.messageKey && data.messageKey !== _messageKey) {
+          console.warn('Duplicate gas-session-created rejected — messageKey already set');
+          return;
+        }
         if (data.success) {
           saveSession(data.sessionToken, data.email);
           // Defer showApp until gas-auth-ok confirms the session is valid server-side.
@@ -904,8 +911,9 @@
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
         if (_pendingSessionShow) {
-          // Normal OAuth sign-in — gas-session-created deferred the UI show
-          // until the GAS backend confirmed the session via gas-auth-ok.
+          // Deferred UI show — gas-session-created, page-load resume, or cross-tab
+          // sync deferred the showApp call until the GAS backend confirmed the
+          // session is valid via gas-auth-ok.
           showApp(_pendingSessionShow.email, _pendingSessionShow.displayName);
           _pendingSessionShow = null;
         }
@@ -932,7 +940,8 @@
       if (e.key === SESSION_KEY && !e.oldValue && e.newValue) {
         var session = loadSession();
         if (session.token) {
-          showApp(session.email);
+          // Defer showApp until gas-auth-ok confirms the session server-side.
+          _pendingSessionShow = { email: session.email, displayName: null };
           var gasApp = document.getElementById('gas-app');
           var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
@@ -1056,7 +1065,10 @@
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
           }
         }
-        showApp(session.email);
+        // Defer showApp until gas-auth-ok confirms the session is still valid
+        // server-side. Without this, an attacker who injects a forged token into
+        // storage can trick the page into hiding the auth wall on reload.
+        _pendingSessionShow = { email: session.email, displayName: null };
       } else {
         // No session — prevent the iframe from loading the bare GAS URL.
         // The iframe IIFE navigates to the GAS deployment URL immediately,

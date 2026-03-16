@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 44/100`
+`Sections: 45/100`
 
 ## [Unreleased]
+
+## [v04.09r] — 2026-03-16 09:57:31 AM EST
+
+### Security
+- Fixed session fixation attack via storage injection — page-load resume now defers `showApp()` until `gas-auth-ok` confirms the stored token is valid server-side, preventing an attacker who injects a forged token into storage from bypassing the auth wall on reload
+- Fixed duplicate `gas-session-created` message overwriting legitimate session data — second `gas-session-created` with a different `messageKey` is now rejected entirely (first-write-wins on both key and session data)
+- Fixed cross-tab storage sync calling `showApp()` directly — login sync via `storage` event now defers to `gas-auth-ok` like all other auth paths
+
+#### `testauth1.html` — v02.01w
+
+##### Security
+- Sign-in screen now stays visible during page reload until the server re-confirms your session is valid
+- A second sign-in attempt from an untrusted source is now rejected entirely instead of overwriting your session
+
+#### `portal.html` — v01.10w
+
+##### Security
+- Sign-in screen now stays visible during page reload until the server re-confirms your session is valid
+- A second sign-in attempt from an untrusted source is now rejected entirely instead of overwriting your session
 
 ## [v04.08r] — 2026-03-16 09:43:13 AM EST
 
