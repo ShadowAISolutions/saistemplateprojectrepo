@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 29/100`
+`Sections: 30/100`
 
 ## [Unreleased]
+
+## [v03.94r] — 2026-03-15 09:27:39 PM EST
+
+### Added
+- Plan 11: EMR GAS Application Layer Plan — HIPAA data access and business logic covering RBAC, minimum necessary access, input validation, PHI segmentation, data retention, consent tracking, and disclosure logging
 
 ## [v03.93r] — 2026-03-15 08:44:53 PM EST
 
