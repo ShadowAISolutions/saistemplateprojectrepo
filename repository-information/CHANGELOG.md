@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 57/100`
+`Sections: 58/100`
 
 ## [Unreleased]
+
+## [v04.22r] — 2026-03-16 02:08:13 PM EST
+
+### Fixed
+- Fixed logo not displaying on login page — `img-src` was restricted to `*.googleusercontent.com` only but logos load from `www.shadowaisolutions.com` and `logoipsum.com`
+- Added `media-src 'self'` to CSP — `default-src 'none'` was blocking same-origin audio files (splash screen sounds)
+
+#### `testauth1.html` — v02.05w
+
+##### Fixed
+- Added logo and placeholder logo domains to `img-src` CSP whitelist
+- Added `media-src 'self'` for splash screen sound playback
 
 ## [v04.21r] — 2026-03-16 02:02:55 PM EST
 

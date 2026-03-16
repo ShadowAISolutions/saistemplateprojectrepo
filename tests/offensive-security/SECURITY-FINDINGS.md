@@ -215,10 +215,11 @@ script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https:/
 connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org
 frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com
 style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style
-img-src 'self' data: https://*.googleusercontent.com
+img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com
 object-src 'none'
 base-uri 'self'
 form-action 'self'
+media-src 'self'
 worker-src 'none'
 manifest-src 'none'
 upgrade-insecure-requests

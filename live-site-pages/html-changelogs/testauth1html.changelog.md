@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v02.05w] — 2026-03-16 02:08:13 PM EST — v04.22r
+
+### Fixed
+- Restored logo display on the sign-in page
+- Restored splash screen sound playback
 
 ## [v02.04w] — 2026-03-16 02:02:55 PM EST — v04.21r
 
