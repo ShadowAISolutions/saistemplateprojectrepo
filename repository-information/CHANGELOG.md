@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 27/100`
+`Sections: 28/100`
 
 ## [Unreleased]
+
+## [v03.92r] — 2026-03-15 08:28:17 PM EST
+
+### Fixed
+- Fixed false "Session expiring soon" warning after "Use Here" tab reclaim — the `gas-auth-ok` handler's `needsReauth` check now correctly skips when `_directSessionLoad` was active (server-side session may be near expiry, but the client just reset its rolling timer and the next heartbeat will extend it)
+
+#### `testauth1.html` — v01.96w
+
+##### Fixed
+- "Session expiring soon" warning no longer appears incorrectly after reclaiming a session with "Use Here"
 
 ## [v03.91r] — 2026-03-15 08:12:32 PM EST
 
