@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v01.36g] — 2026-03-15 09:38:50 PM EST — v03.95r
+
+### Added
+- IP logging: your public IP address is now captured and included in security audit records for post-incident investigation
+- Data-level audit logging: every save action now creates a detailed audit record (who, what, when) in a dedicated security audit sheet
+- New security settings for IP logging and per-operation audit logging
 
 ## [v01.35g] — 2026-03-15 08:44:53 PM EST — v03.93r
 

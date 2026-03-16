@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.98w] — 2026-03-15 09:38:50 PM EST — v03.95r
+
+### Added
+- Your public IP address is now captured and forwarded to the server for security audit records
 
 ## [v01.97w] — 2026-03-15 08:44:53 PM EST — v03.93r
 

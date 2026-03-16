@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.97w">
+  <meta name="build-version" content="v01.98w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -369,7 +369,8 @@
       // HIPAA: Destroy GAS iframe content on session expiry to clear PHI from DOM.
       // When false (standard), auth wall overlays without touching the iframe.
       // When true (HIPAA), sets gasFrame.src = 'about:blank' before showing auth wall.
-      ENABLE_DOM_CLEARING_ON_EXPIRY: true
+      ENABLE_DOM_CLEARING_ON_EXPIRY: true,
+      ENABLE_IP_LOGGING: true
     };
 // ──────────────
 
@@ -1123,6 +1124,7 @@
     // Layer 2: Cryptographic message authentication
     // Per-session key delivered via gas-session-created, used to verify subsequent messages.
     var _messageKey = null;
+    var _clientIp = '';  // Client IP from GAS iframe (Phase 7 — IP Logging)
 
     function _verifyMessageSignature(data, key) {
       if (!key) return true;  // No key yet — pass through (allowlist is the defense)
@@ -1361,6 +1363,10 @@
         // heartbeat will use this to decide when to send.
         _lastHeartbeatActivity = Date.now();
         _heartbeatIdle = false;
+        // Capture client IP from GAS iframe (Phase 7 — IP Logging)
+        if (HTML_CONFIG.ENABLE_IP_LOGGING && data.clientIp) {
+          _clientIp = data.clientIp;
+        }
       }
 
       // GAS sign-out confirmation
@@ -1885,7 +1891,8 @@
         document.body.appendChild(hbFrame);
       }
       hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
-        + '&msgKey=' + encodeURIComponent(_messageKey || '');
+        + '&msgKey=' + encodeURIComponent(_messageKey || '')
+        + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');
       // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
     }
 

@@ -3,9 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 30/100`
+`Sections: 31/100`
 
 ## [Unreleased]
+
+## [v03.95r] — 2026-03-15 09:38:50 PM EST
+
+### Added
+- EMR Security Hardening Phase 7: IP logging — client IP fetched via `api.ipify.org` in GAS iframe, passed through heartbeat URL, stored in session data, and included in audit log entries for post-incident investigation (HIPAA § 164.312(d))
+- EMR Security Hardening Phase 8: Data-level audit logging — `dataAuditLog()` function writes per-operation HIPAA audit records (who, what, when, which record) to a dedicated `DataAuditLog` sheet with auto-creation and sheet protection (HIPAA § 164.312(b))
+- `ENABLE_IP_LOGGING` toggle in both GAS presets — `false` (standard) skips IP fetch, `true` (HIPAA) enables client IP collection and audit trail
+- `ENABLE_DATA_AUDIT_LOG` and `DATA_AUDIT_LOG_SHEET_NAME` toggles in both GAS presets — `false` (standard) skips per-operation logging, `true` (HIPAA) logs every data read/write to a separate audit sheet
+- `ENABLE_IP_LOGGING` toggle in HTML_CONFIG — controls whether client IP is captured and forwarded in heartbeat requests
+
+#### `testauth1.gs` — v01.36g
+
+##### Added
+- Client IP fetch via `api.ipify.org` in GAS iframe authenticated HTML (toggle-gated by `ENABLE_IP_LOGGING`)
+- Client IP included in `gas-user-activity` postMessage to host page
+- Client IP stored in session data during heartbeat for data operation correlation
+- Client IP included in heartbeat audit log entries (session expiry events)
+- `dataAuditLog()` function with auto-creating `DataAuditLog` sheet, sheet protection, and HIPAA-required columns (Timestamp, User, Action, ResourceType, ResourceId, Details, SessionId, IsEmergencyAccess)
+- `saveNote()` now calls `dataAuditLog()` for per-operation audit trail
+- `validateSessionForData()` now returns `clientIp` and `isEmergencyAccess` for downstream audit logging
+
+#### `testauth1.html` — v01.98w
+
+##### Added
+- `ENABLE_IP_LOGGING` toggle in HTML_CONFIG
+- `_clientIp` variable captures client IP from GAS iframe `gas-user-activity` messages
+- Client IP forwarded in heartbeat URL as `clientIp` parameter
 
 ## [v03.94r] — 2026-03-15 09:27:39 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.35g";
+var VERSION = "v01.36g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -71,7 +71,10 @@ var PRESETS = {
     ENABLE_CROSS_DEVICE_ENFORCEMENT: true,
     ENABLE_DATA_OP_VALIDATION: false,  // Data ops execute without session re-validation (current behavior)
     ENABLE_DOM_CLEARING_ON_EXPIRY: false,  // Auth wall overlay only (current behavior)
-    ENABLE_ESCALATING_LOCKOUT: false   // Use existing flat rate limit (5/5min)
+    ENABLE_ESCALATING_LOCKOUT: false,  // Use existing flat rate limit (5/5min)
+    ENABLE_IP_LOGGING: false,          // Do not fetch or log client IP
+    ENABLE_DATA_AUDIT_LOG: false,      // No per-operation audit logging (current behavior)
+    DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   },
   hipaa: {
     // SESSION_EXPIRATION: 900,        // seconds — rolling session lifetime, reset by heartbeats (15min)
@@ -99,7 +102,10 @@ var PRESETS = {
     ENABLE_CROSS_DEVICE_ENFORCEMENT: true,
     ENABLE_DATA_OP_VALIDATION: true,   // Every google.script.run data op validates session first
     ENABLE_DOM_CLEARING_ON_EXPIRY: true,   // Destroy GAS iframe content on session expiry
-    ENABLE_ESCALATING_LOCKOUT: true    // Escalating lockout tiers (5min → 30min → 6hr)
+    ENABLE_ESCALATING_LOCKOUT: true,   // Escalating lockout tiers (5min → 30min → 6hr)
+    ENABLE_IP_LOGGING: true,           // Fetch client IP and include in audit log entries
+    ENABLE_DATA_AUDIT_LOG: true,       // Log individual data access events (reads, writes)
+    DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   }
 };
 
@@ -343,6 +349,50 @@ function _writeAuditLogEntry(event, user, result, details) {
     ]);
   } catch(e) {
     Logger.log('Audit log error: ' + e.message);
+  }
+}
+
+// =============================================
+// AUTH — Data-Level Audit Logger (Toggle-Gated, Phase 8)
+// No-op when AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG === false.
+// Separate from session audit log — captures per-operation PHI access events.
+// =============================================
+
+function dataAuditLog(user, action, resourceType, resourceId, details) {
+  if (!AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG) return;
+  try {
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheetName = AUTH_CONFIG.DATA_AUDIT_LOG_SHEET_NAME || 'DataAuditLog';
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      sheet.appendRow([
+        'Timestamp',
+        'User',
+        'Action',
+        'ResourceType',
+        'ResourceId',
+        'Details',
+        'SessionId',
+        'IsEmergencyAccess'
+      ]);
+      var protection = sheet.protect();
+      protection.setDescription('HIPAA Data Audit Log — protected');
+      protection.setWarningOnly(true);
+    }
+    sheet.appendRow([
+      new Date().toISOString(),
+      user.email || user,
+      action,
+      resourceType,
+      resourceId || '',
+      JSON.stringify(details || {}),
+      details && details.sessionId ? details.sessionId.substring(0, 8) + '...' : '',
+      details && details.isEmergencyAccess ? 'YES' : 'NO'
+    ]);
+  } catch(e) {
+    Logger.log('Data audit log error: ' + e.message);
   }
 }
 
@@ -672,10 +722,12 @@ function validateSessionForData(sessionToken, operationName) {
     throw new Error('SESSION_EXPIRED');
   }
 
-  // Session is valid — return user identity for audit logging
+  // Session is valid — return user identity and context for audit logging
   return {
     email: sessionData.email,
-    displayName: sessionData.displayName
+    displayName: sessionData.displayName,
+    clientIp: sessionData.clientIp || '',
+    isEmergencyAccess: sessionData.isEmergencyAccess || false
   };
 }
 
@@ -688,7 +740,14 @@ function saveNote(sessionToken, noteText) {
   var user = validateSessionForData(sessionToken, 'saveNote');
   // Data operation (only runs if session is valid)
   auditLog('data_access', user.email, 'write',
-    { operation: 'saveNote', noteLength: (noteText || '').length });
+    { operation: 'saveNote', noteLength: (noteText || '').length, clientIp: user.clientIp });
+  // Data-level audit log (Phase 8 — HIPAA per-operation logging)
+  dataAuditLog(user, 'write', 'patient_note', '', {
+    sessionId: sessionToken,
+    isEmergencyAccess: user.isEmergencyAccess,
+    noteLength: (noteText || '').length,
+    clientIp: user.clientIp
+  });
   return { success: true, email: user.email, note: noteText };
 }
 
@@ -903,6 +962,9 @@ function doGet(e) {
   // Message signing key from URL parameter (used by heartbeat iframe for signing)
   var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
 
+  // Client IP from URL parameter (Phase 7 — IP Logging, client-reported)
+  var clientIp = (e && e.parameter && e.parameter.clientIp) || '';
+
   // Heartbeat flow: validate session + reset createdAt to extend it
   if (heartbeatToken && AUTH_CONFIG.ENABLE_HEARTBEAT) {
     var cache = CacheService.getScriptCache();
@@ -967,7 +1029,7 @@ function doGet(e) {
       if (hbAbsElapsed > AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
         cache.remove("session_" + heartbeatToken);
         auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
-          { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's' });
+          { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's', clientIp: clientIp });
         var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
           + 'var k=' + JSON.stringify(msgKey) + ';'
           + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
@@ -983,7 +1045,7 @@ function doGet(e) {
     if (hbElapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
       cache.remove("session_" + heartbeatToken);
       auditLog('session_expired', hbData.email, 'heartbeat_too_late',
-        { elapsed: Math.round(hbElapsed) + 's' });
+        { elapsed: Math.round(hbElapsed) + 's', clientIp: clientIp });
       var hbLateHtml = '<!DOCTYPE html><html><body><script>'
         + 'var k=' + JSON.stringify(msgKey) + ';'
         + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
@@ -996,6 +1058,10 @@ function doGet(e) {
     // Session is valid — reset createdAt to extend the session
     hbData.createdAt = Date.now();
     hbData.lastActivity = Date.now();
+    // Store client IP in session data for data operation audit trail (Phase 7)
+    if (AUTH_CONFIG.ENABLE_IP_LOGGING && clientIp) {
+      hbData.clientIp = clientIp;
+    }
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) {
       hbData.hmac = generateSessionHmac(hbData);
     }
@@ -1179,6 +1245,15 @@ function doGet(e) {
           return m;
         }
 
+        // Client IP for audit logging (Phase 7 — IP Logging)
+        var _clientIp = '';
+        if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
+          fetch('https://api.ipify.org?format=json')
+            .then(function(r) { return r.json(); })
+            .then(function(data) { _clientIp = data.ip || 'unknown'; })
+            .catch(function() { _clientIp = 'unknown'; });
+        }
+
         // Notify wrapper that auth is OK
         window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');
 
@@ -1202,7 +1277,7 @@ function doGet(e) {
           var now = Date.now();
           if (now - _lastActivityNotify < 5000) return; // 5s debounce
           _lastActivityNotify = now;
-          window.top.postMessage(_s({type: 'gas-user-activity'}), '${PARENT_ORIGIN}');
+          window.top.postMessage(_s({type: 'gas-user-activity', clientIp: _clientIp}), '${PARENT_ORIGIN}');
         }
         document.addEventListener('keydown', _notifyActivity, true);
         document.addEventListener('click', _notifyActivity, true);
