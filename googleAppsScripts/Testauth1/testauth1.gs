@@ -1,4 +1,4 @@
-var VERSION = "v01.43g";
+var VERSION = "v01.44g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -991,6 +991,13 @@ function doGet(e) {
         details: seDetails,
         clientIp: clientIp,
         userAgent: (e && e.parameter && e.parameter.ua) || '',
+        page: EMBED_PAGE_URL
+      });
+    } else if (seCount === 20) {
+      seCache.put(seRlKey, String(seCount + 1), 300);
+      auditLog('security_event_throttled', clientIp || 'unknown', securityEvent.substring(0, 50), {
+        message: 'Rate limit reached — further events from this IP/type suppressed for 5 minutes',
+        clientIp: clientIp,
         page: EMBED_PAGE_URL
       });
     }

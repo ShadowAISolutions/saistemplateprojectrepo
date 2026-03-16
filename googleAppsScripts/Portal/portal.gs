@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -797,6 +797,12 @@ function doGet(e) {
       auditLog('security_event', 'unknown', securityEvent.substring(0, 50), {
         details: seDetails,
         userAgent: (e && e.parameter && e.parameter.ua) || '',
+        page: EMBED_PAGE_URL
+      });
+    } else if (seCount === 20) {
+      seCache.put(seRlKey, String(seCount + 1), 300);
+      auditLog('security_event_throttled', 'unknown', securityEvent.substring(0, 50), {
+        message: 'Rate limit reached — further events from this IP/type suppressed for 5 minutes',
         page: EMBED_PAGE_URL
       });
     }

@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 47/100`
+`Sections: 48/100`
 
 ## [Unreleased]
+
+## [v04.12r] — 2026-03-16 10:52:13 AM EST
+
+### Changed
+- Security event rate limiter now logs a `security_event_throttled` entry when an IP hits the 20-event limit, giving the defender visibility that further events were suppressed
+
+#### `testauth1.gs` — v01.44g
+
+##### Changed
+- Attack report rate limiting now tells you when an attacker was cut off
+
+#### `portal.gs` — v01.03g
+
+##### Changed
+- Attack report rate limiting now tells you when an attacker was cut off
 
 ## [v04.11r] — 2026-03-16 10:29:43 AM EST
 
