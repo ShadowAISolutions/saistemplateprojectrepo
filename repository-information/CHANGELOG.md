@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v04.25r] — 2026-03-16 02:33:18 PM EST
+
+### Added
+- Tab-takeover overlay now shows how many other tabs have the page open (e.g. "2 other tabs have this page open") — uses zero-cost browser-local BroadcastChannel heartbeat with no server calls
+
+#### `testauth1.html` — v02.08w
+
+##### Added
+- Tab count displayed in the "Session Active in Another Tab" overlay when multiple tabs are detected
 
 ## [v04.24r] — 2026-03-16 02:22:46 PM EST
 

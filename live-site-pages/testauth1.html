@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.07w">
+  <meta name="build-version" content="v02.08w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -995,6 +995,19 @@
     var _tabSurrendered = false;  // true when another tab claimed the session
     var _evictedByRemote = false;  // true when heartbeat detects cross-device eviction
 
+    // Tab registry — tracks other tabs open in the same browser via BroadcastChannel.
+    // Used only for informational display in the tab-takeover overlay.
+    // Security: messages contain only tabId (no tokens, emails, or session data).
+    var _knownTabs = {};           // { tabId: lastSeenTimestamp }
+    var _tabAliveInterval = null;
+    var _tabPruneInterval = null;
+    var _TAB_ALIVE_PERIOD = 3000;  // broadcast "I'm here" every 3s
+    var _TAB_PRUNE_THRESHOLD = 10000; // consider tab gone after 10s silence
+
+    function getOtherTabCount() {
+      return Object.keys(_knownTabs).length;
+    }
+
     function getStorage() {
       return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
         ? window.sessionStorage
@@ -1527,6 +1540,10 @@
       _signOutChannel = new BroadcastChannel('auth-sign-out');
       _signOutChannel.onmessage = function(e) {
         if (!e.data) return;
+        // Tab registry: track other tabs (informational only — no sensitive data)
+        if (e.data.type === 'tab-alive' && e.data.tabId && e.data.tabId !== _tabId) {
+          _knownTabs[e.data.tabId] = Date.now();
+        }
         if (e.data.type === 'sign-out') {
           // Hide tab-takeover overlay if visible (sign-out takes priority)
           document.getElementById('tab-takeover-wall').style.display = 'none';
@@ -1561,13 +1578,17 @@
               _messageKey = e.data.messageKey || null;
             }
             // Reset overlay text to same-browser message (in case it was changed
-            // by a previous cross-device eviction)
+            // by a previous cross-device eviction). Include tab count if known.
             var takeoverWall = document.getElementById('tab-takeover-wall');
             if (takeoverWall) {
               var takeoverText = takeoverWall.querySelector('p');
               if (takeoverText) {
+                var otherCount = getOtherTabCount();
+                var tabNote = otherCount > 1
+                  ? ' (' + otherCount + ' other tabs have this page open)'
+                  : '';
                 takeoverText.textContent =
-                  'This session is active in another tab. Only one tab can be active at a time.';
+                  'This session is active in another tab. Only one tab can be active at a time.' + tabNote;
               }
               var useHereBtn = document.getElementById('tab-use-here-btn');
               if (useHereBtn) {
@@ -1578,6 +1599,26 @@
           }
         }
       };
+    }
+
+    // Tab registry heartbeat — broadcast presence and prune stale entries.
+    // Only active when BroadcastChannel is available (same conditions as sign-out sync).
+    if (_signOutChannel) {
+      // Announce this tab immediately so other tabs see it right away
+      _signOutChannel.postMessage({ type: 'tab-alive', tabId: _tabId });
+      _tabAliveInterval = setInterval(function() {
+        if (_signOutChannel) {
+          _signOutChannel.postMessage({ type: 'tab-alive', tabId: _tabId });
+        }
+      }, _TAB_ALIVE_PERIOD);
+      _tabPruneInterval = setInterval(function() {
+        var now = Date.now();
+        for (var id in _knownTabs) {
+          if (now - _knownTabs[id] > _TAB_PRUNE_THRESHOLD) {
+            delete _knownTabs[id];
+          }
+        }
+      }, _TAB_PRUNE_THRESHOLD);
     }
 
     // Broadcast tab-claim to other tabs (single-tab enforcement)

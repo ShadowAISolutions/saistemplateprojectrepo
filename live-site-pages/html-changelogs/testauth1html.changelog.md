@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
 
 ## [Unreleased]
+
+## [v02.08w] — 2026-03-16 02:33:18 PM EST — v04.25r
+
+### Added
+- "Session Active in Another Tab" overlay now shows how many other tabs have this page open
 
 ## [v02.07w] — 2026-03-16 02:22:46 PM EST — v04.24r
 
