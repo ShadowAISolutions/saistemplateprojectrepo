@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v04.26r] — 2026-03-16 02:40:38 PM EST
+
+### Changed
+- Refactored tab counting from continuous heartbeat (every 3s) to on-demand roll call — zero background overhead, count is only collected when the tab-takeover overlay appears
+
+#### `testauth1.html` — v02.09w
+
+##### Changed
+- Tab count now uses on-demand roll call instead of continuous heartbeat — other tabs respond instantly when asked, and the count updates in real time as responses arrive
 
 ## [v04.25r] — 2026-03-16 02:33:18 PM EST
 

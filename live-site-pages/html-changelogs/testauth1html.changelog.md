@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 27/50`
+`Sections: 28/50`
 
 ## [Unreleased]
+
+## [v02.09w] — 2026-03-16 02:40:38 PM EST — v04.26r
+
+### Changed
+- Tab count now updates instantly when the overlay appears instead of relying on a background timer
 
 ## [v02.08w] — 2026-03-16 02:33:18 PM EST — v04.25r
 
