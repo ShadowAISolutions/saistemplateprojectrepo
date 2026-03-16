@@ -153,10 +153,16 @@ def run_test():
             }}""")
 
             # Check 4: Navigation hijack (cookie theft redirects)
-            current_url = page.url
-            stayed_on_page = TARGET_URL.split("//")[1] in current_url
+            # Use window.location.href (top-level frame) — NOT page.url which can
+            # reflect iframe navigations. The gas-session-created handler reloads the
+            # GAS iframe (gasApp.src = ...) which is normal behavior, not an attack.
+            stayed_on_page = page.evaluate("""() => {
+                return window.location.href;
+            }""")
+            target_host = TARGET_URL.split("//")[1].split("/")[0]  # e.g. ShadowAISolutions.github.io
+            is_same_origin = target_host in stayed_on_page
 
-            blocked = not xss_fired and not new_scripts_injected and not payload_rendered and stayed_on_page
+            blocked = not xss_fired and not new_scripts_injected and not payload_rendered and is_same_origin
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             print(f"  {color}[{status}]\033[0m Type: {msg['type']}, payload in: {[k for k in msg if k != 'type']}")
@@ -166,8 +172,8 @@ def run_test():
                 print(f"    \033[91m!!! NEW <script> element injected into DOM !!!\033[0m")
             if payload_rendered:
                 print(f"    \033[91m!!! XSS payload rendered in visible element innerHTML !!!\033[0m")
-            if not stayed_on_page:
-                print(f"    \033[91m!!! Page navigated away — possible redirect hijack !!!\033[0m")
+            if not is_same_origin:
+                print(f"    \033[91m!!! Page navigated to: {stayed_on_page} — redirect hijack !!!\033[0m")
             if blocked:
                 # Show why it was safe
                 sink_info = page.evaluate(f"""() => {{
