@@ -55,4 +55,12 @@ python tests/offensive-security/test_09_auth_state_manipulation.py
 Every test should show the attack being **blocked** by one or more defense layers.
 If any attack succeeds, you've found a real vulnerability that needs fixing.
 
+## Security Findings & Incident Response
+
+See **[SECURITY-FINDINGS.md](SECURITY-FINDINGS.md)** for:
+- Detailed findings from all 9 tests
+- Known platform limitations (GAS DDoS exposure, GitHub Pages framing, etc.)
+- **Incident response procedure** for DDoS / resource exhaustion attacks
+- Defense-in-depth summary showing all protection layers
+
 Developed by: ShadowAISolutions
