@@ -1008,6 +1008,27 @@
     // Per-session key delivered via gas-session-created, used to verify subsequent messages.
     var _messageKey = null;
 
+    // ── Security Event Reporter ──
+    // Reports blocked attacks to the GAS backend for audit logging.
+    // Events are rate-limited (max 10 per page load) to prevent abuse.
+    var _securityEventCount = 0;
+    var _SECURITY_EVENT_LIMIT = 10;
+    function _reportSecurityEvent(eventType, details) {
+      if (_securityEventCount >= _SECURITY_EVENT_LIMIT) return;
+      _securityEventCount++;
+      var gasApp = document.getElementById('gas-app');
+      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!baseUrl) return;
+      var frame = document.createElement('iframe');
+      frame.style.display = 'none';
+      var params = 'securityEvent=' + encodeURIComponent(eventType)
+        + '&details=' + encodeURIComponent(JSON.stringify(details || {}).substring(0, 500))
+        + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');
+      frame.src = baseUrl + '?' + params;
+      document.body.appendChild(frame);
+      setTimeout(function() { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 10000);
+    }
+
     function _verifyMessageSignature(data, key) {
       if (!key) return true;  // No key yet — pass through (allowlist is the defense)
       var sig = data._sig;
@@ -1028,17 +1049,31 @@
       var data = event.data;
       if (!data || typeof data !== 'object') return;
       // Layer 1: Only process known GAS message types (allowlist)
-      if (!_KNOWN_GAS_MESSAGES[data.type]) return;
+      if (!_KNOWN_GAS_MESSAGES[data.type]) {
+        _reportSecurityEvent('unknown_message_type', {
+          type: String(data.type || '').substring(0, 50),
+          origin: event.origin
+        });
+        return;
+      }
 
       // Layer 2: Cryptographic verification (optional — key delivered via gas-session-created)
       // gas-session-created delivers the key itself — trust it on first receipt
       // (the session token it contains is validated server-side on the next iframe load)
       if (data.type === 'gas-session-created' && data.success && data.messageKey) {
-        _messageKey = data.messageKey;
+        if (!_messageKey) {
+          _messageKey = data.messageKey;
+        }
       }
       // For all subsequent messages, verify the signature if we have a key
       if (_messageKey && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {
-        if (!_verifyMessageSignature(data, _messageKey)) return;  // Silently drop
+        if (!_verifyMessageSignature(data, _messageKey)) {
+          _reportSecurityEvent('invalid_signature', {
+            type: data.type,
+            origin: event.origin
+          });
+          return;
+        }
       }
 
       // GAS iframe signals ready for token (postMessage exchange path)
@@ -1060,6 +1095,10 @@
         // Only the first gas-session-created after a fresh page load is accepted.
         if (_messageKey && data.messageKey && data.messageKey !== _messageKey) {
           console.warn('Duplicate gas-session-created rejected — messageKey already set');
+          _reportSecurityEvent('duplicate_session_created', {
+            origin: event.origin,
+            email: String(data.email || '').substring(0, 50)
+          });
           return;
         }
         if (data.success) {

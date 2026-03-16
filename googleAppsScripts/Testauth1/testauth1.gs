@@ -1,4 +1,4 @@
-var VERSION = "v01.42g";
+var VERSION = "v01.43g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -974,6 +974,32 @@ function doGet(e) {
 
   // Client IP from URL parameter (Phase 7 — IP Logging, client-reported)
   var clientIp = (e && e.parameter && e.parameter.clientIp) || '';
+
+  // Security event reporting — client-side defense layers report blocked attacks
+  var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
+  if (securityEvent) {
+    // Rate limit: max 20 security events per 5-minute window (prevents abuse)
+    var seCache = CacheService.getScriptCache();
+    var seRlKey = 'se_ratelimit_' + (clientIp || 'unknown').substring(0, 16);
+    var seAttempts = seCache.get(seRlKey);
+    var seCount = seAttempts ? parseInt(seAttempts, 10) : 0;
+    if (seCount < 20) {
+      seCache.put(seRlKey, String(seCount + 1), 300);
+      var seDetails = {};
+      try { seDetails = JSON.parse((e.parameter.details || '{}').substring(0, 500)); } catch(ex) {}
+      auditLog('security_event', clientIp || 'unknown', securityEvent.substring(0, 50), {
+        details: seDetails,
+        clientIp: clientIp,
+        userAgent: (e && e.parameter && e.parameter.ua) || '',
+        page: EMBED_PAGE_URL
+      });
+    }
+    // Return minimal response — no app HTML needed
+    var seHtml = '<!DOCTYPE html><html><body></body></html>';
+    return HtmlService.createHtmlOutput(seHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
 
   // Heartbeat flow: validate session + reset createdAt to extend it
   if (heartbeatToken && AUTH_CONFIG.ENABLE_HEARTBEAT) {

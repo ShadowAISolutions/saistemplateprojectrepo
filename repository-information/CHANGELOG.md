@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 46/100`
+`Sections: 47/100`
 
 ## [Unreleased]
+
+## [v04.11r] — 2026-03-16 10:29:43 AM EST
+
+### Added
+- Added Security Event Reporter system — client-side defense layers now report blocked attacks (unknown message types, replay attempts, invalid signatures, duplicate session hijacking) to the GAS backend for audit logging
+- Server-side security event handler in both testauth1.gs and portal.gs — receives attack telemetry via hidden iframe beacons, rate-limited to 20 events per 5-minute window per IP/event type, logged to SessionAuditLog sheet
+
+### Security
+- Added first-write-wins guard on `_messageKey` in portal.html — prevents message key overwriting attacks (was already present in testauth1.html)
+
+#### `testauth1.html` — v02.02w
+
+##### Added
+- Blocked attacks are now reported to the server for security monitoring
+
+#### `portal.html` — v01.11w
+
+##### Added
+- Blocked attacks are now reported to the server for security monitoring
+- Additional protection against session key overwriting attacks
+
+#### `testauth1.gs` — v01.43g
+
+##### Added
+- Server now receives and logs blocked attack reports from the page
+
+#### `portal.gs` — v01.02g
+
+##### Added
+- Server now receives and logs blocked attack reports from the page
 
 ## [v04.10r] — 2026-03-16 10:07:13 AM EST
 

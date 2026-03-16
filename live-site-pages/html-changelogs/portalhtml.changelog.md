@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 10/100`
+`Sections: 11/100`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-03-16 10:29:43 AM EST — v04.11r
+
+### Added
+- Blocked attacks are now reported to the server for security monitoring
+- Additional protection against session key overwriting attacks
 
 ## [v01.10w] — 2026-03-16 09:57:31 AM EST — v04.09r
 

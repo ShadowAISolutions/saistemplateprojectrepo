@@ -1,4 +1,4 @@
-var VERSION = "v01.01g";
+var VERSION = "v01.02g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -779,6 +779,29 @@ function doGet(e) {
       + 'window.top.postMessage(s({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(hbOkHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Security event reporting: client-side defenses report blocked attacks
+  var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
+  if (securityEvent) {
+    var seCache = CacheService.getScriptCache();
+    var seRlKey = 'se_ratelimit_' + securityEvent.substring(0, 20);
+    var seAttempts = seCache.get(seRlKey);
+    var seCount = seAttempts ? parseInt(seAttempts, 10) : 0;
+    if (seCount < 20) {
+      seCache.put(seRlKey, String(seCount + 1), 300);
+      var seDetails = {};
+      try { seDetails = JSON.parse((e.parameter.details || '{}').substring(0, 500)); } catch(ex) {}
+      auditLog('security_event', 'unknown', securityEvent.substring(0, 50), {
+        details: seDetails,
+        userAgent: (e && e.parameter && e.parameter.ua) || '',
+        page: EMBED_PAGE_URL
+      });
+    }
+    var seHtml = '<!DOCTYPE html><html><body></body></html>';
+    return HtmlService.createHtmlOutput(seHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
