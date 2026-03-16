@@ -314,12 +314,12 @@ def run_test():
         print("─── Attack 5: Fake Heartbeat Iframe Injection ───")
         print("Injecting a fake heartbeat iframe to extend session...")
 
-        fake_hb_result = page.evaluate("""() => {
+        fake_hb_result = page.evaluate("""(gasUrl) => {
             // Create a fake heartbeat iframe pointing to GAS with a forged session token
             var fakeHb = document.createElement('iframe');
             fakeHb.id = 'fake-heartbeat';
             fakeHb.style.cssText = 'display:none;width:0;height:0';
-            fakeHb.src = arguments[0] + '?heartbeat=forged-token-12345&msgKey=forged-key';
+            fakeHb.src = gasUrl + '?heartbeat=forged-token-12345&msgKey=forged-key';
             document.body.appendChild(fakeHb);
             return { injected: true, src: fakeHb.src };
         }""", GAS_BASE_URL)
