@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 26/100`
+`Sections: 27/100`
 
 ## [Unreleased]
+
+## [v03.91r] — 2026-03-15 08:12:32 PM EST
+
+### Fixed
+- Fixed absolute session timer resetting on "Use Here" — `stopCountdownTimers()` in the `tab-claim` handler was clearing `ABSOLUTE_START_KEY` from sessionStorage; the key is now preserved across the stop/start cycle so the absolute timer continues from the original sign-in
+
+#### `testauth1.html` — v01.95w
+
+##### Fixed
+- Reclaiming a session with "Use Here" now correctly preserves the absolute session timer countdown
 
 ## [v03.90r] — 2026-03-15 08:07:39 PM EST
 

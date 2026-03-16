@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.94w">
+  <meta name="build-version" content="v01.95w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1432,7 +1432,14 @@
           if (e.data.tabId !== _tabId) {
             _tabSurrendered = true;
             _evictedByRemote = false;  // Ensure correct overlay text for same-browser claim
+            // Preserve the absolute start time — stopCountdownTimers() clears
+            // it, but "Use Here" needs to continue the original absolute timer
+            // rather than restarting it.
+            var savedAbsoluteStart = getStorage().getItem(ABSOLUTE_START_KEY);
             stopCountdownTimers();
+            if (savedAbsoluteStart) {
+              getStorage().setItem(ABSOLUTE_START_KEY, savedAbsoluteStart);
+            }
             stopHeartbeat();
             hideAllWarningBanners();
             // Save the claiming tab's session credentials so "Use Here" can
