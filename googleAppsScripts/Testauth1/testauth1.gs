@@ -1,4 +1,4 @@
-var VERSION = "v01.41g";
+var VERSION = "v01.42g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -339,6 +339,9 @@ function _writeAuditLogEntry(event, user, result, details) {
     if (!sheet) {
       sheet = ss.insertSheet(AUTH_CONFIG.AUDIT_LOG_SHEET_NAME);
       sheet.appendRow(['Timestamp', 'Event', 'User', 'Result', 'Details']);
+      var protection = sheet.protect();
+      protection.setDescription('Session Audit Log — protected');
+      protection.setWarningOnly(true);
     }
     sheet.appendRow([
       new Date().toISOString(),
