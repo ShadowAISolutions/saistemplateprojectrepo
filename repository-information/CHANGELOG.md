@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v04.28r] — 2026-03-16 02:54:36 PM EST
+
+### Changed
+- "Signing in…" and "Reconnecting…" screens now have distinct animations — spinning ring for sign-in, pulsing dots for reconnection
+
+#### `testauth1.html` — v02.11w
+
+##### Changed
+- "Signing in…" uses a spinning ring animation (new session)
+- "Reconnecting…" uses pulsing dots animation (session verification)
 
 ## [v04.27r] — 2026-03-16 02:50:53 PM EST
 

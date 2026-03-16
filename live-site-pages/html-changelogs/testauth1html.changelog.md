@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v02.11w] — 2026-03-16 02:54:36 PM EST — v04.28r
+
+### Changed
+- "Signing in…" now shows a spinning ring, "Reconnecting…" now shows pulsing dots — visually distinct animations for each state
 
 ## [v02.10w] — 2026-03-16 02:50:53 PM EST — v04.27r
 
