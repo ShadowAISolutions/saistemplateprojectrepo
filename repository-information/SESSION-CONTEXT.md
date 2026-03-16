@@ -4,37 +4,52 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-15 06:20:13 PM EST
-**Repo version:** v03.80r
+**Date:** 2026-03-15 08:32:43 PM EST
+**Repo version:** v03.92r
 
 ### What was done
-- **v03.69r–v03.77r** — Multiple sessions implemented Plan 9.2 (cross-device session enforcement via heartbeat piggyback), renamed plan files from single-digit to zero-padded prefixes, CHANGELOG archive rotation
-- **v03.78r** — CHANGELOG archive rotation (86 sections moved, SHA enrichment)
-- **v03.79r** — Updated EMR security hardening plan (`10-EMR-SECURITY-HARDENING-PLAN.md`) to be fully preset-aware — all 8 phases now explicitly document behavior under both `standard` and `hipaa` presets. Added Preset Behavior Matrix, preset transition rules, 5 new config toggles with explicit values, toggle guards in all code examples
-- **v03.80r** — Added "Implementation Risk Areas (Toggle Architecture)" section to EMR hardening plan documenting three specific integration risks with mitigations: Phase 3 stub return value, Phase 4 server/client config boundary, Phase 6 branching flow control
+- **v03.81r** — EMR Security Hardening Phase 1: HMAC fail-closed enforcement + Phase 2: domain restriction validation in `testauth1.gs`
+- **v03.82r** — Sign-in error messages now surface specific misconfiguration details (HMAC secret missing, domain restriction misconfigured, domain not allowed)
+- **v03.83r** — EMR Security Hardening Phase 3: Server-side data operation validation — `validateSessionForData()` gate, `saveNote()` with session validation, `gas-session-invalid` postMessage type
+- **v03.84r–v03.92r** — Series of "Use Here" tab-reclaim UX fixes discovered during testing:
+  - v03.84r: Fixed blank GAS iframe when clicking "Use Here" on non-original tab
+  - v03.85r: Rate-limited activity-triggered heartbeats + auto-clear stuck heartbeat requests
+  - v03.86r: Activity now updates timestamp instead of forcing immediate heartbeat
+  - v03.87r: Session token transfer via BroadcastChannel for seamless tab reclaim
+  - v03.88r: Eliminated GAS iframe flicker on "Use Here" (visibility hidden + `_directSessionLoad` flag)
+  - v03.89r: Absolute timer preservation in `gas-session-created` (partial fix)
+  - v03.90r: Moved `_directSessionLoad` handling from `gas-session-created` to `gas-auth-ok` handler
+  - v03.91r: Preserved `ABSOLUTE_START_KEY` across `stopCountdownTimers()` in tab-claim handler
+  - v03.92r: Suppressed false "Session expiring soon" warning after tab reclaim
 
 ### Where we left off
-The EMR Security Hardening Plan (Plan 10) is complete and ready for implementation. The plan covers 8 phases of HIPAA Technical Safeguard compliance across `testauth1.html` and `testauth1.gs`.
+EMR Security Hardening Phases 1–3 are complete. All "Use Here" tab-reclaim bugs found during testing are fixed. Phase 4 (DOM Clearing on Session Expiry) is the next implementation target.
 
-**NEXT SESSION: Implement EMR Security Hardening Plan** — `repository-information/10-EMR-SECURITY-HARDENING-PLAN.md`
-- 8 phases, organized into 4 implementation batches:
-  - **Batch 1 (P0 — Critical):** Phases 1 (HMAC enforcement) + 2 (domain restriction) — configuration enforcement, low risk
-  - **Batch 2 (P1 — High):** Phases 3 (data op validation) + 4 (DOM clearing) — most impactful security improvement
-  - **Batch 3 (P2 — Medium):** Phases 5 (emergency access) + 6 (account lockout) — access control enhancements
-  - **Batch 4 (P3 — Recommended):** Phases 7 (IP logging) + 8 (data audit log) — audit logging enhancements
-- 5 new toggles: `ENABLE_DATA_OP_VALIDATION`, `ENABLE_DOM_CLEARING_ON_EXPIRY`, `ENABLE_ESCALATING_LOCKOUT`, `ENABLE_IP_LOGGING`, `ENABLE_DATA_AUDIT_LOG`
-- **Watch for 3 risk areas** (documented in plan): Phase 3 stub return value consumption, Phase 4 server/client config transfer, Phase 6 branching flow control
+**NEXT SESSION: Continue EMR Security Hardening Plan** — `repository-information/10-EMR-SECURITY-HARDENING-PLAN.md`
+- Phases 1–3 DONE, Phase 4 next
+- Remaining phases:
+  - **Phase 4 (P1):** DOM Clearing on Session Expiry — `ENABLE_DOM_CLEARING_ON_EXPIRY`, sets `gasFrame.src = 'about:blank'` to destroy PHI in DOM
+  - **Phase 5 (P2):** Emergency/break-glass access
+  - **Phase 6 (P2):** Escalating account lockout
+  - **Phase 7 (P3):** IP audit logging
+  - **Phase 8 (P3):** Data-level audit logging
+
+### Key technical context
+- **`_directSessionLoad` flag** — distinguishes "Use Here" iframe loads from OAuth token-exchange loads; critical for handler routing
+- **`gas-auth-ok` vs `gas-session-created`** — GAS sends `gas-auth-ok` for valid session reloads (Use Here path), `gas-session-created` only during OAuth token exchange
+- **`ABSOLUTE_START_KEY` preservation** — must be saved before `stopCountdownTimers()` in tab-claim handler and restored after, since `stopCountdownTimers()` clears it
+- **`_expectingSession` guard** — for initial page-load srcdoc race condition only, not for Use Here flow
+- **Eviction tombstones** — 5-minute cache entries (`evicted_TOKEN`) for cross-device session differentiation in heartbeat responses
 
 ### Key decisions made
-- **Preset-aware design** — every hardening feature is behind a toggle guard; `standard` preset preserves pre-hardening behavior exactly; `hipaa` enables all features
-- **`ENABLE_IP_LOGGING` not `ENABLE_IP_BINDING`** — renamed because GAS cannot do server-side IP detection; client-reported IP is logging-only, not enforcement
-- **Implementation confidence: 8/10** — toggle architecture reduces risk vs HIPAA-only approach; three specific integration seams need careful attention (documented in plan)
+- Phases implemented incrementally with user testing between each push
+- "Use Here" reclaim path routes through `gas-auth-ok` handler, not `gas-session-created`
+- Server-side `needsReauth` flag is suppressed during tab reclaim (server session may be near expiry but next heartbeat will extend it)
 
 ### Active context
-- Repo version: v03.80r
-- testauth1.html: v01.85w, testauth1.gs: v01.27g
+- Repo version: v03.92r
+- testauth1.html: v01.96w, testauth1.gs: v01.34g
 - portal.html: v01.08w, portal.gs: v01.01g
-- Plan files: `repository-information/01-` through `10-EMR-SECURITY-HARDENING-PLAN.md` (all zero-padded)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -42,11 +57,10 @@ The EMR Security Hardening Plan (Plan 10) is complete and ready for implementati
 
 ## Previous Sessions
 
-**Date:** 2026-03-15 02:03:23 AM EST
-**Repo version:** v03.68r
+**Date:** 2026-03-15 06:20:13 PM EST
+**Repo version:** v03.80r
 
 ### What was done
-- **v03.65r–v03.68r** — Created 4 cross-device session enforcement plans (9, 9.1, 9.1.1, 9.2). Developer chose Plan 9.2 (heartbeat piggyback) for implementation
-- Research & comparison across security, quota cost, detection latency, complexity, EMR/HIPAA suitability
+- **v03.69r–v03.80r** — Implemented Plan 9.2 (cross-device session enforcement), renamed plan files, CHANGELOG rotation, completed EMR hardening plan with preset-awareness and risk areas
 
 Developed by: ShadowAISolutions
