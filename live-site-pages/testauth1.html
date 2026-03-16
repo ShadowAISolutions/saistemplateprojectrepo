@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.91w">
+  <meta name="build-version" content="v01.92w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1021,6 +1021,7 @@
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
+    var _directSessionLoad = false; // true when iframe was loaded directly with ?session= (Use Here) — skips the reload in gas-session-created
 
     function initGoogleSignIn() {
       signInClient = google.accounts.oauth2.initTokenClient({
@@ -1197,12 +1198,21 @@
           startCountdownTimers();
           startHeartbeat();
           broadcastTabClaim();
-          // Reload iframe with session token so the app UI loads
-          var gasApp = document.getElementById('gas-app');
-          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
-          if (gasApp && baseUrl) {
-            _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+          if (_directSessionLoad) {
+            // "Use Here" already loaded the iframe with ?session= — the GAS
+            // app is ready, just make it visible.  No reload needed.
+            _directSessionLoad = false;
+            var gasAppDirect = document.getElementById('gas-app');
+            if (gasAppDirect) gasAppDirect.style.visibility = '';
+          } else {
+            // Normal sign-in flow (OAuth) — reload iframe with session token
+            // so the app UI loads (first load was the token exchange page).
+            var gasApp = document.getElementById('gas-app');
+            var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+            if (gasApp && baseUrl) {
+              _expectingSession = true;
+              gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+            }
           }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
@@ -1231,6 +1241,7 @@
           _expectingSession = false;
           return;
         }
+        _directSessionLoad = false;  // Clear in case "Use Here" token was invalid
         clearSession();
         stopCountdownTimers();
         stopHeartbeat();
@@ -1952,20 +1963,16 @@
       if (!HTML_CONFIG.SINGLE_TAB_ENFORCEMENT) return;
       var session = loadSession();
       if (session.token) {
-        showApp(session.email);
-        startCountdownTimers();
-        startHeartbeat();
-        // Reload GAS iframe with the session token.
-        // Clear _messageKey so the new GAS app's gas-session-created can
-        // deliver a fresh signing key (first-write-wins guard).
+        // Don't call showApp/startTimers/startHeartbeat here — let
+        // gas-session-created handle that after the GAS app confirms the
+        // session is valid.  This avoids showing the app UI before the
+        // iframe is ready (which causes a flicker).
         _messageKey = null;
+        _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
         var gasApp = document.getElementById('gas-app');
         var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          // Do NOT set _expectingSession here — that guard is for the initial
-          // page-load srcdoc race only.  In the "Use Here" flow the iframe is
-          // explicitly reloaded; if the token is server-side-invalid the
-          // resulting gas-needs-auth must NOT be suppressed.
+          gasApp.style.visibility = 'hidden';
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {

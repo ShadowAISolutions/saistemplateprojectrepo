@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 23/100`
+`Sections: 24/100`
 
 ## [Unreleased]
+
+## [v03.88r] — 2026-03-15 07:59:08 PM EST
+
+### Fixed
+- Eliminated GAS iframe flicker when clicking "Use Here" — the iframe is now hidden during reload and revealed only after `gas-session-created` confirms the GAS app is ready, and the unnecessary double-reload (from the OAuth token-exchange path) is skipped when the iframe was loaded directly with a session token
+
+#### `testauth1.html` — v01.92w
+
+##### Fixed
+- Clicking "Use Here" no longer causes a brief GAS iframe flicker — the app appears smoothly after the session is confirmed
 
 ## [v03.87r] — 2026-03-15 07:51:52 PM EST
 
