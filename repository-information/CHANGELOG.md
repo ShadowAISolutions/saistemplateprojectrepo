@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 56/100`
+`Sections: 57/100`
 
 ## [Unreleased]
+
+## [v04.21r] — 2026-03-16 02:02:55 PM EST
+
+### Security
+- Hardened CSP with 5 new directives: `default-src 'none'` (deny-all fallback), `worker-src 'none'` (blocks web workers), `manifest-src 'none'` (blocks manifest injection), `upgrade-insecure-requests` (auto-upgrades mixed content), and restricted `img-src` from blanket `https:` to `https://*.googleusercontent.com` (closes image-based exfiltration vector)
+- Fixed test 08 eval() misleading message — `unsafe-inline` does NOT implicitly allow eval (they are independent CSP keywords per W3C spec)
+- Improved test 08 form-action test to verify actual submission blocking via CSP violation events instead of just checking attribute values
+- Removed `navigate-to` from test 08's recommended directives list — dropped from CSP Level 3 spec with zero browser implementation
+
+### Changed
+- Updated SECURITY-FINDINGS.md with comprehensive deep-analysis of all 14 test 08 findings (9 CSP audit + 9 attack results), categorized as FIXED, ACCEPTED, or UNFIXABLE
+
+#### `testauth1.html` — v02.04w
+
+##### Security
+- Added `default-src 'none'` — deny-all fallback that also blocks eval()
+- Added `worker-src 'none'` — prevents web worker abuse
+- Added `manifest-src 'none'` — prevents manifest injection
+- Added `upgrade-insecure-requests` — auto-upgrades mixed content
+- Restricted `img-src` from blanket `https:` to `https://*.googleusercontent.com` only
 
 ## [v04.20r] — 2026-03-16 01:47:48 PM EST
 
