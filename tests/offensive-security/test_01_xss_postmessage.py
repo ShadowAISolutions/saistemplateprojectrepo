@@ -77,23 +77,30 @@ def run_test():
         print("─── Attack 1: Unknown Message Types ───")
         print("Sending messages with types not in the allowlist...")
         for i, msg in enumerate(UNKNOWN_TYPE_MESSAGES):
-            # Clear previous console state
             console_logs.clear()
 
-            # Send the malicious postMessage from the page context
             page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
             page.wait_for_timeout(200)
 
-            # Check if any handler processed it (look for side effects)
-            session_changed = page.evaluate("""() => {
-                var s = sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session');
-                return s;
+            # Full diagnostic: check all possible side effects
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                };
             }""")
 
-            blocked = session_changed is None
+            blocked = diag["storedSession"] is None
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             print(f"  {color}[{status}]\033[0m Type: {msg.get('type', '(none)')!r}")
+            print(f"    location.href: {diag['locationHref']}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, stored session: {diag['storedSession']}, stored email: {diag['storedEmail']}")
             results.append({"attack": f"unknown_type_{i}", "blocked": blocked})
 
         print()
@@ -214,16 +221,52 @@ def run_test():
         for i, payload in enumerate(XSS_PAYLOADS):
             console_logs.clear()
 
+            # Override alert/prompt/confirm to catch actual XSS execution
+            page.evaluate("""() => {
+                window._xssTriggered = false;
+                window._origAlert = window.alert;
+                window.alert = function() { window._xssTriggered = true; };
+                window.prompt = function() { window._xssTriggered = true; };
+                window.confirm = function() { window._xssTriggered = true; };
+            }""")
+
             # Try sending string payloads (not objects) — a common attack vector
             page.evaluate(f"window.postMessage({json.dumps(payload)}, '*')")
-            page.wait_for_timeout(200)
+            page.wait_for_timeout(300)
 
-            # The handler should reject non-object messages at the first check
-            blocked = True  # If we get here without error, it was silently dropped
-            status = "BLOCKED"
-            color = "\033[92m"
+            # Full diagnostic: check all possible side effects
+            xss_fired = page.evaluate("() => window._xssTriggered")
+
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                };
+            }""")
+
+            target_host = TARGET_URL.split("//")[1].split("/")[0]
+            is_same_origin = target_host.lower() in diag["locationHref"].lower()
+
+            blocked = not xss_fired and diag["storedSession"] is None and is_same_origin
+            status = "BLOCKED" if blocked else "BYPASSED"
+            color = "\033[92m" if blocked else "\033[91m"
             print(f"  {color}[{status}]\033[0m Payload: {payload[:60]}...")
+            print(f"    location.href: {diag['locationHref']}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, stored session: {diag['storedSession']}, stored email: {diag['storedEmail']}")
+            print(f"    xss_fired: {xss_fired}, same_origin: {is_same_origin}")
+            if xss_fired:
+                print(f"    \033[91m!!! XSS EXECUTED — alert/prompt/confirm was called !!!\033[0m")
+            if not is_same_origin:
+                print(f"    \033[91m!!! Page navigated to: {diag['locationHref']} !!!\033[0m")
             results.append({"attack": f"raw_xss_{i}", "blocked": blocked})
+
+            # Restore alert
+            page.evaluate("() => { if (window._origAlert) window.alert = window._origAlert; }")
 
         print()
 
@@ -245,18 +288,38 @@ def run_test():
             page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
             page.wait_for_timeout(300)
 
-            # Check if the app acted on the message (auth wall hidden = bad)
-            auth_wall_visible = page.evaluate("""() => {
-                var wall = document.getElementById('auth-wall');
-                if (!wall) return true;
-                return wall.style.display !== 'none';
+            # Full diagnostic: check all possible side effects
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    authWallDisplay: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? window.getComputedStyle(w).display : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                };
             }""")
 
-            blocked = auth_wall_visible
+            # Blocked if auth wall is still visible AND no session was stored
+            auth_wall_visible = diag["authWallDisplay"] != 'none' and not diag["authWallHidden"]
+            blocked = auth_wall_visible and diag["storedSession"] is None
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             sig_desc = f"_sig={msg.get('_sig', '(none)')!r}" if '_sig' in msg else "no _sig field"
             print(f"  {color}[{status}]\033[0m Type: {msg['type']}, {sig_desc}")
+            print(f"    location.href: {diag['locationHref']}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+            print(f"    stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}, stored email: {diag['storedEmail']}")
+            if not blocked:
+                if diag["storedSession"]:
+                    print(f"    \033[91m!!! Forged message created a session !!!\033[0m")
+                if diag["authWallDisplay"] == 'none' or diag["authWallHidden"]:
+                    print(f"    \033[91m!!! Auth wall was bypassed !!!\033[0m")
             results.append({"attack": f"sig_bypass_{i}", "blocked": blocked})
 
         print()
