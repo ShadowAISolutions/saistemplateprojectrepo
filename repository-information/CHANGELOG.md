@@ -3,9 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 40/100`
+`Sections: 41/100`
 
 ## [Unreleased]
+
+## [v04.05r] — 2026-03-16 09:15:52 AM EST
+
+### Changed
+- Added full diagnostic output to test 01 Attack 2 instead of silencing failures — each bypassed attack now prints `location.href`, auth wall state, stored session/email, and all check results so the actual behavior is visible and can be evaluated honestly
 
 ## [v04.04r] — 2026-03-16 09:11:26 AM EST
 

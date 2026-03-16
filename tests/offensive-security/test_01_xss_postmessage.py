@@ -153,19 +153,34 @@ def run_test():
             }}""")
 
             # Check 4: Navigation hijack (cookie theft redirects)
-            # Use window.location.href (top-level frame) — NOT page.url which can
-            # reflect iframe navigations. The gas-session-created handler reloads the
-            # GAS iframe (gasApp.src = ...) which is normal behavior, not an attack.
-            stayed_on_page = page.evaluate("""() => {
-                return window.location.href;
+            # Collect all diagnostic info to understand what's actually happening
+            nav_debug = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    locationOrigin: window.location.origin,
+                    locationHostname: window.location.hostname,
+                    pageUrl: document.URL,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                };
             }""")
-            target_host = TARGET_URL.split("//")[1].split("/")[0]  # e.g. ShadowAISolutions.github.io
-            is_same_origin = target_host in stayed_on_page
+            target_host = TARGET_URL.split("//")[1].split("/")[0]
+            is_same_origin = target_host.lower() in nav_debug["locationHref"].lower()
 
             blocked = not xss_fired and not new_scripts_injected and not payload_rendered and is_same_origin
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             print(f"  {color}[{status}]\033[0m Type: {msg['type']}, payload in: {[k for k in msg if k != 'type']}")
+            # Always show diagnostic details so we can see what happened
+            print(f"    location.href: {nav_debug['locationHref']}")
+            print(f"    auth wall hidden: {nav_debug['authWallHidden']}")
+            print(f"    stored session: {str(nav_debug['storedSession'])[:30] if nav_debug['storedSession'] else 'None'}")
+            print(f"    stored email: {nav_debug['storedEmail']}")
+            print(f"    xss_fired: {xss_fired}, new_scripts: {new_scripts_injected}, payload_rendered: {payload_rendered}")
             if xss_fired:
                 print(f"    \033[91m!!! XSS EXECUTED — alert/prompt/confirm was called !!!\033[0m")
             if new_scripts_injected:
@@ -173,7 +188,7 @@ def run_test():
             if payload_rendered:
                 print(f"    \033[91m!!! XSS payload rendered in visible element innerHTML !!!\033[0m")
             if not is_same_origin:
-                print(f"    \033[91m!!! Page navigated to: {stayed_on_page} — redirect hijack !!!\033[0m")
+                print(f"    \033[91m!!! Page navigated to: {nav_debug['locationHref']} !!!\033[0m")
             if blocked:
                 # Show why it was safe
                 sink_info = page.evaluate(f"""() => {{
