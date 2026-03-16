@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.08w">
+  <meta name="build-version" content="v01.09w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Portal Title</title>
 <!-- ══════════════ -->
@@ -764,6 +764,7 @@
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;
+    var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
 
     function initGoogleSignIn() {
       signInClient = google.accounts.oauth2.initTokenClient({
@@ -873,7 +874,10 @@
       if (data.type === 'gas-session-created') {
         if (data.success) {
           saveSession(data.sessionToken, data.email);
-          showApp(data.email, data.displayName);
+          // Defer showApp until gas-auth-ok confirms the session is valid server-side.
+          // This prevents a forged gas-session-created postMessage from hiding the auth wall
+          // before the GAS backend has validated the token.
+          _pendingSessionShow = { email: data.email, displayName: data.displayName };
           // Reload iframe with session token so the app UI loads
           var gasApp = document.getElementById('gas-app');
           var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
@@ -899,6 +903,12 @@
       // GAS iframe confirms auth is OK
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
+        if (_pendingSessionShow) {
+          // Normal OAuth sign-in — gas-session-created deferred the UI show
+          // until the GAS backend confirmed the session via gas-auth-ok.
+          showApp(_pendingSessionShow.email, _pendingSessionShow.displayName);
+          _pendingSessionShow = null;
+        }
       }
 
       // Heartbeat expired

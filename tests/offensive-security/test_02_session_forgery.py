@@ -69,10 +69,10 @@ def run_test():
             page.evaluate(f"""() => {{
                 var token = {json.dumps(token)};
                 // Try both storage types (standard uses localStorage, HIPAA uses sessionStorage)
-                sessionStorage.setItem('testauth1_session', token);
-                sessionStorage.setItem('testauth1_email', 'attacker@evil.com');
-                localStorage.setItem('testauth1_session', token);
-                localStorage.setItem('testauth1_email', 'attacker@evil.com');
+                sessionStorage.setItem('gas_session_token', token);
+                sessionStorage.setItem('gas_user_email', 'attacker@evil.com');
+                localStorage.setItem('gas_session_token', token);
+                localStorage.setItem('gas_user_email', 'attacker@evil.com');
             }}""")
 
             # Now reload the page — does it accept the forged token?
@@ -95,8 +95,8 @@ def run_test():
                         var app = document.getElementById('gas-app');
                         return app ? (app.offsetHeight > 0 && app.offsetWidth > 0) : false;
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null,
                     iframeSrc: (function() {
                         var f = document.getElementById('gasApp');
                         return f ? f.src : 'no_iframe';
@@ -175,8 +175,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? window.getComputedStyle(w).display : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null,
                     iframeSrc: (function() {
                         var f = document.getElementById('gasApp');
                         return f ? f.src.substring(0, 80) : 'no_iframe';
@@ -240,8 +240,8 @@ def run_test():
             // If the attacker's key was accepted, messages signed with it would pass
             // We can check indirectly by seeing which email was stored
             return {
-                email: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email'),
-                token: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session')
+                email: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email'),
+                token: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token')
             };
         }""")
 

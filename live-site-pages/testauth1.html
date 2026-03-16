@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https: ; object-src 'none'; base-uri 'self';">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.99w">
+  <meta name="build-version" content="v02.00w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1027,6 +1027,7 @@
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
     var _directSessionLoad = false; // true when iframe was loaded directly with ?session= (Use Here) — skips the reload in gas-session-created
+    var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
 
     function initGoogleSignIn() {
       signInClient = google.accounts.oauth2.initTokenClient({
@@ -1220,10 +1221,10 @@
           if (data.absoluteTimeout > 0) {
             ABSOLUTE_SESSION_DURATION = data.absoluteTimeout;
           }
-          showApp(data.email, data.displayName);
-          startCountdownTimers();
-          startHeartbeat();
-          broadcastTabClaim();
+          // Defer showApp until gas-auth-ok confirms the session is valid server-side.
+          // This prevents a forged gas-session-created postMessage from hiding the auth wall
+          // before the GAS backend has validated the token.
+          _pendingSessionShow = { email: data.email, displayName: data.displayName };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
           // "Use Here" reclaims are handled by gas-auth-ok instead (the GAS
@@ -1301,6 +1302,14 @@
           // momentarily.  Suppress the false warning.
           _expiryWarningShown = false;
           hideAllWarningBanners();
+        } else if (_pendingSessionShow) {
+          // Normal OAuth sign-in — gas-session-created deferred the UI show
+          // until the GAS backend confirmed the session via gas-auth-ok.
+          showApp(_pendingSessionShow.email, _pendingSessionShow.displayName);
+          startCountdownTimers();
+          startHeartbeat();
+          broadcastTabClaim();
+          _pendingSessionShow = null;
         } else if (data.needsReauth) {
           showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
         }

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
 
 ## [Unreleased]
+
+## [v02.00w] — 2026-03-16 09:43:13 AM EST — v04.08r
+
+### Security
+- Sign-in screen now stays visible until the server confirms your session is valid, preventing a potential UI spoofing issue
 
 ## [v01.99w] — 2026-03-15 09:59:28 PM EST — v03.96r
 

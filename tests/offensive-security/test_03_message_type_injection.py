@@ -72,8 +72,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? w.classList.contains('hidden') : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null,
                     protoIsAdmin: ({}).__proto__.isAdmin,
                     protoAuthenticated: ({}).__proto__.authenticated
                 };
@@ -98,10 +98,10 @@ def run_test():
 
         # Pre-plant a fake session to see if the attacker can destroy it
         page.evaluate("""() => {
-            sessionStorage.setItem('testauth1_session', 'user-valid-session');
-            sessionStorage.setItem('testauth1_email', 'user@legit.com');
-            localStorage.setItem('testauth1_session', 'user-valid-session');
-            localStorage.setItem('testauth1_email', 'user@legit.com');
+            sessionStorage.setItem('gas_session_token', 'user-valid-session');
+            sessionStorage.setItem('gas_user_email', 'user@legit.com');
+            localStorage.setItem('gas_session_token', 'user-valid-session');
+            localStorage.setItem('gas_user_email', 'user@legit.com');
         }""")
 
         dos_messages = [
@@ -116,10 +116,10 @@ def run_test():
         for i, msg in enumerate(dos_messages):
             # Restore the session before each attempt
             page.evaluate("""() => {
-                sessionStorage.setItem('testauth1_session', 'user-valid-session');
-                sessionStorage.setItem('testauth1_email', 'user@legit.com');
-                localStorage.setItem('testauth1_session', 'user-valid-session');
-                localStorage.setItem('testauth1_email', 'user@legit.com');
+                sessionStorage.setItem('gas_session_token', 'user-valid-session');
+                sessionStorage.setItem('gas_user_email', 'user@legit.com');
+                localStorage.setItem('gas_session_token', 'user-valid-session');
+                localStorage.setItem('gas_user_email', 'user@legit.com');
             }""")
 
             page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
@@ -137,8 +137,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? window.getComputedStyle(w).display : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null,
                     hasMessageKey: (typeof _messageKey !== 'undefined' && _messageKey !== null) ? 'yes' : 'no'
                 };
             }""")
@@ -185,8 +185,8 @@ def run_test():
                     var w = document.getElementById('auth-wall');
                     return w ? window.getComputedStyle(w).display : 'no_wall';
                 })(),
-                storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
             };
         }""")
 
@@ -220,8 +220,8 @@ def run_test():
                     var w = document.getElementById('auth-wall');
                     return w ? window.getComputedStyle(w).display : 'no_wall';
                 })(),
-                storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
             };
         }""")
 
@@ -270,8 +270,8 @@ def run_test():
                             var w = document.getElementById('auth-wall');
                             return w ? w.classList.contains('hidden') : 'no_wall';
                         })(),
-                        storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                        storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                        storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                        storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
                     };
                 }""")
 

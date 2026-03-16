@@ -90,8 +90,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? w.classList.contains('hidden') : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
                 };
             }""")
 
@@ -171,8 +171,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? w.classList.contains('hidden') : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
                 };
             }""")
             target_host = TARGET_URL.split("//")[1].split("/")[0]
@@ -244,8 +244,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? w.classList.contains('hidden') : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
                 };
             }""")
 
@@ -300,8 +300,8 @@ def run_test():
                         var w = document.getElementById('auth-wall');
                         return w ? window.getComputedStyle(w).display : 'no_wall';
                     })(),
-                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
-                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                    storedSession: sessionStorage.getItem('gas_session_token') || localStorage.getItem('gas_session_token') || null,
+                    storedEmail: sessionStorage.getItem('gas_user_email') || localStorage.getItem('gas_user_email') || null
                 };
             }""")
 

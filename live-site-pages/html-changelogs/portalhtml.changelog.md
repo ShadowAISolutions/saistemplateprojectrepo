@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 8/100`
+`Sections: 9/100`
 
 ## [Unreleased]
+
+## [v01.09w] — 2026-03-16 09:43:13 AM EST — v04.08r
+
+### Security
+- Sign-in screen now stays visible until the server confirms your session is valid, preventing a potential UI spoofing issue
 
 ## [v01.08w] — 2026-03-14 08:59:29 PM EST — v03.54r
 
