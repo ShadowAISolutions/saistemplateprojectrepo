@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 62/100`
+`Sections: 63/100`
 
 ## [Unreleased]
+
+## [v04.27r] — 2026-03-16 02:50:53 PM EST
+
+### Added
+- Spinner animation on "Signing in…" and "Reconnecting…" screens — provides visual feedback while waiting for session setup or verification
+
+#### `testauth1.html` — v02.10w
+
+##### Added
+- Spinning loading indicator on the "Signing in…" and "Reconnecting…" screens
 
 ## [v04.26r] — 2026-03-16 02:40:38 PM EST
 
