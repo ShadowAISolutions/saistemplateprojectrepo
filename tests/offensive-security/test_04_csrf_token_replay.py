@@ -13,6 +13,7 @@ auth flow where tokens are exchanged between Google, the browser, and GAS.
 
 import sys
 import json
+import re
 import secrets
 from urllib.parse import urlencode
 from playwright.sync_api import sync_playwright
@@ -214,12 +215,20 @@ def run_test():
                 content = probe_page.content()
 
                 # Check what the GAS backend returned
-                has_session_token = 'sessionToken' in content and 'forged' not in content.lower()
+                # Look for a JSON-structured session token response (not just the word
+                # 'sessionToken' which appears in the GAS app's own JavaScript source).
+                # A real acceptance would return JSON with a sessionToken value, not
+                # an HTML page that happens to contain the variable name in its code.
                 has_auth_ok = 'gas-auth-ok' in content
                 has_error = 'error' in content.lower() or 'denied' in content.lower() or 'invalid' in content.lower()
 
-                # The GAS backend should reject forged tokens
-                blocked = not has_session_token and not has_auth_ok
+                # Check for actual token issuance: a JSON response with a real token value
+                # (not just the variable name in HTML/JS source code)
+                has_real_token = bool(re.search(r'"sessionToken"\s*:\s*"[a-f0-9]{20,}"', content))
+
+                # The GAS backend should reject forged tokens.
+                # Blocked if: error response received OR no real token issued and no auth-ok
+                blocked = has_error or (not has_real_token and not has_auth_ok)
                 status = "BLOCKED" if blocked else "BYPASSED"
                 color = "\033[92m" if blocked else "\033[91m"
 
@@ -228,7 +237,7 @@ def run_test():
                 # Show truncated response body for diagnosis
                 body_preview = content.replace('\n', ' ')[:120]
                 print(f"    response body: {body_preview}...")
-                print(f"    has_session_token: {has_session_token}, has_auth_ok: {has_auth_ok}, has_error: {has_error}")
+                print(f"    has_real_token: {has_real_token}, has_auth_ok: {has_auth_ok}, has_error: {has_error}")
                 if has_error:
                     print(f"    → GAS returned error response (correct behavior)")
                 if not blocked:
