@@ -11,6 +11,35 @@
 
 ---
 
+## Architectural Clarification — HTML Auth Layer vs. GAS PHI Layer
+
+> **Developer note (added post-audit):** The HTML layer is **authentication only** — it handles sign-in, session establishment, and token exchange. **No PHI is stored, displayed, or processed at the HTML layer.** All Protected Health Information (PHI) lives exclusively on the GAS (Google Apps Script) layer, which enforces its own independent access controls, encryption, and audit logging.
+
+This distinction has material impact on the findings below:
+
+### Findings whose effective severity is reduced by this architecture
+
+| # | Finding | Why it's reduced |
+|---|---------|-----------------|
+| C-5 | sessionStorage token exposure | Token theft grants access to the auth layer only — not directly to PHI. The attacker still needs to pass GAS-layer validation to reach any health data |
+| H-4 | Client-side timers authoritative | If the GAS layer independently enforces session timeouts, bypassing client-side timers cannot extend PHI access |
+| M-8 | No auth lifecycle audit trail | HIPAA audit trail requirements are most critical at the PHI-access layer (GAS). Client-side auth event logging is still recommended but is not the compliance-critical surface |
+
+### Findings that remain critical regardless of this architecture
+
+| # | Finding | Why it's still critical |
+|---|---------|----------------------|
+| C-1 | DJB2 hash for message signing | Message integrity matters for the auth handoff — a forged message could manipulate the authentication flow that grants access to the GAS layer |
+| C-2 | postMessage wildcard with access token | The access token sent via `'*'` targetOrigin is what authenticates the user to GAS. Leaking it could grant an attacker a legitimate-looking session at the PHI layer |
+| C-3 | api.ipify.org without BAA | IP address is captured at the HTML layer and is PHI under HIPAA OCR guidance — this violation exists independently of where other PHI lives |
+| C-4 | No MFA | Authentication happens here. If the front door is weak, the GAS layer's protections are irrelevant — the attacker gets a legitimate session |
+
+### Key takeaway
+
+**The HTML auth layer is the front door.** Even though PHI lives behind the GAS layer, a compromised authentication flow gives attackers a legitimate-looking session to access GAS endpoints. The auth layer doesn't need to defend against every theoretical client-side attack, but the **authentication handoff** (OAuth token → GAS session) must be airtight. When the GAS layer is built, that's where the HIPAA-heavy controls land: encryption at rest, audit logging, minimum necessary access, session binding, and BAA-covered services only.
+
+---
+
 ## Findings Chart
 
 ### CRITICAL — Must fix before any PHI touches this system
