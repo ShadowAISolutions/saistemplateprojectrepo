@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.35g] — 2026-03-15 08:44:53 PM EST — v03.93r
+
+### Added
+- Stricter sign-in protection: repeated failed sign-in attempts now trigger escalating lockout periods (HIPAA mode) instead of a single flat limit
+- New security settings for content clearing on session expiry and escalating lockout
 
 ## [v01.34g] — 2026-03-15 06:46:09 PM EST — v03.83r
 

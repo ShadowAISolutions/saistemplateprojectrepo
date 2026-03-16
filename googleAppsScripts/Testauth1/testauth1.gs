@@ -1,4 +1,4 @@
-var VERSION = "v01.34g";
+var VERSION = "v01.35g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -69,7 +69,9 @@ var PRESETS = {
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
     TOKEN_EXCHANGE_METHOD: 'url',
     ENABLE_CROSS_DEVICE_ENFORCEMENT: true,
-    ENABLE_DATA_OP_VALIDATION: false   // Data ops execute without session re-validation (current behavior)
+    ENABLE_DATA_OP_VALIDATION: false,  // Data ops execute without session re-validation (current behavior)
+    ENABLE_DOM_CLEARING_ON_EXPIRY: false,  // Auth wall overlay only (current behavior)
+    ENABLE_ESCALATING_LOCKOUT: false   // Use existing flat rate limit (5/5min)
   },
   hipaa: {
     // SESSION_EXPIRATION: 900,        // seconds — rolling session lifetime, reset by heartbeats (15min)
@@ -95,7 +97,9 @@ var PRESETS = {
     EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS',
     TOKEN_EXCHANGE_METHOD: 'postMessage',
     ENABLE_CROSS_DEVICE_ENFORCEMENT: true,
-    ENABLE_DATA_OP_VALIDATION: true    // Every google.script.run data op validates session first
+    ENABLE_DATA_OP_VALIDATION: true,   // Every google.script.run data op validates session first
+    ENABLE_DOM_CLEARING_ON_EXPIRY: true,   // Destroy GAS iframe content on session expiry
+    ENABLE_ESCALATING_LOCKOUT: true    // Escalating lockout tiers (5min → 30min → 6hr)
   }
 };
 
@@ -392,20 +396,60 @@ function exchangeTokenForSession(accessToken) {
     return { success: false, error: "no_token" };
   }
 
-  // Rate limiting: max 5 failed attempts per token fingerprint per 5-minute window
+  // Rate limiting: configurable via ENABLE_ESCALATING_LOCKOUT toggle
   var rlCache = CacheService.getScriptCache();
   var tokenFingerprint = 'ratelimit_' + accessToken.substring(0, 16);
   var attempts = rlCache.get(tokenFingerprint);
   var attemptCount = attempts ? parseInt(attempts, 10) : 0;
-  if (attemptCount >= 5) {
-    auditLog('login_failed', '', 'rate_limited', { fingerprint: tokenFingerprint.substring(0, 20) });
-    return { success: false, error: "rate_limited" };
+
+  if (!AUTH_CONFIG.ENABLE_ESCALATING_LOCKOUT) {
+    // Standard preset: flat rate limit (5 failures / 5-minute window)
+    if (attemptCount >= 5) {
+      auditLog('login_failed', '', 'rate_limited', { fingerprint: tokenFingerprint.substring(0, 20) });
+      return { success: false, error: "rate_limited" };
+    }
+  } else {
+    // HIPAA preset: escalating lockout tiers
+    // Tier 1: 5 failures → 5 min lockout
+    // Tier 2: 10 cumulative failures → 30 min lockout
+    // Tier 3: 20 cumulative failures → 6 hr lockout
+    var LOCKOUT_TIER1 = 5;
+    var LOCKOUT_TIER2 = 10;
+    var LOCKOUT_TIER3 = 20;
+    var LOCKOUT_TIER1_DURATION = 300;    // 5 minutes
+    var LOCKOUT_TIER2_DURATION = 1800;   // 30 minutes
+    var LOCKOUT_TIER3_DURATION = 21600;  // 6 hours
+
+    if (attemptCount >= LOCKOUT_TIER3) {
+      auditLog('security_alert', '', 'account_locked_tier3',
+        { fingerprint: tokenFingerprint.substring(0, 20), attempts: attemptCount });
+      return { success: false, error: "account_locked" };
+    }
+    if (attemptCount >= LOCKOUT_TIER2) {
+      auditLog('login_failed', '', 'rate_limited_tier2',
+        { fingerprint: tokenFingerprint.substring(0, 20), attempts: attemptCount });
+      return { success: false, error: "rate_limited" };
+    }
+    if (attemptCount >= LOCKOUT_TIER1) {
+      auditLog('login_failed', '', 'rate_limited',
+        { fingerprint: tokenFingerprint.substring(0, 20), attempts: attemptCount });
+      return { success: false, error: "rate_limited" };
+    }
+  }
+
+  // Compute lockout TTL for failed login increments
+  var rlTtl = 300;  // Default: 5 minutes (standard preset flat rate limit)
+  if (AUTH_CONFIG.ENABLE_ESCALATING_LOCKOUT) {
+    var nextCount = attemptCount + 1;
+    if (nextCount >= 20) rlTtl = 21600;       // Tier 3: 6 hours
+    else if (nextCount >= 10) rlTtl = 1800;   // Tier 2: 30 minutes
+    // else rlTtl stays 300 (Tier 1: 5 minutes)
   }
 
   var userInfo = validateGoogleToken(accessToken);
   if (!userInfo || userInfo.status === "not_signed_in") {
     auditLog('login_failed', '', 'invalid_token', { reason: 'Google token validation failed' });
-    rlCache.put(tokenFingerprint, String(attemptCount + 1), 300);
+    rlCache.put(tokenFingerprint, String(attemptCount + 1), rlTtl);
     return { success: false, error: "invalid_token" };
   }
 
@@ -428,7 +472,7 @@ function exchangeTokenForSession(accessToken) {
     if (!domainAllowed) {
       auditLog('login_failed', userInfo.email, 'domain_rejected',
         { domain: emailDomain, allowed: AUTH_CONFIG.ALLOWED_DOMAINS.join(',') });
-      rlCache.put(tokenFingerprint, String(attemptCount + 1), 300);
+      rlCache.put(tokenFingerprint, String(attemptCount + 1), rlTtl);
       return { success: false, error: "domain_not_allowed" };
     }
   }
@@ -440,7 +484,7 @@ function exchangeTokenForSession(accessToken) {
     if (!checkSpreadsheetAccess(userInfo.email)) {
       auditLog('login_failed', userInfo.email, 'access_denied',
         { reason: 'No spreadsheet access' });
-      rlCache.put(tokenFingerprint, String(attemptCount + 1), 300);
+      rlCache.put(tokenFingerprint, String(attemptCount + 1), rlTtl);
       return { success: false, error: "not_authorized" };
     }
   }

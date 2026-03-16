@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.97w] — 2026-03-15 08:44:53 PM EST — v03.93r
+
+### Added
+- Session expiry now fully clears any displayed data from the page (HIPAA mode) — prevents data from remaining visible in browser tools after your session ends
+- Improved error messages when sign-in is blocked due to too many failed attempts
 
 ## [v01.96w] — 2026-03-15 08:28:17 PM EST — v03.92r
 

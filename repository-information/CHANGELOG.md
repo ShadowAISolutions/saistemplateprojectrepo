@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 28/100`
+`Sections: 29/100`
 
 ## [Unreleased]
+
+## [v03.93r] — 2026-03-15 08:44:53 PM EST
+
+### Added
+- EMR Security Hardening Phase 4: DOM clearing on session expiry — GAS iframe destroyed (`about:blank`) when session expires to prevent PHI exposure via DevTools (HIPAA § 164.312(a)(2)(iii), § 164.312(c)(1))
+- EMR Security Hardening Phase 6: Escalating account lockout — three-tier system (5min → 30min → 6hr) replacing flat 5-failure rate limit (HIPAA § 164.312(d), NIST SP 800-63B § 5.2.2)
+- `ENABLE_DOM_CLEARING_ON_EXPIRY` toggle in both GAS presets and HTML_CONFIG — `false` (standard) preserves overlay-only behavior, `true` (HIPAA) destroys iframe content
+- `ENABLE_ESCALATING_LOCKOUT` toggle in both GAS presets — `false` (standard) preserves flat 5/5min rate limit, `true` (HIPAA) enables tiered lockout
+- Client-side error messages for `account_locked` and `rate_limited` login failures
+
+#### `testauth1.html` — v01.97w
+
+##### Added
+- DOM clearing on session expiry — GAS iframe replaced with `about:blank` to destroy any patient data in the DOM
+- GAS iframe auto-reload on re-authentication after DOM clearing
+- User-facing error messages for account lockout and rate limiting
+
+#### `testauth1.gs` — v01.35g
+
+##### Added
+- `ENABLE_DOM_CLEARING_ON_EXPIRY` toggle in standard (`false`) and HIPAA (`true`) presets
+- `ENABLE_ESCALATING_LOCKOUT` toggle in standard (`false`) and HIPAA (`true`) presets
+- Escalating lockout: Tier 1 (5 failures/5min), Tier 2 (10 failures/30min), Tier 3 (20 failures/6hr)
+- Dynamic lockout TTL computation for rate limit counter persistence
 
 ## [v03.92r] — 2026-03-15 08:28:17 PM EST
 
