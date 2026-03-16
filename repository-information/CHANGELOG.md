@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
 
 ## [Unreleased]
+
+## [v04.31r] — 2026-03-16 03:19:06 PM EST
+
+### Added
+- IP format validation on client-reported IP addresses — validates IPv4/IPv6 format and truncates to 45 characters at three layers: host page, GAS inner iframe, and GAS server-side. Prevents log injection via arbitrary strings in the IP field
+
+#### `testauth1.html` — v02.12w
+
+##### Added
+- IP address validation before logging — malformed values are now rejected instead of stored as-is
+
+#### `testauth1.gs` — v01.46g
+
+##### Added
+- Server-side IP format validation on URL parameter — rejects non-IP strings before audit logging
+- Inner iframe IP validation on both XHR response and host postMessage fallback
 
 ## [v04.30r] — 2026-03-16 03:14:55 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.45g";
+var VERSION = "v01.46g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -973,7 +973,13 @@ function doGet(e) {
   var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
 
   // Client IP from URL parameter (Phase 7 — IP Logging, client-reported)
-  var clientIp = (e && e.parameter && e.parameter.clientIp) || '';
+  // Validated server-side: format check + 45-char truncation to prevent log injection
+  var rawIp = (e && e.parameter && e.parameter.clientIp) || '';
+  var clientIp = '';
+  if (rawIp) {
+    var t = String(rawIp).trim().substring(0, 45);
+    clientIp = (/^(\d{1,3}\.){3}\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) ? t : 'invalid';
+  }
 
   // Security event reporting — client-side defense layers report blocked attacks
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
@@ -1295,12 +1301,18 @@ function doGet(e) {
         // Client IP for audit logging (Phase 7 — IP Logging)
         // Dual-path: (1) direct XHR fetch, (2) host page postMessage fallback
         var _clientIp = '';
+        function _valIp(v) {
+          if (!v || typeof v !== 'string') return 'unknown';
+          var t = v.trim().substring(0, 45);
+          if (/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) return t;
+          return 'invalid';
+        }
         if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
           try {
             var _ipXhr = new XMLHttpRequest();
             _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
             _ipXhr.timeout = 5000;
-            _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _ipXhr.responseText.trim() || 'unknown'; };
+            _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _valIp(_ipXhr.responseText); };
             _ipXhr.onerror = function() { _clientIp = 'unknown'; };
             _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
             _ipXhr.send();
@@ -1313,7 +1325,7 @@ function doGet(e) {
         window.addEventListener('message', function(e) {
           // Receive client IP from host page (Phase 7 — IP Logging)
           if (e.data && e.data.type === 'host-client-ip') {
-            _clientIp = e.data.ip || '';
+            _clientIp = _valIp(e.data.ip);
           }
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run

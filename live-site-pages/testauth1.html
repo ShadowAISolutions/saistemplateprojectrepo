@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.11w">
+  <meta name="build-version" content="v02.12w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1160,12 +1160,23 @@
     var _messageKey = null;
     var _clientIp = '';  // Client IP for audit logging (Phase 7 — IP Logging)
 
+    // Validate IP format (IPv4 or IPv6) and truncate to max 45 chars.
+    // Prevents log injection via arbitrary strings in the client-reported IP field.
+    // Does NOT prevent spoofing (platform limitation) — only ensures the value is well-formed.
+    function _validateIp(ip) {
+      if (!ip || typeof ip !== 'string') return 'unknown';
+      var trimmed = ip.trim().substring(0, 45);
+      // IPv4: 1.2.3.4 — IPv6: fe80::1, ::1, 2001:db8::1, etc.
+      if (/^(\d{1,3}\.){3}\d{1,3}$/.test(trimmed) || /^[0-9a-fA-F:]+$/.test(trimmed)) return trimmed;
+      return 'invalid';
+    }
+
     // Fetch client IP on host page (not inside GAS iframe — avoids sandbox CSP issues)
     if (HTML_CONFIG.ENABLE_IP_LOGGING) {
       fetch('https://api.ipify.org?format=json')
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          _clientIp = data.ip || 'unknown';
+          _clientIp = _validateIp(data.ip);
           // Forward IP to GAS iframe so it can pass to google.script.run calls
           var gasFrame = document.getElementById('gas-app');
           if (gasFrame && gasFrame.contentWindow) {
