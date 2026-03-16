@@ -4,52 +4,41 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-15 08:32:43 PM EST
-**Repo version:** v03.92r
+**Date:** 2026-03-15 10:42:40 PM EST
+**Repo version:** v04.01r
 
 ### What was done
-- **v03.81r** — EMR Security Hardening Phase 1: HMAC fail-closed enforcement + Phase 2: domain restriction validation in `testauth1.gs`
-- **v03.82r** — Sign-in error messages now surface specific misconfiguration details (HMAC secret missing, domain restriction misconfigured, domain not allowed)
-- **v03.83r** — EMR Security Hardening Phase 3: Server-side data operation validation — `validateSessionForData()` gate, `saveNote()` with session validation, `gas-session-invalid` postMessage type
-- **v03.84r–v03.92r** — Series of "Use Here" tab-reclaim UX fixes discovered during testing:
-  - v03.84r: Fixed blank GAS iframe when clicking "Use Here" on non-original tab
-  - v03.85r: Rate-limited activity-triggered heartbeats + auto-clear stuck heartbeat requests
-  - v03.86r: Activity now updates timestamp instead of forcing immediate heartbeat
-  - v03.87r: Session token transfer via BroadcastChannel for seamless tab reclaim
-  - v03.88r: Eliminated GAS iframe flicker on "Use Here" (visibility hidden + `_directSessionLoad` flag)
-  - v03.89r: Absolute timer preservation in `gas-session-created` (partial fix)
-  - v03.90r: Moved `_directSessionLoad` handling from `gas-session-created` to `gas-auth-ok` handler
-  - v03.91r: Preserved `ABSOLUTE_START_KEY` across `stopCountdownTimers()` in tab-claim handler
-  - v03.92r: Suppressed false "Session expiring soon" warning after tab reclaim
+- **v03.93r** — EMR Security Hardening Phases 4–5: DOM clearing on session expiry (`ENABLE_DOM_CLEARING_ON_EXPIRY`), content clearing on expiry (`ENABLE_CONTENT_CLEARING_ON_EXPIRY`), and escalating lockout (`ENABLE_ESCALATING_LOCKOUT`) with new security settings in both standard and hipaa presets
+- **v03.94r** — Phase 6: Escalating lockout refinements
+- **v03.95r** — Phase 7 & 8: IP logging (`ENABLE_IP_LOGGING`) via `api.ipify.org` + Data-level audit logging (`ENABLE_DATA_AUDIT_LOG`) with `DataAuditLog` sheet, `dataAuditLog()` function, and `validateSessionForData()` gate
+- **v03.96r** — Fix: moved IP fetch from GAS iframe to host page (GAS sandbox blocks `fetch()`), forwarded via `host-client-ip` postMessage
+- **v03.97r** — Fix: added direct `XMLHttpRequest` to `api.ipify.org` inside GAS iframe (XHR works in sandbox, `fetch` doesn't), with host-page postMessage as fallback — this one worked
+- **v03.98r** — Security: truncated sessionId in DataAuditLog Details JSON to 8 chars (was full token) to prevent token theft, with undo comment
+- **v03.99r** — Added `Utilities.getUuid()` as resourceId for patient note audit entries
+- **v04.00r** — Renamed `AuditLog` sheet to `SessionAuditLog` for clarity alongside `DataAuditLog`
+- **v04.01r** — Added `sheet.protect()` to SessionAuditLog for parity with DataAuditLog's tamper-resistant protection
 
 ### Where we left off
-EMR Security Hardening Phases 1–3 are complete. All "Use Here" tab-reclaim bugs found during testing are fixed. Phase 4 (DOM Clearing on Session Expiry) is the next implementation target.
+**All 8 phases of the EMR Security Hardening Plan (10-EMR-SECURITY-HARDENING-PLAN.md) are COMPLETE.** Post-implementation polish is done (IP fix, sessionId truncation, resourceId, sheet rename, sheet protection).
 
-**NEXT SESSION: Continue EMR Security Hardening Plan** — `repository-information/10-EMR-SECURITY-HARDENING-PLAN.md`
-- Phases 1–3 DONE, Phase 4 next
-- Remaining phases:
-  - **Phase 4 (P1):** DOM Clearing on Session Expiry — `ENABLE_DOM_CLEARING_ON_EXPIRY`, sets `gasFrame.src = 'about:blank'` to destroy PHI in DOM
-  - **Phase 5 (P2):** Emergency/break-glass access
-  - **Phase 6 (P2):** Escalating account lockout
-  - **Phase 7 (P3):** IP audit logging
-  - **Phase 8 (P3):** Data-level audit logging
+**Plan 11 (GAS Application Layer — `11-EMR-GAS-APPLICATION-LAYER-PLAN.md`) is written but NOT yet started.** It has 7 phases: RBAC, Minimum Necessary, Input Validation, PHI Segmentation, Data Retention, Consent Tracking, Disclosure Logging.
 
 ### Key technical context
-- **`_directSessionLoad` flag** — distinguishes "Use Here" iframe loads from OAuth token-exchange loads; critical for handler routing
-- **`gas-auth-ok` vs `gas-session-created`** — GAS sends `gas-auth-ok` for valid session reloads (Use Here path), `gas-session-created` only during OAuth token exchange
-- **`ABSOLUTE_START_KEY` preservation** — must be saved before `stopCountdownTimers()` in tab-claim handler and restored after, since `stopCountdownTimers()` clears it
-- **`_expectingSession` guard** — for initial page-load srcdoc race condition only, not for Use Here flow
-- **Eviction tombstones** — 5-minute cache entries (`evicted_TOKEN`) for cross-device session differentiation in heartbeat responses
+- **GAS iframe sandbox restrictions**: `fetch()` is blocked, `postMessage` from host to inner frame doesn't reach the GAS HTML (Google wraps it in nested iframes), but `XMLHttpRequest` works — this is the reliable method for in-iframe network requests
+- **Dual audit logs**: `SessionAuditLog` (security events — logins, lockouts, alerts, expirations) and `DataAuditLog` (PHI access — who touched what data, when, with what resourceId). Both are needed — different audiences, different HIPAA requirements
+- **SessionId truncation**: first 8 chars only in both the SessionId column AND the Details JSON — prevents token theft from audit spreadsheets. Undo comment in `saveNote()`: "To log the full token, change the line below to: sessionId: sessionToken,"
+- **IP logging architecture**: XHR to `api.ipify.org` inside GAS iframe (primary), host-page postMessage (fallback). IP passed directly as 3rd parameter to `saveNote()`, not reliant on heartbeat round-trip
+- **Sheet protection**: both audit log sheets use `setWarningOnly(true)` — warns editors but doesn't hard-block (Google Sheets limitation — only the owner can set strict protection)
 
 ### Key decisions made
-- Phases implemented incrementally with user testing between each push
-- "Use Here" reclaim path routes through `gas-auth-ok` handler, not `gas-session-created`
-- Server-side `needsReauth` flag is suppressed during tab reclaim (server session may be near expiry but next heartbeat will extend it)
+- Keep full IP and full resourceId in audit logs (not secrets — unlike sessionId which IS a secret)
+- Keep both SessionAuditLog and DataAuditLog (different purposes, one overlap in `saveNote()` is by design)
+- Existing spreadsheet tabs created before protection was added need manual protection or recreation
 
 ### Active context
-- Repo version: v03.92r
-- testauth1.html: v01.96w, testauth1.gs: v01.34g
-- portal.html: v01.08w, portal.gs: v01.01g
+- Repo version: v04.01r
+- testauth1.html: v01.99w, testauth1.gs: v01.42g
+- portal.html: v01.08w
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -57,10 +46,11 @@ EMR Security Hardening Phases 1–3 are complete. All "Use Here" tab-reclaim bug
 
 ## Previous Sessions
 
-**Date:** 2026-03-15 06:20:13 PM EST
-**Repo version:** v03.80r
+**Date:** 2026-03-15 08:32:43 PM EST
+**Repo version:** v03.92r
 
 ### What was done
-- **v03.69r–v03.80r** — Implemented Plan 9.2 (cross-device session enforcement), renamed plan files, CHANGELOG rotation, completed EMR hardening plan with preset-awareness and risk areas
+- **v03.81r–v03.83r** — EMR Security Hardening Phases 1–3: HMAC fail-closed, domain restriction validation, server-side data operation validation
+- **v03.84r–v03.92r** — "Use Here" tab-reclaim UX fixes (blank iframe, rate limiting, token transfer, flicker, absolute timer preservation, false expiry warnings)
 
 Developed by: ShadowAISolutions
