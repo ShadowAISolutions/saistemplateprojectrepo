@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 33/100`
+`Sections: 34/100`
 
 ## [Unreleased]
+
+## [v03.98r] — 2026-03-15 10:15:14 PM EST
+
+### Security
+- Session token in Data Audit Log Details JSON column is now truncated to 8 characters (was previously full token) to prevent token theft from audit spreadsheets
+
+#### `testauth1.gs` — v01.39g
+
+##### Security
+- Session ID truncated in Details JSON to match SessionId column truncation, with undo comment for easy reversal
 
 ## [v03.97r] — 2026-03-15 10:07:11 PM EST
 

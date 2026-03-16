@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v01.39g] — 2026-03-15 10:15:14 PM EST — v03.98r
+
+### Security
+- Session identifiers are now fully masked in all audit log columns to prevent token theft from shared spreadsheets
 
 ## [v01.38g] — 2026-03-15 10:07:11 PM EST — v03.97r
 

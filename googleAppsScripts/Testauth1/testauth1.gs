@@ -1,4 +1,4 @@
-var VERSION = "v01.38g";
+var VERSION = "v01.39g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -741,11 +741,15 @@ function saveNote(sessionToken, noteText, clientIp) {
   // Use directly-passed clientIp (from GAS iframe), fall back to session-stored IP (from heartbeat)
   var ip = clientIp || user.clientIp || '';
   // Data operation (only runs if session is valid)
+  // Security: sessionId omitted from session audit log details (it's already in the SessionId column via dataAuditLog)
   auditLog('data_access', user.email, 'write',
     { operation: 'saveNote', noteLength: (noteText || '').length, clientIp: ip });
   // Data-level audit log (Phase 8 — HIPAA per-operation logging)
+  // Security: sessionId truncated to 8 chars to prevent token theft from audit logs.
+  // To log the full token, change the line below to: sessionId: sessionToken,
+  var truncatedSessionId = sessionToken ? sessionToken.substring(0, 8) + '...' : '';
   dataAuditLog(user, 'write', 'patient_note', '', {
-    sessionId: sessionToken,
+    sessionId: truncatedSessionId,
     isEmergencyAccess: user.isEmergencyAccess,
     noteLength: (noteText || '').length,
     clientIp: ip
