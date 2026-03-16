@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
 
 ## [Unreleased]
+
+## [v04.20r] — 2026-03-16 01:47:48 PM EST
+
+### Security
+- Added `form-action 'self'` to CSP meta tag on testauth1 — prevents form submissions to attacker-controlled URLs
+
+### Changed
+- Updated SECURITY-FINDINGS.md with actual-run results for test 07 (6/6 blocked, including timing oracle confirmation) and test 08 (9/9 blocked, full CSP audit table)
+- Upgraded test 08 status from "MOSTLY BLOCKED / Medium" to "BLOCKED / Low" after adding `form-action` directive
+
+#### `testauth1.html` — v02.03w
+
+##### Security
+- Added `form-action 'self'` to Content Security Policy — closes the last missing directive identified during offensive security testing
 
 ## [v04.19r] — 2026-03-16 01:32:02 PM EST
 
