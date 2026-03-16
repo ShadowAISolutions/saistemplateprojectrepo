@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-15 10:29:39 PM EST` · Repo version: `v04.01r`
+Last updated: `2026-03-16 08:47:20 AM EST` · Repo version: `v04.02r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -112,6 +112,15 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/init-repo.sh">init-repo.sh</a>            — [template] One-shot fork initialization script
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/scripts/setup-gas-project.sh">setup-gas-project.sh</a>    — [template] GAS project file creation script
+│
+<b>─── Tests ────────────────────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests">tests/</a>                     — [template] Security &amp; integration tests
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests/offensive-security">offensive-security/</a>    — [template] Offensive security tests (Playwright)
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/README.md">README.md</a>                         — [template] Test suite documentation
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_01_xss_postmessage.py">test_01_xss_postmessage.py</a>        — [template] XSS via postMessage injection
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_02_session_forgery.py">test_02_session_forgery.py</a>         — [template] Session token forgery &amp; fixation
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_03_message_type_injection.py">test_03_message_type_injection.py</a>  — [template] Message type spoofing &amp; protocol confusion
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_04_csrf_token_replay.py">test_04_csrf_token_replay.py</a>       — [template] OAuth token replay &amp; CSRF attacks
 │
 <b>─── Repository Information ───────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]

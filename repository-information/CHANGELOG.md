@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 37/100`
+`Sections: 38/100`
 
 ## [Unreleased]
+
+## [v04.02r] — 2026-03-16 08:47:20 AM EST
+
+### Added
+- Offensive security test suite (`tests/offensive-security/`) with 4 standalone Playwright-based attack scripts targeting testauth1 auth system
+  - Test 01: XSS via postMessage injection (unknown types, poisoned fields, raw payloads, signature bypass)
+  - Test 02: Session token forgery & fixation (storage injection, forged gas-session-created, messageKey overwrite race)
+  - Test 03: Message type spoofing & protocol confusion (prototype pollution, DoS via forced sign-out, state machine confusion, type coercion)
+  - Test 04: OAuth token replay & CSRF (fabricated tokens, nonce bypass, direct GAS endpoint probing, token leakage check)
 
 ## [v04.01r] — 2026-03-15 10:29:39 PM EST
 
