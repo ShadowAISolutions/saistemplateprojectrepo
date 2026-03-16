@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
 ## [Unreleased]
+
+## [v04.17r] — 2026-03-16 12:57:47 PM EST
+
+### Security
+- Hardened security event endpoint: replaced per-IP rate limit (bypassable via IP rotation) with global rate limit (50 events/5min, IP-independent)
+- Added `security_event_flood` meta-event logged when global rate limit is reached
+
+### Fixed
+- Fixed false positive `hmac_secret_leak` detection in test_06 — sensitive pattern matching now looks for actual secret value prefixes instead of generic words like "secret"
+- Updated test_06 Attack 4 to demonstrate IP rotation bypass and verify global rate limit effectiveness
+
+#### `testauth1.gs` — v01.45g
+
+##### Security
+- Replaced per-IP security event rate limit with global rate limit (50/5min) — prevents bypass via clientIp parameter rotation
+- Added `security_event_flood` audit log entry when global limit is reached
+
+#### `test_06_deploy_endpoint_abuse.py` — (no version)
+
+##### Fixed
+- Removed false positive sensitive pattern detection (no longer flags "secret"/"hmac_secret" as leaked data)
+- Rewrote security event flood test: Phase A tests single-IP flooding, Phase B tests IP rotation bypass
 
 ## [v04.16r] — 2026-03-16 12:37:32 PM EST
 

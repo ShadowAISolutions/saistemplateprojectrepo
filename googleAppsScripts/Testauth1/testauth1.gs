@@ -1,4 +1,4 @@
-var VERSION = "v01.44g";
+var VERSION = "v01.45g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -978,13 +978,16 @@ function doGet(e) {
   // Security event reporting — client-side defense layers report blocked attacks
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
   if (securityEvent) {
-    // Rate limit: max 20 security events per 5-minute window (prevents abuse)
     var seCache = CacheService.getScriptCache();
-    var seRlKey = 'se_ratelimit_' + (clientIp || 'unknown').substring(0, 16);
-    var seAttempts = seCache.get(seRlKey);
-    var seCount = seAttempts ? parseInt(seAttempts, 10) : 0;
-    if (seCount < 20) {
-      seCache.put(seRlKey, String(seCount + 1), 300);
+
+    // Global rate limit: max 50 security events per 5-minute window (all sources combined)
+    // Uses a single key independent of clientIp — prevents bypass via IP rotation
+    var seGlobalKey = 'se_ratelimit_global';
+    var seGlobalAttempts = seCache.get(seGlobalKey);
+    var seGlobalCount = seGlobalAttempts ? parseInt(seGlobalAttempts, 10) : 0;
+
+    if (seGlobalCount < 50) {
+      seCache.put(seGlobalKey, String(seGlobalCount + 1), 300);
       var seDetails = {};
       try { seDetails = JSON.parse((e.parameter.details || '{}').substring(0, 500)); } catch(ex) {}
       auditLog('security_event', clientIp || 'unknown', securityEvent.substring(0, 50), {
@@ -993,11 +996,12 @@ function doGet(e) {
         userAgent: (e && e.parameter && e.parameter.ua) || '',
         page: EMBED_PAGE_URL
       });
-    } else if (seCount === 20) {
-      seCache.put(seRlKey, String(seCount + 1), 300);
-      auditLog('security_event_throttled', clientIp || 'unknown', securityEvent.substring(0, 50), {
-        message: 'Rate limit reached — further events from this IP/type suppressed for 5 minutes',
-        clientIp: clientIp,
+    } else if (seGlobalCount === 50) {
+      seCache.put(seGlobalKey, String(seGlobalCount + 1), 300);
+      auditLog('security_event_flood', 'system', 'Global rate limit reached', {
+        message: 'Max 50 security events per 5 minutes — further events suppressed regardless of source IP',
+        lastClientIp: clientIp,
+        lastEvent: securityEvent.substring(0, 50),
         page: EMBED_PAGE_URL
       });
     }

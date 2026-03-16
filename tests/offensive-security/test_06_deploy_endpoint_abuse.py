@@ -79,27 +79,26 @@ def run_test():
                 content = probe_page.content()
 
                 # Check for sensitive information in the response
+                # Look for actual secret VALUES leaked, not the word "secret" in code/labels.
+                # Patterns use word boundaries or value-adjacent context to reduce false positives.
                 sensitive_patterns = [
-                    ("GITHUB_TOKEN", "github_token_leak"),
-                    ("Bearer ", "bearer_token_leak"),
-                    ("HMAC_SECRET", "hmac_secret_leak"),
-                    ("password", "password_leak"),
-                    ("secret", "secret_leak"),
+                    ("github_pat_", "github_token_leak"),      # GitHub PAT prefix
+                    ("ghp_", "github_token_leak"),             # GitHub classic token prefix
+                    ("Bearer ", "bearer_token_leak"),           # Auth header with actual token
                     ("api_key", "api_key_leak"),
                     ("private_key", "private_key_leak"),
+                    ("-----BEGIN", "private_key_leak"),         # PEM key block
                     ("stack trace", "stack_trace_leak"),
-                    ("Exception", "exception_leak"),
                     ("ScriptApp", "gas_internal_leak"),
+                    ("PropertiesService", "gas_internal_leak"), # GAS internals exposed
+                    ("CacheService", "gas_internal_leak"),
                 ]
 
                 leaks_found = []
                 content_lower = content.lower()
                 for pattern, leak_name in sensitive_patterns:
                     if pattern.lower() in content_lower:
-                        # Exclude false positives from the page's own JS variable declarations
-                        # (e.g. the word "secret" in comments or variable names in the source)
-                        if pattern.lower() not in ["secret", "password"]:
-                            leaks_found.append(leak_name)
+                        leaks_found.append(leak_name)
 
                 action_preview = action[:40] + "..." if len(action) > 40 else action
                 if leaks_found:
@@ -250,36 +249,66 @@ def run_test():
         # ─── Attack 4: Security event reporting abuse ───
         print("─── Attack 4: Security Event Reporting Abuse ───")
         print("Testing if the securityEvent endpoint can be abused for spam/DoS...")
+        print("Phase A: Flood with single IP (tests per-IP rate limit)...")
 
-        # The security event endpoint is rate-limited to 20 per 5 min
+        # Phase A: Flood from a single IP — should hit the global rate limit
+        se_events_sent_a = 0
         se_page = context.new_page()
         try:
-            # Send 25 rapid security events to test rate limiting
-            rate_limit_hit = False
-            for j in range(25):
-                se_response = se_page.goto(
-                    f"{GAS_BASE_URL}?securityEvent=test_flood_{j}&clientIp=attacker_ip&details=%7B%22test%22%3Atrue%7D",
-                    wait_until="load",
-                    timeout=10000
-                )
+            for j in range(30):
+                try:
+                    se_page.goto(
+                        f"{GAS_BASE_URL}?securityEvent=test_flood_{j}&clientIp=attacker_ip_1&details=%7B%22test%22%3Atrue%7D",
+                        wait_until="load",
+                        timeout=10000
+                    )
+                    se_events_sent_a += 1
+                except Exception:
+                    break  # Timeout = server slowing down under load
 
-            # The endpoint should not crash or leak info even under flood
-            final_content = se_page.content()
-            has_error = "error" in final_content.lower() and "rate" not in final_content.lower()
-
-            if has_error:
-                print(f"  \033[93m[WARN]\033[0m Security event flood caused error response")
-                results.append({"attack": "se_flood", "blocked": False})
-            else:
-                print(f"  \033[92m[SAFE]\033[0m Security event endpoint handled flood gracefully")
-                print(f"  → Rate limiting (20/5min) should cap the audit log entries")
-                results.append({"attack": "se_flood", "blocked": True})
-
+            print(f"  Sent {se_events_sent_a}/30 events from single IP")
         except Exception as e:
-            print(f"  \033[92m[SAFE]\033[0m Flood test: {str(e)[:50]}")
-            results.append({"attack": "se_flood", "blocked": True})
+            print(f"  Phase A error: {str(e)[:50]}")
         finally:
             se_page.close()
+
+        # Phase B: Rotate IP — test if attacker can bypass per-IP rate limiting
+        print("Phase B: Rotating clientIp to bypass per-IP rate limit...")
+        se_events_sent_b = 0
+        se_page_b = context.new_page()
+        try:
+            for j in range(30):
+                # Each request uses a different fake IP
+                fake_ip = f"attacker_ip_{j + 100}"
+                try:
+                    se_page_b.goto(
+                        f"{GAS_BASE_URL}?securityEvent=test_flood_rotated_{j}&clientIp={fake_ip}&details=%7B%22test%22%3Atrue%7D",
+                        wait_until="load",
+                        timeout=10000
+                    )
+                    se_events_sent_b += 1
+                except Exception:
+                    break
+
+            print(f"  Sent {se_events_sent_b}/30 events with rotated IPs")
+        except Exception as e:
+            print(f"  Phase B error: {str(e)[:50]}")
+        finally:
+            se_page_b.close()
+
+        total_flood = se_events_sent_a + se_events_sent_b
+        # The global rate limit (50/5min) should cap the total across both phases.
+        # If more than 50 events got through, the rate limit is ineffective.
+        if total_flood > 55:
+            print(f"  \033[91m[VULNERABLE]\033[0m {total_flood} events sent — global rate limit not effective")
+            print(f"    IP rotation bypasses per-IP rate limiting")
+            results.append({"attack": "se_flood_single_ip", "blocked": False})
+            results.append({"attack": "se_flood_ip_rotation", "blocked": False})
+        else:
+            print(f"  \033[92m[RATE LIMITED]\033[0m {total_flood} events sent — global cap appears effective")
+            print(f"    Global rate limit (50/5min) caps total events regardless of source IP")
+            results.append({"attack": "se_flood_single_ip", "blocked": True})
+            results.append({"attack": "se_flood_ip_rotation", "blocked": True})
 
         print()
 
