@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 34/100`
+`Sections: 35/100`
 
 ## [Unreleased]
+
+## [v03.99r] — 2026-03-15 10:21:09 PM EST
+
+### Added
+- Each saved patient note now receives a unique resource ID (UUID) in the Data Audit Log, enabling individual record tracing
+
+#### `testauth1.gs` — v01.40g
+
+##### Added
+- `saveNote()` generates a UUID via `Utilities.getUuid()` and passes it as `resourceId` to the data audit log
 
 ## [v03.98r] — 2026-03-15 10:15:14 PM EST
 

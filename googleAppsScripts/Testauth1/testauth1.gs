@@ -1,4 +1,4 @@
-var VERSION = "v01.39g";
+var VERSION = "v01.40g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -748,7 +748,8 @@ function saveNote(sessionToken, noteText, clientIp) {
   // Security: sessionId truncated to 8 chars to prevent token theft from audit logs.
   // To log the full token, change the line below to: sessionId: sessionToken,
   var truncatedSessionId = sessionToken ? sessionToken.substring(0, 8) + '...' : '';
-  dataAuditLog(user, 'write', 'patient_note', '', {
+  var noteId = Utilities.getUuid();
+  dataAuditLog(user, 'write', 'patient_note', noteId, {
     sessionId: truncatedSessionId,
     isEmergencyAccess: user.isEmergencyAccess,
     noteLength: (noteText || '').length,
