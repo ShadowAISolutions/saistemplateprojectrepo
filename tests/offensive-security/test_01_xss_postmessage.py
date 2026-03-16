@@ -101,42 +101,89 @@ def run_test():
         # ─── Attack 2: XSS payloads in postMessage data ───
         print("─── Attack 2: XSS Payloads in Message Fields ───")
         print("Sending known message types with XSS payloads in values...")
+
+        # Snapshot the page's existing script count BEFORE attacks
+        # so we only detect truly NEW scripts injected by the attack
+        baseline_script_count = page.evaluate("""() => {
+            return document.querySelectorAll('script').length;
+        }""")
+
         for i, msg in enumerate(POISONED_KNOWN_MESSAGES):
             console_logs.clear()
             page_errors.clear()
 
+            # Override alert/prompt/confirm to catch actual XSS execution
+            page.evaluate("""() => {
+                window._xssTriggered = false;
+                window._origAlert = window.alert;
+                window.alert = function() { window._xssTriggered = true; };
+                window.prompt = function() { window._xssTriggered = true; };
+                window.confirm = function() { window._xssTriggered = true; };
+            }""")
+
             page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
             page.wait_for_timeout(300)
 
-            # Check for XSS execution indicators
-            xss_fired = page.evaluate("""() => {
-                // Check if any alert/prompt/confirm was called (overridden)
-                return window._xssTriggered || false;
-            }""")
+            # Check 1: Did any alert/prompt/confirm fire? (actual XSS execution)
+            xss_fired = page.evaluate("() => window._xssTriggered")
 
-            # Check if any script tags were injected into the DOM
-            injected_scripts = page.evaluate("""() => {
-                var scripts = document.querySelectorAll('script:not([src])');
-                var suspicious = [];
-                scripts.forEach(function(s) {
-                    if (s.textContent.indexOf('evil') !== -1 || s.textContent.indexOf('alert') !== -1) {
-                        suspicious.push(s.textContent.substring(0, 80));
-                    }
-                });
-                return suspicious;
+            # Check 2: Were NEW script elements added to the DOM?
+            # (existing inline scripts from the page don't count)
+            current_script_count = page.evaluate("""() => {
+                return document.querySelectorAll('script').length;
             }""")
+            new_scripts_injected = current_script_count > baseline_script_count
 
-            # Check for navigation attempts (cookie theft redirects)
+            # Check 3: Did the attacker's payload appear in innerHTML of
+            # any visible element? (rendered XSS, not just stored)
+            payload_rendered = page.evaluate(f"""() => {{
+                var payload = {json.dumps(list(msg.values())[1] if len(msg) > 1 else '')};
+                if (typeof payload !== 'string') return false;
+                // Check if the XSS payload appears in any visible element's innerHTML
+                var els = document.querySelectorAll('#auth-error, #auth-email, #user-email-display');
+                for (var i = 0; i < els.length; i++) {{
+                    if (els[i].innerHTML.indexOf('<script') !== -1 ||
+                        els[i].innerHTML.indexOf('onerror') !== -1 ||
+                        els[i].innerHTML.indexOf('<svg') !== -1 ||
+                        els[i].innerHTML.indexOf('<img') !== -1) {{
+                        return true;
+                    }}
+                }}
+                return false;
+            }}""")
+
+            # Check 4: Navigation hijack (cookie theft redirects)
             current_url = page.url
             stayed_on_page = TARGET_URL.split("//")[1] in current_url
 
-            blocked = not xss_fired and len(injected_scripts) == 0 and stayed_on_page
+            blocked = not xss_fired and not new_scripts_injected and not payload_rendered and stayed_on_page
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             print(f"  {color}[{status}]\033[0m Type: {msg['type']}, payload in: {[k for k in msg if k != 'type']}")
-            if injected_scripts:
-                print(f"    \033[91m!!! Injected script found: {injected_scripts[0][:60]}\033[0m")
+            if xss_fired:
+                print(f"    \033[91m!!! XSS EXECUTED — alert/prompt/confirm was called !!!\033[0m")
+            if new_scripts_injected:
+                print(f"    \033[91m!!! NEW <script> element injected into DOM !!!\033[0m")
+            if payload_rendered:
+                print(f"    \033[91m!!! XSS payload rendered in visible element innerHTML !!!\033[0m")
+            if not stayed_on_page:
+                print(f"    \033[91m!!! Page navigated away — possible redirect hijack !!!\033[0m")
+            if blocked:
+                # Show why it was safe
+                sink_info = page.evaluate(f"""() => {{
+                    // Check where the values actually landed
+                    var email = document.getElementById('user-email-display');
+                    var err = document.getElementById('auth-error');
+                    var sinks = [];
+                    if (email && email.textContent) sinks.push('email→textContent (safe)');
+                    if (err && err.textContent) sinks.push('error→textContent (safe)');
+                    return sinks.length > 0 ? sinks.join(', ') : 'values not rendered in DOM';
+                }}""")
+                print(f"    → Defense: {sink_info}")
             results.append({"attack": f"xss_known_type_{i}", "blocked": blocked})
+
+            # Restore alert
+            page.evaluate("() => { if (window._origAlert) window.alert = window._origAlert; }")
 
         print()
 
