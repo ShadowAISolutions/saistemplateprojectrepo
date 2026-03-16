@@ -1,4 +1,4 @@
-var VERSION = "v01.40g";
+var VERSION = "v01.41g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -61,7 +61,7 @@ var PRESETS = {
     ENABLE_DOMAIN_RESTRICTION: false,
     ALLOWED_DOMAINS: [],
     ENABLE_AUDIT_LOG: false,
-    AUDIT_LOG_SHEET_NAME: 'AuditLog',
+    AUDIT_LOG_SHEET_NAME: 'SessionAuditLog',
     AUDIT_LOG_RETENTION_YEARS: 6,
     ENABLE_HMAC_INTEGRITY: true,
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
@@ -92,7 +92,7 @@ var PRESETS = {
     ENABLE_DOMAIN_RESTRICTION: true,
     ALLOWED_DOMAINS: [],
     ENABLE_AUDIT_LOG: true,
-    AUDIT_LOG_SHEET_NAME: 'AuditLog',
+    AUDIT_LOG_SHEET_NAME: 'SessionAuditLog',
     AUDIT_LOG_RETENTION_YEARS: 6,
     ENABLE_HMAC_INTEGRITY: true,
     HMAC_SECRET_PROPERTY: 'HMAC_SECRET',
