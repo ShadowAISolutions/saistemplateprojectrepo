@@ -1,4 +1,4 @@
-var VERSION = "v01.37g";
+var VERSION = "v01.38g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1248,8 +1248,19 @@ function doGet(e) {
         }
 
         // Client IP for audit logging (Phase 7 — IP Logging)
-        // Populated by host page via host-client-ip postMessage (avoids GAS iframe sandbox issues)
+        // Dual-path: (1) direct XHR fetch, (2) host page postMessage fallback
         var _clientIp = '';
+        if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
+          try {
+            var _ipXhr = new XMLHttpRequest();
+            _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
+            _ipXhr.timeout = 5000;
+            _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _ipXhr.responseText.trim() || 'unknown'; };
+            _ipXhr.onerror = function() { _clientIp = 'unknown'; };
+            _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
+            _ipXhr.send();
+          } catch(e) { _clientIp = 'unknown'; }
+        }
 
         // Notify wrapper that auth is OK
         window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');

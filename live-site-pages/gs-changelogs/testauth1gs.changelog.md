@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.38g] — 2026-03-15 10:07:11 PM EST — v03.97r
+
+### Fixed
+- Your IP address now reliably appears in security audit records (switched to direct fetch method)
 
 ## [v01.37g] — 2026-03-15 09:59:28 PM EST — v03.96r
 
