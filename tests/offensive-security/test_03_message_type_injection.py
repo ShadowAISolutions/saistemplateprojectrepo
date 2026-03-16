@@ -64,11 +64,28 @@ def run_test():
                 return obj.isAdmin === true || obj.authenticated === true;
             }""")
 
+            # Full diagnostic
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    protoIsAdmin: ({}).__proto__.isAdmin,
+                    protoAuthenticated: ({}).__proto__.authenticated
+                };
+            }""")
+
             blocked = not polluted
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             desc = json.dumps(payload)[:60] if isinstance(payload, dict) else payload[:60]
             print(f"  {color}[{status}]\033[0m {desc}...")
+            print(f"    proto.isAdmin: {diag.get('protoIsAdmin')}, proto.authenticated: {diag.get('protoAuthenticated')}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, stored session: {diag['storedSession']}")
             if polluted:
                 print(f"    \033[91m!!! Object.prototype polluted — attacker can inject properties !!!\033[0m")
             results.append({"attack": f"proto_pollution_{i}", "blocked": blocked})
@@ -100,27 +117,44 @@ def run_test():
             # Restore the session before each attempt
             page.evaluate("""() => {
                 sessionStorage.setItem('testauth1_session', 'user-valid-session');
+                sessionStorage.setItem('testauth1_email', 'user@legit.com');
                 localStorage.setItem('testauth1_session', 'user-valid-session');
+                localStorage.setItem('testauth1_email', 'user@legit.com');
             }""")
 
             page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
             page.wait_for_timeout(500)
 
-            # Check if the session was destroyed
-            session_after = page.evaluate("""() => {
-                return sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session');
+            # Full diagnostic: check all side effects
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    authWallDisplay: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? window.getComputedStyle(w).display : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    hasMessageKey: (typeof _messageKey !== 'undefined' && _messageKey !== null) ? 'yes' : 'no'
+                };
             }""")
 
-            if session_after is None:
-                # Without signature verification, these messages could clear session — this is
-                # expected if no messageKey is set. The real defense is signature verification.
+            session_cleared = diag["storedSession"] is None
+            if session_cleared:
                 print(f"  \033[93m[SESSION CLEARED]\033[0m Type: {msg['type']}, reason: {msg.get('reason', 'n/a')}")
-                print(f"    → Check: is _messageKey set? Without it, allowlisted messages pass through")
-                # This is a known risk when no key is set — document but don't fail
                 results.append({"attack": f"dos_{i}", "blocked": False})
             else:
-                print(f"  \033[92m[BLOCKED]\033[0m Type: {msg['type']} — session preserved (sig verification)")
+                print(f"  \033[92m[BLOCKED]\033[0m Type: {msg['type']} — session preserved")
                 results.append({"attack": f"dos_{i}", "blocked": True})
+            print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+            print(f"    stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}, stored email: {diag['storedEmail']}")
+            print(f"    messageKey set: {diag['hasMessageKey']}")
+            if session_cleared:
+                print(f"    \033[93m→ No messageKey set — allowlisted messages pass unsigned. Real defense is sig verification.\033[0m")
 
         print()
 
@@ -139,20 +173,32 @@ def run_test():
         }, '*')""")
         page.wait_for_timeout(500)
 
-        # Check if auth wall dropped despite no valid session
-        auth_wall = page.evaluate("""() => {
-            var wall = document.getElementById('auth-wall');
-            if (!wall) return 'no_wall';
-            var style = window.getComputedStyle(wall);
-            return (style.display === 'none' || style.visibility === 'hidden') ? 'hidden' : 'visible';
+        # Full diagnostic: check all side effects after out-of-sequence gas-auth-ok
+        diag = page.evaluate("""() => {
+            return {
+                locationHref: window.location.href,
+                authWallHidden: (function() {
+                    var w = document.getElementById('auth-wall');
+                    return w ? w.classList.contains('hidden') : 'no_wall';
+                })(),
+                authWallDisplay: (function() {
+                    var w = document.getElementById('auth-wall');
+                    return w ? window.getComputedStyle(w).display : 'no_wall';
+                })(),
+                storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+            };
         }""")
 
-        if auth_wall == 'hidden':
+        auth_wall_hidden = diag["authWallDisplay"] == 'none' or diag["authWallHidden"]
+        if auth_wall_hidden:
             print(f"  \033[91m[BYPASSED]\033[0m Auth wall hidden after out-of-sequence gas-auth-ok!")
             results.append({"attack": "state_confusion_1", "blocked": False})
         else:
             print(f"  \033[92m[BLOCKED]\033[0m Auth wall still visible — out-of-sequence message rejected")
             results.append({"attack": "state_confusion_1", "blocked": True})
+        print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+        print(f"    stored session: {diag['storedSession']}, stored email: {diag['storedEmail']}")
 
         # Send heartbeat-ok to extend a non-existent session
         page.evaluate("""window.postMessage({
@@ -162,16 +208,31 @@ def run_test():
         }, '*')""")
         page.wait_for_timeout(300)
 
-        session_exists = page.evaluate("""() => {
-            return sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session');
+        # Full diagnostic for heartbeat check
+        diag2 = page.evaluate("""() => {
+            return {
+                locationHref: window.location.href,
+                authWallHidden: (function() {
+                    var w = document.getElementById('auth-wall');
+                    return w ? w.classList.contains('hidden') : 'no_wall';
+                })(),
+                authWallDisplay: (function() {
+                    var w = document.getElementById('auth-wall');
+                    return w ? window.getComputedStyle(w).display : 'no_wall';
+                })(),
+                storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+            };
         }""")
 
-        if session_exists:
+        if diag2["storedSession"]:
             print(f"  \033[91m[BYPASSED]\033[0m Heartbeat created a session from nothing!")
             results.append({"attack": "state_confusion_2", "blocked": False})
         else:
             print(f"  \033[92m[BLOCKED]\033[0m Heartbeat didn't create a session — correct behavior")
             results.append({"attack": "state_confusion_2", "blocked": True})
+        print(f"    auth wall hidden: {diag2['authWallHidden']}, auth wall display: {diag2['authWallDisplay']}")
+        print(f"    stored session: {diag2['storedSession']}, stored email: {diag2['storedEmail']}")
 
         print()
 
@@ -199,9 +260,30 @@ def run_test():
 
             try:
                 page.evaluate(f"window.postMessage({json.dumps(payload)}, '*')")
-                page.wait_for_timeout(200)
-                print(f"  \033[92m[BLOCKED]\033[0m Edge case {i}: silently dropped")
-                results.append({"attack": f"edge_case_{i}", "blocked": True})
+                page.wait_for_timeout(300)
+
+                # Full diagnostic
+                diag = page.evaluate("""() => {
+                    return {
+                        locationHref: window.location.href,
+                        authWallHidden: (function() {
+                            var w = document.getElementById('auth-wall');
+                            return w ? w.classList.contains('hidden') : 'no_wall';
+                        })(),
+                        storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                        storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                    };
+                }""")
+
+                blocked = diag["storedSession"] is None and not diag["authWallHidden"]
+                status = "BLOCKED" if blocked else "BYPASSED"
+                color = "\033[92m" if blocked else "\033[91m"
+                desc = json.dumps(payload)[:50] if isinstance(payload, (dict, list)) else str(payload)[:50]
+                print(f"  {color}[{status}]\033[0m Edge case {i}: {desc}")
+                print(f"    auth wall hidden: {diag['authWallHidden']}, stored session: {diag['storedSession']}, stored email: {diag['storedEmail']}")
+                if not blocked:
+                    print(f"    \033[91m!!! Edge case bypassed defenses !!!\033[0m")
+                results.append({"attack": f"edge_case_{i}", "blocked": blocked})
             except Exception as e:
                 print(f"  \033[92m[BLOCKED]\033[0m Edge case {i}: caused error (good): {str(e)[:50]}")
                 results.append({"attack": f"edge_case_{i}", "blocked": True})

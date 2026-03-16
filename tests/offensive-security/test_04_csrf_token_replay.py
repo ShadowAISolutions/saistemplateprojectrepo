@@ -85,18 +85,32 @@ def run_test():
 
                 page.wait_for_timeout(1000)
 
-                # Check if the attacker gained access
-                auth_wall = page.evaluate("""() => {
-                    var wall = document.getElementById('auth-wall');
-                    if (!wall) return 'no_wall';
-                    return window.getComputedStyle(wall).display === 'none' ? 'hidden' : 'visible';
+                # Full diagnostic: check all possible side effects
+                diag = page.evaluate("""() => {
+                    return {
+                        locationHref: window.location.href,
+                        authWallHidden: (function() {
+                            var w = document.getElementById('auth-wall');
+                            return w ? w.classList.contains('hidden') : 'no_wall';
+                        })(),
+                        authWallDisplay: (function() {
+                            var w = document.getElementById('auth-wall');
+                            return w ? window.getComputedStyle(w).display : 'no_wall';
+                        })(),
+                        storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                        storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                    };
                 }""")
 
-                blocked = auth_wall != 'hidden'
+                blocked = diag["authWallDisplay"] != 'none' and not diag["authWallHidden"]
                 status = "BLOCKED" if blocked else "BYPASSED"
                 color = "\033[92m" if blocked else "\033[91m"
                 token_desc = str(list(token_response.values())[0])[:40] if token_response else "(empty)"
                 print(f"  {color}[{status}]\033[0m Token: {token_desc}... (result: {result})")
+                print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+                print(f"    stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}, stored email: {diag['storedEmail']}")
+                if not blocked:
+                    print(f"    \033[91m!!! Forged OAuth token accepted — auth wall bypassed !!!\033[0m")
 
             except Exception as e:
                 print(f"  \033[92m[BLOCKED]\033[0m Token attempt {i} threw error: {str(e)[:50]}")
@@ -147,15 +161,31 @@ def run_test():
             result = page.evaluate(attack_code)
             page.wait_for_timeout(500)
 
-            # Check for side effects
-            session = page.evaluate("""() => {
-                return sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session');
+            # Full diagnostic: check all side effects
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    authWallDisplay: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? window.getComputedStyle(w).display : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null
+                };
             }""")
 
-            blocked = session is None or 'rejected' in str(result) or 'error' in str(result).lower()
+            blocked = diag["storedSession"] is None or 'rejected' in str(result) or 'error' in str(result).lower()
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             print(f"  {color}[{status}]\033[0m Nonce attack {i+1}: {result}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+            print(f"    stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}, stored email: {diag['storedEmail']}")
+            if not blocked:
+                print(f"    \033[91m!!! CSRF nonce bypass succeeded !!!\033[0m")
             results.append({"attack": f"csrf_nonce_{i}", "blocked": blocked})
 
         print()
@@ -195,8 +225,14 @@ def run_test():
 
                 param = url.split("?")[1][:50] if "?" in url else "(none)"
                 print(f"  {color}[{status}]\033[0m HTTP {status_code} — param: {param}")
+                # Show truncated response body for diagnosis
+                body_preview = content.replace('\n', ' ')[:120]
+                print(f"    response body: {body_preview}...")
+                print(f"    has_session_token: {has_session_token}, has_auth_ok: {has_auth_ok}, has_error: {has_error}")
                 if has_error:
                     print(f"    → GAS returned error response (correct behavior)")
+                if not blocked:
+                    print(f"    \033[91m!!! GAS accepted forged token !!!\033[0m")
 
                 probe_page.close()
                 results.append({"attack": f"gas_probe_{i}", "blocked": blocked})
@@ -214,8 +250,18 @@ def run_test():
         # Load the page and check if any token appears in the current URL
         page.goto(TARGET_URL, wait_until="networkidle", timeout=30000)
 
-        url_after_load = page.url
+        url_after_load = page.evaluate("() => window.location.href")
         has_token_in_url = "token=" in url_after_load or "session=" in url_after_load or "exchangeToken=" in url_after_load
+
+        # Full diagnostic
+        diag = page.evaluate("""() => {
+            return {
+                locationHref: window.location.href,
+                storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                cookieString: document.cookie || '(none)'
+            };
+        }""")
 
         if has_token_in_url:
             print(f"  \033[91m[LEAKED]\033[0m Token found in URL: {url_after_load}")
@@ -223,6 +269,9 @@ def run_test():
         else:
             print(f"  \033[92m[SAFE]\033[0m No tokens in URL after page load")
             results.append({"attack": "url_leakage", "blocked": True})
+        print(f"    location.href: {diag['locationHref']}")
+        print(f"    stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}")
+        print(f"    cookies: {diag['cookieString']}")
 
         # Check the Referrer Policy
         referrer_policy = page.evaluate("""() => {

@@ -79,27 +79,43 @@ def run_test():
             page.reload(wait_until="networkidle", timeout=30000)
             page.wait_for_timeout(2000)  # Wait for auth flow to process
 
-            # Check if the auth wall is still up (it should be — forged token should fail)
-            auth_wall_visible = page.evaluate("""() => {
-                var wall = document.getElementById('auth-wall');
-                if (!wall) return true;  // No wall = can't bypass
-                var style = window.getComputedStyle(wall);
-                return style.display !== 'none' && style.visibility !== 'hidden';
-            }""")
-
-            # Check if the app content is visible (it shouldn't be)
-            app_visible = page.evaluate("""() => {
-                var app = document.getElementById('gas-app');
-                if (!app) return false;
-                return app.offsetHeight > 0 && app.offsetWidth > 0;
+            # Full diagnostic: check all possible side effects
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    authWallDisplay: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? window.getComputedStyle(w).display : 'no_wall';
+                    })(),
+                    appVisible: (function() {
+                        var app = document.getElementById('gas-app');
+                        return app ? (app.offsetHeight > 0 && app.offsetWidth > 0) : false;
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    iframeSrc: (function() {
+                        var f = document.getElementById('gasApp');
+                        return f ? f.src : 'no_iframe';
+                    })()
+                };
             }""")
 
             # The token should be rejected — auth wall stays up, app stays hidden
-            blocked = auth_wall_visible or not app_visible
+            auth_wall_visible = diag["authWallDisplay"] != 'none' and not diag["authWallHidden"]
+            blocked = auth_wall_visible or not diag["appVisible"]
             status = "BLOCKED" if blocked else "BYPASSED"
             color = "\033[92m" if blocked else "\033[91m"
             token_preview = token[:40] + "..." if len(token) > 40 else token
             print(f"  {color}[{status}]\033[0m Token: {token_preview}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+            print(f"    app visible: {diag['appVisible']}, stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}")
+            print(f"    stored email: {diag['storedEmail']}")
+            if not blocked:
+                print(f"    \033[91m!!! Forged token accepted — auth wall bypassed !!!\033[0m")
             results.append({"attack": f"fixation_{i}", "blocked": blocked})
 
         print()
@@ -147,41 +163,46 @@ def run_test():
             page.evaluate(f"window.postMessage({json.dumps(msg)}, '*')")
             page.wait_for_timeout(1000)
 
-            # Check if the token was actually stored (it might be — but should fail on next validation)
-            stored_token = page.evaluate("""() => {
-                return sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session');
+            # Full diagnostic: check all possible side effects
+            diag = page.evaluate("""() => {
+                return {
+                    locationHref: window.location.href,
+                    authWallHidden: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? w.classList.contains('hidden') : 'no_wall';
+                    })(),
+                    authWallDisplay: (function() {
+                        var w = document.getElementById('auth-wall');
+                        return w ? window.getComputedStyle(w).display : 'no_wall';
+                    })(),
+                    storedSession: sessionStorage.getItem('testauth1_session') || localStorage.getItem('testauth1_session') || null,
+                    storedEmail: sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email') || null,
+                    iframeSrc: (function() {
+                        var f = document.getElementById('gasApp');
+                        return f ? f.src.substring(0, 80) : 'no_iframe';
+                    })()
+                };
             }""")
 
-            stored_email = page.evaluate("""() => {
-                return sessionStorage.getItem('testauth1_email') || localStorage.getItem('testauth1_email');
-            }""")
-
-            # Even if the message handler stores the token, loading the iframe with it
-            # should fail GAS-side validation (server never created this session)
-            # Check if the app is actually showing authenticated content
-            app_authenticated = page.evaluate("""() => {
-                var wall = document.getElementById('auth-wall');
-                if (wall) {
-                    var style = window.getComputedStyle(wall);
-                    if (style.display === 'none' || style.visibility === 'hidden') {
-                        return true;  // Wall hidden = app thinks we're authenticated
-                    }
-                }
-                return false;
-            }""")
+            # Check if auth wall was hidden (bad — attacker message accepted)
+            app_authenticated = diag["authWallDisplay"] == 'none' or diag["authWallHidden"]
 
             # Key insight: the HTML side may accept the message (allowlist passes it),
-            # but the GAS backend will reject the forged token on the next iframe load
-            if stored_token:
-                print(f"  \033[93m[STORED]\033[0m Token was stored client-side (email: {stored_email})")
-                print(f"    → This is expected — the real defense is GAS-side validation")
-
+            # but the GAS backend will reject the forged token on the next iframe load.
+            # However, the auth wall hiding IS a client-side bypass even if GAS rejects later.
+            status_label = "BYPASSED" if app_authenticated else "BLOCKED"
+            color = "\033[91m" if app_authenticated else "\033[92m"
+            blocked = not app_authenticated
+            print(f"  {color}[{status_label}]\033[0m Forged session msg {i}: type={msg['type']}")
+            print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+            print(f"    stored session: {str(diag['storedSession'])[:30] if diag['storedSession'] else 'None'}")
+            print(f"    stored email: {diag['storedEmail']}")
+            print(f"    iframe src: {diag['iframeSrc']}")
             if app_authenticated:
-                print(f"  \033[91m[BYPASSED]\033[0m Auth wall was hidden — attacker message accepted!")
-                blocked = False
-            else:
-                print(f"  \033[92m[BLOCKED]\033[0m Auth wall remains visible — forged session not accepted")
-                blocked = True
+                print(f"    \033[91m!!! Auth wall hidden — client-side bypass !!!\033[0m")
+                print(f"    → Note: GAS backend should still reject this forged token server-side")
+            if diag["storedSession"]:
+                print(f"    \033[93m→ Token was stored client-side (GAS-side validation is the real defense)\033[0m")
 
             results.append({"attack": f"forged_session_{i}", "blocked": blocked})
 
@@ -224,14 +245,32 @@ def run_test():
             };
         }""")
 
+        # Full diagnostic for key overwrite check
+        diag = page.evaluate("""() => {
+            return {
+                locationHref: window.location.href,
+                authWallHidden: (function() {
+                    var w = document.getElementById('auth-wall');
+                    return w ? w.classList.contains('hidden') : 'no_wall';
+                })(),
+                authWallDisplay: (function() {
+                    var w = document.getElementById('auth-wall');
+                    return w ? window.getComputedStyle(w).display : 'no_wall';
+                })()
+            };
+        }""")
+
         # First-write-wins: the email should be from the first message, not the attacker's
-        if key_check.get("email") == "attacker@evil.com" and key_check.get("token") == "attacker-token":
+        attacker_won = key_check.get("email") == "attacker@evil.com" and key_check.get("token") == "attacker-token"
+        if attacker_won:
             print(f"  \033[91m[BYPASSED]\033[0m Attacker's key/token overwrote the legitimate one!")
-            results.append({"attack": "key_overwrite", "blocked": False})
         else:
             print(f"  \033[92m[BLOCKED]\033[0m First-write-wins: attacker's key was rejected")
-            print(f"    Stored email: {key_check.get('email')}, token: {str(key_check.get('token'))[:20]}...")
-            results.append({"attack": "key_overwrite", "blocked": True})
+        print(f"    stored email: {key_check.get('email')}, stored token: {str(key_check.get('token'))[:30] if key_check.get('token') else 'None'}...")
+        print(f"    auth wall hidden: {diag['authWallHidden']}, auth wall display: {diag['authWallDisplay']}")
+        if attacker_won:
+            print(f"    \033[91m!!! messageKey overwrite succeeded — attacker controls signing !!!\033[0m")
+        results.append({"attack": "key_overwrite", "blocked": not attacker_won})
 
         print()
 
