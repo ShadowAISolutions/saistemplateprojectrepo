@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 59/100`
+`Sections: 60/100`
 
 ## [Unreleased]
+
+## [v04.24r] — 2026-03-16 02:22:46 PM EST
+
+### Fixed
+- Fixed sign-in page centering after adding reconnecting UI state
+
+### Added
+- "Signing in…" screen now appears between selecting your Google account and the app loading — previously the sign-in form stayed visible during this transition
+
+#### `testauth1.html` — v02.07w
+
+##### Fixed
+- Restored centering on the sign-in page
+
+##### Added
+- Added "Signing in…" intermediate screen during Google authentication
 
 ## [v04.23r] — 2026-03-16 02:16:05 PM EST
 

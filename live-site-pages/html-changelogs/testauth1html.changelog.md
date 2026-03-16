@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
 
 ## [Unreleased]
+
+## [v02.07w] — 2026-03-16 02:22:46 PM EST — v04.24r
+
+### Fixed
+- Restored centering on the sign-in page
+
+### Added
+- "Signing in…" screen now appears after selecting your Google account while your session is being set up
 
 ## [v02.06w] — 2026-03-16 02:16:05 PM EST — v04.23r
 
