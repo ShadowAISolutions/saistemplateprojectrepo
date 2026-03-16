@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 25/100`
+`Sections: 26/100`
 
 ## [Unreleased]
+
+## [v03.90r] — 2026-03-15 08:07:39 PM EST
+
+### Fixed
+- Fixed GAS iframe not reappearing after "Use Here" — the visibility restore was in the `gas-session-created` handler but GAS sends `gas-auth-ok` for valid session reloads; moved the `_directSessionLoad` visibility restore and deferred `showApp()`/timer start to the `gas-auth-ok` handler
+
+#### `testauth1.html` — v01.94w
+
+##### Fixed
+- GAS app now properly reappears after clicking "Use Here" — the app UI and timers are activated once the GAS server confirms the session is valid
 
 ## [v03.89r] — 2026-03-15 08:03:31 PM EST
 

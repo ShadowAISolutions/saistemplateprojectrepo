@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.94w] — 2026-03-15 08:07:39 PM EST — v03.90r
+
+### Fixed
+- GAS app now properly reappears after clicking "Use Here" — the app UI and timers are activated once the GAS server confirms the session is valid
 
 ## [v01.93w] — 2026-03-15 08:03:31 PM EST — v03.89r
 
