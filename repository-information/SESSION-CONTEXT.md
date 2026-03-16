@@ -4,53 +4,64 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-15 10:42:40 PM EST
-**Repo version:** v04.01r
+**Date:** 2026-03-16 12:10:39 PM EST
+**Repo version:** v04.15r
 
 ### What was done
-- **v03.93r** — EMR Security Hardening Phases 4–5: DOM clearing on session expiry (`ENABLE_DOM_CLEARING_ON_EXPIRY`), content clearing on expiry (`ENABLE_CONTENT_CLEARING_ON_EXPIRY`), and escalating lockout (`ENABLE_ESCALATING_LOCKOUT`) with new security settings in both standard and hipaa presets
-- **v03.94r** — Phase 6: Escalating lockout refinements
-- **v03.95r** — Phase 7 & 8: IP logging (`ENABLE_IP_LOGGING`) via `api.ipify.org` + Data-level audit logging (`ENABLE_DATA_AUDIT_LOG`) with `DataAuditLog` sheet, `dataAuditLog()` function, and `validateSessionForData()` gate
-- **v03.96r** — Fix: moved IP fetch from GAS iframe to host page (GAS sandbox blocks `fetch()`), forwarded via `host-client-ip` postMessage
-- **v03.97r** — Fix: added direct `XMLHttpRequest` to `api.ipify.org` inside GAS iframe (XHR works in sandbox, `fetch` doesn't), with host-page postMessage as fallback — this one worked
-- **v03.98r** — Security: truncated sessionId in DataAuditLog Details JSON to 8 chars (was full token) to prevent token theft, with undo comment
-- **v03.99r** — Added `Utilities.getUuid()` as resourceId for patient note audit entries
-- **v04.00r** — Renamed `AuditLog` sheet to `SessionAuditLog` for clarity alongside `DataAuditLog`
-- **v04.01r** — Added `sheet.protect()` to SessionAuditLog for parity with DataAuditLog's tamper-resistant protection
+- **v04.02r–v04.08r** — Built 4 offensive security test suites using Playwright (Python, sync API):
+  - test_01: XSS injection (22 attacks, all blocked)
+  - test_02: Session forgery (14 attacks, all blocked)
+  - test_03: Message injection (all blocked)
+  - test_04: CSRF/OAuth token replay (all blocked)
+- **v04.09r** — Fixed real vulnerabilities found by the tests:
+  - Session fixation via storage injection — page-load resume now defers `showApp()` until `gas-auth-ok`
+  - Duplicate `gas-session-created` overwriting legitimate session — first-write-wins on messageKey
+  - Cross-tab storage sync calling `showApp()` directly — now defers to `gas-auth-ok`
+- **v04.10r** — Fixed false positive in test_04 Attack 3 (regex for real JSON token responses vs JS variable names)
+- **v04.11r** — Security Event Reporter: client-side defenses now report blocked attacks to GAS backend via hidden iframe beacons. Added `_reportSecurityEvent()` to testauth1.html, portal.html, and auth template. Server handler in testauth1.gs and portal.gs with rate limiting (20/5min/IP)
+- **v04.12r** — Rate-limit-hit logging: `security_event_throttled` entry fires once at limit so defender knows events were suppressed
+- **v04.13r** — Added web search verification rule to "Validate Before Asserting" for platform quota/limit/pricing claims
+- **v04.14r–v04.15r** — Created `FUTURE-CONSIDERATIONS.md` for deferred scale ideas (IP blocklist, quota tracking, email alerts, heartbeat tuning, client-side expiry estimation)
 
 ### Where we left off
-**All 8 phases of the EMR Security Hardening Plan (10-EMR-SECURITY-HARDENING-PLAN.md) are COMPLETE.** Post-implementation polish is done (IP fix, sessionId truncation, resourceId, sheet rename, sheet protection).
-
-**Plan 11 (GAS Application Layer — `11-EMR-GAS-APPLICATION-LAYER-PLAN.md`) is written but NOT yet started.** It has 7 phases: RBAC, Minimum Necessary, Input Validation, PHI Segmentation, Data Retention, Consent Tracking, Disclosure Logging.
+All 4 offensive test suites pass. Security Event Reporter is deployed to code (needs GAS redeployment). We had an extended discussion about:
+- **Defender visibility** — how to know when attacks are blocked (answer: SessionAuditLog sheet)
+- **GAS quotas are per-account, not per-script** — at 50 projects this matters. Heartbeats are the biggest consumer
+- **IP blocking** — possible at application level in GAS but no network-level blocking (GitHub Pages + GAS don't offer it)
+- Future considerations documented but deferred — not urgent at 2 projects
 
 ### Key technical context
-- **GAS iframe sandbox restrictions**: `fetch()` is blocked, `postMessage` from host to inner frame doesn't reach the GAS HTML (Google wraps it in nested iframes), but `XMLHttpRequest` works — this is the reliable method for in-iframe network requests
-- **Dual audit logs**: `SessionAuditLog` (security events — logins, lockouts, alerts, expirations) and `DataAuditLog` (PHI access — who touched what data, when, with what resourceId). Both are needed — different audiences, different HIPAA requirements
-- **SessionId truncation**: first 8 chars only in both the SessionId column AND the Details JSON — prevents token theft from audit spreadsheets. Undo comment in `saveNote()`: "To log the full token, change the line below to: sessionId: sessionToken,"
-- **IP logging architecture**: XHR to `api.ipify.org` inside GAS iframe (primary), host-page postMessage (fallback). IP passed directly as 3rd parameter to `saveNote()`, not reliant on heartbeat round-trip
-- **Sheet protection**: both audit log sheets use `setWarningOnly(true)` — warns editors but doesn't hard-block (Google Sheets limitation — only the owner can set strict protection)
+- **Security Event Reporter flow**: client blocks attack → `_reportSecurityEvent()` creates hidden iframe → GAS `doGet(?securityEvent=...)` → `auditLog('security_event', ...)` to SessionAuditLog sheet
+- **Rate limiting**: client-side 10/page-load, server-side 20/5min/IP. At count === 20, one `security_event_throttled` entry logged then silent
+- **GAS quotas are PER ACCOUNT**: 20,000 executions/day (consumer), 100,000 (Workspace). All scripts share. Verified via Google official docs
+- **Heartbeat test value**: currently 30s in testauth1.gs (production should be 300s). Biggest quota consumer at scale
+- **Storage keys**: `gas_session_token`/`gas_user_email` (NOT `testauth1_session`/`testauth1_email`)
+- **HIPAA preset active**: `TOKEN_EXCHANGE_METHOD: 'postMessage'` — URL exchange is skipped entirely
+- **Template propagation**: auth template now includes security event reporter + first-write-wins messageKey guard + all 4 reporting points
 
 ### Key decisions made
-- Keep full IP and full resourceId in audit logs (not secrets — unlike sessionId which IS a secret)
-- Keep both SessionAuditLog and DataAuditLog (different purposes, one overlap in `saveNote()` is by design)
-- Existing spreadsheet tabs created before protection was added need manual protection or recreation
+- Keep security events in SessionAuditLog (not a separate sheet) — correlation with auth events is more valuable than separation
+- Don't build IP blocklist yet — impractical for attackers at current scale, revisit at 10-15 projects
+- Don't optimize heartbeats yet — switch to production interval first (30s→300s), then evaluate
+- TODO.md is developer's personal list only — architectural deferred items go in FUTURE-CONSIDERATIONS.md
+- Platform quota/limit claims must be web-search verified before asserting (new rule in behavioral-rules.md)
 
 ### Active context
-- Repo version: v04.01r
-- testauth1.html: v01.99w, testauth1.gs: v01.42g
-- portal.html: v01.08w
+- Repo version: v04.15r
+- testauth1.html: v02.02w, testauth1.gs: v01.44g
+- portal.html: v01.11w, portal.gs: v01.03g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
+- **GAS redeployment needed**: testauth1.gs (v01.44g) and portal.gs (v01.03g) for security event handler to be live
 
 ## Previous Sessions
 
-**Date:** 2026-03-15 08:32:43 PM EST
-**Repo version:** v03.92r
+**Date:** 2026-03-15 10:42:40 PM EST
+**Repo version:** v04.01r
 
 ### What was done
-- **v03.81r–v03.83r** — EMR Security Hardening Phases 1–3: HMAC fail-closed, domain restriction validation, server-side data operation validation
-- **v03.84r–v03.92r** — "Use Here" tab-reclaim UX fixes (blank iframe, rate limiting, token transfer, flicker, absolute timer preservation, false expiry warnings)
+- **v03.93r–v04.01r** — EMR Security Hardening Phases 4–8 complete: DOM clearing, content clearing, escalating lockout, IP logging, data audit logging, sheet protection, sheet rename
 
 Developed by: ShadowAISolutions
