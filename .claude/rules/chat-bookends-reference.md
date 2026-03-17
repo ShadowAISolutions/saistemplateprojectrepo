@@ -39,7 +39,8 @@
 | `📁📁FILES CHANGED📁📁` | Files were modified/created/deleted | After AGENTS USED (skip if no files changed) | — | — |
 | `📜📜COMMIT LOG📜📜` | Commits were made | After FILES CHANGED (skip if no commits made) | — | — |
 | `🔖🔖WORTH NOTING🔖🔖` | Something deserves attention | After COMMIT LOG (skip if nothing worth noting) | — | — |
-| `📝📝SUMMARY📝📝` | Changes were made in the response | After WORTH NOTING | — | — |
+| `💬💬PROMPT💬💬` | Every response with CODING COMPLETE | After WORTH NOTING — blockquoted copy of user's original prompt (never skipped) | — | — |
+| `📝📝SUMMARY📝📝` | Changes were made in the response | After PROMPT | — | — |
 | `📋📋TODO📋📋` | Every response with CODING COMPLETE | After SUMMARY — current to-do items from TODO.md, with completed items crossed off (never skipped) | — | — |
 | `📂📂NEW FOLDERS📂📂` | New directories were created | After TODO (skip entirely if no new folders created — no header, no placeholder) | — | — |
 | `🔗✏️AFFECTED URLS✏️🔗` | Every response with CODING COMPLETE | After NEW FOLDERS (or TODO if no new folders) — affected pages with post-bump versions, or placeholder if none (never skipped) | — | — |
@@ -55,7 +56,9 @@
 **Normal flow (with revised estimate):**
 ```
 🚩🚩CODING PLAN🚩🚩 [01:15:00 AM EST 01/15/2026]
-  - brief bullet plan of intended changes
+  - > **Prompt:** "Add a loading spinner to the homepage"
+  - Edit index.html to add spinner component
+  - Update styles and commit
 
 🔗✏️PLANNED AFFECTED URLS✏️🔗
 
@@ -96,6 +99,9 @@
 
 📜📜COMMIT LOG📜📜
 SHA: [abc1234](https://github.com/ORG/REPO/commit/abc1234...) — Add feature X
+
+💬💬PROMPT💬💬
+> "Add a loading spinner to the homepage"
 
 📝📝SUMMARY📝📝
 - Updated X in `file.md` (edited)

@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v04.36r] — 2026-03-17 08:08:41 AM EST
+
+> **Prompt:** "when you output the coding plan bookend, have the first item on the list be a quoted copy of my prompt to you. have this same quote be shown after the COMMIT LOG, before the SUMMARY in the END OF RESPONSE BLOCK. i also want you to include the quote of the prompt in the repo change log from now on"
+
+### Added
+- Prompt quote rule — the first bullet in every CODING PLAN is now a blockquoted copy of the user's original prompt, preserving the request verbatim in chat history
+- `💬💬PROMPT💬💬` section in the end-of-response block — appears after COMMIT LOG and before SUMMARY, showing the user's original prompt for easy reference alongside the change summary
+- Prompt quote in CHANGELOG version sections — each versioned release now includes a blockquoted copy of the user's prompt that triggered the changes, preserving intent alongside the change entries
 
 ## [v04.35r] — 2026-03-16 08:04:14 PM EST
 
