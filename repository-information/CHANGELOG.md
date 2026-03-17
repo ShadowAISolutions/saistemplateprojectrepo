@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v04.51r] — 2026-03-17 07:07:53 PM EST
+
+> **Prompt:** "ok that is fixed, but i need you to track all the things that we were unable to do so that we dont keep trying the same thing over and over when we review the code upon fully updating. you can add a note to the implementation guide itself"
+
+### Added
+- "Implementation Notes & Deviations" section in `10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md` — tracks what was changed from the guide's recommendations during live implementation (regex fixes, workarounds, deviations) so future sessions don't repeat known issues
 
 ## [v04.50r] — 2026-03-17 07:03:24 PM EST
 
