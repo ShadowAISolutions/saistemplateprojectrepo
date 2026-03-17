@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v04.43r] — 2026-03-17 05:27:44 PM EST
+
+> **Prompt:** "start implementing step 1.1 of repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md, afterwards tell me what specifically to test for in functionality relating to what you modified, then wait for me to tell you to proceed and you will continue step by step"
+
+### Added
+- Added `signMessage()` HMAC-SHA256 function to `testauth1.gs` — server-side message signing using `Utilities.computeHmacSha256Signature()` (Phase 1, Step 1.1 of Category 3 security implementation)
+  - Deterministic payload construction with sorted keys
+  - Signed byte array → hex string conversion with proper unsigned masking
+  - Placed alongside existing HMAC session integrity functions
+
+#### `testauth1.gs` — v01.47g
+
+##### Added
+- Server-side HMAC-SHA256 message signing function for postMessage integrity
 
 ## [v04.42r] — 2026-03-17 02:37:43 PM EST
 

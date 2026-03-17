@@ -1,4 +1,4 @@
-var VERSION = "v01.46g";
+var VERSION = "v01.47g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -437,6 +437,41 @@ function verifySessionHmac(sessionData) {
   if (!sessionData.hmac) return false;  // Secret exists but session has no HMAC → reject
   var expected = generateSessionHmac(sessionData);
   return expected === sessionData.hmac;
+}
+
+// ── GAS-Side HMAC-SHA256 Message Signing ──
+// Uses Utilities.computeHmacSha256Signature() — native GAS API.
+// This is the SAME algorithm as Web Crypto API HMAC-SHA256.
+// The outputs are byte-for-byte identical when given the same key and payload.
+
+/**
+ * Sign a message object with HMAC-SHA256 using the session's messageKey.
+ * @param {Object} msgObj - The message to sign (will have _sig added)
+ * @param {string} messageKey - The session's HMAC key
+ * @returns {Object} - The message with _sig field containing hex-encoded signature
+ */
+function signMessage(msgObj, messageKey) {
+  if (!messageKey) return msgObj;
+
+  // Create a deterministic payload — sorted keys, exclude _sig
+  var copy = {};
+  var keys = Object.keys(msgObj).sort();
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i] !== '_sig') copy[keys[i]] = msgObj[keys[i]];
+  }
+  var payload = JSON.stringify(copy);
+
+  // Compute HMAC-SHA256 using GAS native API
+  var signature = Utilities.computeHmacSha256Signature(payload, messageKey);
+
+  // Convert signed byte array to hex string
+  // GAS returns signed bytes (-128 to 127), must mask to unsigned (0-255)
+  var hex = signature.map(function(byte) {
+    return ('0' + (byte & 0xff).toString(16)).slice(-2);
+  }).join('');
+
+  msgObj._sig = hex;
+  return msgObj;
 }
 
 // =============================================
