@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v04.45r] — 2026-03-17 05:52:48 PM EST
+
+> **Prompt:** "make it so that the full unabridged prompt that was used is put in the changelog every time, do not shorten it with ..."
+
+### Changed
+- Enforced full unabridged prompt quotes in CHANGELOG version sections — prompt text must never be truncated, shortened, or abbreviated with "..."
+- Updated CODING PLAN first bullet prompt quote rule to require full verbatim prompt (no truncation)
+- Updated PROMPT end-of-response section to require full verbatim prompt (no truncation)
 
 ## [v04.44r] — 2026-03-17 05:34:24 PM EST
 
