@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v04.42r] — 2026-03-17 02:37:43 PM EST
+
+> **Prompt:** "Research online deeply and think carefully about the findings in repository-information/10.1-SECURITY-REMEDIATION-GUIDE.md. Make a specialized document for the findings in 10.1-SECURITY-REMEDIATION-GUIDE.md with the same goal but focusing on the 'Category 3: Must Implement in Code — Cannot Justify Under Risk Assessment'..."
+
+### Added
+- Created `10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md` — comprehensive, phased implementation guide for the 12 Category 3 security findings that must be fixed in code before production deployment
+  - 10 implementation phases (one per finding or logical group), each with working code, verification tests, and rollback plans
+  - Standards quick reference (HIPAA NPRM 2025, NIST 800-63B-4, OWASP 2025/2026, GAS constraints)
+  - Dependency map showing required implementation order
+  - Before/after architecture diagrams with defense layer visualization
+  - 32-check cross-phase integration test suite
+  - Master security implementation checklist
+  - Troubleshooting section with debug scripts for each phase
+  - Research sources with direct links to standards and references
+- Added README tree entry for the new document
 
 ## [v04.41r] — 2026-03-17 11:39:21 AM EST
 
