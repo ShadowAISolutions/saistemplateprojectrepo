@@ -1,4 +1,4 @@
-var VERSION = "v01.48g";
+var VERSION = "v01.49g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1219,6 +1219,7 @@ function doGet(e) {
       + '  if (!e.data || e.data.type !== "exchange-token") return;'
       + '  var token = e.data.accessToken;'
       + '  if (!token) return;'
+      + '  var nonce = e.data.nonce || "";'  // Phase 2: echo nonce back for verification
       + '  google.script.run'
       + '    .withSuccessHandler(function(result) {'
       + '      window.top.postMessage({'
@@ -1229,7 +1230,8 @@ function doGet(e) {
       + '        displayName: result.displayName || "",'
       + '        error: result.error || "",'
       + '        absoluteTimeout: result.absoluteTimeout || 0,'
-      + '        messageKey: result.messageKey || ""'
+      + '        messageKey: result.messageKey || "",'
+      + '        nonce: nonce'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .withFailureHandler(function(err) {'
@@ -1238,7 +1240,8 @@ function doGet(e) {
       + '      window.top.postMessage({'
       + '        type: "gas-session-created",'
       + '        success: false,'
-      + '        error: code'
+      + '        error: code,'
+      + '        nonce: nonce'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .exchangeTokenForSession(token);'

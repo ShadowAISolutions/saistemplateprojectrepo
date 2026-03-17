@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v02.17w] — 2026-03-17 07:14:06 PM EST — v04.52r
+
+### Added
+- Token exchange now uses a one-time cryptographic nonce — prevents forged session creation messages
+- Non-token messages are now restricted to the expected server origin
 
 ## [v02.16w] — 2026-03-17 07:03:24 PM EST — v04.50r
 

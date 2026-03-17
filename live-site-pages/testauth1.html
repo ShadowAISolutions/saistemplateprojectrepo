@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.16w">
+  <meta name="build-version" content="v02.17w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1048,6 +1048,7 @@
       // attempt are silently dropped by the HMAC verification layer.
       _messageKey = null;
       _hmacKey = null;
+      _pendingNonce = null;
     }
 
     // =============================================
@@ -1124,9 +1125,13 @@
 
     // --- postMessage Path (HIPAA) ---
     var _pendingToken = null;
+    var _pendingNonce = null;   // One-time nonce for token exchange (Phase 2 — C-2 mitigation)
 
     function exchangeViaPostMessage(googleAccessToken) {
       _pendingToken = googleAccessToken;
+      // Generate a cryptographic nonce — verified when gas-session-created arrives
+      _pendingNonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+        .map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
       var gasApp = document.getElementById('gas-app');
       if (!gasApp) return;
       var baseUrl = window._r || gasApp.dataset.baseUrl || '';
@@ -1202,7 +1207,7 @@
           // Forward IP to GAS iframe so it can pass to google.script.run calls
           var gasFrame = document.getElementById('gas-app');
           if (gasFrame && gasFrame.contentWindow) {
-            gasFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, '*');
+            gasFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, 'https://script.google.com');
           }
         })
         .catch(function() { _clientIp = 'unknown'; });
@@ -1394,14 +1399,29 @@
         if (event.source) {
           event.source.postMessage({
             type: 'exchange-token',
-            accessToken: _pendingToken
-          }, '*');
-          _pendingToken = null;
+            accessToken: _pendingToken,
+            nonce: _pendingNonce,
+            timestamp: Date.now()
+          }, '*');  // Constraint: unpredictable GAS sandbox origin requires '*'
+          _pendingToken = null;  // One-shot delivery — clear immediately
         }
       }
 
       // GAS iframe created a session (both url and postMessage paths)
       if (data.type === 'gas-session-created') {
+        // Nonce verification (Phase 2 — C-2): if a nonce was set during token exchange,
+        // verify it matches the response. Prevents replay/injection of forged session messages.
+        if (_pendingNonce) {
+          if (data.nonce !== _pendingNonce) {
+            _reportSecurityEvent('nonce_mismatch', {
+              origin: event.origin,
+              expected: _pendingNonce.substring(0, 8) + '...',
+              received: String(data.nonce || '').substring(0, 8) + '...'
+            });
+            return;  // Reject — possible replay or injection
+          }
+          _pendingNonce = null;  // Consumed — one-time use
+        }
         // First-write-wins: if messageKey is already set, this is a duplicate/forged
         // gas-session-created — reject it entirely (don't save session data or show app).
         // Only the first gas-session-created after a fresh page load is accepted.
@@ -1491,7 +1511,7 @@
         if (_clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
           var gasIpFrame = document.getElementById('gas-app');
           if (gasIpFrame && gasIpFrame.contentWindow) {
-            gasIpFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, '*');
+            gasIpFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, 'https://script.google.com');
           }
         }
         // "Use Here" hides the iframe before reload — re-show it now that

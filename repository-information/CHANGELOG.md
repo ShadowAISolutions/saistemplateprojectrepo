@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v04.52r] — 2026-03-17 07:14:06 PM EST
+
+> **Prompt:** "proceed with implementing the next step of 10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Added
+- Phase 2 Step 2.2: Cryptographic nonce for token exchange — HTML generates a 16-byte random nonce before sending the OAuth token, GAS echoes it back in the `gas-session-created` response, HTML verifies the match before accepting the session (prevents replay/injection attacks)
+- Phase 2 Step 2.3: Non-token outgoing postMessages now use `'https://script.google.com'` targetOrigin instead of `'*'` — restricts `host-client-ip` messages to the known GAS outer shell origin
+
+### Changed
+- GAS postMessage listener page updated to capture and echo nonce from `exchange-token` messages in both success and failure response paths
+
+#### `testauth1.html` — v02.17w
+
+##### Added
+- Token exchange nonce verification — forged session creation messages without a matching nonce are rejected
+- Non-token messages now scoped to specific Google origin instead of wildcard
+
+#### `testauth1.gs` — v01.49g
+
+##### Changed
+- Token exchange listener echoes nonce back in session creation response for verification
 
 ## [v04.51r] — 2026-03-17 07:07:53 PM EST
 
