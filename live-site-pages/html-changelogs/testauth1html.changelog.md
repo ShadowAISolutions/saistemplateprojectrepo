@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 36/50`
+`Sections: 37/50`
 
 ## [Unreleased]
+
+## [v02.18w] — 2026-03-17 07:18:47 PM EST — v04.53r
+
+### Fixed
+- Console error on page load resolved — internal messages no longer fail due to timing-dependent origin mismatch
 
 ## [v02.17w] — 2026-03-17 07:14:06 PM EST — v04.52r
 

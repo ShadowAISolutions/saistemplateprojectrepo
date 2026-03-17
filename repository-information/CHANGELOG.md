@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v04.53r] — 2026-03-17 07:18:47 PM EST
+
+> **Prompt:** "before signing in, the console is saying this. Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://script.google.com') does not match the recipient window's origin ('https://shadowaisolutions.github.io')."
+
+### Fixed
+- Reverted `host-client-ip` outgoing postMessage targetOrigin from `'https://script.google.com'` back to `'*'` — `gasFrame.contentWindow` origin depends on GAS load timing and may still be at the parent origin when the IP fetch completes, causing the restricted targetOrigin to fail
+
+#### `testauth1.html` — v02.18w
+
+##### Fixed
+- Console error on page load resolved — IP forwarding messages no longer fail due to origin mismatch
 
 ## [v04.52r] — 2026-03-17 07:14:06 PM EST
 
