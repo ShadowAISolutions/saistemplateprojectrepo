@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v02.16w] — 2026-03-17 07:03:24 PM EST — v04.50r
+
+### Fixed
+- Sign-in now completes successfully — origin validation no longer blocks legitimate server messages
 
 ## [v02.15w] — 2026-03-17 06:56:06 PM EST — v04.49r
 

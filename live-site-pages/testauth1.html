@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.15w">
+  <meta name="build-version" content="v02.16w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1159,16 +1159,18 @@
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
     // GAS uses two origin patterns:
     //   1. https://script.google.com (outer shell)
-    //   2. https://<hash>-script.googleusercontent.com (inner sandbox — subdomain varies per deployment/session)
+    //   2. https://<hash>.googleusercontent.com (inner sandbox — subdomain varies per deployment/session)
+    //      Subdomain format varies widely: may include hyphens, dots, and multi-segment prefixes
+    //      (e.g. n-abc123-0lu-script.googleusercontent.com). All *.googleusercontent.com subdomains
+    //      are Google-controlled, so matching the full domain suffix is sufficient.
     // Google Accounts origin is also allowed for GIS callback messages.
     function _isValidGasOrigin(origin) {
       if (!origin) return false;
       // Exact match: GAS outer shell
       if (origin === 'https://script.google.com') return true;
-      // Pattern match: GAS inner sandbox (variable subdomain)
-      if (/^https:\/\/[a-z0-9]+-script\.googleusercontent\.com$/.test(origin)) return true;
-      // Alternate sandbox format (no subdomain prefix)
-      if (origin === 'https://script.googleusercontent.com') return true;
+      // Pattern match: any *.googleusercontent.com subdomain (Google-owned, all trusted)
+      // Covers inner sandbox variations: <hash>-script, n-<hash>-0lu-script, bare script, etc.
+      if (/^https:\/\/[a-z0-9][a-z0-9.-]*\.googleusercontent\.com$/.test(origin)) return true;
       // Google Accounts origin (GIS callback messages)
       if (origin === 'https://accounts.google.com') return true;
       return false;
@@ -2809,8 +2811,9 @@
       // Verify legitimate GAS origins are accepted
       var acceptTests = [
         ['https://script.google.com', 'GAS outer shell'],
-        ['https://abc123-script.googleusercontent.com', 'GAS inner sandbox'],
-        ['https://script.googleusercontent.com', 'GAS sandbox (no subdomain)'],
+        ['https://abc123-script.googleusercontent.com', 'GAS inner sandbox (simple)'],
+        ['https://n-abc123def-0lu-script.googleusercontent.com', 'GAS inner sandbox (hyphenated)'],
+        ['https://script.googleusercontent.com', 'GAS sandbox (no subdomain prefix)'],
         ['https://accounts.google.com', 'Google Accounts (GIS)']
       ];
       var rejectTests = [
@@ -2833,7 +2836,7 @@
         }
       }
       if (failures.length === 0) {
-        addResult('PASS', 'postMessage Origin Validation', '_isValidGasOrigin accepts ' + acceptTests.length + ' legitimate origins, rejects ' + rejectTests.length + ' attack patterns');
+        addResult('PASS', 'postMessage Origin Validation', '_isValidGasOrigin accepts all ' + acceptTests.length + ' legitimate origins (incl. hyphenated sandbox), rejects ' + rejectTests.length + ' attack patterns');
       } else {
         addResult('FAIL', 'postMessage Origin Validation', failures.join('; '));
       }

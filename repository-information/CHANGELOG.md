@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v04.50r] — 2026-03-17 07:03:24 PM EST
+
+> **Prompt:** "first hiccup. we are stuck in the signing in page, figure out whats going on and fix it"
+
+### Fixed
+- Origin validation regex was too restrictive — Google's GAS sandbox subdomains contain hyphens (e.g. `n-abc123-0lu-script.googleusercontent.com`) but the regex only allowed `[a-z0-9]+` before `-script`, silently dropping all legitimate GAS messages and preventing sign-in from completing
+- Broadened regex to accept any `*.googleusercontent.com` subdomain (all Google-controlled) — handles all current and future sandbox subdomain format variations
+
+#### `testauth1.html` — v02.16w
+
+##### Fixed
+- Sign-in now completes successfully — origin validation no longer blocks legitimate server messages with hyphenated subdomain origins
 
 ## [v04.49r] — 2026-03-17 06:56:06 PM EST
 
