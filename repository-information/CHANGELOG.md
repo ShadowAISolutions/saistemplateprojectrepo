@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v04.46r] — 2026-03-17 06:09:12 PM EST
+
+> **Prompt:** "continue with implementing the next step 1.3 of the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Added
+- Added HMAC-SHA256 signature verification to `testauth1.html` using Web Crypto API (Phase 1, Step 1.3)
+  - `_importHmacKey()` — imports raw key as non-extractable CryptoKey (verify-only)
+  - `_verifyHmacSha256()` — async verification using `crypto.subtle.verify()`
+  - `_verifyDjb2Legacy()` — extracted legacy DJB2 verification for dual-accept migration
+  - `_verifyMessageSignature()` — async dual-accept dispatcher (HMAC-SHA256 first, DJB2 fallback)
+  - `_processVerifiedMessage()` — extracted message handler for async verification flow
+- HMAC key import on `gas-session-created` — key is imported as non-extractable via Web Crypto API
+- HMAC key re-import on BroadcastChannel tab-claim (cross-tab key sync)
+
+### Changed
+- postMessage listener now uses async verification path for HMAC-SHA256 + DJB2 dual-accept
+- All session reset points (`clearSession`, reauth, "Use Here", cross-device eviction) now null both `_messageKey` and `_hmacKey`
+- Security tests updated for async HMAC-SHA256 verification (Test 13, 37, 43)
+
+#### `testauth1.html` — v02.13w
+
+##### Added
+- Messages from the server are now verified using HMAC-SHA256 cryptographic signatures (Web Crypto API)
+- Dual-accept migration: both new HMAC-SHA256 and legacy signatures are accepted during transition
+
+##### Changed
+- Security tests updated to validate the new cryptographic verification
 
 ## [v04.45r] — 2026-03-17 05:52:48 PM EST
 

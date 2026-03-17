@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 31/50`
+`Sections: 32/50`
 
 ## [Unreleased]
+
+## [v02.13w] — 2026-03-17 06:09:12 PM EST — v04.46r
+
+### Added
+- Messages from the server are now verified using HMAC-SHA256 cryptographic signatures (Web Crypto API)
+- Dual-accept migration: both new HMAC-SHA256 and legacy signatures are accepted during transition
+
+### Changed
+- Security tests updated to validate the new cryptographic verification
 
 ## [v02.12w] — 2026-03-16 03:19:06 PM EST — v04.31r
 

@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.12w">
+  <meta name="build-version" content="v02.13w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1047,6 +1047,7 @@
       // unsigned bootstrap messages (gas-ready-for-token) from a new sign-in
       // attempt are silently dropped by the HMAC verification layer.
       _messageKey = null;
+      _hmacKey = null;
     }
 
     // =============================================
@@ -1157,7 +1158,8 @@
 
     // Layer 2: Cryptographic message authentication
     // Per-session key delivered via gas-session-created, used to verify subsequent messages.
-    var _messageKey = null;
+    var _messageKey = null;       // Raw key string (kept for legacy DJB2 dual-accept during migration)
+    var _hmacKey = null;          // CryptoKey object — non-extractable, verify-only (Web Crypto API)
     var _clientIp = '';  // Client IP for audit logging (Phase 7 — IP Logging)
 
     // Validate IP format (IPv4 or IPv6) and truncate to max 45 chars.
@@ -1209,11 +1211,45 @@
       setTimeout(function() { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 10000);
     }
 
-    function _verifyMessageSignature(data, key) {
-      if (!key) return true;  // No key yet — pass through (allowlist is the defense)
-      var sig = data._sig;
-      if (!sig) return false;  // Key exists but message has no signature — reject
-      // Reconstruct the hash the same way GAS computed it
+    // ── HMAC Key Import (Web Crypto API) ──
+    // Called once when gas-session-created delivers the messageKey.
+    // Key is imported as non-extractable — even XSS cannot read it back.
+    // Permissions: verify-only (cannot sign forged messages).
+    async function _importHmacKey(rawKey) {
+      var encoder = new TextEncoder();
+      var keyData = encoder.encode(rawKey);
+      return crypto.subtle.importKey(
+        'raw',
+        keyData,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,   // non-extractable
+        ['verify'] // verify-only — cannot sign
+      );
+    }
+
+    // ── HMAC-SHA256 Verification (Web Crypto API) ──
+    // Verifies a hex-encoded HMAC-SHA256 signature against the payload.
+    async function _verifyHmacSha256(data, hexSig) {
+      if (!_hmacKey) return false;
+      // Reconstruct payload identically to how GAS computed it (sorted keys, exclude _sig)
+      var copy = {};
+      var keys = Object.keys(data).sort();
+      for (var i = 0; i < keys.length; i++) {
+        if (keys[i] !== '_sig') copy[keys[i]] = data[keys[i]];
+      }
+      var payload = JSON.stringify(copy);
+      // Decode hex signature to ArrayBuffer
+      var sigBytes = new Uint8Array(hexSig.match(/.{1,2}/g).map(function(byte) {
+        return parseInt(byte, 16);
+      }));
+      var encoder = new TextEncoder();
+      var payloadBytes = encoder.encode(payload);
+      return crypto.subtle.verify('HMAC', _hmacKey, sigBytes, payloadBytes);
+    }
+
+    // ── Legacy DJB2 Verification (migration — remove after 16h rollover) ──
+    // Accepts old-format DJB2 signatures from sessions created before HMAC deploy.
+    function _verifyDjb2Legacy(data, sig, key) {
       var copy = {};
       for (var k in data) { if (k !== '_sig') copy[k] = data[k]; }
       var payload = JSON.stringify(copy) + '|' + key;
@@ -1223,6 +1259,28 @@
         hash |= 0;
       }
       return sig === hash.toString(36);
+    }
+
+    // ── Dual-Accept Signature Verification ──
+    // Migration strategy: accept EITHER HMAC-SHA256 (new) or DJB2 (legacy).
+    // HMAC-SHA256 signatures are 64-char hex strings; DJB2 are base36 numbers.
+    // TODO: Remove DJB2 acceptance after migration period (16h after GAS deploy)
+    async function _verifyMessageSignature(data) {
+      if (!_hmacKey && !_messageKey) return true;  // No key yet — allowlist is defense
+      var sig = data._sig;
+      if (!sig) return false;  // Key exists but no signature — reject
+
+      // Try HMAC-SHA256 first (new format — 64-char hex string)
+      if (_hmacKey && typeof sig === 'string' && sig.length === 64 && /^[0-9a-f]+$/.test(sig)) {
+        return _verifyHmacSha256(data, sig);
+      }
+
+      // Fall back to DJB2 (old format — base36 number)
+      if (_messageKey) {
+        return _verifyDjb2Legacy(data, sig, _messageKey);
+      }
+
+      return false;
     }
 
     window.addEventListener('message', function(event) {
@@ -1253,19 +1311,44 @@
         // First-write-wins: only accept the first gas-session-created (prevent overwrite by attacker)
         if (!_messageKey) {
           _messageKey = data.messageKey;
+          // Import HMAC key for Web Crypto API verification (non-extractable, verify-only)
+          _importHmacKey(data.messageKey).then(function(key) {
+            _hmacKey = key;
+          }).catch(function(err) {
+            console.error('HMAC key import failed:', err);
+            _reportSecurityEvent('hmac_key_import_failed', { error: String(err) });
+            // Fail open for import — DJB2 legacy + allowlist is the fallback defense
+          });
         }
       }
-      // For all subsequent messages, verify the signature if we have a key
-      if (_messageKey && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {
-        if (!_verifyMessageSignature(data, _messageKey)) {
-          _reportSecurityEvent('invalid_signature', {
+      // For all subsequent messages, verify the signature if we have a key (async — HMAC-SHA256 or DJB2 legacy)
+      if ((_hmacKey || _messageKey) && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {
+        _verifyMessageSignature(data).then(function(valid) {
+          if (!valid) {
+            _reportSecurityEvent('invalid_signature', {
+              type: data.type,
+              origin: event.origin
+            });
+            return;  // Drop message — signature invalid
+          }
+          _processVerifiedMessage(data, event);
+        }).catch(function(err) {
+          _reportSecurityEvent('hmac_verification_error', {
             type: data.type,
-            origin: event.origin
+            error: String(err)
           });
-          return;
-        }
+        });
+        return;  // Don't process synchronously — wait for async verify
       }
 
+      // Pre-session messages and exempt types proceed synchronously
+      _processVerifiedMessage(data, event);
+    });
+
+    // ── Verified Message Handler ──
+    // Called after HMAC/DJB2 verification passes (or for exempt/pre-session messages).
+    // Extracted to allow the async verification path to call it after the Promise resolves.
+    function _processVerifiedMessage(data, event) {
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
@@ -1498,7 +1581,7 @@
         stopHeartbeat();
         showAuthWall('You have been signed out.');
       }
-    });
+    }
 
     // =============================================
     // AUTH — Cross-Tab Session Sync
@@ -1601,6 +1684,10 @@
               // after reclaim.  Reset to null first so the first-write-wins
               // guard in gas-session-created accepts the next key delivery.
               _messageKey = e.data.messageKey || null;
+              _hmacKey = null;  // Reset CryptoKey — will be re-imported on next gas-session-created
+              if (_messageKey) {
+                _importHmacKey(_messageKey).then(function(key) { _hmacKey = key; }).catch(function() {});
+              }
             }
             // Reset overlay text to same-browser message (in case it was changed
             // by a previous cross-device eviction).
@@ -2194,6 +2281,7 @@
       stopCountdownTimers();
       stopHeartbeat();
       _messageKey = null;
+      _hmacKey = null;
       attemptReauth();
     });
 
@@ -2207,6 +2295,7 @@
       if (_evictedByRemote) {
         _evictedByRemote = false;
         _messageKey = null;  // Clear HMAC key — old session's key is invalid
+        _hmacKey = null;
         clearSession();
         showAuthWall();
         return;
@@ -2221,6 +2310,7 @@
         // session is valid.  This avoids showing the app UI before the
         // iframe is ready (which causes a flicker).
         _messageKey = null;
+        _hmacKey = null;
         _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
@@ -2512,31 +2602,72 @@
       }
     });
 
-    // Test 13: Signature verification logic — test with known values
+    // Test 13: Signature verification logic — test DJB2 legacy + HMAC-SHA256
     _registerTest('Signature Verification Logic', function(addResult) {
-      if (typeof _verifyMessageSignature === 'function') {
-        var testKey = 'test-key-abc123';
-        var testData = { type: 'gas-heartbeat-ok' };
-        // Compute expected signature the same way GAS does
-        var testPayload = JSON.stringify(testData) + '|' + testKey;
-        var testHash = 0;
-        for (var ti = 0; ti < testPayload.length; ti++) {
-          testHash = ((testHash << 5) - testHash) + testPayload.charCodeAt(ti);
-          testHash |= 0;
-        }
-        var validSig = testHash.toString(36);
-        var signedData = { type: 'gas-heartbeat-ok', _sig: validSig };
-        var unsignedData = { type: 'gas-heartbeat-ok' };
-        var wrongSigData = { type: 'gas-heartbeat-ok', _sig: 'wrong' };
-        var validResult = _verifyMessageSignature(signedData, testKey);
-        var unsignedResult = _verifyMessageSignature(unsignedData, testKey);
-        var wrongResult = _verifyMessageSignature(wrongSigData, testKey);
-        if (validResult && !unsignedResult && !wrongResult) {
-          addResult('PASS', 'Signature Verification Logic', 'Valid sig accepted, missing sig rejected, wrong sig rejected');
-        } else {
-          addResult('FAIL', 'Signature Verification Logic', 'Valid=' + validResult + ' Unsigned=' + unsignedResult + ' Wrong=' + wrongResult);
-        }
+      if (typeof _verifyMessageSignature !== 'function' || typeof _verifyDjb2Legacy !== 'function') {
+        addResult('FAIL', 'Signature Verification Logic', 'Verification functions not found');
+        return;
       }
+      // Test DJB2 legacy path (synchronous — known values)
+      var testKey = 'test-key-abc123';
+      var testData = { type: 'gas-heartbeat-ok' };
+      var testPayload = JSON.stringify(testData) + '|' + testKey;
+      var testHash = 0;
+      for (var ti = 0; ti < testPayload.length; ti++) {
+        testHash = ((testHash << 5) - testHash) + testPayload.charCodeAt(ti);
+        testHash |= 0;
+      }
+      var validSig = testHash.toString(36);
+      var djb2Valid = _verifyDjb2Legacy({ type: 'gas-heartbeat-ok', _sig: validSig }, validSig, testKey);
+      var djb2Wrong = _verifyDjb2Legacy({ type: 'gas-heartbeat-ok', _sig: 'wrong' }, 'wrong', testKey);
+      if (!djb2Valid || djb2Wrong) {
+        addResult('FAIL', 'Signature Verification Logic', 'DJB2 legacy: valid=' + djb2Valid + ' wrong=' + djb2Wrong);
+        return;
+      }
+      // Test HMAC-SHA256 path (async — uses Web Crypto API)
+      var savedMsgKey = _messageKey;
+      var savedHmacKey = _hmacKey;
+      _messageKey = testKey;
+      // Import key with both sign+verify for test purposes (production key is verify-only)
+      var testEnc = new TextEncoder();
+      var testSigningKey;
+      crypto.subtle.importKey('raw', testEnc.encode(testKey), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']).then(function(signingKey) {
+        testSigningKey = signingKey;
+        // Also import as verify-only for the actual _hmacKey
+        return _importHmacKey(testKey);
+      }).then(function(cryptoKey) {
+        _hmacKey = cryptoKey;
+        // Compute HMAC-SHA256 signature for test data (same as GAS would)
+        var copy = {};
+        var keys = Object.keys(testData).sort();
+        for (var i = 0; i < keys.length; i++) { if (keys[i] !== '_sig') copy[keys[i]] = testData[keys[i]]; }
+        var payload = JSON.stringify(copy);
+        var enc = new TextEncoder();
+        return crypto.subtle.sign('HMAC', testSigningKey, enc.encode(payload));
+      }).then(function(sigBuf) {
+        var sigArr = new Uint8Array(sigBuf);
+        var hexSig = Array.from(sigArr).map(function(b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+        var signedData = { type: 'gas-heartbeat-ok', _sig: hexSig };
+        var unsignedData = { type: 'gas-heartbeat-ok' };
+        var wrongSigData = { type: 'gas-heartbeat-ok', _sig: 'a'.repeat(64) };
+        return Promise.all([
+          _verifyMessageSignature(signedData),
+          _verifyMessageSignature(unsignedData),
+          _verifyMessageSignature(wrongSigData)
+        ]);
+      }).then(function(results) {
+        _messageKey = savedMsgKey;
+        _hmacKey = savedHmacKey;
+        if (results[0] && !results[1] && !results[2]) {
+          addResult('PASS', 'Signature Verification Logic', 'HMAC-SHA256: valid accepted, missing rejected, wrong rejected. DJB2 legacy: valid accepted, wrong rejected');
+        } else {
+          addResult('FAIL', 'Signature Verification Logic', 'HMAC: valid=' + results[0] + ' unsigned=' + results[1] + ' wrong=' + results[2]);
+        }
+      }).catch(function(err) {
+        _messageKey = savedMsgKey;
+        _hmacKey = savedHmacKey;
+        addResult('FAIL', 'Signature Verification Logic', 'HMAC test error: ' + String(err));
+      });
     });
 
     // Test 16: CSP script-src domains
@@ -2772,13 +2903,24 @@
     // Test 37: Signature passthrough when no key (intentional design)
     _registerTest('Sig Passthrough (No Key)', function(addResult) {
       if (typeof _verifyMessageSignature === 'function') {
-        var noKeyResult = _verifyMessageSignature({ type: 'test' }, null);
-        var emptyKeyResult = _verifyMessageSignature({ type: 'test' }, '');
-        if (noKeyResult && emptyKeyResult) {
-          addResult('PASS', 'Sig Passthrough (No Key)', 'Messages pass through when no key set \u2014 allowlist is primary defense pre-key');
-        } else {
-          addResult('FAIL', 'Sig Passthrough (No Key)', 'Unexpected behavior with null/empty key');
-        }
+        // Temporarily null both keys to test passthrough
+        var savedMsgKey37 = _messageKey;
+        var savedHmacKey37 = _hmacKey;
+        _messageKey = null;
+        _hmacKey = null;
+        _verifyMessageSignature({ type: 'test' }).then(function(result) {
+          _messageKey = savedMsgKey37;
+          _hmacKey = savedHmacKey37;
+          if (result) {
+            addResult('PASS', 'Sig Passthrough (No Key)', 'Messages pass through when no key set \u2014 allowlist is primary defense pre-key');
+          } else {
+            addResult('FAIL', 'Sig Passthrough (No Key)', 'Messages blocked even with no key');
+          }
+        }).catch(function(err) {
+          _messageKey = savedMsgKey37;
+          _hmacKey = savedHmacKey37;
+          addResult('FAIL', 'Sig Passthrough (No Key)', 'Error: ' + String(err));
+        });
       }
     });
 
@@ -2859,27 +3001,31 @@
       }
     });
 
-    // Test 43: clearSession — verify it removes all session data and nulls HMAC key
+    // Test 43: clearSession — verify it removes all session data and nulls both HMAC keys
     _registerTest('Clear Session Function', function(addResult) {
       if (typeof clearSession === 'function') {
         var savedToken43 = getStorage().getItem(SESSION_KEY);
         var savedEmail43 = getStorage().getItem(EMAIL_KEY);
         var savedKey43 = _messageKey;
+        var savedHmacKey43 = _hmacKey;
         getStorage().setItem(SESSION_KEY, 'test-clear-token');
         getStorage().setItem(EMAIL_KEY, 'test@clear.com');
         _messageKey = 'test-hmac-key';
+        _hmacKey = 'test-crypto-key';  // Simulated — clearSession only nulls it
         clearSession();
         var tokenGone43 = !getStorage().getItem(SESSION_KEY);
         var emailGone43 = !getStorage().getItem(EMAIL_KEY);
         var keyNull43 = _messageKey === null;
+        var hmacKeyNull43 = _hmacKey === null;
         // Restore
         if (savedToken43) getStorage().setItem(SESSION_KEY, savedToken43); else getStorage().removeItem(SESSION_KEY);
         if (savedEmail43) getStorage().setItem(EMAIL_KEY, savedEmail43); else getStorage().removeItem(EMAIL_KEY);
         _messageKey = savedKey43;
-        if (tokenGone43 && emailGone43 && keyNull43) {
-          addResult('PASS', 'Clear Session Function', 'clearSession() removes token, email from storage and nulls HMAC key');
+        _hmacKey = savedHmacKey43;
+        if (tokenGone43 && emailGone43 && keyNull43 && hmacKeyNull43) {
+          addResult('PASS', 'Clear Session Function', 'clearSession() removes token, email from storage and nulls both _messageKey and _hmacKey');
         } else {
-          addResult('FAIL', 'Clear Session Function', 'Cleanup incomplete: token=' + !tokenGone43 + ' email=' + !emailGone43 + ' key=' + !keyNull43);
+          addResult('FAIL', 'Clear Session Function', 'Cleanup incomplete: token=' + !tokenGone43 + ' email=' + !emailGone43 + ' msgKey=' + !keyNull43 + ' hmacKey=' + !hmacKeyNull43);
         }
       } else {
         addResult('FAIL', 'Clear Session Function', 'clearSession function not found');
