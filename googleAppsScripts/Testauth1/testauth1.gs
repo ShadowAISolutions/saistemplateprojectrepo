@@ -1,4 +1,4 @@
-var VERSION = "v01.47g";
+var VERSION = "v01.48g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1079,10 +1079,9 @@ function doGet(e) {
       if (evictionReason !== 'timeout') {
         cache.remove("evicted_" + heartbeatToken);
       }
+      var hbExpiredMsg = signMessage({type:'gas-heartbeat-expired', reason: evictionReason}, msgKey);
       var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
-        + 'var k=' + JSON.stringify(msgKey) + ';'
-        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:' + JSON.stringify(evictionReason) + '}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage(' + JSON.stringify(hbExpiredMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbExpiredHtml)
         .setTitle(TITLE)
@@ -1090,10 +1089,9 @@ function doGet(e) {
     }
     var hbData;
     try { hbData = JSON.parse(raw); } catch (err) {
+      var hbErrMsg = signMessage({type:'gas-heartbeat-expired', reason:'corrupt_session'}, msgKey);
       var hbErrHtml = '<!DOCTYPE html><html><body><script>'
-        + 'var k=' + JSON.stringify(msgKey) + ';'
-        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"corrupt_session"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage(' + JSON.stringify(hbErrMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbErrHtml)
         .setTitle(TITLE)
@@ -1102,10 +1100,9 @@ function doGet(e) {
     // Check HMAC if enabled
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
       cache.remove("session_" + heartbeatToken);
+      var hbHmacMsg = signMessage({type:'gas-heartbeat-expired', reason:'integrity_violation'}, msgKey);
       var hbHmacHtml = '<!DOCTYPE html><html><body><script>'
-        + 'var k=' + JSON.stringify(msgKey) + ';'
-        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"integrity_violation"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage(' + JSON.stringify(hbHmacMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbHmacHtml)
         .setTitle(TITLE)
@@ -1118,10 +1115,9 @@ function doGet(e) {
         cache.remove("session_" + heartbeatToken);
         auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
           { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's', clientIp: clientIp });
+        var hbAbsMsg = signMessage({type:'gas-heartbeat-expired', reason:'absolute_timeout'}, msgKey);
         var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
-          + 'var k=' + JSON.stringify(msgKey) + ';'
-          + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-          + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"absolute_timeout"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+          + 'window.top.postMessage(' + JSON.stringify(hbAbsMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
           + '</' + 'script></body></html>';
         return HtmlService.createHtmlOutput(hbAbsHtml)
           .setTitle(TITLE)
@@ -1134,10 +1130,9 @@ function doGet(e) {
       cache.remove("session_" + heartbeatToken);
       auditLog('session_expired', hbData.email, 'heartbeat_too_late',
         { elapsed: Math.round(hbElapsed) + 's', clientIp: clientIp });
+      var hbLateMsg = signMessage({type:'gas-heartbeat-expired', reason:'timeout'}, msgKey);
       var hbLateHtml = '<!DOCTYPE html><html><body><script>'
-        + 'var k=' + JSON.stringify(msgKey) + ';'
-        + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-        + 'window.top.postMessage(s({type:"gas-heartbeat-expired",reason:"timeout"}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + 'window.top.postMessage(' + JSON.stringify(hbLateMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
         + '</' + 'script></body></html>';
       return HtmlService.createHtmlOutput(hbLateHtml)
         .setTitle(TITLE)
@@ -1157,10 +1152,9 @@ function doGet(e) {
     var hbAbsRemaining = hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT
       ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
       : 0;
+    var hbOkMsg = signMessage({type:'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
     var hbOkHtml = '<!DOCTYPE html><html><body><script>'
-      + 'var k=' + JSON.stringify(msgKey) + ';'
-      + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-      + 'window.top.postMessage(s({type:"gas-heartbeat-ok",expiresIn:' + AUTH_CONFIG.SESSION_EXPIRATION + ',absoluteRemaining:' + hbAbsRemaining + '}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+      + 'window.top.postMessage(' + JSON.stringify(hbOkMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(hbOkHtml)
       .setTitle(TITLE)
@@ -1175,10 +1169,9 @@ function doGet(e) {
     var soMsgKey = '';
     if (soRaw) { try { soMsgKey = JSON.parse(soRaw).messageKey || ''; } catch(e) {} }
     invalidateSession(signOutToken);
+    var signOutMsg = signMessage({type:'gas-signed-out', success:true}, soMsgKey);
     var signOutHtml = '<!DOCTYPE html><html><body><script>'
-      + 'var k=' + JSON.stringify(soMsgKey) + ';'
-      + 'function s(m){if(!k)return m;var p=JSON.stringify(m)+"|"+k;var h=0;for(var i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}m._sig=h.toString(36);return m;}'
-      + 'window.top.postMessage(s({type:"gas-signed-out",success:true}), ' + JSON.stringify(PARENT_ORIGIN) + ');'
+      + 'window.top.postMessage(' + JSON.stringify(signOutMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(signOutHtml)
       .setTitle(TITLE)

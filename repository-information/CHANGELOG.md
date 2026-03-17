@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v04.44r] — 2026-03-17 05:34:24 PM EST
+
+> **Prompt:** "proceed with next step"
+
+### Changed
+- Replaced all 7 inline DJB2 hash signing blocks in `testauth1.gs` `doGet()` with server-side `signMessage()` HMAC-SHA256 pre-signing (Phase 1, Step 1.2)
+  - Heartbeat responses (expired, error, HMAC violation, absolute timeout, session timeout, OK) now use server-computed HMAC-SHA256 signatures
+  - Sign-out response now uses server-computed HMAC-SHA256 signature
+  - The messageKey is no longer embedded in client-side HTML responses — it stays server-side only
+
+#### `testauth1.gs` — v01.48g
+
+##### Changed
+- Messages are now signed on the server before being sent, replacing the previous client-side signing approach
 
 ## [v04.43r] — 2026-03-17 05:27:44 PM EST
 

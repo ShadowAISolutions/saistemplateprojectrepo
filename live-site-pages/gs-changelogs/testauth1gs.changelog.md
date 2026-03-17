@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v01.48g] — 2026-03-17 05:34:24 PM EST — v04.44r
+
+### Changed
+- Messages are now signed on the server before being sent, replacing the previous client-side signing approach
 
 ## [v01.47g] — 2026-03-17 05:27:44 PM EST — v04.43r
 
