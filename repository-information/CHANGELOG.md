@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v04.48r] — 2026-03-17 06:20:58 PM EST
+
+> **Prompt:** "sig passthrough is stuck on pending waiting to run"
+
+### Fixed
+- Fixed security test runner hanging on async tests (Tests 13, 37) — runner now detects when `addResult` is called asynchronously and waits for completion (up to 5s timeout) before advancing to the next test
+
+#### `testauth1.html` — v02.14w
+
+##### Fixed
+- Security tests no longer get stuck on "Waiting to run" for tests that verify cryptographic signatures
 
 ## [v04.47r] — 2026-03-17 06:15:17 PM EST
 

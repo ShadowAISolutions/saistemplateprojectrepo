@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v02.14w] — 2026-03-17 06:20:58 PM EST — v04.48r
+
+### Fixed
+- Security tests no longer get stuck on "Waiting to run" for tests that verify cryptographic signatures
 
 ## [v02.13w] — 2026-03-17 06:09:12 PM EST — v04.46r
 
