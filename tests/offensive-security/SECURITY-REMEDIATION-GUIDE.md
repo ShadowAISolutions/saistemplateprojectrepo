@@ -11,8 +11,78 @@
 
 ---
 
+## Implementation Classification — What Goes Where
+
+> **Read this first.** Not every finding requires code changes. Some are handled by Google Workspace admin policy, some can be justified via your HIPAA risk assessment, and some absolutely must be implemented in code. This section classifies all 24 findings so you know where to focus.
+
+### Category 1: Handled at Organization / Google Workspace Policy Level
+
+These findings are resolved through Workspace admin configuration, not application code. If your Workspace policies already enforce these, the finding is satisfied — document the policy in your risk assessment.
+
+| Finding | Severity | Description | How the Org Policy Resolves It |
+|---------|----------|-------------|-------------------------------|
+| **C-4** | CRITICAL | No Multi-Factor Authentication | **Enforce 2-Step Verification** in Admin Console → Security → Authentication → 2-Step Verification → set to "Enforcement: On". Since testauth1 authenticates exclusively via Google OAuth, users complete MFA at the Google identity provider before your app ever sees them. The HIPAA NPRM requires MFA for ePHI access — it doesn't specify where it happens. Document: "MFA enforced at identity provider level via Google Workspace 2-Step Verification policy." |
+| **M-7** | MEDIUM | Client ID exposed in source | **Restrict OAuth consent screen to internal users** in GCP Console → APIs & Services → OAuth consent screen → User type: Internal. This limits sign-in to your Workspace domain. While the Client ID is still visible in source, an attacker cannot use it for phishing because Google rejects auth requests from non-domain users. Document: "OAuth restricted to internal Workspace users; Client ID exposure cannot be exploited for phishing against org users." |
+| **L-4** | LOW | Wake Lock without user consent | **Configure device auto-lock policies** via Workspace → Devices → Mobile & endpoints → Settings → Screen lock. For shared workstations, enforce OS-level screen lock timeouts via endpoint management (Chrome Enterprise, MDM). The wake lock is a convenience feature — the org's device policy provides the HIPAA physical safeguard independently. |
+
+### Category 2: Risk-Assessment Justifiable — No Code Change Required
+
+These findings can be accepted or deferred if your documented HIPAA risk assessment provides adequate justification. The key: you must explicitly document *why* the residual risk is acceptable and what compensating controls exist.
+
+| Finding | Severity | Description | Risk Assessment Justification |
+|---------|----------|-------------|------------------------------|
+| **C-3** | CRITICAL | api.ipify.org without BAA | **Remove ipify entirely (recommended) or justify not collecting IP.** HIPAA does not explicitly mandate client IP logging — it requires audit trails of system activity. Your risk assessment can state: "Client IP is not available server-side in GAS (`doGet(e)` does not expose it). User identity is established via Google OAuth (unique user ID + email + timestamp). IP collection via third-party without BAA creates greater HIPAA risk than not collecting IP. Compensating control: Google Workspace admin audit logs capture access events at the infrastructure level under our BAA." **Note:** Simply removing ipify is the strongest position — you eliminate a HIPAA violation and justify the absence of IP logging through your risk assessment. |
+| **C-5** | CRITICAL | sessionStorage token exposure | **Justify as architectural limitation with compensating controls.** Risk assessment: "Browser-based applications have no HttpOnly-equivalent storage mechanism accessible to client-side JavaScript. The session token stored in sessionStorage is scoped to the tab (not shared across tabs), cleared on tab close, and is only the auth-layer token — not a direct key to PHI. Compensating controls: (1) GAS server-side session validation on every request, (2) server-enforced session timeout independent of client, (3) HMAC-signed messages prevent forged commands even with a stolen token, (4) single-tab enforcement limits exposure surface." |
+| **M-1** | MEDIUM | Tab duplication clones sessionStorage | **Justify as browser behavior with compensating controls.** Risk assessment: "Tab duplication is a browser feature that clones all tab state including sessionStorage. The BroadcastChannel single-tab enforcement detects the duplicate within seconds and forces the original tab to surrender. Residual risk: a brief race window (~1-3 seconds) where two tabs hold valid tokens. Compensating control: GAS server-side session validation rejects requests from surrendered sessions." |
+| **M-5** | MEDIUM | No session binding to device fingerprint | **Justify if org devices are managed.** Risk assessment: "All authorized users access from organization-managed devices with endpoint protection (Chrome Enterprise / MDM). Device fingerprinting adds complexity and false-positive lockouts (browser updates change fingerprints) with limited security gain in a managed-device environment. Compensating controls: Workspace 2-Step Verification, OAuth token scoping, server-side session timeout." **Note:** If users access from unmanaged personal devices, this justification is weaker — consider implementing session binding in that case. |
+| **M-6** | MEDIUM | Test values hardcoded in production | **Justify as development-phase configuration.** Risk assessment: "Test values (shorter timeouts, more frequent heartbeats) are intentionally present during active development and testing. Before production deployment, these values will be replaced with production values as part of the deployment checklist. The test values are clearly marked with `⚡ TEST VALUE` comments. Compensating control: server-side session timeout enforces the authoritative expiry regardless of client-side values." **Note:** This justification has a shelf life — it's valid during development but must be resolved before production deployment. |
+| **M-8** | MEDIUM | No client-side auth audit trail | **Justify with server-side logging as primary control.** Risk assessment: "HIPAA §164.312(b) audit controls are most critical at the PHI-access layer. The GAS server logs all authentication events, session creation/validation/expiry, and data access with timestamps and user identity. Client-side auth events (sign-in button clicks, tab switches) are convenience-level telemetry, not the compliance-critical audit trail. The server-side audit log is the authoritative record for HIPAA purposes." |
+| **L-1** | LOW | Maintenance bypass (triple-click) | **Accept as developer convenience.** Risk assessment: "The maintenance bypass is a developer tool for accessing the page during scheduled maintenance windows. It does not bypass authentication — the user must still complete Google OAuth. The bypass only skips the maintenance-mode UI overlay. No PHI exposure risk." |
+| **L-2** | LOW | Sound files cached in localStorage | **Accept as non-sensitive data.** Risk assessment: "Cached data consists solely of UI sound effect files (base64-encoded audio). No PHI, no user identifiers, no session data. The only privacy implication is that a subsequent user on a shared device could infer this application was previously used. Compensating control: org device policy can enforce browser data clearing on logout." |
+| **L-3** | LOW | No CSP report-uri/report-to | **Defer as monitoring enhancement.** Risk assessment: "CSP reporting requires a dedicated reporting endpoint to receive violation reports. This is a visibility/monitoring improvement, not a security control — the CSP itself still blocks violations regardless of whether they're reported. Will be implemented when a reporting infrastructure is available. No PHI exposure risk from the absence of reporting." |
+
+### Category 3: Must Implement in Code — Cannot Justify Under Risk Assessment
+
+These findings represent security weaknesses where the risk cannot be reasonably accepted under a HIPAA risk assessment. They must be fixed in the application code before production deployment.
+
+| Finding | Severity | Description | Why It Cannot Be Risk-Assessed Away |
+|---------|----------|-------------|--------------------------------------|
+| **C-1** | CRITICAL | DJB2 non-cryptographic hash for message signing | A 32-bit hash that can be brute-forced in milliseconds is not an "integrity control" by any reasonable definition. HIPAA §164.312(e)(1) requires integrity controls — DJB2 provides the appearance of one without the substance. No compensating control can offset "the lock can be picked in 0.001 seconds." **Must replace with HMAC-SHA256.** |
+| **C-2** | CRITICAL | postMessage sends token with `'*'` targetOrigin | Sending an OAuth access token to any listening window is an active vulnerability, not a design tradeoff. OWASP explicitly prohibits wildcard targetOrigin with sensitive data. The GAS double-iframe constraint means `'*'` may be required for *some* message directions, but origin validation on incoming messages and nonce-based verification are non-negotiable compensating controls. **Must implement origin validation + nonce at minimum.** |
+| **H-1** | HIGH | BroadcastChannel transmits token + messageKey | Broadcasting full session credentials (token, email, messageKey) to every same-origin tab is equivalent to writing them to a shared clipboard. Any XSS in any same-origin tab gets complete session takeover material. **Must change to broadcasting events only (tab claimed/released), not credentials.** |
+| **H-2** | HIGH | No origin validation on incoming postMessages | Accepting messages from any origin based solely on message type is an open door for cross-origin attacks. Any page can send a message with `type: 'gas-ready-for-token'` and receive the auth token. **Must add `event.origin` validation.** |
+| **H-3** | HIGH | messageKey nullified in multiple places | Each nullification point reopens the window for an attacker to inject a forged `gas-session-created` with a new messageKey, hijacking the session integrity mechanism. **Must ensure messageKey is set once per session and not clearable from client-side code.** |
+| **H-4** | HIGH | Client-side session timers are authoritative | While the server enforces its own timeout, the client UI must also enforce it — otherwise a user on a shared computer can keep the session visually active indefinitely, and the next person who sits down sees an authenticated screen. **Must make timers immutable (Object.defineProperty or closure-scoped).** |
+| **H-5** | HIGH | Heartbeat sends token in URL parameter | Session tokens in URLs end up in browser history, server logs, and proxy logs. This is not a theoretical risk — it's data at rest in multiple uncontrolled locations. OWASP prohibits tokens in URLs. **Must switch to postMessage-based heartbeat.** |
+| **H-6** | HIGH | Sign-out sends token in URL parameter | Same as H-5. **Must switch to postMessage-based sign-out.** |
+| **H-7** | HIGH | `unsafe-inline` in CSP script-src | `unsafe-inline` fundamentally undermines CSP's XSS protection. If any HTML injection exists (even one not yet discovered), inline scripts execute freely. **Must switch to hash-based CSP (`sha256-...`).** |
+| **M-2** | MEDIUM | Client IP sent via `postMessage('*')` | If IP collection is removed (per C-3 resolution), this finding is resolved automatically. If IP collection is retained via a compliant method, the postMessage must use a specific targetOrigin, not `'*'`. **Resolved by fixing C-3 (remove ipify removes this message entirely).** |
+| **M-3** | MEDIUM | `window._r` exposes GAS deployment URL | The deployment URL is the endpoint for all authenticated GAS operations. Exposing it globally allows any script to discover and target it. **Must scope to closure or delete immediately after use with no race window.** |
+| **M-4** | MEDIUM | Security event reporter sends details via URL params | Security event details (attack types, blocked actions) in URL parameters end up in logs. **Must switch to postMessage-based reporting.** |
+
+### Quick Reference — Finding-to-Category Map
+
+| Category | Findings | Count |
+|----------|----------|-------|
+| **Org Policy** (no code needed) | C-4, M-7, L-4 | 3 |
+| **Risk Assessment** (document & accept) | C-3, C-5, M-1, M-5, M-6, M-8, L-1, L-2, L-3 | 9 |
+| **Must Implement** (code changes required) | C-1, C-2, H-1, H-2, H-3, H-4, H-5, H-6, H-7, M-2, M-3, M-4 | 12 |
+
+### Important Caveats
+
+1. **"Risk-assessment justifiable" does not mean "ignore."** Each finding in Category 2 must be explicitly documented in your HIPAA risk assessment with the justification and compensating controls. An undocumented acceptance is a compliance gap.
+
+2. **Category 2 justifications have conditions.** Some (like M-6 test values) are only valid during development. Review these before each production deployment.
+
+3. **Org policy findings still need verification.** Category 1 items require you to confirm the policies are actually enforced — not just available. Check Admin Console settings and document the configuration.
+
+4. **The 12 must-implement findings are your production checklist.** These are the minimum code changes required before deploying testauth1 in a HIPAA-regulated environment. The detailed implementation for each is in the sections below.
+
+---
+
 ## Table of Contents
 
+0. [Implementation Classification — What Goes Where](#implementation-classification--what-goes-where)
 1. [Architecture Overview](#1-architecture-overview)
 2. [Standards Reference](#2-standards-reference)
 3. [Finding C-1: Replace DJB2 with HMAC-SHA256](#3-finding-c-1-replace-djb2-with-hmac-sha256)
