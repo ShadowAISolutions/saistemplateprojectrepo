@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v04.40r] — 2026-03-17 11:08:18 AM EST
+
+> **Prompt:** "remove the 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md file"
+
+### Removed
+- 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md — comprehensive auth implementation document for testauth1 environment (removed from repo and README tree)
 
 ## [v04.39r] — 2026-03-17 10:31:40 AM EST
 
