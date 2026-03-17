@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v04.41r] — 2026-03-17 11:39:21 AM EST
+
+> **Prompt:** "the tests/offensive-security/SECURITY-REMEDIATION-GUIDE.md , move that where the 10.1 was, and also give it the prefix 10.1-"
+
+### Changed
+- Moved SECURITY-REMEDIATION-GUIDE.md from `tests/offensive-security/` to `repository-information/10.1-SECURITY-REMEDIATION-GUIDE.md`
+- Updated cross-reference link in GAS-HIPAA-COMPLIANCE-ANALYSIS.md to point to new location
+- Updated README tree — removed old entry from tests/offensive-security, added new entry in repository-information
 
 ## [v04.40r] — 2026-03-17 11:08:18 AM EST
 
