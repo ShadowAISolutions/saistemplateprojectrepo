@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v04.54r] — 2026-03-17 07:33:33 PM EST
+
+> **Prompt:** "in console showing this [Violation] Avoid using document.write(). https://developers.google.com/web/updates/2016/08/removing-document-wr..." ... "really but why havent i seen them before" ... "what about this one then, i dont remember this being in the console a while ago" (dropping postMessage from host) ... "for hipaa and security its ok that its shown in the console?" ... "yes please"
+
+### Fixed
+- Deferred `host-client-ip` postMessage until GAS iframe confirms it's loaded — eliminates Google warden console log that exposed internal GAS sandbox URL
+- Changed `host-client-ip` targetOrigin from `'*'` to `event.origin` (the verified GAS origin) for tighter security
+- Added `_ipForwardedToGas` flag to ensure IP is forwarded exactly once
+
+#### `testauth1.html` — v02.19w
+
+##### Fixed
+- Eliminated console warning from Google's warden about unexpected postMessage origin — IP forwarding now waits until GAS iframe is ready
+- Tightened outgoing postMessage security — IP messages now use the verified GAS origin instead of wildcard
 
 ## [v04.53r] — 2026-03-17 07:18:47 PM EST
 
