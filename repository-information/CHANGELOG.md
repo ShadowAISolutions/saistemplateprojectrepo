@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v04.49r] — 2026-03-17 06:56:06 PM EST
+
+> **Prompt:** "continue with implementing the next step in the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Added
+- Phase 2 Step 2.1: postMessage origin validation — `_isValidGasOrigin()` function validates incoming postMessage origins against Google's known patterns (script.google.com, *.googleusercontent.com, accounts.google.com)
+- Layer 0 origin check in postMessage listener — messages from non-Google origins are silently dropped before reaching the allowlist or HMAC verification layers
+- Security test (Test 19b) for origin validation — verifies 4 legitimate origins are accepted and 6 attack patterns are rejected
+
+#### `testauth1.html` — v02.15w
+
+##### Added
+- Origin validation gate on all incoming postMessages — blocks cross-origin message injection (Category 3 finding H-2)
+- New security test validates the origin allowlist against legitimate GAS origins and common spoofing patterns
 
 ## [v04.48r] — 2026-03-17 06:20:58 PM EST
 

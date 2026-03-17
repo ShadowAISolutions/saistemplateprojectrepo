@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v02.15w] — 2026-03-17 06:56:06 PM EST — v04.49r
+
+### Added
+- Messages from unexpected origins are now blocked before processing — only legitimate Google server origins are accepted
+- New security test validates the origin allowlist against spoofing patterns
 
 ## [v02.14w] — 2026-03-17 06:20:58 PM EST — v04.48r
 

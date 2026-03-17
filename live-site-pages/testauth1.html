@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.14w">
+  <meta name="build-version" content="v02.15w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1156,6 +1156,24 @@
       'gas-session-invalid': true
     };
 
+    // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
+    // GAS uses two origin patterns:
+    //   1. https://script.google.com (outer shell)
+    //   2. https://<hash>-script.googleusercontent.com (inner sandbox — subdomain varies per deployment/session)
+    // Google Accounts origin is also allowed for GIS callback messages.
+    function _isValidGasOrigin(origin) {
+      if (!origin) return false;
+      // Exact match: GAS outer shell
+      if (origin === 'https://script.google.com') return true;
+      // Pattern match: GAS inner sandbox (variable subdomain)
+      if (/^https:\/\/[a-z0-9]+-script\.googleusercontent\.com$/.test(origin)) return true;
+      // Alternate sandbox format (no subdomain prefix)
+      if (origin === 'https://script.googleusercontent.com') return true;
+      // Google Accounts origin (GIS callback messages)
+      if (origin === 'https://accounts.google.com') return true;
+      return false;
+    }
+
     // Layer 2: Cryptographic message authentication
     // Per-session key delivered via gas-session-created, used to verify subsequent messages.
     var _messageKey = null;       // Raw key string (kept for legacy DJB2 dual-accept during migration)
@@ -1286,6 +1304,19 @@
     window.addEventListener('message', function(event) {
       var data = event.data;
       if (!data || typeof data !== 'object') return;
+
+      // Layer 0: Origin validation — reject messages from unexpected origins (Phase 2 — H-2)
+      if (!_isValidGasOrigin(event.origin)) {
+        // Only log if it looks like an intentional message (has a type field), not random noise
+        if (data.type) {
+          _reportSecurityEvent('rejected_origin', {
+            origin: event.origin,
+            type: String(data.type).substring(0, 50)
+          });
+        }
+        return;  // Silently drop
+      }
+
       // Layer 1: Only process known GAS message types (allowlist)
       if (!_KNOWN_GAS_MESSAGES[data.type]) {
         _reportSecurityEvent('unknown_message_type', {
@@ -2766,6 +2797,45 @@
         }
       } else {
         addResult('FAIL', 'GAS Origin Validation', 'GAS_ORIGIN not set or incorrect');
+      }
+    });
+
+    // Test 19b: postMessage origin validation function (Phase 2 — H-2)
+    _registerTest('postMessage Origin Validation', function(addResult) {
+      if (typeof _isValidGasOrigin !== 'function') {
+        addResult('FAIL', 'postMessage Origin Validation', '_isValidGasOrigin function not found \u2014 Phase 2 origin check missing');
+        return;
+      }
+      // Verify legitimate GAS origins are accepted
+      var acceptTests = [
+        ['https://script.google.com', 'GAS outer shell'],
+        ['https://abc123-script.googleusercontent.com', 'GAS inner sandbox'],
+        ['https://script.googleusercontent.com', 'GAS sandbox (no subdomain)'],
+        ['https://accounts.google.com', 'Google Accounts (GIS)']
+      ];
+      var rejectTests = [
+        ['https://evil.com', 'random domain'],
+        ['https://script.google.com.evil.com', 'spoofed subdomain'],
+        ['http://script.google.com', 'HTTP downgrade'],
+        ['https://googleusercontent.com', 'bare googleusercontent'],
+        ['', 'empty origin'],
+        [null, 'null origin']
+      ];
+      var failures = [];
+      for (var a = 0; a < acceptTests.length; a++) {
+        if (!_isValidGasOrigin(acceptTests[a][0])) {
+          failures.push('should accept ' + acceptTests[a][1] + ' (' + acceptTests[a][0] + ')');
+        }
+      }
+      for (var r = 0; r < rejectTests.length; r++) {
+        if (_isValidGasOrigin(rejectTests[r][0])) {
+          failures.push('should reject ' + rejectTests[r][1] + ' (' + rejectTests[r][0] + ')');
+        }
+      }
+      if (failures.length === 0) {
+        addResult('PASS', 'postMessage Origin Validation', '_isValidGasOrigin accepts ' + acceptTests.length + ' legitimate origins, rejects ' + rejectTests.length + ' attack patterns');
+      } else {
+        addResult('FAIL', 'postMessage Origin Validation', failures.join('; '));
       }
     });
 
