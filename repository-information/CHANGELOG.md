@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v04.56r] — 2026-03-17 08:55:55 PM EST
+
+> **Prompt:** "can you have all the code for getting the IP that you just removed commented out as you had it in case i want to re-add it later please"
+
+### Changed
+- Restored all removed IP collection code as commented-out blocks in testauth1.html and testauth1.gs for easy re-enablement
+- Added step-by-step re-enablement instructions in comments
+
+#### `testauth1.html` — v02.21w
+
+##### Changed
+- Added commented-out IP collection, validation, forwarding, and heartbeat code with re-enablement instructions
+
+#### `testauth1.gs` — v01.51g
+
+##### Changed
+- Added commented-out IP extraction, storage, iframe IP collection, and message handler code with re-enablement instructions
 
 ## [v04.55r] — 2026-03-17 08:48:57 PM EST
 

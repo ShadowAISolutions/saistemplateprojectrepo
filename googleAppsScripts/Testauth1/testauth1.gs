@@ -1,4 +1,4 @@
-var VERSION = "v01.50g";
+var VERSION = "v01.51g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -774,9 +774,12 @@ function validateSessionForData(sessionToken, operationName) {
 // Every function that reads/writes data must call validateSessionForData() first.
 // =============================================
 
+// Phase 3: clientIp parameter removed — to re-enable, change signature to:
+// function saveNote(sessionToken, noteText, clientIp) {
 function saveNote(sessionToken, noteText) {
   var user = validateSessionForData(sessionToken, 'saveNote');
   // Phase 3 (C-3): Client IP no longer collected — use 'not-collected' for audit trail
+  // To re-enable: var ip = clientIp || user.clientIp || '';
   var ip = user.clientIp || 'not-collected';
   // Data operation (only runs if session is valid)
   // Security: sessionId omitted from session audit log details (it's already in the SessionId column via dataAuditLog)
@@ -1010,6 +1013,13 @@ function doGet(e) {
   // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
   // GAS doGet(e) does not expose client IP — no compliant server-side method exists.
   // All audit log entries use 'not-collected' for the IP field.
+  // To re-enable, uncomment below and set AUTH_CONFIG.ENABLE_IP_LOGGING = true:
+  // var rawIp = (e && e.parameter && e.parameter.clientIp) || '';
+  // var clientIp = '';
+  // if (rawIp) {
+  //   var t = String(rawIp).trim().substring(0, 45);
+  //   clientIp = (/^(\d{1,3}\.){3}\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) ? t : 'invalid';
+  // }
   var clientIp = 'not-collected';
 
   // Security event reporting — client-side defense layers report blocked attacks
@@ -1137,6 +1147,10 @@ function doGet(e) {
     // Session is valid — reset createdAt to extend the session
     hbData.createdAt = Date.now();
     hbData.lastActivity = Date.now();
+    // Phase 3: IP storage removed — uncomment to re-enable
+    // if (AUTH_CONFIG.ENABLE_IP_LOGGING && clientIp) {
+    //   hbData.clientIp = clientIp;
+    // }
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) {
       hbData.hmac = generateSessionHmac(hbData);
     }
@@ -1322,11 +1336,34 @@ function doGet(e) {
         }
 
         // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
+        // To re-enable, uncomment below and set AUTH_CONFIG.ENABLE_IP_LOGGING = true:
+        // var _clientIp = '';
+        // function _valIp(v) {
+        //   if (!v || typeof v !== 'string') return 'unknown';
+        //   var t = v.trim().substring(0, 45);
+        //   if (/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) return t;
+        //   return 'invalid';
+        // }
+        // if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
+        //   try {
+        //     var _ipXhr = new XMLHttpRequest();
+        //     _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
+        //     _ipXhr.timeout = 5000;
+        //     _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _valIp(_ipXhr.responseText); };
+        //     _ipXhr.onerror = function() { _clientIp = 'unknown'; };
+        //     _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
+        //     _ipXhr.send();
+        //   } catch(e) { _clientIp = 'unknown'; }
+        // }
 
         // Notify wrapper that auth is OK
         window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');
 
         window.addEventListener('message', function(e) {
+          // Phase 3: IP receiver removed — uncomment to re-enable
+          // if (e.data && e.data.type === 'host-client-ip') {
+          //   _clientIp = _valIp(e.data.ip);
+          // }
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
@@ -1387,7 +1424,7 @@ function doGet(e) {
                 statusEl.style.color = '#c62828';
               }
             })
-            .saveNote(_sessionToken, note);
+            .saveNote(_sessionToken, note);  // Phase 3: was .saveNote(_sessionToken, note, _clientIp)
         });
       </script>
     </body>

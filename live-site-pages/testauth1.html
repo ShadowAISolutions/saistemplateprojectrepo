@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.20w">
+  <meta name="build-version" content="v02.21w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1189,6 +1189,37 @@
     // using it constitutes unauthorized PHI disclosure under HIPAA §164.502(a).
     // GAS doGet(e) does not expose client IP — no compliant server-side collection method exists.
     // User identity is established via Google OAuth (email + unique user ID + timestamp).
+    //
+    // To re-enable IP logging:
+    // 1. Set HTML_CONFIG.ENABLE_IP_LOGGING = true (above)
+    // 2. Uncomment the code below
+    // 3. Add 'https://api.ipify.org' back to connect-src in the CSP meta tag
+    // 4. Uncomment the IP forwarding blocks in the message handler and gas-auth-ok handler
+    // 5. Uncomment the clientIp parameter in the heartbeat URL
+    // 6. Re-enable corresponding GAS-side code (see testauth1.gs)
+    // 7. Obtain a BAA with your IP lookup provider or use a Google Cloud Function proxy
+    //
+    // var _clientIp = '';  // Client IP for audit logging
+    // var _ipForwardedToGas = false;  // Tracks whether IP was forwarded to GAS iframe
+    //
+    // // Validate IP format (IPv4 or IPv6) and truncate to max 45 chars.
+    // // Prevents log injection via arbitrary strings in the client-reported IP field.
+    // function _validateIp(ip) {
+    //   if (!ip || typeof ip !== 'string') return 'unknown';
+    //   var trimmed = ip.trim().substring(0, 45);
+    //   if (/^(\d{1,3}\.){3}\d{1,3}$/.test(trimmed) || /^[0-9a-fA-F:]+$/.test(trimmed)) return trimmed;
+    //   return 'invalid';
+    // }
+    //
+    // // Fetch client IP on host page (not inside GAS iframe — avoids sandbox CSP issues)
+    // if (HTML_CONFIG.ENABLE_IP_LOGGING) {
+    //   fetch('https://api.ipify.org?format=json')
+    //     .then(function(r) { return r.json(); })
+    //     .then(function(data) {
+    //       _clientIp = _validateIp(data.ip);
+    //     })
+    //     .catch(function() { _clientIp = 'unknown'; });
+    // }
 
     // ── Security Event Reporter ──
     // Reports blocked attacks to the GAS backend for audit logging.
@@ -1206,6 +1237,7 @@
       frame.style.display = 'none';
       var params = 'securityEvent=' + encodeURIComponent(eventType)
         + '&details=' + encodeURIComponent(JSON.stringify(details || {}).substring(0, 500));
+        // + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');  // Phase 3: IP removed
       frame.src = baseUrl + '?' + params;
       document.body.appendChild(frame);
       // Clean up after 10s
@@ -1299,6 +1331,17 @@
         }
         return;  // Silently drop
       }
+
+      // Phase 3: IP forwarding removed — uncomment to re-enable
+      // // Forward client IP to GAS iframe on first valid message (deferred from IP fetch
+      // // to avoid hitting Google's warden before the iframe navigates to GAS origin)
+      // if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
+      //   _ipForwardedToGas = true;
+      //   var gasIpFwd = document.getElementById('gas-app');
+      //   if (gasIpFwd && gasIpFwd.contentWindow) {
+      //     gasIpFwd.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, event.origin);
+      //   }
+      // }
 
       // Layer 1: Only process known GAS message types (allowlist)
       if (!_KNOWN_GAS_MESSAGES[data.type]) {
@@ -1483,6 +1526,14 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
+        // Phase 3: IP forwarding removed — uncomment to re-enable
+        // if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
+        //   _ipForwardedToGas = true;
+        //   var gasIpFrame = document.getElementById('gas-app');
+        //   if (gasIpFrame && gasIpFrame.contentWindow) {
+        //     gasIpFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, event.origin);
+        //   }
+        // }
         // "Use Here" hides the iframe before reload — re-show it now that
         // the GAS app confirmed the session is valid.
         if (_directSessionLoad) {
@@ -2188,6 +2239,7 @@
       }
       hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
         + '&msgKey=' + encodeURIComponent(_messageKey || '');
+        // + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');  // Phase 3: IP removed
       // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
     }
 
