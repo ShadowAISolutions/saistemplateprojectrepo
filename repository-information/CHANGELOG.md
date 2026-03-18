@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v04.78r] — 2026-03-18 01:12:40 PM EST
+
+> **Prompt:** "hmm, the thing is now with your last update is that when i duplicate the tab, its now fighting to stay open in the original tab by spamming refreshes, and is not gracefully transfering to the other tab"
+
+### Fixed
+- Fixed iframe reload loop caused by injecting `gas-session-created` into the `?session` GAS path — every `?session` load (tab duplicate, refresh, normal sign-in) was triggering the handler which reloads the iframe, creating an infinite loop
+- Reverted the GAS-side `gas-session-created` injection; instead, `gas-auth-ok` now includes `messageKey` and the HTML-side `gas-auth-ok` handler imports the key when `_hmacKey` is null — this is safe because `gas-auth-ok` is a terminal message (no iframe reload), so no loop can occur
+
+#### `testauth1.html` — v02.34w
+
+##### Fixed
+- HMAC key is now imported from `gas-auth-ok` when the key is missing (after "Use Here" reclaim, tab duplicate, or page refresh)
+
+#### `testauth1.gs` — v01.54g
+
+##### Changed
+- `gas-auth-ok` message now includes `messageKey` from the session, replacing the reverted `gas-session-created` injection approach
 
 ## [v04.77r] — 2026-03-18 01:02:43 PM EST
 

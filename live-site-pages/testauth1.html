@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.33w">
+  <meta name="build-version" content="v02.34w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1538,15 +1538,13 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
-          // "Use Here" reclaims skip this — the iframe was already loaded with
-          // ?session=TOKEN, which now sends gas-session-created + gas-auth-ok.
-          if (!_directSessionLoad) {
-            var gasApp = document.getElementById('gas-app');
-            var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-            if (gasApp && baseUrl) {
-              _expectingSession = true;
-              gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
-            }
+          // The ?session path does NOT send gas-session-created — it sends
+          // gas-auth-ok (with messageKey) directly. Key import is handled there.
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
           }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
@@ -1589,6 +1587,15 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
+        // Phase 5: Import messageKey if delivered via gas-auth-ok (the ?session path
+        // includes it). This handles "Use Here" reclaim, tab duplicate, and page refresh
+        // where gas-session-created is not sent. Only import if no key is set yet.
+        if (data.messageKey && !_hmacKeySet) {
+          _messageKey = data.messageKey;
+          _importHmacKey(data.messageKey).catch(function(err) {
+            console.error('HMAC key import from gas-auth-ok failed:', err);
+          });
+        }
         // Phase 3: IP forwarding removed — uncomment to re-enable
         // if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
         //   _ipForwardedToGas = true;
@@ -2533,7 +2540,6 @@
         _hmacKey = null;
         _hmacKeySet = false;
         _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
-        _iframeLoadTime = Date.now();  // Reset bootstrap timer for gas-session-created replay check
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';

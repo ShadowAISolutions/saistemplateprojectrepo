@@ -1,4 +1,4 @@
-var VERSION = "v01.53g";
+var VERSION = "v01.54g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1557,14 +1557,10 @@ function doGet(e) {
         //   } catch(e) { _clientIp = 'unknown'; }
         // }
 
-        // Deliver messageKey to parent for HMAC verification (Phase 5)
-        // This is needed for the ?session= path (e.g. "Use Here" reclaim)
-        // which bypasses the normal sign-in flow that sends gas-session-created.
-        // Without this, _hmacKey stays null after tab reclaim.
-        window.top.postMessage({type: 'gas-session-created', success: true, messageKey: '${escapeJs(appMsgKey)}', email: '${escapeJs(session.email)}', displayName: '${escapeJs(session.displayName || '')}', absoluteTimeout: ${session.absoluteTimeout || 0}, sessionToken: '${escapeJs(sessionToken)}'}, '${PARENT_ORIGIN}');
-
-        // Notify wrapper that auth is OK
-        window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');
+        // Notify wrapper that auth is OK — include messageKey so the host page
+        // can import it for HMAC verification (needed for ?session= path where
+        // gas-session-created is not sent, e.g. "Use Here" reclaim, tab duplicate, refresh)
+        window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}, messageKey: '${escapeJs(appMsgKey)}'}), '${PARENT_ORIGIN}');
 
         window.addEventListener('message', function(e) {
           // Phase 3: IP receiver removed — uncomment to re-enable

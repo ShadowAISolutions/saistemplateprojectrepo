@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v02.34w] — 2026-03-18 01:12:40 PM EST — v04.78r
+
+### Fixed
+- Fixed tab duplication causing an iframe reload loop instead of gracefully transferring to the new tab
+- HMAC key is now properly restored after "Use Here" reclaim without causing refresh spam
 
 ## [v02.33w] — 2026-03-18 01:02:43 PM EST — v04.77r
 
