@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.12w">
+  <meta name="build-version" content="v01.13w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1406,12 +1406,12 @@
       var old = document.getElementById('gas-app');
       if (old) old.remove();
 
-      // Create iframe via srcdoc trampoline to validate the deployment ID
+      // Create iframe and load the GAS deployment URL directly
       var url = 'https://script.google.com/macros/s/' + deployId + '/exec';
       var f = document.createElement('iframe');
       f.id = 'gas-app';
-      window._r = url;
-      f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
+      f.dataset.baseUrl = url;
+      f.src = url;
       panel.appendChild(f);
 
       // Show tab and expand panel

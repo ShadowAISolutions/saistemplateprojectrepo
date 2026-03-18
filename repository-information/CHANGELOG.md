@@ -3,9 +3,50 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v04.73r] — 2026-03-18 11:06:43 AM EST
+
+> **Prompt:** "go ahead and implement phase 9, make sure to clean up any dead code with it"
+
+### Fixed
+- Eliminated `window._r` global variable exposure (Phase 9 / M-3 MEDIUM) — GAS deployment URL is no longer accessible as a global JavaScript variable; now scoped to `dataset.baseUrl` DOM property only
+- Removed srcdoc trampoline pattern from iframe creation — replaced with direct `f.src` assignment on non-auth pages and inert iframe (no src) on auth pages
+- Cleaned up all `window._r ||` fallback chains across auth flow, heartbeat, sign-out, security event reporter, and session sync handlers
+- Removed dead `delete window._r` and `gasApp.removeAttribute('srcdoc')` cleanup code from page-load IIFEs
+- Updated stale comments referencing srcdoc race conditions
+
+#### `testauth1.html` — v02.31w
+
+##### Fixed
+- Removed global GAS URL exposure — deployment URL no longer accessible via `window._r`
+- Minor internal improvements
+
+#### `portal.html` — v01.12w
+
+##### Fixed
+- Removed global GAS URL exposure — deployment URL no longer accessible via `window._r`
+- Minor internal improvements
+
+#### `index.html` — v01.06w
+
+##### Fixed
+- Removed global GAS URL exposure — srcdoc trampoline replaced with direct iframe navigation
+- Minor internal improvements
+
+#### `testenvironment.html` — v01.06w
+
+##### Fixed
+- Removed global GAS URL exposure — srcdoc trampoline replaced with direct iframe navigation
+- Minor internal improvements
+
+#### `gas-project-creator.html` — v01.13w
+
+##### Fixed
+- Removed global GAS URL exposure — srcdoc trampoline replaced with direct iframe navigation
+- Minor internal improvements
 
 ## [v04.72r] — 2026-03-18 10:47:49 AM EST
 

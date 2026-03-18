@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.11w">
+  <meta name="build-version" content="v01.12w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Portal Title</title>
 <!-- ══════════════ -->
@@ -537,8 +537,6 @@
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
       f.dataset.baseUrl = _u;
-      window._r = _u;
-      f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
       document.body.appendChild(f);
     })();
 
@@ -799,7 +797,7 @@
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
       if (!gasApp) return;
-      var baseUrl = window._r || gasApp.dataset.baseUrl || '';
+      var baseUrl = gasApp.dataset.baseUrl || '';
       if (!baseUrl) return;
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
     }
@@ -810,7 +808,7 @@
       _pendingToken = googleAccessToken;
       var gasApp = document.getElementById('gas-app');
       if (!gasApp) return;
-      var baseUrl = window._r || gasApp.dataset.baseUrl || '';
+      var baseUrl = gasApp.dataset.baseUrl || '';
       if (!baseUrl) return;
       gasApp.src = baseUrl;
     }
@@ -841,7 +839,7 @@
       if (_securityEventCount >= _SECURITY_EVENT_LIMIT) return;
       _securityEventCount++;
       var gasApp = document.getElementById('gas-app');
-      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;
       var frame = document.createElement('iframe');
       frame.style.display = 'none';
@@ -925,7 +923,7 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName };
           // Reload iframe with session token so the app UI loads
           var gasApp = document.getElementById('gas-app');
-          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
@@ -981,7 +979,7 @@
           // Defer showApp until gas-auth-ok confirms the session server-side.
           _pendingSessionShow = { email: session.email, displayName: null };
           var gasApp = document.getElementById('gas-app');
-          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
@@ -1054,7 +1052,7 @@
       if (session.token) {
         // Tell GAS to invalidate the server-side session
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           gasApp.src = baseUrl + '?signOut=' + encodeURIComponent(session.token);
         }
@@ -1091,35 +1089,21 @@
     (function() {
       var session = loadSession();
       if (session.token) {
-        // Resume existing session — cancel the srcdoc navigation and load
-        // the GAS iframe with the session token instead.
+        // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
-        if (gasApp) {
-          delete window._r;
-          gasApp.removeAttribute('srcdoc');
-          if (baseUrl) {
-            _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
-          }
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+        if (gasApp && baseUrl) {
+          _expectingSession = true;
+          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
         // server-side. Without this, an attacker who injects a forged token into
         // storage can trick the page into hiding the auth wall on reload.
         _pendingSessionShow = { email: session.email, displayName: null };
       } else {
-        // No session — prevent the iframe from loading the bare GAS URL.
-        // The iframe IIFE navigates to the GAS deployment URL immediately,
-        // which would trigger a premature gas-needs-auth ("Session expired")
-        // before Google Sign-In has a chance to obtain a token. Cancel that
-        // navigation, then let the sign-in button handle the auth flow —
-        // exchangeViaUrl will navigate the iframe once a token is available.
-        var gasApp = document.getElementById('gas-app');
-        if (gasApp) {
-          delete window._r;
-          gasApp.removeAttribute('srcdoc');
-          gasApp.src = 'about:blank';
-        }
+        // No session — the iframe IIFE created the element without navigating it
+        // (no src set on auth pages). The auth flow (exchangeViaUrl) will set
+        // the iframe src once Google Sign-In obtains a token.
         showAuthWall();
       }
     })();

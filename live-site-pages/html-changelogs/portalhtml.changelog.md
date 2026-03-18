@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 11/100`
+`Sections: 12/100`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-03-18 11:06:43 AM EST — v04.73r
+
+### Fixed
+- Removed global GAS URL exposure — deployment URL no longer accessible via `window._r`
+- Minor internal improvements
 
 ## [v01.11w] — 2026-03-16 10:29:43 AM EST — v04.11r
 

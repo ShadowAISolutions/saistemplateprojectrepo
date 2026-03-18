@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.30w">
+  <meta name="build-version" content="v02.31w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -696,7 +696,6 @@
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
       f.dataset.baseUrl = _u;
-      window._r = _u;
       document.body.appendChild(f);
     })();
 
@@ -1123,7 +1122,7 @@
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
       if (!gasApp) return;
-      var baseUrl = window._r || gasApp.dataset.baseUrl || '';
+      var baseUrl = gasApp.dataset.baseUrl || '';
       if (!baseUrl) return;
 
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
@@ -1141,7 +1140,7 @@
         .map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
       var gasApp = document.getElementById('gas-app');
       if (!gasApp) return;
-      var baseUrl = window._r || gasApp.dataset.baseUrl || '';
+      var baseUrl = gasApp.dataset.baseUrl || '';
       if (!baseUrl) return;
 
       // Reload iframe to get a fresh postMessage listener page
@@ -1244,7 +1243,7 @@
       if (_securityEventCount >= _SECURITY_EVENT_LIMIT) return;
       _securityEventCount++;
       var gasApp = document.getElementById('gas-app');
-      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;
       // Send via hidden iframe with action parameter only — NO sensitive data in URL
       var frame = document.createElement('iframe');
@@ -1539,7 +1538,7 @@
           // "Use Here" reclaims are handled by gas-auth-ok instead (the GAS
           // app sends gas-auth-ok, not gas-session-created, for valid sessions).
           var gasApp = document.getElementById('gas-app');
-          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
@@ -1568,10 +1567,9 @@
       // GAS iframe says auth is needed (session expired/invalid)
       if (data.type === 'gas-needs-auth') {
         if (_expectingSession) {
-          // Stale gas-needs-auth from the bare-URL srcdoc race — the iframe
-          // was still loading the old (no-session) URL while we already set
-          // a new src with the session token. Ignore this message and wait
-          // for the session-URL response instead.
+          // Stale gas-needs-auth — the iframe was still loading a prior URL
+          // while we already set a new src with the session token. Ignore
+          // this message and wait for the session-URL response instead.
           _expectingSession = false;
           return;
         }
@@ -1751,7 +1749,7 @@
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
           var gasApp = document.getElementById('gas-app');
-          var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
@@ -2332,7 +2330,7 @@
       if (!session.token) return;
 
       var gasApp = document.getElementById('gas-app');
-      var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!gasApp || !baseUrl) return;
 
       _heartbeatInFlight = true;
@@ -2397,7 +2395,7 @@
       // Token sent via postMessage, NOT URL parameters
       if (session.token) {
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           var _soToken = session.token;  // capture for closure
           gasApp.src = baseUrl + '?action=signout';
@@ -2532,7 +2530,7 @@
         _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           gasApp.style.visibility = 'hidden';
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
@@ -2557,7 +2555,7 @@
       if (session.token) {
         // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           _expectingSession = true;
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
@@ -2568,9 +2566,9 @@
         _pendingSessionShow = { email: session.email, displayName: null };
         showReconnecting();
       } else {
-        // No session — iframe starts inert (no srcdoc, no src).
-        // exchangeViaUrl/exchangeViaPostMessage will navigate it once
-        // Google Sign-In obtains a token.
+        // No session — the iframe IIFE created the element without navigating it
+        // (no src set on auth pages). The auth flow (exchangeViaUrl) will set
+        // the iframe src once Google Sign-In obtains a token.
 
         // If the session expired before this reload (e.g. auto-refresh after
         // timeout), show expired message. Otherwise show generic auth wall.

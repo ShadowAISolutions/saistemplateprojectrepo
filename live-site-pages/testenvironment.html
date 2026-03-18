@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Test Title</title>
   <style>
@@ -460,8 +460,7 @@
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
       f.dataset.baseUrl = _u;
-      window._r = _u;
-      f.srcdoc = '<script>var d=parent._r;delete parent._r;if(d)location.replace(d)<\/script>';
+      f.src = _u;
       document.body.appendChild(f);
     })();
 

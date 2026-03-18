@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-03-18 11:06:43 AM EST — v04.73r
+
+### Fixed
+- Removed global GAS URL exposure — srcdoc trampoline replaced with direct iframe navigation
+- Minor internal improvements
 
 ## [v01.12w] — 2026-03-14 08:59:29 PM EST — v03.54r
 
