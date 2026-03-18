@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v02.29w] — 2026-03-18 09:45:42 AM EST — v04.69r
+
+### Removed
+- Removed unnecessary iframe startup code that was already being cancelled on every page load — cleaner initialization flow
 
 ## [v02.28w] — 2026-03-18 09:24:34 AM EST — v04.68r
 

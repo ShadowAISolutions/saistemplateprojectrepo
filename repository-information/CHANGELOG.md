@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v04.69r] — 2026-03-18 09:45:42 AM EST
+
+> **Prompt:** "before you remove it, add something as a rule/reference so that you can use the logic you just used so we can clean up dead code anywhere we designate later"
+
+### Removed
+- Removed dead srcdoc code from GAS iframe IIFE in testauth1.html — srcdoc navigation was cancelled by every code path, making it dead code with active cleanup burden in two init branches
+
+### Added
+- Added "Dead Code Detection Methodology" reference to `.claude/rules/html-pages.md` — documents the systematic analysis for identifying dead code and pre-auth resource abuse vectors
+
+#### `testauth1.html` — v02.29w
+
+##### Removed
+- Removed unnecessary iframe startup code that was already being cancelled on every page load — cleaner initialization flow
 
 ## [v04.68r] — 2026-03-18 09:24:34 AM EST
 
