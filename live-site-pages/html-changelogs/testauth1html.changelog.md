@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v02.35w] — 2026-03-18 02:50:29 PM EST — v04.81r
+
+### Changed
+- Improved message verification security — all messages are now validated using a single, stronger cryptographic method
+- Security self-test panel updated to reflect the stronger verification system
+
+### Removed
+- Removed support for legacy message verification (no longer needed after server-side upgrade)
 
 ## [v02.34w] — 2026-03-18 01:12:40 PM EST — v04.78r
 

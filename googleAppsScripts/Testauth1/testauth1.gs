@@ -1,4 +1,4 @@
-var VERSION = "v01.55g";
+var VERSION = "v01.56g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1131,6 +1131,66 @@ function processSecurityEvent(eventType, details) {
   }
 }
 
+// ── DJB2→HMAC Migration: Server-side message signing for GAS session HTML ──
+// Called via google.script.run from the session HTML inline script.
+// Replaces client-side _s() (DJB2) with server-side HMAC-SHA256 signing.
+// Same pattern as processHeartbeat/processSignOut (Phase 7).
+function signAppMessage(sessionToken, messageType, params) {
+  if (!sessionToken || !messageType) {
+    return { type: 'error', error: 'missing_parameters' };
+  }
+
+  var cache = CacheService.getScriptCache();
+
+  // Validate session — retrieve messageKey from cache regardless of session validity
+  var raw = cache.get('session_' + sessionToken);
+  var msgKey = '';
+  if (raw) {
+    try { msgKey = JSON.parse(raw).messageKey || ''; } catch(e) {}
+  }
+
+  var session = validateSession(sessionToken);
+  if (session.status !== 'authorized') {
+    // Session is invalid — expected for 'gas-session-invalid' callers.
+    // Use recovered messageKey from cache (may still exist even after expiry).
+    return signMessage({
+      type: 'gas-session-invalid',
+      reason: 'SESSION_EXPIRED'
+    }, msgKey);
+  }
+
+  switch (messageType) {
+    case 'gas-auth-ok':
+      return signMessage({
+        type: 'gas-auth-ok',
+        version: VERSION,
+        needsReauth: session.needsReauth || false,
+        messageKey: msgKey
+      }, msgKey);
+
+    case 'gas-version':
+      var appData = getAppData();
+      return signMessage({
+        type: 'gas-version',
+        version: appData.version
+      }, msgKey);
+
+    case 'gas-user-activity':
+      return signMessage({
+        type: 'gas-user-activity'
+      }, msgKey);
+
+    case 'gas-session-invalid':
+      return signMessage({
+        type: 'gas-session-invalid',
+        reason: (params && params.reason) || 'unknown'
+      }, msgKey);
+
+    default:
+      return { type: 'error', error: 'unknown_message_type' };
+  }
+}
+
 function doGet(e) {
   var sessionToken = (e && e.parameter && e.parameter.session) || "";
   // Phase 7: signOutToken, heartbeatToken, and msgKey URL parameters removed —
@@ -1404,16 +1464,9 @@ function doGet(e) {
       <script>
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';
-        // Message signing for cryptographic authentication
-        var _mk = '${escapeJs(appMsgKey)}';
-        function _s(m) {
-          if (!_mk) return m;
-          var p = JSON.stringify(m) + '|' + _mk;
-          var h = 0;
-          for (var i = 0; i < p.length; i++) { h = ((h << 5) - h) + p.charCodeAt(i); h |= 0; }
-          m._sig = h.toString(36);
-          return m;
-        }
+        // DJB2→HMAC migration complete: _s() and _mk removed.
+        // All message signing now happens server-side via signAppMessage()
+        // (called through google.script.run — same pattern as Phase 7 heartbeat/signout).
 
         // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
         // To re-enable, uncomment below and set AUTH_CONFIG.ENABLE_IP_LOGGING = true:
@@ -1439,7 +1492,19 @@ function doGet(e) {
         // Notify wrapper that auth is OK — include messageKey so the host page
         // can import it for HMAC verification (needed for ?session= path where
         // gas-session-created is not sent, e.g. "Use Here" reclaim, tab duplicate, refresh)
-        window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}, messageKey: '${escapeJs(appMsgKey)}'}), '${PARENT_ORIGIN}');
+        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        google.script.run
+          .withSuccessHandler(function(signed) {
+            window.top.postMessage(signed, '${PARENT_ORIGIN}');
+          })
+          .withFailureHandler(function(err) {
+            // Fallback: send unsigned gas-auth-ok so the host page at least knows
+            // the session is valid (verification will pass because no key is set yet)
+            window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
+              needsReauth: ${session.needsReauth || false},
+              messageKey: '${escapeJs(appMsgKey)}'}, '${PARENT_ORIGIN}');
+          })
+          .signAppMessage(_sessionToken, 'gas-auth-ok');
 
         window.addEventListener('message', function(e) {
           // Phase 3: IP receiver removed — uncomment to re-enable
@@ -1447,25 +1512,40 @@ function doGet(e) {
           //   _clientIp = _valIp(e.data.ip);
           // }
           if (e.data && e.data.type === 'gas-version-check') {
+            // DJB2→HMAC migration: signed server-side via signAppMessage()
             google.script.run
-              .withSuccessHandler(function(data) {
-                top.postMessage(_s({type: 'gas-version', version: data.version}), '${PARENT_ORIGIN}');
+              .withSuccessHandler(function(signed) {
+                top.postMessage(signed, '${PARENT_ORIGIN}');
               })
               .withFailureHandler(function() {
-                top.postMessage(_s({type: 'gas-version', version: null}), '${PARENT_ORIGIN}');
+                // Don't send an unsigned response — the version poll is periodic and will retry.
+                // A missing response is safer than an unsigned one that gets dropped by HMAC verify.
               })
-              .getAppData();
+              .signAppMessage(_sessionToken, 'gas-version');
           }
         });
 
         // Activity detection — notify host page on user interaction so it can
         // trigger an immediate heartbeat (catches expired sessions before data loss)
+        // DJB2→HMAC migration: signed server-side via signAppMessage()
         var _lastActivityNotify = 0;
+        var _pendingActivity = false;
         function _notifyActivity() {
           var now = Date.now();
           if (now - _lastActivityNotify < 5000) return; // 5s debounce
+          if (_pendingActivity) return; // Prevent stacking server calls
           _lastActivityNotify = now;
-          window.top.postMessage(_s({type: 'gas-user-activity'}), '${PARENT_ORIGIN}');
+          _pendingActivity = true;
+          google.script.run
+            .withSuccessHandler(function(signed) {
+              _pendingActivity = false;
+              window.top.postMessage(signed, '${PARENT_ORIGIN}');
+            })
+            .withFailureHandler(function() {
+              _pendingActivity = false;
+              // Silently drop — next activity event will retry
+            })
+            .signAppMessage(_sessionToken, 'gas-user-activity');
         }
         document.addEventListener('keydown', _notifyActivity, true);
         document.addEventListener('click', _notifyActivity, true);
@@ -1500,7 +1580,17 @@ function doGet(e) {
               if (msg.indexOf('SESSION_') === 0) {
                 statusEl.textContent = 'Session invalid — re-authenticate to save.';
                 statusEl.style.color = '#c62828';
-                window.top.postMessage(_s({type: 'gas-session-invalid', reason: msg}), '${PARENT_ORIGIN}');
+                // DJB2→HMAC migration: signed server-side via signAppMessage()
+                google.script.run
+                  .withSuccessHandler(function(signed) {
+                    window.top.postMessage(signed, '${PARENT_ORIGIN}');
+                  })
+                  .withFailureHandler(function() {
+                    // Double failure — can't even sign the invalid notification.
+                    // User already sees "re-authenticate" text in the GAS iframe.
+                    // Don't send unsigned — host page would drop it anyway.
+                  })
+                  .signAppMessage(_sessionToken, 'gas-session-invalid', {reason: msg});
               } else {
                 statusEl.textContent = 'Error: ' + msg;
                 statusEl.style.color = '#c62828';

@@ -3,9 +3,45 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v04.81r] — 2026-03-18 02:50:29 PM EST
+
+> **Prompt:** "implement the repository-information/10.3-DJB2-TO-HMAC-MIGRATION-PLAN.md"
+
+### Changed
+- Migrated four client-side GAS session HTML messages from DJB2 signing to server-side HMAC-SHA256 signing via `signAppMessage()` — `gas-auth-ok`, `gas-version`, `gas-user-activity`, `gas-session-invalid` now use `google.script.run` for cryptographic integrity
+
+### Removed
+- Removed `_s()` inline DJB2 signing function and `_mk` variable from GAS session HTML inline script
+- Removed `_verifyDjb2Legacy()` function and DJB2 fallback path from `_verifyMessageSignature()` in host page
+- Removed `_messageKey` raw string variable from host page — only `_hmacKey` (CryptoKey) remains
+- Removed DJB2-specific tests from self-test panel (Test 13 updated to HMAC-only)
+
+#### `testauth1.gs` — v01.56g
+
+##### Added
+- `signAppMessage()` server-side function for HMAC-SHA256 signing of GAS session HTML messages (same pattern as `processHeartbeat`/`processSignOut`)
+
+##### Changed
+- `gas-auth-ok`, `gas-version`, `gas-user-activity`, `gas-session-invalid` messages now signed server-side via `google.script.run.signAppMessage()` instead of client-side `_s()` (DJB2)
+
+##### Removed
+- `_s()` inline DJB2 signing function and `_mk` variable from session HTML inline script
+
+#### `testauth1.html` — v02.35w
+
+##### Changed
+- `_verifyMessageSignature()` simplified to HMAC-SHA256 only path (DJB2 fallback removed)
+- Signature verification gate checks `_hmacKey` only (no `_messageKey` fallback)
+- Duplicate `gas-session-created` detection uses `_hmacKeySet` guard instead of `_messageKey` comparison
+
+##### Removed
+- `_verifyDjb2Legacy()` function
+- `_messageKey` raw string variable — all references removed from `clearSession()`, "Use Here" handler, `gas-session-created` handler, `gas-auth-ok` handler
+- DJB2-specific assertions from self-test panel Test 13 and Test 43
 
 ## [v04.80r] — 2026-03-18 02:02:28 PM EST
 

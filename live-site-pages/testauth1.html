@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.34w">
+  <meta name="build-version" content="v02.35w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1046,10 +1046,9 @@
       storage.removeItem(SESSION_KEY);
       storage.removeItem(EMAIL_KEY);
       // Phase 5 (H-3): ONLY place where HMAC key is cleared.
-      // Clear the HMAC message key from the previous session — if it persists,
+      // Clear the HMAC key from the previous session — if it persists,
       // unsigned bootstrap messages (gas-ready-for-token) from a new sign-in
       // attempt are silently dropped by the HMAC verification layer.
-      _messageKey = null;
       _hmacKey = null;
       _hmacKeySet = false;  // Allow new key import for next session
       _pendingNonce = null;
@@ -1192,7 +1191,6 @@
 
     // Layer 2: Cryptographic message authentication
     // Per-session key delivered via gas-session-created, used to verify subsequent messages.
-    var _messageKey = null;       // Raw key string (kept for legacy DJB2 dual-accept during migration)
     var _hmacKey = null;          // CryptoKey object — non-extractable, verify-only (Web Crypto API)
     // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage,
     // using it constitutes unauthorized PHI disclosure under HIPAA §164.502(a).
@@ -1322,40 +1320,13 @@
       return crypto.subtle.verify('HMAC', _hmacKey, sigBytes, payloadBytes);
     }
 
-    // ── Legacy DJB2 Verification (migration — remove after 16h rollover) ──
-    // Accepts old-format DJB2 signatures from sessions created before HMAC deploy.
-    function _verifyDjb2Legacy(data, sig, key) {
-      var copy = {};
-      for (var k in data) { if (k !== '_sig') copy[k] = data[k]; }
-      var payload = JSON.stringify(copy) + '|' + key;
-      var hash = 0;
-      for (var i = 0; i < payload.length; i++) {
-        hash = ((hash << 5) - hash) + payload.charCodeAt(i);
-        hash |= 0;
-      }
-      return sig === hash.toString(36);
-    }
-
-    // ── Dual-Accept Signature Verification ──
-    // Migration strategy: accept EITHER HMAC-SHA256 (new) or DJB2 (legacy).
-    // HMAC-SHA256 signatures are 64-char hex strings; DJB2 are base36 numbers.
-    // TODO: Remove DJB2 acceptance after migration period (16h after GAS deploy)
+    // ── HMAC-SHA256 Signature Verification ──
+    // DJB2 legacy removed — all messages now signed server-side with HMAC-SHA256.
     async function _verifyMessageSignature(data) {
-      if (!_hmacKey && !_messageKey) return true;  // No key yet — allowlist is defense
+      if (!_hmacKey) return true;  // No key yet — allowlist is defense
       var sig = data._sig;
       if (!sig) return false;  // Key exists but no signature — reject
-
-      // Try HMAC-SHA256 first (new format — 64-char hex string)
-      if (_hmacKey && typeof sig === 'string' && sig.length === 64 && /^[0-9a-f]+$/.test(sig)) {
-        return _verifyHmacSha256(data, sig);
-      }
-
-      // Fall back to DJB2 (old format — base36 number)
-      if (_messageKey) {
-        return _verifyDjb2Legacy(data, sig, _messageKey);
-      }
-
-      return false;
+      return _verifyHmacSha256(data, sig);
     }
 
     window.addEventListener('message', function(event) {
@@ -1411,20 +1382,18 @@
         // gas-session-created (prevent overwrite by attacker). _hmacKeySet is only reset
         // in clearSession() and in the "Use Here" reclaim handler.
         if (!_hmacKeySet) {
-          _messageKey = data.messageKey;
           // Import HMAC key for Web Crypto API verification (non-extractable, verify-only)
           _importHmacKey(data.messageKey).catch(function(err) {
             console.error('HMAC key import failed:', err);
             _reportSecurityEvent('hmac_key_import_failed', { error: String(err) });
-            // Fail open for import — DJB2 legacy + allowlist is the fallback defense
           });
         }
       }
-      // For all subsequent messages, verify the signature if we have a key (async — HMAC-SHA256 or DJB2 legacy)
+      // For all subsequent messages, verify the signature if we have a key (async — HMAC-SHA256)
       // Phase 7: ready signals from action listener pages are exempt — they have no signing key
       var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
         'gas-heartbeat-ready': true, 'gas-signout-ready': true, 'gas-security-event-ready': true };
-      if ((_hmacKey || _messageKey) && !_SIG_EXEMPT[data.type]) {
+      if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
             _reportSecurityEvent('invalid_signature', {
@@ -1448,7 +1417,7 @@
     });
 
     // ── Verified Message Handler ──
-    // Called after HMAC/DJB2 verification passes (or for exempt/pre-session messages).
+    // Called after HMAC-SHA256 verification passes (or for exempt/pre-session messages).
     // Extracted to allow the async verification path to call it after the Promise resolves.
     function _processVerifiedMessage(data, event) {
       // ── Phase 7 (H-5): Heartbeat listener page signals ready ──
@@ -1502,8 +1471,8 @@
         // First-write-wins: if messageKey is already set, this is a duplicate/forged
         // gas-session-created — reject it entirely (don't save session data or show app).
         // Only the first gas-session-created after a fresh page load is accepted.
-        if (_messageKey && data.messageKey && data.messageKey !== _messageKey) {
-          console.warn('Duplicate gas-session-created rejected — messageKey already set');
+        if (_hmacKeySet && data.messageKey) {
+          console.warn('Duplicate gas-session-created rejected — HMAC key already set');
           _reportSecurityEvent('duplicate_session_created', {
             origin: event.origin,
             email: String(data.email || '').substring(0, 50)
@@ -1591,7 +1560,6 @@
         // includes it). This handles "Use Here" reclaim, tab duplicate, and page refresh
         // where gas-session-created is not sent. Only import if no key is set yet.
         if (data.messageKey && !_hmacKeySet) {
-          _messageKey = data.messageKey;
           _importHmacKey(data.messageKey).catch(function(err) {
             console.error('HMAC key import from gas-auth-ok failed:', err);
           });
@@ -2536,7 +2504,6 @@
         // a new messageKey via gas-session-created, so the first-write-wins guard
         // must be reopened. This is one of only two places keys are cleared
         // (the other is clearSession()). Session token stays in storage.
-        _messageKey = null;
         _hmacKey = null;
         _hmacKeySet = false;
         _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
@@ -2836,33 +2803,17 @@
       }
     });
 
-    // Test 13: Signature verification logic — test DJB2 legacy + HMAC-SHA256
+    // Test 13: Signature verification logic — HMAC-SHA256 only (DJB2 legacy removed)
     _registerTest('Signature Verification Logic', function(addResult) {
-      if (typeof _verifyMessageSignature !== 'function' || typeof _verifyDjb2Legacy !== 'function') {
-        addResult('FAIL', 'Signature Verification Logic', 'Verification functions not found');
-        return;
-      }
-      // Test DJB2 legacy path (synchronous — known values)
-      var testKey = 'test-key-abc123';
-      var testData = { type: 'gas-heartbeat-ok' };
-      var testPayload = JSON.stringify(testData) + '|' + testKey;
-      var testHash = 0;
-      for (var ti = 0; ti < testPayload.length; ti++) {
-        testHash = ((testHash << 5) - testHash) + testPayload.charCodeAt(ti);
-        testHash |= 0;
-      }
-      var validSig = testHash.toString(36);
-      var djb2Valid = _verifyDjb2Legacy({ type: 'gas-heartbeat-ok', _sig: validSig }, validSig, testKey);
-      var djb2Wrong = _verifyDjb2Legacy({ type: 'gas-heartbeat-ok', _sig: 'wrong' }, 'wrong', testKey);
-      if (!djb2Valid || djb2Wrong) {
-        addResult('FAIL', 'Signature Verification Logic', 'DJB2 legacy: valid=' + djb2Valid + ' wrong=' + djb2Wrong);
+      if (typeof _verifyMessageSignature !== 'function') {
+        addResult('FAIL', 'Signature Verification Logic', 'Verification function not found');
         return;
       }
       // Test HMAC-SHA256 path (async — uses Web Crypto API)
-      var savedMsgKey = _messageKey;
+      var testKey = 'test-key-abc123';
+      var testData = { type: 'gas-heartbeat-ok' };
       var savedHmacKey = _hmacKey;
       var savedHmacKeySet = _hmacKeySet;
-      _messageKey = testKey;
       _hmacKeySet = false;  // Temporarily allow test key import (Phase 5 guard)
       // Import key with both sign+verify for test purposes (production key is verify-only)
       var testEnc = new TextEncoder();
@@ -2892,16 +2843,14 @@
           _verifyMessageSignature(wrongSigData)
         ]);
       }).then(function(results) {
-        _messageKey = savedMsgKey;
         _hmacKey = savedHmacKey;
         _hmacKeySet = savedHmacKeySet;
         if (results[0] && !results[1] && !results[2]) {
-          addResult('PASS', 'Signature Verification Logic', 'HMAC-SHA256: valid accepted, missing rejected, wrong rejected. DJB2 legacy: valid accepted, wrong rejected');
+          addResult('PASS', 'Signature Verification Logic', 'HMAC-SHA256: valid accepted, missing rejected, wrong rejected');
         } else {
           addResult('FAIL', 'Signature Verification Logic', 'HMAC: valid=' + results[0] + ' unsigned=' + results[1] + ' wrong=' + results[2]);
         }
       }).catch(function(err) {
-        _messageKey = savedMsgKey;
         _hmacKey = savedHmacKey;
         _hmacKeySet = savedHmacKeySet;
         addResult('FAIL', 'Signature Verification Logic', 'HMAC test error: ' + String(err));
@@ -3181,15 +3130,12 @@
     // Test 37: Signature passthrough when no key (intentional design)
     _registerTest('Sig Passthrough (No Key)', function(addResult) {
       if (typeof _verifyMessageSignature === 'function') {
-        // Temporarily null both keys to test passthrough
-        var savedMsgKey37 = _messageKey;
+        // Temporarily null HMAC key to test passthrough
         var savedHmacKey37 = _hmacKey;
         var savedHmacKeySet37 = _hmacKeySet;
-        _messageKey = null;
         _hmacKey = null;
         _hmacKeySet = false;
         _verifyMessageSignature({ type: 'test' }).then(function(result) {
-          _messageKey = savedMsgKey37;
           _hmacKey = savedHmacKey37;
           _hmacKeySet = savedHmacKeySet37;
           if (result) {
@@ -3198,7 +3144,6 @@
             addResult('FAIL', 'Sig Passthrough (No Key)', 'Messages blocked even with no key');
           }
         }).catch(function(err) {
-          _messageKey = savedMsgKey37;
           _hmacKey = savedHmacKey37;
           _hmacKeySet = savedHmacKeySet37;
           addResult('FAIL', 'Sig Passthrough (No Key)', 'Error: ' + String(err));
@@ -3283,31 +3228,27 @@
       }
     });
 
-    // Test 43: clearSession — verify it removes all session data and nulls both HMAC keys
+    // Test 43: clearSession — verify it removes all session data and nulls HMAC key
     _registerTest('Clear Session Function', function(addResult) {
       if (typeof clearSession === 'function') {
         var savedToken43 = getStorage().getItem(SESSION_KEY);
         var savedEmail43 = getStorage().getItem(EMAIL_KEY);
-        var savedKey43 = _messageKey;
         var savedHmacKey43 = _hmacKey;
         getStorage().setItem(SESSION_KEY, 'test-clear-token');
         getStorage().setItem(EMAIL_KEY, 'test@clear.com');
-        _messageKey = 'test-hmac-key';
         _hmacKey = 'test-crypto-key';  // Simulated — clearSession only nulls it
         clearSession();
         var tokenGone43 = !getStorage().getItem(SESSION_KEY);
         var emailGone43 = !getStorage().getItem(EMAIL_KEY);
-        var keyNull43 = _messageKey === null;
         var hmacKeyNull43 = _hmacKey === null;
         // Restore
         if (savedToken43) getStorage().setItem(SESSION_KEY, savedToken43); else getStorage().removeItem(SESSION_KEY);
         if (savedEmail43) getStorage().setItem(EMAIL_KEY, savedEmail43); else getStorage().removeItem(EMAIL_KEY);
-        _messageKey = savedKey43;
         _hmacKey = savedHmacKey43;
-        if (tokenGone43 && emailGone43 && keyNull43 && hmacKeyNull43) {
-          addResult('PASS', 'Clear Session Function', 'clearSession() removes token, email from storage and nulls both _messageKey and _hmacKey');
+        if (tokenGone43 && emailGone43 && hmacKeyNull43) {
+          addResult('PASS', 'Clear Session Function', 'clearSession() removes token, email from storage and nulls _hmacKey');
         } else {
-          addResult('FAIL', 'Clear Session Function', 'Cleanup incomplete: token=' + !tokenGone43 + ' email=' + !emailGone43 + ' msgKey=' + !keyNull43 + ' hmacKey=' + !hmacKeyNull43);
+          addResult('FAIL', 'Clear Session Function', 'Cleanup incomplete: token=' + !tokenGone43 + ' email=' + !emailGone43 + ' hmacKey=' + !hmacKeyNull43);
         }
       } else {
         addResult('FAIL', 'Clear Session Function', 'clearSession function not found');
