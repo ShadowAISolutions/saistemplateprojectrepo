@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v04.77r] — 2026-03-18 01:02:43 PM EST
+
+> **Prompt:** "[screenshot showing Tab A with active session but _hmacKeySet false and _hmacKey null after Use Here reclaim]"
+
+### Fixed
+- Fixed HMAC key not being re-established after "Use Here" tab reclaim — the `?session=TOKEN` GAS path now sends `gas-session-created` with `messageKey` before `gas-auth-ok`, so `_hmacKey` is imported during reclaim (previously stayed null because `gas-session-created` was never sent on the `?session` path)
+- Added `_directSessionLoad` guard to `gas-session-created` handler to prevent iframe reload loop — when the message comes from the `?session` path (already loaded), the handler skips reloading the iframe
+- Reset `_iframeLoadTime` in "Use Here" handler so the 30-second bootstrap replay check doesn't reject the reclaim's `gas-session-created`
+
+#### `testauth1.html` — v02.33w
+
+##### Fixed
+- HMAC key is now properly restored after reclaiming a session with "Use Here"
+
+#### `testauth1.gs` — v01.53g
+
+##### Fixed
+- Session reclaim via `?session=TOKEN` now delivers the HMAC signing key to the host page
 
 ## [v04.76r] — 2026-03-18 11:49:04 AM EST
 

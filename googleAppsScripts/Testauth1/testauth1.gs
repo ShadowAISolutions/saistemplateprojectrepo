@@ -1,4 +1,4 @@
-var VERSION = "v01.52g";
+var VERSION = "v01.53g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1556,6 +1556,12 @@ function doGet(e) {
         //     _ipXhr.send();
         //   } catch(e) { _clientIp = 'unknown'; }
         // }
+
+        // Deliver messageKey to parent for HMAC verification (Phase 5)
+        // This is needed for the ?session= path (e.g. "Use Here" reclaim)
+        // which bypasses the normal sign-in flow that sends gas-session-created.
+        // Without this, _hmacKey stays null after tab reclaim.
+        window.top.postMessage({type: 'gas-session-created', success: true, messageKey: '${escapeJs(appMsgKey)}', email: '${escapeJs(session.email)}', displayName: '${escapeJs(session.displayName || '')}', absoluteTimeout: ${session.absoluteTimeout || 0}, sessionToken: '${escapeJs(sessionToken)}'}, '${PARENT_ORIGIN}');
 
         // Notify wrapper that auth is OK
         window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');

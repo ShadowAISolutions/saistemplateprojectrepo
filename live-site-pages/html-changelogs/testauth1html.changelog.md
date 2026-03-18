@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v02.33w] — 2026-03-18 01:02:43 PM EST — v04.77r
+
+### Fixed
+- HMAC key is now properly restored after reclaiming a session with "Use Here"
 
 ## [v02.32w] — 2026-03-18 11:49:04 AM EST — v04.76r
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.32w">
+  <meta name="build-version" content="v02.33w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1409,7 +1409,7 @@
         }
         // Phase 5 (H-3): First-write-wins with _hmacKeySet guard — only accept the first
         // gas-session-created (prevent overwrite by attacker). _hmacKeySet is only reset
-        // in clearSession(), so the key cannot be overwritten mid-session.
+        // in clearSession() and in the "Use Here" reclaim handler.
         if (!_hmacKeySet) {
           _messageKey = data.messageKey;
           // Import HMAC key for Web Crypto API verification (non-extractable, verify-only)
@@ -1538,13 +1538,15 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
-          // "Use Here" reclaims are handled by gas-auth-ok instead (the GAS
-          // app sends gas-auth-ok, not gas-session-created, for valid sessions).
-          var gasApp = document.getElementById('gas-app');
-          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-          if (gasApp && baseUrl) {
-            _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+          // "Use Here" reclaims skip this — the iframe was already loaded with
+          // ?session=TOKEN, which now sends gas-session-created + gas-auth-ok.
+          if (!_directSessionLoad) {
+            var gasApp = document.getElementById('gas-app');
+            var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+            if (gasApp && baseUrl) {
+              _expectingSession = true;
+              gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+            }
           }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
@@ -2531,6 +2533,7 @@
         _hmacKey = null;
         _hmacKeySet = false;
         _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
+        _iframeLoadTime = Date.now();  // Reset bootstrap timer for gas-session-created replay check
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
