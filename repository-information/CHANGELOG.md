@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v04.66r] — 2026-03-17 11:05:06 PM EST
+
+> **Prompt:** "nice all working as expected, update those tests in the guide document"
+
+### Changed
+- Updated Phase 6 console test commands in security implementation guide — numbered steps, closure internals test, session resume note, corrected expected behavior descriptions
 
 ## [v04.65r] — 2026-03-17 10:56:34 PM EST
 
