@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.31w">
+  <meta name="build-version" content="v02.32w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1237,6 +1237,9 @@
     var _SECURITY_EVENT_LIMIT = 10;
     // Phase 7 (M-4): postMessage-based security event reporting — details never in URL
     function _reportSecurityEvent(eventType, details) {
+      // Surrendered-tab guard: don't fire GAS requests when this tab has yielded
+      // to another tab. The surrendered tab should be idle — no network activity.
+      if (_tabSurrendered) return;
       // Pre-auth guard: don't fire GAS requests when no session exists.
       // Prevents unauthenticated quota abuse via postMessage spam on the login page.
       if (!loadSession().token) return;

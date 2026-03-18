@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v04.76r] — 2026-03-18 11:49:04 AM EST
+
+> **Prompt:** "added screenshots of results. running {postMessage({type:'gas-heartbeat-ok', expiresIn:9999}, '*');} in a session active elsewhere is triggering net state change from idle to busy, but the gas should not be loaded on that page"
+
+### Fixed
+- Added `_tabSurrendered` guard to `_reportSecurityEvent()` — surrendered tabs no longer fire GAS iframe requests for security audit logging, eliminating unexpected IDLE→BUSY network state changes and warden warnings on the takeover wall
+- Clarified item 17 (forge message test) — the IDLE→BUSY network activity is the security event audit logger (expected behavior when signed in), NOT the forged message being processed; the forged message is correctly rejected at Layer 0 (origin check)
+- Clarified item 15 (key survives takeover) — Tab A must be signed in BEFORE Tab B claims the session; if Tab A never signed in, `_hmacKey` will correctly be null
+- Clarified item 18 (CSP XSS test) — expected to fail until Phase 8 hash-based CSP is activated; current CSP has `unsafe-inline` in script-src
+
+#### `testauth1.html` — v02.32w
+
+##### Fixed
+- Security event reports no longer fire from tabs that have been taken over by another tab
 
 ## [v04.75r] — 2026-03-18 11:31:50 AM EST
 
