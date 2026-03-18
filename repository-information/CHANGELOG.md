@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v04.75r] — 2026-03-18 11:31:50 AM EST
+
+> **Prompt:** "yes, but make sure its properly testing not cosmetically going to make it pass"
+
+### Fixed
+- Fixed HMAC key overwrite test race condition in console test commands — `postMessage` is async but the old `console.log` ran synchronously before the handler processed the attack, producing a cosmetic pass. Now uses `setTimeout` + reference equality (`_hmacKey === _keyBefore`) to verify key immutability AFTER the message handler runs
+- Fixed wrong sessionStorage key name in sign-out test — was `'sessionToken'`, corrected to `getStorage().getItem(SESSION_KEY)` to use the actual storage abstraction and key constant
+- Added `_hmacKeySet` check and clearer tab-context instructions to the "Key survives takeover" test (item 15) — clarified that this must run from Tab A while the takeover wall is showing
 
 ## [v04.74r] — 2026-03-18 11:15:40 AM EST
 
