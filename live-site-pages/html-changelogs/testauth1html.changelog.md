@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v02.28w] — 2026-03-18 09:24:34 AM EST — v04.68r
+
+### Fixed
+- Security event reporting now requires an active session — improved protection against unauthorized resource usage
 
 ## [v02.27w] — 2026-03-18 08:38:59 AM EST — v04.67r
 

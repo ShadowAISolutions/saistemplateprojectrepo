@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
 
 ## [Unreleased]
+
+## [v04.68r] — 2026-03-18 09:24:34 AM EST
+
+> **Prompt:** "yes implement it, and see if theres anything else that might have a similar vulnerability for me to review to make their own implementation"
+
+### Fixed
+- Added pre-auth guard to `_reportSecurityEvent()` — prevents unauthenticated quota abuse via postMessage spam on the login page (GAS requests no longer fire when no session exists)
+
+#### `testauth1.html` — v02.28w
+
+##### Fixed
+- Security event reporting now requires an active session — unauthenticated visitors can no longer trigger GAS quota consumption via postMessage spam
 
 ## [v04.67r] — 2026-03-18 08:38:59 AM EST
 
