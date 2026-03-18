@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v04.79r] — 2026-03-18 01:19:03 PM EST
+
+> **Prompt:** "ok you fixed it, add it to the documentation what happened, why it happened, and what you did to fix it"
+
+### Changed
+- Added "Key Delivery Architecture — Implementation Note" section to Phase 5 documentation in `10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md` — documents the two code paths (sign-in vs direct session load), the HMAC key null bug after "Use Here", the failed `gas-session-created` injection approach (infinite reload loop), and the working `gas-auth-ok` delivery fix
+- Updated Phase 5 verification checklist item #3 to reflect actual behavior (key is re-imported via `gas-auth-ok`, not preserved from the original session)
+- Updated Phase 5 console test #4 to use `setTimeout` for async key import after "Use Here"
+- Corrected Phase 5 Step 5.2 "Use Here" handler documentation — keys ARE cleared (not preserved) because the iframe reload generates a new GAS-side context
 
 ## [v04.78r] — 2026-03-18 01:12:40 PM EST
 
