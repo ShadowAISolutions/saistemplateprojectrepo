@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.24w">
+  <meta name="build-version" content="v02.25w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1482,8 +1482,9 @@
           // default. SERVER_SESSION_DURATION stays at its declared value (rolling
           // timer is a client-side concept derived from the server's session expiry).
           var _absDur = (data.absoluteTimeout > 0) ? data.absoluteTimeout : ABSOLUTE_SESSION_DURATION;
-          _lockSessionTimers(SERVER_SESSION_DURATION, _absDur);
+          // Update the var BEFORE locking — _lockSessionTimers makes it writable:false
           ABSOLUTE_SESSION_DURATION = _absDur;
+          _lockSessionTimers(SERVER_SESSION_DURATION, _absDur);
           // Defer showApp until gas-auth-ok confirms the session is valid server-side.
           // This prevents a forged gas-session-created postMessage from hiding the auth wall
           // before the GAS backend has validated the token.
@@ -2034,23 +2035,22 @@
       _sessionTimerEnforcer.lock(serverDuration, absoluteDuration);
 
       // Also lock global variables via Object.defineProperty (secondary defense)
-      // If already defined as non-configurable, skip
-      var desc = Object.getOwnPropertyDescriptor(window, '_SERVER_SESSION_DURATION');
-      if (!desc || desc.configurable) {
-        Object.defineProperty(window, '_SERVER_SESSION_DURATION', {
+      // var-declared globals are configurable:false but writable:true — we flip
+      // writable to false so console assignments silently fail in non-strict mode.
+      // Check writable (not configurable) since var declarations are already
+      // non-configurable. Skip if already locked (writable:false).
+      var desc = Object.getOwnPropertyDescriptor(window, 'SERVER_SESSION_DURATION');
+      if (!desc || desc.writable) {
+        Object.defineProperty(window, 'SERVER_SESSION_DURATION', {
           value: serverDuration,
-          writable: false,
-          configurable: false,
-          enumerable: true
+          writable: false
         });
       }
-      var descAbs = Object.getOwnPropertyDescriptor(window, '_ABSOLUTE_SESSION_DURATION');
-      if (!descAbs || descAbs.configurable) {
-        Object.defineProperty(window, '_ABSOLUTE_SESSION_DURATION', {
+      var descAbs = Object.getOwnPropertyDescriptor(window, 'ABSOLUTE_SESSION_DURATION');
+      if (!descAbs || descAbs.writable) {
+        Object.defineProperty(window, 'ABSOLUTE_SESSION_DURATION', {
           value: absoluteDuration,
-          writable: false,
-          configurable: false,
-          enumerable: true
+          writable: false
         });
       }
     }
@@ -2803,7 +2803,9 @@
       // Test HMAC-SHA256 path (async — uses Web Crypto API)
       var savedMsgKey = _messageKey;
       var savedHmacKey = _hmacKey;
+      var savedHmacKeySet = _hmacKeySet;
       _messageKey = testKey;
+      _hmacKeySet = false;  // Temporarily allow test key import (Phase 5 guard)
       // Import key with both sign+verify for test purposes (production key is verify-only)
       var testEnc = new TextEncoder();
       var testSigningKey;
@@ -2834,6 +2836,7 @@
       }).then(function(results) {
         _messageKey = savedMsgKey;
         _hmacKey = savedHmacKey;
+        _hmacKeySet = savedHmacKeySet;
         if (results[0] && !results[1] && !results[2]) {
           addResult('PASS', 'Signature Verification Logic', 'HMAC-SHA256: valid accepted, missing rejected, wrong rejected. DJB2 legacy: valid accepted, wrong rejected');
         } else {
@@ -2842,6 +2845,7 @@
       }).catch(function(err) {
         _messageKey = savedMsgKey;
         _hmacKey = savedHmacKey;
+        _hmacKeySet = savedHmacKeySet;
         addResult('FAIL', 'Signature Verification Logic', 'HMAC test error: ' + String(err));
       });
     });
@@ -3561,11 +3565,20 @@
         }
       }
 
-      if (hasEnforcer && hasLockFn && closureProtected && usesEnforcer) {
+      // Verify Object.defineProperty targets the actual var names (no underscore prefix)
+      var serverDesc = Object.getOwnPropertyDescriptor(window, 'SERVER_SESSION_DURATION');
+      var absDesc = Object.getOwnPropertyDescriptor(window, 'ABSOLUTE_SESSION_DURATION');
+      // After sign-in, both should be writable:false (locked by _lockSessionTimers)
+      var varsLocked = _sessionTimerEnforcer.isLocked()
+        ? (serverDesc && !serverDesc.writable && absDesc && !absDesc.writable)
+        : true;  // Before sign-in, vars are still writable — that's expected
+
+      if (hasEnforcer && hasLockFn && closureProtected && usesEnforcer && varsLocked) {
         var status = _sessionTimerEnforcer.isLocked() ? 'locked' : 'unlocked';
+        var varStatus = (serverDesc && !serverDesc.writable) ? ', vars writable:false' : ', vars writable (pre-login)';
         addResult('PASS', 'Immutable Session Timers',
-          'Phase 6 \u2014 closure-scoped enforcer active (' + status + '), '
-          + '_lockSessionTimers present, closure internals protected, '
+          'Phase 6 \u2014 closure-scoped enforcer active (' + status + ')'
+          + varStatus + ', _lockSessionTimers present, closure internals protected, '
           + 'countdown reads from enforcer');
       } else {
         var missing = [];
@@ -3573,6 +3586,7 @@
         if (!hasLockFn) missing.push('_lockSessionTimers fn');
         if (!closureProtected) missing.push('closure protection');
         if (!usesEnforcer) missing.push('countdown integration');
+        if (!varsLocked) missing.push('Object.defineProperty on SERVER_SESSION_DURATION/ABSOLUTE_SESSION_DURATION');
         addResult('FAIL', 'Immutable Session Timers',
           'Phase 6 missing: ' + missing.join(', '));
       }

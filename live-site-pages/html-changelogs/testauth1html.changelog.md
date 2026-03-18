@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v02.25w] — 2026-03-17 10:43:37 PM EST — v04.64r
+
+### Fixed
+- Session timer protection now properly prevents modification via browser console
+- Security test panel signature verification now works correctly when signed in
 
 ## [v02.24w] — 2026-03-17 10:14:46 PM EST — v04.62r
 

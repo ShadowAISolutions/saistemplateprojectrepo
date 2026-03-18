@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v04.64r] — 2026-03-17 10:43:37 PM EST
+
+> **Prompt:** "screenshots attached for several of these tests which dont match whats expected. also, number 4 after running it auto expires the session"
+
+### Fixed
+- Phase 6 (H-4) immutable session timers — Object.defineProperty now targets actual `var`-declared names (`SERVER_SESSION_DURATION`, `ABSOLUTE_SESSION_DURATION`) instead of underscore-prefixed names that nothing read from
+- Guard check changed from `configurable` to `writable` since `var` declarations are already non-configurable
+- `ABSOLUTE_SESSION_DURATION` assignment moved before `_lockSessionTimers()` call so it executes while the var is still writable
+- Signature Verification test now saves/restores `_hmacKeySet` flag so Phase 5's first-write-wins guard doesn't block test key import
+- Immutable Session Timers security test now verifies Object.defineProperty targets correct property names and checks `writable:false` state
+
+#### `testauth1.html` — v02.25w
+
+##### Fixed
+- Session timer protection now properly prevents modification via browser console
+- Security test panel signature verification now works correctly when signed in
 
 ## [v04.63r] — 2026-03-17 10:23:01 PM EST
 
