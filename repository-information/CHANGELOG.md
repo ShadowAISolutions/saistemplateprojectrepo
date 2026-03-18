@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v04.62r] — 2026-03-17 10:14:46 PM EST
+
+> **Prompt:** "continue to implement the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Changed
+- Implemented Phase 6 (H-4) immutable session timers — closure-scoped enforcer + Object.defineProperty prevents client-side timer tampering on shared workstations
+- Updated security implementation guide progress to 6/10 phases complete
+
+#### `testauth1.html` — v02.24w
+
+##### Changed
+- Session timeout values are now tamper-proof — cannot be modified via browser DevTools to prevent automatic logoff
 
 ## [v04.61r] — 2026-03-17 09:58:32 PM EST
 

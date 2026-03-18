@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 42/50`
+`Sections: 43/50`
 
 ## [Unreleased]
+
+## [v02.24w] — 2026-03-17 10:14:46 PM EST — v04.62r
+
+### Changed
+- Session timeout values are now tamper-proof — cannot be modified via browser DevTools to prevent automatic logoff
 
 ## [v02.23w] — 2026-03-17 09:38:24 PM EST — v04.60r
 
