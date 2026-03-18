@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.26w">
+  <meta name="build-version" content="v02.27w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1159,6 +1159,9 @@
       'gas-heartbeat-ok': true,
       'gas-heartbeat-expired': true,
       'gas-heartbeat-error': true,
+      'gas-heartbeat-ready': true,       // Phase 7: heartbeat listener page ready signal
+      'gas-signout-ready': true,         // Phase 7: signout listener page ready signal
+      'gas-security-event-ready': true,  // Phase 7: security event listener page ready signal
       'gas-user-activity': true,
       'gas-signed-out': true,
       'gas-version': true,
@@ -1230,22 +1233,42 @@
     // Events are rate-limited (max 10 per page load) to prevent abuse.
     var _securityEventCount = 0;
     var _SECURITY_EVENT_LIMIT = 10;
+    // Phase 7 (M-4): postMessage-based security event reporting — details never in URL
     function _reportSecurityEvent(eventType, details) {
       if (_securityEventCount >= _SECURITY_EVENT_LIMIT) return;
       _securityEventCount++;
       var gasApp = document.getElementById('gas-app');
       var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;
-      // Send via hidden iframe — same pattern as heartbeat, no CORS issues
+      // Send via hidden iframe with action parameter only — NO sensitive data in URL
       var frame = document.createElement('iframe');
-      frame.style.display = 'none';
-      var params = 'securityEvent=' + encodeURIComponent(eventType)
-        + '&details=' + encodeURIComponent(JSON.stringify(details || {}).substring(0, 500));
-        // + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');  // Phase 3: IP removed
-      frame.src = baseUrl + '?' + params;
+      frame.style.cssText = 'display:none;width:0;height:0;border:0';
+      frame.src = baseUrl + '?action=securityEvent';
       document.body.appendChild(frame);
-      // Clean up after 10s
-      setTimeout(function() { if (frame.parentNode) frame.parentNode.removeChild(frame); }, 10000);
+      var _seHandled = false;
+      var _seEventType = eventType;
+      var _seDetails = details;
+      var _seHandler = function(event) {
+        if (_seHandled) return;
+        if (!event.data || event.data.type !== 'gas-security-event-ready') return;
+        _seHandled = true;
+        window.removeEventListener('message', _seHandler);
+        event.source.postMessage({
+          type: 'security-event-report',
+          eventType: _seEventType,
+          details: _seDetails,
+          timestamp: Date.now()
+        }, event.origin);
+      };
+      window.addEventListener('message', _seHandler);
+      // Cleanup after 10 seconds
+      setTimeout(function() {
+        if (!_seHandled) {
+          _seHandled = true;
+          window.removeEventListener('message', _seHandler);
+        }
+        if (frame.parentNode) frame.parentNode.removeChild(frame);
+      }, 10000);
     }
 
     // ── HMAC Key Import (Web Crypto API) ──
@@ -1390,7 +1413,10 @@
         }
       }
       // For all subsequent messages, verify the signature if we have a key (async — HMAC-SHA256 or DJB2 legacy)
-      if ((_hmacKey || _messageKey) && data.type !== 'gas-session-created' && data.type !== 'gas-needs-auth') {
+      // Phase 7: ready signals from action listener pages are exempt — they have no signing key
+      var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
+        'gas-heartbeat-ready': true, 'gas-signout-ready': true, 'gas-security-event-ready': true };
+      if ((_hmacKey || _messageKey) && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
             _reportSecurityEvent('invalid_signature', {
@@ -1417,6 +1443,19 @@
     // Called after HMAC/DJB2 verification passes (or for exempt/pre-session messages).
     // Extracted to allow the async verification path to call it after the Promise resolves.
     function _processVerifiedMessage(data, event) {
+      // ── Phase 7 (H-5): Heartbeat listener page signals ready ──
+      // Send token via postMessage — never appears in any URL
+      if (data.type === 'gas-heartbeat-ready') {
+        var session = loadSession();
+        if (session.token && event.source) {
+          event.source.postMessage({
+            type: 'heartbeat-token',
+            token: session.token
+          }, event.origin);
+        }
+        return;
+      }
+
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
@@ -2280,6 +2319,7 @@
       _heartbeatIdle = false;  // clear idle so display immediately shows ▶ ready
     }
 
+    // Phase 7 (H-5): postMessage-based heartbeat — token never appears in URL
     function sendHeartbeat() {
       if (_heartbeatInFlight) return;  // don't stack requests
       var session = loadSession();
@@ -2311,10 +2351,10 @@
         hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
         document.body.appendChild(hbFrame);
       }
-      hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
-        + '&msgKey=' + encodeURIComponent(_messageKey || '');
-        // + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');  // Phase 3: IP removed
-      // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
+      // Phase 7: Load with action parameter only — NO token in URL
+      hbFrame.src = baseUrl + '?action=heartbeat';
+      // Token is sent via postMessage after the iframe signals ready
+      // (handled by gas-heartbeat-ready message handler below)
     }
 
     function stopHeartbeat() {
@@ -2347,12 +2387,34 @@
         _signOutChannel.postMessage({ type: 'sign-out' });
       }
 
-      // Notify GAS server to invalidate server-side session
+      // Phase 7 (H-6): Notify GAS server to invalidate server-side session
+      // Token sent via postMessage, NOT URL parameters
       if (session.token) {
         var gasApp = document.getElementById('gas-app');
         var baseUrl = window._r || (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          gasApp.src = baseUrl + '?signOut=' + encodeURIComponent(session.token);
+          var _soToken = session.token;  // capture for closure
+          gasApp.src = baseUrl + '?action=signout';
+          // Token sent after iframe signals ready (gas-signout-ready handler)
+          var _soHandled = false;
+          var _soHandler = function(event) {
+            if (_soHandled) return;
+            if (!event.data || event.data.type !== 'gas-signout-ready') return;
+            _soHandled = true;
+            window.removeEventListener('message', _soHandler);
+            event.source.postMessage({
+              type: 'signout-token',
+              token: _soToken
+            }, event.origin);
+          };
+          window.addEventListener('message', _soHandler);
+          // Cleanup if GAS doesn't respond within 10 seconds
+          setTimeout(function() {
+            if (!_soHandled) {
+              _soHandled = true;
+              window.removeEventListener('message', _soHandler);
+            }
+          }, 10000);
         }
       }
 

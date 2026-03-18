@@ -3,9 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v04.67r] — 2026-03-18 08:38:59 AM EST
+
+> **Prompt:** "continue to implement the next step in repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Changed
+- Implemented Phase 7: Token-in-URL Elimination (H-5, H-6, M-4) — session tokens and security event details no longer appear in URL parameters
+
+#### `testauth1.gs` — v01.52g
+
+##### Added
+- `processHeartbeat(token)` server-side function — heartbeat logic extracted from doGet() for postMessage-based calling
+- `processSignOut(token)` server-side function — sign-out logic extracted from doGet()
+- `processSecurityEvent(eventType, details)` server-side function — security event logging extracted from doGet()
+- Three `?action=` routes in doGet() (`heartbeat`, `signout`, `securityEvent`) — return listener pages that receive sensitive data via postMessage
+
+#### `testauth1.html` — v02.27w
+
+##### Changed
+- `sendHeartbeat()` now loads `?action=heartbeat` instead of `?heartbeat=TOKEN` — token sent via postMessage after ready signal
+- `performSignOut()` now loads `?action=signout` instead of `?signOut=TOKEN` — token sent via postMessage after ready signal
+- `_reportSecurityEvent()` now loads `?action=securityEvent` instead of `?securityEvent=TYPE&details=DATA` — event data sent via postMessage after ready signal
+
+##### Added
+- `gas-heartbeat-ready`, `gas-signout-ready`, `gas-security-event-ready` message types to `_KNOWN_GAS_MESSAGES` allowlist
+- Signature exemption for Phase 7 ready signals (listener pages don't have signing keys)
+- `gas-heartbeat-ready` handler in `_processVerifiedMessage` — sends token via postMessage to heartbeat iframe
 
 ## [v04.66r] — 2026-03-17 11:05:06 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.51g";
+var VERSION = "v01.52g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1002,6 +1002,135 @@ function checkSpreadsheetAccess(email, opt_ss) {
 // Toggle-gated: TOKEN_EXCHANGE_METHOD controls token exchange path.
 // =============================================
 
+// ── Phase 7 (H-5): Server-side heartbeat processing ──
+// Called via google.script.run from the heartbeat listener page (action=heartbeat).
+// Token is received via postMessage, NOT URL parameters — eliminates token-in-URL exposure.
+function processHeartbeat(token) {
+  if (!token || !AUTH_CONFIG.ENABLE_HEARTBEAT) {
+    return {type: 'gas-heartbeat-error', error: 'invalid_request'};
+  }
+
+  var cache = CacheService.getScriptCache();
+
+  // Rate limit: max 20 per session per 5-minute window
+  var hbRlKey = 'hb_ratelimit_' + token.substring(0, 16);
+  var hbAttempts = cache.get(hbRlKey);
+  var hbCount = hbAttempts ? parseInt(hbAttempts, 10) : 0;
+  if (hbCount >= 20) {
+    return {type: 'gas-heartbeat-error', error: 'rate_limited'};
+  }
+  cache.put(hbRlKey, String(hbCount + 1), 300);
+
+  var raw = cache.get("session_" + token);
+  if (!raw) {
+    var evictionReason = cache.get("evicted_" + token) || 'timeout';
+    if (evictionReason !== 'timeout') {
+      cache.remove("evicted_" + token);
+    }
+    return {type: 'gas-heartbeat-expired', reason: evictionReason};
+  }
+
+  var hbData;
+  try { hbData = JSON.parse(raw); } catch (err) {
+    return {type: 'gas-heartbeat-expired', reason: 'corrupt_session'};
+  }
+
+  // Retrieve messageKey from session data for signing response
+  var msgKey = hbData.messageKey || '';
+
+  // Check HMAC if enabled
+  if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
+    cache.remove("session_" + token);
+    return signMessage({type: 'gas-heartbeat-expired', reason: 'integrity_violation'}, msgKey);
+  }
+
+  // Absolute session timeout — hard ceiling, heartbeats cannot extend past this
+  if (hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+    var hbAbsElapsed = (Date.now() - hbData.absoluteCreatedAt) / 1000;
+    if (hbAbsElapsed > AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+      cache.remove("session_" + token);
+      auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
+        { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's', clientIp: 'not-collected' });
+      return signMessage({type: 'gas-heartbeat-expired', reason: 'absolute_timeout'}, msgKey);
+    }
+  }
+
+  // Rolling session timeout
+  var hbElapsed = (Date.now() - hbData.createdAt) / 1000;
+  if (hbElapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
+    cache.remove("session_" + token);
+    auditLog('session_expired', hbData.email, 'heartbeat_too_late',
+      { elapsed: Math.round(hbElapsed) + 's', clientIp: 'not-collected' });
+    return signMessage({type: 'gas-heartbeat-expired', reason: 'timeout'}, msgKey);
+  }
+
+  // Session valid — reset createdAt to extend
+  hbData.createdAt = Date.now();
+  hbData.lastActivity = Date.now();
+  if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) {
+    hbData.hmac = generateSessionHmac(hbData);
+  }
+  cache.put("session_" + token, JSON.stringify(hbData), AUTH_CONFIG.SESSION_EXPIRATION);
+
+  var hbAbsRemaining = hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT
+    ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
+    : 0;
+  return signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
+}
+
+// ── Phase 7 (H-6): Server-side sign-out processing ──
+// Called via google.script.run from the signout listener page (action=signout).
+// Token is received via postMessage, NOT URL parameters.
+function processSignOut(token) {
+  if (!token) {
+    return {type: 'gas-signed-out', success: false, error: 'no_token'};
+  }
+  // Read messageKey before invalidation (for signing the response)
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get("session_" + token);
+  var msgKey = '';
+  if (raw) { try { msgKey = JSON.parse(raw).messageKey || ''; } catch(e) {} }
+  invalidateSession(token);
+  return signMessage({type: 'gas-signed-out', success: true}, msgKey);
+}
+
+// ── Phase 7 (M-4): Server-side security event processing ──
+// Called via google.script.run from the securityEvent listener page (action=securityEvent).
+// Event details are received via postMessage, NOT URL parameters.
+function processSecurityEvent(eventType, details) {
+  if (!eventType) return;
+  var cache = CacheService.getScriptCache();
+
+  // Global rate limit: max 50 security events per 5-minute window
+  var seGlobalKey = 'se_ratelimit_global';
+  var seGlobalAttempts = cache.get(seGlobalKey);
+  var seGlobalCount = seGlobalAttempts ? parseInt(seGlobalAttempts, 10) : 0;
+
+  if (seGlobalCount < 50) {
+    cache.put(seGlobalKey, String(seGlobalCount + 1), 300);
+    var seDetails = {};
+    try {
+      if (typeof details === 'string') {
+        seDetails = JSON.parse(details.substring(0, 500));
+      } else if (details && typeof details === 'object') {
+        seDetails = details;
+      }
+    } catch(ex) {}
+    auditLog('security_event', 'not-collected', String(eventType).substring(0, 50), {
+      details: seDetails,
+      clientIp: 'not-collected',
+      page: EMBED_PAGE_URL
+    });
+  } else if (seGlobalCount === 50) {
+    cache.put(seGlobalKey, String(seGlobalCount + 1), 300);
+    auditLog('security_event_flood', 'system', 'Global rate limit reached', {
+      message: 'Max 50 security events per 5 minutes — further events suppressed regardless of source IP',
+      lastEvent: String(eventType).substring(0, 50),
+      page: EMBED_PAGE_URL
+    });
+  }
+}
+
 function doGet(e) {
   var sessionToken = (e && e.parameter && e.parameter.session) || "";
   var signOutToken = (e && e.parameter && e.parameter.signOut) || "";
@@ -1022,7 +1151,79 @@ function doGet(e) {
   // }
   var clientIp = 'not-collected';
 
+  // ── Phase 7: postMessage-based action routes ──
+  // These routes return lightweight listener pages that receive sensitive data
+  // via postMessage instead of URL parameters. The listener pages use
+  // google.script.run to call the server-side processing functions.
+  var action = (e && e.parameter && e.parameter.action) || '';
+
+  // Heartbeat action — returns page that listens for token via postMessage
+  if (action === 'heartbeat') {
+    var hbListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-heartbeat-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "heartbeat-token") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage(r, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"gas-heartbeat-error",'
+      + '        error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .processHeartbeat(evt.data.token);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(hbListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Sign-out action — returns page that listens for token via postMessage
+  if (action === 'signout') {
+    var soListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-signout-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "signout-token") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage(r, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"gas-signed-out", success:false,'
+      + '        error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .processSignOut(evt.data.token);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(soListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Security event action — returns page that listens for event data via postMessage
+  if (action === 'securityEvent') {
+    var seListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-security-event-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "security-event-report") return;'
+      + '  google.script.run'
+      + '    .processSecurityEvent(evt.data.eventType, evt.data.details);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(seListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
   // Security event reporting — client-side defense layers report blocked attacks
+  // Phase 7: URL-parameter path kept for backwards compatibility during migration
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
   if (securityEvent) {
     var seCache = CacheService.getScriptCache();
