@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v04.60r] — 2026-03-17 09:38:24 PM EST
+
+> **Prompt:** "proceed to implement the next step"
+
+### Changed
+- Implemented Phase 5 (H-3) messageKey lifecycle hardening — added `_hmacKeySet` defense-in-depth guard, centralized key clearing to `clearSession()` and iframe-reload path only
+
+#### `testauth1.html` — v02.23w
+
+##### Changed
+- Improved authentication key management — keys can no longer be overwritten by forged messages mid-session
 
 ## [v04.59r] — 2026-03-17 09:21:24 PM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v02.23w] — 2026-03-17 09:38:24 PM EST — v04.60r
+
+### Changed
+- Improved authentication key management — keys can no longer be overwritten by forged messages mid-session
 
 ## [v02.22w] — 2026-03-17 09:21:24 PM EST — v04.59r
 

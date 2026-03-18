@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.22w">
+  <meta name="build-version" content="v02.23w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1043,11 +1043,13 @@
       var storage = getStorage();
       storage.removeItem(SESSION_KEY);
       storage.removeItem(EMAIL_KEY);
+      // Phase 5 (H-3): ONLY place where HMAC key is cleared.
       // Clear the HMAC message key from the previous session — if it persists,
       // unsigned bootstrap messages (gas-ready-for-token) from a new sign-in
       // attempt are silently dropped by the HMAC verification layer.
       _messageKey = null;
       _hmacKey = null;
+      _hmacKeySet = false;  // Allow new key import for next session
       _pendingNonce = null;
     }
 
@@ -1248,16 +1250,23 @@
     // Called once when gas-session-created delivers the messageKey.
     // Key is imported as non-extractable — even XSS cannot read it back.
     // Permissions: verify-only (cannot sign forged messages).
+    // Phase 5 (H-3): _hmacKeySet flag provides defense-in-depth — once set,
+    // external code cannot overwrite the key via a forged gas-session-created.
+    var _hmacKeySet = false;
     async function _importHmacKey(rawKey) {
+      if (_hmacKeySet) return _hmacKey;  // Already set — reject overwrites
       var encoder = new TextEncoder();
       var keyData = encoder.encode(rawKey);
-      return crypto.subtle.importKey(
+      var key = await crypto.subtle.importKey(
         'raw',
         keyData,
         { name: 'HMAC', hash: 'SHA-256' },
         false,   // non-extractable
         ['verify'] // verify-only — cannot sign
       );
+      _hmacKey = key;
+      _hmacKeySet = true;
+      return key;
     }
 
     // ── HMAC-SHA256 Verification (Web Crypto API) ──
@@ -1365,13 +1374,13 @@
           });
           return;
         }
-        // First-write-wins: only accept the first gas-session-created (prevent overwrite by attacker)
-        if (!_messageKey) {
+        // Phase 5 (H-3): First-write-wins with _hmacKeySet guard — only accept the first
+        // gas-session-created (prevent overwrite by attacker). _hmacKeySet is only reset
+        // in clearSession(), so the key cannot be overwritten mid-session.
+        if (!_hmacKeySet) {
           _messageKey = data.messageKey;
           // Import HMAC key for Web Crypto API verification (non-extractable, verify-only)
-          _importHmacKey(data.messageKey).then(function(key) {
-            _hmacKey = key;
-          }).catch(function(err) {
+          _importHmacKey(data.messageKey).catch(function(err) {
             console.error('HMAC key import failed:', err);
             _reportSecurityEvent('hmac_key_import_failed', { error: String(err) });
             // Fail open for import — DJB2 legacy + allowlist is the fallback defense
@@ -2333,13 +2342,12 @@
 
     // Re-auth button handler (on absolute warning banner)
     // Stop timers first to prevent performSignOut from firing during the OAuth flow.
-    // Clear HMAC key so the new session's key is accepted (first-write-wins guard).
+    // Phase 5 (H-3): clearSession() handles HMAC key clearing — no separate nulling needed.
     document.getElementById('reauth-btn').addEventListener('click', function() {
       hideAllWarningBanners();
       stopCountdownTimers();
       stopHeartbeat();
-      _messageKey = null;
-      _hmacKey = null;
+      clearSession();
       attemptReauth();
     });
 
@@ -2350,10 +2358,9 @@
 
       // Cross-device eviction: session was invalidated by another device.
       // Cannot reclaim — must sign in fresh.
+      // Phase 5 (H-3): clearSession() handles HMAC key clearing — no separate nulling needed.
       if (_evictedByRemote) {
         _evictedByRemote = false;
-        _messageKey = null;  // Clear HMAC key — old session's key is invalid
-        _hmacKey = null;
         clearSession();
         showAuthWall();
         return;
@@ -2367,8 +2374,13 @@
         // gas-session-created handle that after the GAS app confirms the
         // session is valid.  This avoids showing the app UI before the
         // iframe is ready (which causes a flicker).
+        // Phase 5 (H-3): Reset HMAC key state — the iframe reload below generates
+        // a new messageKey via gas-session-created, so the first-write-wins guard
+        // must be reopened. This is one of only two places keys are cleared
+        // (the other is clearSession()). Session token stays in storage.
         _messageKey = null;
         _hmacKey = null;
+        _hmacKeySet = false;
         _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
@@ -3033,11 +3045,14 @@
         // Temporarily null both keys to test passthrough
         var savedMsgKey37 = _messageKey;
         var savedHmacKey37 = _hmacKey;
+        var savedHmacKeySet37 = _hmacKeySet;
         _messageKey = null;
         _hmacKey = null;
+        _hmacKeySet = false;
         _verifyMessageSignature({ type: 'test' }).then(function(result) {
           _messageKey = savedMsgKey37;
           _hmacKey = savedHmacKey37;
+          _hmacKeySet = savedHmacKeySet37;
           if (result) {
             addResult('PASS', 'Sig Passthrough (No Key)', 'Messages pass through when no key set \u2014 allowlist is primary defense pre-key');
           } else {
@@ -3046,6 +3061,7 @@
         }).catch(function(err) {
           _messageKey = savedMsgKey37;
           _hmacKey = savedHmacKey37;
+          _hmacKeySet = savedHmacKeySet37;
           addResult('FAIL', 'Sig Passthrough (No Key)', 'Error: ' + String(err));
         });
       }
