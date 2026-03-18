@@ -1,4 +1,4 @@
-var VERSION = "v01.49g";
+var VERSION = "v01.50g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -103,7 +103,7 @@ var PRESETS = {
     ENABLE_DATA_OP_VALIDATION: true,   // Every google.script.run data op validates session first
     ENABLE_DOM_CLEARING_ON_EXPIRY: true,   // Destroy GAS iframe content on session expiry
     ENABLE_ESCALATING_LOCKOUT: true,   // Escalating lockout tiers (5min → 30min → 6hr)
-    ENABLE_IP_LOGGING: true,           // Fetch client IP and include in audit log entries
+    ENABLE_IP_LOGGING: false,          // DISABLED — ipify.org lacks BAA, violates HIPAA (Phase 3: C-3)
     ENABLE_DATA_AUDIT_LOG: true,       // Log individual data access events (reads, writes)
     DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   }
@@ -764,7 +764,7 @@ function validateSessionForData(sessionToken, operationName) {
   return {
     email: sessionData.email,
     displayName: sessionData.displayName,
-    clientIp: sessionData.clientIp || '',
+    clientIp: sessionData.clientIp || 'not-collected',
     isEmergencyAccess: sessionData.isEmergencyAccess || false
   };
 }
@@ -774,10 +774,10 @@ function validateSessionForData(sessionToken, operationName) {
 // Every function that reads/writes data must call validateSessionForData() first.
 // =============================================
 
-function saveNote(sessionToken, noteText, clientIp) {
+function saveNote(sessionToken, noteText) {
   var user = validateSessionForData(sessionToken, 'saveNote');
-  // Use directly-passed clientIp (from GAS iframe), fall back to session-stored IP (from heartbeat)
-  var ip = clientIp || user.clientIp || '';
+  // Phase 3 (C-3): Client IP no longer collected — use 'not-collected' for audit trail
+  var ip = user.clientIp || 'not-collected';
   // Data operation (only runs if session is valid)
   // Security: sessionId omitted from session audit log details (it's already in the SessionId column via dataAuditLog)
   auditLog('data_access', user.email, 'write',
@@ -1007,14 +1007,10 @@ function doGet(e) {
   // Message signing key from URL parameter (used by heartbeat iframe for signing)
   var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
 
-  // Client IP from URL parameter (Phase 7 — IP Logging, client-reported)
-  // Validated server-side: format check + 45-char truncation to prevent log injection
-  var rawIp = (e && e.parameter && e.parameter.clientIp) || '';
-  var clientIp = '';
-  if (rawIp) {
-    var t = String(rawIp).trim().substring(0, 45);
-    clientIp = (/^(\d{1,3}\.){3}\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) ? t : 'invalid';
-  }
+  // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
+  // GAS doGet(e) does not expose client IP — no compliant server-side method exists.
+  // All audit log entries use 'not-collected' for the IP field.
+  var clientIp = 'not-collected';
 
   // Security event reporting — client-side defense layers report blocked attacks
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
@@ -1141,10 +1137,6 @@ function doGet(e) {
     // Session is valid — reset createdAt to extend the session
     hbData.createdAt = Date.now();
     hbData.lastActivity = Date.now();
-    // Store client IP in session data for data operation audit trail (Phase 7)
-    if (AUTH_CONFIG.ENABLE_IP_LOGGING && clientIp) {
-      hbData.clientIp = clientIp;
-    }
     if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) {
       hbData.hmac = generateSessionHmac(hbData);
     }
@@ -1329,35 +1321,12 @@ function doGet(e) {
           return m;
         }
 
-        // Client IP for audit logging (Phase 7 — IP Logging)
-        // Dual-path: (1) direct XHR fetch, (2) host page postMessage fallback
-        var _clientIp = '';
-        function _valIp(v) {
-          if (!v || typeof v !== 'string') return 'unknown';
-          var t = v.trim().substring(0, 45);
-          if (/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) return t;
-          return 'invalid';
-        }
-        if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
-          try {
-            var _ipXhr = new XMLHttpRequest();
-            _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
-            _ipXhr.timeout = 5000;
-            _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _valIp(_ipXhr.responseText); };
-            _ipXhr.onerror = function() { _clientIp = 'unknown'; };
-            _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
-            _ipXhr.send();
-          } catch(e) { _clientIp = 'unknown'; }
-        }
+        // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
 
         // Notify wrapper that auth is OK
         window.top.postMessage(_s({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}', needsReauth: ${session.needsReauth || false}}), '${PARENT_ORIGIN}');
 
         window.addEventListener('message', function(e) {
-          // Receive client IP from host page (Phase 7 — IP Logging)
-          if (e.data && e.data.type === 'host-client-ip') {
-            _clientIp = _valIp(e.data.ip);
-          }
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
@@ -1418,7 +1387,7 @@ function doGet(e) {
                 statusEl.style.color = '#c62828';
               }
             })
-            .saveNote(_sessionToken, note, _clientIp);
+            .saveNote(_sessionToken, note);
         });
       </script>
     </body>

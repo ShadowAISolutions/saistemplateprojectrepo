@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://api.ipify.org; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.19w">
+  <meta name="build-version" content="v02.20w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -397,7 +397,7 @@
       // When false (standard), auth wall overlays without touching the iframe.
       // When true (HIPAA), sets gasFrame.src = 'about:blank' before showing auth wall.
       ENABLE_DOM_CLEARING_ON_EXPIRY: true,
-      ENABLE_IP_LOGGING: true
+      ENABLE_IP_LOGGING: false  // DISABLED — ipify.org lacks BAA, violates HIPAA (Phase 3: C-3)
     };
 // ──────────────
 
@@ -1185,33 +1185,10 @@
     // Per-session key delivered via gas-session-created, used to verify subsequent messages.
     var _messageKey = null;       // Raw key string (kept for legacy DJB2 dual-accept during migration)
     var _hmacKey = null;          // CryptoKey object — non-extractable, verify-only (Web Crypto API)
-    var _clientIp = '';  // Client IP for audit logging (Phase 7 — IP Logging)
-    var _ipForwardedToGas = false;  // Tracks whether IP was forwarded to GAS iframe
-
-    // Validate IP format (IPv4 or IPv6) and truncate to max 45 chars.
-    // Prevents log injection via arbitrary strings in the client-reported IP field.
-    // Does NOT prevent spoofing (platform limitation) — only ensures the value is well-formed.
-    function _validateIp(ip) {
-      if (!ip || typeof ip !== 'string') return 'unknown';
-      var trimmed = ip.trim().substring(0, 45);
-      // IPv4: 1.2.3.4 — IPv6: fe80::1, ::1, 2001:db8::1, etc.
-      if (/^(\d{1,3}\.){3}\d{1,3}$/.test(trimmed) || /^[0-9a-fA-F:]+$/.test(trimmed)) return trimmed;
-      return 'invalid';
-    }
-
-    // Fetch client IP on host page (not inside GAS iframe — avoids sandbox CSP issues)
-    if (HTML_CONFIG.ENABLE_IP_LOGGING) {
-      fetch('https://api.ipify.org?format=json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          _clientIp = _validateIp(data.ip);
-          // IP is stored in _clientIp — it will be forwarded to GAS iframe
-          // when GAS sends its first message (confirming iframe is loaded).
-          // Sending earlier triggers Google's warden log because the iframe
-          // hasn't navigated to the GAS origin yet.
-        })
-        .catch(function() { _clientIp = 'unknown'; });
-    }
+    // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage,
+    // using it constitutes unauthorized PHI disclosure under HIPAA §164.502(a).
+    // GAS doGet(e) does not expose client IP — no compliant server-side collection method exists.
+    // User identity is established via Google OAuth (email + unique user ID + timestamp).
 
     // ── Security Event Reporter ──
     // Reports blocked attacks to the GAS backend for audit logging.
@@ -1228,8 +1205,7 @@
       var frame = document.createElement('iframe');
       frame.style.display = 'none';
       var params = 'securityEvent=' + encodeURIComponent(eventType)
-        + '&details=' + encodeURIComponent(JSON.stringify(details || {}).substring(0, 500))
-        + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');
+        + '&details=' + encodeURIComponent(JSON.stringify(details || {}).substring(0, 500));
       frame.src = baseUrl + '?' + params;
       document.body.appendChild(frame);
       // Clean up after 10s
@@ -1322,16 +1298,6 @@
           });
         }
         return;  // Silently drop
-      }
-
-      // Forward client IP to GAS iframe on first valid message (deferred from IP fetch
-      // to avoid hitting Google's warden before the iframe navigates to GAS origin)
-      if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
-        _ipForwardedToGas = true;
-        var gasIpFwd = document.getElementById('gas-app');
-        if (gasIpFwd && gasIpFwd.contentWindow) {
-          gasIpFwd.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, event.origin);
-        }
       }
 
       // Layer 1: Only process known GAS message types (allowlist)
@@ -1517,14 +1483,6 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
-        // Send client IP to GAS iframe if not already forwarded (Phase 7 — IP Logging)
-        if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
-          _ipForwardedToGas = true;
-          var gasIpFrame = document.getElementById('gas-app');
-          if (gasIpFrame && gasIpFrame.contentWindow) {
-            gasIpFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, event.origin);
-          }
-        }
         // "Use Here" hides the iframe before reload — re-show it now that
         // the GAS app confirmed the session is valid.
         if (_directSessionLoad) {
@@ -2229,8 +2187,7 @@
         document.body.appendChild(hbFrame);
       }
       hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
-        + '&msgKey=' + encodeURIComponent(_messageKey || '')
-        + (_clientIp ? '&clientIp=' + encodeURIComponent(_clientIp) : '');
+        + '&msgKey=' + encodeURIComponent(_messageKey || '');
       // Response handled by gas-heartbeat-ok / gas-heartbeat-expired message handlers
     }
 

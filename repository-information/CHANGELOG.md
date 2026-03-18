@@ -3,9 +3,44 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v04.55r] — 2026-03-17 08:48:57 PM EST
+
+> **Prompt:** "proceed with implementing the next step of 10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Removed
+- Removed ipify.org dependency from testauth1 (Phase 3: C-3, M-2) — third-party IP lookup service lacks BAA coverage, constituting unauthorized PHI disclosure under HIPAA
+- Removed all client IP collection, validation, forwarding, and logging code from both HTML host page and GAS backend
+- Removed `api.ipify.org` from Content Security Policy `connect-src` directive
+
+### Changed
+- All audit log entries now use `'not-collected'` for the client IP field instead of actual IP addresses
+- `saveNote()` function signature simplified — clientIp parameter removed since IP is no longer collected
+
+#### `testauth1.html` — v02.20w
+
+##### Removed
+- Removed ipify.org fetch block, `_validateIp` function, `_clientIp` variable, `_ipForwardedToGas` flag, and all IP forwarding logic
+- Removed `api.ipify.org` from CSP `connect-src`
+- Removed client IP from security event reports and heartbeat requests
+
+##### Changed
+- `ENABLE_IP_LOGGING` set to `false` with HIPAA compliance comment
+
+#### `testauth1.gs` — v01.50g
+
+##### Removed
+- Removed GAS iframe's XHR to ipify.org and `host-client-ip` message handler
+- Removed client IP extraction from URL parameters in `doGet()`
+- Removed IP storage in heartbeat session data
+- Removed `clientIp` parameter from `saveNote()` function
+
+##### Changed
+- `ENABLE_IP_LOGGING` set to `false` in HIPAA config profile
+- All audit log IP fields default to `'not-collected'`
 
 ## [v04.54r] — 2026-03-17 07:33:33 PM EST
 

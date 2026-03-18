@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v02.20w] — 2026-03-17 08:48:57 PM EST — v04.55r
+
+### Removed
+- Removed third-party IP address collection — your IP is no longer sent to external services when using this page
+
+### Changed
+- Simplified internal security monitoring to no longer include IP addresses in reports
 
 ## [v02.19w] — 2026-03-17 07:33:33 PM EST — v04.54r
 

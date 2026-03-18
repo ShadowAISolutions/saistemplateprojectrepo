@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.50g] — 2026-03-17 08:48:57 PM EST — v04.55r
+
+### Removed
+- IP address collection and logging removed for privacy compliance
+- Third-party IP lookup service dependency removed
+
+### Changed
+- Audit log entries now record 'not-collected' instead of IP addresses
 
 ## [v01.49g] — 2026-03-17 07:14:06 PM EST — v04.52r
 
