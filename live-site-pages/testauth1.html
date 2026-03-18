@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.25w">
+  <meta name="build-version" content="v02.26w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -2076,9 +2076,12 @@
       var heartbeatEl = document.getElementById('timer-heartbeat');
       var pillLabel = document.getElementById('timer-pill-label');
 
-      // Phase 6 (H-4): Read timer values from the closure-scoped enforcer
-      // (tamper-proof). Falls back to the var declarations if enforcer not yet locked
-      // (e.g. page-load resume before gas-session-created).
+      // Phase 6 (H-4): Lock timer values if not already locked.
+      // gas-session-created locks them on fresh sign-in (with server-provided values).
+      // On session resume (gas-auth-ok), gas-session-created never fires — lock here
+      // as a catch-all using the var declarations. No-op if already locked.
+      _lockSessionTimers(SERVER_SESSION_DURATION, ABSOLUTE_SESSION_DURATION);
+      // Read timer values from the closure-scoped enforcer (tamper-proof).
       var _serverDur = _sessionTimerEnforcer.getServerDuration() || SERVER_SESSION_DURATION;
       var _absDur = _sessionTimerEnforcer.getAbsoluteDuration() || ABSOLUTE_SESSION_DURATION;
 
