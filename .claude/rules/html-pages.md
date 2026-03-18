@@ -321,39 +321,4 @@ When writing security tests, feature tests, or any automated verification:
 
 *Rule: see `.claude/rules/gas-scripts.md` — section "GAS UI Layout Awareness". GAS elements are guests in the host HTML page and must defer to its layout.*
 
-## Dead Code Detection Methodology
-
-When the user asks to identify dead code or clean up unused code paths, apply this systematic analysis. The methodology was developed while analyzing an iframe srcdoc that appeared functional but was actively cancelled by every code path that consumed it.
-
-### The Analysis Steps
-
-1. **Trace all consumers** — for any code construct (variable, function, DOM element, event handler), find every place it is read, called, or referenced. Use grep/search to ensure completeness — don't rely on memory
-2. **Map each consumer's execution path** — for each consumer, trace whether it actually uses the value or cancels/overrides it before use. A consumer that immediately overwrites or deletes the value is not a real consumer — it's cleanup code
-3. **Check for race conditions** — if the code involves async timing (srcdoc execution, setTimeout, event handlers, iframe navigation), determine whether the "useful" path can ever win the race against the cancellation path. Key questions:
-   - Do both paths run in the same synchronous script execution? If yes, the later one always wins
-   - Is there a browser yield point (end of script block, await, setTimeout(0)) between creation and cancellation? If yes, the async path could theoretically fire first
-   - Even if the race is theoretically possible, does the code have a guard (null check, flag deletion) that makes the async path a no-op even if it wins?
-4. **Verify the "what if it ran" scenario** — even if the dead code somehow executed, would it cause harm or just be a no-op? This determines urgency:
-   - **Harmful if executed** (e.g. fires an external request, leaks data, corrupts state) → remove with priority
-   - **No-op if executed** (e.g. guard check prevents the action) → remove for cleanliness, lower priority
-5. **Check for external resource consumption** — does the code path, if triggered, consume quotas, fire network requests, or create DOM elements? Pre-auth code that can hit external services is a quota abuse vector (see the `_reportSecurityEvent` pre-auth guard pattern)
-6. **Identify the cleanup burden** — dead code often requires active cancellation elsewhere. Removing the dead code also removes the cancellation logic, simplifying both sides. Count how many places actively fight against the dead code — each one is cleanup that disappears with removal
-
-### Indicators of Dead Code
-
-- **Every branch cancels it** — if all code paths that could consume a value instead delete, overwrite, or neutralize it before use, the original assignment is dead
-- **Active cleanup in multiple places** — if 2+ code locations contain comments like "cancel the X" or "prevent X from running", X is likely dead and the cleanup is the real logic
-- **Guard makes it a no-op** — if the code has a guard (`if (!value) return`) and every path deletes the value before the code runs, the guarded code is dead
-- **Comment describes the problem it causes** — if the code's own comments explain why it must be cancelled ("would trigger gas-needs-auth", "would wipe the valid session"), the code is causing harm that other code must prevent — strong signal it should be removed entirely
-
-### Pre-Auth Resource Abuse Pattern
-
-Any code that can trigger external requests (GAS `doGet()`, API calls, iframe creation) without requiring an authenticated session is a potential quota abuse vector. When auditing for dead code or bombarding vulnerabilities:
-
-- **Enumerate all external request paths** — every `iframe.src = ...`, `fetch()`, `XMLHttpRequest`, `navigator.sendBeacon`, `new Image()` that hits a non-static-file URL
-- **For each path, check: is there a session guard?** — `if (!loadSession().token) return` or equivalent
-- **Static file fetches are exempt** — GitHub Pages CDN requests (version polling, changelogs, sounds) don't consume GAS quotas
-- **BroadcastChannel is exempt** — requires same-origin access (XSS prerequisite), and messages are local-only (no network)
-- **postMessage handlers that reply with tokens** — not a quota issue but a security concern; verify origin validation gates them
-
 Developed by: ShadowAISolutions

@@ -180,6 +180,43 @@ When working from an implementation guide, remediation plan, or any document tha
 
 **Why this matters:** implementation guides with pause points exist because the changes require live testing that Claude cannot perform (browser behavior, GAS deployment verification, OAuth flows, etc.). Skipping the pauses means the developer loses the opportunity to catch issues between steps — problems compound and become harder to diagnose.
 
+## Dead Code Detection Methodology
+
+When the user asks to identify dead code or clean up unused code paths, apply this systematic analysis. The methodology was developed while analyzing an iframe srcdoc that appeared functional but was actively cancelled by every code path that consumed it — but the approach applies to any language or runtime (HTML, JavaScript, GAS, server-side scripts, workflows).
+
+### The Analysis Steps
+
+1. **Trace all consumers** — for any code construct (variable, function, DOM element, event handler, parameter, config value), find every place it is read, called, or referenced. Use grep/search to ensure completeness — don't rely on memory
+2. **Map each consumer's execution path** — for each consumer, trace whether it actually uses the value or cancels/overrides it before use. A consumer that immediately overwrites or deletes the value is not a real consumer — it's cleanup code. In GAS scripts, check both `doGet()`/`doPost()` entry points and any time-driven or event-driven triggers
+3. **Check for race conditions** — if the code involves async timing (srcdoc execution, setTimeout, event handlers, iframe navigation, GAS trigger scheduling, Promises), determine whether the "useful" path can ever win the race against the cancellation path. Key questions:
+   - Do both paths run in the same synchronous execution context? If yes, the later one always wins
+   - Is there a yield point (end of script block, await, setTimeout(0), separate trigger execution) between creation and cancellation? If yes, the async path could theoretically fire first
+   - Even if the race is theoretically possible, does the code have a guard (null check, flag deletion, state validation) that makes the async path a no-op even if it wins?
+4. **Verify the "what if it ran" scenario** — even if the dead code somehow executed, would it cause harm or just be a no-op? This determines urgency:
+   - **Harmful if executed** (e.g. fires an external request, leaks data, corrupts state, consumes quotas) → remove with priority
+   - **No-op if executed** (e.g. guard check prevents the action) → remove for cleanliness, lower priority
+5. **Check for external resource consumption** — does the code path, if triggered, consume quotas, fire network requests, write to spreadsheets, send emails, or create DOM elements? Unguarded code that can hit external services is a resource abuse vector. For GAS specifically: check for `UrlFetchApp.fetch()`, `SpreadsheetApp` writes, `GmailApp`/`MailApp` sends, `PropertiesService` writes, and `ScriptApp.getService().getUrl()` calls
+6. **Identify the cleanup burden** — dead code often requires active cancellation elsewhere. Removing the dead code also removes the cancellation logic, simplifying both sides. Count how many places actively fight against the dead code — each one is cleanup that disappears with removal
+
+### Indicators of Dead Code
+
+- **Every branch cancels it** — if all code paths that could consume a value instead delete, overwrite, or neutralize it before use, the original assignment is dead
+- **Active cleanup in multiple places** — if 2+ code locations contain comments like "cancel the X" or "prevent X from running", X is likely dead and the cleanup is the real logic
+- **Guard makes it a no-op** — if the code has a guard (`if (!value) return`) and every path deletes the value before the code runs, the guarded code is dead
+- **Comment describes the problem it causes** — if the code's own comments explain why it must be cancelled ("would trigger gas-needs-auth", "would wipe the valid session", "would fire an extra API call"), the code is causing harm that other code must prevent — strong signal it should be removed entirely
+- **Unreachable parameters** — a function parameter that is never passed by any caller, or a config value that is read but whose result is never used in any branch
+- **Vestigial error handlers** — catch blocks or fallback paths for error conditions that the upstream code can no longer produce (e.g. error handling for a removed API call)
+
+### Pre-Auth / Unguarded Resource Abuse Pattern
+
+Any code that can trigger external requests or resource consumption without requiring proper authorization is a potential abuse vector. When auditing for dead code or bombarding vulnerabilities:
+
+- **Enumerate all external request paths** — every `iframe.src = ...`, `fetch()`, `XMLHttpRequest`, `navigator.sendBeacon`, `new Image()`, `UrlFetchApp.fetch()`, spreadsheet write, email send, or other external call
+- **For each path, check: is there an auth/session guard?** — `if (!loadSession().token) return` or equivalent in client code; `if (!session) return` or equivalent in GAS server code
+- **Static file fetches are exempt** — CDN requests (version polling, changelogs, sounds) don't consume application quotas
+- **Same-origin-only channels are exempt** — BroadcastChannel requires same-origin access (XSS prerequisite), and messages are local-only (no network)
+- **Handlers that reply with secrets** — not a quota issue but a security concern; verify origin/auth validation gates them
+
 ## Provenance Markers
 - This repo contains hidden provenance markers that identify ShadowAISolutions as the original author
 - These markers are embedded across multiple file types and are intentionally not documented in detail
