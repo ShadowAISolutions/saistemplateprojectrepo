@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v04.71r] — 2026-03-18 10:41:45 AM EST
+
+> **Prompt:** "actually do both options"
+
+### Added
+- Created `scripts/compute-csp-hash.sh` — CSP SHA-256 hash computation script with `--verify` mode for checking hash mismatches
+- Added commented-out hardened CSP meta tag (hash-based with `strict-dynamic`) to testauth1.html — ready to activate after all other security phases are complete
+
+#### `testauth1.html` — v02.30w
+
+##### Added
+- Prepared hash-based Content Security Policy — ready to activate when all security phases are complete
 
 ## [v04.70r] — 2026-03-18 09:51:48 AM EST
 

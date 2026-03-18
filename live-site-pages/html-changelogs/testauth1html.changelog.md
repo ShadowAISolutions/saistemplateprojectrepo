@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.30w] — 2026-03-18 10:41:45 AM EST — v04.71r
+
+### Added
+- Prepared hash-based Content Security Policy — ready to activate when all security phases are complete
 
 ## [v02.29w] — 2026-03-18 09:45:42 AM EST — v04.69r
 
