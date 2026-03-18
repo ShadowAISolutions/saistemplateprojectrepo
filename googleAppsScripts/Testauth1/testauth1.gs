@@ -1,4 +1,4 @@
-var VERSION = "v01.54g";
+var VERSION = "v01.55g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1133,11 +1133,9 @@ function processSecurityEvent(eventType, details) {
 
 function doGet(e) {
   var sessionToken = (e && e.parameter && e.parameter.session) || "";
-  var signOutToken = (e && e.parameter && e.parameter.signOut) || "";
-  var heartbeatToken = (e && e.parameter && e.parameter.heartbeat) || "";
-
-  // Message signing key from URL parameter (used by heartbeat iframe for signing)
-  var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
+  // Phase 7: signOutToken, heartbeatToken, and msgKey URL parameters removed —
+  // heartbeat and sign-out now use postMessage via action listener pages
+  // (processHeartbeat/processSignOut called via google.script.run)
 
   // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
   // GAS doGet(e) does not expose client IP — no compliant server-side method exists.
@@ -1260,130 +1258,11 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Heartbeat flow: validate session + reset createdAt to extend it
-  if (heartbeatToken && AUTH_CONFIG.ENABLE_HEARTBEAT) {
-    var cache = CacheService.getScriptCache();
-
-    // Rate limit heartbeat: max 20 per session per 5-minute window
-    var hbRlKey = 'hb_ratelimit_' + heartbeatToken.substring(0, 16);
-    var hbAttempts = cache.get(hbRlKey);
-    var hbCount = hbAttempts ? parseInt(hbAttempts, 10) : 0;
-    if (hbCount >= 20) {
-      var hbRlHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage({type:"gas-heartbeat-error"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
-        + '</' + 'script></body></html>';
-      return HtmlService.createHtmlOutput(hbRlHtml)
-        .setTitle(TITLE)
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    }
-    cache.put(hbRlKey, String(hbCount + 1), 300);
-
-    var raw = cache.get("session_" + heartbeatToken);
-    if (!raw) {
-      // Check for eviction tombstone — tells us WHY the session disappeared
-      var evictionReason = cache.get("evicted_" + heartbeatToken) || 'timeout';
-      // Clean up the tombstone after reading (one-time use)
-      if (evictionReason !== 'timeout') {
-        cache.remove("evicted_" + heartbeatToken);
-      }
-      var hbExpiredMsg = signMessage({type:'gas-heartbeat-expired', reason: evictionReason}, msgKey);
-      var hbExpiredHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage(' + JSON.stringify(hbExpiredMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-        + '</' + 'script></body></html>';
-      return HtmlService.createHtmlOutput(hbExpiredHtml)
-        .setTitle(TITLE)
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    }
-    var hbData;
-    try { hbData = JSON.parse(raw); } catch (err) {
-      var hbErrMsg = signMessage({type:'gas-heartbeat-expired', reason:'corrupt_session'}, msgKey);
-      var hbErrHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage(' + JSON.stringify(hbErrMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-        + '</' + 'script></body></html>';
-      return HtmlService.createHtmlOutput(hbErrHtml)
-        .setTitle(TITLE)
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    }
-    // Check HMAC if enabled
-    if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY && !verifySessionHmac(hbData)) {
-      cache.remove("session_" + heartbeatToken);
-      var hbHmacMsg = signMessage({type:'gas-heartbeat-expired', reason:'integrity_violation'}, msgKey);
-      var hbHmacHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage(' + JSON.stringify(hbHmacMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-        + '</' + 'script></body></html>';
-      return HtmlService.createHtmlOutput(hbHmacHtml)
-        .setTitle(TITLE)
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    }
-    // Check absolute session timeout — hard ceiling, heartbeats cannot extend past this
-    if (hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
-      var hbAbsElapsed = (Date.now() - hbData.absoluteCreatedAt) / 1000;
-      if (hbAbsElapsed > AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
-        cache.remove("session_" + heartbeatToken);
-        auditLog('session_expired', hbData.email, 'absolute_timeout_heartbeat',
-          { elapsed: Math.round(hbAbsElapsed) + 's', limit: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT + 's', clientIp: clientIp });
-        var hbAbsMsg = signMessage({type:'gas-heartbeat-expired', reason:'absolute_timeout'}, msgKey);
-        var hbAbsHtml = '<!DOCTYPE html><html><body><script>'
-          + 'window.top.postMessage(' + JSON.stringify(hbAbsMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-          + '</' + 'script></body></html>';
-        return HtmlService.createHtmlOutput(hbAbsHtml)
-          .setTitle(TITLE)
-          .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-      }
-    }
-    // Check if already expired (rolling session timeout)
-    var hbElapsed = (Date.now() - hbData.createdAt) / 1000;
-    if (hbElapsed > AUTH_CONFIG.SESSION_EXPIRATION) {
-      cache.remove("session_" + heartbeatToken);
-      auditLog('session_expired', hbData.email, 'heartbeat_too_late',
-        { elapsed: Math.round(hbElapsed) + 's', clientIp: clientIp });
-      var hbLateMsg = signMessage({type:'gas-heartbeat-expired', reason:'timeout'}, msgKey);
-      var hbLateHtml = '<!DOCTYPE html><html><body><script>'
-        + 'window.top.postMessage(' + JSON.stringify(hbLateMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-        + '</' + 'script></body></html>';
-      return HtmlService.createHtmlOutput(hbLateHtml)
-        .setTitle(TITLE)
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    }
-    // Session is valid — reset createdAt to extend the session
-    hbData.createdAt = Date.now();
-    hbData.lastActivity = Date.now();
-    // Phase 3: IP storage removed — uncomment to re-enable
-    // if (AUTH_CONFIG.ENABLE_IP_LOGGING && clientIp) {
-    //   hbData.clientIp = clientIp;
-    // }
-    if (AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) {
-      hbData.hmac = generateSessionHmac(hbData);
-    }
-    cache.put("session_" + heartbeatToken, JSON.stringify(hbData), AUTH_CONFIG.SESSION_EXPIRATION);
-    var hbAbsRemaining = hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT
-      ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
-      : 0;
-    var hbOkMsg = signMessage({type:'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
-    var hbOkHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage(' + JSON.stringify(hbOkMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-      + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(hbOkHtml)
-      .setTitle(TITLE)
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-
-  // Sign-out flow: invalidate session and return confirmation
-  if (signOutToken) {
-    // Read messageKey before invalidation (for signing the response)
-    var soCache = CacheService.getScriptCache();
-    var soRaw = soCache.get("session_" + signOutToken);
-    var soMsgKey = '';
-    if (soRaw) { try { soMsgKey = JSON.parse(soRaw).messageKey || ''; } catch(e) {} }
-    invalidateSession(signOutToken);
-    var signOutMsg = signMessage({type:'gas-signed-out', success:true}, soMsgKey);
-    var signOutHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage(' + JSON.stringify(signOutMsg) + ', ' + JSON.stringify(PARENT_ORIGIN) + ');'
-      + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(signOutHtml)
-      .setTitle(TITLE)
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
+  // Phase 7 cleanup: Legacy URL-parameter heartbeat (?heartbeat=TOKEN) and
+  // sign-out (?signOut=TOKEN) routes removed. These are now handled by:
+  //   - processHeartbeat() via google.script.run from action=heartbeat listener page
+  //   - processSignOut() via google.script.run from action=signout listener page
+  // The postMessage-based approach eliminates token-in-URL exposure (H-5, H-6).
 
   // URL-parameter token exchange (standard mode)
   if (AUTH_CONFIG.TOKEN_EXCHANGE_METHOD === 'url') {

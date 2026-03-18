@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v04.80r] — 2026-03-18 02:02:28 PM EST
+
+> **Prompt:** "yes proceed that way, make the implementation plan a single document. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+
+### Changed
+- Removed legacy URL-parameter heartbeat (`?heartbeat=TOKEN`) and sign-out (`?signOut=TOKEN`) routes from `doGet()` in `testauth1.gs` — these were superseded by Phase 7's postMessage-based `processHeartbeat()` and `processSignOut()` functions (~120 lines of dead code removed)
+- Checked off Phase 9 verification in the implementation guide (`10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md`)
+
+### Added
+- Created DJB2 → HMAC-SHA256 migration plan (`10.3-DJB2-TO-HMAC-MIGRATION-PLAN.md`) — 7-step implementation plan to migrate the four remaining DJB2-signed messages in GAS session HTML (`gas-auth-ok`, `gas-version`, `gas-user-activity`, `gas-session-invalid`) to server-side HMAC-SHA256 signing via `google.script.run`
+
+#### `testauth1.gs` — v01.55g
+
+##### Changed
+- Removed legacy URL-parameter heartbeat and sign-out routes from `doGet()` — dead code after Phase 7 migration
+- Removed `signOutToken`, `heartbeatToken`, and `msgKey` URL parameter variables from `doGet()`
 
 ## [v04.79r] — 2026-03-18 01:19:03 PM EST
 

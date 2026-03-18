@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v01.55g] — 2026-03-18 02:02:28 PM EST — v04.80r
+
+### Changed
+- Removed unused legacy session routes — heartbeat and sign-out now use the newer, more secure communication method
 
 ## [v01.54g] — 2026-03-18 01:12:40 PM EST — v04.78r
 
