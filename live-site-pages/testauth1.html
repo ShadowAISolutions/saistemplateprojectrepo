@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.21w">
+  <meta name="build-version" content="v02.22w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1749,19 +1749,9 @@
             }
             stopHeartbeat();
             hideAllWarningBanners();
-            // Save the claiming tab's session credentials so "Use Here" can
-            // reclaim with a valid token instead of the stale one.
-            if (e.data.token && e.data.email) {
-              saveSession(e.data.token, e.data.email);
-              // Accept the new message key so GAS responses can be verified
-              // after reclaim.  Reset to null first so the first-write-wins
-              // guard in gas-session-created accepts the next key delivery.
-              _messageKey = e.data.messageKey || null;
-              _hmacKey = null;  // Reset CryptoKey — will be re-imported on next gas-session-created
-              if (_messageKey) {
-                _importHmacKey(_messageKey).then(function(key) { _hmacKey = key; }).catch(function() {});
-              }
-            }
+            // Phase 4 (H-1): No credentials in broadcast — each tab already has
+            // its own session in sessionStorage. When "Use Here" is clicked, the
+            // tab reclaims using its stored token (see Use Here handler below).
             // Reset overlay text to same-browser message (in case it was changed
             // by a previous cross-device eviction).
             var takeoverWall = document.getElementById('tab-takeover-wall');
@@ -1815,18 +1805,13 @@
     }
 
     // Broadcast tab-claim to other tabs (single-tab enforcement)
-    // Includes the current session credentials so the surrendering tab can
-    // update its own sessionStorage — when it clicks "Use Here" later it
-    // will already have a valid token instead of a stale one.
+    // Phase 4 (H-1): Only broadcast the event + tabId — never send credentials
+    // over BroadcastChannel. Each tab reads its own credentials from sessionStorage.
     function broadcastTabClaim() {
       if (HTML_CONFIG.SINGLE_TAB_ENFORCEMENT && _signOutChannel) {
-        var session = loadSession();
         _signOutChannel.postMessage({
           type: 'tab-claim',
-          tabId: _tabId,
-          token: session.token || null,
-          email: session.email || null,
-          messageKey: _messageKey || null
+          tabId: _tabId
         });
       }
     }

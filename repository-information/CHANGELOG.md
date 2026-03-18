@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v04.59r] — 2026-03-17 09:21:24 PM EST
+
+> **Prompt:** "continue to implement the next step of repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
+
+### Changed
+- Implemented Phase 4 (H-1) BroadcastChannel credential leak fix — stripped session token, email, and HMAC key from tab-claim broadcasts
+
+#### `testauth1.html` — v02.22w
+
+##### Changed
+- Improved session security by removing sensitive data from cross-tab communication
 
 ## [v04.58r] — 2026-03-17 09:12:37 PM EST
 

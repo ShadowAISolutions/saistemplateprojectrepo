@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v02.22w] — 2026-03-17 09:21:24 PM EST — v04.59r
+
+### Changed
+- Improved session security by removing sensitive data from cross-tab communication
 
 ## [v02.21w] — 2026-03-17 08:55:55 PM EST — v04.56r
 
