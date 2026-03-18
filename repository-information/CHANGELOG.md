@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v04.61r] — 2026-03-17 09:58:32 PM EST
+
+> **Prompt:** "these console tests you have had me do and will have me do, add those into the 10.2 guide near the progress checklist"
+
+### Changed
+- Added "Console Test Commands" sections to all 10 phases in the security implementation guide — each phase now includes copy-paste DevTools commands for verifying the implementation
 
 ## [v04.60r] — 2026-03-17 09:38:24 PM EST
 
