@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v04.83r] — 2026-03-18 03:22:20 PM EST
+
+> **Prompt:** "everything seems to be passing, except for the " new BroadcastChannel('signout-channel').onmessage = e => console.log('BC:', JSON.stringify(e.data)); " this one doesnt seem to be outputting anything no matter where i sign in"
+
+### Fixed
+- Fixed incorrect BroadcastChannel name in Phase 10 verification guide — `'signout-channel'` → `'auth-sign-out'` (3 occurrences across Phase 4 checklist, console commands, and Phase 10 integration test)
 
 ## [v04.82r] — 2026-03-18 03:08:21 PM EST
 
