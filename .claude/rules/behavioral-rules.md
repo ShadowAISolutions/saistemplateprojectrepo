@@ -165,6 +165,21 @@ When adding, moving, or reorganizing `##` sections in CLAUDE.md, follow the atte
 - **When this matters most:** any response where a secondary task (CHANGELOG updates, archive rotation, structural changes) is more complex than the primary task (version bump, config change, small edit). The secondary task's complexity creates tunnel vision that causes the simpler primary task to be skipped entirely
 - **Summary accuracy:** never write summary bullets claiming a file was edited unless `git diff` confirms the edit exists. Summaries must describe what actually happened, not what was planned
 
+## Document-Prescribed Workflows
+When working from an implementation guide, remediation plan, or any document that prescribes a specific workflow (e.g. "wait for developer confirmation between steps", "do not advance unprompted", "implement one phase at a time"), **follow the document's workflow exactly** — do not override it with the default "just do it" execution style.
+
+**How to recognize these documents:** look for explicit workflow instructions near the top — phrases like "wait for the developer to confirm", "do not proceed until", "implement one phase at a time, test after each", or "tell the developer what to test". These override the Execution Style rule's bias toward autonomous completion.
+
+**What to do at each pause point:**
+1. Complete the prescribed step(s) up to the pause boundary
+2. Describe what the developer should test — expected behaviors, edge cases, DevTools checks, and what success/failure looks like
+3. Use `AskUserQuestion` (or simply end the response) to wait for the developer's confirmation before continuing
+4. Only advance to the next step after the developer confirms results or says to proceed
+
+**The developer can always override:** if the developer says "do all remaining steps", "skip the pauses", or "just finish it", revert to the default autonomous execution style for the remainder. The workflow constraint is opt-out, not a hard gate.
+
+**Why this matters:** implementation guides with pause points exist because the changes require live testing that Claude cannot perform (browser behavior, GAS deployment verification, OAuth flows, etc.). Skipping the pauses means the developer loses the opportunity to catch issues between steps — problems compound and become harder to diagnose.
+
 ## Provenance Markers
 - This repo contains hidden provenance markers that identify ShadowAISolutions as the original author
 - These markers are embedded across multiple file types and are intentionally not documented in detail

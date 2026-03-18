@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v04.63r] — 2026-03-17 10:23:01 PM EST
+
+> **Prompt:** "sure add that"
+
+### Added
+- "Document-Prescribed Workflows" behavioral rule — enforces pause-and-confirm workflow when implementation guides prescribe developer testing between steps
 
 ## [v04.62r] — 2026-03-17 10:14:46 PM EST
 
