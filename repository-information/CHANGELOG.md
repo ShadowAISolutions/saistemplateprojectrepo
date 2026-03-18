@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v04.58r] — 2026-03-17 09:12:37 PM EST
+
+> **Prompt:** "in the implementation workflow also have it mention something to the effect of "if writing a large document/file, Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section.""
+
+### Added
+- Added large file writing guidance to implementation workflow in security guide
 
 ## [v04.57r] — 2026-03-17 09:01:20 PM EST
 
