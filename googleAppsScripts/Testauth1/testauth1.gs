@@ -1,4 +1,4 @@
-var VERSION = "v01.59g";
+var VERSION = "v01.60g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -185,6 +185,51 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 // PROJECT START
 // ══════════════
+
+// ── Admin Utilities — run from the GAS Editor (select function → Run) ──
+
+/**
+ * Clear the access cache for a specific user so their next login reads the ACL fresh.
+ * Usage: set the email below, select this function in the editor, click Run.
+ */
+function clearAccessCacheForUser() {
+  var email = 'user@example.com';  // ← change this to the target email
+  var cache = CacheService.getScriptCache();
+  cache.remove('access_' + email.toLowerCase());
+  cache.remove('role_' + email.toLowerCase());
+  Logger.log('Cleared access cache for ' + email);
+}
+
+/**
+ * Clear the access cache for ALL users listed in the ACL tab.
+ * Useful after bulk ACL changes so all users get fresh lookups on next login.
+ */
+function clearAllAccessCache() {
+  var cache = CacheService.getScriptCache();
+  var keysToRemove = [];
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) { Logger.log('ACL sheet "' + ACL_SHEET_NAME + '" not found'); return; }
+    var data = sheet.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (email && email.indexOf('@') > -1) {
+        keysToRemove.push('access_' + email);
+        keysToRemove.push('role_' + email);
+      }
+    }
+  } catch(e) {
+    Logger.log('Error reading ACL: ' + e.message);
+    return;
+  }
+  if (keysToRemove.length > 0) {
+    cache.removeAll(keysToRemove);
+    Logger.log('Cleared access cache for ' + (keysToRemove.length / 2) + ' users');
+  } else {
+    Logger.log('No users found in ACL tab');
+  }
+}
 
 // ══════════════
 // PROJECT END

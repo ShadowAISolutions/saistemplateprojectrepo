@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v05.00r] — 2026-03-19 11:43:05 AM EST
+
+> **Prompt:** "you can add these things to the gas for me"
+
+### Added
+- Added admin utility functions to testauth1.gs for clearing the server-side access cache — `clearAccessCacheForUser()` clears a single user, `clearAllAccessCache()` clears all ACL-listed users
+
+#### `testauth1.gs` — v01.60g
+
+##### Added
+- Admin utility to clear access cache for a specific user or all users, so ACL changes take effect immediately without waiting 10 minutes
 
 ## [v04.99r] — 2026-03-19 11:34:59 AM EST
 

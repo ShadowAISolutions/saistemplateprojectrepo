@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v01.60g] — 2026-03-19 11:43:05 AM EST — v05.00r
+
+### Added
+- Admin can now instantly clear cached access decisions so ACL changes take effect without waiting
 
 ## [v01.59g] — 2026-03-19 11:34:59 AM EST — v04.99r
 
