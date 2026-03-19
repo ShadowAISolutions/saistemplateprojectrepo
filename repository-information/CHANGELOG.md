@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v05.15r] — 2026-03-19 07:17:21 PM EST
+
+> **Prompt:** "update the gas and html templates to match what we have in the testauth1 environment. make sure you therefore fix the scripts to work on the new template code"
+
+### Added
+- `TEMPLATE-UPDATE-PLAN.md` — phased implementation plan for syncing auth templates with testauth1's evolved feature set (RBAC, HMAC-SHA256, admin panel, cache epoch, cross-device enforcement, tab takeover, CSP, and 10+ new config toggles)
 
 ## [v05.14r] — 2026-03-19 05:46:46 PM EST
 
