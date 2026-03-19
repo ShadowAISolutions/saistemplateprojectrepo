@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v04.85r] — 2026-03-18 10:09:24 PM EST
+
+> **Prompt:** "can you clean up the plan so that you write it out as a ready to implement format, but redo the deep thinking, and online research, make sure to break large document writes into chunks"
+
+### Changed
+- Rewrote `10.4-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` as clean ready-to-implement document — removed abandoned HIPAA path optimization (Step 5), eliminated contradictory summary tables, removed back-and-forth reasoning, updated sources with fresh 2026 web research. Reduced from 752 lines to 528 lines while preserving all actionable content
 
 ## [v04.84r] — 2026-03-18 03:45:28 PM EST
 
