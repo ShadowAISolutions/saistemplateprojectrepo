@@ -1,4 +1,4 @@
-var VERSION = "v01.60g";
+var VERSION = "v01.61g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -229,6 +229,94 @@ function clearAllAccessCache() {
   } else {
     Logger.log('No users found in ACL tab');
   }
+}
+
+/**
+ * List all active sessions by walking the ACL spreadsheet.
+ * Admin-only — requires a valid session with 'admin' permission.
+ * Called via google.script.run from the admin session panel.
+ */
+function listActiveSessions(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'listActiveSessions');
+  checkPermission(user, 'admin', 'listActiveSessions');
+
+  var cache = CacheService.getScriptCache();
+  var activeSessions = [];
+
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return activeSessions;
+    var data = sheet.getDataRange().getValues();
+
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) continue;
+
+      var trackKey = 'sessions_' + email;
+      var raw = cache.get(trackKey);
+      if (!raw) continue;
+
+      var tokens;
+      try { tokens = JSON.parse(raw); } catch (e) { continue; }
+
+      for (var i = 0; i < tokens.length; i++) {
+        var sessionRaw = cache.get('session_' + tokens[i]);
+        if (!sessionRaw) continue;
+
+        var sess;
+        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
+
+        var absRemaining = 0;
+        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+          absRemaining = Math.max(0, Math.round(
+            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
+          ));
+        }
+        var rollingRemaining = Math.max(0, Math.round(
+          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
+        ));
+
+        activeSessions.push({
+          email: sess.email,
+          displayName: sess.displayName || '',
+          role: sess.role || RBAC_DEFAULT_ROLE,
+          createdAt: sess.absoluteCreatedAt || sess.createdAt,
+          lastActivity: sess.lastActivity,
+          absoluteRemaining: absRemaining,
+          rollingRemaining: rollingRemaining,
+          isEmergencyAccess: sess.isEmergencyAccess || false,
+          isSelf: (sess.email || '').toLowerCase() === (user.email || '').toLowerCase()
+        });
+      }
+    }
+  } catch (e) {
+    Logger.log('listActiveSessions error: ' + e.message);
+  }
+
+  auditLog('admin_action', user.email, 'list_active_sessions',
+    { sessionCount: activeSessions.length });
+
+  return activeSessions;
+}
+
+/**
+ * Sign out a specific user by email (invalidate all their sessions).
+ * Admin-only — requires a valid session with 'admin' permission.
+ * Called via google.script.run from the admin session panel.
+ */
+function adminSignOutUser(sessionToken, targetEmail) {
+  var user = validateSessionForData(sessionToken, 'adminSignOutUser');
+  checkPermission(user, 'admin', 'adminSignOutUser');
+
+  if (!targetEmail) return { success: false, error: 'no_email' };
+
+  invalidateAllSessions(targetEmail);
+
+  auditLog('admin_action', user.email, 'admin_sign_out_user',
+    { targetEmail: targetEmail });
+
+  return { success: true, email: targetEmail };
 }
 
 // ══════════════
@@ -1402,6 +1490,43 @@ function doGet(e) {
       + '});'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(soListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Admin session management — returns page that listens for admin commands via postMessage
+  if (action === 'adminSessions') {
+    var adminListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-admin-sessions-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data) return;'
+      + '  if (evt.data.type === "admin-list-sessions") {'
+      + '    google.script.run'
+      + '      .withSuccessHandler(function(r) {'
+      + '        window.top.postMessage({type:"gas-admin-sessions-list", sessions:r}, PARENT_ORIGIN);'
+      + '      })'
+      + '      .withFailureHandler(function(e) {'
+      + '        window.top.postMessage({type:"gas-admin-sessions-error",'
+      + '          error:String(e)}, PARENT_ORIGIN);'
+      + '      })'
+      + '      .listActiveSessions(evt.data.token);'
+      + '  }'
+      + '  if (evt.data.type === "admin-signout-user") {'
+      + '    google.script.run'
+      + '      .withSuccessHandler(function(r) {'
+      + '        window.top.postMessage({type:"gas-admin-signout-result", result:r}, PARENT_ORIGIN);'
+      + '      })'
+      + '      .withFailureHandler(function(e) {'
+      + '        window.top.postMessage({type:"gas-admin-signout-error",'
+      + '          error:String(e)}, PARENT_ORIGIN);'
+      + '      })'
+      + '      .adminSignOutUser(evt.data.token, evt.data.email);'
+      + '  }'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(adminListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }

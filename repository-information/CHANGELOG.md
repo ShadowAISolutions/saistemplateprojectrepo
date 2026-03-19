@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v05.01r] — 2026-03-19 12:16:19 PM EST
+
+> **Prompt:** "yes build that"
+
+### Added
+- Admin session management panel — admins can view all active sessions (email, role, last activity, time remaining) and sign out any user directly from the testauth1 UI
+- Server-side `listActiveSessions()` and `adminSignOutUser()` GAS functions, both admin-permission-gated with audit logging
+- New `action=adminSessions` doGet route in testauth1.gs for postMessage-based admin panel communication (same pattern as heartbeat/signout)
+- "Sessions" button in user pill (visible only to admin role) toggles the admin panel overlay
+
+#### `testauth1.gs` — v01.61g
+
+##### Added
+- `listActiveSessions(sessionToken)` — walks ACL spreadsheet to enumerate all active sessions from cache, returns email, role, timestamps, and remaining time
+- `adminSignOutUser(sessionToken, targetEmail)` — invalidates all sessions for a target user, admin-permission-gated
+- `action=adminSessions` doGet route — lightweight postMessage listener page for admin session commands
+
+#### `testauth1.html` — v02.38w
+
+##### Added
+- Admin session management panel with dark-themed UI — shows active sessions with email, role badge, sign-in time, last activity, and countdown timers
+- "Sessions" button in user pill visible only to admin role users
+- Per-user "Sign Out User" button to remotely terminate another user's session
+- Auto-refresh and manual refresh for session list
+- Panel auto-closes on sign-out or auth wall display
 
 ## [v05.00r] — 2026-03-19 11:43:05 AM EST
 

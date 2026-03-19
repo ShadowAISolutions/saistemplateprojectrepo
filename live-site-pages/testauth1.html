@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.37w">
+  <meta name="build-version" content="v02.38w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -255,6 +255,53 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
+    #admin-sessions-btn {
+      background: none; border: none; color: #90caf9; cursor: pointer;
+      font: 11px/1 monospace; padding: 0 4px; display: none;
+    }
+    #admin-sessions-btn:hover { color: #42a5f5; }
+    #admin-sessions-panel {
+      display: none; position: fixed; top: 40px; right: 8px; z-index: 10010;
+      background: rgba(20,20,30,0.95); color: #ccc; border: 1px solid #444;
+      border-radius: 8px; padding: 12px 16px; font: 12px/1.4 monospace;
+      max-width: 420px; min-width: 300px; max-height: 70vh; overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #admin-sessions-panel .asp-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px;
+    }
+    #admin-sessions-panel .asp-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+    #admin-sessions-panel .asp-close {
+      background: none; border: none; color: #999; cursor: pointer;
+      font-size: 16px; padding: 0 4px; line-height: 1;
+    }
+    #admin-sessions-panel .asp-close:hover { color: #fff; }
+    #admin-sessions-panel .asp-refresh {
+      background: none; border: 1px solid #555; color: #90caf9; cursor: pointer;
+      font: 11px/1 monospace; padding: 3px 8px; border-radius: 4px; margin-left: 8px;
+    }
+    #admin-sessions-panel .asp-refresh:hover { background: rgba(144,202,249,0.1); }
+    #admin-sessions-panel .asp-session {
+      background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 8px;
+    }
+    #admin-sessions-panel .asp-session.asp-self { border-color: #1565c0; }
+    #admin-sessions-panel .asp-email { color: #fff; font-weight: bold; font-size: 12px; }
+    #admin-sessions-panel .asp-role {
+      display: inline-block; background: rgba(144,202,249,0.15); color: #90caf9;
+      padding: 1px 5px; border-radius: 3px; font-size: 10px; text-transform: uppercase;
+      margin-left: 6px;
+    }
+    #admin-sessions-panel .asp-role.asp-emergency { background: rgba(255,152,0,0.2); color: #ff9800; }
+    #admin-sessions-panel .asp-meta { color: #888; font-size: 11px; margin-top: 4px; }
+    #admin-sessions-panel .asp-kick {
+      background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer;
+      font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px;
+    }
+    #admin-sessions-panel .asp-kick:hover { background: rgba(239,83,80,0.15); }
+    #admin-sessions-panel .asp-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
+    #admin-sessions-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -317,8 +364,23 @@
   <div id="user-pill">
     <span id="user-email-display"></span>
     <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
+    <button id="admin-sessions-btn" title="Manage active sessions">Sessions</button>
     <button id="sign-out-btn">Sign Out</button>
   </div>
+
+  <div id="admin-sessions-panel">
+    <div class="asp-header">
+      <span class="asp-title">Active Sessions</span>
+      <span>
+        <button class="asp-refresh" id="asp-refresh-btn" title="Refresh session list">Refresh</button>
+        <button class="asp-close" id="asp-close-btn">&times;</button>
+      </span>
+    </div>
+    <div id="asp-session-list">
+      <div class="asp-status">Loading sessions...</div>
+    </div>
+  </div>
+  <iframe id="admin-sessions-iframe"></iframe>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -1176,7 +1238,12 @@
       'gas-user-activity': true,
       'gas-signed-out': true,
       'gas-version': true,
-      'gas-session-invalid': true
+      'gas-session-invalid': true,
+      'gas-admin-sessions-ready': true,
+      'gas-admin-sessions-list': true,
+      'gas-admin-sessions-error': true,
+      'gas-admin-signout-result': true,
+      'gas-admin-signout-error': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1402,7 +1469,10 @@
       // For all subsequent messages, verify the signature if we have a key (async — HMAC-SHA256)
       // Phase 7: ready signals from action listener pages are exempt — they have no signing key
       var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
-        'gas-heartbeat-ready': true, 'gas-signout-ready': true, 'gas-security-event-ready': true };
+        'gas-heartbeat-ready': true, 'gas-signout-ready': true, 'gas-security-event-ready': true,
+        'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
+        'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
+        'gas-admin-signout-error': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -1440,6 +1510,43 @@
             token: session.token
           }, event.origin);
         }
+        return;
+      }
+
+      // ── Admin session management responses ──
+      if (data.type === 'gas-admin-sessions-ready') {
+        _adminIframeReady = true;
+        if (_adminPanelOpen) _adminListSessions();
+        return;
+      }
+      if (data.type === 'gas-admin-sessions-list') {
+        _renderAdminSessions(data.sessions);
+        return;
+      }
+      if (data.type === 'gas-admin-sessions-error') {
+        var errList = document.getElementById('asp-session-list');
+        if (errList) {
+          var errMsg = String(data.error || 'Unknown error');
+          if (errMsg.indexOf('PERMISSION_DENIED') !== -1) {
+            errList.innerHTML = '<div class="asp-status" style="color:#ef5350">Access denied. Admin role required.</div>';
+          } else {
+            errList.innerHTML = '<div class="asp-status" style="color:#ef5350">Error: ' + _escHtml(errMsg) + '</div>';
+          }
+        }
+        return;
+      }
+      if (data.type === 'gas-admin-signout-result') {
+        // Refresh the session list after signing out a user
+        if (data.result && data.result.success) {
+          document.getElementById('asp-session-list').innerHTML =
+            '<div class="asp-status">Signed out ' + _escHtml(data.result.email) + '. Refreshing...</div>';
+          setTimeout(function() { _adminListSessions(); }, 500);
+        }
+        return;
+      }
+      if (data.type === 'gas-admin-signout-error') {
+        document.getElementById('asp-session-list').innerHTML =
+          '<div class="asp-status" style="color:#ef5350">Sign-out failed: ' + _escHtml(String(data.error || '')) + '</div>';
         return;
       }
 
@@ -1899,6 +2006,10 @@
       hideAllWarningBanners();
       userPill.style.display = 'none';
 
+      // Close admin panel if open
+      var adminPanel = document.getElementById('admin-sessions-panel');
+      if (adminPanel) { adminPanel.style.display = 'none'; _adminPanelOpen = false; }
+
       // Always show sign-in UI (not reconnecting/signing-in) when showAuthWall is called
       signinEl.style.display = '';
       reconnEl.style.display = 'none';
@@ -1970,6 +2081,12 @@
       if (displayRole && roleBadge) {
         roleBadge.textContent = displayRole;
         roleBadge.style.display = 'inline';
+      }
+
+      // Show admin sessions button only for admin role
+      var adminBtn = document.getElementById('admin-sessions-btn');
+      if (adminBtn) {
+        adminBtn.style.display = (displayRole === 'admin') ? 'inline' : 'none';
       }
     }
 
@@ -2490,6 +2607,129 @@
     // Sign-out button handler
     document.getElementById('sign-out-btn').addEventListener('click', function() {
       performSignOut('manual');
+    });
+
+    // =============================================
+    // AUTH — Admin Session Management Panel
+    // =============================================
+    var _adminIframeReady = false;
+    var _adminPanelOpen = false;
+
+    function _getGasBaseUrl() {
+      var gasApp = document.getElementById('gas-app');
+      return (gasApp && gasApp.dataset.baseUrl) || '';
+    }
+
+    function _initAdminIframe() {
+      var iframe = document.getElementById('admin-sessions-iframe');
+      var baseUrl = _getGasBaseUrl();
+      if (!baseUrl) return;
+      _adminIframeReady = false;
+      iframe.src = baseUrl + '?action=adminSessions';
+    }
+
+    function _adminListSessions() {
+      var session = loadSession();
+      if (!session.token || !_adminIframeReady) return;
+      var iframe = document.getElementById('admin-sessions-iframe');
+      iframe.contentWindow.postMessage({
+        type: 'admin-list-sessions',
+        token: session.token
+      }, '*');
+    }
+
+    function _adminSignOutUser(email) {
+      var session = loadSession();
+      if (!session.token || !_adminIframeReady) return;
+      var iframe = document.getElementById('admin-sessions-iframe');
+      iframe.contentWindow.postMessage({
+        type: 'admin-signout-user',
+        token: session.token,
+        email: email
+      }, '*');
+    }
+
+    function _renderAdminSessions(sessions) {
+      var list = document.getElementById('asp-session-list');
+      if (!sessions || sessions.length === 0) {
+        list.innerHTML = '<div class="asp-status">No active sessions found.</div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < sessions.length; i++) {
+        var s = sessions[i];
+        var selfClass = s.isSelf ? ' asp-self' : '';
+        var roleClass = s.isEmergencyAccess ? ' asp-emergency' : '';
+        var selfLabel = s.isSelf ? ' (you)' : '';
+        var created = new Date(s.createdAt);
+        var lastAct = new Date(s.lastActivity);
+        var absMin = Math.floor(s.absoluteRemaining / 60);
+        var absSec = s.absoluteRemaining % 60;
+        var rollMin = Math.floor(s.rollingRemaining / 60);
+        var rollSec = s.rollingRemaining % 60;
+
+        html += '<div class="asp-session' + selfClass + '">'
+          + '<div><span class="asp-email">' + _escHtml(s.email) + selfLabel + '</span>'
+          + '<span class="asp-role' + roleClass + '">' + _escHtml(s.role)
+          + (s.isEmergencyAccess ? ' (emergency)' : '') + '</span></div>'
+          + '<div class="asp-meta">Signed in: ' + created.toLocaleTimeString() + '</div>'
+          + '<div class="asp-meta">Last activity: ' + lastAct.toLocaleTimeString() + '</div>'
+          + '<div class="asp-meta">Remaining: ' + absMin + 'm ' + absSec + 's abs / '
+          + rollMin + 'm ' + rollSec + 's rolling</div>';
+        if (!s.isSelf) {
+          html += '<button class="asp-kick" data-email="' + _escHtml(s.email)
+            + '">Sign Out User</button>';
+        }
+        html += '</div>';
+      }
+      list.innerHTML = html;
+
+      // Attach click handlers to sign-out buttons
+      var kickBtns = list.querySelectorAll('.asp-kick');
+      for (var k = 0; k < kickBtns.length; k++) {
+        kickBtns[k].addEventListener('click', function() {
+          var email = this.getAttribute('data-email');
+          this.textContent = 'Signing out...';
+          this.disabled = true;
+          _adminSignOutUser(email);
+        });
+      }
+    }
+
+    function _escHtml(str) {
+      if (!str) return '';
+      var d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    document.getElementById('admin-sessions-btn').addEventListener('click', function() {
+      var panel = document.getElementById('admin-sessions-panel');
+      if (_adminPanelOpen) {
+        panel.style.display = 'none';
+        _adminPanelOpen = false;
+        return;
+      }
+      panel.style.display = 'block';
+      _adminPanelOpen = true;
+      document.getElementById('asp-session-list').innerHTML =
+        '<div class="asp-status">Loading sessions...</div>';
+      if (!_adminIframeReady) {
+        _initAdminIframe();
+      } else {
+        _adminListSessions();
+      }
+    });
+
+    document.getElementById('asp-close-btn').addEventListener('click', function() {
+      document.getElementById('admin-sessions-panel').style.display = 'none';
+      _adminPanelOpen = false;
+    });
+
+    document.getElementById('asp-refresh-btn').addEventListener('click', function() {
+      document.getElementById('asp-session-list').innerHTML =
+        '<div class="asp-status">Refreshing...</div>';
+      _adminListSessions();
     });
 
     // Re-auth button handler (on absolute warning banner)

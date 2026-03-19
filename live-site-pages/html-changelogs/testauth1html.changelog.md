@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v02.38w] — 2026-03-19 12:16:19 PM EST — v05.01r
+
+### Added
+- New "Sessions" button for admins — view all active sessions and sign out any user directly from the page
 
 ## [v02.37w] — 2026-03-19 11:23:01 AM EST — v04.98r
 
