@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.39w">
+  <meta name="build-version" content="v02.40w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1660,6 +1660,9 @@
           // Stale gas-needs-auth — the iframe was still loading a prior URL
           // while we already set a new src with the session token. Ignore
           // this message and wait for the session-URL response instead.
+          // NOTE: _expectingSession is NOT set on page-load resume — only on
+          // mid-session navigations (gas-session-created, Use Here) where
+          // prior iframe content could emit a stale gas-needs-auth.
           _expectingSession = false;
           return;
         }
@@ -1668,7 +1671,15 @@
         stopCountdownTimers();
         stopHeartbeat();
         sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
-        showAuthWall('Session expired. Please sign in again.');
+        // Differentiate admin sign-out from normal expiration
+        var evReason = data.evictionReason || '';
+        var authMsg = 'Session expired. Please sign in again.';
+        if (evReason === 'admin_signout') {
+          authMsg = 'An administrator ended your session. Please sign in again.';
+        } else if (evReason === 'new_sign_in') {
+          authMsg = 'Your session was ended (signed in elsewhere). Please sign in again.';
+        }
+        showAuthWall(authMsg);
       }
 
       // GAS iframe confirms auth is OK (for returning users)
@@ -1753,6 +1764,14 @@
           hbEl2.className = 'timer-value critical';
         }
         stopCountdownTimers();
+
+        // Admin sign-out: an administrator ended this session
+        if (data.reason === 'admin_signout') {
+          clearSession();
+          sessionStorage.setItem(SESSION_EXPIRED_FLAG, '1');
+          showAuthWall('An administrator ended your session. Please sign in again.');
+          return;
+        }
 
         // Cross-device eviction: another device signed in
         if (data.reason === 'new_sign_in' && HTML_CONFIG.CROSS_DEVICE_ENFORCEMENT) {
@@ -2805,7 +2824,12 @@
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          _expectingSession = true;
+          // Do NOT set _expectingSession here — on page load, there is no prior
+          // iframe content that could send a stale gas-needs-auth. The flag would
+          // cause the REAL gas-needs-auth (from an admin-invalidated session) to be
+          // silently dropped, leaving the user stuck on "Reconnecting...".
+          // _expectingSession is only needed after mid-session iframe navigations
+          // (gas-session-created, Use Here) where prior content may still be loaded.
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid

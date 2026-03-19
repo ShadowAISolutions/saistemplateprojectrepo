@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 101/100`
+`Sections: 102/100`
 
 ## [Unreleased]
+
+## [v05.03r] — 2026-03-19 12:37:20 PM EST
+
+> **Prompt:** "ok it is properly detecting sessions, but when i sign out another user it seems to invalidate their session, but its not actually signing them out so on their end it looks like they are still in, and refreshing their page has them stuck on the reconnecting page. what do you think we should do to handle this?"
+
+### Fixed
+- Fixed admin-signed-out users getting stuck on "Reconnecting..." on page refresh — `_expectingSession` flag was incorrectly set on page-load resume, causing the real `gas-needs-auth` to be silently dropped
+- Added distinct `admin_signout` tombstone reason so admin sign-outs produce a clear "An administrator ended your session" message instead of the cross-device "signed in elsewhere" message
+- `invalidateAllSessions()` now accepts a `reason` parameter — admin sign-outs use `admin_signout`, natural sign-ins continue using `new_sign_in`
+- `validateSession()` now checks eviction tombstones and forwards the reason to `gas-needs-auth`, enabling the client to show context-appropriate messages on page refresh
+
+#### `testauth1.html` — v02.40w
+
+##### Fixed
+- Users signed out by an admin now see a clear sign-in page instead of being stuck on "Reconnecting..."
+- Admin sign-out now shows "An administrator ended your session" instead of a generic expiration message
+
+#### `testauth1.gs` — v01.62g
+
+##### Fixed
+- Admin sign-out now properly notifies the signed-out user's browser via distinct eviction reason
 
 ## [v05.02r] — 2026-03-19 12:24:13 PM EST
 
