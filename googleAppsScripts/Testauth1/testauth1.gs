@@ -1,4 +1,4 @@
-var VERSION = "v01.67g";
+var VERSION = "v01.68g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -287,10 +287,18 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 
 /**
  * Clear the access cache for a specific user so their next login reads the ACL fresh.
- * Usage: set the email below, select this function in the editor, click Run.
+ * @param {string} email — the user's email address. When called from the GAS editor
+ *   (no parameter), reads from Script Properties key "CLEAR_CACHE_EMAIL".
+ *   Usage: Script Properties → CLEAR_CACHE_EMAIL = user@example.com → Run this function.
  */
-function clearAccessCacheForUser() {
-  var email = 'user@example.com';  // ← change this to the target email
+function clearAccessCacheForUser(email) {
+  if (!email) {
+    email = PropertiesService.getScriptProperties().getProperty('CLEAR_CACHE_EMAIL');
+  }
+  if (!email) {
+    Logger.log('No email specified. Set Script Properties key "CLEAR_CACHE_EMAIL" or pass email as parameter.');
+    return;
+  }
   var cache = CacheService.getScriptCache();
   cache.remove('access_' + email.toLowerCase());
   cache.remove('role_' + email.toLowerCase());

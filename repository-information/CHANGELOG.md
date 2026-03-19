@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v05.09r] — 2026-03-19 02:30:31 PM EST
+
+> **Prompt:** "if i run the clearaccesscacheforuser function, how exactly am i supposed to specify which user"
+
+### Changed
+- `clearAccessCacheForUser()` now accepts an email parameter and falls back to Script Properties key `CLEAR_CACHE_EMAIL` — no longer requires editing the source code
+
+#### `testauth1.gs` — v01.68g
+
+##### Changed
+- Cache clearing for individual users now reads the target email from a Script Properties setting instead of requiring a code edit
 
 ## [v05.08r] — 2026-03-19 02:25:25 PM EST
 
