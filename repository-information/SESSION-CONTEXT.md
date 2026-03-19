@@ -4,6 +4,46 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-19 07:51:00 PM EST
+**Repo version:** v05.15r
+
+### What was done
+This session planned the **template update to sync auth templates with testauth1**:
+
+- **v05.15r** — Created `TEMPLATE-UPDATE-PLAN.md` with initial 5-phase granular approach (write from scratch)
+- **Pivoted approach** — Developer correctly identified that copying testauth1 files and making ~20-30 targeted edits is far simpler than writing 2,000+ lines from scratch
+- **Rewrote plan** — `TEMPLATE-UPDATE-PLAN.md` now uses the **copy-then-modify approach**:
+  - Phase 1: Copy `testauth1.gs` → `gas-minimal-auth-template-code.js.txt`, make ~20-25 edits (placeholders, production values, generic RBAC, strip PROJECT content, move admin utilities out)
+  - Phase 2: Copy `testauth1.html` → `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, make ~20-25 edits (placeholders, production values, remove test panels)
+  - Phase 3: Copy Phase 1 output → `gas-test-auth-template-code.js.txt`, add test functions back
+  - Phase 4: Verify `setup-gas-project.sh` sed patterns match new template format
+  - Phase 5: Sync applicable features to noauth templates (CSP, changelog sanitization, deferred AudioContext)
+
+### Where we left off
+- **Plan is ready for execution** — `TEMPLATE-UPDATE-PLAN.md` has the full copy-then-modify plan
+- **No template files have been modified yet** — execution is deferred to the next session
+- The plan is at "Draft — awaiting developer approval" status
+
+### Key decisions made
+- **Copy-then-modify over write-from-scratch** — dramatically reduces effort and risk (starting from known-working code)
+- **Admin utilities stay in templates** — `clearAccessCacheForUser()`, `clearAllAccessCache()`, `inspectCache()`, `listActiveSessions()`, `adminSignOutUser()` are generic, not project-specific — they get moved OUT of the PROJECT START/END block before stripping
+- **`saveNote()` gets removed entirely** — it's a project-specific data operation example
+- **RBAC genericization**: `clinician` → `editor`, `billing` removed, keep `admin` + `viewer`
+- **Production values**: 1hr session, 5min heartbeat, 8hr absolute timeout (not testauth1's test values)
+
+### Active context
+- Branch: `claude/fix-admin-logout-button-mx45L`
+- Repo version: v05.15r
+- Key files: `repository-information/TEMPLATE-UPDATE-PLAN.md` (the execution plan)
+- Source files for copying: `googleAppsScripts/Testauth1/testauth1.gs` (2,116 lines), `live-site-pages/testauth1.html`
+- Target files: `live-site-pages/templates/gas-minimal-auth-template-code.js.txt`, `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-19 03:07:49 PM EST
 **Repo version:** v05.13r
 
@@ -20,48 +60,5 @@ This session worked on **centralizing ACL setup and cache management infrastruct
 ### Where we left off
 - Cache infrastructure is solid — epoch-based invalidation, rate limiting, and RBAC caching all working
 - `inspectCache()` is available for debugging cache state
-- **RBAC features still not built** (from prior sessions):
-  1. Client-side UI gating — hide/show elements based on role
-  2. `delete` permission — defined but no endpoint
-  3. `export` permission — defined but no endpoint (HIPAA #23)
-  4. `amend` permission — defined but no workflow (HIPAA #24)
-  5. Field-level data filtering
-  6. Role management UI
-- **Other unimplemented work:**
-  - HIPAA P1 gaps: #19 Disclosure Accounting, #23 Right of Access, #24 Right to Amendment
-  - HIPAA P2 gaps: #18 6-Year Retention, #28 Breach alerting, #31 Breach Logging
-  - Single-load optimization (10.4 standard, 10.4.1 HIPAA)
-  - Phase 8 CSP Hardening, Phase 10 Cross-Phase Verification
-  - Test timeout values still at `⚡ TEST VALUE`
-
-### Key decisions made
-- Cache keys use epoch prefix (`eN_`) — incrementing epoch effectively invalidates all cached data without explicit deletion
-- `inspectCache()` checks both current and previous epoch to detect stale entries
-- Rate limiting is cache-based (not persistent) — resets on epoch change or cache expiry
-
-### Active context
-- Branch: `claude/centralize-acl-setup-2m7V1`
-- Repo version: v05.13r
-- Key files: `googleAppsScripts/Testauth1/testauth1.gs` (v01.72g), `live-site-pages/testauth1.html` (v02.44w)
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-19 01:13:05 PM EST
-**Repo version:** v05.04r
-
-### What was done
-This session worked on **admin session management — sign-out notification and heartbeat fixes**:
-
-- **v05.03r** — Fixed admin sign-out not reaching the signed-out user's browser. Three fixes: (1) `doGet()` now includes `evictionReason` in `gas-needs-auth` when a tombstone exists, so page refresh shows "An administrator ended your session" instead of generic "Session expired"; (2) fixed `_expectingSession` guard blocking legitimate `gas-needs-auth` on page-load resume — guard is now only set during mid-session iframe navigations (gas-session-created, Use Here), not on initial page load; (3) added `gas-session-invalid` message type for mid-session heartbeat detection of invalidated sessions
-- **v05.04r** — Fixed heartbeat stuck on "Heartbeat: sending..." after admin sign-out. Two root causes: (1) `gas-heartbeat-expired` was not in the `_SIG_EXEMPT` list — the server can't sign the response when the session (and its signing key) no longer exists, so the unsigned response was silently rejected by HMAC verification on the client; (2) eviction tombstones were consumed (deleted) by `processHeartbeat` on first read, leaving nothing for page refresh to read — tombstones now expire naturally (5 min TTL) so both heartbeat and page refresh can independently detect the `admin_signout` reason
-
-### Where we left off
-- Admin sign-out flow is fully working
-- RBAC features still need implementation (client-side UI gating, delete/export/amend permissions, field-level filtering, role management UI)
-- HIPAA gaps and other unimplemented work carried forward
 
 Developed by: ShadowAISolutions

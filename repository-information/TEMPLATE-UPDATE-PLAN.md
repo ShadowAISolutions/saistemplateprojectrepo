@@ -2,71 +2,80 @@
 
 > **Status:** Draft — awaiting developer approval
 > **Created:** 2026-03-19
+> **Approach:** Copy-then-modify (copy testauth1 files as new templates, then make targeted edits)
 > **Scope:** Update `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`, `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, and `setup-gas-project.sh`
 
 ---
 
 ## Overview
 
-testauth1 has evolved significantly beyond the current auth templates. This plan brings the templates up to parity while keeping them **generic** (no test-specific values, no project-specific RBAC roles).
+Instead of writing thousands of lines from scratch, **copy testauth1's working files as the new templates** and make ~20-30 targeted modifications to genericize them. This is dramatically simpler than the previous approach because testauth1 already has every feature we want in the templates.
 
-### What testauth1 has that the templates don't
+### Why copy-then-modify?
 
-| Feature | GAS | HTML | Priority |
-|---------|-----|------|----------|
-| RBAC system (roles, permissions, spreadsheet-driven) | ✅ | ✅ (stores role/perms) | High |
-| Cache epoch system (nuclear cache clear) | ✅ | — | High |
-| HMAC-SHA256 cryptographic signing (Web Crypto API) | ✅ | ✅ | High |
-| Admin session management (list/kick active sessions) | ✅ | ✅ (admin panel UI) | High |
-| Cross-device session enforcement | ✅ | ✅ | High |
-| Tab takeover system (BroadcastChannel) | — | ✅ | High |
-| Warning banners (session + absolute timeout) | — | ✅ | Medium |
-| CSP meta tag + changelog sanitization | — | ✅ | Medium |
-| Nonce-based CSRF protection | — | ✅ | High |
-| postMessage nonce exchange | — | ✅ | High |
-| Origin validation function | — | ✅ | High |
-| Auth UI state variations (reconnecting, signing-in) | — | ✅ | Medium |
-| Deferred AudioContext initialization | — | ✅ | Low |
-| Security event reporting (postMessage-based) | ✅ | ✅ | Medium |
-| Data operation validation (`validateSessionForData`) | ✅ | — | Medium |
-| Data audit logging | ✅ | — | Medium |
-| Admin utilities (clearCache, inspectCache) | ✅ | — | Low |
-| Enhanced config toggles (10+ new flags) | ✅ | ✅ | High |
+| Approach | Lines to write | Risk |
+|----------|---------------|------|
+| Build from scratch (old plan) | ~2,000+ new lines across GAS + HTML | High — easy to miss subtle interactions |
+| Copy + modify (this plan) | ~20-30 targeted edits per file | Low — starting from known-working code |
 
 ---
 
-## Phase 1: GAS Auth Template Update (`gas-minimal-auth-template-code.js.txt`)
+## Phase 1: GAS Auth Template (`gas-minimal-auth-template-code.js.txt`)
 
-**Estimated effort:** 1 session
+**Source:** `googleAppsScripts/Testauth1/testauth1.gs` (2,116 lines)
+**Target:** `live-site-pages/templates/gas-minimal-auth-template-code.js.txt`
+**Estimated edits:** ~20-25
 
-### 1.1 Configuration & Presets
+### Step 1.1: Copy
 
-**Add to PRESETS (both standard and hipaa):**
-- `ENABLE_CROSS_DEVICE_ENFORCEMENT` — standard: `true`, hipaa: `true`
-- `ENABLE_DATA_OP_VALIDATION` — standard: `false`, hipaa: `true`
-- `ENABLE_DOM_CLEARING_ON_EXPIRY` — standard: `false`, hipaa: `true`
-- `ENABLE_ESCALATING_LOCKOUT` — standard: `false`, hipaa: `true`
-- `ENABLE_IP_LOGGING` — both: `false` (never enable — ipify.org lacks BAA)
-- `ENABLE_DATA_AUDIT_LOG` — standard: `false`, hipaa: `true`
-- `DATA_AUDIT_LOG_SHEET_NAME` — both: `'DataAuditLog'`
+```bash
+cp googleAppsScripts/Testauth1/testauth1.gs live-site-pages/templates/gas-minimal-auth-template-code.js.txt
+```
 
-**Use production values (NOT testauth1's test values):**
-- `SESSION_EXPIRATION` — standard: `3600`, hipaa: `900`
-- `ABSOLUTE_SESSION_TIMEOUT` — both: `28800`
-- `HEARTBEAT_INTERVAL` — both: `300`
-- `OAUTH_TOKEN_LIFETIME` — both: `3600`
-- `OAUTH_REFRESH_BUFFER` — both: `300`
+### Step 1.2: Replace project-specific values with placeholders
 
-### 1.2 RBAC System
+| Value in testauth1 | Template placeholder |
+|---------------------|---------------------|
+| `var TITLE = 'testauth1';` | `var TITLE = 'TEMPLATE_TITLE';` |
+| `var DEPLOYMENT_ID = '...'` | `var DEPLOYMENT_ID = 'TEMPLATE_DEPLOYMENT_ID';` |
+| `var SPREADSHEET_ID = '...'` | `var SPREADSHEET_ID = 'TEMPLATE_SPREADSHEET_ID';` |
+| `var SHEET_NAME     = 'Testauth1Data';` | `var SHEET_NAME     = 'Sheet1';` |
+| `var GITHUB_OWNER  = 'ShadowAISolutions';` | `var GITHUB_OWNER  = 'TEMPLATE_GITHUB_OWNER';` |
+| `var GITHUB_REPO   = 'saistemplateprojectrepo';` | `var GITHUB_REPO   = 'TEMPLATE_GITHUB_REPO';` |
+| `var CLIENT_ID = '...'` | `var CLIENT_ID = 'TEMPLATE_CLIENT_ID';` |
+| `var SOUND_FILE_ID = '...'` | `var SOUND_FILE_ID = '';` |
+| Any hardcoded `testauth1` references in strings | Generic equivalents |
 
-**Add (from testauth1 lines 48-205):**
-- `RBAC_ROLES_FALLBACK` — generic roles: `admin`, `editor`, `viewer` (NOT clinician/billing — those are project-specific)
-- `getRolesFromSpreadsheet()` — 3-tier caching (execution → CacheService → spreadsheet)
-- `hasPermission(role, permission)` — simple permission check
-- `checkPermission(user, requiredPermission, operationName)` — throws PERMISSION_DENIED
+### Step 1.3: Swap test values for production values
 
-**Generic role structure:**
+All lines marked with `⚡ TEST VALUE` comments need production values:
+
+| Config key | Test value | Production value |
+|-----------|-----------|-----------------|
+| `SESSION_EXPIRATION` | `180` (3 min) | `3600` (1 hr) / `900` (HIPAA) |
+| `ABSOLUTE_SESSION_TIMEOUT` | `600` (10 min) | `28800` (8 hr) |
+| `HEARTBEAT_INTERVAL` | `30` (30 sec) | `300` (5 min) |
+| `OAUTH_TOKEN_LIFETIME` | `180` | `3600` |
+| `OAUTH_REFRESH_BUFFER` | `60` | `300` |
+| `MAX_FAILED_ATTEMPTS` | test value | `5` |
+| `LOCKOUT_DURATION` | test value | `900` (15 min) |
+
+Also remove all `⚡ TEST VALUE` comment annotations.
+
+### Step 1.4: Genericize RBAC roles
+
+Replace project-specific roles with generic ones:
+
 ```javascript
+// FROM (testauth1):
+var RBAC_ROLES_FALLBACK = {
+  admin:     ['read', 'write', 'delete', 'export', 'admin'],
+  clinician: ['read', 'write', 'export'],
+  billing:   ['read', 'export'],
+  viewer:    ['read']
+};
+
+// TO (template):
 var RBAC_ROLES_FALLBACK = {
   admin:  ['read', 'write', 'delete', 'export', 'admin'],
   editor: ['read', 'write', 'export'],
@@ -74,233 +83,201 @@ var RBAC_ROLES_FALLBACK = {
 };
 ```
 
-### 1.3 Cache Epoch System
+Remove the `billing` role. Rename `clinician` → `editor`.
 
-**Add (from testauth1 lines 71-95):**
-- `_getCacheEpoch()` — reads/writes epoch to ScriptProperties
-- `getEpochCache()` — returns wrapper that auto-prefixes cache keys
+### Step 1.5: Strip PROJECT START/END content
 
-### 1.4 HMAC-SHA256 Signing
+Remove everything between `// ===== PROJECT START =====` and `// ===== PROJECT END =====` markers. This includes:
+- `saveNote()` function and related code
+- Any other project-specific functions
 
-**Replace** the existing simple hash with (from testauth1 lines 794-870):
-- `generateSessionHmac(sessionData)` — server-side HMAC-SHA256
-- `verifySessionHmac(sessionData)` — verify session integrity
-- `signMessage(msgObj, messageKey)` — sign outgoing postMessages
+**Important — keep these (move OUT of PROJECT block into template section):**
+- `clearAccessCacheForUser(email)` — generic admin utility
+- `clearAllAccessCache()` — generic admin utility (increments cache epoch)
+- `inspectCache()` — generic diagnostic tool
+- `listActiveSessions(sessionToken)` — generic admin function
+- `adminSignOutUser(sessionToken, targetEmail)` — generic admin function
 
-### 1.5 Enhanced Session Management
+These are NOT project-specific — they work on any auth project. Move them to the template section before stripping.
 
-**Add:**
-- `validateSessionForData(sessionToken, operationName)` — per-operation session+permission validation
-- Role and permissions in session data object
-- Cross-device enforcement logic in `validateSession()`
+### Step 1.6: Reset version
 
-### 1.6 Admin Functions
+```javascript
+var VERSION = "v01.00g";
+```
 
-**Add (from testauth1 lines 454-551):**
-- `listActiveSessions(sessionToken)` — admin-only session list
-- `adminSignOutUser(sessionToken, targetEmail)` — admin kick
+### Step 1.7: Clean up
 
-### 1.7 Admin Utilities
-
-**Add (from testauth1 lines 312-447):**
-- `clearAccessCacheForUser(email)`
-- `clearAllAccessCache()` — increment cache epoch
-- `inspectCache()` — diagnostic tool
-
-### 1.8 Data Audit Logging
-
-**Add (from testauth1 lines 752-792):**
-- `dataAuditLog(user, action, resourceType, resourceId, details)` — toggle-gated
-
-### 1.9 Security Event Processing
-
-**Add (from testauth1 lines 1550-1586):**
-- `processSecurityEvent(eventType, details)` — server-side event handler
-
-### 1.10 Enhanced doGet()
-
-**Update doGet() to include:**
-- Security event reporting endpoint
-- Admin session list endpoint
-- Admin signout endpoint
-- User activity tracking via postMessage
-- Return role + permissions in app HTML response
-- Signed messages using HMAC
-
-### 1.11 Signout Processing
-
-**Add (from testauth1 lines 1534-1549):**
-- `processSignOut(token)` — dedicated signout with signed response
+- Remove `saveNote` UI elements from `doGet()` inline HTML (input fields, save button, related JavaScript)
+- Verify `ACTIVE_PRESET` defaults to `'standard'`
+- Ensure `ALLOWED_DOMAINS: []` and `ENABLE_DOMAIN_RESTRICTION: false` are present
+- Remove any remaining testauth1-specific comments or references
+- Update the `Developed by:` footer
 
 ---
 
-## Phase 2: HTML Auth Template Update (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
+## Phase 2: HTML Auth Template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
 
-**Estimated effort:** 1 session
+**Source:** `live-site-pages/testauth1.html`
+**Target:** `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`
+**Estimated edits:** ~20-25
 
-### 2.1 Security Hardening
+### Step 2.1: Copy
 
-- **CSP meta tag** — add with `unsafe-inline` default + commented hardened version
-- **Changelog sanitization** — `sanitizeChangelogHtml()` function
-- **Origin validation** — `_isValidGasOrigin()` function
-- **Nonce-based CSRF** — `_authNonce` for token requests
-- **postMessage nonce exchange** — `_pendingNonce` with `crypto.getRandomValues()`
+```bash
+cp live-site-pages/testauth1.html live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt
+```
 
-### 2.2 HMAC-SHA256 Client-Side
+### Step 2.2: Replace project-specific values with placeholders
 
-**Replace** simple hash verification with:
-- `_hmacKey`, `_hmacKeySet` — Web Crypto API key objects
-- `_importHmacKey()` — async key import
-- `_verifyHmacSha256()` — async signature verification
-- Async message verification pipeline
+| Value in testauth1.html | Template placeholder |
+|-------------------------|---------------------|
+| `<title>testauth1</title>` | `<title>TEMPLATE_TITLE</title>` |
+| `var _e = '...'` (encoded deployment URL) | `var _e = '';` |
+| `LOGO_URL` value | `'YOUR_ORG_LOGO_URL'` or template default |
+| Any hardcoded `testauth1` references | Generic equivalents |
 
-### 2.3 Session Storage Enhancements
+### Step 2.3: Swap test values for production values
 
-- Add `ROLE_KEY` and `PERMISSIONS_KEY` to storage
-- Enhance `saveSession()` to accept and save role + permissions
-- Enhance `loadSession()` to return role + permissions
+HTML-side config values that mirror the GAS test values:
+- `SESSION_TIMEOUT` → match GAS production value
+- `ABSOLUTE_TIMEOUT` → match GAS production value
+- `HEARTBEAT_INTERVAL` → match GAS production value
+- Warning banner thresholds → adjust to production timing
+- Remove `⚡ TEST VALUE` annotations
 
-### 2.4 Tab Takeover System
+### Step 2.4: Remove test-specific UI panels
 
-- **CSS:** `.auth-spinner`, `.auth-pulse-dots` animations
-- **HTML:** `#tab-takeover-wall` overlay with "Use Here" button
-- **JS:** BroadcastChannel-based `_signOutChannel`, `_tabId`, tab-roll-call/present/takeover protocol
-- **Config:** `SINGLE_TAB_ENFORCEMENT` toggle
+- **Security test panel** — remove `#security-test-panel` and "Run Security Tests" button + all related JavaScript
+- **Force heartbeat panel** — remove `#force-heartbeat-panel` and related JavaScript
+- **saveNote UI** — remove any note-saving input fields, buttons, and handlers
 
-### 2.5 Warning Banners
+### Step 2.5: Reset version
 
-- **Replace** single `#reauth-banner` with dual banners:
-  - `#session-warning-banner` (yellow — rolling session expiring)
-  - `#absolute-warning-banner` (red — absolute timeout approaching)
-- Both with countdown text and reauth button
+- Update `<meta name="build-version" content="v01.00w">`
+- Remove any testauth1-specific version references
 
-### 2.6 Admin Session Management Panel
+### Step 2.6: Clean up
 
-- **CSS:** Admin button, panel, session list, role badges, emergency styling
-- **HTML:** `#admin-sessions-btn`, `#admin-sessions-panel`, `#admin-sessions-iframe`
-- **JS:** Admin panel open/close/refresh, session list rendering, kick button handlers
-- **RBAC gating:** `data-requires-role="admin"` attribute
-
-### 2.7 Auth UI State Variations
-
-- **HTML:** Three auth-wall states: `#auth-wall-signin`, `#auth-wall-reconnecting`, `#auth-wall-signing-in`
-- **JS:** Dynamic state switching based on auth flow
-
-### 2.8 Config Additions
-
-**Add to HTML_CONFIG:**
-- `SINGLE_TAB_ENFORCEMENT: true`
-- `CROSS_DEVICE_ENFORCEMENT: true`
-- `ENABLE_DOM_CLEARING_ON_EXPIRY: false` (standard default)
-- `ENABLE_IP_LOGGING: false`
-
-### 2.9 Security Event Reporting
-
-**Replace** iframe-based reporting with postMessage-based:
-- `_reportSecurityEvent()` with rate limiting
-- Hidden iframe with `action=securityEvent`
-- Wait for `gas-security-event-ready` signal
-
-### 2.10 New Message Types
-
-**Add handlers for:**
-- `gas-heartbeat-error`, `gas-heartbeat-ready`
-- `gas-signout-ready`, `gas-security-event-ready`
-- `gas-user-activity`, `gas-session-invalid`
-- `gas-admin-sessions-ready`, `gas-admin-sessions-list`, `gas-admin-sessions-error`
-- `gas-admin-signout-result`, `gas-admin-signout-error`
-
-### 2.11 Deferred AudioContext
-
-- Change `_audioCtx` from immediate creation to `null`
-- Add `_ensureAudioCtx()` function called on first user gesture
-
-### 2.12 Cross-Device Enforcement Client-Side
-
-- `_evictedByRemote` flag
-- Heartbeat error detection for cross-device eviction
-- "Session Active Elsewhere" overlay
+- Ensure `ALLOWED_DOMAINS: []` is present in HTML_CONFIG
+- Verify all GAS iframe references use the `_e` variable (not hardcoded URLs)
+- Remove any remaining testauth1-specific comments
+- Update the `Developed by:` footer
 
 ---
 
-## Phase 3: GAS Test Auth Template Update (`gas-test-auth-template-code.js.txt`)
+## Phase 3: GAS Test Auth Template (`gas-test-auth-template-code.js.txt`)
 
-**Estimated effort:** 0.5 session (mostly inherits from Phase 1)
+**Source:** The Phase 1 output (new `gas-minimal-auth-template-code.js.txt`)
+**Target:** `live-site-pages/templates/gas-test-auth-template-code.js.txt`
+**Estimated edits:** ~5-10
 
-The test-auth template is the minimal-auth template + test/diagnostic functions. After Phase 1 updates the minimal-auth template, the test-auth template needs:
+The test-auth template = minimal-auth template + test/diagnostic functions.
 
-- All Phase 1 changes propagated to the auth section
-- Existing test/diagnostic functions preserved (getSoundBase64, writeVersionToSheet, readB1, etc.)
-- doGet() updated to include all new endpoints alongside test UI
-- Fix `postMessage` target to use `PARENT_ORIGIN` instead of `"*"` (security gap inherited from test template)
+### Step 3.1: Copy the Phase 1 output
+
+```bash
+cp live-site-pages/templates/gas-minimal-auth-template-code.js.txt \
+   live-site-pages/templates/gas-test-auth-template-code.js.txt
+```
+
+### Step 3.2: Add test functions back
+
+Add back the test-only functions that the current `gas-test-auth-template-code.js.txt` has:
+- `getSoundBase64()` — test sound playback
+- `writeVersionToSheet()` — version write test
+- `readB1()` — spreadsheet read test
+- Test UI in `doGet()` — the diagnostic panel with test buttons
+
+### Step 3.3: Verify postMessage security
+
+Ensure all `postMessage` calls use `PARENT_ORIGIN` instead of `"*"` (fixing a known security gap in the current test template).
 
 ---
 
-## Phase 4: Script Updates (`setup-gas-project.sh`)
+## Phase 4: Verify `setup-gas-project.sh` sed Patterns
 
-**Estimated effort:** 0.5 session
+**Estimated edits:** ~5-10 (if any patterns changed)
 
-### 4.1 New Placeholder Handling
+### Step 4.1: Compare variable declaration formats
 
-The setup script needs new sed patterns for auth templates:
+After Phases 1-2, verify that the following sed patterns in `setup-gas-project.sh` still match the new template code:
 
-| New Placeholder | Replacement Source |
-|----------------|-------------------|
-| `MASTER_ACL_SPREADSHEET_ID` | Already handled |
-| `ACL_SHEET_NAME` | Already handled |
-| `ACL_PAGE_NAME` | Already handled |
-| (No new placeholders needed for most new features — they use config toggles, not project-specific values) |
+| Pattern | What it matches | Check |
+|---------|----------------|-------|
+| `var TITLE = .*;` | Title declaration | Verify spacing + semicolon |
+| `var DEPLOYMENT_ID = .*;` | Deployment ID | Verify format |
+| `var SHEET_NAME     = .*;` | Sheet name (5 spaces) | **Verify exact spacing** |
+| `var GITHUB_OWNER  = .*;` | GitHub owner (2 spaces) | **Verify exact spacing** |
+| `var GITHUB_REPO   = .*;` | GitHub repo (3 spaces) | **Verify exact spacing** |
+| `var _e = '[^']*';` | Encoded deployment URL | Verify quote style |
+| `<title>.*</title>` | HTML title | Verify tag format |
+| `var CLIENT_ID = '[^']*';` | OAuth client ID | Verify format |
+| `var ACTIVE_PRESET = '[^']*';` | Active preset | Verify format |
+| `ALLOWED_DOMAINS: \[\]` | Domain restriction | Verify presence |
+| `ENABLE_DOMAIN_RESTRICTION: false` | Domain toggle | Verify presence |
 
-### 4.2 Template Pattern Updates
+### Step 4.2: Fix any mismatches
 
-If variable declarations change format (spacing, quotes, etc.) during the template update, corresponding sed patterns in setup-gas-project.sh must be updated to match. **Document all sed pattern dependencies** and verify each one after template changes.
+If testauth1 uses different spacing or formatting than what the sed patterns expect, update the sed patterns in `setup-gas-project.sh` to match the new template format.
 
-Key patterns to verify:
-- `var TITLE = .*;` — spacing and semicolon
-- `var DEPLOYMENT_ID = .*;`
-- `var SHEET_NAME     = .*;` — exact multi-space alignment
-- `var GITHUB_OWNER  = .*;` — exact two-space alignment
-- `var GITHUB_REPO   = .*;` — exact three-space alignment
-- `var _e = '[^']*';` — single-quote string
-- `<title>.*</title>` — greedy match
-- `var CLIENT_ID = '[^']*';` — auth-only
-- `var ACTIVE_PRESET = '[^']*';` — auth-only
-- `ALLOWED_DOMAINS: \[\]` — auth-only
-- `ENABLE_DOMAIN_RESTRICTION: false` — auth-only
+### Step 4.3: Verify config.json template
 
-### 4.3 Config JSON Updates
-
-If `<page-name>.config.json` structure changes (new fields), update:
-- The JSON template in setup-gas-project.sh
-- The sync logic in Pre-Commit #15 (GAS config sync)
+If any new config fields need to be in `<page-name>.config.json`, update the JSON template in `setup-gas-project.sh`.
 
 ---
 
 ## Phase 5: Noauth Template Sync
 
-**Estimated effort:** 0.25 session
+**Estimated edits:** ~5-10
 
-Features from the auth template that also apply to noauth:
-- CSP meta tag (with simpler policy — no auth endpoints)
-- Changelog sanitization
+Features from the updated auth template that also apply to noauth:
+- CSP meta tag (simpler policy — no auth endpoints)
+- Changelog sanitization (`sanitizeChangelogHtml()`)
 - Deferred AudioContext initialization
 - Any CSS/structural improvements
 
-Features that do NOT apply to noauth:
-- Everything auth-related (session, HMAC, admin, RBAC, tab takeover, warning banners, etc.)
+Features that do **NOT** apply to noauth:
+- Everything auth-related (session, HMAC, RBAC, admin, tab takeover, warning banners, nonces, etc.)
 
 ---
 
-## What gets EXCLUDED from templates
+## What Gets EXCLUDED from Templates
 
 These testauth1-specific items are **not** brought to the templates:
 
 1. **Test timeout values** — 30s heartbeat, 3min session, etc. → use production values
 2. **Project-specific RBAC roles** — `clinician`, `billing` → use generic `admin`, `editor`, `viewer`
-3. **Security test panel UI** — `#security-test-panel`, "Run Security Tests" button → project-specific diagnostic
+3. **Security test panel UI** — `#security-test-panel`, "Run Security Tests" button → test-only diagnostic
 4. **Force heartbeat panel** — `#force-heartbeat-panel` → test-only
-5. **`saveNote()` function** — example data operation → leave as commented example or remove
-6. **Test value override comments** — `⚡ TEST VALUE` annotations → not applicable to templates
+5. **`saveNote()` function + UI** — example data operation → removed entirely
+6. **`⚡ TEST VALUE` annotations** — not applicable to templates
+7. **PROJECT START/END content** — project-specific code blocks (but admin utilities are moved out first)
+
+---
+
+## What Gets INCLUDED (features the templates gain)
+
+All of these come "for free" by copying testauth1:
+
+1. **RBAC system** — roles, permissions, spreadsheet-driven, 3-tier caching
+2. **Cache epoch system** — nuclear cache invalidation
+3. **HMAC-SHA256 signing** — server-side and client-side (Web Crypto API)
+4. **Admin session management** — list/kick active sessions + admin panel UI
+5. **Cross-device session enforcement** — eviction tombstones
+6. **Tab takeover system** — BroadcastChannel-based single-tab enforcement
+7. **Warning banners** — dual session + absolute timeout banners with countdown
+8. **CSP meta tag** — Content Security Policy
+9. **Nonce-based CSRF protection** — auth nonce + postMessage nonce exchange
+10. **Origin validation** — `_isValidGasOrigin()`
+11. **Auth UI state variations** — reconnecting, signing-in states
+12. **Deferred AudioContext** — initialized on first user gesture
+13. **Security event reporting** — postMessage-based with rate limiting
+14. **Data operation validation** — `validateSessionForData()`
+15. **Data audit logging** — toggle-gated
+16. **Escalating lockout** — 3-tier progressive lockout
+17. **Enhanced config toggles** — 10+ new configurable flags
+18. **Server-side message signing** — `signAppMessage()`
 
 ---
 
@@ -308,18 +285,21 @@ These testauth1-specific items are **not** brought to the templates:
 
 ```
 Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
-  GAS       HTML      Test GAS   Scripts   Noauth
+ GAS       HTML      Test GAS   Scripts   Noauth
+(copy+mod) (copy+mod) (copy+add) (verify)  (selective)
 ```
 
-Each phase is one commit+push cycle. Phases can be done across sessions.
+Phases 1-2 are the heavy lifting (~20-25 edits each). Phases 3-5 are lightweight.
+All phases can be done in a single session.
 
 ---
 
 ## Risk Mitigation
 
-1. **Backup templates before starting** — `repository-information/backups/`
-2. **Verify setup-gas-project.sh after each phase** — dry-run the script to confirm sed patterns still match
-3. **Test propagation** — after template updates, verify Pre-Commit #20 (Template Source Propagation) correctly identifies the changes that should propagate to existing pages
-4. **Preserve PROJECT OVERRIDE markers** — any overrides in existing pages (testauth1, etc.) must be respected during propagation
+1. **Backup templates before starting** — copy current templates to `repository-information/backups/`
+2. **Verify sed patterns after Phase 1-2** — dry-run `setup-gas-project.sh` or manually compare patterns
+3. **Test propagation** — after template updates, verify Pre-Commit #20 (Template Source Propagation) correctly identifies changes
+4. **Preserve PROJECT OVERRIDE markers** — any overrides in existing pages must be respected during propagation
+5. **Diff check** — after each phase, diff the new template against testauth1 to confirm only the intended changes were made
 
 Developed by: ShadowAISolutions
