@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.35w">
+  <meta name="build-version" content="v02.36w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1008,6 +1008,8 @@
 
     var SESSION_KEY = 'gas_session_token';
     var EMAIL_KEY = 'gas_user_email';
+    var ROLE_KEY = 'gas_user_role';
+    var PERMISSIONS_KEY = 'gas_user_permissions';
 
     // Single-tab enforcement — unique ID for this tab instance
     var _tabId = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1025,17 +1027,22 @@
         : window.localStorage;
     }
 
-    function saveSession(sessionToken, email) {
+    function saveSession(sessionToken, email, role, permissions) {
       var storage = getStorage();
       storage.setItem(SESSION_KEY, sessionToken);
       storage.setItem(EMAIL_KEY, email);
+      if (role) storage.setItem(ROLE_KEY, role);
+      if (permissions) storage.setItem(PERMISSIONS_KEY, JSON.stringify(permissions));
     }
 
     function loadSession() {
       var storage = getStorage();
+      var permsRaw = storage.getItem(PERMISSIONS_KEY);
       return {
         token: storage.getItem(SESSION_KEY),
-        email: storage.getItem(EMAIL_KEY)
+        email: storage.getItem(EMAIL_KEY),
+        role: storage.getItem(ROLE_KEY) || '',
+        permissions: permsRaw ? JSON.parse(permsRaw) : []
       };
     }
 
@@ -1045,6 +1052,8 @@
       var storage = getStorage();
       storage.removeItem(SESSION_KEY);
       storage.removeItem(EMAIL_KEY);
+      storage.removeItem(ROLE_KEY);
+      storage.removeItem(PERMISSIONS_KEY);
       // Phase 5 (H-3): ONLY place where HMAC key is cleared.
       // Clear the HMAC key from the previous session — if it persists,
       // unsigned bootstrap messages (gas-ready-for-token) from a new sign-in
@@ -1480,7 +1489,7 @@
           return;
         }
         if (data.success) {
-          saveSession(data.sessionToken, data.email);
+          saveSession(data.sessionToken, data.email, data.role, data.permissions);
           // Reset the rolling session timer (activity extends it).
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           // Only reset the absolute timer on a genuine new sign-in.
@@ -1504,7 +1513,7 @@
           // Defer showApp until gas-auth-ok confirms the session is valid server-side.
           // This prevents a forged gas-session-created postMessage from hiding the auth wall
           // before the GAS backend has validated the token.
-          _pendingSessionShow = { email: data.email, displayName: data.displayName };
+          _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
           // The ?session path does NOT send gas-session-created — it sends
@@ -1563,6 +1572,14 @@
           _importHmacKey(data.messageKey).catch(function(err) {
             console.error('HMAC key import from gas-auth-ok failed:', err);
           });
+        }
+        // RBAC: Update role/permissions from server (covers session resume where
+        // gas-session-created is not sent, and role changes between sessions)
+        if (data.role) {
+          getStorage().setItem(ROLE_KEY, data.role);
+          if (data.permissions) {
+            getStorage().setItem(PERMISSIONS_KEY, JSON.stringify(data.permissions));
+          }
         }
         // Phase 3: IP forwarding removed — uncomment to re-enable
         // if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {

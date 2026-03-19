@@ -3,9 +3,52 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v04.96r] — 2026-03-19 10:46:42 AM EST
+
+> **Prompt:** "ok how do you suggest we get started with RBAC"
+
+### Added
+- Implemented Role-Based Access Control (RBAC) in the testauth1 environment — four roles (admin, clinician, billing, viewer) with distinct permission sets, addressing HIPAA §164.308(a)(4)(ii) compliance gap #5 from the HIPAA compliance report
+- Permission gate function `checkPermission()` validates user role against required permissions before data operations, throwing PERMISSION_DENIED on denial with full audit logging
+- Role and permissions now stored in server-side session cache and delivered to client via postMessage (gas-session-created and gas-auth-ok)
+- Client-side role/permissions storage in sessionStorage for future UI gating
+
+### Changed
+- `checkSpreadsheetAccess()` now returns an RBAC-aware object `{ hasAccess, role, isEmergencyAccess }` instead of a boolean — reads Role column (col B) from the Master ACL spreadsheet
+- `exchangeTokenForSession()` stores role and permissions in sessionData, includes role in login audit log entries
+- `validateSession()` and `validateSessionForData()` now return role and permissions in their result objects
+- `saveNote()` gated behind 'write' permission — viewers and billing users cannot write patient notes
+- Audit log entries enhanced with role and permission check results for HIPAA-compliant access tracking
+- Emergency access users receive 'admin' role with full permissions, logged as isEmergencyAccess
+- Session resume via gas-auth-ok now updates stored role/permissions (covers role changes between sessions)
+
+#### `testauth1.gs` — v01.57g
+
+##### Added
+- RBAC role definitions: admin (full access), clinician (read/write/export/amend), billing (read/export), viewer (read-only)
+- `hasPermission()` and `checkPermission()` functions for role-based authorization
+- Role column reading from ACL spreadsheet with role caching
+
+##### Changed
+- `checkSpreadsheetAccess()` returns object instead of boolean
+- Session data includes role, permissions, and isEmergencyAccess flag
+- All postMessage responses include role and permissions
+- Audit logging includes role and permission check details
+
+#### `testauth1.html` — v02.36w
+
+##### Added
+- ROLE_KEY and PERMISSIONS_KEY storage keys for client-side role persistence
+- Role/permissions saved on sign-in and updated on session resume
+
+##### Changed
+- `saveSession()` accepts role and permissions parameters
+- `loadSession()` returns role and permissions from storage
+- `clearSession()` clears role and permissions storage
 
 ## [v04.95r] — 2026-03-19 09:15:01 AM EST
 

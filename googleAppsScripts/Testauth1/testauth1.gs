@@ -1,4 +1,4 @@
-var VERSION = "v01.56g";
+var VERSION = "v01.57g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -40,6 +40,46 @@ var PROJECT_OVERRIDES = {
   ENABLE_DOMAIN_RESTRICTION: false,  // allow any Google account (override hipaa default)
   // ALLOWED_DOMAINS: ['yourdomain.com'],  // set this if you enable domain restriction
 };
+
+// ══════════════
+// RBAC — Role-Based Access Control
+// ══════════════
+// Roles and their permissions. Each role maps to an array of permission strings.
+// The ACL spreadsheet has a "Role" column (col B) that assigns one role per user.
+// HIPAA: §164.308(a)(4)(ii) — access authorization based on role.
+var RBAC_ROLES = {
+  admin:     ['read', 'write', 'delete', 'export', 'amend', 'admin'],
+  clinician: ['read', 'write', 'export', 'amend'],
+  billing:   ['read', 'export'],
+  viewer:    ['read']
+};
+
+// Default role when ACL does not specify one (fallback access via editor/viewer list)
+var RBAC_DEFAULT_ROLE = 'viewer';
+
+// Check if a role has a specific permission
+function hasPermission(role, permission) {
+  var perms = RBAC_ROLES[role];
+  if (!perms) return false;
+  return perms.indexOf(permission) !== -1;
+}
+
+// Validate and gate a data operation by permission.
+// Throws PERMISSION_DENIED if the user's role lacks the required permission.
+// Returns the user object (from validateSessionForData) on success.
+function checkPermission(user, requiredPermission, operationName) {
+  var role = user.role || RBAC_DEFAULT_ROLE;
+  if (!hasPermission(role, requiredPermission)) {
+    auditLog('security_alert', user.email, 'permission_denied', {
+      operation: operationName,
+      role: role,
+      requiredPermission: requiredPermission,
+      availablePermissions: (RBAC_ROLES[role] || []).join(',')
+    });
+    throw new Error('PERMISSION_DENIED');
+  }
+  return user;
+}
 
 // ══════════════
 // AUTH PRESETS
@@ -566,10 +606,13 @@ function exchangeTokenForSession(accessToken) {
   }
 
   // Check access via master ACL spreadsheet (or fall back to SPREADSHEET_ID editor/viewer list)
+  // Returns RBAC-aware object: { hasAccess, role, isEmergencyAccess }
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
   var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
+  var accessResult = { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
   if (hasAcl || hasSheet) {
-    if (!checkSpreadsheetAccess(userInfo.email)) {
+    accessResult = checkSpreadsheetAccess(userInfo.email);
+    if (!accessResult.hasAccess) {
       auditLog('login_failed', userInfo.email, 'access_denied',
         { reason: 'No spreadsheet access' });
       rlCache.put(tokenFingerprint, String(attemptCount + 1), rlTtl);
@@ -599,7 +642,12 @@ function exchangeTokenForSession(accessToken) {
     absoluteCreatedAt: Date.now(),
     lastActivity: Date.now(),
     tokenObtainedAt: Date.now(),
-    messageKey: messageKey
+    messageKey: messageKey,
+    // RBAC: role and permissions stored in session for fast permission checks
+    // HIPAA: §164.308(a)(4)(ii) — access authorization based on role
+    role: accessResult.role,
+    permissions: RBAC_ROLES[accessResult.role] || [],
+    isEmergencyAccess: accessResult.isEmergencyAccess
   };
 
   // HMAC integrity (toggle-gated)
@@ -616,7 +664,8 @@ function exchangeTokenForSession(accessToken) {
   rlCache.remove(tokenFingerprint);
 
   auditLog('login_success', userInfo.email, 'session_created',
-    { sessionId: sessionToken.substring(0, 8) + '...' });
+    { sessionId: sessionToken.substring(0, 8) + '...', role: accessResult.role,
+      isEmergencyAccess: accessResult.isEmergencyAccess });
 
   return {
     success: true,
@@ -624,7 +673,9 @@ function exchangeTokenForSession(accessToken) {
     email: userInfo.email,
     displayName: userInfo.displayName,
     absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0,
-    messageKey: messageKey
+    messageKey: messageKey,
+    role: accessResult.role,
+    permissions: RBAC_ROLES[accessResult.role] || []
   };
 }
 
@@ -690,7 +741,9 @@ function validateSession(sessionToken) {
     status: "authorized",
     email: sessionData.email,
     displayName: sessionData.displayName,
-    needsReauth: needsReauth
+    needsReauth: needsReauth,
+    role: sessionData.role || RBAC_DEFAULT_ROLE,
+    permissions: sessionData.permissions || RBAC_ROLES[sessionData.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE]
   };
 }
 
@@ -760,12 +813,14 @@ function validateSessionForData(sessionToken, operationName) {
     throw new Error('SESSION_EXPIRED');
   }
 
-  // Session is valid — return user identity and context for audit logging
+  // Session is valid — return user identity, role, and context for audit logging
   return {
     email: sessionData.email,
     displayName: sessionData.displayName,
     clientIp: sessionData.clientIp || 'not-collected',
-    isEmergencyAccess: sessionData.isEmergencyAccess || false
+    isEmergencyAccess: sessionData.isEmergencyAccess || false,
+    role: sessionData.role || RBAC_DEFAULT_ROLE,
+    permissions: sessionData.permissions || RBAC_ROLES[sessionData.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE]
   };
 }
 
@@ -778,13 +833,16 @@ function validateSessionForData(sessionToken, operationName) {
 // function saveNote(sessionToken, noteText, clientIp) {
 function saveNote(sessionToken, noteText) {
   var user = validateSessionForData(sessionToken, 'saveNote');
+  // RBAC: require 'write' permission — throws PERMISSION_DENIED if denied
+  checkPermission(user, 'write', 'saveNote');
   // Phase 3 (C-3): Client IP no longer collected — use 'not-collected' for audit trail
   // To re-enable: var ip = clientIp || user.clientIp || '';
   var ip = user.clientIp || 'not-collected';
-  // Data operation (only runs if session is valid)
+  // Data operation (only runs if session is valid AND permission granted)
   // Security: sessionId omitted from session audit log details (it's already in the SessionId column via dataAuditLog)
   auditLog('data_access', user.email, 'write',
-    { operation: 'saveNote', noteLength: (noteText || '').length, clientIp: ip });
+    { operation: 'saveNote', noteLength: (noteText || '').length, clientIp: ip,
+      role: user.role });
   // Data-level audit log (Phase 8 — HIPAA per-operation logging)
   // Security: sessionId truncated to 8 chars to prevent token theft from audit logs.
   // To log the full token, change the line below to: sessionId: sessionToken,
@@ -794,9 +852,11 @@ function saveNote(sessionToken, noteText) {
     sessionId: truncatedSessionId,
     isEmergencyAccess: user.isEmergencyAccess,
     noteLength: (noteText || '').length,
-    clientIp: ip
+    clientIp: ip,
+    role: user.role,
+    permissionChecked: 'write'
   });
-  return { success: true, email: user.email, note: noteText };
+  return { success: true, email: user.email, note: noteText, role: user.role };
 }
 
 function invalidateSession(sessionToken) {
@@ -913,8 +973,13 @@ function removeUserSession(email, sessionToken) {
 // Toggle-gated: emergency access override
 // =============================================
 
+// checkSpreadsheetAccess returns an RBAC-aware result object:
+//   { hasAccess: true,  role: 'admin', isEmergencyAccess: false }
+//   { hasAccess: false, role: null,    isEmergencyAccess: false }
+// Legacy boolean callers: use checkSpreadsheetAccess(email).hasAccess
 function checkSpreadsheetAccess(email, opt_ss) {
-  if (!email) return false;
+  var denied = { hasAccess: false, role: null, isEmergencyAccess: false };
+  if (!email) return denied;
   var lowerEmail = email.toLowerCase();
 
   // Emergency access override (toggle-gated)
@@ -928,17 +993,25 @@ function checkSpreadsheetAccess(email, opt_ss) {
       if (emergencyList.indexOf(lowerEmail) > -1) {
         auditLog('emergency_access', email, 'granted',
           { reason: 'Emergency access override via Script Properties' });
-        return true;
+        return { hasAccess: true, role: 'admin', isEmergencyAccess: true };
       }
     }
   }
 
   var cache = CacheService.getScriptCache();
   var cacheKey = "access_" + lowerEmail;
+  var roleCacheKey = "role_" + lowerEmail;
   var cached = cache.get(cacheKey);
-  if (cached !== null) return cached === "1";
+  if (cached !== null) {
+    if (cached === "1") {
+      var cachedRole = cache.get(roleCacheKey) || RBAC_DEFAULT_ROLE;
+      return { hasAccess: true, role: cachedRole, isEmergencyAccess: false };
+    }
+    return denied;
+  }
 
-  // Method 1: Master ACL spreadsheet (row-based lookup — email in col A, TRUE/FALSE per page column)
+  // Method 1: Master ACL spreadsheet
+  // Expected layout: col A = Email, col B = Role, cols C+ = page names (TRUE/FALSE)
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
   if (hasAcl) {
     try {
@@ -948,10 +1021,18 @@ function checkSpreadsheetAccess(email, opt_ss) {
         var data = aclSheet.getDataRange().getValues();
         if (data.length >= 2) {
           var headers = data[0];
+          // Find the page column index (page access TRUE/FALSE)
           var colIdx = -1;
           for (var c = 0; c < headers.length; c++) {
             if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
               colIdx = c; break;
+            }
+          }
+          // Find the Role column index (expected col B, but search by header name for flexibility)
+          var roleColIdx = -1;
+          for (var rc = 0; rc < headers.length; rc++) {
+            if (String(headers[rc]).trim().toLowerCase() === 'role') {
+              roleColIdx = rc; break;
             }
           }
           if (colIdx !== -1) {
@@ -959,8 +1040,17 @@ function checkSpreadsheetAccess(email, opt_ss) {
               if (String(data[r][0]).trim().toLowerCase() === lowerEmail) {
                 var val = data[r][colIdx];
                 if (val === true || String(val).trim().toUpperCase() === 'TRUE') {
+                  // Read role from the Role column (default to RBAC_DEFAULT_ROLE if missing)
+                  var userRole = RBAC_DEFAULT_ROLE;
+                  if (roleColIdx !== -1 && data[r][roleColIdx]) {
+                    var rawRole = String(data[r][roleColIdx]).trim().toLowerCase();
+                    if (RBAC_ROLES[rawRole]) {
+                      userRole = rawRole;
+                    }
+                  }
                   cache.put(cacheKey, "1", 600);
-                  return true;
+                  cache.put(roleCacheKey, userRole, 600);
+                  return { hasAccess: true, role: userRole, isEmergencyAccess: false };
                 }
                 break; // Found email but not granted — continue to method 2
               }
@@ -972,6 +1062,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
   }
 
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
+  // Users granted via sharing list default to RBAC_DEFAULT_ROLE (viewer)
   var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (hasSheet) {
     var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -979,22 +1070,26 @@ function checkSpreadsheetAccess(email, opt_ss) {
     for (var i = 0; i < editors.length; i++) {
       if (editors[i].getEmail().toLowerCase() === lowerEmail) {
         cache.put(cacheKey, "1", 600);
-        return true;
+        cache.put(roleCacheKey, RBAC_DEFAULT_ROLE, 600);
+        return { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
       }
     }
     var viewers = ss.getViewers();
     for (var i = 0; i < viewers.length; i++) {
       if (viewers[i].getEmail().toLowerCase() === lowerEmail) {
         cache.put(cacheKey, "1", 600);
-        return true;
+        cache.put(roleCacheKey, RBAC_DEFAULT_ROLE, 600);
+        return { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
       }
     }
   }
 
   // Neither method granted access (or neither is configured)
-  if (!hasAcl && !hasSheet) return true; // No access control configured — allow all
+  if (!hasAcl && !hasSheet) {
+    return { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
+  }
   cache.put(cacheKey, "0", 600);
-  return false;
+  return denied;
 }
 
 // =============================================
@@ -1165,7 +1260,9 @@ function signAppMessage(sessionToken, messageType, params) {
         type: 'gas-auth-ok',
         version: VERSION,
         needsReauth: session.needsReauth || false,
-        messageKey: msgKey
+        messageKey: msgKey,
+        role: session.role || RBAC_DEFAULT_ROLE,
+        permissions: session.permissions || RBAC_ROLES[session.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE]
       }, msgKey);
 
     case 'gas-version':
@@ -1347,7 +1444,9 @@ function doGet(e) {
             displayName: result.displayName || "",
             error: result.error || "",
             absoluteTimeout: result.absoluteTimeout || 0,
-            messageKey: result.messageKey || ""
+            messageKey: result.messageKey || "",
+            role: result.role || "",
+            permissions: result.permissions || []
           });
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
         + 'try { window.top.postMessage(' + payload + ', ' + JSON.stringify(PARENT_ORIGIN) + '); } catch(e) {}'
@@ -1377,6 +1476,8 @@ function doGet(e) {
       + '        error: result.error || "",'
       + '        absoluteTimeout: result.absoluteTimeout || 0,'
       + '        messageKey: result.messageKey || "",'
+      + '        role: result.role || "",'
+      + '        permissions: result.permissions || [],'
       + '        nonce: nonce'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
@@ -1502,7 +1603,9 @@ function doGet(e) {
             // the session is valid (verification will pass because no key is set yet)
             window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
               needsReauth: ${session.needsReauth || false},
-              messageKey: '${escapeJs(appMsgKey)}'}, '${PARENT_ORIGIN}');
+              messageKey: '${escapeJs(appMsgKey)}',
+              role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
+              permissions: ${JSON.stringify(session.permissions || RBAC_ROLES[session.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
           })
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 

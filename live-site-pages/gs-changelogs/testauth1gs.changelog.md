@@ -3,9 +3,20 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v01.57g] — 2026-03-19 10:46:42 AM EST — v04.96r
+
+### Added
+- Role-based access control — your account is now assigned a role (admin, clinician, billing, or viewer) that determines what actions you can perform
+- Permission checks before data operations — only users with the appropriate role can save or modify records
+
+### Changed
+- Access checks now include role assignment from the access control list
+- Audit logs now record which role performed each action
+- Emergency access users are automatically assigned the admin role
 
 ## [v01.56g] — 2026-03-18 02:50:29 PM EST — v04.81r
 
