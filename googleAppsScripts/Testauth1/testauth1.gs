@@ -1,4 +1,4 @@
-var VERSION = "v01.68g";
+var VERSION = "v01.69g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -29,7 +29,7 @@ var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
 // Two tabs:
 //   "Access" — Row 1 = headers (Email, Role, page1, page2, ...). Rows 2+ = email in col A, role in col B, TRUE/FALSE per page.
 //   "Roles"  — Row 1 = headers (Role, perm1, perm2, ...). Rows 2+ = role name in col A, TRUE/FALSE per permission.
-// UI element gating is handled client-side via data-requires-permission attributes on HTML elements.
+// UI element gating is handled client-side via data-requires-permission and data-requires-role attributes on HTML elements.
 // If configured, this replaces the old editor/viewer sharing-list check.
 // Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
@@ -49,7 +49,7 @@ var PROJECT_OVERRIDES = {
 // ══════════════
 // Roles and permissions are read from the "Roles" tab of the centralized ACL spreadsheet.
 // The "Access" tab has a "Role" column (col B) that assigns one role per user.
-// UI element gating is handled client-side via data-requires-permission HTML attributes.
+// UI element gating is handled client-side via data-requires-permission and data-requires-role HTML attributes.
 // HIPAA: §164.308(a)(4)(ii) — access authorization based on role.
 
 // Hardcoded fallback — used ONLY when the Roles tab is missing or unreadable.

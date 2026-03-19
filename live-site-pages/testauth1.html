@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.43w">
+  <meta name="build-version" content="v02.44w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -364,7 +364,7 @@
   <div id="user-pill">
     <span id="user-email-display"></span>
     <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
-    <button id="admin-sessions-btn" title="Manage active sessions" data-requires-permission="admin">Sessions</button>
+    <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
     <button id="sign-out-btn">Sign Out</button>
   </div>
 
@@ -2108,25 +2108,32 @@
         roleBadge.style.display = 'inline';
       }
 
-      // RBAC UI gating — hide/show elements with data-requires-permission attributes
-      // based on the user's permissions from session storage.
-      // Admin sessions button uses data-requires-permission="admin" in HTML.
+      // RBAC UI gating — hide/show elements with data-requires-permission and
+      // data-requires-role attributes based on session storage.
+      // Admin sessions button uses data-requires-role="admin" in HTML.
       applyUIGating();
     }
 
     /**
-     * Apply UI element gating based on data-requires-permission attributes.
-     * Any element with data-requires-permission="permName" is hidden if the
-     * user's permissions (from session storage) don't include that permission.
+     * Apply UI element gating based on data-requires-permission and data-requires-role attributes.
+     * - data-requires-permission="permName": hidden unless the user's permissions array includes permName.
+     * - data-requires-role="roleName": hidden unless the user's role matches roleName.
+     * Both attributes can coexist on the same element (both conditions must be met).
      * No spreadsheet tab needed — just add the attribute to any HTML element.
      */
     function applyUIGating() {
       var session = loadSession();
       var perms = session.permissions || [];
-      var gated = document.querySelectorAll('[data-requires-permission]');
+      var role = session.role || '';
+      var gated = document.querySelectorAll('[data-requires-permission], [data-requires-role]');
       for (var i = 0; i < gated.length; i++) {
-        var reqPerm = gated[i].getAttribute('data-requires-permission');
-        gated[i].style.display = (perms.indexOf(reqPerm) !== -1) ? '' : 'none';
+        var el = gated[i];
+        var visible = true;
+        var reqPerm = el.getAttribute('data-requires-permission');
+        if (reqPerm && perms.indexOf(reqPerm) === -1) visible = false;
+        var reqRole = el.getAttribute('data-requires-role');
+        if (reqRole && role !== reqRole) visible = false;
+        el.style.display = visible ? '' : 'none';
       }
     }
 

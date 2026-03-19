@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v05.10r] — 2026-03-19 02:36:10 PM EST
+
+> **Prompt:** "this is what i currently see, it wont let me click on the top to see who is logged in like it used to"
+
+### Fixed
+- Sessions button hidden for admin users — `applyUIGating()` was checking permissions array for "admin" but the spreadsheet Roles tab may not have "admin" as a permission column. Added `data-requires-role` attribute support alongside `data-requires-permission`, and switched the Sessions button to use role-based gating
+
+#### `testauth1.html` — v02.44w
+
+##### Fixed
+- Admin session management button now appears correctly for admin users
+
+#### `testauth1.gs` — v01.69g
+
+##### Changed
+- Minor internal improvements
 
 ## [v05.09r] — 2026-03-19 02:30:31 PM EST
 

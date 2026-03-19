@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v01.69g] — 2026-03-19 02:36:10 PM EST — v05.10r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.68g] — 2026-03-19 02:30:31 PM EST — v05.09r
 
@@ -243,54 +248,3 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ### Added
 - Cross-device session detection groundwork: when signing in on a new device, previous sessions now record eviction metadata for future notification support
 
-## [v01.27g] — 2026-03-14 09:18:31 PM EST — v03.55r
-
-### Fixed
-- Fixed accessibility warning for heartbeat test input label
-
-## [v01.26g] — 2026-03-14 06:03:06 PM EST — v03.36r
-
-### Security
-- Session data integrity verification is now enabled for all security modes
-
-## [v01.25g] — 2026-03-14 05:58:39 PM EST — v03.35r
-
-### Security
-- Deploy events are now logged for security monitoring
-
-## [v01.24g] — 2026-03-14 05:54:36 PM EST — v03.34r
-
-### Security
-- Login attempts are now rate-limited to prevent brute force attacks
-- Heartbeat requests are now rate-limited to prevent abuse
-- Maximum session duration reduced from 16 hours to 8 hours for improved security
-- Error messages no longer reveal email addresses or detailed failure reasons
-
-## [v01.23g] — 2026-03-14 01:18:46 PM EST — v03.19r
-
-### Fixed
-- Fixed blank page after sign-in when using hipaa security preset
-
-## [v01.22g] — 2026-03-14 12:53:45 PM EST — v03.16r
-
-### Changed
-- Switched to high-security (HIPAA) configuration — enables message integrity checks, audit logging, and emergency access by default
-
-## [v01.21g] — 2026-03-14 12:46:13 PM EST — v03.15r
-
-### Changed
-- Minor internal improvements
-
-## [v01.20g] — 2026-03-14 12:43:08 PM EST — v03.14r
-
-### Changed
-- Session now expires after 3 minutes (for testing — production: 1 hour)
-- Absolute session limit reduced to 5 minutes (for testing — production: 16 hours)
-- Activity checks now happen every 30 seconds (for testing — production: 5 minutes)
-- Sign-in token lifetime reduced to 3 minutes (for testing — production: 1 hour)
-- "Expiring soon" warning now shows 1 minute before token expires (for testing — production: 5 minutes)
-
-## [v01.19g] — 2026-03-14 12:39:17 PM EST — v03.13r
-
-### Changed
-- "Session expiring soon" notification now only appears in the last 5 minutes instead of the last 15 minutes

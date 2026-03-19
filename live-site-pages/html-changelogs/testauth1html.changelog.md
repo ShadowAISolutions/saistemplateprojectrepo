@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v02.44w] — 2026-03-19 02:36:10 PM EST — v05.10r
+
+### Fixed
+- Admin session management button now appears correctly for admin users
 
 ## [v02.43w] — 2026-03-19 02:15:50 PM EST — v05.07r
 
