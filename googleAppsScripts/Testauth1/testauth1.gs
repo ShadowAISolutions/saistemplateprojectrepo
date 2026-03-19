@@ -1,4 +1,4 @@
-var VERSION = "v01.61g";
+var VERSION = "v01.62g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -311,7 +311,7 @@ function adminSignOutUser(sessionToken, targetEmail) {
 
   if (!targetEmail) return { success: false, error: 'no_email' };
 
-  invalidateAllSessions(targetEmail);
+  invalidateAllSessions(targetEmail, 'admin_signout');
 
   auditLog('admin_action', user.email, 'admin_sign_out_user',
     { targetEmail: targetEmail });
@@ -820,6 +820,12 @@ function validateSession(sessionToken) {
   var cache = CacheService.getScriptCache();
   var raw = cache.get("session_" + sessionToken);
   if (!raw) {
+    // Check for eviction tombstone — tells the client WHY the session is gone
+    var evictionReason = cache.get("evicted_" + sessionToken) || '';
+    if (evictionReason) {
+      cache.remove("evicted_" + sessionToken);
+      return { status: "not_signed_in", evictionReason: evictionReason };
+    }
     return { status: "not_signed_in" };
   }
 
@@ -1007,8 +1013,9 @@ function invalidateSession(sessionToken) {
   cache.remove("session_" + sessionToken);
 }
 
-function invalidateAllSessions(email) {
+function invalidateAllSessions(email, reason) {
   if (!email) return;
+  var evictionReason = reason || 'new_sign_in';
   var cache = CacheService.getScriptCache();
   var trackKey = "sessions_" + email.toLowerCase();
   var raw = cache.get(trackKey);
@@ -1017,13 +1024,11 @@ function invalidateAllSessions(email) {
     var tokens = JSON.parse(raw);
     for (var i = 0; i < tokens.length; i++) {
       cache.remove("session_" + tokens[i]);
-      // Leave a tombstone so the heartbeat handler knows WHY the session
-      // disappeared. Short TTL (5 minutes) — just needs to survive until
-      // the old device's next heartbeat fires. After that, natural expiry
-      // is assumed (no tombstone = timed out normally).
-      if (AUTH_CONFIG.ENABLE_CROSS_DEVICE_ENFORCEMENT) {
-        cache.put("evicted_" + tokens[i], "new_sign_in", 300);
-      }
+      // Leave a tombstone so the heartbeat/validateSession handler knows WHY
+      // the session disappeared. Short TTL (5 minutes) — just needs to survive
+      // until the old device's next heartbeat fires or page refresh.
+      // After that, natural expiry is assumed (no tombstone = timed out normally).
+      cache.put("evicted_" + tokens[i], evictionReason, 300);
     }
     if (tokens.length > 0) {
       auditLog('session_management', email, 'all_sessions_invalidated',
@@ -1675,8 +1680,9 @@ function doGet(e) {
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {
+    var evReason = session.evictionReason || '';
     var authHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + escapeJs(session.status) + '",email:"' + escapeJs(session.email || '') + '",version:"' + escapeJs(VERSION) + '"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + escapeJs(session.status) + '",email:"' + escapeJs(session.email || '') + '",version:"' + escapeJs(VERSION) + '",evictionReason:"' + escapeJs(evReason) + '"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(authHtml)
       .setTitle(TITLE)

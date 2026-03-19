@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v02.40w] — 2026-03-19 12:37:20 PM EST — v05.03r
+
+### Fixed
+- Users signed out by an admin now see a clear sign-in page instead of being stuck on "Reconnecting..."
+- Admin sign-out now shows "An administrator ended your session" instead of a generic expiration message
 
 ## [v02.39w] — 2026-03-19 12:24:13 PM EST — v05.02r
 
