@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v04.95r] — 2026-03-19 09:15:01 AM EST
+
+> **Prompt:** "review the repository-information/HIPAA-CODING-REQUIREMENTS.md , and analyze which parts are missing/completed in our testauth1 environment. think deeply and create a report document with your findings"
+
+### Added
+- Created `HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` — comprehensive compliance assessment evaluating all 40 HIPAA coding checklist items against the testauth1 environment. Reports 14 fully implemented, 5 partial, 4 not implemented, 3 N/A, 5 policy/process, and 9 NPRM items. Identifies 7 priority gaps (disclosure accounting, right of access, right to amendment, RBAC, retention enforcement, breach alerting, breach logging) and 5 strengths exceeding requirements (dual timeouts, HMAC integrity, dual audit logs, escalating lockout, fail-closed design). Includes test-value warnings for production deployment
 
 ## [v04.94r] — 2026-03-19 08:48:12 AM EST
 
