@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v04.97r] — 2026-03-19 10:55:31 AM EST
+
+> **Prompt:** "for now use the testauth1 spreadsheet as the ACL while we are testing, set up the tab for it"
+
+### Changed
+- Configured `MASTER_ACL_SPREADSHEET_ID` to use the existing testauth1 data spreadsheet (`1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA`) as the ACL source for testing — activates RBAC role lookups from the ACL tab
+
+#### `testauth1.gs` — v01.58g
+
+##### Changed
+- ACL spreadsheet ID set to testauth1 data spreadsheet — RBAC now reads roles from the ACL tab in the same spreadsheet
 
 ## [v04.96r] — 2026-03-19 10:46:42 AM EST
 

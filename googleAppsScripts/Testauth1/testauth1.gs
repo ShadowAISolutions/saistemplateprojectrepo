@@ -1,4 +1,4 @@
-var VERSION = "v01.57g";
+var VERSION = "v01.58g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -29,7 +29,7 @@ var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
 // Row 1 = headers (Email, page1, page2, ...). Rows 2+ = email in col A, TRUE/FALSE per page column.
 // If configured, this replaces the old editor/viewer sharing-list check.
 // Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
-var MASTER_ACL_SPREADSHEET_ID = "YOUR_MASTER_ACL_SPREADSHEET_ID";
+var MASTER_ACL_SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
 var ACL_SHEET_NAME = "ACL";
 var ACL_PAGE_NAME  = "testauth1";
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v01.58g] — 2026-03-19 10:55:31 AM EST — v04.97r
+
+### Changed
+- Access control now checks roles from the project's data spreadsheet — a dedicated ACL tab determines who can access the app and what role they have
 
 ## [v01.57g] — 2026-03-19 10:46:42 AM EST — v04.96r
 
