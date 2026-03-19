@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v04.94r] — 2026-03-19 08:48:12 AM EST
+
+> **Prompt:** "make a complete document which lists every single unabridged HIPAA requirement for coding to be used as our source of truth for HIPAA compliance moving forward. This is very important to get right, think deeply, research online. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+
+### Added
+- Created `HIPAA-CODING-REQUIREMENTS.md` — comprehensive 950-line regulatory reference document containing every HIPAA requirement relevant to software development, derived from the unabridged text of 45 CFR Part 164 (Security Rule, Privacy Rule, Breach Notification Rule), supplemented by NIST SP 800-66r2 guidance and the 2025 NPRM proposed changes. Includes 13 sections covering applicability, definitions, all 5 Security Rule safeguard categories, Privacy Rule coding requirements, breach notification, de-identification standards, summary counts, and a 40-item coding implementation checklist. Supersedes `HIPAA-COMPLIANCE-REFERENCE.md` as the project's HIPAA source of truth
 
 ## [v04.93r] — 2026-03-18 11:55:09 PM EST
 
