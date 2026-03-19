@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.38w">
+  <meta name="build-version" content="v02.39w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1516,6 +1516,7 @@
       // ── Admin session management responses ──
       if (data.type === 'gas-admin-sessions-ready') {
         _adminIframeReady = true;
+        _adminIframeSource = event.source;  // Capture sandbox frame WindowProxy
         if (_adminPanelOpen) _adminListSessions();
         return;
       }
@@ -2614,6 +2615,7 @@
     // =============================================
     var _adminIframeReady = false;
     var _adminPanelOpen = false;
+    var _adminIframeSource = null;  // WindowProxy of the GAS sandbox frame (event.source)
 
     function _getGasBaseUrl() {
       var gasApp = document.getElementById('gas-app');
@@ -2630,9 +2632,11 @@
 
     function _adminListSessions() {
       var session = loadSession();
-      if (!session.token || !_adminIframeReady) return;
-      var iframe = document.getElementById('admin-sessions-iframe');
-      iframe.contentWindow.postMessage({
+      if (!session.token || !_adminIframeReady || !_adminIframeSource) return;
+      // Must use _adminIframeSource (event.source from gas-admin-sessions-ready),
+      // NOT iframe.contentWindow — GAS double-iframe architecture means contentWindow
+      // targets the outer shell, but the listener runs in the inner sandbox frame.
+      _adminIframeSource.postMessage({
         type: 'admin-list-sessions',
         token: session.token
       }, '*');
@@ -2640,9 +2644,8 @@
 
     function _adminSignOutUser(email) {
       var session = loadSession();
-      if (!session.token || !_adminIframeReady) return;
-      var iframe = document.getElementById('admin-sessions-iframe');
-      iframe.contentWindow.postMessage({
+      if (!session.token || !_adminIframeReady || !_adminIframeSource) return;
+      _adminIframeSource.postMessage({
         type: 'admin-signout-user',
         token: session.token,
         email: email
