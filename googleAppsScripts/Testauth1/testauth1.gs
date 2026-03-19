@@ -1,4 +1,4 @@
-var VERSION = "v01.57g";
+var VERSION = "v01.58g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1541,15 +1541,69 @@ function doGet(e) {
       + '          nonce: nonce,'
       + '          appLoaded: true'
       + '        }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
-      // 2. Inject app HTML into page body via innerHTML
+      // 2. Inject app HTML markup into page body via innerHTML
       + '        document.body.innerHTML = result.appHtml;'
-      // 3. Manually execute <script> tags (innerHTML does not auto-execute scripts)
-      + '        var scripts = document.body.getElementsByTagName("script");'
-      + '        for (var i = 0; i < scripts.length; i++) {'
-      + '          var newScript = document.createElement("script");'
-      + '          newScript.textContent = scripts[i].textContent;'
-      + '          document.body.appendChild(newScript);'
+      // 3. Execute app logic directly (google.script.run survives innerHTML replacement).
+      //    We do NOT rely on innerHTML script execution (unreliable in GAS sandbox).
+      //    Instead, run the same logic that buildAppHtmlString's <script> would run.
+      + '        var _st = result.sessionToken || "";'
+      + '        var _po = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      // 3a. Call signAppMessage to get signed gas-auth-ok
+      + '        google.script.run'
+      + '          .withSuccessHandler(function(signed) {'
+      + '            window.top.postMessage(signed, _po);'
+      + '          })'
+      + '          .withFailureHandler(function(err) {'
+      + '            window.top.postMessage({type:"gas-auth-ok",version:result.version||"",'
+      + '              needsReauth:false,messageKey:result.messageKey||""}, _po);'
+      + '          })'
+      + '          .signAppMessage(_st, "gas-auth-ok");'
+      // 3b. Version-check listener
+      + '        window.addEventListener("message", function(ev) {'
+      + '          if (ev.data && ev.data.type === "gas-version-check") {'
+      + '            google.script.run'
+      + '              .withSuccessHandler(function(s){top.postMessage(s,_po);})'
+      + '              .withFailureHandler(function(){})'
+      + '              .signAppMessage(_st, "gas-version");'
+      + '          }'
+      + '        });'
+      // 3c. Activity detection
+      + '        var _lastAct=0,_pendAct=false;'
+      + '        function _notAct(){'
+      + '          var n=Date.now();if(n-_lastAct<5000)return;if(_pendAct)return;'
+      + '          _lastAct=n;_pendAct=true;'
+      + '          google.script.run'
+      + '            .withSuccessHandler(function(s){_pendAct=false;window.top.postMessage(s,_po);})'
+      + '            .withFailureHandler(function(){_pendAct=false;})'
+      + '            .signAppMessage(_st,"gas-user-activity");'
       + '        }'
+      + '        document.addEventListener("keydown",_notAct,true);'
+      + '        document.addEventListener("click",_notAct,true);'
+      + '        document.addEventListener("input",_notAct,true);'
+      // 3d. Save Note button
+      + '        var _snBtn=document.getElementById("save-note-btn");'
+      + '        if(_snBtn)_snBtn.addEventListener("click",function(){'
+      + '          var ni=document.getElementById("save-note-input");'
+      + '          var se=document.getElementById("save-note-status");'
+      + '          var nt=ni.value.trim();'
+      + '          if(!nt){se.textContent="Enter a note first.";se.style.color="#f57c00";return;}'
+      + '          _notAct();se.textContent="Validating session & saving...";se.style.color="#999";'
+      + '          google.script.run'
+      + '            .withSuccessHandler(function(r){'
+      + '              if(r.success){se.textContent="Saved: \\""+r.note+"\\" (validated as "+r.email+")";'
+      + '                se.style.color="#2e7d32";ni.value="";}else{se.textContent="Save failed.";se.style.color="#c62828";}'
+      + '            })'
+      + '            .withFailureHandler(function(err){'
+      + '              var m=err.message||"";'
+      + '              if(m.indexOf("SESSION_")===0){se.textContent="Session invalid — re-authenticate to save.";'
+      + '                se.style.color="#c62828";'
+      + '                google.script.run.withSuccessHandler(function(s){window.top.postMessage(s,_po);})'
+      + '                  .withFailureHandler(function(){})'
+      + '                  .signAppMessage(_st,"gas-session-invalid",{reason:m});'
+      + '              }else{se.textContent="Error: "+m;se.style.color="#c62828";}'
+      + '            })'
+      + '            .saveNote(_st,nt);'
+      + '        });'
       + '      } else {'
       // Exchange failed — post error (same as before, no appLoaded flag)
       + '        window.top.postMessage({'

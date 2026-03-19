@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v04.90r] — 2026-03-18 11:16:43 PM EST
+
+> **Prompt:** "the backend is showing login success, but we are stuck on the signing in screen"
+
+### Fixed
+- Fixed HIPAA single-load auth: app was stuck on "Signing in..." because innerHTML-injected `<script>` tags don't auto-execute in the GAS sandbox. Replaced script execution approach — the listener page's success handler now directly calls `google.script.run.signAppMessage()` and sets up event listeners instead of relying on `createElement('script')` + `appendChild`. Also fixed `getElementsByTagName` live collection infinite loop bug
+
+#### `testauth1.gs` — v01.58g
+##### Fixed
+- Sign-in now completes properly — the app interface loads and becomes interactive after authentication
 
 ## [v04.89r] — 2026-03-18 11:09:45 PM EST
 
