@@ -1,4 +1,4 @@
-var VERSION = "v01.59g";
+var VERSION = "v01.56g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1191,169 +1191,6 @@ function signAppMessage(sessionToken, messageType, params) {
   }
 }
 
-/**
- * Combined exchange + app HTML builder for HIPAA single-load optimization.
- * Called from the listener page via google.script.run.
- * Returns session data + app HTML string in one response, eliminating
- * the second doGet() call that was previously needed to serve the app UI.
- * See: 10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md
- */
-function exchangeTokenAndBuildApp(googleAccessToken) {
-  // Step 1: Exchange token (existing function — unchanged)
-  var result;
-  try {
-    result = exchangeTokenForSession(googleAccessToken);
-  } catch (err) {
-    var errMsg = err.message || String(err);
-    var errorCode = 'server_error';
-    if (errMsg.indexOf('HMAC_SECRET') !== -1) errorCode = 'hmac_secret_missing';
-    return { success: false, error: errorCode };
-  }
-
-  if (!result.success) {
-    return {
-      success: false,
-      error: result.error || 'exchange_failed'
-    };
-  }
-
-  // Step 2: Validate the just-created session
-  var session = validateSession(result.sessionToken);
-  if (session.status !== 'authorized') {
-    return {
-      success: false,
-      error: 'session_validation_failed'
-    };
-  }
-
-  // Step 3: Build app HTML markup only (no <script> tags — the listener page
-  // handles script logic directly to avoid double-execution in GAS sandbox)
-  var appParts = buildAppHtmlString(result.sessionToken, session, result.messageKey);
-
-  return {
-    success: true,
-    sessionToken: result.sessionToken,
-    email: result.email || '',
-    displayName: result.displayName || '',
-    absoluteTimeout: result.absoluteTimeout || 0,
-    messageKey: result.messageKey || '',
-    appHtml: appParts.markup
-  };
-}
-
-/**
- * Builds the app HTML body content as a string.
- * Returns an object: { markup: "...", script: "..." }
- * - markup: HTML elements only (no <script> tags) — safe for innerHTML injection
- * - script: the <script> block content — used by the ?session= path (auto-executes)
- *   and NOT included in innerHTML injection (the listener page handles logic directly)
- * See: 10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md, Step 2
- */
-function buildAppHtmlString(sessionToken, session, appMsgKey) {
-  var markup = '<div id="debug-marker" style="font-size:200px;color:#1565c0;font-weight:bold;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">1</div>'
-    + '<div id="save-note-area" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:9999;text-align:center">'
-    + '  <label for="save-note-input" style="display:block;font-size:11px;color:#999;margin-bottom:4px;font-family:monospace">Patient note (test — triggers session check on interaction)</label>'
-    + '  <input type="text" id="save-note-input" placeholder="Type a note and click Save..." autocomplete="off" style="width:300px;padding:8px 12px;font-size:14px;font-family:monospace;border:2px solid #2e7d32;border-radius:6px;outline:none;margin-bottom:6px">'
-    + '  <br>'
-    + '  <button id="save-note-btn" style="background:#2e7d32;color:#fff;border:none;padding:8px 20px;border-radius:6px;font:13px/1 monospace;cursor:pointer">Save Note</button>'
-    + '  <div id="save-note-status" style="font-size:11px;color:#999;margin-top:4px;font-family:monospace;min-height:16px"></div>'
-    + '</div>'
-    + '<div id="hb-test-area" style="position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:9999;text-align:center">'
-    + '  <label for="hb-test-input" style="display:block;font-size:11px;color:#999;margin-bottom:4px;font-family:monospace">Type here to test heartbeat interruption</label>'
-    + '  <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off" style="width:300px;padding:8px 12px;font-size:14px;font-family:monospace;border:2px solid #1565c0;border-radius:6px;outline:none">'
-    + '</div>'
-    + '<h2 id="version" style="position:fixed;bottom:8px;left:8px;z-index:9999;color:#1565c0;font-size:12px;margin:0;font-family:monospace;opacity:0.8">' + escapeHtml(VERSION) + '</h2>'
-    + '<div id="user-email" style="position:fixed;top:8px;left:8px;z-index:9999;color:#666;font-size:11px;font-family:monospace;opacity:0.7">' + escapeHtml(session.email) + '</div>';
-
-  var scriptBlock = '<script>'
-    + 'var _sessionToken = \'' + escapeJs(sessionToken) + '\';'
-    + 'google.script.run'
-    + '  .withSuccessHandler(function(signed) {'
-    + '    window.top.postMessage(signed, \'' + PARENT_ORIGIN + '\');'
-    + '  })'
-    + '  .withFailureHandler(function(err) {'
-    + '    window.top.postMessage({type: "gas-auth-ok", version: "' + escapeJs(VERSION) + '",'
-    + '      needsReauth: ' + (session.needsReauth || false) + ','
-    + '      messageKey: "' + escapeJs(appMsgKey) + '"}, "' + PARENT_ORIGIN + '");'
-    + '  })'
-    + '  .signAppMessage(_sessionToken, "gas-auth-ok");'
-    + 'window.addEventListener("message", function(e) {'
-    + '  if (e.data && e.data.type === "gas-version-check") {'
-    + '    google.script.run'
-    + '      .withSuccessHandler(function(signed) {'
-    + '        top.postMessage(signed, "' + PARENT_ORIGIN + '");'
-    + '      })'
-    + '      .withFailureHandler(function() {})'
-    + '      .signAppMessage(_sessionToken, "gas-version");'
-    + '  }'
-    + '});'
-    + 'var _lastActivityNotify = 0;'
-    + 'var _pendingActivity = false;'
-    + 'function _notifyActivity() {'
-    + '  var now = Date.now();'
-    + '  if (now - _lastActivityNotify < 5000) return;'
-    + '  if (_pendingActivity) return;'
-    + '  _lastActivityNotify = now;'
-    + '  _pendingActivity = true;'
-    + '  google.script.run'
-    + '    .withSuccessHandler(function(signed) {'
-    + '      _pendingActivity = false;'
-    + '      window.top.postMessage(signed, "' + PARENT_ORIGIN + '");'
-    + '    })'
-    + '    .withFailureHandler(function() {'
-    + '      _pendingActivity = false;'
-    + '    })'
-    + '    .signAppMessage(_sessionToken, "gas-user-activity");'
-    + '}'
-    + 'document.addEventListener("keydown", _notifyActivity, true);'
-    + 'document.addEventListener("click", _notifyActivity, true);'
-    + 'document.addEventListener("input", _notifyActivity, true);'
-    + 'document.getElementById("save-note-btn").addEventListener("click", function() {'
-    + '  var noteInput = document.getElementById("save-note-input");'
-    + '  var statusEl = document.getElementById("save-note-status");'
-    + '  var note = noteInput.value.trim();'
-    + '  if (!note) {'
-    + '    statusEl.textContent = "Enter a note first.";'
-    + '    statusEl.style.color = "#f57c00";'
-    + '    return;'
-    + '  }'
-    + '  _notifyActivity();'
-    + '  statusEl.textContent = "Validating session & saving...";'
-    + '  statusEl.style.color = "#999";'
-    + '  google.script.run'
-    + '    .withSuccessHandler(function(result) {'
-    + '      if (result.success) {'
-    + '        statusEl.textContent = "Saved: \\"" + result.note + "\\" (validated as " + result.email + ")";'
-    + '        statusEl.style.color = "#2e7d32";'
-    + '        noteInput.value = "";'
-    + '      } else {'
-    + '        statusEl.textContent = "Save failed.";'
-    + '        statusEl.style.color = "#c62828";'
-    + '      }'
-    + '    })'
-    + '    .withFailureHandler(function(err) {'
-    + '      var msg = err.message || "";'
-    + '      if (msg.indexOf("SESSION_") === 0) {'
-    + '        statusEl.textContent = "Session invalid — re-authenticate to save.";'
-    + '        statusEl.style.color = "#c62828";'
-    + '        google.script.run'
-    + '          .withSuccessHandler(function(signed) {'
-    + '            window.top.postMessage(signed, "' + PARENT_ORIGIN + '");'
-    + '          })'
-    + '          .withFailureHandler(function() {})'
-    + '          .signAppMessage(_sessionToken, "gas-session-invalid", {reason: msg});'
-    + '      } else {'
-    + '        statusEl.textContent = "Error: " + msg;'
-    + '        statusEl.style.color = "#c62828";'
-    + '      }'
-    + '    })'
-    + '    .saveNote(_sessionToken, note);'
-    + '});'
-    + '</' + 'script>';
-
-  return { markup: markup, script: scriptBlock };
-}
-
 function doGet(e) {
   var sessionToken = (e && e.parameter && e.parameter.session) || "";
   // Phase 7: signOutToken, heartbeatToken, and msgKey URL parameters removed —
@@ -1521,103 +1358,27 @@ function doGet(e) {
     }
   }
 
-  // postMessage token exchange (HIPAA mode) — single-load optimization (10.4.1)
-  // The listener page calls exchangeTokenAndBuildApp() which returns session data + app HTML.
-  // On success, the app HTML is injected via innerHTML (no second doGet needed).
+  // postMessage token exchange (HIPAA mode)
   if (AUTH_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage' && !sessionToken) {
     var listenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
       + 'window.addEventListener("message", function(e) {'
       + '  if (!e.data || e.data.type !== "exchange-token") return;'
       + '  var token = e.data.accessToken;'
       + '  if (!token) return;'
-      + '  var nonce = e.data.nonce || "";'
+      + '  var nonce = e.data.nonce || "";'  // Phase 2: echo nonce back for verification
       + '  google.script.run'
       + '    .withSuccessHandler(function(result) {'
-      + '      if (result.success && result.appHtml) {'
-      // 1. Post gas-session-created with appLoaded flag FIRST (synchronous)
-      + '        window.top.postMessage({'
-      + '          type: "gas-session-created",'
-      + '          success: true,'
-      + '          sessionToken: result.sessionToken || "",'
-      + '          email: result.email || "",'
-      + '          displayName: result.displayName || "",'
-      + '          absoluteTimeout: result.absoluteTimeout || 0,'
-      + '          messageKey: result.messageKey || "",'
-      + '          nonce: nonce,'
-      + '          appLoaded: true'
-      + '        }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
-      // 2. Inject app HTML markup into page body via innerHTML
-      + '        document.body.innerHTML = result.appHtml;'
-      // 3. Execute app logic directly (google.script.run survives innerHTML replacement).
-      //    We do NOT rely on innerHTML script execution (unreliable in GAS sandbox).
-      //    Instead, run the same logic that buildAppHtmlString's <script> would run.
-      + '        var _st = result.sessionToken || "";'
-      + '        var _po = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      // 3a. Call signAppMessage to get signed gas-auth-ok
-      + '        google.script.run'
-      + '          .withSuccessHandler(function(signed) {'
-      + '            window.top.postMessage(signed, _po);'
-      + '          })'
-      + '          .withFailureHandler(function(err) {'
-      + '            window.top.postMessage({type:"gas-auth-ok",version:result.version||"",'
-      + '              needsReauth:false,messageKey:result.messageKey||""}, _po);'
-      + '          })'
-      + '          .signAppMessage(_st, "gas-auth-ok");'
-      // 3b. Version-check listener
-      + '        window.addEventListener("message", function(ev) {'
-      + '          if (ev.data && ev.data.type === "gas-version-check") {'
-      + '            google.script.run'
-      + '              .withSuccessHandler(function(s){top.postMessage(s,_po);})'
-      + '              .withFailureHandler(function(){})'
-      + '              .signAppMessage(_st, "gas-version");'
-      + '          }'
-      + '        });'
-      // 3c. Activity detection
-      + '        var _lastAct=0,_pendAct=false;'
-      + '        function _notAct(){'
-      + '          var n=Date.now();if(n-_lastAct<5000)return;if(_pendAct)return;'
-      + '          _lastAct=n;_pendAct=true;'
-      + '          google.script.run'
-      + '            .withSuccessHandler(function(s){_pendAct=false;window.top.postMessage(s,_po);})'
-      + '            .withFailureHandler(function(){_pendAct=false;})'
-      + '            .signAppMessage(_st,"gas-user-activity");'
-      + '        }'
-      + '        document.addEventListener("keydown",_notAct,true);'
-      + '        document.addEventListener("click",_notAct,true);'
-      + '        document.addEventListener("input",_notAct,true);'
-      // 3d. Save Note button
-      + '        var _snBtn=document.getElementById("save-note-btn");'
-      + '        if(_snBtn)_snBtn.addEventListener("click",function(){'
-      + '          var ni=document.getElementById("save-note-input");'
-      + '          var se=document.getElementById("save-note-status");'
-      + '          var nt=ni.value.trim();'
-      + '          if(!nt){se.textContent="Enter a note first.";se.style.color="#f57c00";return;}'
-      + '          _notAct();se.textContent="Validating session & saving...";se.style.color="#999";'
-      + '          google.script.run'
-      + '            .withSuccessHandler(function(r){'
-      + '              if(r.success){se.textContent="Saved: \\""+r.note+"\\" (validated as "+r.email+")";'
-      + '                se.style.color="#2e7d32";ni.value="";}else{se.textContent="Save failed.";se.style.color="#c62828";}'
-      + '            })'
-      + '            .withFailureHandler(function(err){'
-      + '              var m=err.message||"";'
-      + '              if(m.indexOf("SESSION_")===0){se.textContent="Session invalid — re-authenticate to save.";'
-      + '                se.style.color="#c62828";'
-      + '                google.script.run.withSuccessHandler(function(s){window.top.postMessage(s,_po);})'
-      + '                  .withFailureHandler(function(){})'
-      + '                  .signAppMessage(_st,"gas-session-invalid",{reason:m});'
-      + '              }else{se.textContent="Error: "+m;se.style.color="#c62828";}'
-      + '            })'
-      + '            .saveNote(_st,nt);'
-      + '        });'
-      + '      } else {'
-      // Exchange failed — post error (same as before, no appLoaded flag)
-      + '        window.top.postMessage({'
-      + '          type: "gas-session-created",'
-      + '          success: result.success || false,'
-      + '          error: result.error || "",'
-      + '          nonce: nonce'
-      + '        }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
-      + '      }'
+      + '      window.top.postMessage({'
+      + '        type: "gas-session-created",'
+      + '        success: result.success,'
+      + '        sessionToken: result.sessionToken || "",'
+      + '        email: result.email || "",'
+      + '        displayName: result.displayName || "",'
+      + '        error: result.error || "",'
+      + '        absoluteTimeout: result.absoluteTimeout || 0,'
+      + '        messageKey: result.messageKey || "",'
+      + '        nonce: nonce'
+      + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
       + '    .withFailureHandler(function(err) {'
       + '      var code = "server_error";'
@@ -1629,7 +1390,7 @@ function doGet(e) {
       + '        nonce: nonce'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
-      + '    .exchangeTokenAndBuildApp(token);'
+      + '    .exchangeTokenForSession(token);'
       + '});'
       + 'window.top.postMessage({ type: "gas-ready-for-token" }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
@@ -1658,18 +1419,189 @@ function doGet(e) {
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
 
-  // Session valid — build the app HTML using shared builder (refactored for 10.4.1 optimization)
-  // ?session= path gets BOTH markup + script (script auto-executes in HtmlService output)
-  var appParts = buildAppHtmlString(sessionToken, session, appMsgKey);
-  var html = '<!DOCTYPE html><html><head>'
-    + '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">'
-    + '<meta http-equiv="Pragma" content="no-cache">'
-    + '<meta http-equiv="Expires" content="0">'
-    + '<style>'
-    + 'html, body { height: 100%; margin: 0; overflow: auto; }'
-    + 'body { font-family: Arial; display: flex; justify-content: center; align-items: center; }'
-    + '</style>'
-    + '</head><body>' + appParts.markup + appParts.script + '</body></html>';
+  // Session valid — build the app HTML (same as noauth doGet but with user context)
+  var html = `
+    <html>
+    <head>
+      <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+      <meta http-equiv="Pragma" content="no-cache">
+      <meta http-equiv="Expires" content="0">
+      <style>
+        html, body { height: 100%; margin: 0; overflow: auto; }
+        body { font-family: Arial; display: flex; justify-content: center; align-items: center; }
+        #debug-marker { font-size: 200px; color: #1565c0; font-weight: bold; }
+        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
+        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        #hb-test-area { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; text-align: center; }
+        #hb-test-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
+        #hb-test-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #1565c0; border-radius: 6px; outline: none; }
+        #hb-test-input:focus { border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(21,101,192,0.2); }
+        #save-note-area { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; text-align: center; }
+        #save-note-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
+        #save-note-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #2e7d32; border-radius: 6px; outline: none; margin-bottom: 6px; }
+        #save-note-input:focus { border-color: #1b5e20; box-shadow: 0 0 0 3px rgba(46,125,50,0.2); }
+        #save-note-btn { background: #2e7d32; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font: 13px/1 monospace; cursor: pointer; }
+        #save-note-btn:hover { background: #1b5e20; }
+        #save-note-status { font-size: 11px; color: #999; margin-top: 4px; font-family: monospace; min-height: 16px; }
+      </style>
+    </head>
+    <body>
+      <div id="debug-marker">1</div>
+      <div id="save-note-area">
+        <label for="save-note-input">Patient note (test — triggers session check on interaction)</label>
+        <input type="text" id="save-note-input" placeholder="Type a note and click Save..." autocomplete="off">
+        <br>
+        <button id="save-note-btn">Save Note</button>
+        <div id="save-note-status"></div>
+      </div>
+      <div id="hb-test-area">
+        <label for="hb-test-input">Type here to test heartbeat interruption</label>
+        <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off">
+      </div>
+      <h2 id="version">${escapeHtml(VERSION)}</h2>
+      <div id="user-email">${escapeHtml(session.email)}</div>
+
+      <script>
+        // Session token for data operation validation (Phase 3)
+        var _sessionToken = '${escapeJs(sessionToken)}';
+        // DJB2→HMAC migration complete: _s() and _mk removed.
+        // All message signing now happens server-side via signAppMessage()
+        // (called through google.script.run — same pattern as Phase 7 heartbeat/signout).
+
+        // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
+        // To re-enable, uncomment below and set AUTH_CONFIG.ENABLE_IP_LOGGING = true:
+        // var _clientIp = '';
+        // function _valIp(v) {
+        //   if (!v || typeof v !== 'string') return 'unknown';
+        //   var t = v.trim().substring(0, 45);
+        //   if (/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) return t;
+        //   return 'invalid';
+        // }
+        // if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
+        //   try {
+        //     var _ipXhr = new XMLHttpRequest();
+        //     _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
+        //     _ipXhr.timeout = 5000;
+        //     _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _valIp(_ipXhr.responseText); };
+        //     _ipXhr.onerror = function() { _clientIp = 'unknown'; };
+        //     _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
+        //     _ipXhr.send();
+        //   } catch(e) { _clientIp = 'unknown'; }
+        // }
+
+        // Notify wrapper that auth is OK — include messageKey so the host page
+        // can import it for HMAC verification (needed for ?session= path where
+        // gas-session-created is not sent, e.g. "Use Here" reclaim, tab duplicate, refresh)
+        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        google.script.run
+          .withSuccessHandler(function(signed) {
+            window.top.postMessage(signed, '${PARENT_ORIGIN}');
+          })
+          .withFailureHandler(function(err) {
+            // Fallback: send unsigned gas-auth-ok so the host page at least knows
+            // the session is valid (verification will pass because no key is set yet)
+            window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
+              needsReauth: ${session.needsReauth || false},
+              messageKey: '${escapeJs(appMsgKey)}'}, '${PARENT_ORIGIN}');
+          })
+          .signAppMessage(_sessionToken, 'gas-auth-ok');
+
+        window.addEventListener('message', function(e) {
+          // Phase 3: IP receiver removed — uncomment to re-enable
+          // if (e.data && e.data.type === 'host-client-ip') {
+          //   _clientIp = _valIp(e.data.ip);
+          // }
+          if (e.data && e.data.type === 'gas-version-check') {
+            // DJB2→HMAC migration: signed server-side via signAppMessage()
+            google.script.run
+              .withSuccessHandler(function(signed) {
+                top.postMessage(signed, '${PARENT_ORIGIN}');
+              })
+              .withFailureHandler(function() {
+                // Don't send an unsigned response — the version poll is periodic and will retry.
+                // A missing response is safer than an unsigned one that gets dropped by HMAC verify.
+              })
+              .signAppMessage(_sessionToken, 'gas-version');
+          }
+        });
+
+        // Activity detection — notify host page on user interaction so it can
+        // trigger an immediate heartbeat (catches expired sessions before data loss)
+        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        var _lastActivityNotify = 0;
+        var _pendingActivity = false;
+        function _notifyActivity() {
+          var now = Date.now();
+          if (now - _lastActivityNotify < 5000) return; // 5s debounce
+          if (_pendingActivity) return; // Prevent stacking server calls
+          _lastActivityNotify = now;
+          _pendingActivity = true;
+          google.script.run
+            .withSuccessHandler(function(signed) {
+              _pendingActivity = false;
+              window.top.postMessage(signed, '${PARENT_ORIGIN}');
+            })
+            .withFailureHandler(function() {
+              _pendingActivity = false;
+              // Silently drop — next activity event will retry
+            })
+            .signAppMessage(_sessionToken, 'gas-user-activity');
+        }
+        document.addEventListener('keydown', _notifyActivity, true);
+        document.addEventListener('click', _notifyActivity, true);
+        document.addEventListener('input', _notifyActivity, true);
+
+        // Save Note button — real EMR data entry action with server-side session validation
+        document.getElementById('save-note-btn').addEventListener('click', function() {
+          var noteInput = document.getElementById('save-note-input');
+          var statusEl = document.getElementById('save-note-status');
+          var note = noteInput.value.trim();
+          if (!note) {
+            statusEl.textContent = 'Enter a note first.';
+            statusEl.style.color = '#f57c00';
+            return;
+          }
+          _notifyActivity();
+          statusEl.textContent = 'Validating session & saving...';
+          statusEl.style.color = '#999';
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result.success) {
+                statusEl.textContent = 'Saved: "' + result.note + '" (validated as ' + result.email + ')';
+                statusEl.style.color = '#2e7d32';
+                noteInput.value = '';
+              } else {
+                statusEl.textContent = 'Save failed.';
+                statusEl.style.color = '#c62828';
+              }
+            })
+            .withFailureHandler(function(err) {
+              var msg = err.message || '';
+              if (msg.indexOf('SESSION_') === 0) {
+                statusEl.textContent = 'Session invalid — re-authenticate to save.';
+                statusEl.style.color = '#c62828';
+                // DJB2→HMAC migration: signed server-side via signAppMessage()
+                google.script.run
+                  .withSuccessHandler(function(signed) {
+                    window.top.postMessage(signed, '${PARENT_ORIGIN}');
+                  })
+                  .withFailureHandler(function() {
+                    // Double failure — can't even sign the invalid notification.
+                    // User already sees "re-authenticate" text in the GAS iframe.
+                    // Don't send unsigned — host page would drop it anyway.
+                  })
+                  .signAppMessage(_sessionToken, 'gas-session-invalid', {reason: msg});
+              } else {
+                statusEl.textContent = 'Error: ' + msg;
+                statusEl.style.color = '#c62828';
+              }
+            })
+            .saveNote(_sessionToken, note);  // Phase 3: was .saveNote(_sessionToken, note, _clientIp)
+        });
+      </script>
+    </body>
+    </html>
+  `;
   return HtmlService.createHtmlOutput(html)
     .setTitle(TITLE)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

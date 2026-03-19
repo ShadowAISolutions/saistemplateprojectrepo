@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v04.92r] — 2026-03-18 11:42:52 PM EST
+
+> **Prompt:** "its still doing the blink. can you write up your current findings in a document, and then revert the testauth1 environment completely to its pre-10.4.1 state"
+
+### Added
+- Created `10.4.1-IMPLEMENTATION-FINDINGS.md` — documents the implementation attempt, three issues encountered (stuck on signing in, double signAppMessage, persistent visual blink), technical learnings, quota analysis, and five recommendations for future re-attempt
+
+### Reverted
+- Reverted `testauth1.gs` to v01.56g (pre-10.4.1 state) — removed `exchangeTokenAndBuildApp()`, `buildAppHtmlString()`, and modified listener page
+- Reverted `testauth1.html` to v02.35w (pre-10.4.1 state) — removed `appLoaded` guard in `gas-session-created` handler
+- Reverted GAS/HTML version files and changelog entries to pre-10.4.1 values
 
 ## [v04.91r] — 2026-03-18 11:36:01 PM EST
 

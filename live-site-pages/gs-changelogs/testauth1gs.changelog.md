@@ -3,25 +3,9 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 43/50`
 
 ## [Unreleased]
-
-## [v01.59g] — 2026-03-18 11:36:01 PM EST — v04.91r
-
-### Fixed
-- Eliminated extra server call during sign-in that was causing a brief visual flash
-
-## [v01.58g] — 2026-03-18 11:16:43 PM EST — v04.90r
-
-### Fixed
-- Fixed sign-in getting stuck on "Signing in..." — the app now loads correctly after authentication
-
-## [v01.57g] — 2026-03-18 11:09:45 PM EST — v04.89r
-
-### Changed
-- Sign-in now completes in a single server request instead of two — the app interface loads immediately after authentication without a separate page reload
-- Session resume, tab reclaim, and all security checks continue to work exactly as before
 
 ## [v01.56g] — 2026-03-18 02:50:29 PM EST — v04.81r
 

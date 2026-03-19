@@ -3,14 +3,9 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 36/50`
 
 ## [Unreleased]
-
-## [v02.36w] — 2026-03-18 11:09:45 PM EST — v04.89r
-
-### Changed
-- Faster sign-in — the app now loads in a single step instead of requiring two separate page loads during HIPAA-mode login
 
 ## [v02.35w] — 2026-03-18 02:50:29 PM EST — v04.81r
 
