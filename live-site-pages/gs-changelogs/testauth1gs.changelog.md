@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.64g] — 2026-03-19 01:24:26 PM EST — v05.05r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.63g] — 2026-03-19 12:45:41 PM EST — v05.04r
 
@@ -268,41 +273,3 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Changed
 - "Session expiring soon" notification now only appears in the last 5 minutes instead of the last 15 minutes
-
-## [v01.18g] — 2026-03-13 11:17:21 PM EST — v03.07r
-
-### Changed
-- Session expiration changed to 1 hour
-- Heartbeat interval changed to 5 minutes
-
-## [v01.17g] — 2026-03-13 11:12:06 PM EST — v03.06r
-
-### Changed
-- Session expiration extended from 3 minutes to 2 hours
-- Heartbeat interval increased from 30 seconds to 10 minutes
-
-## [v01.16g] — 2026-03-13 08:58:37 PM EST — v02.94r
-
-### Added
-- Added a text input field for testing typing during heartbeat activity
-
-## [v01.15g] — 2026-03-13 07:15:58 PM EST — v02.90r
-
-### Added
-- Cryptographic message signing for all outgoing messages
-- Input sanitization to prevent code injection
-
-### Changed
-- Messages now only reach the intended embedding page
-- Error details are logged server-side only, not sent to the browser
-- Improved session security by removing stored credentials
-
-### Removed
-- Debug logging from token exchange
-
-## [v01.14g] — 2026-03-13 06:03:16 PM EST — v02.86r
-
-### Changed
-- Minor internal improvements
-
-Developed by: ShadowAISolutions

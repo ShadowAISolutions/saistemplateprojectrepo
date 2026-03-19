@@ -8,6 +8,44 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.18g] — 2026-03-13 11:17:21 PM EST — v03.07r
+
+### Changed
+- Session expiration changed to 1 hour
+- Heartbeat interval changed to 5 minutes
+
+## [v01.17g] — 2026-03-13 11:12:06 PM EST — v03.06r
+
+### Changed
+- Session expiration extended from 3 minutes to 2 hours
+- Heartbeat interval increased from 30 seconds to 10 minutes
+
+## [v01.16g] — 2026-03-13 08:58:37 PM EST — v02.94r
+
+### Added
+- Added a text input field for testing typing during heartbeat activity
+
+## [v01.15g] — 2026-03-13 07:15:58 PM EST — v02.90r
+
+### Added
+- Cryptographic message signing for all outgoing messages
+- Input sanitization to prevent code injection
+
+### Changed
+- Messages now only reach the intended embedding page
+- Error details are logged server-side only, not sent to the browser
+- Improved session security by removing stored credentials
+
+### Removed
+- Debug logging from token exchange
+
+## [v01.14g] — 2026-03-13 06:03:16 PM EST — v02.86r
+
+### Changed
+- Minor internal improvements
+
+Developed by: ShadowAISolutions
+
 ## [v01.13g] — 2026-03-12 09:47:46 PM EST — v02.64r — [squashed]
 
 ### Changed
