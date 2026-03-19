@@ -1,4 +1,4 @@
-var VERSION = "v01.70g";
+var VERSION = "v01.71g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -69,6 +69,32 @@ var _rbacRolesCache = null;
 var _rbacRolesCacheExpiry = 0;
 
 /**
+ * Cache epoch — a counter stored in ScriptProperties that prefixes all CacheService keys.
+ * Incrementing the epoch instantly orphans ALL existing cache entries (they have the old
+ * prefix and will never be read again). This is a nuclear cache clear without needing to
+ * know individual cache keys. The epoch is read once per execution and cached in memory.
+ *
+ * getEpochCache() returns a wrapper around CacheService.getScriptCache() that auto-prefixes
+ * all keys with the epoch. Use this instead of CacheService.getScriptCache() directly.
+ */
+var _cacheEpoch = null;
+function _getCacheEpoch() {
+  if (_cacheEpoch !== null) return _cacheEpoch;
+  _cacheEpoch = PropertiesService.getScriptProperties().getProperty('CACHE_EPOCH') || '0';
+  return _cacheEpoch;
+}
+function getEpochCache() {
+  var raw = CacheService.getScriptCache();
+  var pfx = 'e' + _getCacheEpoch() + '_';
+  return {
+    get: function(key) { return raw.get(pfx + key); },
+    put: function(key, value, ttl) { raw.put(pfx + key, value, ttl); },
+    remove: function(key) { raw.remove(pfx + key); },
+    removeAll: function(keys) { raw.removeAll(keys.map(function(k) { return pfx + k; })); }
+  };
+}
+
+/**
  * Read roles and permissions from the "Roles" tab of the centralized ACL spreadsheet.
  * Expected layout: Row 1 = headers (Role, permission1, permission2, ...).
  *                  Rows 2+ = role name in col A, TRUE/FALSE per permission column.
@@ -83,7 +109,7 @@ function getRolesFromSpreadsheet() {
     return _rbacRolesCache;
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var cacheKey = 'rbac_roles_matrix';
   var cached = cache.get(cacheKey);
   if (cached) {
@@ -290,6 +316,8 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
  * @param {string} email — the user's email address. When called from the GAS editor
  *   (no parameter), reads from Script Properties key "CLEAR_CACHE_EMAIL".
  *   Usage: Script Properties → CLEAR_CACHE_EMAIL = user@example.com → Run this function.
+ * Note: uses the same epoch bump as clearAllAccessCache — all users are affected.
+ * GAS CacheService does not support per-key enumeration, so targeted clearing is not possible.
  */
 function clearAccessCacheForUser(email) {
   if (!email) {
@@ -299,86 +327,31 @@ function clearAccessCacheForUser(email) {
     Logger.log('No email specified. Set Script Properties key "CLEAR_CACHE_EMAIL" or pass email as parameter.');
     return;
   }
-  var cache = CacheService.getScriptCache();
-  cache.remove('access_' + email.toLowerCase());
-  cache.remove('role_' + email.toLowerCase());
-  invalidateAllSessions(email, 'access_cache_cleared');
-  Logger.log('Cleared access cache + invalidated sessions for ' + email);
+  // Bump epoch to invalidate all cache (no way to target individual keys in GAS)
+  clearAllAccessCache();
+  Logger.log('Cache cleared for all users (epoch bumped). Target user: ' + email);
 }
 
 /**
- * Clear the access cache for ALL users and invalidate all active sessions.
- * Collects emails from BOTH sources:
- *   1. Master ACL spreadsheet (MASTER_ACL_SPREADSHEET_ID → Access tab)
- *   2. SPREADSHEET_ID editor/viewer sharing list (catches users cached before ACL migration)
- * This ensures no stale cache entries survive a spreadsheet migration.
+ * Nuclear cache clear — increments the cache epoch so ALL existing CacheService entries
+ * are instantly orphaned (they have the old epoch prefix and will never be read again).
+ * No need to enumerate individual keys — everything is invalidated at once.
+ * After incrementing, all users must re-authenticate on their next request.
  */
 function clearAllAccessCache() {
-  var cache = CacheService.getScriptCache();
-  var keysToRemove = [];
-  var emailsToInvalidate = [];
+  var props = PropertiesService.getScriptProperties();
+  var oldEpoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
+  var newEpoch = String(oldEpoch + 1);
+  props.setProperty('CACHE_EPOCH', newEpoch);
 
-  // Source 1: Master ACL spreadsheet
-  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  if (hasAcl) {
-    try {
-      var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-      var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
-      if (aclSheet) {
-        var data = aclSheet.getDataRange().getValues();
-        for (var r = 1; r < data.length; r++) {
-          var email = String(data[r][0]).trim().toLowerCase();
-          if (email && email.indexOf('@') > -1) {
-            keysToRemove.push('access_' + email);
-            keysToRemove.push('role_' + email);
-            emailsToInvalidate.push(email);
-          }
-        }
-      } else {
-        Logger.log('ACL sheet "' + ACL_SHEET_NAME + '" not found');
-      }
-    } catch(e) {
-      Logger.log('Error reading ACL spreadsheet: ' + e.message);
-    }
-  }
-
-  // Source 2: SPREADSHEET_ID sharing list (catches pre-migration cached users)
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
-  if (hasSheet) {
-    try {
-      var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
-      var allUsers = dataSs.getEditors().concat(dataSs.getViewers());
-      for (var u = 0; u < allUsers.length; u++) {
-        var ue = allUsers[u].getEmail().toLowerCase();
-        if (ue && emailsToInvalidate.indexOf(ue) === -1) {
-          keysToRemove.push('access_' + ue);
-          keysToRemove.push('role_' + ue);
-          emailsToInvalidate.push(ue);
-        }
-      }
-    } catch(e) {
-      Logger.log('Warning: could not read SPREADSHEET_ID sharing list — ' + e.message);
-    }
-  }
-
-  // Clear roles matrix cache
-  keysToRemove.push('rbac_roles_matrix');
-  if (keysToRemove.length > 0) {
-    cache.removeAll(keysToRemove);
-  }
-
-  // Reset in-memory cache
+  // Reset in-memory cache for this execution
+  _cacheEpoch = newEpoch;
   _rbacRolesCache = null;
   _rbacRolesCacheExpiry = 0;
 
-  // Invalidate all active sessions so users re-authenticate with fresh roles/permissions
-  for (var s = 0; s < emailsToInvalidate.length; s++) {
-    invalidateAllSessions(emailsToInvalidate[s], 'access_cache_cleared');
-  }
-
-  Logger.log('Cleared access cache for ' + emailsToInvalidate.length + ' users from '
-    + (hasAcl ? 'ACL' : '') + (hasAcl && hasSheet ? ' + ' : '') + (hasSheet ? 'sharing list' : '')
-    + ' + roles matrix. All sessions invalidated.');
+  Logger.log('Cache epoch bumped from ' + oldEpoch + ' to ' + newEpoch
+    + ' — ALL cached access, roles, and sessions are now invalidated.'
+    + ' Old entries will expire naturally from CacheService within 10 minutes.');
 }
 
 /**
@@ -390,7 +363,7 @@ function listActiveSessions(sessionToken) {
   var user = validateSessionForData(sessionToken, 'listActiveSessions');
   checkPermission(user, 'admin', 'listActiveSessions');
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var activeSessions = [];
 
   try {
@@ -508,7 +481,7 @@ function getAppData() {
 
 function pullAndDeployFromGitHub() {
   // Audit: Log every deploy trigger for security monitoring
-  var auditCache = CacheService.getScriptCache();
+  var auditCache = getEpochCache();
   var deployLog = auditCache.get('deploy_audit_log') || '[]';
   var log;
   try { log = JSON.parse(deployLog); } catch(e) { log = []; }
@@ -808,7 +781,7 @@ function exchangeTokenForSession(accessToken) {
   }
 
   // Rate limiting: configurable via ENABLE_ESCALATING_LOCKOUT toggle
-  var rlCache = CacheService.getScriptCache();
+  var rlCache = getEpochCache();
   var tokenFingerprint = 'ratelimit_' + accessToken.substring(0, 16);
   var attempts = rlCache.get(tokenFingerprint);
   var attemptCount = attempts ? parseInt(attempts, 10) : 0;
@@ -938,7 +911,7 @@ function exchangeTokenForSession(accessToken) {
     sessionData.hmac = generateSessionHmac(sessionData);
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   cache.put("session_" + sessionToken, JSON.stringify(sessionData), AUTH_CONFIG.SESSION_EXPIRATION);
 
   trackUserSession(userInfo.email, sessionToken);
@@ -967,7 +940,7 @@ function validateSession(sessionToken) {
     return { status: "not_signed_in" };
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var raw = cache.get("session_" + sessionToken);
   if (!raw) {
     // Check for eviction tombstone — tells the client WHY the session is gone.
@@ -1056,7 +1029,7 @@ function validateSessionForData(sessionToken, operationName) {
     throw new Error('SESSION_EXPIRED');
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var raw = cache.get("session_" + sessionToken);
   if (!raw) {
     // Check for eviction tombstone
@@ -1151,7 +1124,7 @@ function saveNote(sessionToken, noteText) {
 
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var raw = cache.get("session_" + sessionToken);
   if (raw) {
     try {
@@ -1167,7 +1140,7 @@ function invalidateSession(sessionToken) {
 function invalidateAllSessions(email, reason) {
   if (!email) return;
   var evictionReason = reason || 'new_sign_in';
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var trackKey = "sessions_" + email.toLowerCase();
   var raw = cache.get(trackKey);
   if (!raw) return;
@@ -1229,7 +1202,7 @@ function checkGoogleTokenExpiry(sessionData) {
 // =============================================
 
 function trackUserSession(email, sessionToken) {
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var trackKey = "sessions_" + email.toLowerCase();
   var raw = cache.get(trackKey);
   var tokens = [];
@@ -1242,7 +1215,7 @@ function trackUserSession(email, sessionToken) {
 
 function removeUserSession(email, sessionToken) {
   if (!email) return;
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var trackKey = "sessions_" + email.toLowerCase();
   var raw = cache.get(trackKey);
   if (!raw) return;
@@ -1287,7 +1260,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
     }
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var cacheKey = "access_" + lowerEmail;
   var roleCacheKey = "role_" + lowerEmail;
   var cached = cache.get(cacheKey);
@@ -1395,7 +1368,7 @@ function processHeartbeat(token) {
     return {type: 'gas-heartbeat-error', error: 'invalid_request'};
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
 
   // Rate limit: max 20 per session per 5-minute window
   var hbRlKey = 'hb_ratelimit_' + token.substring(0, 16);
@@ -1471,7 +1444,7 @@ function processSignOut(token) {
     return {type: 'gas-signed-out', success: false, error: 'no_token'};
   }
   // Read messageKey before invalidation (for signing the response)
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var raw = cache.get("session_" + token);
   var msgKey = '';
   if (raw) { try { msgKey = JSON.parse(raw).messageKey || ''; } catch(e) {} }
@@ -1484,7 +1457,7 @@ function processSignOut(token) {
 // Event details are received via postMessage, NOT URL parameters.
 function processSecurityEvent(eventType, details) {
   if (!eventType) return;
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
 
   // Global rate limit: max 50 security events per 5-minute window
   var seGlobalKey = 'se_ratelimit_global';
@@ -1525,7 +1498,7 @@ function signAppMessage(sessionToken, messageType, params) {
     return { type: 'error', error: 'missing_parameters' };
   }
 
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
 
   // Validate session — retrieve messageKey from cache regardless of session validity
   var raw = cache.get('session_' + sessionToken);
@@ -1709,7 +1682,7 @@ function doGet(e) {
   // Phase 7: URL-parameter path kept for backwards compatibility during migration
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
   if (securityEvent) {
-    var seCache = CacheService.getScriptCache();
+    var seCache = getEpochCache();
 
     // Global rate limit: max 50 security events per 5-minute window (all sources combined)
     // Uses a single key independent of clientIp — prevents bypass via IP rotation
@@ -1844,7 +1817,7 @@ function doGet(e) {
   // Retrieve messageKey from session data for signing outgoing messages
   var appMsgKey = '';
   try {
-    var appCache = CacheService.getScriptCache();
+    var appCache = getEpochCache();
     var appRaw = appCache.get("session_" + sessionToken);
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}

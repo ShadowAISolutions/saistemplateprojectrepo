@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v05.12r] — 2026-03-19 02:53:47 PM EST
+
+> **Prompt:** "still not working, are you able to clear entire cache instead of just specific cache"
+
+### Changed
+- Implemented cache epoch system — `clearAllAccessCache()` now increments a counter in ScriptProperties, instantly orphaning ALL CacheService entries without needing to know individual keys
+- All CacheService access now goes through `getEpochCache()` wrapper that auto-prefixes keys with the epoch number
+- Running `clearAllAccessCache()` from the GAS editor is now a true nuclear clear — guaranteed to invalidate everything
+
+#### `testauth1.gs` — v01.71g
+
+##### Changed
+- Cache clearing now invalidates everything at once — no more stale entries from any source
 
 ## [v05.11r] — 2026-03-19 02:46:22 PM EST
 
