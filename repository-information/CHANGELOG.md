@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v05.14r] — 2026-03-19 05:46:46 PM EST
+
+> **Prompt:** "in the testauth1, for an admin user, i am no longer able to click on the button to see who is logged in to log them out anymore, think deep"
+
+### Fixed
+- Admin Sessions button unclickable for admin users — `applyUIGating()` set `el.style.display = ''` to show gated elements, but the `#admin-sessions-btn` CSS has `display: none` as default, so clearing the inline style just exposed the stylesheet rule and the button stayed hidden. Changed to `display: 'inline-block'` for visible state
+
+#### `testauth1.html` — v02.45w
+
+##### Fixed
+- Admin Sessions button now properly visible and clickable for admin users
 
 ## [v05.13r] — 2026-03-19 02:57:40 PM EST
 
