@@ -1,4 +1,4 @@
-var VERSION = "v01.64g";
+var VERSION = "v01.65g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -26,11 +26,14 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
 
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
-// Row 1 = headers (Email, page1, page2, ...). Rows 2+ = email in col A, TRUE/FALSE per page column.
+// Three tabs:
+//   "Access" — Row 1 = headers (Email, Role, page1, page2, ...). Rows 2+ = email in col A, role in col B, TRUE/FALSE per page.
+//   "Roles"  — Row 1 = headers (Role, perm1, perm2, ...). Rows 2+ = role name in col A, TRUE/FALSE per permission.
+//   "UIElements" — Row 1 = headers (ElementID, RequiredPermission, Project). Rows 2+ = UI gating rules.
 // If configured, this replaces the old editor/viewer sharing-list check.
 // Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
-var ACL_SHEET_NAME = "ACL";
+var ACL_SHEET_NAME = "Access";
 var ACL_PAGE_NAME  = "testauth1";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
@@ -44,10 +47,14 @@ var PROJECT_OVERRIDES = {
 // ══════════════
 // RBAC — Role-Based Access Control
 // ══════════════
-// Roles and their permissions. Each role maps to an array of permission strings.
-// The ACL spreadsheet has a "Role" column (col B) that assigns one role per user.
+// Roles and permissions are read from the "Roles" tab of the centralized ACL spreadsheet.
+// The "Access" tab has a "Role" column (col B) that assigns one role per user.
+// The "UIElements" tab maps element IDs to required permissions for client-side UI gating.
 // HIPAA: §164.308(a)(4)(ii) — access authorization based on role.
-var RBAC_ROLES = {
+
+// Hardcoded fallback — used ONLY when the Roles tab is missing or unreadable.
+// In normal operation, getRolesFromSpreadsheet() reads from the spreadsheet.
+var RBAC_ROLES_FALLBACK = {
   admin:     ['read', 'write', 'delete', 'export', 'amend', 'admin'],
   clinician: ['read', 'write', 'export', 'amend'],
   billing:   ['read', 'export'],
@@ -57,9 +64,177 @@ var RBAC_ROLES = {
 // Default role when ACL does not specify one (fallback access via editor/viewer list)
 var RBAC_DEFAULT_ROLE = 'viewer';
 
-// Check if a role has a specific permission
+// In-memory cache for the current execution (avoids repeated spreadsheet reads within a single request)
+var _rbacRolesCache = null;
+var _rbacRolesCacheExpiry = 0;
+
+/**
+ * Read roles and permissions from the "Roles" tab of the centralized ACL spreadsheet.
+ * Expected layout: Row 1 = headers (Role, permission1, permission2, ...).
+ *                  Rows 2+ = role name in col A, TRUE/FALSE per permission column.
+ * Returns an object like { admin: ['read','write','delete',...], viewer: ['read'], ... }
+ * Falls back to RBAC_ROLES_FALLBACK if the spreadsheet/tab is unavailable.
+ * Results are cached in CacheService for 10 minutes and in memory for the current execution.
+ */
+function getRolesFromSpreadsheet() {
+  // In-memory cache for same-execution reuse (avoids even CacheService overhead)
+  var now = Date.now();
+  if (_rbacRolesCache && now < _rbacRolesCacheExpiry) {
+    return _rbacRolesCache;
+  }
+
+  var cache = CacheService.getScriptCache();
+  var cacheKey = 'rbac_roles_matrix';
+  var cached = cache.get(cacheKey);
+  if (cached) {
+    try {
+      _rbacRolesCache = JSON.parse(cached);
+      _rbacRolesCacheExpiry = now + 60000; // 1 min in-memory
+      return _rbacRolesCache;
+    } catch (e) { /* fall through to spreadsheet read */ }
+  }
+
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (!hasAcl) {
+    _rbacRolesCache = RBAC_ROLES_FALLBACK;
+    _rbacRolesCacheExpiry = now + 60000;
+    return RBAC_ROLES_FALLBACK;
+  }
+
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var rolesSheet = ss.getSheetByName('Roles');
+    if (!rolesSheet) {
+      Logger.log('RBAC: "Roles" tab not found — using hardcoded fallback');
+      _rbacRolesCache = RBAC_ROLES_FALLBACK;
+      _rbacRolesCacheExpiry = now + 60000;
+      return RBAC_ROLES_FALLBACK;
+    }
+
+    var data = rolesSheet.getDataRange().getValues();
+    if (data.length < 2) {
+      _rbacRolesCache = RBAC_ROLES_FALLBACK;
+      _rbacRolesCacheExpiry = now + 60000;
+      return RBAC_ROLES_FALLBACK;
+    }
+
+    // Row 0 = headers: [Role, perm1, perm2, ...]
+    var headers = data[0];
+    var permNames = [];
+    for (var c = 1; c < headers.length; c++) {
+      permNames.push(String(headers[c]).trim().toLowerCase());
+    }
+
+    var roles = {};
+    for (var r = 1; r < data.length; r++) {
+      var roleName = String(data[r][0]).trim().toLowerCase();
+      if (!roleName) continue;
+      var perms = [];
+      for (var p = 0; p < permNames.length; p++) {
+        var val = data[r][p + 1];
+        if (val === true || String(val).trim().toUpperCase() === 'TRUE') {
+          perms.push(permNames[p]);
+        }
+      }
+      roles[roleName] = perms;
+    }
+
+    // Cache for 10 minutes in CacheService
+    cache.put(cacheKey, JSON.stringify(roles), 600);
+    _rbacRolesCache = roles;
+    _rbacRolesCacheExpiry = now + 60000;
+    return roles;
+  } catch (e) {
+    Logger.log('RBAC: Error reading Roles tab — ' + e.message + ' — using hardcoded fallback');
+    _rbacRolesCache = RBAC_ROLES_FALLBACK;
+    _rbacRolesCacheExpiry = now + 60000;
+    return RBAC_ROLES_FALLBACK;
+  }
+}
+
+/**
+ * Read UI element gating rules from the "UIElements" tab of the centralized ACL spreadsheet.
+ * Expected layout: Row 1 = headers (ElementID, RequiredPermission, Project).
+ *                  Rows 2+ = element ID, permission string, project name.
+ * Returns an array of { elementId, permission } for elements matching ACL_PAGE_NAME.
+ * Results are cached in CacheService for 10 minutes.
+ */
+function getUIElementsForPage() {
+  var cache = CacheService.getScriptCache();
+  var cacheKey = 'ui_elements_' + ACL_PAGE_NAME;
+  var cached = cache.get(cacheKey);
+  if (cached) {
+    try { return JSON.parse(cached); } catch (e) { /* fall through */ }
+  }
+
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (!hasAcl) return [];
+
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var uiSheet = ss.getSheetByName('UIElements');
+    if (!uiSheet) return [];
+
+    var data = uiSheet.getDataRange().getValues();
+    if (data.length < 2) return [];
+
+    // Find column indices by header name (flexible ordering)
+    var headers = data[0];
+    var idCol = -1, permCol = -1, projCol = -1;
+    for (var c = 0; c < headers.length; c++) {
+      var h = String(headers[c]).trim().toLowerCase();
+      if (h === 'elementid') idCol = c;
+      else if (h === 'requiredpermission') permCol = c;
+      else if (h === 'project') projCol = c;
+    }
+    if (idCol === -1 || permCol === -1) return [];
+
+    var elements = [];
+    for (var r = 1; r < data.length; r++) {
+      // Filter by project if the Project column exists
+      if (projCol !== -1) {
+        var proj = String(data[r][projCol]).trim().toLowerCase();
+        if (proj && proj !== ACL_PAGE_NAME.toLowerCase()) continue;
+      }
+      var elId = String(data[r][idCol]).trim();
+      var perm = String(data[r][permCol]).trim().toLowerCase();
+      if (elId && perm) {
+        elements.push({ elementId: elId, permission: perm });
+      }
+    }
+
+    cache.put(cacheKey, JSON.stringify(elements), 600);
+    return elements;
+  } catch (e) {
+    Logger.log('UIElements: Error reading tab — ' + e.message);
+    return [];
+  }
+}
+
+/**
+ * Get the UI elements that should be VISIBLE for a given role.
+ * Compares the role's permissions against each UI element's required permission.
+ * Returns the full element list with a 'visible' boolean for each.
+ */
+function getUIGatingForRole(role) {
+  var roles = getRolesFromSpreadsheet();
+  var perms = roles[role] || roles[RBAC_DEFAULT_ROLE] || [];
+  var elements = getUIElementsForPage();
+  var result = [];
+  for (var i = 0; i < elements.length; i++) {
+    result.push({
+      elementId: elements[i].elementId,
+      permission: elements[i].permission,
+      visible: perms.indexOf(elements[i].permission) !== -1
+    });
+  }
+  return result;
+}
+
+// Check if a role has a specific permission (reads from spreadsheet)
 function hasPermission(role, permission) {
-  var perms = RBAC_ROLES[role];
+  var roles = getRolesFromSpreadsheet();
+  var perms = roles[role];
   if (!perms) return false;
   return perms.indexOf(permission) !== -1;
 }
@@ -70,11 +245,12 @@ function hasPermission(role, permission) {
 function checkPermission(user, requiredPermission, operationName) {
   var role = user.role || RBAC_DEFAULT_ROLE;
   if (!hasPermission(role, requiredPermission)) {
+    var roles = getRolesFromSpreadsheet();
     auditLog('security_alert', user.email, 'permission_denied', {
       operation: operationName,
       role: role,
       requiredPermission: requiredPermission,
-      availablePermissions: (RBAC_ROLES[role] || []).join(',')
+      availablePermissions: (roles[role] || []).join(',')
     });
     throw new Error('PERMISSION_DENIED');
   }
@@ -223,12 +399,18 @@ function clearAllAccessCache() {
     Logger.log('Error reading ACL: ' + e.message);
     return;
   }
+  // Also clear the centralized roles matrix and UI elements caches
+  keysToRemove.push('rbac_roles_matrix');
+  keysToRemove.push('ui_elements_' + ACL_PAGE_NAME);
   if (keysToRemove.length > 0) {
     cache.removeAll(keysToRemove);
-    Logger.log('Cleared access cache for ' + (keysToRemove.length / 2) + ' users');
+    Logger.log('Cleared access cache for ' + ((keysToRemove.length - 2) / 2) + ' users + roles matrix + UI elements');
   } else {
     Logger.log('No users found in ACL tab');
   }
+  // Reset in-memory cache
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
 }
 
 /**
@@ -779,7 +961,7 @@ function exchangeTokenForSession(accessToken) {
     // RBAC: role and permissions stored in session for fast permission checks
     // HIPAA: §164.308(a)(4)(ii) — access authorization based on role
     role: accessResult.role,
-    permissions: RBAC_ROLES[accessResult.role] || [],
+    permissions: getRolesFromSpreadsheet()[accessResult.role] || [],
     isEmergencyAccess: accessResult.isEmergencyAccess
   };
 
@@ -800,6 +982,8 @@ function exchangeTokenForSession(accessToken) {
     { sessionId: sessionToken.substring(0, 8) + '...', role: accessResult.role,
       isEmergencyAccess: accessResult.isEmergencyAccess });
 
+  var uiGating = getUIGatingForRole(accessResult.role);
+
   return {
     success: true,
     sessionToken: sessionToken,
@@ -808,7 +992,8 @@ function exchangeTokenForSession(accessToken) {
     absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0,
     messageKey: messageKey,
     role: accessResult.role,
-    permissions: RBAC_ROLES[accessResult.role] || []
+    permissions: getRolesFromSpreadsheet()[accessResult.role] || [],
+    uiElements: uiGating
   };
 }
 
@@ -883,7 +1068,7 @@ function validateSession(sessionToken) {
     displayName: sessionData.displayName,
     needsReauth: needsReauth,
     role: sessionData.role || RBAC_DEFAULT_ROLE,
-    permissions: sessionData.permissions || RBAC_ROLES[sessionData.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE]
+    permissions: sessionData.permissions || getRolesFromSpreadsheet()[sessionData.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE]
   };
 }
 
@@ -960,7 +1145,7 @@ function validateSessionForData(sessionToken, operationName) {
     clientIp: sessionData.clientIp || 'not-collected',
     isEmergencyAccess: sessionData.isEmergencyAccess || false,
     role: sessionData.role || RBAC_DEFAULT_ROLE,
-    permissions: sessionData.permissions || RBAC_ROLES[sessionData.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE]
+    permissions: sessionData.permissions || getRolesFromSpreadsheet()[sessionData.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE]
   };
 }
 
@@ -1183,7 +1368,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
                   var userRole = RBAC_DEFAULT_ROLE;
                   if (roleColIdx !== -1 && data[r][roleColIdx]) {
                     var rawRole = String(data[r][roleColIdx]).trim().toLowerCase();
-                    if (RBAC_ROLES[rawRole]) {
+                    if (getRolesFromSpreadsheet()[rawRole]) {
                       userRole = rawRole;
                     }
                   }
@@ -1396,13 +1581,15 @@ function signAppMessage(sessionToken, messageType, params) {
 
   switch (messageType) {
     case 'gas-auth-ok':
+      var authRole = session.role || RBAC_DEFAULT_ROLE;
       return signMessage({
         type: 'gas-auth-ok',
         version: VERSION,
         needsReauth: session.needsReauth || false,
         messageKey: msgKey,
-        role: session.role || RBAC_DEFAULT_ROLE,
-        permissions: session.permissions || RBAC_ROLES[session.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE]
+        role: authRole,
+        permissions: session.permissions || getRolesFromSpreadsheet()[authRole] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE],
+        uiElements: getUIGatingForRole(authRole)
       }, msgKey);
 
     case 'gas-version':
@@ -1623,7 +1810,8 @@ function doGet(e) {
             absoluteTimeout: result.absoluteTimeout || 0,
             messageKey: result.messageKey || "",
             role: result.role || "",
-            permissions: result.permissions || []
+            permissions: result.permissions || [],
+            uiElements: result.uiElements || []
           });
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
         + 'try { window.top.postMessage(' + payload + ', ' + JSON.stringify(PARENT_ORIGIN) + '); } catch(e) {}'
@@ -1655,6 +1843,7 @@ function doGet(e) {
       + '        messageKey: result.messageKey || "",'
       + '        role: result.role || "",'
       + '        permissions: result.permissions || [],'
+      + '        uiElements: result.uiElements || [],'
       + '        nonce: nonce'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
@@ -1783,7 +1972,8 @@ function doGet(e) {
               needsReauth: ${session.needsReauth || false},
               messageKey: '${escapeJs(appMsgKey)}',
               role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
-              permissions: ${JSON.stringify(session.permissions || RBAC_ROLES[session.role] || RBAC_ROLES[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
+              permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])},
+              uiElements: ${JSON.stringify(getUIGatingForRole(session.role || RBAC_DEFAULT_ROLE))}}, '${PARENT_ORIGIN}');
           })
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 

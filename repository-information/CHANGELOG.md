@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v05.06r] — 2026-03-19 02:07:08 PM EST
+
+> **Prompt:** "ok ive made them, proceed with implementing these into testauth1"
+
+### Changed
+- Centralized RBAC: roles and permissions now read from the "Roles" tab of the ACL spreadsheet instead of being hardcoded in the GAS script — admins can change permissions by editing spreadsheet cells without redeploying code
+- Added client-side UI element gating driven by the "UIElements" tab of the ACL spreadsheet — the server returns a visibility map per role, and the HTML page hides/shows elements accordingly
+- Renamed ACL tab from "ACL" to "Access" to match the new centralized spreadsheet structure
+- Added 10-minute CacheService caching and in-memory execution caching for spreadsheet-driven role lookups to minimize API calls
+
+#### `testauth1.gs` — v01.65g
+
+##### Changed
+- Replaced hardcoded `RBAC_ROLES` object with `getRolesFromSpreadsheet()` that reads from the "Roles" tab of the centralized ACL spreadsheet (falls back to hardcoded values if tab is missing)
+- Added `getUIElementsForPage()` to read UI element gating rules from the "UIElements" tab
+- Added `getUIGatingForRole()` that combines role permissions with UI element requirements to produce a visibility map
+- Updated `hasPermission()` and `checkPermission()` to use spreadsheet-driven roles
+- `exchangeTokenForSession()` and `signAppMessage('gas-auth-ok')` now include `uiElements` in their responses
+- Updated `clearAllAccessCache()` to also clear the roles matrix and UI elements caches
+- Updated `ACL_SHEET_NAME` from "ACL" to "Access"
+
+#### `testauth1.html` — v02.42w
+
+##### Changed
+- Added `UI_ELEMENTS_KEY` to session storage for persisting UI gating rules across page interactions
+- `saveSession()` and `loadSession()` now handle `uiElements` data
+- Added `applyUIGating()` function that reads the stored UI element map and hides/shows host-page elements based on role permissions
+- `showApp()` now calls `applyUIGating()` on every app display (login, resume, reclaim)
+- `gas-auth-ok` handler now stores `uiElements` from server response
 
 ## [v05.05r] — 2026-03-19 01:24:26 PM EST
 
