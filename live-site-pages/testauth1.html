@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.42w">
+  <meta name="build-version" content="v02.43w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -364,7 +364,7 @@
   <div id="user-pill">
     <span id="user-email-display"></span>
     <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
-    <button id="admin-sessions-btn" title="Manage active sessions">Sessions</button>
+    <button id="admin-sessions-btn" title="Manage active sessions" data-requires-permission="admin">Sessions</button>
     <button id="sign-out-btn">Sign Out</button>
   </div>
 
@@ -1073,7 +1073,6 @@
     var EMAIL_KEY = 'gas_user_email';
     var ROLE_KEY = 'gas_user_role';
     var PERMISSIONS_KEY = 'gas_user_permissions';
-    var UI_ELEMENTS_KEY = 'gas_ui_elements';
 
     // Single-tab enforcement — unique ID for this tab instance
     var _tabId = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1091,25 +1090,22 @@
         : window.localStorage;
     }
 
-    function saveSession(sessionToken, email, role, permissions, uiElements) {
+    function saveSession(sessionToken, email, role, permissions) {
       var storage = getStorage();
       storage.setItem(SESSION_KEY, sessionToken);
       storage.setItem(EMAIL_KEY, email);
       if (role) storage.setItem(ROLE_KEY, role);
       if (permissions) storage.setItem(PERMISSIONS_KEY, JSON.stringify(permissions));
-      if (uiElements) storage.setItem(UI_ELEMENTS_KEY, JSON.stringify(uiElements));
     }
 
     function loadSession() {
       var storage = getStorage();
       var permsRaw = storage.getItem(PERMISSIONS_KEY);
-      var uiRaw = storage.getItem(UI_ELEMENTS_KEY);
       return {
         token: storage.getItem(SESSION_KEY),
         email: storage.getItem(EMAIL_KEY),
         role: storage.getItem(ROLE_KEY) || '',
-        permissions: permsRaw ? JSON.parse(permsRaw) : [],
-        uiElements: uiRaw ? JSON.parse(uiRaw) : []
+        permissions: permsRaw ? JSON.parse(permsRaw) : []
       };
     }
 
@@ -1121,7 +1117,6 @@
       storage.removeItem(EMAIL_KEY);
       storage.removeItem(ROLE_KEY);
       storage.removeItem(PERMISSIONS_KEY);
-      storage.removeItem(UI_ELEMENTS_KEY);
       // Phase 5 (H-3): ONLY place where HMAC key is cleared.
       // Clear the HMAC key from the previous session — if it persists,
       // unsigned bootstrap messages (gas-ready-for-token) from a new sign-in
@@ -1608,7 +1603,7 @@
           return;
         }
         if (data.success) {
-          saveSession(data.sessionToken, data.email, data.role, data.permissions, data.uiElements);
+          saveSession(data.sessionToken, data.email, data.role, data.permissions);
           // Reset the rolling session timer (activity extends it).
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           // Only reset the absolute timer on a genuine new sign-in.
@@ -1703,15 +1698,12 @@
             console.error('HMAC key import from gas-auth-ok failed:', err);
           });
         }
-        // RBAC: Update role/permissions/uiElements from server (covers session resume where
+        // RBAC: Update role/permissions from server (covers session resume where
         // gas-session-created is not sent, and role changes between sessions)
         if (data.role) {
           getStorage().setItem(ROLE_KEY, data.role);
           if (data.permissions) {
             getStorage().setItem(PERMISSIONS_KEY, JSON.stringify(data.permissions));
-          }
-          if (data.uiElements) {
-            getStorage().setItem(UI_ELEMENTS_KEY, JSON.stringify(data.uiElements));
           }
         }
         // Phase 3: IP forwarding removed — uncomment to re-enable
@@ -2116,34 +2108,25 @@
         roleBadge.style.display = 'inline';
       }
 
-      // Show admin sessions button only for admin role
-      var adminBtn = document.getElementById('admin-sessions-btn');
-      if (adminBtn) {
-        adminBtn.style.display = (displayRole === 'admin') ? 'inline' : 'none';
-      }
-
-      // RBAC UI gating — hide/show elements based on the UIElements mapping from the ACL spreadsheet.
-      // Each entry has { elementId, permission, visible }. Elements not in the list are left untouched.
+      // RBAC UI gating — hide/show elements with data-requires-permission attributes
+      // based on the user's permissions from session storage.
+      // Admin sessions button uses data-requires-permission="admin" in HTML.
       applyUIGating();
     }
 
     /**
-     * Apply UI element gating based on the UIElements mapping from the centralized ACL spreadsheet.
-     * Reads the mapping from session storage (saved during login or session resume).
-     * Each entry: { elementId: string, permission: string, visible: boolean }.
-     * Elements with visible=false are hidden; visible=true are shown.
-     * Elements not in the mapping are left untouched (default visible).
-     * This runs on the HOST page — it gates host-page elements only (not GAS iframe content).
+     * Apply UI element gating based on data-requires-permission attributes.
+     * Any element with data-requires-permission="permName" is hidden if the
+     * user's permissions (from session storage) don't include that permission.
+     * No spreadsheet tab needed — just add the attribute to any HTML element.
      */
     function applyUIGating() {
       var session = loadSession();
-      var uiElements = session.uiElements || [];
-      for (var i = 0; i < uiElements.length; i++) {
-        var entry = uiElements[i];
-        var el = document.getElementById(entry.elementId);
-        if (el) {
-          el.style.display = entry.visible ? '' : 'none';
-        }
+      var perms = session.permissions || [];
+      var gated = document.querySelectorAll('[data-requires-permission]');
+      for (var i = 0; i < gated.length; i++) {
+        var reqPerm = gated[i].getAttribute('data-requires-permission');
+        gated[i].style.display = (perms.indexOf(reqPerm) !== -1) ? '' : 'none';
       }
     }
 

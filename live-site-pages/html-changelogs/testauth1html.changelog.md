@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v02.43w] — 2026-03-19 02:15:50 PM EST — v05.07r
+
+### Changed
+- Buttons and sections are now gated using simple HTML attributes — no external configuration needed to hide features based on your role
 
 ## [v02.42w] — 2026-03-19 02:07:08 PM EST — v05.06r
 

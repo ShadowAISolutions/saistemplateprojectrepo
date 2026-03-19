@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v05.07r] — 2026-03-19 02:15:50 PM EST
+
+> **Prompt:** "yes go ahead"
+
+### Changed
+- Replaced UIElements spreadsheet tab with client-side `data-requires-permission` HTML attributes — no spreadsheet row management needed, just add the attribute to any element
+- Removed `getUIElementsForPage()` and `getUIGatingForRole()` server functions — UI gating is now purely client-side using the permissions array already in session storage
+- Removed `uiElements` from all auth response payloads (`exchangeTokenForSession`, `signAppMessage`, `doGet` paths)
+- Admin sessions button now uses `data-requires-permission="admin"` instead of hardcoded role check in JavaScript
+
+#### `testauth1.gs` — v01.66g
+
+##### Changed
+- Removed UIElements spreadsheet functions and all uiElements response fields — UI gating is now handled client-side
+- Simplified clearAllAccessCache() — no longer clears UI elements cache
+
+#### `testauth1.html` — v02.43w
+
+##### Changed
+- `applyUIGating()` now scans for `data-requires-permission` attributes and compares against session permissions instead of reading a server-provided mapping
+- Removed `UI_ELEMENTS_KEY` session storage — no longer needed
+- Admin sessions button uses `data-requires-permission="admin"` attribute instead of hardcoded JavaScript role check
 
 ## [v05.06r] — 2026-03-19 02:07:08 PM EST
 

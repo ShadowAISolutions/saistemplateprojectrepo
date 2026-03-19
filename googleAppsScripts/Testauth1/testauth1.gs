@@ -1,4 +1,4 @@
-var VERSION = "v01.65g";
+var VERSION = "v01.66g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -26,10 +26,10 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
 
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
-// Three tabs:
+// Two tabs:
 //   "Access" — Row 1 = headers (Email, Role, page1, page2, ...). Rows 2+ = email in col A, role in col B, TRUE/FALSE per page.
 //   "Roles"  — Row 1 = headers (Role, perm1, perm2, ...). Rows 2+ = role name in col A, TRUE/FALSE per permission.
-//   "UIElements" — Row 1 = headers (ElementID, RequiredPermission, Project). Rows 2+ = UI gating rules.
+// UI element gating is handled client-side via data-requires-permission attributes on HTML elements.
 // If configured, this replaces the old editor/viewer sharing-list check.
 // Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
@@ -49,7 +49,7 @@ var PROJECT_OVERRIDES = {
 // ══════════════
 // Roles and permissions are read from the "Roles" tab of the centralized ACL spreadsheet.
 // The "Access" tab has a "Role" column (col B) that assigns one role per user.
-// The "UIElements" tab maps element IDs to required permissions for client-side UI gating.
+// UI element gating is handled client-side via data-requires-permission HTML attributes.
 // HIPAA: §164.308(a)(4)(ii) — access authorization based on role.
 
 // Hardcoded fallback — used ONLY when the Roles tab is missing or unreadable.
@@ -150,85 +150,6 @@ function getRolesFromSpreadsheet() {
     _rbacRolesCacheExpiry = now + 60000;
     return RBAC_ROLES_FALLBACK;
   }
-}
-
-/**
- * Read UI element gating rules from the "UIElements" tab of the centralized ACL spreadsheet.
- * Expected layout: Row 1 = headers (ElementID, RequiredPermission, Project).
- *                  Rows 2+ = element ID, permission string, project name.
- * Returns an array of { elementId, permission } for elements matching ACL_PAGE_NAME.
- * Results are cached in CacheService for 10 minutes.
- */
-function getUIElementsForPage() {
-  var cache = CacheService.getScriptCache();
-  var cacheKey = 'ui_elements_' + ACL_PAGE_NAME;
-  var cached = cache.get(cacheKey);
-  if (cached) {
-    try { return JSON.parse(cached); } catch (e) { /* fall through */ }
-  }
-
-  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  if (!hasAcl) return [];
-
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var uiSheet = ss.getSheetByName('UIElements');
-    if (!uiSheet) return [];
-
-    var data = uiSheet.getDataRange().getValues();
-    if (data.length < 2) return [];
-
-    // Find column indices by header name (flexible ordering)
-    var headers = data[0];
-    var idCol = -1, permCol = -1, projCol = -1;
-    for (var c = 0; c < headers.length; c++) {
-      var h = String(headers[c]).trim().toLowerCase();
-      if (h === 'elementid') idCol = c;
-      else if (h === 'requiredpermission') permCol = c;
-      else if (h === 'project') projCol = c;
-    }
-    if (idCol === -1 || permCol === -1) return [];
-
-    var elements = [];
-    for (var r = 1; r < data.length; r++) {
-      // Filter by project if the Project column exists
-      if (projCol !== -1) {
-        var proj = String(data[r][projCol]).trim().toLowerCase();
-        if (proj && proj !== ACL_PAGE_NAME.toLowerCase()) continue;
-      }
-      var elId = String(data[r][idCol]).trim();
-      var perm = String(data[r][permCol]).trim().toLowerCase();
-      if (elId && perm) {
-        elements.push({ elementId: elId, permission: perm });
-      }
-    }
-
-    cache.put(cacheKey, JSON.stringify(elements), 600);
-    return elements;
-  } catch (e) {
-    Logger.log('UIElements: Error reading tab — ' + e.message);
-    return [];
-  }
-}
-
-/**
- * Get the UI elements that should be VISIBLE for a given role.
- * Compares the role's permissions against each UI element's required permission.
- * Returns the full element list with a 'visible' boolean for each.
- */
-function getUIGatingForRole(role) {
-  var roles = getRolesFromSpreadsheet();
-  var perms = roles[role] || roles[RBAC_DEFAULT_ROLE] || [];
-  var elements = getUIElementsForPage();
-  var result = [];
-  for (var i = 0; i < elements.length; i++) {
-    result.push({
-      elementId: elements[i].elementId,
-      permission: elements[i].permission,
-      visible: perms.indexOf(elements[i].permission) !== -1
-    });
-  }
-  return result;
 }
 
 // Check if a role has a specific permission (reads from spreadsheet)
@@ -399,12 +320,11 @@ function clearAllAccessCache() {
     Logger.log('Error reading ACL: ' + e.message);
     return;
   }
-  // Also clear the centralized roles matrix and UI elements caches
+  // Also clear the centralized roles matrix cache
   keysToRemove.push('rbac_roles_matrix');
-  keysToRemove.push('ui_elements_' + ACL_PAGE_NAME);
   if (keysToRemove.length > 0) {
     cache.removeAll(keysToRemove);
-    Logger.log('Cleared access cache for ' + ((keysToRemove.length - 2) / 2) + ' users + roles matrix + UI elements');
+    Logger.log('Cleared access cache for ' + ((keysToRemove.length - 1) / 2) + ' users + roles matrix');
   } else {
     Logger.log('No users found in ACL tab');
   }
@@ -982,8 +902,6 @@ function exchangeTokenForSession(accessToken) {
     { sessionId: sessionToken.substring(0, 8) + '...', role: accessResult.role,
       isEmergencyAccess: accessResult.isEmergencyAccess });
 
-  var uiGating = getUIGatingForRole(accessResult.role);
-
   return {
     success: true,
     sessionToken: sessionToken,
@@ -992,8 +910,7 @@ function exchangeTokenForSession(accessToken) {
     absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0,
     messageKey: messageKey,
     role: accessResult.role,
-    permissions: getRolesFromSpreadsheet()[accessResult.role] || [],
-    uiElements: uiGating
+    permissions: getRolesFromSpreadsheet()[accessResult.role] || []
   };
 }
 
@@ -1588,8 +1505,7 @@ function signAppMessage(sessionToken, messageType, params) {
         needsReauth: session.needsReauth || false,
         messageKey: msgKey,
         role: authRole,
-        permissions: session.permissions || getRolesFromSpreadsheet()[authRole] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE],
-        uiElements: getUIGatingForRole(authRole)
+        permissions: session.permissions || getRolesFromSpreadsheet()[authRole] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE]
       }, msgKey);
 
     case 'gas-version':
@@ -1810,8 +1726,7 @@ function doGet(e) {
             absoluteTimeout: result.absoluteTimeout || 0,
             messageKey: result.messageKey || "",
             role: result.role || "",
-            permissions: result.permissions || [],
-            uiElements: result.uiElements || []
+            permissions: result.permissions || []
           });
       var exchangeHtml = '<!DOCTYPE html><html><body><script>'
         + 'try { window.top.postMessage(' + payload + ', ' + JSON.stringify(PARENT_ORIGIN) + '); } catch(e) {}'
@@ -1843,7 +1758,6 @@ function doGet(e) {
       + '        messageKey: result.messageKey || "",'
       + '        role: result.role || "",'
       + '        permissions: result.permissions || [],'
-      + '        uiElements: result.uiElements || [],'
       + '        nonce: nonce'
       + '      }, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '    })'
@@ -1972,8 +1886,7 @@ function doGet(e) {
               needsReauth: ${session.needsReauth || false},
               messageKey: '${escapeJs(appMsgKey)}',
               role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
-              permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])},
-              uiElements: ${JSON.stringify(getUIGatingForRole(session.role || RBAC_DEFAULT_ROLE))}}, '${PARENT_ORIGIN}');
+              permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
           })
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 
