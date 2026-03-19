@@ -1,4 +1,4 @@
-var VERSION = "v01.58g";
+var VERSION = "v01.59g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1226,8 +1226,9 @@ function exchangeTokenAndBuildApp(googleAccessToken) {
     };
   }
 
-  // Step 3: Build app HTML as a string (reuses the same builder as ?session= path)
-  var appHtml = buildAppHtmlString(result.sessionToken, session, result.messageKey);
+  // Step 3: Build app HTML markup only (no <script> tags — the listener page
+  // handles script logic directly to avoid double-execution in GAS sandbox)
+  var appParts = buildAppHtmlString(result.sessionToken, session, result.messageKey);
 
   return {
     success: true,
@@ -1236,18 +1237,20 @@ function exchangeTokenAndBuildApp(googleAccessToken) {
     displayName: result.displayName || '',
     absoluteTimeout: result.absoluteTimeout || 0,
     messageKey: result.messageKey || '',
-    appHtml: appHtml
+    appHtml: appParts.markup
   };
 }
 
 /**
  * Builds the app HTML body content as a string.
- * Used by exchangeTokenAndBuildApp() for innerHTML injection (HIPAA single-load),
- * and by the ?session= path (wrapped in HtmlService.createHtmlOutput).
+ * Returns an object: { markup: "...", script: "..." }
+ * - markup: HTML elements only (no <script> tags) — safe for innerHTML injection
+ * - script: the <script> block content — used by the ?session= path (auto-executes)
+ *   and NOT included in innerHTML injection (the listener page handles logic directly)
  * See: 10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md, Step 2
  */
 function buildAppHtmlString(sessionToken, session, appMsgKey) {
-  var html = '<div id="debug-marker" style="font-size:200px;color:#1565c0;font-weight:bold;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">1</div>'
+  var markup = '<div id="debug-marker" style="font-size:200px;color:#1565c0;font-weight:bold;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">1</div>'
     + '<div id="save-note-area" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);z-index:9999;text-align:center">'
     + '  <label for="save-note-input" style="display:block;font-size:11px;color:#999;margin-bottom:4px;font-family:monospace">Patient note (test — triggers session check on interaction)</label>'
     + '  <input type="text" id="save-note-input" placeholder="Type a note and click Save..." autocomplete="off" style="width:300px;padding:8px 12px;font-size:14px;font-family:monospace;border:2px solid #2e7d32;border-radius:6px;outline:none;margin-bottom:6px">'
@@ -1260,8 +1263,9 @@ function buildAppHtmlString(sessionToken, session, appMsgKey) {
     + '  <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off" style="width:300px;padding:8px 12px;font-size:14px;font-family:monospace;border:2px solid #1565c0;border-radius:6px;outline:none">'
     + '</div>'
     + '<h2 id="version" style="position:fixed;bottom:8px;left:8px;z-index:9999;color:#1565c0;font-size:12px;margin:0;font-family:monospace;opacity:0.8">' + escapeHtml(VERSION) + '</h2>'
-    + '<div id="user-email" style="position:fixed;top:8px;left:8px;z-index:9999;color:#666;font-size:11px;font-family:monospace;opacity:0.7">' + escapeHtml(session.email) + '</div>'
-    + '<script>'
+    + '<div id="user-email" style="position:fixed;top:8px;left:8px;z-index:9999;color:#666;font-size:11px;font-family:monospace;opacity:0.7">' + escapeHtml(session.email) + '</div>';
+
+  var scriptBlock = '<script>'
     + 'var _sessionToken = \'' + escapeJs(sessionToken) + '\';'
     + 'google.script.run'
     + '  .withSuccessHandler(function(signed) {'
@@ -1346,7 +1350,8 @@ function buildAppHtmlString(sessionToken, session, appMsgKey) {
     + '    .saveNote(_sessionToken, note);'
     + '});'
     + '</' + 'script>';
-  return html;
+
+  return { markup: markup, script: scriptBlock };
 }
 
 function doGet(e) {
@@ -1654,7 +1659,8 @@ function doGet(e) {
   } catch(e) {}
 
   // Session valid — build the app HTML using shared builder (refactored for 10.4.1 optimization)
-  var appBody = buildAppHtmlString(sessionToken, session, appMsgKey);
+  // ?session= path gets BOTH markup + script (script auto-executes in HtmlService output)
+  var appParts = buildAppHtmlString(sessionToken, session, appMsgKey);
   var html = '<!DOCTYPE html><html><head>'
     + '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">'
     + '<meta http-equiv="Pragma" content="no-cache">'
@@ -1663,7 +1669,7 @@ function doGet(e) {
     + 'html, body { height: 100%; margin: 0; overflow: auto; }'
     + 'body { font-family: Arial; display: flex; justify-content: center; align-items: center; }'
     + '</style>'
-    + '</head><body>' + appBody + '</body></html>';
+    + '</head><body>' + appParts.markup + appParts.script + '</body></html>';
   return HtmlService.createHtmlOutput(html)
     .setTitle(TITLE)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

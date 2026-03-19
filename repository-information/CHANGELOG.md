@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v04.91r] — 2026-03-18 11:36:01 PM EST
+
+> **Prompt:** "can you think deeply and research to make sure that the 10.4.1 update is in fact using less quota per login compared to before the update despite the console showing 6 state change idle/busy. why is the gas blinking and then reloading after the 4th net state change"
+
+### Fixed
+- Fixed double `signAppMessage` execution in HIPAA single-load path — `buildAppHtmlString()` included a `<script>` tag that could execute in the GAS sandbox (non-standard innerHTML behavior), causing `signAppMessage` to fire twice (once from the listener's direct call, once from the injected script). Split `buildAppHtmlString()` return into `{ markup, script }` — innerHTML path receives markup only (no scripts), `?session=` path receives both (scripts auto-execute normally in HtmlService output). Eliminates the extra `google.script.run` round-trip and the visual "blink" from double gas-auth-ok processing
+
+#### `testauth1.gs` — v01.59g
+##### Fixed
+- Eliminated extra server call during sign-in that was causing a brief visual flash
 
 ## [v04.90r] — 2026-03-18 11:16:43 PM EST
 
