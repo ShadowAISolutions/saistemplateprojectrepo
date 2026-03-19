@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v02.37w] — 2026-03-19 11:23:01 AM EST — v04.98r
+
+### Added
+- Your assigned role (e.g. admin, clinician, viewer) now appears as a badge next to your email after signing in
 
 ## [v02.36w] — 2026-03-19 10:46:42 AM EST — v04.96r
 

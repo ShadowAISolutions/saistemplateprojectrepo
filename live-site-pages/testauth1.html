@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.36w">
+  <meta name="build-version" content="v02.37w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -316,6 +316,7 @@
 
   <div id="user-pill">
     <span id="user-email-display"></span>
+    <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
     <button id="sign-out-btn">Sign Out</button>
   </div>
 
@@ -1598,7 +1599,7 @@
           // The "Use Here" handler deferred these to avoid premature UI —
           // now that auth is confirmed, show the app and start timers.
           var session = loadSession();
-          showApp(session.email);
+          showApp(session.email, null, session.role);
           startCountdownTimers();
           startHeartbeat();
           // The server may report needsReauth because the server-side
@@ -1611,7 +1612,7 @@
           // Deferred UI show — gas-session-created, page-load resume, or cross-tab
           // sync deferred the showApp call until the GAS backend confirmed the
           // session is valid via gas-auth-ok.
-          showApp(_pendingSessionShow.email, _pendingSessionShow.displayName);
+          showApp(_pendingSessionShow.email, _pendingSessionShow.displayName, _pendingSessionShow.role);
           startCountdownTimers();
           startHeartbeat();
           broadcastTabClaim();
@@ -1742,7 +1743,7 @@
           // Defer showApp until gas-auth-ok confirms the session server-side.
           // The iframe will load with the session token and the GAS backend will
           // validate it — only then does the auth wall come down.
-          _pendingSessionShow = { email: session.email, displayName: null };
+          _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
           var gasApp = document.getElementById('gas-app');
@@ -1934,10 +1935,11 @@
       document.getElementById('auth-wall-signing-in').style.display = '';
     }
 
-    function showApp(email, displayName) {
+    function showApp(email, displayName, role) {
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
       var emailDisplay = document.getElementById('user-email-display');
+      var roleBadge = document.getElementById('user-role-badge');
 
       wall.classList.add('hidden');
       hideAllWarningBanners();
@@ -1961,6 +1963,13 @@
       if (email) {
         emailDisplay.textContent = email;
         userPill.style.display = 'flex';
+      }
+
+      // Show role badge from parameter or stored session
+      var displayRole = role || getStorage().getItem(ROLE_KEY) || '';
+      if (displayRole && roleBadge) {
+        roleBadge.textContent = displayRole;
+        roleBadge.style.display = 'inline';
       }
     }
 
@@ -2559,7 +2568,7 @@
         // Defer showApp until gas-auth-ok confirms the session is still valid
         // server-side. Without this, an attacker who injects a forged token into
         // storage can trick the page into hiding the auth wall on reload.
-        _pendingSessionShow = { email: session.email, displayName: null };
+        _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
         showReconnecting();
       } else {
         // No session — the iframe IIFE created the element without navigating it

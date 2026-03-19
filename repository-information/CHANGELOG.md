@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v04.98r] — 2026-03-19 11:23:01 AM EST
+
+> **Prompt:** "ok i did it, can you have it show the role i am when i log in to confirm"
+
+### Changed
+- Added role badge display to the user pill after sign-in, showing the user's assigned RBAC role (e.g. admin, clinician, viewer) from the ACL spreadsheet
+
+#### `testauth1.html` — v02.37w
+
+##### Changed
+- Show user's role badge in the top-right corner after sign-in
 
 ## [v04.97r] — 2026-03-19 10:55:31 AM EST
 
