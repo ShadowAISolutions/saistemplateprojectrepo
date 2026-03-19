@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v04.89r] — 2026-03-18 11:09:45 PM EST
+
+> **Prompt:** "implement 10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md"
+
+### Changed
+- Implemented HIPAA single-load auth optimization — reduced HIPAA postMessage login from 2 `doGet()` calls to 1 by using `innerHTML` SPA technique. The listener page now calls `exchangeTokenAndBuildApp()` which returns session data + app HTML in a single `google.script.run` response, then injects the app UI via `innerHTML` and manually executes scripts. Eliminates one full iframe reload per sign-in (25% reduction in GAS executions per login) while maintaining all security guarantees (HMAC, nonce, origin validation, audit logging). Session token no longer appears in URL during HIPAA login flow
+
+#### `testauth1.gs` — v01.57g
+##### Added
+- `exchangeTokenAndBuildApp()` — combined exchange + app HTML builder for single-load optimization
+- `buildAppHtmlString()` — extracted app HTML body builder, shared between single-load and `?session=` paths
+##### Changed
+- HIPAA listener page success handler now injects app HTML via `innerHTML` + manual script execution instead of triggering a second `doGet()` reload
+- `?session=` path refactored to use `buildAppHtmlString()` (identical output, shared code)
+
+#### `testauth1.html` — v02.36w
+##### Changed
+- `gas-session-created` handler now checks `appLoaded` flag — skips iframe reload when app HTML was already injected by the single-load optimization
 
 ## [v04.88r] — 2026-03-18 10:51:38 PM EST
 
