@@ -1,4 +1,4 @@
-var VERSION = "v01.71g";
+var VERSION = "v01.72g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -352,6 +352,98 @@ function clearAllAccessCache() {
   Logger.log('Cache epoch bumped from ' + oldEpoch + ' to ' + newEpoch
     + ' — ALL cached access, roles, and sessions are now invalidated.'
     + ' Old entries will expire naturally from CacheService within 10 minutes.');
+}
+
+/**
+ * Diagnostic — probe all known cache key patterns and log what's found.
+ * Run from the GAS editor to see what's currently in the cache.
+ * Checks both the current epoch and the previous epoch (to detect stale entries).
+ */
+function inspectCache() {
+  var props = PropertiesService.getScriptProperties();
+  var epoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
+  var raw = CacheService.getScriptCache();
+
+  // Collect emails from ACL + sharing list
+  var emails = [];
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (hasAcl) {
+    try {
+      var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+      var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
+      if (aclSheet) {
+        var data = aclSheet.getDataRange().getValues();
+        for (var r = 1; r < data.length; r++) {
+          var em = String(data[r][0]).trim().toLowerCase();
+          if (em && em.indexOf('@') > -1) emails.push(em);
+        }
+      }
+    } catch(e) { Logger.log('ACL read error: ' + e.message); }
+  }
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
+  if (hasSheet) {
+    try {
+      var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
+      var allUsers = dataSs.getEditors().concat(dataSs.getViewers());
+      for (var u = 0; u < allUsers.length; u++) {
+        var ue = allUsers[u].getEmail().toLowerCase();
+        if (ue && emails.indexOf(ue) === -1) emails.push(ue);
+      }
+    } catch(e) { Logger.log('Sharing list read error: ' + e.message); }
+  }
+
+  Logger.log('══════ CACHE INSPECTION ══════');
+  Logger.log('Current epoch: ' + epoch);
+  Logger.log('Users found: ' + emails.length);
+  Logger.log('');
+
+  // Check both current and previous epoch
+  var epochs = [epoch, epoch - 1];
+  for (var ei = 0; ei < epochs.length; ei++) {
+    var ep = epochs[ei];
+    if (ep < 0) continue;
+    var pfx = 'e' + ep + '_';
+    var label = (ep === epoch) ? 'CURRENT (e' + ep + ')' : 'PREVIOUS (e' + ep + ' — should be empty)';
+    Logger.log('── ' + label + ' ──');
+
+    // Roles matrix
+    var rolesVal = raw.get(pfx + 'rbac_roles_matrix');
+    Logger.log('  rbac_roles_matrix: ' + (rolesVal ? rolesVal.substring(0, 100) + '...' : '(empty)'));
+
+    // Per-user keys
+    for (var i = 0; i < emails.length; i++) {
+      var email = emails[i];
+      var access = raw.get(pfx + 'access_' + email);
+      var role = raw.get(pfx + 'role_' + email);
+      var sessions = raw.get(pfx + 'sessions_' + email);
+      if (access || role || sessions) {
+        Logger.log('  ' + email + ':');
+        if (access) Logger.log('    access_: ' + access);
+        if (role) Logger.log('    role_: ' + role);
+        if (sessions) {
+          try {
+            var tokens = JSON.parse(sessions);
+            Logger.log('    sessions_: ' + tokens.length + ' active token(s)');
+            for (var t = 0; t < tokens.length; t++) {
+              var sessRaw = raw.get(pfx + 'session_' + tokens[t]);
+              if (sessRaw) {
+                try {
+                  var sess = JSON.parse(sessRaw);
+                  Logger.log('      session ' + (t+1) + ': role=' + sess.role + ', created=' + new Date(sess.createdAt).toISOString());
+                } catch(pe) {
+                  Logger.log('      session ' + (t+1) + ': (unparseable)');
+                }
+              } else {
+                Logger.log('      session ' + (t+1) + ': (expired/missing)');
+              }
+            }
+          } catch(je) { Logger.log('    sessions_: (unparseable)'); }
+        }
+      }
+    }
+    Logger.log('');
+  }
+  Logger.log('══════ END INSPECTION ══════');
 }
 
 /**

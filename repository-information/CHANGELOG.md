@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v05.13r] — 2026-03-19 02:57:40 PM EST
+
+> **Prompt:** "ok then is there a function that can do get and do it for each key name"
+
+### Added
+- `inspectCache()` diagnostic function — probes all known cache key patterns for each user and logs what's found, including current and previous epoch entries
+
+#### `testauth1.gs` — v01.72g
+
+##### Added
+- New diagnostic tool to view cache contents from the GAS editor
 
 ## [v05.12r] — 2026-03-19 02:53:47 PM EST
 
