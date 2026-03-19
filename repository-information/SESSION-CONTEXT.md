@@ -4,6 +4,42 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-19 09:51:08 AM EST
+**Repo version:** v04.95r
+
+### What was done
+This session worked on **comprehensive HIPAA documentation and compliance assessment**:
+
+- **v04.94r** — Created `repository-information/HIPAA-CODING-REQUIREMENTS.md` — a 953-line complete regulatory reference document containing every HIPAA requirement relevant to software development. Derived from the unabridged text of 45 CFR Part 164 (Security Rule, Privacy Rule, Breach Notification Rule), supplemented by NIST SP 800-66r2 guidance and the 2025 NPRM proposed changes. Contains 13 sections: Applicability & Definitions, General Rules, Administrative Safeguards (§164.308), Physical Safeguards (§164.310), Technical Safeguards (§164.312), Organizational Requirements (§164.314), Policies/Documentation (§164.316), Privacy Rule coding requirements, Breach Notification Rule, 2025 NPRM, De-Identification Standards, Summary Counts, and a 40-item Coding Implementation Checklist. Supersedes `HIPAA-COMPLIANCE-REFERENCE.md` as the project's HIPAA source of truth
+- **v04.95r** — Created `repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` — a 580-line compliance assessment evaluating all 40 HIPAA coding checklist items against the testauth1 environment (testauth1.gs v01.56g + testauth1.html v02.35w). Results: **14 fully implemented**, **5 partial**, **4 not implemented**, **3 N/A**, **5 policy/process**, **9 NPRM items**
+
+### Where we left off
+- Both HIPAA documents are committed and pushed
+- The compliance report identifies **7 priority gaps** that need remediation:
+  - **P1 (Critical):** #19 Disclosure Accounting, #23 Right of Access (data export), #24 Right to Amendment — all completely unimplemented
+  - **P2 (Important):** #5 RBAC (only binary access control exists), #18 6-Year Retention enforcement, #28 Breach alerting (no automated alerts), #31 Breach Logging (no dedicated breach log)
+- The report also identifies **5 strengths exceeding requirements:** Dual timeouts (#4), HMAC-SHA256 message integrity (#12), Dual audit logs (#14), Escalating lockout (#16), Fail-closed HMAC design (#20-21)
+- **Test configuration warning:** All timeout values are set to `⚡ TEST VALUE` — must be changed to production values before real deployment
+- **Prior work remains unimplemented:** Single-load optimization plans (10.4 standard, 10.4.1 HIPAA), Phase 8 CSP Hardening, Phase 10 Cross-Phase Verification
+
+### Key decisions made
+- `HIPAA-CODING-REQUIREMENTS.md` supersedes the older `HIPAA-COMPLIANCE-REFERENCE.md` — the new document is the authoritative HIPAA reference
+- "Addressable" in HIPAA does NOT mean optional — it means implement or document why not AND implement an alternative
+- The 2025 NPRM (proposing elimination of addressable/required distinction, mandatory MFA, mandatory encryption, etc.) is NOT yet law — included for forward planning only. Status as of March 2026: finalization on OCR's regulatory agenda for May 2026, but a regulatory freeze and hospital pushback may delay or modify it
+- Google's infrastructure-level encryption (AES-256 at rest, TLS in transit) is considered sufficient for the Addressable encryption requirements, but application-level encryption would provide defense-in-depth
+
+### Active context
+- Branch: `claude/hipaa-guidelines-research-1TWtX`
+- Repo version: v04.95r
+- Key new files: `repository-information/HIPAA-CODING-REQUIREMENTS.md`, `repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md`
+- Key existing files: `repository-information/HIPAA-COMPLIANCE-REFERENCE.md` (now superseded), `googleAppsScripts/Testauth1/testauth1.gs` (v01.56g), `live-site-pages/testauth1.html` (v02.35w)
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-19 12:18:01 AM EST
 **Repo version:** v04.93r
 
@@ -22,31 +58,5 @@ This session worked on **testauth2 creation and console error analysis**:
   - `10.4` — Standard path: 2 `doGet()` → 1
   - `10.4.1` — HIPAA path: 2 `doGet()` → 1 via innerHTML SPA technique (needs POC first)
 - **Remaining Category 3 work:** Phase 8 (CSP Hardening), Phase 10 (Cross-Phase Verification)
-
-### Key decisions made
-- Console errors (unrecognized features, framing violations, document.write) are all Google infrastructure noise — no action needed
-- testauth2 shares testauth1's GAS backend intentionally — allows testing HTML-side auth changes without needing a separate GAS deployment
-
-### Active context
-- Branch: `claude/hipaa-auth-optimization-GsR3F`
-- Repo version: v04.93r
-- Key files: `live-site-pages/testauth1.html`, `live-site-pages/testauth2.html`, `repository-information/10.4-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md`, `repository-information/10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md`
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-18 10:54:58 PM EST
-**Repo version:** v04.88r
-
-### What was done
-This session worked on **single-load auth optimization plans — reducing GAS login quota consumption**:
-
-- **v04.85r** — Rewrote `10.4-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` as a clean ready-to-implement document. Removed abandoned HIPAA path optimization (Step 5), eliminated contradictory summary tables and back-and-forth reasoning. Reduced from 752 to 528 lines. Fresh 2026 web research on GAS quotas and HIPAA security. Clarified scope: standard path only (2 `doGet()` → 1)
-- **v04.86r** — Created `10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` — discovered that the HIPAA postMessage path CAN go from 2 `doGet()` to 1 using the innerHTML SPA technique. Key insight: `google.script.run` is a JS runtime object that survives `innerHTML` DOM replacement (only `document.write()` destroys it). The listener page can inject app HTML via `innerHTML` after exchange succeeds, then manually execute `<script>` tags — `google.script.run.signAppMessage()` fires from the injected code
-- **v04.87r** — Added section 10 "Audit Log Consolidation — Evaluated and Rejected" to the HIPAA plan. Researched HIPAA §164.312(b) audit trail requirements. The two audit entries (`all_sessions_invalidated` + `session_created`) must remain separate: distinct security events, different functions, conditional firing. Consolidation rejected for HIPAA compliance
-- **v04.88r** — Added comprehensive element-by-element HIPAA evaluation to section 8. Evaluated all 9 techniques individually against HIPAA requirements. All 9 passed. Two caveats documented: (1) `escapeJs()`/`escapeHtml()` guards must be maintained in `buildAppHtmlString()`, (2) Phase 8 CSP must accommodate `createElement('script')`
 
 Developed by: ShadowAISolutions
