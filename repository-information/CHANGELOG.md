@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v05.08r] — 2026-03-19 02:25:25 PM EST
+
+> **Prompt:** "the clearallaccesscache is not reseting the permissions, i changed a user to editor and when logging in still says viewer"
+
+### Fixed
+- `clearAllAccessCache()` now invalidates all active sessions, forcing users to re-authenticate with fresh roles — previously only cleared the access lookup cache while existing sessions kept the old role
+- `clearAccessCacheForUser()` also invalidates the target user's sessions for the same reason
+
+#### `testauth1.gs` — v01.67g
+
+##### Fixed
+- Clearing the access cache now forces all users to sign in again so role changes take effect immediately
 
 ## [v05.07r] — 2026-03-19 02:15:50 PM EST
 

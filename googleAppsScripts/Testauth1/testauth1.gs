@@ -1,4 +1,4 @@
-var VERSION = "v01.66g";
+var VERSION = "v01.67g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -294,7 +294,8 @@ function clearAccessCacheForUser() {
   var cache = CacheService.getScriptCache();
   cache.remove('access_' + email.toLowerCase());
   cache.remove('role_' + email.toLowerCase());
-  Logger.log('Cleared access cache for ' + email);
+  invalidateAllSessions(email, 'access_cache_cleared');
+  Logger.log('Cleared access cache + invalidated sessions for ' + email);
 }
 
 /**
@@ -331,6 +332,25 @@ function clearAllAccessCache() {
   // Reset in-memory cache
   _rbacRolesCache = null;
   _rbacRolesCacheExpiry = 0;
+
+  // Invalidate all active sessions so users re-authenticate with fresh roles/permissions.
+  // Without this, existing sessions retain the old role from when they were created.
+  try {
+    var aclSs2 = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var aclSheet2 = aclSs2.getSheetByName(ACL_SHEET_NAME);
+    if (aclSheet2) {
+      var aclData = aclSheet2.getDataRange().getValues();
+      for (var r2 = 1; r2 < aclData.length; r2++) {
+        var userEmail = String(aclData[r2][0]).trim().toLowerCase();
+        if (userEmail && userEmail.indexOf('@') > -1) {
+          invalidateAllSessions(userEmail, 'access_cache_cleared');
+        }
+      }
+      Logger.log('Invalidated all active sessions — users will re-authenticate with fresh roles');
+    }
+  } catch(e2) {
+    Logger.log('Warning: could not invalidate sessions — ' + e2.message);
+  }
 }
 
 /**

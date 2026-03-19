@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v01.67g] — 2026-03-19 02:25:25 PM EST — v05.08r
+
+### Fixed
+- Changing a user's role in the spreadsheet now takes effect immediately after clearing the cache — previously required waiting for the session to expire
 
 ## [v01.66g] — 2026-03-19 02:15:50 PM EST — v05.07r
 
