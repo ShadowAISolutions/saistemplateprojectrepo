@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v02.41w] — 2026-03-19 12:45:41 PM EST — v05.04r
+
+### Fixed
+- Admin sign-out now immediately shows "An administrator ended your session" without requiring a page refresh
+- Heartbeat no longer gets stuck on "sending..." when session is admin-invalidated
 
 ## [v02.40w] — 2026-03-19 12:37:20 PM EST — v05.03r
 

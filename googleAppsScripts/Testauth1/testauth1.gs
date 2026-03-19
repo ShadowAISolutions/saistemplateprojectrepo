@@ -1,4 +1,4 @@
-var VERSION = "v01.62g";
+var VERSION = "v01.63g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -820,10 +820,11 @@ function validateSession(sessionToken) {
   var cache = CacheService.getScriptCache();
   var raw = cache.get("session_" + sessionToken);
   if (!raw) {
-    // Check for eviction tombstone — tells the client WHY the session is gone
+    // Check for eviction tombstone — tells the client WHY the session is gone.
+    // Don't remove it — let it expire naturally (5 min TTL) so both heartbeat
+    // and page refresh can read it independently.
     var evictionReason = cache.get("evicted_" + sessionToken) || '';
     if (evictionReason) {
-      cache.remove("evicted_" + sessionToken);
       return { status: "not_signed_in", evictionReason: evictionReason };
     }
     return { status: "not_signed_in" };
@@ -1258,9 +1259,9 @@ function processHeartbeat(token) {
   var raw = cache.get("session_" + token);
   if (!raw) {
     var evictionReason = cache.get("evicted_" + token) || 'timeout';
-    if (evictionReason !== 'timeout') {
-      cache.remove("evicted_" + token);
-    }
+    // Don't remove the tombstone — let it expire naturally (5 min TTL).
+    // Multiple consumers may need it: heartbeat, page refresh (validateSession),
+    // and the same heartbeat may retry if the first response was dropped.
     return {type: 'gas-heartbeat-expired', reason: evictionReason};
   }
 

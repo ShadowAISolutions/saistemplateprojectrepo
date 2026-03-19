@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.63g] — 2026-03-19 12:45:41 PM EST — v05.04r
+
+### Fixed
+- Eviction tombstones are no longer consumed on first read, allowing multiple consumers to detect the sign-out reason
 
 ## [v01.62g] — 2026-03-19 12:37:20 PM EST — v05.03r
 

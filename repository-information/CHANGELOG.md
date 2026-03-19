@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 102/100`
+`Sections: 103/100`
 
 ## [Unreleased]
+
+## [v05.04r] — 2026-03-19 12:45:41 PM EST
+
+> **Prompt:** "for the admin signed out  user, if i refresh the page it tries to reconnect and then says session expired, but without manually refreshing, its getting stuck on Heartbeat: sending... . also when it expires this way can you have it mention signed out by admin"
+
+### Fixed
+- Fixed heartbeat stuck on "sending..." after admin sign-out — `gas-heartbeat-expired` was being rejected by HMAC signature verification because the server can't sign the response when the session (and its signing key) no longer exists. Added `gas-heartbeat-expired` and `gas-heartbeat-error` to the signature-exempt list
+- Fixed eviction tombstone being consumed by the first reader (heartbeat), leaving nothing for page refresh to read — tombstones now expire naturally (5 min TTL) instead of being deleted on first read, so both heartbeat and page refresh can independently detect the admin sign-out reason
+
+#### `testauth1.html` — v02.41w
+
+##### Fixed
+- Admin sign-out now immediately shows "An administrator ended your session" without requiring a page refresh
+- Heartbeat no longer gets stuck on "sending..." when session is admin-invalidated
+
+#### `testauth1.gs` — v01.63g
+
+##### Fixed
+- Eviction tombstones are no longer consumed on first read, allowing multiple consumers (heartbeat, page refresh) to detect the sign-out reason
 
 ## [v05.03r] — 2026-03-19 12:37:20 PM EST
 
