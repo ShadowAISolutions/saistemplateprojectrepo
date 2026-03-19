@@ -1,4 +1,4 @@
-var VERSION = "v01.58g";
+var VERSION = "v01.59g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1062,9 +1062,10 @@ function checkSpreadsheetAccess(email, opt_ss) {
   }
 
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
-  // Users granted via sharing list default to RBAC_DEFAULT_ROLE (viewer)
+  // ONLY used when the ACL tab is NOT configured — when ACL exists, it is the
+  // sole authority and the sharing list is not consulted.
   var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
-  if (hasSheet) {
+  if (!hasAcl && hasSheet) {
     var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
     var editors = ss.getEditors();
     for (var i = 0; i < editors.length; i++) {

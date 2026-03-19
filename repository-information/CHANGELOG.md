@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v04.99r] — 2026-03-19 11:34:59 AM EST
+
+> **Prompt:** "im testing on another user and they are showing up as admin, even if they are not on the ACL list"
+
+### Fixed
+- Fixed bug where users not in the ACL tab could still sign in via the spreadsheet's editor/viewer sharing list (Method 2 fallback). When the ACL tab is configured, it is now the sole authority — the sharing-list check is skipped entirely
+
+#### `testauth1.gs` — v01.59g
+
+##### Fixed
+- Users not listed in the ACL tab are now properly denied access instead of being admitted through the spreadsheet sharing list
 
 ## [v04.98r] — 2026-03-19 11:23:01 AM EST
 
