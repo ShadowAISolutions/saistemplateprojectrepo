@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v05.11r] — 2026-03-19 02:46:22 PM EST
+
+> **Prompt:** "i think its something to do with the cache because after moving the ACL to its own spreadsheet, the clearallaccesscache is not working, its still holding on to old values"
+
+### Fixed
+- `clearAllAccessCache()` now collects emails from BOTH the ACL spreadsheet AND the SPREADSHEET_ID sharing list — previously only read the ACL tab, so users cached from the old sharing-list method (before ACL migration) were never cleared
+
+#### `testauth1.gs` — v01.70g
+
+##### Fixed
+- Cache clearing now covers all users regardless of which access method originally cached them
 
 ## [v05.10r] — 2026-03-19 02:36:10 PM EST
 

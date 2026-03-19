@@ -1,4 +1,4 @@
-var VERSION = "v01.69g";
+var VERSION = "v01.70g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -307,58 +307,78 @@ function clearAccessCacheForUser(email) {
 }
 
 /**
- * Clear the access cache for ALL users listed in the ACL tab.
- * Useful after bulk ACL changes so all users get fresh lookups on next login.
+ * Clear the access cache for ALL users and invalidate all active sessions.
+ * Collects emails from BOTH sources:
+ *   1. Master ACL spreadsheet (MASTER_ACL_SPREADSHEET_ID → Access tab)
+ *   2. SPREADSHEET_ID editor/viewer sharing list (catches users cached before ACL migration)
+ * This ensures no stale cache entries survive a spreadsheet migration.
  */
 function clearAllAccessCache() {
   var cache = CacheService.getScriptCache();
   var keysToRemove = [];
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (!sheet) { Logger.log('ACL sheet "' + ACL_SHEET_NAME + '" not found'); return; }
-    var data = sheet.getDataRange().getValues();
-    for (var r = 1; r < data.length; r++) {
-      var email = String(data[r][0]).trim().toLowerCase();
-      if (email && email.indexOf('@') > -1) {
-        keysToRemove.push('access_' + email);
-        keysToRemove.push('role_' + email);
+  var emailsToInvalidate = [];
+
+  // Source 1: Master ACL spreadsheet
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (hasAcl) {
+    try {
+      var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+      var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
+      if (aclSheet) {
+        var data = aclSheet.getDataRange().getValues();
+        for (var r = 1; r < data.length; r++) {
+          var email = String(data[r][0]).trim().toLowerCase();
+          if (email && email.indexOf('@') > -1) {
+            keysToRemove.push('access_' + email);
+            keysToRemove.push('role_' + email);
+            emailsToInvalidate.push(email);
+          }
+        }
+      } else {
+        Logger.log('ACL sheet "' + ACL_SHEET_NAME + '" not found');
       }
+    } catch(e) {
+      Logger.log('Error reading ACL spreadsheet: ' + e.message);
     }
-  } catch(e) {
-    Logger.log('Error reading ACL: ' + e.message);
-    return;
   }
-  // Also clear the centralized roles matrix cache
+
+  // Source 2: SPREADSHEET_ID sharing list (catches pre-migration cached users)
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
+  if (hasSheet) {
+    try {
+      var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
+      var allUsers = dataSs.getEditors().concat(dataSs.getViewers());
+      for (var u = 0; u < allUsers.length; u++) {
+        var ue = allUsers[u].getEmail().toLowerCase();
+        if (ue && emailsToInvalidate.indexOf(ue) === -1) {
+          keysToRemove.push('access_' + ue);
+          keysToRemove.push('role_' + ue);
+          emailsToInvalidate.push(ue);
+        }
+      }
+    } catch(e) {
+      Logger.log('Warning: could not read SPREADSHEET_ID sharing list — ' + e.message);
+    }
+  }
+
+  // Clear roles matrix cache
   keysToRemove.push('rbac_roles_matrix');
   if (keysToRemove.length > 0) {
     cache.removeAll(keysToRemove);
-    Logger.log('Cleared access cache for ' + ((keysToRemove.length - 1) / 2) + ' users + roles matrix');
-  } else {
-    Logger.log('No users found in ACL tab');
   }
+
   // Reset in-memory cache
   _rbacRolesCache = null;
   _rbacRolesCacheExpiry = 0;
 
-  // Invalidate all active sessions so users re-authenticate with fresh roles/permissions.
-  // Without this, existing sessions retain the old role from when they were created.
-  try {
-    var aclSs2 = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var aclSheet2 = aclSs2.getSheetByName(ACL_SHEET_NAME);
-    if (aclSheet2) {
-      var aclData = aclSheet2.getDataRange().getValues();
-      for (var r2 = 1; r2 < aclData.length; r2++) {
-        var userEmail = String(aclData[r2][0]).trim().toLowerCase();
-        if (userEmail && userEmail.indexOf('@') > -1) {
-          invalidateAllSessions(userEmail, 'access_cache_cleared');
-        }
-      }
-      Logger.log('Invalidated all active sessions — users will re-authenticate with fresh roles');
-    }
-  } catch(e2) {
-    Logger.log('Warning: could not invalidate sessions — ' + e2.message);
+  // Invalidate all active sessions so users re-authenticate with fresh roles/permissions
+  for (var s = 0; s < emailsToInvalidate.length; s++) {
+    invalidateAllSessions(emailsToInvalidate[s], 'access_cache_cleared');
   }
+
+  Logger.log('Cleared access cache for ' + emailsToInvalidate.length + ' users from '
+    + (hasAcl ? 'ACL' : '') + (hasAcl && hasSheet ? ' + ' : '') + (hasSheet ? 'sharing list' : '')
+    + ' + roles matrix. All sessions invalidated.');
 }
 
 /**
