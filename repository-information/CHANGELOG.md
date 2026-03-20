@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v05.24r] — 2026-03-20 01:17:27 PM EST
+
+> **Prompt:** "Set up a new GAS project. Run the script, then commit and push.
+bash scripts/setup-gas-project.sh <<'CONFIG'
+{
+  "PROJECT_ENVIRONMENT_NAME": "globalacl",
+  "TITLE": "Global ACL",
+  "DEPLOYMENT_ID": "AKfycbwARlOI-DKErWfPFIlp4bhrf7Iqm8NmGhIeuISviwylSTAd9JL4Th5AoCWKG5oAdc6bcQ",
+  "SPREADSHEET_ID": "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI",
+  "SHEET_NAME": "Live_Sheet",
+  "SOUND_FILE_ID": "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN",
+  "SPLASH_LOGO_URL": "https://www.shadowaisolutions.com/SAIS_Logo.png",
+  "INCLUDE_TEST": false,
+  "INCLUDE_AUTH": true,
+  "CLIENT_ID": "216764502068-k9hjjpnlcolqjpp5gccimimqh662dilt.apps.googleusercontent.com",
+  "AUTH_PRESET": "standard",
+  "IS_MASTER_ACL": true,
+  "MASTER_ACL_SPREADSHEET_ID": "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI",
+  "ACL_SHEET_NAME": "Access"
+}
+CONFIG"
+
+### Added
+- New GAS project: **Global ACL** (`globalacl`) — authenticated GAS environment with master ACL integration, connected to spreadsheet `1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI` (sheet: Live_Sheet, ACL sheet: Access)
+- Created `globalacl.html` embedding page, `globalacl.gs` GAS script, and `globalacl.config.json` configuration
+- Created version tracking files (`globalaclhtml.version.txt`, `globalaclgs.version.txt`)
+- Created changelog files for both HTML and GAS components
+- Created per-environment diagram (`globalacl-diagram.md`)
+- Registered Globalacl in GAS Projects table, REPO-ARCHITECTURE.md, and README.md structure tree
 
 ## [v05.23r] — 2026-03-20 10:34:16 AM EST
 

@@ -105,6 +105,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | Testenvironment | `googleAppsScripts/Testenvironment/testenvironment.gs` | `googleAppsScripts/Testenvironment/testenvironment.config.json` | `live-site-pages/testenvironment.html` |
 | Testauth1 | `googleAppsScripts/Testauth1/testauth1.gs` | `googleAppsScripts/Testauth1/testauth1.config.json` | `live-site-pages/testauth1.html` |
 | Portal | `googleAppsScripts/Portal/portal.gs` | `googleAppsScripts/Portal/portal.config.json` | `live-site-pages/portal.html` |
+| Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 
 ## GAS Architecture Overview
 
