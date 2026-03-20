@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.16w">
+  <meta name="build-version" content="v01.17w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -580,11 +580,10 @@
         </li>
         <li>Set <strong>Script Properties</strong> in your Apps Script project
           <div class="step-note">Project Settings &rarr; Script Properties &rarr; Add the following properties:</div>
-          <div style="margin:8px 0;padding:10px 12px;background:#0d1117;border:1px solid #30363d;border-radius:6px;font:12px/1.8 'SFMono-Regular',Consolas,monospace;color:#c9d1d9;position:relative;">
-            <button class="btn-copy-json" onclick="copyPropertyNames(this)" style="position:absolute;top:6px;right:6px;">Copy Names</button>
-            <div><code style="color:#79c0ff;border:none;background:none;padding:0;">CACHE_EPOCH</code> &mdash; <span style="color:#8b949e;">leave value blank (auto-managed by the script)</span></div>
-            <div><code style="color:#79c0ff;border:none;background:none;padding:0;">GITHUB_TOKEN</code> &mdash; <span style="color:#8b949e;">your fine-grained personal access token</span></div>
-            <div id="hmac-property-row" style="display:none"><code style="color:#79c0ff;border:none;background:none;padding:0;">HMAC_SECRET</code> &mdash; <span style="color:#8b949e;">random 64-char hex string (generate one below in Auth Settings)</span></div>
+          <div style="margin:8px 0;padding:10px 12px;background:#0d1117;border:1px solid #30363d;border-radius:6px;font:12px/1.8 'SFMono-Regular',Consolas,monospace;color:#c9d1d9;">
+            <div style="display:flex;align-items:center;gap:8px;"><code style="color:#79c0ff;border:none;background:none;padding:0;">CACHE_EPOCH</code><button class="btn-copy-json" onclick="copyText('CACHE_EPOCH',this)" style="position:static;padding:1px 6px;font-size:10px;line-height:1.4;">Copy</button> <span style="color:#8b949e;">&mdash; leave value blank (auto-managed by the script)</span></div>
+            <div style="display:flex;align-items:center;gap:8px;"><code style="color:#79c0ff;border:none;background:none;padding:0;">GITHUB_TOKEN</code><button class="btn-copy-json" onclick="copyText('GITHUB_TOKEN',this)" style="position:static;padding:1px 6px;font-size:10px;line-height:1.4;">Copy</button> <span style="color:#8b949e;">&mdash; your fine-grained personal access token</span></div>
+            <div id="hmac-property-row" style="display:none;align-items:center;gap:8px;"><code style="color:#79c0ff;border:none;background:none;padding:0;">HMAC_SECRET</code><button class="btn-copy-json" onclick="copyText('HMAC_SECRET',this)" style="position:static;padding:1px 6px;font-size:10px;line-height:1.4;">Copy</button> <span style="color:#8b949e;">&mdash; random 64-char hex string (generate one below in Auth Settings)</span></div>
           </div>
           <div class="step-note" style="margin-top:6px"><strong>To create a token:</strong> GitHub.com &rarr; Settings &rarr; Developer settings &rarr; <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener" style="color:#58a6ff">Fine-grained tokens</a> &rarr; Generate new token. Under "Repository access" select <strong>Public repositories (read-only)</strong>. No additional permissions are needed. Copy the <code>github_pat_...</code> value.</div>
           <div class="step-note"><strong>Reuse across projects:</strong> The same token works for all your GAS projects &mdash; you don't need a new one per repo. Just paste the same token into each project's Script Properties. Note: GitHub only shows the token once at the time of creation and permanently hides it afterward &mdash; save it somewhere secure before closing the page.</div>
@@ -685,7 +684,7 @@
             </div>
             <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-hmac-secret">HMAC Secret <em>(optional &mdash; auto-generated for HIPAA preset)</em></label>
-              <div class="input-row"><input type="text" id="cfg-hmac-secret" placeholder="64-character hex string" style="flex:1;"><button class="field-clear" onclick="clearField('cfg-hmac-secret')" title="Clear">&times;</button><button style="background:#1f6feb;border:1px solid #388bfd;border-radius:6px;color:#fff;font-size:12px;font-weight:500;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.background='#388bfd'" onmouseout="this.style.background='#1f6feb'" onclick="generateHmacSecret()">Generate</button></div>
+              <div class="input-row"><input type="text" id="cfg-hmac-secret" placeholder="64-character hex string" style="flex:1;"><button class="field-clear" onclick="clearField('cfg-hmac-secret')" title="Clear">&times;</button><button style="background:#21262d;border:1px solid #30363d;border-radius:6px;color:#8b949e;font-size:12px;font-weight:500;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onclick="copyHmacSecret(this)">Copy</button><button style="background:#1f6feb;border:1px solid #388bfd;border-radius:6px;color:#fff;font-size:12px;font-weight:500;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all 0.2s;" onmouseover="this.style.background='#388bfd'" onmouseout="this.style.background='#1f6feb'" onclick="generateHmacSecret()">Generate</button></div>
               <span class="field-hint">Random secret for HMAC session integrity. Each project should have its own unique secret. Click Generate to create one, then paste it into Script Properties as <code>HMAC_SECRET</code></span>
             </div>
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#58a6ff;margin:14px 0 10px;">Master ACL Spreadsheet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6e7681;">(optional &mdash; centralized access control)</span></div>
@@ -1411,23 +1410,28 @@
       });
     }
 
+// ── Copy Text Helper ──
+    function copyText(text, btn) {
+      navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(function() { btn.textContent = orig; }, 1500);
+      });
+    }
+
+// ── Copy HMAC Secret ──
+    function copyHmacSecret(btn) {
+      var val = document.getElementById('cfg-hmac-secret').value;
+      if (!val) { btn.textContent = 'Empty!'; setTimeout(function() { btn.textContent = 'Copy'; }, 1500); return; }
+      copyText(val, btn);
+    }
+
 // ── Generate HMAC Secret ──
     function generateHmacSecret() {
       var arr = new Uint8Array(32);
       crypto.getRandomValues(arr);
       var hex = Array.from(arr, function(b) { return b.toString(16).padStart(2, '0'); }).join('');
       document.getElementById('cfg-hmac-secret').value = hex;
-    }
-
-// ── Copy Script Property Names ──
-    function copyPropertyNames(btn) {
-      var useAuth = document.getElementById('chk-google-auth').checked;
-      var names = ['CACHE_EPOCH', 'GITHUB_TOKEN'];
-      if (useAuth) names.push('HMAC_SECRET');
-      navigator.clipboard.writeText(names.join('\n')).then(function() {
-        btn.textContent = 'Copied!';
-        setTimeout(function() { btn.textContent = 'Copy Names'; }, 1500);
-      });
     }
 
 // ── Master ACL Toggle ──
@@ -1468,7 +1472,7 @@
       var authStepClient = document.getElementById('auth-step-client');
       if (authFields) authFields.style.display = authChecked ? 'block' : 'none';
       var hmacRow = document.getElementById('hmac-property-row');
-      if (hmacRow) hmacRow.style.display = authChecked ? '' : 'none';
+      if (hmacRow) hmacRow.style.display = authChecked ? 'flex' : 'none';
       if (authStepLabel) authStepLabel.style.display = authChecked ? '' : 'none';
       if (authStepConsent) authStepConsent.style.display = authChecked ? '' : 'none';
       if (authStepClient) authStepClient.style.display = authChecked ? '' : 'none';

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-03-20 10:03:45 AM EST — v05.19r
+
+### Changed
+- Each script property name now has its own individual copy button for one-click copying
+- HMAC Secret field now includes a Copy button to easily copy the generated value
 
 ## [v01.16w] — 2026-03-20 09:55:14 AM EST — v05.18r
 

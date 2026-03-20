@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v05.19r] — 2026-03-20 10:03:45 AM EST
+
+> **Prompt:** "each script property needs its own copy button, and also the hmac secret also should have a copy button"
+
+### Changed
+- Script Properties list in gas-project-creator now has individual copy buttons per property name (CACHE_EPOCH, GITHUB_TOKEN, HMAC_SECRET) instead of a single "Copy Names" button
+- HMAC Secret field now has a dedicated Copy button alongside the existing Generate and Clear buttons
+
+#### `gas-project-creator.html` — v01.17w
+
+##### Changed
+- Each script property name now has its own individual copy button for one-click copying
+- HMAC Secret field now includes a Copy button to easily copy the generated secret value
 
 ## [v05.18r] — 2026-03-20 09:55:14 AM EST
 
