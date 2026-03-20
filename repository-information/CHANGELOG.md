@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v05.27r] — 2026-03-20 01:46:22 PM EST
+
+> **Prompt:** "ok well, after loading its showing the same error message, when i press refresh still get that error of no access"
+
+### Fixed
+- Fixed persistent PERMISSION_DENIED error in ACL management — `validateSessionForData` now extracts role/permissions from the session cache even when standard preset skips full validation, so `checkPermission('admin')` succeeds for admin users
+
+#### `globalacl.gs` — v01.03g
+
+##### Fixed
+- Fixed PERMISSION_DENIED error when using ACL management — admin role is now correctly read from the session even when standard preset skips full validation
 
 ## [v05.26r] — 2026-03-20 01:42:16 PM EST
 

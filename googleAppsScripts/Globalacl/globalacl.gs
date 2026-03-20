@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1102,9 +1102,23 @@ function validateSession(sessionToken) {
 // =============================================
 
 function validateSessionForData(sessionToken, operationName) {
-  // Toggle check — standard preset skips validation entirely
+  // Toggle check — standard preset skips full validation but still extracts
+  // role/permissions from the session cache so permission checks work correctly
   if (!AUTH_CONFIG.ENABLE_DATA_OP_VALIDATION) {
-    return { email: 'unvalidated', displayName: '' };
+    var skipResult = { email: 'unvalidated', displayName: '', role: RBAC_DEFAULT_ROLE, permissions: [] };
+    if (sessionToken) {
+      try {
+        var skipCache = getEpochCache();
+        var skipRaw = skipCache.get("session_" + sessionToken);
+        if (skipRaw) {
+          var skipSession = JSON.parse(skipRaw);
+          skipResult.email = skipSession.email || 'unvalidated';
+          skipResult.role = skipSession.role || RBAC_DEFAULT_ROLE;
+          skipResult.permissions = skipSession.permissions || getRolesFromSpreadsheet()[skipResult.role] || [];
+        }
+      } catch (e) { /* fall through with defaults */ }
+    }
+    return skipResult;
   }
 
   if (!sessionToken || sessionToken.length < 32) {
