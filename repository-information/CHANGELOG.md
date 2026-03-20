@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v05.39r] — 2026-03-20 04:59:04 PM EST
+
+> **Prompt:** "in the global ACL manager, i want to be able to manage all user logins on all projects from here. so similar to the function of the sessions button but controllable from the UI."
+
+### Added
+- Session Manager panel in the Global ACL page — admin-only UI for viewing and managing active sessions across all auth-enabled projects from a single interface
+- Cross-project session management via per-project hidden iframes with sequential loading to avoid message routing race conditions
+- Per-project session cards showing email, role, sign-in time, last activity, and remaining session time (absolute + rolling)
+- Sign Out button per user per project to terminate sessions remotely
+- Auto-refresh toggle (30s interval) and manual Refresh All / per-project refresh buttons
+- Connection timeout handling (15s) with error display for unresponsive projects
+- Total active sessions counter across all projects
+
+#### `globalacl.html` — v01.01w
+
+##### Added
+- Session Manager panel showing active user sessions across all projects
+- Ability to sign out users from any project directly from the UI
+- Auto-refresh and manual refresh controls for session monitoring
 
 ## [v05.38r] — 2026-03-20 04:30:27 PM EST
 
