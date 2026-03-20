@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14g] — 2026-03-20 06:56:29 PM EST — v05.43r
+
+### Added
+- Projects now auto-register themselves for the Global Sessions feature — no manual spreadsheet setup required
+- Cross-project shared secret is auto-generated on first use
+
+### Changed
+- Replaced temporary session fallback with proper auto-registration infrastructure
 
 ## [v01.13g] — 2026-03-20 06:34:44 PM EST — v05.42r
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.04g";
+var VERSION = "v01.05g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -131,6 +131,49 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 // CROSS-PROJECT SESSION MANAGEMENT
 // ══════════════
+
+/**
+ * Auto-register this project in the "Projects" tab of the Master ACL Spreadsheet.
+ * Creates the sheet if it doesn't exist. Runs once per execution (cached flag).
+ * Schema: Col A = Project Name, Col B = Deployment URL, Col C = Auth Enabled, Col D = Project ID.
+ */
+var _selfRegistered = false;
+function registerSelfProject() {
+  if (_selfRegistered) return;
+  _selfRegistered = true;
+  // Guard against placeholder Master ACL ID
+  if (!MASTER_ACL_SPREADSHEET_ID || MASTER_ACL_SPREADSHEET_ID === 'YOUR_MASTER_ACL_SPREADSHEET_ID') return;
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Projects');
+    if (!sheet) {
+      sheet = ss.insertSheet('Projects');
+      sheet.getRange(1, 1, 1, 4).setValues([['Project Name', 'Deployment URL', 'Auth Enabled', 'Project ID']]);
+    }
+    var data = sheet.getDataRange().getValues();
+    var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
+    var myUrl = isSelfProject ? 'SELF'
+      : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
+        ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
+        : '';
+    if (!myUrl) return;
+    for (var r = 1; r < data.length; r++) {
+      var existingId = (data[r].length > 3) ? String(data[r][3]).trim().toLowerCase() : '';
+      if (existingId === ACL_PAGE_NAME.toLowerCase()) {
+        if (String(data[r][1]).trim() !== myUrl) {
+          sheet.getRange(r + 1, 2).setValue(myUrl);
+        }
+        if (String(data[r][0]).trim() !== TITLE) {
+          sheet.getRange(r + 1, 1).setValue(TITLE);
+        }
+        return;
+      }
+    }
+    sheet.appendRow([TITLE, myUrl, true, ACL_PAGE_NAME]);
+  } catch (e) {
+    Logger.log('registerSelfProject error: ' + e.message);
+  }
+}
 
 var _crossProjectSecret = null;
 function getCrossProjectSecret() {
@@ -804,6 +847,9 @@ function doGet(e) {
 
   // Message signing key from URL parameter (used by heartbeat iframe for signing)
   var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
+
+  // Auto-register this project in the cross-project registry
+  registerSelfProject();
 
   // ── Cross-project action routes (called by globalacl via UrlFetchApp) ──
   var action = (e && e.parameter && e.parameter.action) || '';

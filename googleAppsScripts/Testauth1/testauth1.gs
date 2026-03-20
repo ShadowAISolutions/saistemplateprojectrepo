@@ -1,4 +1,4 @@
-var VERSION = "v01.73g";
+var VERSION = "v01.74g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -541,6 +541,47 @@ function adminSignOutUser(sessionToken, targetEmail) {
 // ══════════════
 // CROSS-PROJECT SESSION MANAGEMENT
 // ══════════════
+
+/**
+ * Auto-register this project in the "Projects" tab of the Master ACL Spreadsheet.
+ * Creates the sheet if it doesn't exist. Runs once per execution (cached flag).
+ * Schema: Col A = Project Name, Col B = Deployment URL, Col C = Auth Enabled, Col D = Project ID.
+ */
+var _selfRegistered = false;
+function registerSelfProject() {
+  if (_selfRegistered) return;
+  _selfRegistered = true;
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Projects');
+    if (!sheet) {
+      sheet = ss.insertSheet('Projects');
+      sheet.getRange(1, 1, 1, 4).setValues([['Project Name', 'Deployment URL', 'Auth Enabled', 'Project ID']]);
+    }
+    var data = sheet.getDataRange().getValues();
+    var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
+    var myUrl = isSelfProject ? 'SELF'
+      : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
+        ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
+        : '';
+    if (!myUrl) return;
+    for (var r = 1; r < data.length; r++) {
+      var existingId = (data[r].length > 3) ? String(data[r][3]).trim().toLowerCase() : '';
+      if (existingId === ACL_PAGE_NAME.toLowerCase()) {
+        if (String(data[r][1]).trim() !== myUrl) {
+          sheet.getRange(r + 1, 2).setValue(myUrl);
+        }
+        if (String(data[r][0]).trim() !== TITLE) {
+          sheet.getRange(r + 1, 1).setValue(TITLE);
+        }
+        return;
+      }
+    }
+    sheet.appendRow([TITLE, myUrl, true, ACL_PAGE_NAME]);
+  } catch (e) {
+    Logger.log('registerSelfProject error: ' + e.message);
+  }
+}
 
 var _crossProjectSecret = null;
 function getCrossProjectSecret() {
@@ -1758,6 +1799,9 @@ function doGet(e) {
   //   clientIp = (/^(\d{1,3}\.){3}\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) ? t : 'invalid';
   // }
   var clientIp = 'not-collected';
+
+  // Auto-register this project in the cross-project registry
+  registerSelfProject();
 
   // ── Phase 7: postMessage-based action routes ──
   // These routes return lightweight listener pages that receive sensitive data

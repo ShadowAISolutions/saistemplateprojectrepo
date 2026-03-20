@@ -3,9 +3,41 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v05.43r] — 2026-03-20 06:56:29 PM EST
+
+> **Prompt:** "you made it show myself, but it should be showing sessions from all projects, which i am signed into the testauth1 project with another user as seen in the screenshot. is there a better way to accomplish this? recreating how we have configured everything is fine, recommend the best long term approach"
+
+### Added
+- Zero-configuration auto-registration for all auth-enabled GAS projects — each project registers itself in the Master ACL "Projects" sheet on first page load, eliminating the need for manual spreadsheet setup
+- Auto-generated cross-project shared secret — GlobalACL creates a "Config" sheet with a 64-character random secret on first run, used for server-to-server authentication between projects
+- Project identification by stable internal ID (`ACL_PAGE_NAME`) stored in a hidden "Project ID" column, decoupled from the user-editable display title
+
+### Changed
+- Replaced the self-project fallback (v05.42r) with proper auto-registration — the SELF entry is now created automatically, making the fallback unnecessary
+- `getRegisteredProjects()` now reads the Project ID column (col D) and returns a `projectId` field for each registered project
+
+#### `globalacl.gs` — v01.14g
+
+##### Added
+- Auto-registration on page load — registers itself as SELF in the Projects sheet
+- Auto-generated cross-project secret in Config sheet on first run
+
+##### Changed
+- Replaced self-project fallback with proper auto-registration infrastructure
+
+#### `testauth1.gs` — v01.74g
+
+##### Added
+- Auto-registration on page load — registers itself with its deployment URL in the Projects sheet
+
+#### `portal.gs` — v01.05g
+
+##### Added
+- Auto-registration on page load — registers itself with its deployment URL in the Projects sheet (skipped when Master ACL ID is a placeholder)
 
 ## [v05.42r] — 2026-03-20 06:34:44 PM EST
 

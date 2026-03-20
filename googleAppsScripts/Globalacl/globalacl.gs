@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -592,6 +592,82 @@ function adminSignOutUser(sessionToken, targetEmail) {
 // ══════════════
 
 /**
+ * Auto-register this project in the "Projects" tab of the Master ACL Spreadsheet.
+ * Creates the sheet if it doesn't exist. Runs once per execution (cached flag).
+ * GlobalACL registers as SELF; other projects register with their deployment URL.
+ * Schema: Col A = Project Name (TITLE), Col B = Deployment URL, Col C = Auth Enabled, Col D = Project ID (ACL_PAGE_NAME).
+ */
+var _selfRegistered = false;
+function registerSelfProject() {
+  if (_selfRegistered) return;
+  _selfRegistered = true;
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Projects');
+    if (!sheet) {
+      sheet = ss.insertSheet('Projects');
+      sheet.getRange(1, 1, 1, 4).setValues([['Project Name', 'Deployment URL', 'Auth Enabled', 'Project ID']]);
+    }
+    var data = sheet.getDataRange().getValues();
+    // Determine this project's URL: GlobalACL uses SELF, others use deployment URL
+    var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
+    var myUrl = isSelfProject ? 'SELF'
+      : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
+        ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
+        : '';
+    if (!myUrl) return; // No valid deployment URL — skip registration
+    // Check if already registered (match by Project ID in col D)
+    for (var r = 1; r < data.length; r++) {
+      var existingId = (data[r].length > 3) ? String(data[r][3]).trim().toLowerCase() : '';
+      if (existingId === ACL_PAGE_NAME.toLowerCase()) {
+        // Already registered — update URL and title if changed
+        if (String(data[r][1]).trim() !== myUrl) {
+          sheet.getRange(r + 1, 2).setValue(myUrl);
+        }
+        if (String(data[r][0]).trim() !== TITLE) {
+          sheet.getRange(r + 1, 1).setValue(TITLE);
+        }
+        return;
+      }
+    }
+    // Not found — register this project
+    sheet.appendRow([TITLE, myUrl, true, ACL_PAGE_NAME]);
+  } catch (e) {
+    Logger.log('registerSelfProject error: ' + e.message);
+  }
+}
+
+/**
+ * Ensure a cross-project admin secret exists in the "Config" tab.
+ * GlobalACL-only — generates a random 64-char secret if none exists.
+ * Other projects read this secret via getCrossProjectSecret().
+ */
+function ensureCrossProjectSecret() {
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Config');
+    if (!sheet) {
+      sheet = ss.insertSheet('Config');
+    }
+    var data = sheet.getDataRange().getValues();
+    for (var i = 0; i < data.length; i++) {
+      if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
+        return; // Already exists
+      }
+    }
+    // Generate a random 64-character secret
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var secret = '';
+    for (var j = 0; j < 64; j++) {
+      secret += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    sheet.appendRow(['CROSS_PROJECT_ADMIN_SECRET', secret]);
+  } catch (e) {
+    Logger.log('ensureCrossProjectSecret error: ' + e.message);
+  }
+}
+
+/**
  * In-memory cache for cross-project admin secret (avoids repeated spreadsheet reads).
  */
 var _crossProjectSecret = null;
@@ -622,9 +698,9 @@ function getCrossProjectSecret() {
 
 /**
  * Read registered projects from the "Projects" tab of the Master ACL Spreadsheet.
- * Expected layout: Row 1 = headers (Project Name, Deployment URL, Auth Enabled).
- * Rows 2+ = project data.
- * Returns array of { name, url, isSelf, authEnabled }.
+ * Expected layout: Row 1 = headers (Project Name, Deployment URL, Auth Enabled, Project ID).
+ * Rows 2+ = project data. Projects auto-register via registerSelfProject().
+ * Returns array of { name, url, isSelf, authEnabled, projectId }.
  */
 var _registeredProjects = null;
 function getRegisteredProjects() {
@@ -639,12 +715,14 @@ function getRegisteredProjects() {
       var name = String(data[r][0]).trim();
       var url = String(data[r][1]).trim();
       var enabled = data[r][2] === true || String(data[r][2]).toUpperCase() === 'TRUE';
+      var projectId = (data[r].length > 3) ? String(data[r][3]).trim() : '';
       if (!name || !url) continue;
       _registeredProjects.push({
         name: name,
         url: url,
         isSelf: url.toUpperCase() === 'SELF',
-        authEnabled: enabled
+        authEnabled: enabled,
+        projectId: projectId
       });
     }
   } catch (e) {
@@ -756,11 +834,9 @@ function listGlobalSessions(sessionToken) {
   // Collect local sessions and build remote requests
   var requests = [];
   var requestProjectMap = [];
-  var foundSelf = false;
   for (var i = 0; i < projects.length; i++) {
     if (!projects[i].authEnabled) continue;
     if (projects[i].isSelf) {
-      foundSelf = true;
       var local = listActiveSessionsInternal(user.email);
       allSessions = allSessions.concat(local);
       projectStatus.push({ name: projects[i].name, status: 'ok', count: local.length });
@@ -773,14 +849,6 @@ function listGlobalSessions(sessionToken) {
       });
       requestProjectMap.push(projects[i].name);
     }
-  }
-
-  // Fallback: if no project was marked as SELF in the Projects sheet,
-  // always include this project's own sessions so they are never invisible
-  if (!foundSelf) {
-    var localFallback = listActiveSessionsInternal(user.email);
-    allSessions = allSessions.concat(localFallback);
-    projectStatus.push({ name: TITLE, status: 'ok', count: localFallback.length });
   }
 
   // Fetch all remote projects in parallel
@@ -834,12 +902,10 @@ function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
 
   var requests = [];
   var requestProjectMap = [];
-  var foundSelf = false;
   for (var i = 0; i < projects.length; i++) {
     if (!projects[i].authEnabled) continue;
     if (targetProject !== 'ALL' && projects[i].name !== targetProject) continue;
     if (projects[i].isSelf) {
-      foundSelf = true;
       invalidateAllSessions(targetEmail, 'admin_signout');
       results.push({ name: projects[i].name, success: true });
     } else {
@@ -852,13 +918,6 @@ function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
       });
       requestProjectMap.push(projects[i].name);
     }
-  }
-
-  // Fallback: if no project was marked as SELF, handle local sign-out
-  // when targeting this project by name or all projects
-  if (!foundSelf && (targetProject === 'ALL' || targetProject === TITLE)) {
-    invalidateAllSessions(targetEmail, 'admin_signout');
-    results.push({ name: TITLE, success: true });
   }
 
   if (requests.length > 0) {
@@ -2488,6 +2547,10 @@ function doGet(e) {
   //   clientIp = (/^(\d{1,3}\.){3}\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) ? t : 'invalid';
   // }
   var clientIp = 'not-collected';
+
+  // Auto-register this project and ensure cross-project secret exists
+  registerSelfProject();
+  ensureCrossProjectSecret();
 
   // ── Phase 7: postMessage-based action routes ──
   // These routes return lightweight listener pages that receive sensitive data
