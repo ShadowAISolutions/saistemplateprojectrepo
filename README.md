@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-20 06:13:55 PM EST` · Repo version: `v05.41r`
+Last updated: `2026-03-20 06:34:44 PM EST` · Repo version: `v05.42r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -48,7 +48,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/portal.html">portal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/portal.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Portal/portal.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/portalhtml.changelog.md">v01.12w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/portalgs.changelog.md">v01.04g</a> | [template] SSO portal &amp; authentication gateway
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/globalacl.html">globalacl.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/globalacl.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Globalacl/globalacl.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/globalaclhtml.changelog.md">v01.01w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog.md">v01.12g</a> | [template] Global ACL page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/globalacl.html">globalacl.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/globalacl.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Globalacl/globalacl.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/globalaclhtml.changelog.md">v01.01w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog.md">v01.13g</a> | [template] Global ACL page
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>

@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13g] — 2026-03-20 06:34:44 PM EST — v05.42r
+
+### Fixed
+- Sessions from the local project now appear even when the Projects sheet is missing or has no SELF row configured
 
 ## [v01.12g] — 2026-03-20 06:13:55 PM EST — v05.41r
 

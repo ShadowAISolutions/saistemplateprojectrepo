@@ -1,4 +1,4 @@
-var VERSION = "v01.12g";
+var VERSION = "v01.13g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -756,9 +756,11 @@ function listGlobalSessions(sessionToken) {
   // Collect local sessions and build remote requests
   var requests = [];
   var requestProjectMap = [];
+  var foundSelf = false;
   for (var i = 0; i < projects.length; i++) {
     if (!projects[i].authEnabled) continue;
     if (projects[i].isSelf) {
+      foundSelf = true;
       var local = listActiveSessionsInternal(user.email);
       allSessions = allSessions.concat(local);
       projectStatus.push({ name: projects[i].name, status: 'ok', count: local.length });
@@ -771,6 +773,14 @@ function listGlobalSessions(sessionToken) {
       });
       requestProjectMap.push(projects[i].name);
     }
+  }
+
+  // Fallback: if no project was marked as SELF in the Projects sheet,
+  // always include this project's own sessions so they are never invisible
+  if (!foundSelf) {
+    var localFallback = listActiveSessionsInternal(user.email);
+    allSessions = allSessions.concat(localFallback);
+    projectStatus.push({ name: TITLE, status: 'ok', count: localFallback.length });
   }
 
   // Fetch all remote projects in parallel
@@ -824,10 +834,12 @@ function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
 
   var requests = [];
   var requestProjectMap = [];
+  var foundSelf = false;
   for (var i = 0; i < projects.length; i++) {
     if (!projects[i].authEnabled) continue;
     if (targetProject !== 'ALL' && projects[i].name !== targetProject) continue;
     if (projects[i].isSelf) {
+      foundSelf = true;
       invalidateAllSessions(targetEmail, 'admin_signout');
       results.push({ name: projects[i].name, success: true });
     } else {
@@ -840,6 +852,13 @@ function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
       });
       requestProjectMap.push(projects[i].name);
     }
+  }
+
+  // Fallback: if no project was marked as SELF, handle local sign-out
+  // when targeting this project by name or all projects
+  if (!foundSelf && (targetProject === 'ALL' || targetProject === TITLE)) {
+    invalidateAllSessions(targetEmail, 'admin_signout');
+    results.push({ name: TITLE, success: true });
   }
 
   if (requests.length > 0) {
