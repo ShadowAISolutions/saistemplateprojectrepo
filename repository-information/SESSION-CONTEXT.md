@@ -4,6 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-20 01:04:04 PM EST
+**Repo version:** v05.23r
+
+### What was done
+This session made a series of UI layout improvements to `gas-project-creator.html`:
+
+- **v05.17r** — Added Master ACL sheet name selection dropdown to the GAS Project Creator page, allowing users to pick from existing ACL sheets or create new ones
+- **v05.18r–v05.23r** — Multiple iterative UI refinements to the GAS Project Creator page:
+  - Moved "Requires Google Authentication" checkbox to the top of Setup & Configuration section (affects layout of steps below it)
+  - Moved "Include test/diagnostic features" checkbox to just before the Copy Code.gs button, after all configuration and auth settings
+  - Various other layout and field ordering improvements
+
+### Where we left off
+- All changes committed and pushed through v05.23r
+- The GAS Project Creator page now has improved field ordering: auth checkbox at top (since it controls visible fields), all config fields, auth settings, then test/diagnostic checkbox, then the Copy button
+- No outstanding work in progress
+
+### Key decisions made
+- **Auth checkbox placement**: moved to top because it controls which fields are visible — users should see this toggle first
+- **Test/diagnostic checkbox placement**: moved to just before Copy button — it's the last decision before generating code, logically grouped with the action button
+
+### Active context
+- Repo version: v05.23r
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-19 08:34:14 PM EST
 **Repo version:** v05.16r
 
@@ -20,37 +50,5 @@ This session **executed the full 5-phase TEMPLATE-UPDATE-PLAN.md** to sync auth 
 
 ### Where we left off
 - All 5 phases complete and deployed — templates now match testauth1's architecture
-- A new auth project created via gas-project-creator will produce files structurally almost identical to testauth1 (confirmed with developer)
-- testauth1 has zero PROJECT OVERRIDE markers — templates are a clean representation
-- `TEMPLATE-UPDATE-PLAN.md` still exists in `repository-information/` — can be deleted in a future cleanup
-
-### Key decisions made
-- **Copy-then-modify approach** (decided in prior session) — executed successfully, much simpler than writing from scratch
-- **RBAC genericization**: `clinician` → `editor`, `billing` removed, keep `admin` + `viewer`
-- **Production values in templates**: 1hr session, 5min heartbeat, 8hr absolute timeout
-- **Deferred AudioContext** for all pages — eliminates Chrome autoplay policy warning
-- **CSP meta tags** added to all noauth pages and templates
-- **Changelog sanitization** — `sanitizeChangelogHtml()` strips dangerous elements/attributes before innerHTML
-
-### Active context
-- Repo version: v05.16r
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-19 07:51:00 PM EST
-**Repo version:** v05.15r
-
-### What was done
-This session planned the **template update to sync auth templates with testauth1**:
-
-- **v05.15r** — Created `TEMPLATE-UPDATE-PLAN.md` with copy-then-modify approach (5 phases)
-- Developer identified that copying testauth1 files and making ~20-30 targeted edits is far simpler than writing from scratch
-
-### Where we left off
-- Plan ready for execution — executed in the next session (v05.16r)
 
 Developed by: ShadowAISolutions
