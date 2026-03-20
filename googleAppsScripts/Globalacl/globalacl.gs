@@ -1,4 +1,4 @@
-var VERSION = "v01.08g";
+var VERSION = "v01.09g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2212,7 +2212,11 @@ function doGet(e) {
         td.page-col { text-align: center; }
         td.page-col input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #1565c0; }
         td.actions-col { white-space: nowrap; }
-        td.actions-col .btn-row-save { margin-right: 4px; }
+        .dirty-cell { background: #fff8e1; }
+        .dirty-cell select { background: #fff8e1; border-color: #ffb300; }
+        tr.dirty-row td.email-col { color: #e65100; font-weight: 700; }
+        #btn-save-all { display: none; }
+        #btn-save-all.has-changes { display: inline-block; }
         .status-bar { padding: 10px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; display: none; }
         .status-bar.success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
         .status-bar.error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
@@ -2249,6 +2253,7 @@ function doGet(e) {
           <button class="btn btn-primary" id="btn-add-user">+ Add User</button>
           <button class="btn btn-secondary" id="btn-refresh">Refresh</button>
           <button class="btn btn-secondary" id="btn-add-page">+ Add Page Column</button>
+          <button class="btn btn-primary" id="btn-save-all">Save Changes</button>
         </div>
 
         <div class="acl-table-wrap">
@@ -2483,7 +2488,7 @@ function doGet(e) {
               if (roleNames[ri] === role) opt.selected = true;
               roleSel.appendChild(opt);
             }
-            roleSel.addEventListener('change', function() { markRowDirty(this.dataset.email); });
+            roleSel.addEventListener('change', function() { markDirty(this.dataset.email, this); });
             tdR.appendChild(roleSel);
             tr.appendChild(tdR);
 
@@ -2496,7 +2501,7 @@ function doGet(e) {
               cb.checked = row[pageIndices[pc]] === true;
               cb.dataset.email = email;
               cb.dataset.page = _pageHeaders[pc];
-              cb.addEventListener('change', function() { markRowDirty(this.dataset.email); });
+              cb.addEventListener('change', function() { markDirty(this.dataset.email, this); });
               tdP.appendChild(cb);
               tr.appendChild(tdP);
             }
@@ -2504,18 +2509,9 @@ function doGet(e) {
             // Actions
             var tdA = document.createElement('td');
             tdA.className = 'actions-col';
-            var saveBtn = document.createElement('button');
-            saveBtn.className = 'btn btn-primary btn-sm btn-row-save';
-            saveBtn.textContent = 'Save';
-            saveBtn.dataset.email = email;
-            saveBtn.style.display = 'none';
-            saveBtn.addEventListener('click', function() { saveRow(this.dataset.email); });
-            tdA.appendChild(saveBtn);
-
             var delBtn = document.createElement('button');
             delBtn.className = 'btn btn-danger btn-sm';
             delBtn.textContent = 'Delete';
-            delBtn.style.marginLeft = '4px';
             delBtn.dataset.email = email;
             delBtn.addEventListener('click', function() { deleteUser(this.dataset.email); });
             tdA.appendChild(delBtn);
@@ -2628,50 +2624,91 @@ function doGet(e) {
         }
 
         // ── Inline editing helpers ──
-        function markRowDirty(email) {
-          var btn = document.querySelector('.btn-row-save[data-email="' + CSS.escape(email) + '"]');
-          if (btn) btn.style.display = '';
+        var _dirtyUsers = {};
+
+        function markDirty(email, el) {
+          _dirtyUsers[email] = true;
+          // Highlight the changed control's cell
+          if (el && el.parentElement) el.parentElement.classList.add('dirty-cell');
+          // Highlight the role cell too if a select changed
+          if (el && el.tagName === 'SELECT') el.parentElement.classList.add('dirty-cell');
+          // Mark the row
+          var row = el ? el.closest('tr') : null;
+          if (row) row.classList.add('dirty-row');
+          // Show Save Changes button
+          document.getElementById('btn-save-all').classList.add('has-changes');
         }
 
-        function saveRow(email) {
-          var roleSel = document.querySelector('select[data-email="' + CSS.escape(email) + '"]');
-          var role = roleSel ? roleSel.value : 'viewer';
-          var pageAccess = {};
-          var cbs = document.querySelectorAll('input[type="checkbox"][data-email="' + CSS.escape(email) + '"]');
-          for (var i = 0; i < cbs.length; i++) {
-            pageAccess[cbs[i].dataset.page] = cbs[i].checked;
+        function clearDirtyState() {
+          _dirtyUsers = {};
+          var dirtyCells = document.querySelectorAll('.dirty-cell');
+          for (var i = 0; i < dirtyCells.length; i++) dirtyCells[i].classList.remove('dirty-cell');
+          var dirtyRows = document.querySelectorAll('.dirty-row');
+          for (var i = 0; i < dirtyRows.length; i++) dirtyRows[i].classList.remove('dirty-row');
+          document.getElementById('btn-save-all').classList.remove('has-changes');
+        }
+
+        function saveAllChanges() {
+          var emails = Object.keys(_dirtyUsers);
+          if (emails.length === 0) return;
+          var btn = document.getElementById('btn-save-all');
+          btn.disabled = true;
+          btn.textContent = 'Saving (' + emails.length + ')...';
+          var saved = 0;
+          var failed = 0;
+
+          function onComplete() {
+            if (saved + failed < emails.length) return;
+            btn.disabled = false;
+            btn.textContent = 'Save Changes';
+            if (failed === 0) {
+              clearDirtyState();
+              showStatus('All changes saved (' + saved + ' user' + (saved !== 1 ? 's' : '') + ')', 'success');
+            } else {
+              showStatus(saved + ' saved, ' + failed + ' failed — retry the remaining changes', 'error');
+            }
           }
-          var saveBtn = document.querySelector('.btn-row-save[data-email="' + CSS.escape(email) + '"]');
-          if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
-          showStatus('Saving ' + email + '...', 'info');
-          google.script.run
-            .withSuccessHandler(function(result) {
-              showStatus(result.message, 'success');
-              if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; saveBtn.style.display = 'none'; }
-              // Update local data so state stays in sync
-              if (_aclData) {
-                var headers = _aclData.headers;
-                for (var r = 0; r < _aclData.rows.length; r++) {
-                  var eIdx = -1;
-                  for (var c = 0; c < headers.length; c++) {
-                    if (headers[c].toLowerCase() === 'email') { eIdx = c; break; }
-                  }
-                  if (eIdx >= 0 && String(_aclData.rows[r][eIdx]).toLowerCase() === email.toLowerCase()) {
-                    for (var c2 = 0; c2 < headers.length; c2++) {
-                      var hl = headers[c2].toLowerCase();
-                      if (hl === 'role') _aclData.rows[r][c2] = role;
-                      else if (hl !== 'email') _aclData.rows[r][c2] = !!pageAccess[headers[c2]];
-                    }
-                    break;
-                  }
-                }
+
+          for (var i = 0; i < emails.length; i++) {
+            (function(email) {
+              var roleSel = document.querySelector('select[data-email="' + CSS.escape(email) + '"]');
+              var role = roleSel ? roleSel.value : 'viewer';
+              var pageAccess = {};
+              var cbs = document.querySelectorAll('input[type="checkbox"][data-email="' + CSS.escape(email) + '"]');
+              for (var j = 0; j < cbs.length; j++) {
+                pageAccess[cbs[j].dataset.page] = cbs[j].checked;
               }
-            })
-            .withFailureHandler(function(err) {
-              showStatus('Error saving ' + email + ': ' + err.message, 'error');
-              if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
-            })
-            .updateACLUser(_sessionToken, email, role, pageAccess);
+              google.script.run
+                .withSuccessHandler(function(result) {
+                  saved++;
+                  delete _dirtyUsers[email];
+                  // Update local data
+                  if (_aclData) {
+                    var headers = _aclData.headers;
+                    for (var r = 0; r < _aclData.rows.length; r++) {
+                      var eIdx = -1;
+                      for (var c = 0; c < headers.length; c++) {
+                        if (headers[c].toLowerCase() === 'email') { eIdx = c; break; }
+                      }
+                      if (eIdx >= 0 && String(_aclData.rows[r][eIdx]).toLowerCase() === email.toLowerCase()) {
+                        for (var c2 = 0; c2 < headers.length; c2++) {
+                          var hl = headers[c2].toLowerCase();
+                          if (hl === 'role') _aclData.rows[r][c2] = role;
+                          else if (hl !== 'email') _aclData.rows[r][c2] = !!pageAccess[headers[c2]];
+                        }
+                        break;
+                      }
+                    }
+                  }
+                  onComplete();
+                })
+                .withFailureHandler(function(err) {
+                  failed++;
+                  onComplete();
+                })
+                .updateACLUser(_sessionToken, email, role, pageAccess);
+            })(emails[i]);
+          }
         }
 
         // ── CRUD operations ──
@@ -2730,6 +2767,7 @@ function doGet(e) {
 
         // ── Event listeners ──
         document.getElementById('btn-add-user').addEventListener('click', openAddModal);
+        document.getElementById('btn-save-all').addEventListener('click', saveAllChanges);
         document.getElementById('btn-refresh').addEventListener('click', loadData);
         document.getElementById('btn-add-page').addEventListener('click', function() {
           document.getElementById('page-modal').classList.add('open');
