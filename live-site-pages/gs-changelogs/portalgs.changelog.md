@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06g] — 2026-03-20 07:50:37 PM EST — v05.45r
+
+### Changed
+- Portal now connects to the centralized access control system for unified user management
 
 ## [v01.05g] — 2026-03-20 06:56:29 PM EST — v05.43r
 

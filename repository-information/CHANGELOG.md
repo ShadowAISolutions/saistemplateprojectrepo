@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v05.45r] — 2026-03-20 07:50:37 PM EST
+
+> **Prompt:** "add the portal to the projects in global acl"
+
+### Changed
+- Connected the portal to the global ACL system by configuring the Master ACL spreadsheet ID and correcting the ACL sheet name
+
+#### `portal.gs` — v01.06g
+
+##### Changed
+- Set `MASTER_ACL_SPREADSHEET_ID` to the global ACL spreadsheet (was placeholder)
+- Changed `ACL_SHEET_NAME` from `"ACL"` to `"Access"` to match the Master ACL spreadsheet
 
 ## [v05.44r] — 2026-03-20 07:27:24 PM EST
 
