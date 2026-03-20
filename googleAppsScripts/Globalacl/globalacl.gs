@@ -1,4 +1,4 @@
-var VERSION = "v01.07g";
+var VERSION = "v01.08g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2212,6 +2212,7 @@ function doGet(e) {
         td.page-col { text-align: center; }
         td.page-col input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #1565c0; }
         td.actions-col { white-space: nowrap; }
+        td.actions-col .btn-row-save { margin-right: 4px; }
         .status-bar { padding: 10px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; display: none; }
         .status-bar.success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
         .status-bar.error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
@@ -2482,7 +2483,7 @@ function doGet(e) {
               if (roleNames[ri] === role) opt.selected = true;
               roleSel.appendChild(opt);
             }
-            roleSel.addEventListener('change', function() { inlineSave(this.dataset.email); });
+            roleSel.addEventListener('change', function() { markRowDirty(this.dataset.email); });
             tdR.appendChild(roleSel);
             tr.appendChild(tdR);
 
@@ -2495,7 +2496,7 @@ function doGet(e) {
               cb.checked = row[pageIndices[pc]] === true;
               cb.dataset.email = email;
               cb.dataset.page = _pageHeaders[pc];
-              cb.addEventListener('change', function() { inlineSave(this.dataset.email); });
+              cb.addEventListener('change', function() { markRowDirty(this.dataset.email); });
               tdP.appendChild(cb);
               tr.appendChild(tdP);
             }
@@ -2503,9 +2504,18 @@ function doGet(e) {
             // Actions
             var tdA = document.createElement('td');
             tdA.className = 'actions-col';
+            var saveBtn = document.createElement('button');
+            saveBtn.className = 'btn btn-primary btn-sm btn-row-save';
+            saveBtn.textContent = 'Save';
+            saveBtn.dataset.email = email;
+            saveBtn.style.display = 'none';
+            saveBtn.addEventListener('click', function() { saveRow(this.dataset.email); });
+            tdA.appendChild(saveBtn);
+
             var delBtn = document.createElement('button');
             delBtn.className = 'btn btn-danger btn-sm';
             delBtn.textContent = 'Delete';
+            delBtn.style.marginLeft = '4px';
             delBtn.dataset.email = email;
             delBtn.addEventListener('click', function() { deleteUser(this.dataset.email); });
             tdA.appendChild(delBtn);
@@ -2617,49 +2627,51 @@ function doGet(e) {
           return { email: email, role: role, pageAccess: pageAccess };
         }
 
-        // ── Inline save (auto-save on role/page change) ──
-        var _inlineSaveTimer = {};
-        function inlineSave(email) {
-          // Debounce rapid changes for the same user (300ms)
-          if (_inlineSaveTimer[email]) clearTimeout(_inlineSaveTimer[email]);
-          _inlineSaveTimer[email] = setTimeout(function() {
-            delete _inlineSaveTimer[email];
-            // Collect current values from the table row
-            var roleSel = document.querySelector('select[data-email="' + CSS.escape(email) + '"]');
-            var role = roleSel ? roleSel.value : 'viewer';
-            var pageAccess = {};
-            var cbs = document.querySelectorAll('input[type="checkbox"][data-email="' + CSS.escape(email) + '"]');
-            for (var i = 0; i < cbs.length; i++) {
-              pageAccess[cbs[i].dataset.page] = cbs[i].checked;
-            }
-            showStatus('Saving ' + email + '...', 'info');
-            google.script.run
-              .withSuccessHandler(function(result) {
-                showStatus(result.message, 'success');
-                // Update local data so subsequent saves use fresh state
-                if (_aclData) {
-                  var headers = _aclData.headers;
-                  for (var r = 0; r < _aclData.rows.length; r++) {
-                    var eIdx = -1;
-                    for (var c = 0; c < headers.length; c++) {
-                      if (headers[c].toLowerCase() === 'email') { eIdx = c; break; }
+        // ── Inline editing helpers ──
+        function markRowDirty(email) {
+          var btn = document.querySelector('.btn-row-save[data-email="' + CSS.escape(email) + '"]');
+          if (btn) btn.style.display = '';
+        }
+
+        function saveRow(email) {
+          var roleSel = document.querySelector('select[data-email="' + CSS.escape(email) + '"]');
+          var role = roleSel ? roleSel.value : 'viewer';
+          var pageAccess = {};
+          var cbs = document.querySelectorAll('input[type="checkbox"][data-email="' + CSS.escape(email) + '"]');
+          for (var i = 0; i < cbs.length; i++) {
+            pageAccess[cbs[i].dataset.page] = cbs[i].checked;
+          }
+          var saveBtn = document.querySelector('.btn-row-save[data-email="' + CSS.escape(email) + '"]');
+          if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
+          showStatus('Saving ' + email + '...', 'info');
+          google.script.run
+            .withSuccessHandler(function(result) {
+              showStatus(result.message, 'success');
+              if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; saveBtn.style.display = 'none'; }
+              // Update local data so state stays in sync
+              if (_aclData) {
+                var headers = _aclData.headers;
+                for (var r = 0; r < _aclData.rows.length; r++) {
+                  var eIdx = -1;
+                  for (var c = 0; c < headers.length; c++) {
+                    if (headers[c].toLowerCase() === 'email') { eIdx = c; break; }
+                  }
+                  if (eIdx >= 0 && String(_aclData.rows[r][eIdx]).toLowerCase() === email.toLowerCase()) {
+                    for (var c2 = 0; c2 < headers.length; c2++) {
+                      var hl = headers[c2].toLowerCase();
+                      if (hl === 'role') _aclData.rows[r][c2] = role;
+                      else if (hl !== 'email') _aclData.rows[r][c2] = !!pageAccess[headers[c2]];
                     }
-                    if (eIdx >= 0 && String(_aclData.rows[r][eIdx]).toLowerCase() === email.toLowerCase()) {
-                      for (var c2 = 0; c2 < headers.length; c2++) {
-                        var hl = headers[c2].toLowerCase();
-                        if (hl === 'role') _aclData.rows[r][c2] = role;
-                        else if (hl !== 'email') _aclData.rows[r][c2] = !!pageAccess[headers[c2]];
-                      }
-                      break;
-                    }
+                    break;
                   }
                 }
-              })
-              .withFailureHandler(function(err) {
-                showStatus('Error saving ' + email + ': ' + err.message, 'error');
-              })
-              .updateACLUser(_sessionToken, email, role, pageAccess);
-          }, 300);
+              }
+            })
+            .withFailureHandler(function(err) {
+              showStatus('Error saving ' + email + ': ' + err.message, 'error');
+              if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save'; }
+            })
+            .updateACLUser(_sessionToken, email, role, pageAccess);
         }
 
         // ── CRUD operations ──

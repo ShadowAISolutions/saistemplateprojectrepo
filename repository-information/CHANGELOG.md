@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v05.33r] — 2026-03-20 02:29:38 PM EST
+
+> **Prompt:** "i still want there to be a save button, not to save it after every change"
+
+### Changed
+- ACL inline editing now requires clicking a Save button per row instead of auto-saving on every change — Save button appears when a role or page access value is modified
+
+#### `globalacl.gs` — v01.08g
+
+##### Changed
+- Inline editing now shows a Save button per row when changes are made, instead of auto-saving on every toggle
 
 ## [v05.32r] — 2026-03-20 02:25:08 PM EST
 

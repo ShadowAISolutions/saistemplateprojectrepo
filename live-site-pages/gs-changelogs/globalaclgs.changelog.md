@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08g] — 2026-03-20 02:29:38 PM EST — v05.33r
+
+### Changed
+- Inline editing now shows a Save button per row when changes are made, instead of auto-saving on every toggle
 
 ## [v01.07g] — 2026-03-20 02:25:08 PM EST — v05.32r
 
