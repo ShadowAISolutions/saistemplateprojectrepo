@@ -305,6 +305,80 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 
 // ══════════════
+// CROSS-PROJECT SESSION MANAGEMENT
+// Enables the GlobalACL "Global Sessions" feature to query and manage
+// sessions on this project remotely via UrlFetchApp. The shared secret
+// is read from the "Config" tab of the Master ACL Spreadsheet.
+// ══════════════
+
+/**
+ * Read the cross-project admin secret from the Master ACL Spreadsheet "Config" tab.
+ * Cached in-memory for the duration of a single GAS execution.
+ */
+var _cpSecretCache = null;
+function getCrossProjectSecret() {
+  if (_cpSecretCache) return _cpSecretCache;
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('Config');
+  if (!sheet) return '';
+  var data = sheet.getDataRange().getValues();
+  for (var i = 0; i < data.length; i++) {
+    if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
+      _cpSecretCache = String(data[i][1]).trim();
+      return _cpSecretCache;
+    }
+  }
+  return '';
+}
+
+/**
+ * Validate a cross-project request: shared secret must match and caller must be admin.
+ */
+function validateCrossProjectAdmin(params) {
+  var secret = (params && params.secret) || '';
+  var callerEmail = (params && params.callerEmail) || '';
+  if (!secret || !callerEmail) return { valid: false, reason: 'missing_params' };
+  var expected = getCrossProjectSecret();
+  if (!expected || secret !== expected) return { valid: false, reason: 'invalid_secret' };
+  var roles = getRolesFromSpreadsheet(callerEmail);
+  if (roles.indexOf('admin') === -1) return { valid: false, reason: 'not_admin' };
+  return { valid: true, email: callerEmail };
+}
+
+/**
+ * List active sessions for cross-project aggregation (skips session-token validation).
+ * Called by the cross-project listSessions endpoint after secret+admin validation.
+ */
+function listActiveSessionsInternal(callerEmail) {
+  var cache = getEpochCache();
+  var sessions = [];
+  var indexRaw = cache.get('session_index');
+  if (!indexRaw) return sessions;
+  var index;
+  try { index = JSON.parse(indexRaw); } catch (err) { return sessions; }
+  var now = Date.now();
+  for (var email in index) {
+    var tokens = index[email];
+    if (!Array.isArray(tokens)) continue;
+    for (var i = 0; i < tokens.length; i++) {
+      var sessionRaw = cache.get('session_' + tokens[i]);
+      if (!sessionRaw) continue;
+      try {
+        var session = JSON.parse(sessionRaw);
+        sessions.push({
+          email: session.email || email,
+          role: session.role || RBAC_DEFAULT_ROLE,
+          loginTime: session.loginTime || '',
+          lastSeen: session.lastActivity || session.loginTime || '',
+          project: TITLE
+        });
+      } catch (err) { /* skip corrupt entries */ }
+    }
+  }
+  return sessions;
+}
+
+// ══════════════
 // ADMIN UTILITIES — run from the GAS Editor (select function → Run)
 // These are generic admin tools that work with any auth project.
 // ══════════════
@@ -1825,6 +1899,39 @@ function doGet(e) {
     return HtmlService.createHtmlOutput(adminListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Cross-project session listing — called by GlobalACL's Global Sessions feature
+  // Returns JSON via ContentService (not HTML). Authenticated by shared secret.
+  if (action === 'listSessions') {
+    var cpParams = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
+    var cpAuth = validateCrossProjectAdmin(cpParams);
+    if (!cpAuth.valid) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth.reason }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var cpSessions = listActiveSessionsInternal(cpAuth.email);
+    return ContentService.createTextOutput(JSON.stringify({ success: true, sessions: cpSessions, project: TITLE }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Cross-project admin sign-out — called by GlobalACL to kick a user from this project
+  if (action === 'adminSignOut') {
+    var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
+    var cpAuth2 = validateCrossProjectAdmin(cpParams2);
+    if (!cpAuth2.valid) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth2.reason }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var cpTarget = (e.parameter && e.parameter.targetEmail) || '';
+    if (!cpTarget) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'no_target' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    invalidateAllSessions(cpTarget, 'admin_global_signout');
+    auditLog('admin_action', cpAuth2.email, 'cross_project_signout', { targetEmail: cpTarget, source: 'globalacl' });
+    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget, project: TITLE }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
   // Security event action — returns page that listens for event data via postMessage

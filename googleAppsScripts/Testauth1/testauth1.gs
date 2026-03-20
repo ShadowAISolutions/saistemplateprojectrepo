@@ -1,4 +1,4 @@
-var VERSION = "v01.72g";
+var VERSION = "v01.73g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -537,6 +537,103 @@ function adminSignOutUser(sessionToken, targetEmail) {
 // ══════════════
 // PROJECT END
 // ══════════════
+
+// ══════════════
+// CROSS-PROJECT SESSION MANAGEMENT
+// ══════════════
+
+var _crossProjectSecret = null;
+function getCrossProjectSecret() {
+  if (_crossProjectSecret) return _crossProjectSecret;
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Config');
+    if (!sheet) return '';
+    var data = sheet.getDataRange().getValues();
+    for (var i = 0; i < data.length; i++) {
+      if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
+        _crossProjectSecret = String(data[i][1]).trim();
+        return _crossProjectSecret;
+      }
+    }
+  } catch (e) {
+    Logger.log('getCrossProjectSecret error: ' + e.message);
+  }
+  return '';
+}
+
+function validateCrossProjectAdmin(params) {
+  var secret = (params && params.secret) || '';
+  var callerEmail = (params && params.callerEmail) || '';
+  if (!secret || !callerEmail) return false;
+  var expected = getCrossProjectSecret();
+  if (!expected || secret !== expected) return false;
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return false;
+    var data = sheet.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      if (String(data[r][0]).trim().toLowerCase() === callerEmail.toLowerCase()) {
+        var role = String(data[r][1]).trim().toLowerCase();
+        return role === 'admin';
+      }
+    }
+  } catch (e) {
+    Logger.log('validateCrossProjectAdmin error: ' + e.message);
+  }
+  return false;
+}
+
+function listActiveSessionsInternal(callerEmail) {
+  var cache = getEpochCache();
+  var activeSessions = [];
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return activeSessions;
+    var data = sheet.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) continue;
+      var trackKey = 'sessions_' + email;
+      var raw = cache.get(trackKey);
+      if (!raw) continue;
+      var tokens;
+      try { tokens = JSON.parse(raw); } catch (e) { continue; }
+      for (var i = 0; i < tokens.length; i++) {
+        var sessionRaw = cache.get('session_' + tokens[i]);
+        if (!sessionRaw) continue;
+        var sess;
+        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
+        var absRemaining = 0;
+        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+          absRemaining = Math.max(0, Math.round(
+            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
+          ));
+        }
+        var rollingRemaining = Math.max(0, Math.round(
+          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
+        ));
+        activeSessions.push({
+          email: sess.email,
+          displayName: sess.displayName || '',
+          role: sess.role || RBAC_DEFAULT_ROLE,
+          createdAt: sess.absoluteCreatedAt || sess.createdAt,
+          lastActivity: sess.lastActivity,
+          absoluteRemaining: absRemaining,
+          rollingRemaining: rollingRemaining,
+          isEmergencyAccess: sess.isEmergencyAccess || false,
+          isSelf: (sess.email || '').toLowerCase() === (callerEmail || '').toLowerCase(),
+          project: TITLE
+        });
+      }
+    }
+  } catch (e) {
+    Logger.log('listActiveSessionsInternal error: ' + e.message);
+  }
+  return activeSessions;
+}
 
 // ══════════════
 // TEMPLATE START
@@ -1751,6 +1848,31 @@ function doGet(e) {
     return HtmlService.createHtmlOutput(adminListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Cross-project session listing — called by globalacl's listGlobalSessions via UrlFetchApp
+  if (action === 'listSessions') {
+    if (!validateCrossProjectAdmin(e.parameter)) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var cpSessions = listActiveSessionsInternal((e.parameter && e.parameter.callerEmail) || '');
+    return ContentService.createTextOutput(JSON.stringify(cpSessions))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
+  if (action === 'adminSignOut') {
+    if (!validateCrossProjectAdmin(e.parameter)) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var cpTarget = (e.parameter && e.parameter.targetEmail) || '';
+    if (cpTarget) {
+      invalidateAllSessions(cpTarget, 'admin_signout');
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
   // Security event action — returns page that listens for event data via postMessage

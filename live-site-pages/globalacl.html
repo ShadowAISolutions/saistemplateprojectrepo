@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.00w">
+  <meta name="build-version" content="v01.01w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -302,6 +302,74 @@
     #admin-sessions-panel .asp-kick:hover { background: rgba(239,83,80,0.15); }
     #admin-sessions-panel .asp-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
     #admin-sessions-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
+    #admin-global-sessions-btn {
+      background: none; border: 1px solid #66bb6a; color: #66bb6a; cursor: pointer;
+      font: 11px/1 monospace; padding: 2px 6px; border-radius: 3px; display: none;
+    }
+    #admin-global-sessions-btn:hover { color: #81c784; border-color: #81c784; }
+    #admin-global-sessions-panel {
+      display: none; position: fixed; top: 40px; right: 8px; z-index: 10011;
+      background: rgba(20,20,30,0.97); color: #ccc; border: 1px solid #66bb6a;
+      border-radius: 8px; padding: 12px 16px; font: 12px/1.4 monospace;
+      max-width: 520px; min-width: 340px; max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    }
+    #admin-global-sessions-panel .gsp-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; border-bottom: 1px solid #66bb6a; padding-bottom: 8px;
+    }
+    #admin-global-sessions-panel .gsp-title { color: #66bb6a; font-weight: bold; font-size: 13px; }
+    #admin-global-sessions-panel .gsp-close {
+      background: none; border: none; color: #999; cursor: pointer;
+      font-size: 16px; padding: 0 4px; line-height: 1;
+    }
+    #admin-global-sessions-panel .gsp-close:hover { color: #fff; }
+    #admin-global-sessions-panel .gsp-refresh {
+      background: none; border: 1px solid #555; color: #66bb6a; cursor: pointer;
+      font: 11px/1 monospace; padding: 3px 8px; border-radius: 4px; margin-left: 8px;
+    }
+    #admin-global-sessions-panel .gsp-refresh:hover { background: rgba(102,187,106,0.1); }
+    #admin-global-sessions-panel .gsp-project-group {
+      margin-bottom: 12px;
+    }
+    #admin-global-sessions-panel .gsp-project-header {
+      color: #90caf9; font-weight: bold; font-size: 12px; margin-bottom: 6px;
+      padding: 4px 8px; background: rgba(144,202,249,0.1); border-radius: 4px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #admin-global-sessions-panel .gsp-project-header .gsp-count {
+      color: #888; font-weight: normal; font-size: 11px;
+    }
+    #admin-global-sessions-panel .gsp-project-error {
+      color: #ef5350; font-size: 11px; padding: 4px 8px; background: rgba(239,83,80,0.1);
+      border-radius: 4px; margin-bottom: 6px;
+    }
+    #admin-global-sessions-panel .gsp-session {
+      background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 6px;
+    }
+    #admin-global-sessions-panel .gsp-session.gsp-self { border-color: #1565c0; }
+    #admin-global-sessions-panel .gsp-email { color: #fff; font-weight: bold; font-size: 12px; }
+    #admin-global-sessions-panel .gsp-role {
+      display: inline-block; background: rgba(144,202,249,0.15); color: #90caf9;
+      padding: 1px 5px; border-radius: 3px; font-size: 10px; text-transform: uppercase;
+      margin-left: 6px;
+    }
+    #admin-global-sessions-panel .gsp-role.gsp-emergency { background: rgba(255,152,0,0.2); color: #ff9800; }
+    #admin-global-sessions-panel .gsp-meta { color: #888; font-size: 11px; margin-top: 4px; }
+    #admin-global-sessions-panel .gsp-kick {
+      background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer;
+      font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px;
+      margin-right: 4px;
+    }
+    #admin-global-sessions-panel .gsp-kick:hover { background: rgba(239,83,80,0.15); }
+    #admin-global-sessions-panel .gsp-kick-all {
+      background: none; border: 1px solid #ff9800; color: #ff9800; cursor: pointer;
+      font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px;
+    }
+    #admin-global-sessions-panel .gsp-kick-all:hover { background: rgba(255,152,0,0.15); }
+    #admin-global-sessions-panel .gsp-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
+    #admin-global-sessions-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -365,8 +433,23 @@
     <span id="user-email-display"></span>
     <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
     <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
+    <button id="admin-global-sessions-btn" title="View sessions across all projects" data-requires-role="admin">Global Sessions</button>
     <button id="sign-out-btn">Sign Out</button>
   </div>
+
+  <div id="admin-global-sessions-panel">
+    <div class="gsp-header">
+      <span class="gsp-title">Global Sessions — All Projects</span>
+      <span>
+        <button class="gsp-refresh" id="gsp-refresh-btn" title="Refresh global session list">Refresh</button>
+        <button class="gsp-close" id="gsp-close-btn">&times;</button>
+      </span>
+    </div>
+    <div id="gsp-session-list">
+      <div class="gsp-status">Loading sessions from all projects...</div>
+    </div>
+  </div>
+  <iframe id="admin-global-sessions-iframe"></iframe>
 
   <div id="admin-sessions-panel">
     <div class="asp-header">
@@ -1227,7 +1310,12 @@
       'gas-admin-sessions-list': true,
       'gas-admin-sessions-error': true,
       'gas-admin-signout-result': true,
-      'gas-admin-signout-error': true
+      'gas-admin-signout-error': true,
+      'gas-admin-global-sessions-ready': true,
+      'gas-admin-global-sessions-list': true,
+      'gas-admin-global-sessions-error': true,
+      'gas-admin-global-signout-result': true,
+      'gas-admin-global-signout-error': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1461,7 +1549,10 @@
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true };
+        'gas-admin-signout-error': true,
+        'gas-admin-global-sessions-ready': true, 'gas-admin-global-sessions-list': true,
+        'gas-admin-global-sessions-error': true, 'gas-admin-global-signout-result': true,
+        'gas-admin-global-signout-error': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -1537,6 +1628,38 @@
       if (data.type === 'gas-admin-signout-error') {
         document.getElementById('asp-session-list').innerHTML =
           '<div class="asp-status" style="color:#ef5350">Sign-out failed: ' + _escHtml(String(data.error || '')) + '</div>';
+        return;
+      }
+
+      // ── Global session management responses ──
+      if (data.type === 'gas-admin-global-sessions-ready') {
+        _globalIframeReady = true;
+        _globalIframeSource = event.source;
+        if (_globalPanelOpen) _globalListSessions();
+        return;
+      }
+      if (data.type === 'gas-admin-global-sessions-list') {
+        _renderGlobalSessions(data.data);
+        return;
+      }
+      if (data.type === 'gas-admin-global-sessions-error') {
+        var gspList = document.getElementById('gsp-session-list');
+        if (gspList) {
+          gspList.innerHTML = '<div class="gsp-status" style="color:#ef5350">Error: ' + _escHtml(String(data.error || '')) + '</div>';
+        }
+        return;
+      }
+      if (data.type === 'gas-admin-global-signout-result') {
+        if (data.result && data.result.success) {
+          document.getElementById('gsp-session-list').innerHTML =
+            '<div class="gsp-status">Signed out ' + _escHtml(data.result.email) + '. Refreshing...</div>';
+          setTimeout(function() { _globalListSessions(); }, 500);
+        }
+        return;
+      }
+      if (data.type === 'gas-admin-global-signout-error') {
+        document.getElementById('gsp-session-list').innerHTML =
+          '<div class="gsp-status" style="color:#ef5350">Global sign-out failed: ' + _escHtml(String(data.error || '')) + '</div>';
         return;
       }
 
@@ -2761,6 +2884,175 @@
       document.getElementById('asp-session-list').innerHTML =
         '<div class="asp-status">Refreshing...</div>';
       _adminListSessions();
+    });
+
+    // =============================================
+    // AUTH — Global Session Management Panel
+    // =============================================
+    var _globalIframeReady = false;
+    var _globalPanelOpen = false;
+    var _globalIframeSource = null;
+
+    function _initGlobalIframe() {
+      var iframe = document.getElementById('admin-global-sessions-iframe');
+      var baseUrl = _getGasBaseUrl();
+      if (!baseUrl) return;
+      _globalIframeReady = false;
+      iframe.src = baseUrl + '?action=adminGlobalSessions';
+    }
+
+    function _globalListSessions() {
+      var session = loadSession();
+      if (!session.token || !_globalIframeReady || !_globalIframeSource) return;
+      _globalIframeSource.postMessage({
+        type: 'admin-list-global-sessions',
+        token: session.token
+      }, '*');
+    }
+
+    function _globalSignOutUser(email, project) {
+      var session = loadSession();
+      if (!session.token || !_globalIframeReady || !_globalIframeSource) return;
+      _globalIframeSource.postMessage({
+        type: 'admin-global-signout-user',
+        token: session.token,
+        email: email,
+        project: project
+      }, '*');
+    }
+
+    function _renderGlobalSessions(result) {
+      var list = document.getElementById('gsp-session-list');
+      if (!result) {
+        list.innerHTML = '<div class="gsp-status">No data returned.</div>';
+        return;
+      }
+      var sessions = result.sessions || [];
+      var projectStatus = result.projects || [];
+
+      if (sessions.length === 0 && projectStatus.length === 0) {
+        list.innerHTML = '<div class="gsp-status">No active sessions found across any project.</div>';
+        return;
+      }
+
+      // Group sessions by project
+      var groups = {};
+      var projectOrder = [];
+      for (var p = 0; p < projectStatus.length; p++) {
+        var pName = projectStatus[p].name;
+        if (!groups[pName]) {
+          groups[pName] = { sessions: [], status: projectStatus[p] };
+          projectOrder.push(pName);
+        }
+      }
+      for (var i = 0; i < sessions.length; i++) {
+        var proj = sessions[i].project || 'Unknown';
+        if (!groups[proj]) {
+          groups[proj] = { sessions: [], status: { name: proj, status: 'ok', count: 0 } };
+          projectOrder.push(proj);
+        }
+        groups[proj].sessions.push(sessions[i]);
+      }
+
+      var html = '';
+      for (var g = 0; g < projectOrder.length; g++) {
+        var grpName = projectOrder[g];
+        var grp = groups[grpName];
+        html += '<div class="gsp-project-group">';
+        html += '<div class="gsp-project-header"><span>' + _escHtml(grpName) + '</span>';
+        if (grp.status.status === 'ok') {
+          html += '<span class="gsp-count">' + grp.sessions.length + ' session' + (grp.sessions.length !== 1 ? 's' : '') + '</span>';
+        } else {
+          html += '<span class="gsp-count" style="color:#ef5350">unavailable</span>';
+        }
+        html += '</div>';
+        if (grp.status.status !== 'ok') {
+          html += '<div class="gsp-project-error">' + _escHtml(grp.status.error || 'Could not reach project') + '</div>';
+        }
+        for (var s = 0; s < grp.sessions.length; s++) {
+          var sess = grp.sessions[s];
+          var selfClass = sess.isSelf ? ' gsp-self' : '';
+          var roleClass = sess.isEmergencyAccess ? ' gsp-emergency' : '';
+          var selfLabel = sess.isSelf ? ' (you)' : '';
+          var created = new Date(sess.createdAt);
+          var lastAct = new Date(sess.lastActivity);
+          var absMin = Math.floor(sess.absoluteRemaining / 60);
+          var absSec = sess.absoluteRemaining % 60;
+          var rollMin = Math.floor(sess.rollingRemaining / 60);
+          var rollSec = sess.rollingRemaining % 60;
+
+          html += '<div class="gsp-session' + selfClass + '">'
+            + '<div><span class="gsp-email">' + _escHtml(sess.email) + selfLabel + '</span>'
+            + '<span class="gsp-role' + roleClass + '">' + _escHtml(sess.role)
+            + (sess.isEmergencyAccess ? ' (emergency)' : '') + '</span></div>'
+            + '<div class="gsp-meta">Signed in: ' + created.toLocaleTimeString() + '</div>'
+            + '<div class="gsp-meta">Last activity: ' + lastAct.toLocaleTimeString() + '</div>'
+            + '<div class="gsp-meta">Remaining: ' + absMin + 'm ' + absSec + 's abs / '
+            + rollMin + 'm ' + rollSec + 's rolling</div>';
+          if (!sess.isSelf) {
+            html += '<button class="gsp-kick" data-email="' + _escHtml(sess.email)
+              + '" data-project="' + _escHtml(grpName) + '">Sign Out</button>';
+            html += '<button class="gsp-kick-all" data-email="' + _escHtml(sess.email)
+              + '">Sign Out All Projects</button>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+      list.innerHTML = html;
+
+      // Attach click handlers
+      var kickBtns = list.querySelectorAll('.gsp-kick');
+      for (var k = 0; k < kickBtns.length; k++) {
+        kickBtns[k].addEventListener('click', function() {
+          var email = this.getAttribute('data-email');
+          var project = this.getAttribute('data-project');
+          this.textContent = 'Signing out...';
+          this.disabled = true;
+          _globalSignOutUser(email, project);
+        });
+      }
+      var kickAllBtns = list.querySelectorAll('.gsp-kick-all');
+      for (var ka = 0; ka < kickAllBtns.length; ka++) {
+        kickAllBtns[ka].addEventListener('click', function() {
+          var email = this.getAttribute('data-email');
+          this.textContent = 'Signing out...';
+          this.disabled = true;
+          _globalSignOutUser(email, 'ALL');
+        });
+      }
+    }
+
+    document.getElementById('admin-global-sessions-btn').addEventListener('click', function() {
+      var panel = document.getElementById('admin-global-sessions-panel');
+      if (_globalPanelOpen) {
+        panel.style.display = 'none';
+        _globalPanelOpen = false;
+        return;
+      }
+      // Close the local sessions panel if open
+      document.getElementById('admin-sessions-panel').style.display = 'none';
+      _adminPanelOpen = false;
+      panel.style.display = 'block';
+      _globalPanelOpen = true;
+      document.getElementById('gsp-session-list').innerHTML =
+        '<div class="gsp-status">Loading sessions from all projects...</div>';
+      if (!_globalIframeReady) {
+        _initGlobalIframe();
+      } else {
+        _globalListSessions();
+      }
+    });
+
+    document.getElementById('gsp-close-btn').addEventListener('click', function() {
+      document.getElementById('admin-global-sessions-panel').style.display = 'none';
+      _globalPanelOpen = false;
+    });
+
+    document.getElementById('gsp-refresh-btn').addEventListener('click', function() {
+      document.getElementById('gsp-session-list').innerHTML =
+        '<div class="gsp-status">Refreshing...</div>';
+      _globalListSessions();
     });
 
     // Re-auth button handler (on absolute warning banner)

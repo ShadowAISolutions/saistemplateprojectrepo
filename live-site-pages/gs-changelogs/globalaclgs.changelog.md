@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12g] — 2026-03-20 06:13:55 PM EST — v05.41r
+
+### Added
+- Cross-project session aggregation allowing admins to view all active sessions across projects from a single interface
+- Remote session termination — admins can kick users from specific projects or all projects at once
+- Server-to-server authentication using shared secret for secure cross-project communication
 
 ## [v01.11g] — 2026-03-20 04:20:50 PM EST — v05.36r
 

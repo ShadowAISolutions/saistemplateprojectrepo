@@ -3,9 +3,50 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v05.41r] — 2026-03-20 06:13:55 PM EST
+
+> **Prompt:** "i want an interface which is like the sessions button in the testauth1 project, but i want it to apply to all projects. should it be part of the globalacl manager or is that something that should be its own specific environment"
+
+### Added
+- Global Sessions interface on the GlobalACL page — aggregates active sessions from all auth-enabled GAS projects into a single admin view
+- Cross-project session management via UrlFetchApp with shared-secret authentication (server-to-server only, never exposed to browser)
+- "Global Sessions" button alongside existing "Sessions" button on GlobalACL, with a dedicated green-themed panel showing sessions grouped by project
+- Admin ability to kick users from specific projects or all projects at once from the Global Sessions panel
+- Project registry reader that discovers auth-enabled projects from a "Projects" tab in the Master ACL Spreadsheet
+- Cross-project `listSessions` and `adminSignOut` doGet endpoints on all three auth projects (globalacl, testauth1, portal)
+- Cross-project session functions propagated to both auth GAS templates for future projects
+
+#### `globalacl.html` — v01.01w
+
+##### Added
+- "Global Sessions" button for admin users to view sessions across all projects
+- Dedicated green-themed panel showing sessions grouped by project with status indicators
+- Ability to sign out users from individual projects or all projects at once
+
+#### `globalacl.gs` — v01.12g
+
+##### Added
+- Cross-project session aggregation via `listGlobalSessions()` using `UrlFetchApp.fetchAll()` for parallel queries
+- Project registry reader from Master ACL Spreadsheet "Projects" tab
+- Shared-secret authentication for server-to-server cross-project calls
+- `adminGlobalSignOutUser()` for remote session termination across projects
+- `listSessions` and `adminSignOut` doGet action routes for cross-project queries
+- `adminGlobalSessions` doGet action route for the Global Sessions iframe listener
+
+#### `testauth1.gs` — v01.73g
+
+##### Added
+- Cross-project session listing and admin sign-out endpoints (`listSessions`, `adminSignOut` doGet routes)
+- Shared-secret validation for cross-project admin requests
+
+#### `portal.gs` — v01.04g
+
+##### Added
+- Cross-project session listing and admin sign-out endpoints with placeholder guards for unconfigured Master ACL
 
 ## [v05.40r] — 2026-03-20 05:16:32 PM EST
 
