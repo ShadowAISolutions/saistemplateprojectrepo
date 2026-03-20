@@ -4,39 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-19 07:51:00 PM EST
-**Repo version:** v05.15r
+**Date:** 2026-03-19 08:34:14 PM EST
+**Repo version:** v05.16r
 
 ### What was done
-This session planned the **template update to sync auth templates with testauth1**:
+This session **executed the full 5-phase TEMPLATE-UPDATE-PLAN.md** to sync auth templates with testauth1's evolved feature set:
 
-- **v05.15r** — Created `TEMPLATE-UPDATE-PLAN.md` with initial 5-phase granular approach (write from scratch)
-- **Pivoted approach** — Developer correctly identified that copying testauth1 files and making ~20-30 targeted edits is far simpler than writing 2,000+ lines from scratch
-- **Rewrote plan** — `TEMPLATE-UPDATE-PLAN.md` now uses the **copy-then-modify approach**:
-  - Phase 1: Copy `testauth1.gs` → `gas-minimal-auth-template-code.js.txt`, make ~20-25 edits (placeholders, production values, generic RBAC, strip PROJECT content, move admin utilities out)
-  - Phase 2: Copy `testauth1.html` → `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, make ~20-25 edits (placeholders, production values, remove test panels)
-  - Phase 3: Copy Phase 1 output → `gas-test-auth-template-code.js.txt`, add test functions back
-  - Phase 4: Verify `setup-gas-project.sh` sed patterns match new template format
-  - Phase 5: Sync applicable features to noauth templates (CSP, changelog sanitization, deferred AudioContext)
+- **Phase 1** — Copied `testauth1.gs` → `gas-minimal-auth-template-code.js.txt` with ~25 edits: genericized RBAC (`clinician` → `editor`, removed `billing`), replaced project-specific values with template placeholders (`TEMPLATE_DEPLOYMENT_ID`, `TEMPLATE_SPREADSHEET_ID`, etc.), set production timeouts (1hr session, 5min heartbeat, 8hr absolute), kept admin utilities, removed `saveNote()`
+- **Phase 2** — Copied `testauth1.html` → `HtmlAndGasTemplateAutoUpdate-auth.html.txt` with ~25 edits: genericized roles/permissions, replaced deployment IDs and config values with placeholders, removed test panels, cleaned up testauth1-specific references
+- **Phase 3** — Copied Phase 1 output → `gas-test-auth-template-code.js.txt`, added diagnostic UI with version count, sound test, sheet operations, live quota panels (GitHub, Mail, UrlFetch, Sheets, Exec)
+- **Phase 4** — Verified all `setup-gas-project.sh` sed patterns match new template variable formats — all patterns confirmed correct
+- **Phase 5** — Synced CSP meta tag, deferred AudioContext (`_ensureAudioCtx()`), and `sanitizeChangelogHtml()` to noauth HTML template
+- **Pre-Commit #19** — Propagated noauth features to all 3 live noauth pages: index.html (v01.07w), testenvironment.html (v01.07w), gas-project-creator.html (v01.14w)
+- **v05.16r** — All changes committed and pushed
 
 ### Where we left off
-- **Plan is ready for execution** — `TEMPLATE-UPDATE-PLAN.md` has the full copy-then-modify plan
-- **No template files have been modified yet** — execution is deferred to the next session
-- The plan is at "Draft — awaiting developer approval" status
+- All 5 phases complete and deployed — templates now match testauth1's architecture
+- A new auth project created via gas-project-creator will produce files structurally almost identical to testauth1 (confirmed with developer)
+- testauth1 has zero PROJECT OVERRIDE markers — templates are a clean representation
+- `TEMPLATE-UPDATE-PLAN.md` still exists in `repository-information/` — can be deleted in a future cleanup
 
 ### Key decisions made
-- **Copy-then-modify over write-from-scratch** — dramatically reduces effort and risk (starting from known-working code)
-- **Admin utilities stay in templates** — `clearAccessCacheForUser()`, `clearAllAccessCache()`, `inspectCache()`, `listActiveSessions()`, `adminSignOutUser()` are generic, not project-specific — they get moved OUT of the PROJECT START/END block before stripping
-- **`saveNote()` gets removed entirely** — it's a project-specific data operation example
+- **Copy-then-modify approach** (decided in prior session) — executed successfully, much simpler than writing from scratch
 - **RBAC genericization**: `clinician` → `editor`, `billing` removed, keep `admin` + `viewer`
-- **Production values**: 1hr session, 5min heartbeat, 8hr absolute timeout (not testauth1's test values)
+- **Production values in templates**: 1hr session, 5min heartbeat, 8hr absolute timeout
+- **Deferred AudioContext** for all pages — eliminates Chrome autoplay policy warning
+- **CSP meta tags** added to all noauth pages and templates
+- **Changelog sanitization** — `sanitizeChangelogHtml()` strips dangerous elements/attributes before innerHTML
 
 ### Active context
-- Branch: `claude/fix-admin-logout-button-mx45L`
-- Repo version: v05.15r
-- Key files: `repository-information/TEMPLATE-UPDATE-PLAN.md` (the execution plan)
-- Source files for copying: `googleAppsScripts/Testauth1/testauth1.gs` (2,116 lines), `live-site-pages/testauth1.html`
-- Target files: `live-site-pages/templates/gas-minimal-auth-template-code.js.txt`, `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`
+- Repo version: v05.16r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -44,21 +41,16 @@ This session planned the **template update to sync auth templates with testauth1
 
 ## Previous Sessions
 
-**Date:** 2026-03-19 03:07:49 PM EST
-**Repo version:** v05.13r
+**Date:** 2026-03-19 07:51:00 PM EST
+**Repo version:** v05.15r
 
 ### What was done
-This session worked on **centralizing ACL setup and cache management infrastructure**:
+This session planned the **template update to sync auth templates with testauth1**:
 
-- **v05.08r** through **v05.13r** — Major cache infrastructure overhaul and ACL centralization:
-  - **Centralized ACL setup** — created `setupAcl()` function to eliminate duplicated ACL initialization across `doGet()`, `processHeartbeat()`, `listActiveSessions()`, and `adminSignOutUser()`. Single source of truth for ACL spreadsheet opening, sheet selection, and data reading
-  - **Cache epoch system** — implemented `CACHE_EPOCH` (stored in ScriptProperties) with `invalidateAllCaches()` / `nuclearCacheInvalidation()` for bulk cache invalidation. All cache keys are prefixed with `eN_` (epoch number). Incrementing the epoch makes all old keys invisible without waiting for TTL expiry
-  - **Rate limiting** — added `checkRateLimit()` using cache-based sliding window (epoch-aware keys). Configurable per-user request limits to prevent abuse
-  - **RBAC roles matrix caching** — the full roles→permissions mapping is cached under `eN_rbac_roles_matrix` so `hasPermission()` doesn't re-read the config on every call
-  - **`inspectCache()` diagnostic** — new function to probe all known cache key patterns (access, role, session, roles matrix) for each user across current and previous epochs. Run from the GAS editor to view cache contents
+- **v05.15r** — Created `TEMPLATE-UPDATE-PLAN.md` with copy-then-modify approach (5 phases)
+- Developer identified that copying testauth1 files and making ~20-30 targeted edits is far simpler than writing from scratch
 
 ### Where we left off
-- Cache infrastructure is solid — epoch-based invalidation, rate limiting, and RBAC caching all working
-- `inspectCache()` is available for debugging cache state
+- Plan ready for execution — executed in the next session (v05.16r)
 
 Developed by: ShadowAISolutions
