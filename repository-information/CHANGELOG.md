@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v05.30r] — 2026-03-20 02:09:38 PM EST
+
+> **Prompt:** "when running functions such as delete, its showing a browser ui to confirm, have it be our own ui"
+
+### Changed
+- Replaced browser `confirm()` dialog in ACL delete with a custom styled modal that matches the existing UI
+
+#### `globalacl.gs` — v01.06g
+
+##### Changed
+- Delete confirmation now uses a styled in-app dialog instead of the browser's default confirm popup
 
 ## [v05.29r] — 2026-03-20 02:05:14 PM EST
 

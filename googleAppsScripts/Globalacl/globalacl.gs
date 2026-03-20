@@ -1,4 +1,4 @@
-var VERSION = "v01.05g";
+var VERSION = "v01.06g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2289,9 +2289,41 @@ function doGet(e) {
         </div>
       </div>
 
+      <!-- Confirm Dialog (replaces browser confirm()) -->
+      <div class="modal-overlay" id="confirm-modal">
+        <div class="modal" style="width:360px;">
+          <h2 id="confirm-title" style="color:#c62828;">Confirm Delete</h2>
+          <p id="confirm-message" style="margin:8px 0 0;font-size:14px;color:#333;"></p>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="confirm-cancel">Cancel</button>
+            <button class="btn btn-danger" id="confirm-ok">Delete</button>
+          </div>
+        </div>
+      </div>
+
       <script>
         // Session token for data operation validation
         var _sessionToken = '${escapeJs(sessionToken)}';
+
+        // Custom confirm dialog — returns a Promise that resolves true/false
+        var _confirmResolve = null;
+        function showConfirm(title, message, okLabel) {
+          return new Promise(function(resolve) {
+            _confirmResolve = resolve;
+            document.getElementById('confirm-title').textContent = title || 'Confirm';
+            document.getElementById('confirm-message').textContent = message || 'Are you sure?';
+            document.getElementById('confirm-ok').textContent = okLabel || 'OK';
+            document.getElementById('confirm-modal').classList.add('open');
+          });
+        }
+        document.getElementById('confirm-cancel').addEventListener('click', function() {
+          document.getElementById('confirm-modal').classList.remove('open');
+          if (_confirmResolve) { _confirmResolve(false); _confirmResolve = null; }
+        });
+        document.getElementById('confirm-ok').addEventListener('click', function() {
+          document.getElementById('confirm-modal').classList.remove('open');
+          if (_confirmResolve) { _confirmResolve(true); _confirmResolve = null; }
+        });
 
         // Notify wrapper that auth is OK, then load ACL data
         google.script.run
@@ -2600,18 +2632,20 @@ function doGet(e) {
         }
 
         function deleteUser(email) {
-          if (!confirm('Delete user ' + email + '?')) return;
-          setLoading(true);
-          google.script.run
-            .withSuccessHandler(function(result) {
-              showStatus(result.message, 'success');
-              loadData();
-            })
-            .withFailureHandler(function(err) {
-              showStatus('Error: ' + err.message, 'error');
-              setLoading(false);
-            })
-            .deleteACLUser(_sessionToken, email);
+          showConfirm('Delete User', 'Are you sure you want to delete ' + email + '?', 'Delete').then(function(ok) {
+            if (!ok) return;
+            setLoading(true);
+            google.script.run
+              .withSuccessHandler(function(result) {
+                showStatus(result.message, 'success');
+                loadData();
+              })
+              .withFailureHandler(function(err) {
+                showStatus('Error: ' + err.message, 'error');
+                setLoading(false);
+              })
+              .deleteACLUser(_sessionToken, email);
+          });
         }
 
         function addPage() {
