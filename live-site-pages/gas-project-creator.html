@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.14w">
+  <meta name="build-version" content="v01.15w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -631,7 +631,7 @@
           </div>
           <div class="step-input">
             <label for="cfg-spreadsheet-id">Spreadsheet ID <em>(optional)</em></label>
-            <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-spreadsheet-id')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..." oninput="syncMasterAclId()"><button class="field-clear" onclick="clearField('cfg-spreadsheet-id'); syncMasterAclId();" title="Clear">&times;</button></div>
             <span class="field-hint">Google Sheets ID for version tracking</span>
           </div>
           <div class="step-input">
@@ -678,10 +678,14 @@
               <span class="field-hint">Comma-separated list of allowed email domains. Leave blank to allow all Google accounts. Required for HIPAA preset</span>
             </div>
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#58a6ff;margin:14px 0 10px;">Master ACL Spreadsheet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6e7681;">(optional &mdash; centralized access control)</span></div>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="chk-is-master-acl" style="cursor:pointer;" onchange="toggleMasterAcl()">
+              This project&rsquo;s spreadsheet is the master ACL <span style="color:#6e7681;">(uses the Spreadsheet ID above as the centralized access control sheet for all projects)</span>
+            </label>
             <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
-              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-master-acl-id')" title="Clear">&times;</button></div>
-              <span class="field-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
+              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..."><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id')" title="Clear">&times;</button></div>
+              <span class="field-hint" id="master-acl-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
             </div>
             <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
@@ -1348,7 +1352,13 @@
             code = code.replace(/ENABLE_DOMAIN_RESTRICTION:\s*false/g, 'ENABLE_DOMAIN_RESTRICTION: true');
           }
           // Master ACL spreadsheet config
+          var isMasterAcl = document.getElementById('chk-is-master-acl').checked;
           var masterAclId = (document.getElementById('cfg-master-acl-id') || {}).value || '';
+          if (isMasterAcl && !masterAclId.trim()) {
+            // When "is master ACL" is checked but no explicit ID, use the project's own spreadsheet ID
+            var projectSheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
+            if (projectSheetId.trim()) masterAclId = projectSheetId.trim();
+          }
           if (masterAclId.trim()) code = code.replace(/var MASTER_ACL_SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var MASTER_ACL_SPREADSHEET_ID = "' + masterAclId.trim() + '"');
           var aclSheetName = (document.getElementById('cfg-acl-sheet-name') || {}).value || 'ACL';
           if (aclSheetName.trim()) code = code.replace(/var ACL_SHEET_NAME\s*=\s*"[^"]*"/, 'var ACL_SHEET_NAME = "' + aclSheetName.trim().replace(/"/g, '\\"') + '"');
@@ -1388,6 +1398,35 @@
         btn.textContent = 'Copied!';
         setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
       });
+    }
+
+// ── Master ACL Toggle ──
+    function toggleMasterAcl() {
+      var isChecked = document.getElementById('chk-is-master-acl').checked;
+      var aclIdField = document.getElementById('cfg-master-acl-id');
+      var clearBtn = document.getElementById('btn-clear-master-acl');
+      var hint = document.getElementById('master-acl-hint');
+      if (isChecked) {
+        var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
+        aclIdField.value = sheetId.trim();
+        aclIdField.readOnly = true;
+        aclIdField.style.opacity = '0.6';
+        aclIdField.placeholder = 'Auto-filled from Spreadsheet ID above';
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (hint) hint.textContent = 'Auto-filled from the Spreadsheet ID above \u2014 this project\u2019s spreadsheet will serve as the master ACL for all projects';
+      } else {
+        aclIdField.readOnly = false;
+        aclIdField.style.opacity = '1';
+        aclIdField.placeholder = '1abc2def3ghi...';
+        if (clearBtn) clearBtn.style.display = '';
+        if (hint) hint.textContent = 'A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet';
+      }
+    }
+
+    function syncMasterAclId() {
+      if (!document.getElementById('chk-is-master-acl').checked) return;
+      var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
+      document.getElementById('cfg-master-acl-id').value = sheetId.trim();
     }
 
 // ── Auth Fields Toggle ──
@@ -1512,9 +1551,13 @@
         if (allowedDomains) {
           json += ',\n  "ALLOWED_DOMAINS": "' + allowedDomains + '"';
         }
+        var isMasterAcl = document.getElementById('chk-is-master-acl').checked;
         var masterAclId = document.getElementById('cfg-master-acl-id').value.trim() || '';
         var aclSheetName = document.getElementById('cfg-acl-sheet-name').value.trim() || 'ACL';
         var aclPageName = document.getElementById('cfg-acl-page-name').value.trim() || '';
+        if (isMasterAcl) {
+          json += ',\n  "IS_MASTER_ACL": true';
+        }
         if (masterAclId) {
           json += ',\n  "MASTER_ACL_SPREADSHEET_ID": "' + masterAclId + '"';
         }

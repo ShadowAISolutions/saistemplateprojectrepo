@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-03-20 09:08:46 AM EST — v05.17r
+
+### Added
+- Master ACL selection option — new checkbox to designate this project's spreadsheet as the centralized access control sheet for all projects
+- Master ACL Spreadsheet ID auto-fills from Spreadsheet ID when the option is checked
+- Config output now includes the master ACL selection for automated project setup
 
 ## [v01.14w] — 2026-03-19 08:28:19 PM EST — v05.16r
 

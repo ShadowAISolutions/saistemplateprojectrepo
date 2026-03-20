@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v05.17r] — 2026-03-20 09:08:46 AM EST
+
+> **Prompt:** "to the gas-project-creator add a feature which allows the user to select whether the current setup being configured will be used as the master ACL"
+
+### Added
+- Master ACL selection checkbox in gas-project-creator — allows marking the current project's spreadsheet as the centralized master ACL for all GAS-powered pages, auto-filling the Master ACL Spreadsheet ID from the Spreadsheet ID field
+- `IS_MASTER_ACL` flag support in setup-gas-project.sh — when true, automatically sets `MASTER_ACL_SPREADSHEET_ID` to the project's own `SPREADSHEET_ID`
+
+#### `gas-project-creator.html` — v01.15w
+
+##### Added
+- "This project's spreadsheet is the master ACL" checkbox in the Authentication Settings section
+- Auto-sync of Master ACL Spreadsheet ID field from Spreadsheet ID when master ACL checkbox is checked
+- `IS_MASTER_ACL` boolean included in the "Copy Config for Claude" JSON output
+- Master ACL field becomes read-only with explanatory hint when checkbox is active
 
 ## [v05.16r] — 2026-03-19 08:28:19 PM EST
 

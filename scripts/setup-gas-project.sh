@@ -90,9 +90,15 @@ INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
 AUTH_PRESET="$(parse_json AUTH_PRESET 'standard')"
 ALLOWED_DOMAINS="$(parse_json ALLOWED_DOMAINS '')"
+IS_MASTER_ACL="$(parse_json IS_MASTER_ACL 'false')"
 MASTER_ACL_SPREADSHEET_ID="$(parse_json MASTER_ACL_SPREADSHEET_ID 'YOUR_MASTER_ACL_SPREADSHEET_ID')"
 ACL_SHEET_NAME="$(parse_json ACL_SHEET_NAME 'ACL')"
 ACL_PAGE_NAME="$(parse_json ACL_PAGE_NAME '')"
+
+# If IS_MASTER_ACL is true and no explicit Master ACL ID, use the project's own Spreadsheet ID
+if [ "$IS_MASTER_ACL" = "true" ] && [ "$MASTER_ACL_SPREADSHEET_ID" = "YOUR_MASTER_ACL_SPREADSHEET_ID" ]; then
+    MASTER_ACL_SPREADSHEET_ID="$SPREADSHEET_ID"
+fi
 
 if [ -z "$ENV_NAME" ]; then
     err "PROJECT_ENVIRONMENT_NAME is required and cannot be empty."
