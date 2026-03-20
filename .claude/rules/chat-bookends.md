@@ -103,6 +103,18 @@
 
 **The self-check:** before writing any URL section, ask: "Did I actually run a filesystem command to discover pages, or am I listing them from memory?" If from memory, STOP and enumerate first.
 
+## Response Opener — Zero Tool Calls Before First Text
+
+**The failure pattern:** the entire response protocol (Session Start Checklist, CODING PLAN, CODING START, timestamps, and all subsequent bookends including the end-of-response block) gets skipped. The response jumps directly into Agent spawns or tool calls without ever outputting text to the user. The result is a technically correct code change with zero protocol compliance — no session start checks, no plan, no timestamps, no phase markers, no summary, no closing marker. The user sees raw tool output with no structure or context.
+
+**Why this happens:** when the task is clear and straightforward, the "just do it" execution style overrides the "mandatory protocol" requirement. The model optimizes for speed by skipping all text output and going straight to tool calls. The problem compounds: once the opener is skipped, there is no timestamp baseline for `⏱️` annotations, so mid-response bookends are also impossible, and the end-of-response block has no data to report. Skipping the opener causes a cascade failure of the entire bookend system.
+
+**The absolute rule:** the **very first action** of every response must be text output, never a tool call. Specifically: (1) run `date` via Bash (the one exception — this tool call is required to get the timestamp), (2) output the Session Start Checklist results or CODING PLAN as the first visible text. No Agent spawns, no Read calls, no Grep calls, no Edit calls, no other Bash calls may precede the opening text. If you catch yourself about to fire a tool call without having written any text yet, STOP — you are about to skip the entire protocol.
+
+**The self-check:** before every response's first tool call, ask: "Have I written CODING PLAN (or RESEARCH START, or HOOK FEEDBACK, or CONTEXT COMPACTION RECOVERY) as my first text output?" If the answer is no, the response is broken — stop and emit the opener before proceeding.
+
+**Session Start Checklist is not optional:** even when the task is simple, even when you "know" the repo identity from context, the Session Start Checklist must run. It catches contamination, verifies branch hygiene, and surfaces reminders. Skipping it because "the task is straightforward" is exactly the failure pattern this section exists to prevent.
+
 ## Hook Anticipation — Bug Context
 
 **The failure pattern:** if the hook conditions are evaluated *before* a `git push` completes (or evaluated mentally instead of actually running the git commands), the prediction can be wrong — e.g. concluding there are unpushed commits when the push already succeeded. Writing `🐟🐟AWAITING HOOK🐟🐟` in that case means the hook never fires (because all conditions are actually false), and the conversation gets stuck with no closing marker.

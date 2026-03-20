@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v05.37r] — 2026-03-20 04:26:46 PM EST
+
+> **Prompt:** "why did you not do your bookends. make sure you handle it so it never happens again"
+
+### Added
+- "Response Opener — Zero Tool Calls Before First Text" prevention section in chat-bookends.md — catches the failure pattern where the entire protocol (Session Start Checklist, CODING PLAN, timestamps, bookends, end-of-response block) is skipped because the model jumps straight to tool calls without outputting text first
 
 ## [v05.36r] — 2026-03-20 04:20:50 PM EST
 
