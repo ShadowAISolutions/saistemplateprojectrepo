@@ -820,7 +820,11 @@ if [ -f "$WORKFLOW_FILE" ]; then
     if grep -q "Deploy ${PROJECT_DIR}" "$WORKFLOW_FILE"; then
         warn "${PROJECT_DIR} deploy step already in workflow — skipping"
     elif [ "$DEPLOYMENT_ID" = "YOUR_DEPLOYMENT_ID" ] || [ -z "$DEPLOYMENT_ID" ]; then
-        warn "DEPLOYMENT_ID is placeholder — skipping workflow deploy step (add manually after first deploy)"
+        warn "DEPLOYMENT_ID is placeholder — skipping workflow deploy step"
+        warn "⚠️  IMPORTANT: After deploying the GAS project and getting a DEPLOYMENT_ID,"
+        warn "   update the config.json and re-run this script to add the workflow step."
+        warn "   Without this step, GAS auto-update from GitHub will NOT work."
+        MISSING_WORKFLOW_STEP=1
     else
         # Insert before "- name: Delete branch" (the first occurrence after GAS DEPLOY STEPS)
         DELETE_LINE=$(grep -n '      - name: Delete branch' "$WORKFLOW_FILE" | head -1 | cut -d: -f1)
@@ -909,6 +913,17 @@ echo "  - README.md (structure tree)"
 echo "  - .claude/rules/gas-scripts.md (GAS Projects table)"
 echo "  - .github/workflows/auto-merge-claude.yml (GAS deploy webhook step)"
 echo ""
+if [ "${MISSING_WORKFLOW_STEP:-0}" = "1" ]; then
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}⚠️  WORKFLOW DEPLOY STEP WAS NOT ADDED${NC}"
+    echo -e "${YELLOW}   DEPLOYMENT_ID is still a placeholder.${NC}"
+    echo -e "${YELLOW}   After deploying the GAS project:${NC}"
+    echo -e "${YELLOW}   1. Update DEPLOYMENT_ID in ${GAS_DIR}/${ENV_NAME}.config.json${NC}"
+    echo -e "${YELLOW}   2. Re-run: bash scripts/setup-gas-project.sh ${GAS_DIR}/${ENV_NAME}.config.json${NC}"
+    echo -e "${YELLOW}   Without this, GAS auto-update from GitHub will NOT work.${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+fi
 echo "Claude just needs to: commit and push (Pre-Commit checklist applies)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

@@ -357,6 +357,16 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
+      - name: Deploy Globalacl
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Globalacl/globalacl.gs" && \
+          curl -L -X POST \
+            "https://script.google.com/macros/s/AKfycbwARlOI-DKErWfPFIlp4bhrf7Iqm8NmGhIeuISviwylSTAd9JL4Th5AoCWKG5oAdc6bcQ/exec" \
+            -d "action=deploy" \
+            --max-time 120 || true
+
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |

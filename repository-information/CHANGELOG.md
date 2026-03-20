@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v05.31r] — 2026-03-20 02:21:26 PM EST
+
+> **Prompt:** "yes add it. but also make sure that we dont miss this for new projects moving forward"
+
+### Fixed
+- Added missing Globalacl deploy webhook step to the auto-merge workflow — GAS auto-update from GitHub was not working because the workflow had no deploy step for Globalacl
+
+### Changed
+- Improved `setup-gas-project.sh` to show prominent warnings when the workflow deploy step is skipped due to a placeholder DEPLOYMENT_ID, including a banner at end of script output with re-run instructions
 
 ## [v05.30r] — 2026-03-20 02:09:38 PM EST
 
