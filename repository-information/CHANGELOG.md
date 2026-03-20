@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v05.40r] — 2026-03-20 05:16:32 PM EST
+
+> **Prompt:** "undo everything you did in the last prompt, but keep a note of it in a document. its currently not loading sessions, just stuck"
+
+### Removed
+- Reverted Session Manager panel from Global ACL page — the multi-iframe implementation broke the existing Sessions dropdown by cross-contaminating admin session message routing (GAS postMessages lack project identifiers, making disambiguation impossible)
+
+### Added
+- `SESSION-MANAGER-PLAN.md` in `repository-information/` — preserves the full Session Manager implementation notes, architecture decisions, what broke, and three fix options for a future attempt
+
+#### `globalacl.html` — v01.00w (reverted from v01.01w)
+
+##### Removed
+- Session Manager panel, CSS, and JavaScript (~360 lines) — reverted to pre-Session Manager state
+- Modifications to existing admin session message handlers that caused routing conflicts
 
 ## [v05.39r] — 2026-03-20 04:59:04 PM EST
 

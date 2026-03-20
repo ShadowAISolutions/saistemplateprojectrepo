@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.00w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -305,94 +305,6 @@
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
-
-/* ══════════════ */
-/* PROJECT START */
-/* ══════════════ */
-    #session-manager {
-      max-width: 900px; margin: 60px auto 20px; padding: 0 16px;
-      font: 12px/1.4 monospace; color: #ccc;
-    }
-    .sm-header {
-      display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 16px;
-    }
-    .sm-title { color: #90caf9; font-weight: bold; font-size: 15px; }
-    .sm-controls { display: flex; gap: 8px; align-items: center; }
-    .sm-btn {
-      background: none; border: 1px solid #555; color: #90caf9; cursor: pointer;
-      font: 11px/1 monospace; padding: 4px 10px; border-radius: 4px;
-    }
-    .sm-btn:hover { background: rgba(144,202,249,0.1); }
-    .sm-btn:disabled { opacity: 0.4; cursor: default; }
-    .sm-auto-label { color: #888; font-size: 11px; }
-    .sm-auto-label input { vertical-align: middle; margin-right: 3px; }
-
-    .sm-project {
-      background: rgba(255,255,255,0.03); border: 1px solid #333;
-      border-radius: 8px; margin-bottom: 12px; overflow: hidden;
-    }
-    .sm-project-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 14px; background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid #333; cursor: pointer; user-select: none;
-    }
-    .sm-project-header:hover { background: rgba(255,255,255,0.06); }
-    .sm-project-name {
-      font-weight: bold; font-size: 13px; color: #e0e0e0;
-    }
-    .sm-project-badge {
-      display: inline-block; padding: 1px 6px; border-radius: 3px;
-      font-size: 10px; margin-left: 8px;
-    }
-    .sm-badge-count { background: rgba(144,202,249,0.15); color: #90caf9; }
-    .sm-badge-loading { background: rgba(255,255,255,0.1); color: #888; }
-    .sm-badge-error { background: rgba(239,83,80,0.15); color: #ef5350; }
-    .sm-badge-offline { background: rgba(255,255,255,0.08); color: #666; }
-    .sm-project-actions { display: flex; gap: 6px; align-items: center; }
-    .sm-project-refresh {
-      background: none; border: 1px solid #555; color: #90caf9; cursor: pointer;
-      font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px;
-    }
-    .sm-project-refresh:hover { background: rgba(144,202,249,0.1); }
-    .sm-project-toggle { color: #888; font-size: 14px; margin-left: 4px; transition: transform 0.2s; }
-    .sm-project.sm-collapsed .sm-project-toggle { transform: rotate(-90deg); }
-    .sm-project.sm-collapsed .sm-project-body { display: none; }
-
-    .sm-project-body { padding: 10px 14px; }
-    .sm-session {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      background: rgba(255,255,255,0.04); border: 1px solid #2a2a3a;
-      border-radius: 6px; padding: 8px 12px; margin-bottom: 6px;
-    }
-    .sm-session.sm-self { border-color: #1565c0; }
-    .sm-session-info { flex: 1; min-width: 0; }
-    .sm-session-email { color: #fff; font-weight: bold; font-size: 12px; }
-    .sm-session-self { color: #90caf9; font-size: 10px; margin-left: 4px; }
-    .sm-session-role {
-      display: inline-block; background: rgba(144,202,249,0.15); color: #90caf9;
-      padding: 1px 5px; border-radius: 3px; font-size: 10px; text-transform: uppercase;
-      margin-left: 6px;
-    }
-    .sm-session-role.sm-emergency { background: rgba(255,152,0,0.2); color: #ff9800; }
-    .sm-session-meta { color: #888; font-size: 11px; margin-top: 3px; }
-    .sm-session-timers { color: #666; font-size: 10px; margin-top: 2px; }
-    .sm-session-actions { flex-shrink: 0; margin-left: 10px; display: flex; flex-direction: column; gap: 4px; }
-    .sm-kick {
-      background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer;
-      font: 10px/1 monospace; padding: 3px 10px; border-radius: 3px; white-space: nowrap;
-    }
-    .sm-kick:hover { background: rgba(239,83,80,0.15); }
-    .sm-kick:disabled { opacity: 0.4; cursor: default; }
-    .sm-status { color: #666; font-size: 11px; text-align: center; padding: 12px 0; }
-    .sm-total-bar {
-      color: #888; font-size: 11px; text-align: right; margin-top: 4px; padding-top: 8px;
-      border-top: 1px solid #333;
-    }
-    .sm-total-count { color: #90caf9; font-weight: bold; }
-/* ══════════════ */
-/* PROJECT END */
-/* ══════════════ */
   </style>
 </head>
 <body>
@@ -485,19 +397,7 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <div id="session-manager" style="display:none;">
-    <div class="sm-header">
-      <span class="sm-title">Session Manager</span>
-      <div class="sm-controls">
-        <label class="sm-auto-label"><input type="checkbox" id="sm-auto-refresh"> Auto-refresh</label>
-        <button class="sm-btn" id="sm-refresh-all">Refresh All</button>
-      </div>
-    </div>
-    <div id="sm-projects"></div>
-    <div class="sm-total-bar">
-      Total active sessions: <span class="sm-total-count" id="sm-total-count">0</span>
-    </div>
-  </div>
+  <!-- YOUR PAGE CONTENT HERE -->
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -1602,32 +1502,18 @@
         return;
       }
 
-      // ── Admin session management responses (dropdown panel) ──
-      // Session Manager iframes also send these message types but are
-      // handled by _smMessageRouter. For list/error/signout messages,
-      // skip if the source matches a known Session Manager iframe.
+      // ── Admin session management responses ──
       if (data.type === 'gas-admin-sessions-ready') {
         _adminIframeReady = true;
-        _adminIframeSource = event.source;
+        _adminIframeSource = event.source;  // Capture sandbox frame WindowProxy
         if (_adminPanelOpen) _adminListSessions();
         return;
       }
-
-      // For data messages, skip if source is a Session Manager iframe
-      var _isSmIframeSource = false;
-      if (typeof _smState !== 'undefined') {
-        for (var _sid in _smState) {
-          if (_smState[_sid].iframeSource && event.source === _smState[_sid].iframeSource) {
-            _isSmIframeSource = true; break;
-          }
-        }
-      }
       if (data.type === 'gas-admin-sessions-list') {
-        if (!_isSmIframeSource) _renderAdminSessions(data.sessions);
+        _renderAdminSessions(data.sessions);
         return;
       }
       if (data.type === 'gas-admin-sessions-error') {
-        if (_isSmIframeSource) return;
         var errList = document.getElementById('asp-session-list');
         if (errList) {
           var errMsg = String(data.error || 'Unknown error');
@@ -1640,7 +1526,7 @@
         return;
       }
       if (data.type === 'gas-admin-signout-result') {
-        if (_isSmIframeSource) return;
+        // Refresh the session list after signing out a user
         if (data.result && data.result.success) {
           document.getElementById('asp-session-list').innerHTML =
             '<div class="asp-status">Signed out ' + _escHtml(data.result.email) + '. Refreshing...</div>';
@@ -1649,7 +1535,6 @@
         return;
       }
       if (data.type === 'gas-admin-signout-error') {
-        if (_isSmIframeSource) return;
         document.getElementById('asp-session-list').innerHTML =
           '<div class="asp-status" style="color:#ef5350">Sign-out failed: ' + _escHtml(String(data.error || '')) + '</div>';
         return;
@@ -2211,9 +2096,6 @@
       // data-requires-role attributes based on session storage.
       // Admin sessions button uses data-requires-role="admin" in HTML.
       applyUIGating();
-
-      // Show Session Manager panel for admin users (cross-project session management)
-      if (typeof _smShowForAdmin === 'function') _smShowForAdmin();
     }
 
     /**
@@ -2655,13 +2537,6 @@
       document.getElementById('tab-takeover-wall').style.display = 'none';
       _tabSurrendered = false;
 
-      // Hide Session Manager and stop auto-refresh
-      var smMgr = document.getElementById('session-manager');
-      if (smMgr) smMgr.style.display = 'none';
-      if (_smAutoInterval) { clearInterval(_smAutoInterval); _smAutoInterval = null; }
-      var smAutoCheck = document.getElementById('sm-auto-refresh');
-      if (smAutoCheck) smAutoCheck.checked = false;
-
       // Notify other tabs (sessionStorage/hipaa mode — BroadcastChannel)
       // For localStorage/standard mode, cross-tab sync happens automatically via the storage event.
       if (_signOutChannel) {
@@ -2995,392 +2870,9 @@
 // ══════════════
 
 // ══════════════
-// PROJECT START — Session Manager (cross-project session management)
+// PROJECT START — Add your project-specific JavaScript here
 // ══════════════
 
-    // =============================================
-    // SESSION MANAGER — Multi-project session viewer
-    // =============================================
-    var SM_PROJECTS = [
-      {
-        id: 'globalacl',
-        name: 'Global ACL',
-        deploymentId: 'AKfycbwARlOI-DKErWfPFIlp4bhrf7Iqm8NmGhIeuISviwylSTAd9JL4Th5AoCWKG5oAdc6bcQ',
-        isSelf: true  // This project — can reuse the existing admin iframe
-      },
-      {
-        id: 'testauth1',
-        name: 'Testauth1',
-        deploymentId: 'AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w',
-        isSelf: false
-      }
-    ];
-
-    var _smState = {};        // keyed by project id: { iframe, iframeSource, ready, sessions, error, loading }
-    var _smAutoInterval = null;
-    var _smInitialized = false;
-
-    function _smGetBaseUrl(deploymentId) {
-      return 'https://script.google.com/macros/s/' + deploymentId + '/exec';
-    }
-
-    function _smInit() {
-      if (_smInitialized) return;
-      _smInitialized = true;
-
-      var container = document.getElementById('sm-projects');
-      container.innerHTML = '';
-
-      for (var i = 0; i < SM_PROJECTS.length; i++) {
-        var p = SM_PROJECTS[i];
-        _smState[p.id] = {
-          iframe: null,
-          iframeSource: null,
-          ready: false,
-          sessions: null,
-          error: null,
-          loading: true
-        };
-
-        // Create project section
-        var div = document.createElement('div');
-        div.className = 'sm-project';
-        div.id = 'sm-project-' + p.id;
-        div.innerHTML =
-          '<div class="sm-project-header" data-project="' + p.id + '">'
-          + '<span><span class="sm-project-name">' + _escHtml(p.name) + '</span>'
-          + '<span class="sm-project-badge sm-badge-loading" id="sm-badge-' + p.id + '">loading</span></span>'
-          + '<span class="sm-project-actions">'
-          + '<button class="sm-project-refresh" data-project="' + p.id + '">Refresh</button>'
-          + '<span class="sm-project-toggle">&#9662;</span>'
-          + '</span>'
-          + '</div>'
-          + '<div class="sm-project-body" id="sm-body-' + p.id + '">'
-          + '<div class="sm-status">Connecting...</div>'
-          + '</div>';
-        container.appendChild(div);
-
-        // Create hidden iframe for this project
-        // Each project gets its own iframe to avoid message routing
-        // conflicts with the dropdown panel's admin-sessions-iframe.
-        var iframe = document.createElement('iframe');
-        iframe.id = 'sm-iframe-' + p.id;
-        iframe.style.cssText = 'display:none;width:0;height:0;border:none;position:absolute;';
-        document.body.appendChild(iframe);
-        _smState[p.id].iframe = iframe;
-      }
-
-      // Attach event listeners
-      var headers = container.querySelectorAll('.sm-project-header');
-      for (var h = 0; h < headers.length; h++) {
-        headers[h].addEventListener('click', function(e) {
-          if (e.target.tagName === 'BUTTON') return;
-          var proj = this.closest('.sm-project');
-          proj.classList.toggle('sm-collapsed');
-        });
-      }
-      var refreshBtns = container.querySelectorAll('.sm-project-refresh');
-      for (var r = 0; r < refreshBtns.length; r++) {
-        refreshBtns[r].addEventListener('click', function(e) {
-          e.stopPropagation();
-          _smRefreshProject(this.getAttribute('data-project'));
-        });
-      }
-
-      // Load project iframes sequentially to avoid ready-message race conditions.
-      // Each iframe sends gas-admin-sessions-ready without a project identifier,
-      // so we load one at a time and assign the ready message to the pending project.
-      _smLoadNextProject(0);
-    }
-
-    function _smLoadNextProject(index) {
-      if (index >= SM_PROJECTS.length) return;
-      _smPendingProjectIndex = index;
-      _smLoadProjectIframe(SM_PROJECTS[index]);
-    }
-
-    var _smPendingProjectIndex = 0;
-
-    function _smLoadProjectIframe(project) {
-      var state = _smState[project.id];
-      state.ready = false;
-      state.loading = true;
-      state.error = null;
-      _smRenderProject(project.id);
-
-      var baseUrl = _smGetBaseUrl(project.deploymentId);
-      state.iframe.src = baseUrl + '?action=adminSessions';
-
-      // Timeout: if no ready message in 15s, show error and load next
-      state._loadTimeout = setTimeout(function() {
-        if (!state.ready) {
-          state.loading = false;
-          state.error = 'Connection timed out';
-          _smRenderProject(project.id);
-          // Load next project
-          for (var i = 0; i < SM_PROJECTS.length; i++) {
-            if (SM_PROJECTS[i].id === project.id) {
-              _smLoadNextProject(i + 1);
-              break;
-            }
-          }
-        }
-      }, 15000);
-    }
-
-    function _smHandleReady(projectId, source) {
-      var state = _smState[projectId];
-      if (!state) return;
-      if (state._loadTimeout) { clearTimeout(state._loadTimeout); state._loadTimeout = null; }
-      state.ready = true;
-      state.iframeSource = source;
-      _smListSessions(projectId);
-      // Load the next project iframe (sequential loading to avoid race conditions)
-      for (var i = 0; i < SM_PROJECTS.length; i++) {
-        if (SM_PROJECTS[i].id === projectId) {
-          _smLoadNextProject(i + 1);
-          break;
-        }
-      }
-    }
-
-    function _smListSessions(projectId) {
-      var state = _smState[projectId];
-      if (!state || !state.ready || !state.iframeSource) return;
-      var session = loadSession();
-      if (!session.token) return;
-      state.loading = true;
-      _smRenderProject(projectId);
-      state.iframeSource.postMessage({
-        type: 'admin-list-sessions',
-        token: session.token
-      }, '*');
-    }
-
-    function _smHandleSessionsList(projectId, sessions) {
-      var state = _smState[projectId];
-      if (!state) return;
-      state.sessions = sessions;
-      state.loading = false;
-      state.error = null;
-      _smRenderProject(projectId);
-      _smUpdateTotalCount();
-    }
-
-    function _smHandleError(projectId, error) {
-      var state = _smState[projectId];
-      if (!state) return;
-      state.loading = false;
-      state.error = error || 'Unknown error';
-      _smRenderProject(projectId);
-      _smUpdateTotalCount();
-    }
-
-    function _smSignOutUser(projectId, email) {
-      var state = _smState[projectId];
-      if (!state || !state.ready || !state.iframeSource) return;
-      var session = loadSession();
-      if (!session.token) return;
-      state.iframeSource.postMessage({
-        type: 'admin-signout-user',
-        token: session.token,
-        email: email
-      }, '*');
-    }
-
-    function _smHandleSignOutResult(projectId, result) {
-      // Refresh the project after sign-out
-      setTimeout(function() { _smListSessions(projectId); }, 500);
-    }
-
-    function _smRefreshProject(projectId) {
-      var state = _smState[projectId];
-      if (!state) return;
-      if (state.ready) {
-        _smListSessions(projectId);
-      } else {
-        var project = null;
-        for (var i = 0; i < SM_PROJECTS.length; i++) {
-          if (SM_PROJECTS[i].id === projectId) { project = SM_PROJECTS[i]; break; }
-        }
-        if (project) _smLoadProjectIframe(project);
-      }
-    }
-
-    function _smRefreshAll() {
-      for (var i = 0; i < SM_PROJECTS.length; i++) {
-        _smRefreshProject(SM_PROJECTS[i].id);
-      }
-    }
-
-    function _smRenderProject(projectId) {
-      var state = _smState[projectId];
-      if (!state) return;
-      var body = document.getElementById('sm-body-' + projectId);
-      var badge = document.getElementById('sm-badge-' + projectId);
-      if (!body || !badge) return;
-
-      if (state.loading) {
-        badge.className = 'sm-project-badge sm-badge-loading';
-        badge.textContent = 'loading';
-        body.innerHTML = '<div class="sm-status">Loading sessions...</div>';
-        return;
-      }
-
-      if (state.error) {
-        badge.className = 'sm-project-badge sm-badge-error';
-        badge.textContent = 'error';
-        body.innerHTML = '<div class="sm-status" style="color:#ef5350">' + _escHtml(state.error) + '</div>';
-        return;
-      }
-
-      var sessions = state.sessions || [];
-      if (sessions.length === 0) {
-        badge.className = 'sm-project-badge sm-badge-offline';
-        badge.textContent = '0';
-        body.innerHTML = '<div class="sm-status">No active sessions</div>';
-        return;
-      }
-
-      badge.className = 'sm-project-badge sm-badge-count';
-      badge.textContent = sessions.length;
-
-      var html = '';
-      for (var i = 0; i < sessions.length; i++) {
-        var s = sessions[i];
-        var selfClass = s.isSelf ? ' sm-self' : '';
-        var roleClass = s.isEmergencyAccess ? ' sm-emergency' : '';
-        var selfLabel = s.isSelf ? '<span class="sm-session-self">(you)</span>' : '';
-        var created = new Date(s.createdAt);
-        var lastAct = new Date(s.lastActivity);
-        var absMin = Math.floor(s.absoluteRemaining / 60);
-        var absSec = s.absoluteRemaining % 60;
-        var rollMin = Math.floor(s.rollingRemaining / 60);
-        var rollSec = s.rollingRemaining % 60;
-
-        html += '<div class="sm-session' + selfClass + '">'
-          + '<div class="sm-session-info">'
-          + '<div><span class="sm-session-email">' + _escHtml(s.email) + '</span>' + selfLabel
-          + '<span class="sm-session-role' + roleClass + '">' + _escHtml(s.role)
-          + (s.isEmergencyAccess ? ' (emergency)' : '') + '</span></div>'
-          + '<div class="sm-session-meta">Signed in: ' + created.toLocaleTimeString()
-          + ' &middot; Last activity: ' + lastAct.toLocaleTimeString() + '</div>'
-          + '<div class="sm-session-timers">Remaining: ' + absMin + 'm ' + absSec + 's abs / '
-          + rollMin + 'm ' + rollSec + 's rolling</div>'
-          + '</div>';
-        if (!s.isSelf) {
-          html += '<div class="sm-session-actions">'
-            + '<button class="sm-kick" data-project="' + _escHtml(projectId)
-            + '" data-email="' + _escHtml(s.email) + '">Sign Out</button>'
-            + '</div>';
-        }
-        html += '</div>';
-      }
-      body.innerHTML = html;
-
-      // Attach kick handlers
-      var kickBtns = body.querySelectorAll('.sm-kick');
-      for (var k = 0; k < kickBtns.length; k++) {
-        kickBtns[k].addEventListener('click', function() {
-          var proj = this.getAttribute('data-project');
-          var email = this.getAttribute('data-email');
-          this.textContent = 'Signing out...';
-          this.disabled = true;
-          _smSignOutUser(proj, email);
-        });
-      }
-    }
-
-    function _smUpdateTotalCount() {
-      var total = 0;
-      for (var id in _smState) {
-        if (_smState[id].sessions) {
-          total += _smState[id].sessions.length;
-        }
-      }
-      var el = document.getElementById('sm-total-count');
-      if (el) el.textContent = total;
-    }
-
-    // Route postMessage events from Session Manager iframes to the right project.
-    // Self-project messages are also routed here (in addition to the existing dropdown
-    // handler) so the Session Manager panel stays in sync with the dropdown.
-    function _smMessageRouter(evt) {
-      if (!evt.data || !evt.data.type) return;
-      if (!_smInitialized) return;
-      var type = evt.data.type;
-
-      // Only handle admin session message types
-      var adminTypes = {
-        'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
-        'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true
-      };
-      if (!adminTypes[type]) return;
-
-      // Find which project this message belongs to by matching event.source
-      var projectId = null;
-
-      // First, check known iframeSources (already registered projects)
-      for (var id in _smState) {
-        if (_smState[id].iframeSource && evt.source === _smState[id].iframeSource) {
-          projectId = id;
-          break;
-        }
-      }
-
-      // For gas-admin-sessions-ready, the source isn't registered yet.
-      // Since iframes are loaded sequentially, the pending project is known.
-      if (!projectId && type === 'gas-admin-sessions-ready') {
-        if (_smPendingProjectIndex < SM_PROJECTS.length) {
-          var pending = SM_PROJECTS[_smPendingProjectIndex];
-          if (_smState[pending.id] && !_smState[pending.id].ready) {
-            projectId = pending.id;
-          }
-        }
-      }
-
-      if (!projectId) return;  // Unknown source — ignore
-
-      // Dispatch to the appropriate handler
-      if (type === 'gas-admin-sessions-ready') {
-        _smHandleReady(projectId, evt.source);
-      } else if (type === 'gas-admin-sessions-list') {
-        _smHandleSessionsList(projectId, evt.data.sessions);
-      } else if (type === 'gas-admin-sessions-error') {
-        _smHandleError(projectId, evt.data.error || 'Access denied');
-      } else if (type === 'gas-admin-signout-result') {
-        _smHandleSignOutResult(projectId, evt.data.result);
-      } else if (type === 'gas-admin-signout-error') {
-        _smHandleError(projectId, 'Sign-out failed: ' + (evt.data.error || ''));
-      }
-    }
-
-    // Show Session Manager for admin users after login
-    function _smShowForAdmin() {
-      var session = loadSession();
-      if (session.role === 'admin') {
-        var mgr = document.getElementById('session-manager');
-        if (mgr) {
-          mgr.style.display = 'block';
-          if (!_smInitialized) _smInit();
-        }
-      }
-    }
-
-    // Auto-refresh toggle
-    document.getElementById('sm-auto-refresh').addEventListener('change', function() {
-      if (this.checked) {
-        _smAutoInterval = setInterval(_smRefreshAll, 30000);  // 30 second refresh
-      } else {
-        if (_smAutoInterval) { clearInterval(_smAutoInterval); _smAutoInterval = null; }
-      }
-    });
-
-    document.getElementById('sm-refresh-all').addEventListener('click', _smRefreshAll);
-
-    // Listen for messages from non-self project iframes
-    window.addEventListener('message', _smMessageRouter);
 
 // PROJECT END
 // ══════════════
