@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.16w] — 2026-03-20 09:55:14 AM EST — v05.18r
+
+### Added
+- HMAC Secret field with one-click Generate button for creating random session integrity secrets
+- Copy Property Names button in the Script Properties setup step for quick access to all required property names
+- HMAC_SECRET listed in the Script Properties reference when authentication is enabled
 
 ## [v01.15w] — 2026-03-20 09:08:46 AM EST — v05.17r
 

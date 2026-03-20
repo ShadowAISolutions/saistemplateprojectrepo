@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v05.18r] — 2026-03-20 09:55:14 AM EST
+
+> **Prompt:** "i want you to add a button which will generate a random one for the user in the gas-project-creator, also add a button to copy the text CACHE_EPOCH,GITHUB_TOKEN,HMAC_SECRET for the script properties in the step 9 section"
+
+### Added
+- HMAC Secret field with Generate button in gas-project-creator auth settings — creates a cryptographically random 64-char hex string for session integrity
+- "Copy Names" button in the Script Properties setup step — copies CACHE_EPOCH, GITHUB_TOKEN, and HMAC_SECRET property names to clipboard for easy pasting into GAS Script Properties
+- HMAC_SECRET property row in Script Properties list — conditionally shown when Google Authentication is enabled
+
+#### `gas-project-creator.html` — v01.16w
+
+##### Added
+- HMAC Secret field with one-click Generate button for creating random session integrity secrets
+- Copy Property Names button in the Script Properties setup step for quick clipboard access to all required property names
+- HMAC_SECRET shown in the Script Properties list when authentication is enabled
 
 ## [v05.17r] — 2026-03-20 09:08:46 AM EST
 
