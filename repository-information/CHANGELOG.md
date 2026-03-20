@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v05.21r] — 2026-03-20 10:22:10 AM EST
+
+> **Prompt:** "move the checkbox for include google authentication to the top of step 7 in the gas project settings"
+
+### Changed
+- Moved "Include Google Authentication" checkbox from the project configuration area to the top of the GAS Project Settings section for better discoverability
+
+#### `gas-project-creator.html` — v01.19w
+
+##### Changed
+- "Include Google Authentication" checkbox moved to the top of the GAS Project Settings section for earlier visibility
 
 ## [v05.20r] — 2026-03-20 10:10:59 AM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
 
 ## [Unreleased]
+
+## [v01.19w] — 2026-03-20 10:22:10 AM EST — v05.21r
+
+### Changed
+- "Include Google Authentication" checkbox moved to the top of the GAS Project Settings section for earlier visibility
 
 ## [v01.18w] — 2026-03-20 10:10:59 AM EST — v05.20r
 

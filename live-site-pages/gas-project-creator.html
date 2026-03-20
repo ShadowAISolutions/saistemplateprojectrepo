@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.18w">
+  <meta name="build-version" content="v01.19w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -542,6 +542,10 @@
           <div class="step-note">Alternatively, for a <strong>standalone</strong> script (no spreadsheet link), create one at <a href="https://script.google.com" target="_blank" rel="noopener" style="color:#58a6ff">script.google.com</a></div>
         </li>
         <li class="step-group-label">GAS Project Settings</li>
+        <label style="display:flex;align-items:center;gap:6px;margin:8px 0 4px 0;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+          <input type="checkbox" id="chk-google-auth" style="cursor:pointer;" checked onchange="toggleAuthFields()">
+          Include Google Authentication <span style="color:#6e7681;">(adds sign-in gate to both GAS &amp; HTML &mdash; unchecked = no auth, open access)</span>
+        </label>
         <li>In Project Settings, enable <strong>Show appsscript.json manifest file</strong>
           <div class="step-note">Project Settings &rarr; General settings &rarr; Show &ldquo;appsscript.json&rdquo; manifest file</div>
         </li>
@@ -662,10 +666,6 @@
           <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
             <input type="checkbox" id="chk-full-template" style="cursor:pointer;">
             Include test/diagnostic features <span style="color:#6e7681;">(sound, quotas, sheet embed, buttons &mdash; for verifying Google connections, not production use. Unchecked = minimal: version display + auto-update only)</span>
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="chk-google-auth" style="cursor:pointer;" checked onchange="toggleAuthFields()">
-            Include Google Authentication <span style="color:#6e7681;">(adds sign-in gate to both GAS &amp; HTML &mdash; unchecked = no auth, open access)</span>
           </label>
           <div id="auth-fields" style="margin-top:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
