@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 12/100`
+`Sections: 13/100`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-03-20 07:27:24 PM EST — v05.44r
+
+### Fixed
+- Sessions no longer conflict with other projects open in the same browser
 
 ## [v01.12w] — 2026-03-18 11:06:43 AM EST — v04.73r
 

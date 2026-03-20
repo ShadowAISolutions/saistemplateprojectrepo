@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.45w">
+  <meta name="build-version" content="v02.46w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1069,10 +1069,20 @@
     // localStorage persists across sessions (standard).
     // =============================================
 
-    var SESSION_KEY = 'gas_session_token';
-    var EMAIL_KEY = 'gas_user_email';
-    var ROLE_KEY = 'gas_user_role';
-    var PERMISSIONS_KEY = 'gas_user_permissions';
+    // Project-scoped session isolation — each page gets its own storage keys
+    // and BroadcastChannel so different projects don't conflict in the same browser.
+    // All pages on the same GitHub Pages domain share one localStorage origin;
+    // without scoping, signing into Project A overwrites Project B's session.
+    var _pageName = (function() {
+      var p = window.location.pathname;
+      var name = p.substring(p.lastIndexOf('/') + 1).replace('.html', '');
+      return name || 'index';
+    })();
+
+    var SESSION_KEY = _pageName + '_gas_session_token';
+    var EMAIL_KEY = _pageName + '_gas_user_email';
+    var ROLE_KEY = _pageName + '_gas_user_role';
+    var PERMISSIONS_KEY = _pageName + '_gas_user_permissions';
 
     // Single-tab enforcement — unique ID for this tab instance
     var _tabId = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1901,7 +1911,7 @@
     var _signOutChannel = null;
     if ((HTML_CONFIG.STORAGE_TYPE === 'sessionStorage' || HTML_CONFIG.SINGLE_TAB_ENFORCEMENT)
         && typeof BroadcastChannel !== 'undefined') {
-      _signOutChannel = new BroadcastChannel('auth-sign-out');
+      _signOutChannel = new BroadcastChannel(_pageName + '-auth-sign-out');
       _signOutChannel.onmessage = function(e) {
         if (!e.data) return;
         // Tab roll call: another tab is asking "who's there?" — respond with presence
@@ -2267,8 +2277,8 @@
         });
       }
     }
-    var SESSION_START_KEY = 'gas_session_start';
-    var ABSOLUTE_START_KEY = 'gas_absolute_start';
+    var SESSION_START_KEY = _pageName + '_gas_session_start';
+    var ABSOLUTE_START_KEY = _pageName + '_gas_absolute_start';
     var _timerInterval = null;
 
     function formatCountdown(seconds) {

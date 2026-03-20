@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v05.44r] — 2026-03-20 07:27:24 PM EST
+
+> **Prompt:** "when signing in to more than a single project with the same account in the same browser, it thinks that i have a session active elsewhere, which is great when dealing with signing into the same project where i only want one instance, but i want it to allow sign in on different projects at the same time"
+
+### Fixed
+- Cross-project session conflicts in the same browser — signing into one project no longer overwrites or interferes with another project's session
+- All localStorage keys and BroadcastChannel names are now scoped per-project using the page name derived from the URL path
+
+#### `testauth1.html` — v02.46w
+
+##### Fixed
+- Sessions no longer conflict with other projects open in the same browser
+
+#### `testauth2.html` — v01.01w
+
+##### Fixed
+- Sessions no longer conflict with other projects open in the same browser
+
+#### `portal.html` — v01.13w
+
+##### Fixed
+- Sessions no longer conflict with other projects open in the same browser
+
+#### `globalacl.html` — v01.02w
+
+##### Fixed
+- Sessions no longer conflict with other projects open in the same browser
 
 ## [v05.43r] — 2026-03-20 06:56:29 PM EST
 
