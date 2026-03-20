@@ -1,4 +1,4 @@
-var VERSION = "v01.01g";
+var VERSION = "v01.02g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2203,10 +2203,11 @@ function doGet(e) {
         // Session token for data operation validation
         var _sessionToken = '${escapeJs(sessionToken)}';
 
-        // Notify wrapper that auth is OK
+        // Notify wrapper that auth is OK, then load ACL data
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
+            loadData();
           })
           .withFailureHandler(function(err) {
             window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
@@ -2214,6 +2215,7 @@ function doGet(e) {
               messageKey: '${escapeJs(appMsgKey)}',
               role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
               permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
+            loadData();
           })
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 
@@ -2570,8 +2572,8 @@ function doGet(e) {
           }
         });
 
-        // Initial load
-        loadData();
+        // Initial load deferred — triggered by signAppMessage callback above
+        // to avoid race condition where loadData fires before session is confirmed
       </script>
     </body>
     </html>
