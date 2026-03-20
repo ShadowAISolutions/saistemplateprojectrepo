@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [indexhtml.changelog-archive.md](indexhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-03-19 08:28:19 PM EST — v05.16r
+
+### Added
+- Content Security Policy — page now enforces strict resource loading rules for better protection
+- Changelog content sanitization — changelog popups now strip potentially dangerous content before display
+
+### Changed
+- Audio initialization deferred until first interaction — eliminates browser autoplay warning on page load
 
 ## [v01.06w] — 2026-03-18 11:06:43 AM EST — v04.73r
 

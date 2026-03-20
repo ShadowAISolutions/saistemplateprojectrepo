@@ -3,9 +3,55 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v05.16r] — 2026-03-19 08:28:19 PM EST
+
+> **Prompt:** "start with the TEMPLATE-UPDATE-PLAN.md"
+
+### Added
+- Auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — full rebuild synced with testauth1's evolved feature set including RBAC, HMAC-SHA256 message signing, admin panel, cache epoch, cross-device session enforcement, tab takeover, CSP, deferred AudioContext, changelog sanitization, and 10+ new config toggles
+- Auth GAS minimal template (`gas-minimal-auth-template-code.js.txt`) — rebuilt with RBAC roles (admin/editor/viewer), HMAC-SHA256 signed messages, epoch-based cache, ACL spreadsheet support, cross-device enforcement, and `PARENT_ORIGIN` for secure postMessage
+- Auth GAS test template (`gas-test-auth-template-code.js.txt`) — extended minimal template with diagnostic UI, version count status, sound test, sheet operations, and live quota panels
+- Content Security Policy meta tag added to noauth HTML template
+- `sanitizeChangelogHtml()` function added to noauth HTML template — strips dangerous elements and event handlers before rendering changelog content
+- CSP, deferred AudioContext, and changelog sanitization propagated to all 3 noauth live pages (index.html, testenvironment.html, gas-project-creator.html)
+
+### Changed
+- Noauth HTML template AudioContext initialization deferred to first user gesture via `_ensureAudioCtx()` — eliminates Chrome autoplay policy console warning
+- Auth templates genericized: `clinician` → `editor`, `billing` role removed, testauth1-specific references replaced with template placeholders
+
+### Fixed
+- Template placeholder consistency — `YOUR_SPREADSHEET_ID` → `TEMPLATE_SPREADSHEET_ID` in auth GAS templates' internal comparison checks
+
+#### `index.html` — v01.07w
+
+##### Added
+- Content Security Policy enforcing strict resource loading
+- Changelog content sanitization before display
+
+##### Changed
+- Audio initialization deferred until first user interaction
+
+#### `testenvironment.html` — v01.07w
+
+##### Added
+- Content Security Policy enforcing strict resource loading
+- Changelog content sanitization before display
+
+##### Changed
+- Audio initialization deferred until first user interaction
+
+#### `gas-project-creator.html` — v01.14w
+
+##### Added
+- Content Security Policy enforcing strict resource loading
+- Changelog content sanitization before display
+
+##### Changed
+- Audio initialization deferred until first user interaction
 
 ## [v05.15r] — 2026-03-19 07:17:21 PM EST
 
