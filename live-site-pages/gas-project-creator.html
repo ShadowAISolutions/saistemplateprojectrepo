@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.20w">
+  <meta name="build-version" content="v01.21w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -663,10 +663,6 @@
             <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo')" title="Clear">&times;</button></div>
             <span class="field-hint">Logo shown on the GAS splash screen</span>
           </div>
-          <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="chk-full-template" style="cursor:pointer;">
-            Include test/diagnostic features <span style="color:#6e7681;">(sound, quotas, sheet embed, buttons &mdash; for verifying Google connections, not production use. Unchecked = minimal: version display + auto-update only)</span>
-          </label>
           <div id="auth-fields" style="margin-top:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
             <div class="step-input" style="margin:0 0 10px;">
@@ -708,6 +704,10 @@
               <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
             </div>
           </div>
+          <label style="display:flex;align-items:center;gap:6px;margin-top:10px;margin-bottom:10px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="chk-full-template" style="cursor:pointer;">
+            Include test/diagnostic features <span style="color:#6e7681;">(sound, quotas, sheet embed, buttons &mdash; for verifying Google connections, not production use. Unchecked = minimal: version display + auto-update only)</span>
+          </label>
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
         </li>

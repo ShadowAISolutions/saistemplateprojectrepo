@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v05.23r] — 2026-03-20 10:34:16 AM EST
+
+> **Prompt:** "move the include test/diagnostic features to below the authentication settings section, right before the copy code.gs for GAS button"
+
+### Changed
+- Moved "Include test/diagnostic features" checkbox to just before the Copy Code.gs button, after all configuration and authentication settings
+
+#### `gas-project-creator.html` — v01.21w
+
+##### Changed
+- "Include test/diagnostic features" checkbox moved to just above the Copy Code.gs button, after all configuration fields and auth settings
 
 ## [v05.22r] — 2026-03-20 10:28:46 AM EST
 
