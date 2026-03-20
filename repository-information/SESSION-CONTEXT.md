@@ -4,47 +4,38 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-20 02:58:11 PM EST
-**Repo version:** v05.35r
+**Date:** 2026-03-20 05:36:14 PM EST
+**Repo version:** v05.40r
 
 ### What was done
-This session built the **Global ACL Manager** — a new GAS-powered admin UI for managing centralized access control:
+This session continued work on the **Global ACL Manager** page and added/reverted a Session Manager feature:
 
-- **v05.24r** — Set up the Global ACL GAS project via `setup-gas-project.sh` (10 files created)
-- **v05.25r–v05.28r** — Built the core ACL management UI in `globalacl.gs`:
-  - Full CRUD for users (add, edit, delete) with modal forms
-  - Table rendering with Email, Role, and dynamic page columns
-  - Inline editing for role dropdowns and page access checkboxes
-  - Custom confirm dialog (replaced browser `confirm()` for iframe compatibility)
-  - Page column management (add new page columns)
-- **v05.29r–v05.32r** — Iterative improvements:
-  - Wired up `loadACLData` with proper session gating and admin permission checks
-  - Added `addACLUser`, `updateACLUser`, `deleteACLUser`, `addACLPage` backend functions
-  - Connected frontend to backend with proper error handling
-- **v05.33r** — Replaced auto-save with per-row Save buttons for explicit control
-- **v05.34r** — Replaced per-row Save buttons with a single "Save Changes" toolbar button with amber dirty-state highlighting (modified checkboxes/dropdowns get yellow background, modified rows get orange email)
-- **v05.35r** — Added page column rename/remove (context menu on column headers) and full Roles management modal (add/rename/delete roles, toggle permissions inline)
+- **v05.36r** — Fixed permission highlight reset: checkboxes and role dropdowns now unhighlight when reverted to original values (dirty-cell/dirty-row/Save button state updates accordingly)
+- **v05.37r** — Added bookend protocol prevention rule to `chat-bookends.md` (Response Opener section)
+- **v05.38r** — Rewrote the bookend prevention rule from descriptive to a hard 3-step procedural gate after the descriptive version was violated in the same response it was created
+- **v05.39r** — Built a cross-project Session Manager panel in `globalacl.html` — multi-iframe approach to manage user sessions across all auth-enabled projects. **This broke the page** — stuck on "Loading sessions..." because GAS postMessages lack project identifiers, making it impossible to route messages from multiple per-project iframes to the correct handler
+- **v05.40r** — Reverted the Session Manager completely. Saved full implementation notes (architecture, what broke, fix options) to `repository-information/SESSION-MANAGER-PLAN.md`
 
 ### Where we left off
-- All changes committed and pushed through v05.35r
-- The ACL Manager is feature-complete for the core functionality:
-  - User management (add/edit/delete, inline role + page access editing)
-  - Single "Save Changes" button with dirty-state highlighting
-  - Page column management (add/rename/remove via header context menu)
-  - Roles management (add/rename/delete roles, toggle permissions)
-- CHANGELOG is at 100/100 sections — next push will trigger archive rotation
+- All changes committed and pushed through v05.40r
+- The Global ACL page is back to its pre-Session Manager state (v01.00w)
+- The existing Sessions dropdown button still works (single-project admin session management)
+- **SESSION-MANAGER-PLAN.md** documents three fix options for a future attempt:
+  - **(A)** Add project identifier to GAS `gas-admin-sessions-ready` messages — requires modifying each project's GAS `?action=adminSessions` handler
+  - **(B)** Use `stopImmediatePropagation()` for Session Manager iframes — separate listener per iframe
+  - **(C)** Centralized server-to-server approach — Global ACL GAS uses `UrlFetchApp` to call each project's GAS endpoint directly (N+1 quota hits vs 2N for multi-iframe)
 
 ### Key decisions made
-- **Single Save button over per-row**: user preferred one button for all changes with visual indicators showing which rows are dirty (amber highlights + orange email)
-- **Context menu for page headers**: click on a page column header shows rename/remove options — more discoverable than separate buttons
-- **Roles modal**: permissions save immediately per-checkbox (security changes should persist instantly), unlike user access changes which batch via Save Changes
-- **Role deletion behavior**: removing a role does NOT reassign users — they keep their role string but it won't match any defined role
+- **Revert over fix**: user preferred full revert with documentation rather than continued debugging of the Session Manager
+- **Multi-iframe chosen over centralized**: multi-iframe was simpler to implement but failed due to message routing; centralized (option C) would have been more robust
+- **Bookend protocol enforcement**: hard procedural gate (Step 1: `date` → Step 2: opening text → Step 3: everything else) works where descriptive rules don't
 
 ### Active context
-- Branch: `claude/setup-gas-project-rsCCL`
-- Repo version: v05.35r
-- GAS version: v01.10g (globalacl.gs)
-- CHANGELOG at 100/100 — archive rotation needed on next push
+- Branch: `claude/fix-permission-highlight-reset-gjK9U`
+- Repo version: v05.40r
+- GAS version: v01.11g (globalacl.gs — unchanged this session)
+- HTML version: v01.00w (globalacl.html — reverted from v01.01w)
+- CHANGELOG at 74/100 sections
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -52,21 +43,19 @@ This session built the **Global ACL Manager** — a new GAS-powered admin UI for
 
 ## Previous Sessions
 
-**Date:** 2026-03-20 01:04:04 PM EST
-**Repo version:** v05.23r
+**Date:** 2026-03-20 02:58:11 PM EST
+**Repo version:** v05.35r
 
 ### What was done
-This session made a series of UI layout improvements to `gas-project-creator.html`:
+Built the **Global ACL Manager** — a GAS-powered admin UI for centralized access control:
 
-- **v05.17r** — Added Master ACL sheet name selection dropdown to the GAS Project Creator page, allowing users to pick from existing ACL sheets or create new ones
-- **v05.18r–v05.23r** — Multiple iterative UI refinements to the GAS Project Creator page:
-  - Moved "Requires Google Authentication" checkbox to the top of Setup & Configuration section (affects layout of steps below it)
-  - Moved "Include test/diagnostic features" checkbox to just before the Copy Code.gs button, after all configuration and auth settings
-  - Various other layout and field ordering improvements
+- **v05.24r** — Set up the Global ACL GAS project (10 files created)
+- **v05.25r–v05.32r** — Core ACL management UI: CRUD for users, table rendering, inline editing, page column management, backend wiring
+- **v05.33r–v05.34r** — Replaced auto-save with single "Save Changes" button with amber dirty-state highlighting
+- **v05.35r** — Page column rename/remove (context menu) and Roles management modal
 
 ### Where we left off
-- All changes committed and pushed through v05.23r
-- The GAS Project Creator page now has improved field ordering: auth checkbox at top (since it controls visible fields), all config fields, auth settings, then test/diagnostic checkbox, then the Copy button
-- No outstanding work in progress
+- ACL Manager feature-complete for core functionality
+- CHANGELOG was at 100/100 — archive rotation ran in the next session
 
 Developed by: ShadowAISolutions
