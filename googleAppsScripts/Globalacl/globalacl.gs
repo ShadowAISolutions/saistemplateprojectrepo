@@ -1,4 +1,4 @@
-var VERSION = "v01.03g";
+var VERSION = "v01.04g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -70,8 +70,8 @@ var _rbacRolesCacheExpiry = 0;
 /**
  * Cache epoch — a counter stored in ScriptProperties that prefixes all CacheService keys.
  * Incrementing the epoch instantly orphans ALL existing cache entries (they have the old
- * prefix and will never be read again). This is a nuclear cache clear without needing to
- * know individual cache keys. The epoch is read once per execution and cached in memory.
+ * prefix and will never be read again). See nuclearCacheClear() for this emergency-only
+ * operation. The epoch is read once per execution and cached in memory.
  *
  * getEpochCache() returns a wrapper around CacheService.getScriptCache() that auto-prefixes
  * all keys with the epoch. Use this instead of CacheService.getScriptCache() directly.
@@ -308,12 +308,15 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 
 /**
- * Clear the access cache for a specific user so their next login reads the ACL fresh.
+ * Clear the access cache for a specific user so their next request reads the ACL fresh.
  * @param {string} email — the user's email address. When called from the GAS editor
  *   (no parameter), reads from Script Properties key "CLEAR_CACHE_EMAIL".
  *   Usage: Script Properties → CLEAR_CACHE_EMAIL = user@example.com → Run this function.
- * Note: uses the same epoch bump as clearAllAccessCache — all users are affected.
- * GAS CacheService does not support per-key enumeration, so targeted clearing is not possible.
+ *
+ * IMPORTANT: This does NOT bump the cache epoch — sessions remain valid.
+ * Only the access_EMAIL and role_EMAIL keys are removed so the user's ACL permissions
+ * are re-read from the spreadsheet on the next request. The rbac_roles_matrix cache
+ * is also cleared so role definitions are refreshed.
  */
 function clearAccessCacheForUser(email) {
   if (!email) {
@@ -323,9 +326,59 @@ function clearAccessCacheForUser(email) {
     Logger.log('No email specified. Set Script Properties key "CLEAR_CACHE_EMAIL" or pass email as parameter.');
     return;
   }
-  // Bump epoch to invalidate all cache (no way to target individual keys in GAS)
-  clearAllAccessCache();
-  Logger.log('Cache cleared for all users (epoch bumped). Target user: ' + email);
+  var cache = getEpochCache();
+  var lowerEmail = email.trim().toLowerCase();
+  // Remove the user's access and role cache keys
+  cache.remove('access_' + lowerEmail);
+  cache.remove('role_' + lowerEmail);
+  // Also clear the roles matrix so updated role definitions take effect
+  cache.remove('rbac_roles_matrix');
+  // Reset in-memory roles cache for this execution
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+  Logger.log('Access cache cleared for user: ' + email + ' (sessions preserved)');
+}
+
+/**
+ * Clear access cache for ALL users by reading emails from the ACL spreadsheet and
+ * removing each user's access_/role_ keys. Sessions remain valid — only ACL permission
+ * caches are cleared. Also clears the rbac_roles_matrix cache.
+ *
+ * Use this after bulk ACL changes (e.g. adding a new page column).
+ * For individual user changes, use clearAccessCacheForUser(email) instead.
+ */
+function clearAllAccessCache() {
+  var cache = getEpochCache();
+  // Clear the roles matrix
+  cache.remove('rbac_roles_matrix');
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+
+  // Read all emails from the ACL spreadsheet and clear their access/role keys
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (hasAcl) {
+    try {
+      var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+      var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+      if (sheet) {
+        var data = sheet.getDataRange().getValues();
+        var keysToRemove = [];
+        for (var r = 1; r < data.length; r++) {
+          var email = String(data[r][0]).trim().toLowerCase();
+          if (email) {
+            keysToRemove.push('access_' + email);
+            keysToRemove.push('role_' + email);
+          }
+        }
+        if (keysToRemove.length > 0) {
+          cache.removeAll(keysToRemove);
+        }
+      }
+    } catch (e) {
+      Logger.log('Warning: could not read ACL spreadsheet to clear caches — ' + e.message);
+    }
+  }
+  Logger.log('Access cache cleared for all users (sessions preserved).');
 }
 
 /**
@@ -333,8 +386,12 @@ function clearAccessCacheForUser(email) {
  * are instantly orphaned (they have the old epoch prefix and will never be read again).
  * No need to enumerate individual keys — everything is invalidated at once.
  * After incrementing, all users must re-authenticate on their next request.
+ *
+ * WARNING: This invalidates ALL sessions — every user will be signed out.
+ * For ACL-only cache clearing (preserving sessions), use clearAllAccessCache() instead.
+ * Only use this for emergencies (compromised sessions, security incidents).
  */
-function clearAllAccessCache() {
+function nuclearCacheClear() {
   var props = PropertiesService.getScriptProperties();
   var oldEpoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
   var newEpoch = String(oldEpoch + 1);

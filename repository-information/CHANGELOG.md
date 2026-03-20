@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v05.28r] — 2026-03-20 02:00:06 PM EST
+
+> **Prompt:** "it lets me do a single edit, then it makes everything i do permission denied"
+
+### Fixed
+- Fixed ACL management destroying all sessions after every edit — `clearAccessCacheForUser` was bumping the cache epoch (nuclear clear), orphaning all session data. Now uses targeted key removal (`access_EMAIL`, `role_EMAIL`, `rbac_roles_matrix`) so sessions remain valid while permissions are refreshed
+- Renamed the epoch-bumping function to `nuclearCacheClear` for emergencies only
+
+#### `globalacl.gs` — v01.04g
+
+##### Fixed
+- Fixed session being destroyed after each ACL edit — cache clearing now removes only permission keys instead of wiping all sessions
 
 ## [v05.27r] — 2026-03-20 01:46:22 PM EST
 

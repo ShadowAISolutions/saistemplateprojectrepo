@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04g] — 2026-03-20 02:00:06 PM EST — v05.28r
+
+### Fixed
+- Fixed session being destroyed after each ACL edit — cache clearing now removes only permission keys instead of wiping all sessions
 
 ## [v01.03g] — 2026-03-20 01:46:22 PM EST — v05.27r
 
