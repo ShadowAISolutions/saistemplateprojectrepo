@@ -103,17 +103,27 @@
 
 **The self-check:** before writing any URL section, ask: "Did I actually run a filesystem command to discover pages, or am I listing them from memory?" If from memory, STOP and enumerate first.
 
-## Response Opener — Zero Tool Calls Before First Text
+## Response Opener — Mandatory First Action Gate
 
-**The failure pattern:** the entire response protocol (Session Start Checklist, CODING PLAN, CODING START, timestamps, and all subsequent bookends including the end-of-response block) gets skipped. The response jumps directly into Agent spawns or tool calls without ever outputting text to the user. The result is a technically correct code change with zero protocol compliance — no session start checks, no plan, no timestamps, no phase markers, no summary, no closing marker. The user sees raw tool output with no structure or context.
+> **⚠️ THIS IS THE SINGLE MOST IMPORTANT RULE IN THIS FILE ⚠️**
+> It has been violated repeatedly despite being documented. The violation pattern is: the model reads the rule, acknowledges it, and then immediately violates it in the very same response. Descriptive rules ("don't do this") do not work — only a hard procedural gate works.
 
-**Why this happens:** when the task is clear and straightforward, the "just do it" execution style overrides the "mandatory protocol" requirement. The model optimizes for speed by skipping all text output and going straight to tool calls. The problem compounds: once the opener is skipped, there is no timestamp baseline for `⏱️` annotations, so mid-response bookends are also impossible, and the end-of-response block has no data to report. Skipping the opener causes a cascade failure of the entire bookend system.
+**The hard gate — 3 steps, in this exact order, EVERY response:**
 
-**The absolute rule:** the **very first action** of every response must be text output, never a tool call. Specifically: (1) run `date` via Bash (the one exception — this tool call is required to get the timestamp), (2) output the Session Start Checklist results or CODING PLAN as the first visible text. No Agent spawns, no Read calls, no Grep calls, no Edit calls, no other Bash calls may precede the opening text. If you catch yourself about to fire a tool call without having written any text yet, STOP — you are about to skip the entire protocol.
+1. **Step 1: `date` call** — the absolute first tool call of every response is `TZ=America/New_York date '+%I:%M:%S %p EST %m/%d/%Y'`. No other tool call may come first. Not an Agent. Not a Read. Not a Grep. Not an Edit. The `date` call.
+2. **Step 2: Opening text** — the absolute first TEXT output uses the timestamp from Step 1 to write one of: `🚩🚩CODING PLAN🚩🚩 [timestamp]`, `🔬🔬RESEARCH START🔬🔬 [timestamp]`, `⚓⚓HOOK FEEDBACK⚓⚓ [timestamp]`, or `🔃🔃CONTEXT COMPACTION RECOVERY🔃🔃 [timestamp]`. This text MUST appear before any other tool call.
+3. **Step 3: Everything else** — only after Steps 1 and 2 are complete may any other tool calls (Agent, Read, Grep, Edit, Bash, etc.) be issued.
 
-**The self-check:** before every response's first tool call, ask: "Have I written CODING PLAN (or RESEARCH START, or HOOK FEEDBACK, or CONTEXT COMPACTION RECOVERY) as my first text output?" If the answer is no, the response is broken — stop and emit the opener before proceeding.
+**Why previous rules failed:** the prior version of this section described the failure pattern and said "don't do this." That is not a gate — it is advice, and advice gets overridden by task focus. This version specifies a **procedure**: Step 1 → Step 2 → Step 3. If Step 2 hasn't happened, Step 3 is blocked. There is no exception, no shortcut, no "but the task is simple" override.
 
-**Session Start Checklist is not optional:** even when the task is simple, even when you "know" the repo identity from context, the Session Start Checklist must run. It catches contamination, verifies branch hygiene, and surfaces reminders. Skipping it because "the task is straightforward" is exactly the failure pattern this section exists to prevent.
+**The violation history:**
+- Response 1: Skipped the entire protocol — jumped straight to Agent spawns, completed the task with zero bookends, zero timestamps, zero end-of-response block
+- Response 2: Acknowledged the failure, wrote THIS rule, then immediately violated it in the same response — jumped to Read/Edit calls without emitting CODING PLAN first, again produced no bookends or end-of-response block
+- The pattern: knowing the rule exists does not cause compliance. Only a hard procedural gate (Step 1 → Step 2 → Step 3) with no exceptions creates compliance
+
+**The cascade:** skipping Step 2 makes the entire bookend system impossible — no timestamp baseline for `⏱️` annotations, no phase structure, no end-of-response block, no closing marker. One skipped step destroys the entire response format.
+
+**Session Start Checklist is part of Step 3, not a reason to skip Steps 1–2:** the Session Start Checklist runs AFTER the opening bookend, not instead of it. Even on the first response of a session, the order is: `date` → CODING PLAN → Session Start Checklist → work.
 
 ## Hook Anticipation — Bug Context
 

@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v05.38r] — 2026-03-20 04:30:27 PM EST
+
+> **Prompt:** "ok then why are you still not using the bookends"
+
+### Changed
+- Rewrote "Response Opener" section in chat-bookends.md from descriptive advice to a hard 3-step procedural gate (Step 1: `date` call → Step 2: opening text → Step 3: everything else) — previous descriptive version was violated in the same response it was created, proving that "don't do this" rules don't work; only procedural gates with no exceptions create compliance
 
 ## [v05.37r] — 2026-03-20 04:26:46 PM EST
 
