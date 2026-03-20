@@ -1,4 +1,4 @@
-var VERSION = "v01.00g";
+var VERSION = "v01.01g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1172,17 +1172,220 @@ function validateSessionForData(sessionToken, operationName) {
 }
 
 // =============================================
-// DATA OPERATIONS — Session-gated
+// DATA OPERATIONS — Session-gated (ACL Management)
 // Every function that reads/writes data must call validateSessionForData() first.
-// Add your project-specific data operations here. Example:
-//
-// function saveRecord(sessionToken, recordData) {
-//   var user = validateSessionForData(sessionToken, 'saveRecord');
-//   checkPermission(user, 'write', 'saveRecord');
-//   // ... your data operation here ...
-//   return { success: true, email: user.email };
-// }
 // =============================================
+
+/**
+ * Load the full ACL data for the management UI.
+ * Returns { headers: [...], rows: [[email, role, page1, ...], ...], roles: {role: [perms]} }
+ */
+function loadACLData(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'loadACLData');
+  checkPermission(user, 'admin', 'loadACLData');
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet "' + ACL_SHEET_NAME + '" not found');
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data.length > 0 ? data[0].map(function(h) { return String(h).trim(); }) : [];
+  var rows = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = [];
+    for (var c = 0; c < headers.length; c++) {
+      var val = data[r][c];
+      // Normalize booleans to true/false strings for consistent handling
+      if (val === true || String(val).trim().toUpperCase() === 'TRUE') {
+        row.push(true);
+      } else if (val === false || String(val).trim().toUpperCase() === 'FALSE') {
+        row.push(false);
+      } else {
+        row.push(String(val).trim());
+      }
+    }
+    rows.push(row);
+  }
+
+  var roles = getRolesFromSpreadsheet();
+
+  dataAuditLog(user.email, 'read', 'acl', 'all', { rowCount: rows.length });
+  return { headers: headers, rows: rows, roles: roles };
+}
+
+/**
+ * Add a new user row to the ACL sheet.
+ * pageAccess is an object like { globalacl: true, testauth1: false }
+ */
+function addACLUser(sessionToken, email, role, pageAccess) {
+  var user = validateSessionForData(sessionToken, 'addACLUser');
+  checkPermission(user, 'admin', 'addACLUser');
+
+  if (!email || !email.match(/@/)) throw new Error('Invalid email address');
+  email = email.trim().toLowerCase();
+  role = (role || 'viewer').trim().toLowerCase();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet not found');
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h).trim(); });
+
+  // Check for duplicate email
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).trim().toLowerCase() === email) {
+      throw new Error('User already exists: ' + email);
+    }
+  }
+
+  // Build new row matching header order
+  var newRow = [];
+  for (var c = 0; c < headers.length; c++) {
+    var hdr = headers[c].toLowerCase();
+    if (hdr === 'email') {
+      newRow.push(email);
+    } else if (hdr === 'role') {
+      newRow.push(role);
+    } else {
+      // Page column — check pageAccess object
+      var key = headers[c];
+      newRow.push(pageAccess && pageAccess[key] === true ? true : false);
+    }
+  }
+  sheet.appendRow(newRow);
+
+  clearAccessCacheForUser(email);
+  dataAuditLog(user.email, 'create', 'acl_user', email, { role: role, pages: pageAccess });
+  return { success: true, message: 'User added: ' + email };
+}
+
+/**
+ * Update an existing user's role and/or page access.
+ * rowIndex is 1-based (row 2 in sheet = index 1 in data array).
+ */
+function updateACLUser(sessionToken, email, role, pageAccess) {
+  var user = validateSessionForData(sessionToken, 'updateACLUser');
+  checkPermission(user, 'admin', 'updateACLUser');
+
+  if (!email) throw new Error('Email is required');
+  email = email.trim().toLowerCase();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet not found');
+
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h).trim(); });
+
+  // Find the row for this email
+  var rowIdx = -1;
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).trim().toLowerCase() === email) {
+      rowIdx = r;
+      break;
+    }
+  }
+  if (rowIdx === -1) throw new Error('User not found: ' + email);
+
+  // Build updated row
+  var updatedRow = [];
+  for (var c = 0; c < headers.length; c++) {
+    var hdr = headers[c].toLowerCase();
+    if (hdr === 'email') {
+      updatedRow.push(email);
+    } else if (hdr === 'role') {
+      updatedRow.push((role || 'viewer').trim().toLowerCase());
+    } else {
+      var key = headers[c];
+      updatedRow.push(pageAccess && pageAccess[key] === true ? true : false);
+    }
+  }
+
+  // Write the updated row (rowIdx + 1 because sheet rows are 1-indexed)
+  var range = sheet.getRange(rowIdx + 1, 1, 1, headers.length);
+  range.setValues([updatedRow]);
+
+  clearAccessCacheForUser(email);
+  dataAuditLog(user.email, 'update', 'acl_user', email, { role: role, pages: pageAccess });
+  return { success: true, message: 'User updated: ' + email };
+}
+
+/**
+ * Delete a user row from the ACL sheet.
+ */
+function deleteACLUser(sessionToken, email) {
+  var user = validateSessionForData(sessionToken, 'deleteACLUser');
+  checkPermission(user, 'admin', 'deleteACLUser');
+
+  if (!email) throw new Error('Email is required');
+  email = email.trim().toLowerCase();
+
+  // Prevent self-deletion
+  if (email === user.email.toLowerCase()) {
+    throw new Error('Cannot delete your own ACL entry');
+  }
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet not found');
+
+  var data = sheet.getDataRange().getValues();
+  var rowIdx = -1;
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).trim().toLowerCase() === email) {
+      rowIdx = r;
+      break;
+    }
+  }
+  if (rowIdx === -1) throw new Error('User not found: ' + email);
+
+  sheet.deleteRow(rowIdx + 1); // Sheet rows are 1-indexed
+
+  clearAccessCacheForUser(email);
+  dataAuditLog(user.email, 'delete', 'acl_user', email, {});
+  return { success: true, message: 'User deleted: ' + email };
+}
+
+/**
+ * Add a new page column to the ACL sheet.
+ */
+function addACLPage(sessionToken, pageName) {
+  var user = validateSessionForData(sessionToken, 'addACLPage');
+  checkPermission(user, 'admin', 'addACLPage');
+
+  if (!pageName || !pageName.trim()) throw new Error('Page name is required');
+  pageName = pageName.trim();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet not found');
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  // Check for duplicate
+  for (var c = 0; c < headers.length; c++) {
+    if (String(headers[c]).trim().toLowerCase() === pageName.toLowerCase()) {
+      throw new Error('Page column already exists: ' + pageName);
+    }
+  }
+
+  // Add header in the next column
+  var nextCol = headers.length + 1;
+  sheet.getRange(1, nextCol).setValue(pageName);
+
+  // Set FALSE for all existing rows
+  var lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    var falseValues = [];
+    for (var r = 0; r < lastRow - 1; r++) {
+      falseValues.push([false]);
+    }
+    sheet.getRange(2, nextCol, lastRow - 1, 1).setValues(falseValues);
+  }
+
+  dataAuditLog(user.email, 'create', 'acl_page', pageName, {});
+  return { success: true, message: 'Page column added: ' + pageName };
+}
 
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
@@ -1884,7 +2087,7 @@ function doGet(e) {
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
 
-  // Session valid — build the app HTML (same as noauth doGet but with user context)
+  // Session valid — build the ACL management UI
   var html = `
     <html>
     <head>
@@ -1892,57 +2095,120 @@ function doGet(e) {
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
+        * { box-sizing: border-box; }
         html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; display: flex; justify-content: center; align-items: center; }
-        #debug-marker { font-size: 200px; color: #1565c0; font-weight: bold; }
-        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #333; }
+        #acl-app { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .acl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 16px 20px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+        .acl-header h1 { margin: 0; font-size: 20px; color: #1565c0; }
+        .acl-header .meta { font-size: 12px; color: #888; font-family: monospace; }
+        .acl-toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500; transition: background .15s; }
+        .btn-primary { background: #1565c0; color: #fff; }
+        .btn-primary:hover { background: #0d47a1; }
+        .btn-danger { background: #e53935; color: #fff; }
+        .btn-danger:hover { background: #c62828; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #bdbdbd; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .acl-table-wrap { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f0f4f8; color: #555; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: .5px; padding: 10px 12px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
+        td { padding: 8px 12px; border-top: 1px solid #eee; vertical-align: middle; }
+        tr:hover td { background: #f8fafd; }
+        td.email-col { font-family: monospace; font-size: 12px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+        td.role-col select { padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px; background: #fff; }
+        td.page-col { text-align: center; }
+        td.page-col input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #1565c0; }
+        td.actions-col { white-space: nowrap; }
+        .status-bar { padding: 10px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; display: none; }
+        .status-bar.success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .status-bar.error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .status-bar.info { display: block; background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #fff; border-radius: 10px; padding: 24px; width: 420px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+        .modal h2 { margin: 0 0 16px; font-size: 18px; color: #333; }
+        .modal label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; margin-top: 12px; }
+        .modal input[type="email"], .modal select { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+        .modal .page-toggles { margin-top: 12px; }
+        .modal .page-toggles label { display: flex; align-items: center; gap: 8px; font-weight: 400; margin-top: 8px; cursor: pointer; }
+        .modal .page-toggles input { width: 16px; height: 16px; accent-color: #1565c0; }
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ccc; border-top-color: #1565c0; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .count-badge { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
       </style>
     </head>
     <body>
-      <div id="debug-marker">1</div>
-      <h2 id="version">${escapeHtml(VERSION)}</h2>
-      <div id="user-email">${escapeHtml(session.email)}</div>
+      <div id="acl-app">
+        <div class="acl-header">
+          <div>
+            <h1>Global ACL Manager</h1>
+            <div class="meta">${escapeHtml(session.email)} &middot; ${escapeHtml(VERSION)}</div>
+          </div>
+          <div class="count-badge" id="user-count">—</div>
+        </div>
+
+        <div id="status-bar" class="status-bar"></div>
+
+        <div class="acl-toolbar">
+          <button class="btn btn-primary" id="btn-add-user">+ Add User</button>
+          <button class="btn btn-secondary" id="btn-refresh">Refresh</button>
+          <button class="btn btn-secondary" id="btn-add-page">+ Add Page Column</button>
+        </div>
+
+        <div class="acl-table-wrap">
+          <table id="acl-table">
+            <thead><tr id="acl-thead-row"></tr></thead>
+            <tbody id="acl-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add/Edit User Modal -->
+      <div class="modal-overlay" id="user-modal">
+        <div class="modal">
+          <h2 id="modal-title">Add User</h2>
+          <label for="modal-email">Email</label>
+          <input type="email" id="modal-email" placeholder="user@example.com" autocomplete="off">
+          <label for="modal-role">Role</label>
+          <select id="modal-role"></select>
+          <div class="page-toggles" id="modal-pages">
+            <label style="font-weight:600;margin-top:12px;cursor:default;">Page Access</label>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+            <button class="btn btn-primary" id="modal-save">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Page Modal -->
+      <div class="modal-overlay" id="page-modal">
+        <div class="modal">
+          <h2>Add Page Column</h2>
+          <label for="page-name-input">Page Name</label>
+          <input type="email" id="page-name-input" placeholder="e.g. myapp" autocomplete="off" style="font-family:monospace;">
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="page-modal-cancel">Cancel</button>
+            <button class="btn btn-primary" id="page-modal-save">Add Page</button>
+          </div>
+        </div>
+      </div>
 
       <script>
-        // Session token for data operation validation (Phase 3)
+        // Session token for data operation validation
         var _sessionToken = '${escapeJs(sessionToken)}';
-        // DJB2→HMAC migration complete: _s() and _mk removed.
-        // All message signing now happens server-side via signAppMessage()
-        // (called through google.script.run — same pattern as Phase 7 heartbeat/signout).
 
-        // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
-        // To re-enable, uncomment below and set AUTH_CONFIG.ENABLE_IP_LOGGING = true:
-        // var _clientIp = '';
-        // function _valIp(v) {
-        //   if (!v || typeof v !== 'string') return 'unknown';
-        //   var t = v.trim().substring(0, 45);
-        //   if (/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) return t;
-        //   return 'invalid';
-        // }
-        // if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
-        //   try {
-        //     var _ipXhr = new XMLHttpRequest();
-        //     _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
-        //     _ipXhr.timeout = 5000;
-        //     _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _valIp(_ipXhr.responseText); };
-        //     _ipXhr.onerror = function() { _clientIp = 'unknown'; };
-        //     _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
-        //     _ipXhr.send();
-        //   } catch(e) { _clientIp = 'unknown'; }
-        // }
-
-        // Notify wrapper that auth is OK — include messageKey so the host page
-        // can import it for HMAC verification (needed for ?session= path where
-        // gas-session-created is not sent, e.g. "Use Here" reclaim, tab duplicate, refresh)
-        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        // Notify wrapper that auth is OK
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
           })
           .withFailureHandler(function(err) {
-            // Fallback: send unsigned gas-auth-ok so the host page at least knows
-            // the session is valid (verification will pass because no key is set yet)
             window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
               needsReauth: ${session.needsReauth || false},
               messageKey: '${escapeJs(appMsgKey)}',
@@ -1952,33 +2218,23 @@ function doGet(e) {
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 
         window.addEventListener('message', function(e) {
-          // Phase 3: IP receiver removed — uncomment to re-enable
-          // if (e.data && e.data.type === 'host-client-ip') {
-          //   _clientIp = _valIp(e.data.ip);
-          // }
           if (e.data && e.data.type === 'gas-version-check') {
-            // DJB2→HMAC migration: signed server-side via signAppMessage()
             google.script.run
               .withSuccessHandler(function(signed) {
                 top.postMessage(signed, '${PARENT_ORIGIN}');
               })
-              .withFailureHandler(function() {
-                // Don't send an unsigned response — the version poll is periodic and will retry.
-                // A missing response is safer than an unsigned one that gets dropped by HMAC verify.
-              })
+              .withFailureHandler(function() {})
               .signAppMessage(_sessionToken, 'gas-version');
           }
         });
 
-        // Activity detection — notify host page on user interaction so it can
-        // trigger an immediate heartbeat (catches expired sessions before data loss)
-        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        // Activity detection for heartbeat
         var _lastActivityNotify = 0;
         var _pendingActivity = false;
         function _notifyActivity() {
           var now = Date.now();
-          if (now - _lastActivityNotify < 5000) return; // 5s debounce
-          if (_pendingActivity) return; // Prevent stacking server calls
+          if (now - _lastActivityNotify < 5000) return;
+          if (_pendingActivity) return;
           _lastActivityNotify = now;
           _pendingActivity = true;
           google.script.run
@@ -1986,19 +2242,336 @@ function doGet(e) {
               _pendingActivity = false;
               window.top.postMessage(signed, '${PARENT_ORIGIN}');
             })
-            .withFailureHandler(function() {
-              _pendingActivity = false;
-              // Silently drop — next activity event will retry
-            })
+            .withFailureHandler(function() { _pendingActivity = false; })
             .signAppMessage(_sessionToken, 'gas-user-activity');
         }
         document.addEventListener('keydown', _notifyActivity, true);
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // PROJECT START — Add your project-specific UI handlers here
-        // Example: document.getElementById('my-button').addEventListener('click', function() { ... });
-        // PROJECT END
+        // ══════════════════════════════════════
+        // ACL Management UI Logic
+        // ══════════════════════════════════════
+        var _aclData = null; // { headers, rows, roles }
+        var _editingEmail = null; // null = add mode, string = edit mode
+        var _pageHeaders = []; // page column names (everything except Email & Role)
+
+        function _escH(s) {
+          var d = document.createElement('div');
+          d.appendChild(document.createTextNode(s));
+          return d.innerHTML;
+        }
+
+        function showStatus(msg, type) {
+          var bar = document.getElementById('status-bar');
+          bar.textContent = msg;
+          bar.className = 'status-bar ' + (type || 'info');
+          if (type !== 'error') {
+            setTimeout(function() { bar.className = 'status-bar'; }, 4000);
+          }
+        }
+
+        function setLoading(isLoading) {
+          var btns = document.querySelectorAll('.btn');
+          for (var i = 0; i < btns.length; i++) {
+            btns[i].disabled = isLoading;
+          }
+        }
+
+        // ── Load and render ──
+        function loadData() {
+          showStatus('Loading ACL data...', 'info');
+          setLoading(true);
+          google.script.run
+            .withSuccessHandler(function(result) {
+              _aclData = result;
+              _pageHeaders = [];
+              for (var i = 0; i < result.headers.length; i++) {
+                var h = result.headers[i].toLowerCase();
+                if (h !== 'email' && h !== 'role') {
+                  _pageHeaders.push(result.headers[i]);
+                }
+              }
+              renderTable();
+              setLoading(false);
+              document.getElementById('status-bar').className = 'status-bar';
+            })
+            .withFailureHandler(function(err) {
+              showStatus('Error loading data: ' + err.message, 'error');
+              setLoading(false);
+            })
+            .loadACLData(_sessionToken);
+        }
+
+        function renderTable() {
+          if (!_aclData) return;
+          var headers = _aclData.headers;
+          var rows = _aclData.rows;
+          var roleNames = Object.keys(_aclData.roles);
+
+          // Header row
+          var thead = document.getElementById('acl-thead-row');
+          thead.innerHTML = '<th>Email</th><th>Role</th>';
+          for (var p = 0; p < _pageHeaders.length; p++) {
+            thead.innerHTML += '<th>' + _escH(_pageHeaders[p]) + '</th>';
+          }
+          thead.innerHTML += '<th>Actions</th>';
+
+          // Find column indices
+          var emailIdx = -1, roleIdx = -1;
+          var pageIndices = [];
+          for (var c = 0; c < headers.length; c++) {
+            var hl = headers[c].toLowerCase();
+            if (hl === 'email') emailIdx = c;
+            else if (hl === 'role') roleIdx = c;
+          }
+          for (var pi = 0; pi < _pageHeaders.length; pi++) {
+            for (var ci = 0; ci < headers.length; ci++) {
+              if (headers[ci] === _pageHeaders[pi]) { pageIndices.push(ci); break; }
+            }
+          }
+
+          // Body rows
+          var tbody = document.getElementById('acl-tbody');
+          tbody.innerHTML = '';
+          for (var r = 0; r < rows.length; r++) {
+            var row = rows[r];
+            var email = emailIdx >= 0 ? String(row[emailIdx]) : '';
+            var role = roleIdx >= 0 ? String(row[roleIdx]) : '';
+            var tr = document.createElement('tr');
+
+            // Email
+            var tdE = document.createElement('td');
+            tdE.className = 'email-col';
+            tdE.textContent = email;
+            tr.appendChild(tdE);
+
+            // Role
+            var tdR = document.createElement('td');
+            tdR.className = 'role-col';
+            tdR.textContent = role;
+            tr.appendChild(tdR);
+
+            // Page columns
+            for (var pc = 0; pc < pageIndices.length; pc++) {
+              var tdP = document.createElement('td');
+              tdP.className = 'page-col';
+              var val = row[pageIndices[pc]];
+              tdP.textContent = val === true ? '✓' : '—';
+              tdP.style.color = val === true ? '#2e7d32' : '#bbb';
+              tdP.style.fontWeight = val === true ? '700' : '400';
+              tr.appendChild(tdP);
+            }
+
+            // Actions
+            var tdA = document.createElement('td');
+            tdA.className = 'actions-col';
+            var editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-secondary btn-sm';
+            editBtn.textContent = 'Edit';
+            editBtn.dataset.email = email;
+            editBtn.addEventListener('click', function() { openEditModal(this.dataset.email); });
+            tdA.appendChild(editBtn);
+
+            var delBtn = document.createElement('button');
+            delBtn.className = 'btn btn-danger btn-sm';
+            delBtn.textContent = 'Delete';
+            delBtn.style.marginLeft = '4px';
+            delBtn.dataset.email = email;
+            delBtn.addEventListener('click', function() { deleteUser(this.dataset.email); });
+            tdA.appendChild(delBtn);
+
+            tr.appendChild(tdA);
+            tbody.appendChild(tr);
+          }
+
+          document.getElementById('user-count').textContent = rows.length + ' user' + (rows.length !== 1 ? 's' : '');
+        }
+
+        // ── Modal helpers ──
+        function openAddModal() {
+          _editingEmail = null;
+          document.getElementById('modal-title').textContent = 'Add User';
+          document.getElementById('modal-email').value = '';
+          document.getElementById('modal-email').disabled = false;
+          populateModalRoles('viewer');
+          populateModalPages({});
+          document.getElementById('user-modal').classList.add('open');
+          document.getElementById('modal-email').focus();
+        }
+
+        function openEditModal(email) {
+          if (!_aclData) return;
+          _editingEmail = email;
+          document.getElementById('modal-title').textContent = 'Edit User';
+          document.getElementById('modal-email').value = email;
+          document.getElementById('modal-email').disabled = true;
+
+          // Find current values
+          var headers = _aclData.headers;
+          var row = null;
+          for (var r = 0; r < _aclData.rows.length; r++) {
+            var eIdx = -1;
+            for (var c = 0; c < headers.length; c++) {
+              if (headers[c].toLowerCase() === 'email') { eIdx = c; break; }
+            }
+            if (eIdx >= 0 && String(_aclData.rows[r][eIdx]).toLowerCase() === email.toLowerCase()) {
+              row = _aclData.rows[r]; break;
+            }
+          }
+          if (!row) return;
+
+          var roleIdx = -1;
+          for (var c2 = 0; c2 < headers.length; c2++) {
+            if (headers[c2].toLowerCase() === 'role') { roleIdx = c2; break; }
+          }
+          var currentRole = roleIdx >= 0 ? String(row[roleIdx]) : 'viewer';
+
+          var pageAccess = {};
+          for (var p = 0; p < _pageHeaders.length; p++) {
+            for (var ci = 0; ci < headers.length; ci++) {
+              if (headers[ci] === _pageHeaders[p]) {
+                pageAccess[_pageHeaders[p]] = row[ci] === true;
+                break;
+              }
+            }
+          }
+
+          populateModalRoles(currentRole);
+          populateModalPages(pageAccess);
+          document.getElementById('user-modal').classList.add('open');
+        }
+
+        function populateModalRoles(selected) {
+          var sel = document.getElementById('modal-role');
+          sel.innerHTML = '';
+          if (_aclData && _aclData.roles) {
+            var rNames = Object.keys(_aclData.roles);
+            for (var i = 0; i < rNames.length; i++) {
+              var opt = document.createElement('option');
+              opt.value = rNames[i];
+              opt.textContent = rNames[i];
+              if (rNames[i] === selected) opt.selected = true;
+              sel.appendChild(opt);
+            }
+          }
+        }
+
+        function populateModalPages(currentAccess) {
+          var container = document.getElementById('modal-pages');
+          container.innerHTML = '<label style="font-weight:600;margin-top:0;cursor:default;">Page Access</label>';
+          for (var p = 0; p < _pageHeaders.length; p++) {
+            var lbl = document.createElement('label');
+            var cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.dataset.page = _pageHeaders[p];
+            cb.checked = !!currentAccess[_pageHeaders[p]];
+            lbl.appendChild(cb);
+            lbl.appendChild(document.createTextNode(' ' + _pageHeaders[p]));
+            container.appendChild(lbl);
+          }
+        }
+
+        function closeModal() {
+          document.getElementById('user-modal').classList.remove('open');
+          _editingEmail = null;
+        }
+
+        function getModalValues() {
+          var email = document.getElementById('modal-email').value.trim();
+          var role = document.getElementById('modal-role').value;
+          var pageAccess = {};
+          var cbs = document.querySelectorAll('#modal-pages input[type="checkbox"]');
+          for (var i = 0; i < cbs.length; i++) {
+            pageAccess[cbs[i].dataset.page] = cbs[i].checked;
+          }
+          return { email: email, role: role, pageAccess: pageAccess };
+        }
+
+        // ── CRUD operations ──
+        function saveUser() {
+          var vals = getModalValues();
+          if (!vals.email) { showStatus('Email is required', 'error'); return; }
+          setLoading(true);
+          var fn = _editingEmail ? 'updateACLUser' : 'addACLUser';
+          google.script.run
+            .withSuccessHandler(function(result) {
+              closeModal();
+              showStatus(result.message, 'success');
+              loadData();
+            })
+            .withFailureHandler(function(err) {
+              showStatus('Error: ' + err.message, 'error');
+              setLoading(false);
+            })
+            [fn](_sessionToken, vals.email, vals.role, vals.pageAccess);
+        }
+
+        function deleteUser(email) {
+          if (!confirm('Delete user ' + email + '?')) return;
+          setLoading(true);
+          google.script.run
+            .withSuccessHandler(function(result) {
+              showStatus(result.message, 'success');
+              loadData();
+            })
+            .withFailureHandler(function(err) {
+              showStatus('Error: ' + err.message, 'error');
+              setLoading(false);
+            })
+            .deleteACLUser(_sessionToken, email);
+        }
+
+        function addPage() {
+          var name = document.getElementById('page-name-input').value.trim();
+          if (!name) { showStatus('Page name is required', 'error'); return; }
+          setLoading(true);
+          google.script.run
+            .withSuccessHandler(function(result) {
+              document.getElementById('page-modal').classList.remove('open');
+              document.getElementById('page-name-input').value = '';
+              showStatus(result.message, 'success');
+              loadData();
+            })
+            .withFailureHandler(function(err) {
+              showStatus('Error: ' + err.message, 'error');
+              setLoading(false);
+            })
+            .addACLPage(_sessionToken, name);
+        }
+
+        // ── Event listeners ──
+        document.getElementById('btn-add-user').addEventListener('click', openAddModal);
+        document.getElementById('btn-refresh').addEventListener('click', loadData);
+        document.getElementById('btn-add-page').addEventListener('click', function() {
+          document.getElementById('page-modal').classList.add('open');
+          document.getElementById('page-name-input').focus();
+        });
+        document.getElementById('modal-cancel').addEventListener('click', closeModal);
+        document.getElementById('modal-save').addEventListener('click', saveUser);
+        document.getElementById('page-modal-cancel').addEventListener('click', function() {
+          document.getElementById('page-modal').classList.remove('open');
+        });
+        document.getElementById('page-modal-save').addEventListener('click', addPage);
+
+        // Close modals on overlay click
+        document.getElementById('user-modal').addEventListener('click', function(e) {
+          if (e.target === this) closeModal();
+        });
+        document.getElementById('page-modal').addEventListener('click', function(e) {
+          if (e.target === this) this.classList.remove('open');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeModal();
+            document.getElementById('page-modal').classList.remove('open');
+          }
+        });
+
+        // Initial load
+        loadData();
       </script>
     </body>
     </html>
