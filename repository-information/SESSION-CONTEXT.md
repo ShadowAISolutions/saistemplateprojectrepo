@@ -4,6 +4,54 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-20 02:58:11 PM EST
+**Repo version:** v05.35r
+
+### What was done
+This session built the **Global ACL Manager** — a new GAS-powered admin UI for managing centralized access control:
+
+- **v05.24r** — Set up the Global ACL GAS project via `setup-gas-project.sh` (10 files created)
+- **v05.25r–v05.28r** — Built the core ACL management UI in `globalacl.gs`:
+  - Full CRUD for users (add, edit, delete) with modal forms
+  - Table rendering with Email, Role, and dynamic page columns
+  - Inline editing for role dropdowns and page access checkboxes
+  - Custom confirm dialog (replaced browser `confirm()` for iframe compatibility)
+  - Page column management (add new page columns)
+- **v05.29r–v05.32r** — Iterative improvements:
+  - Wired up `loadACLData` with proper session gating and admin permission checks
+  - Added `addACLUser`, `updateACLUser`, `deleteACLUser`, `addACLPage` backend functions
+  - Connected frontend to backend with proper error handling
+- **v05.33r** — Replaced auto-save with per-row Save buttons for explicit control
+- **v05.34r** — Replaced per-row Save buttons with a single "Save Changes" toolbar button with amber dirty-state highlighting (modified checkboxes/dropdowns get yellow background, modified rows get orange email)
+- **v05.35r** — Added page column rename/remove (context menu on column headers) and full Roles management modal (add/rename/delete roles, toggle permissions inline)
+
+### Where we left off
+- All changes committed and pushed through v05.35r
+- The ACL Manager is feature-complete for the core functionality:
+  - User management (add/edit/delete, inline role + page access editing)
+  - Single "Save Changes" button with dirty-state highlighting
+  - Page column management (add/rename/remove via header context menu)
+  - Roles management (add/rename/delete roles, toggle permissions)
+- CHANGELOG is at 100/100 sections — next push will trigger archive rotation
+
+### Key decisions made
+- **Single Save button over per-row**: user preferred one button for all changes with visual indicators showing which rows are dirty (amber highlights + orange email)
+- **Context menu for page headers**: click on a page column header shows rename/remove options — more discoverable than separate buttons
+- **Roles modal**: permissions save immediately per-checkbox (security changes should persist instantly), unlike user access changes which batch via Save Changes
+- **Role deletion behavior**: removing a role does NOT reassign users — they keep their role string but it won't match any defined role
+
+### Active context
+- Branch: `claude/setup-gas-project-rsCCL`
+- Repo version: v05.35r
+- GAS version: v01.10g (globalacl.gs)
+- CHANGELOG at 100/100 — archive rotation needed on next push
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-20 01:04:04 PM EST
 **Repo version:** v05.23r
 
@@ -20,35 +68,5 @@ This session made a series of UI layout improvements to `gas-project-creator.htm
 - All changes committed and pushed through v05.23r
 - The GAS Project Creator page now has improved field ordering: auth checkbox at top (since it controls visible fields), all config fields, auth settings, then test/diagnostic checkbox, then the Copy button
 - No outstanding work in progress
-
-### Key decisions made
-- **Auth checkbox placement**: moved to top because it controls which fields are visible — users should see this toggle first
-- **Test/diagnostic checkbox placement**: moved to just before Copy button — it's the last decision before generating code, logically grouped with the action button
-
-### Active context
-- Repo version: v05.23r
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-19 08:34:14 PM EST
-**Repo version:** v05.16r
-
-### What was done
-This session **executed the full 5-phase TEMPLATE-UPDATE-PLAN.md** to sync auth templates with testauth1's evolved feature set:
-
-- **Phase 1** — Copied `testauth1.gs` → `gas-minimal-auth-template-code.js.txt` with ~25 edits: genericized RBAC (`clinician` → `editor`, removed `billing`), replaced project-specific values with template placeholders (`TEMPLATE_DEPLOYMENT_ID`, `TEMPLATE_SPREADSHEET_ID`, etc.), set production timeouts (1hr session, 5min heartbeat, 8hr absolute), kept admin utilities, removed `saveNote()`
-- **Phase 2** — Copied `testauth1.html` → `HtmlAndGasTemplateAutoUpdate-auth.html.txt` with ~25 edits: genericized roles/permissions, replaced deployment IDs and config values with placeholders, removed test panels, cleaned up testauth1-specific references
-- **Phase 3** — Copied Phase 1 output → `gas-test-auth-template-code.js.txt`, added diagnostic UI with version count, sound test, sheet operations, live quota panels (GitHub, Mail, UrlFetch, Sheets, Exec)
-- **Phase 4** — Verified all `setup-gas-project.sh` sed patterns match new template variable formats — all patterns confirmed correct
-- **Phase 5** — Synced CSP meta tag, deferred AudioContext (`_ensureAudioCtx()`), and `sanitizeChangelogHtml()` to noauth HTML template
-- **Pre-Commit #19** — Propagated noauth features to all 3 live noauth pages: index.html (v01.07w), testenvironment.html (v01.07w), gas-project-creator.html (v01.14w)
-- **v05.16r** — All changes committed and pushed
-
-### Where we left off
-- All 5 phases complete and deployed — templates now match testauth1's architecture
 
 Developed by: ShadowAISolutions
