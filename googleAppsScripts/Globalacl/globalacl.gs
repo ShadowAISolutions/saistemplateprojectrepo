@@ -1,4 +1,4 @@
-var VERSION = "v01.06g";
+var VERSION = "v01.07g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2470,37 +2470,42 @@ function doGet(e) {
             tdE.textContent = email;
             tr.appendChild(tdE);
 
-            // Role
+            // Role — inline dropdown
             var tdR = document.createElement('td');
             tdR.className = 'role-col';
-            tdR.textContent = role;
+            var roleSel = document.createElement('select');
+            roleSel.dataset.email = email;
+            for (var ri = 0; ri < roleNames.length; ri++) {
+              var opt = document.createElement('option');
+              opt.value = roleNames[ri];
+              opt.textContent = roleNames[ri];
+              if (roleNames[ri] === role) opt.selected = true;
+              roleSel.appendChild(opt);
+            }
+            roleSel.addEventListener('change', function() { inlineSave(this.dataset.email); });
+            tdR.appendChild(roleSel);
             tr.appendChild(tdR);
 
-            // Page columns
+            // Page columns — inline checkboxes
             for (var pc = 0; pc < pageIndices.length; pc++) {
               var tdP = document.createElement('td');
               tdP.className = 'page-col';
-              var val = row[pageIndices[pc]];
-              tdP.textContent = val === true ? '✓' : '—';
-              tdP.style.color = val === true ? '#2e7d32' : '#bbb';
-              tdP.style.fontWeight = val === true ? '700' : '400';
+              var cb = document.createElement('input');
+              cb.type = 'checkbox';
+              cb.checked = row[pageIndices[pc]] === true;
+              cb.dataset.email = email;
+              cb.dataset.page = _pageHeaders[pc];
+              cb.addEventListener('change', function() { inlineSave(this.dataset.email); });
+              tdP.appendChild(cb);
               tr.appendChild(tdP);
             }
 
             // Actions
             var tdA = document.createElement('td');
             tdA.className = 'actions-col';
-            var editBtn = document.createElement('button');
-            editBtn.className = 'btn btn-secondary btn-sm';
-            editBtn.textContent = 'Edit';
-            editBtn.dataset.email = email;
-            editBtn.addEventListener('click', function() { openEditModal(this.dataset.email); });
-            tdA.appendChild(editBtn);
-
             var delBtn = document.createElement('button');
             delBtn.className = 'btn btn-danger btn-sm';
             delBtn.textContent = 'Delete';
-            delBtn.style.marginLeft = '4px';
             delBtn.dataset.email = email;
             delBtn.addEventListener('click', function() { deleteUser(this.dataset.email); });
             tdA.appendChild(delBtn);
@@ -2610,6 +2615,51 @@ function doGet(e) {
             pageAccess[cbs[i].dataset.page] = cbs[i].checked;
           }
           return { email: email, role: role, pageAccess: pageAccess };
+        }
+
+        // ── Inline save (auto-save on role/page change) ──
+        var _inlineSaveTimer = {};
+        function inlineSave(email) {
+          // Debounce rapid changes for the same user (300ms)
+          if (_inlineSaveTimer[email]) clearTimeout(_inlineSaveTimer[email]);
+          _inlineSaveTimer[email] = setTimeout(function() {
+            delete _inlineSaveTimer[email];
+            // Collect current values from the table row
+            var roleSel = document.querySelector('select[data-email="' + CSS.escape(email) + '"]');
+            var role = roleSel ? roleSel.value : 'viewer';
+            var pageAccess = {};
+            var cbs = document.querySelectorAll('input[type="checkbox"][data-email="' + CSS.escape(email) + '"]');
+            for (var i = 0; i < cbs.length; i++) {
+              pageAccess[cbs[i].dataset.page] = cbs[i].checked;
+            }
+            showStatus('Saving ' + email + '...', 'info');
+            google.script.run
+              .withSuccessHandler(function(result) {
+                showStatus(result.message, 'success');
+                // Update local data so subsequent saves use fresh state
+                if (_aclData) {
+                  var headers = _aclData.headers;
+                  for (var r = 0; r < _aclData.rows.length; r++) {
+                    var eIdx = -1;
+                    for (var c = 0; c < headers.length; c++) {
+                      if (headers[c].toLowerCase() === 'email') { eIdx = c; break; }
+                    }
+                    if (eIdx >= 0 && String(_aclData.rows[r][eIdx]).toLowerCase() === email.toLowerCase()) {
+                      for (var c2 = 0; c2 < headers.length; c2++) {
+                        var hl = headers[c2].toLowerCase();
+                        if (hl === 'role') _aclData.rows[r][c2] = role;
+                        else if (hl !== 'email') _aclData.rows[r][c2] = !!pageAccess[headers[c2]];
+                      }
+                      break;
+                    }
+                  }
+                }
+              })
+              .withFailureHandler(function(err) {
+                showStatus('Error saving ' + email + ': ' + err.message, 'error');
+              })
+              .updateACLUser(_sessionToken, email, role, pageAccess);
+          }, 300);
         }
 
         // ── CRUD operations ──

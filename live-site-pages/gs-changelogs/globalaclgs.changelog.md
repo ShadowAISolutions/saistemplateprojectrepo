@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07g] — 2026-03-20 02:25:08 PM EST — v05.32r
+
+### Changed
+- Role and page access are now editable directly in the user table — no need to open a separate edit dialog
+- Changes save automatically when you toggle a checkbox or change a role
+
+### Removed
+- Edit button removed from user rows (replaced by inline editing)
 
 ## [v01.06g] — 2026-03-20 02:09:38 PM EST — v05.30r
 

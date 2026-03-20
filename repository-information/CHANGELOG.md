@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v05.32r] — 2026-03-20 02:25:08 PM EST
+
+> **Prompt:** "ok so back to the globalacl , make it so that i dont need to click on edit for each user to be able to modify their page access role, should be doable on the main ui"
+
+### Changed
+- ACL user table now supports inline editing — role dropdowns and page access checkboxes are directly editable in the main table without opening the Edit modal
+- Changes auto-save with a 300ms debounce when toggling checkboxes or changing roles
+
+### Removed
+- Removed the Edit button from the ACL user table actions column (inline editing replaces it)
+
+#### `globalacl.gs` — v01.07g
+
+##### Changed
+- Role and page access are now editable directly in the user table — no need to open a separate edit dialog
+- Changes save automatically when you toggle a checkbox or change a role
+
+##### Removed
+- Edit button removed from user rows (replaced by inline editing)
 
 ## [v05.31r] — 2026-03-20 02:21:26 PM EST
 
