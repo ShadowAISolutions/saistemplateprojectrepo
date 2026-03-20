@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v05.20r] — 2026-03-20 10:10:59 AM EST
+
+> **Prompt:** "move up the hmac secret generator to where the set script properties is"
+
+### Changed
+- HMAC Secret generator field relocated from Authentication Settings to the Script Properties setup step for a more logical workflow
+
+#### `gas-project-creator.html` — v01.18w
+
+##### Changed
+- HMAC Secret generator moved up to the Script Properties setup step for easier access when setting properties
+- HMAC_SECRET property hint updated to reference the generator directly below instead of Auth Settings
 
 ## [v05.19r] — 2026-03-20 10:03:45 AM EST
 

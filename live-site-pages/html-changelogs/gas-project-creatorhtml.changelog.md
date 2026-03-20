@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.18w] — 2026-03-20 10:10:59 AM EST — v05.20r
+
+### Changed
+- HMAC Secret generator moved up to the Script Properties setup step for easier access when setting properties
+- HMAC_SECRET property hint updated to reference the generator directly below instead of Auth Settings
 
 ## [v01.17w] — 2026-03-20 10:03:45 AM EST — v05.19r
 
