@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05g] — 2026-03-20 02:05:14 PM EST — v05.29r
+
+### Added
+- Page access columns now display as checkboxes in the spreadsheet when adding users, updating users, or adding new page columns
 
 ## [v01.04g] — 2026-03-20 02:00:06 PM EST — v05.28r
 

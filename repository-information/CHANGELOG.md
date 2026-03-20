@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v05.29r] — 2026-03-20 02:05:14 PM EST
+
+> **Prompt:** "wherever it creates true/false on the spreadsheet, can you have it auto format as a checkbox?"
+
+### Added
+- ACL spreadsheet page columns now auto-format as checkboxes when adding users, updating users, or adding new page columns
+
+#### `globalacl.gs` — v01.05g
+
+##### Added
+- Page access columns now display as checkboxes in the spreadsheet when adding users, updating users, or adding new page columns
 
 ## [v05.28r] — 2026-03-20 02:00:06 PM EST
 

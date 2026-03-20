@@ -1,4 +1,4 @@
-var VERSION = "v01.04g";
+var VERSION = "v01.05g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1326,6 +1326,15 @@ function addACLUser(sessionToken, email, role, pageAccess) {
   }
   sheet.appendRow(newRow);
 
+  // Format page columns as checkboxes on the new row
+  var newRowNum = sheet.getLastRow();
+  for (var cb = 0; cb < headers.length; cb++) {
+    var cbHdr = headers[cb].toLowerCase();
+    if (cbHdr !== 'email' && cbHdr !== 'role') {
+      sheet.getRange(newRowNum, cb + 1).insertCheckboxes();
+    }
+  }
+
   clearAccessCacheForUser(email);
   dataAuditLog(user.email, 'create', 'acl_user', email, { role: role, pages: pageAccess });
   return { success: true, message: 'User added: ' + email };
@@ -1376,6 +1385,14 @@ function updateACLUser(sessionToken, email, role, pageAccess) {
   // Write the updated row (rowIdx + 1 because sheet rows are 1-indexed)
   var range = sheet.getRange(rowIdx + 1, 1, 1, headers.length);
   range.setValues([updatedRow]);
+
+  // Re-apply checkbox formatting on page columns (setValues can strip it)
+  for (var cb = 0; cb < headers.length; cb++) {
+    var cbHdr = headers[cb].toLowerCase();
+    if (cbHdr !== 'email' && cbHdr !== 'role') {
+      sheet.getRange(rowIdx + 1, cb + 1).insertCheckboxes();
+    }
+  }
 
   clearAccessCacheForUser(email);
   dataAuditLog(user.email, 'update', 'acl_user', email, { role: role, pages: pageAccess });
@@ -1452,6 +1469,8 @@ function addACLPage(sessionToken, pageName) {
       falseValues.push([false]);
     }
     sheet.getRange(2, nextCol, lastRow - 1, 1).setValues(falseValues);
+    // Format the new page column as checkboxes
+    sheet.getRange(2, nextCol, lastRow - 1, 1).insertCheckboxes();
   }
 
   dataAuditLog(user.email, 'create', 'acl_page', pageName, {});
