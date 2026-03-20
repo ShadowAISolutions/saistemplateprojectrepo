@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v05.35r] — 2026-03-20 02:44:10 PM EST
+
+> **Prompt:** "instead of just a button to add page column, have the columns be removeable and be able to be renamed. same for roles, should be able to modify the roles tab from there which is where the list of roles should come from"
+
+### Added
+- Page column headers are now interactive — click to rename or remove a column via context menu
+- New "Manage Roles" modal for adding, renaming, deleting roles and toggling permissions directly from the ACL UI
+- Backend functions: renameACLPage, removeACLPage, loadRolesData, addACLRole, updateACLRole, renameACLRole, removeACLRole
+
+### Changed
+- Role list in user dropdowns now reflects the Roles sheet dynamically — roles added/renamed/removed in the Manage Roles modal take effect immediately
+
+#### `globalacl.gs` — v01.10g
+
+##### Added
+- Context menu on page column headers with Rename and Remove options
+- Manage Roles modal with inline permission editing, rename, and delete per role
+- Rename prompt modal reusable for both page columns and roles
+- 7 new backend server functions for page and role management
+
+##### Changed
+- Page column headers now show a dropdown arrow on hover indicating interactivity
 
 ## [v05.34r] — 2026-03-20 02:35:04 PM EST
 

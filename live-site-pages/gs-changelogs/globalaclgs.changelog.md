@@ -3,9 +3,19 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10g] — 2026-03-20 02:44:10 PM EST — v05.35r
+
+### Added
+- Page column headers are now clickable — rename or remove columns directly from the table
+- New "Manage Roles" panel for adding, renaming, deleting roles and toggling permissions
+- Rename prompt for both page columns and roles
+
+### Changed
+- Role list in user dropdowns updates dynamically when roles are added, renamed, or removed
 
 ## [v01.09g] — 2026-03-20 02:35:04 PM EST — v05.34r
 

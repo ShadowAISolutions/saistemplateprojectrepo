@@ -1,4 +1,4 @@
-var VERSION = "v01.09g";
+var VERSION = "v01.10g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1477,6 +1477,280 @@ function addACLPage(sessionToken, pageName) {
   return { success: true, message: 'Page column added: ' + pageName };
 }
 
+/**
+ * Rename a page column in the ACL sheet.
+ */
+function renameACLPage(sessionToken, oldName, newName) {
+  var user = validateSessionForData(sessionToken, 'renameACLPage');
+  checkPermission(user, 'admin', 'renameACLPage');
+
+  if (!oldName || !newName || !newName.trim()) throw new Error('Page names are required');
+  oldName = oldName.trim();
+  newName = newName.trim();
+  if (oldName.toLowerCase() === newName.toLowerCase()) return { success: true, message: 'No change' };
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet not found');
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var colIdx = -1;
+  for (var c = 0; c < headers.length; c++) {
+    if (String(headers[c]).trim() === oldName) { colIdx = c; break; }
+  }
+  if (colIdx === -1) throw new Error('Page column not found: ' + oldName);
+
+  // Check new name doesn't conflict
+  for (var c2 = 0; c2 < headers.length; c2++) {
+    if (String(headers[c2]).trim().toLowerCase() === newName.toLowerCase() && c2 !== colIdx) {
+      throw new Error('Page column already exists: ' + newName);
+    }
+  }
+
+  sheet.getRange(1, colIdx + 1).setValue(newName);
+  dataAuditLog(user.email, 'update', 'acl_page', oldName, { newName: newName });
+  return { success: true, message: 'Page renamed: ' + oldName + ' → ' + newName };
+}
+
+/**
+ * Remove a page column from the ACL sheet.
+ */
+function removeACLPage(sessionToken, pageName) {
+  var user = validateSessionForData(sessionToken, 'removeACLPage');
+  checkPermission(user, 'admin', 'removeACLPage');
+
+  if (!pageName) throw new Error('Page name is required');
+  pageName = pageName.trim();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (!sheet) throw new Error('ACL sheet not found');
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var colIdx = -1;
+  for (var c = 0; c < headers.length; c++) {
+    if (String(headers[c]).trim() === pageName) { colIdx = c; break; }
+  }
+  if (colIdx === -1) throw new Error('Page column not found: ' + pageName);
+
+  sheet.deleteColumn(colIdx + 1);
+  dataAuditLog(user.email, 'delete', 'acl_page', pageName, {});
+  return { success: true, message: 'Page column removed: ' + pageName };
+}
+
+/**
+ * Load the Roles sheet data for management.
+ * Returns { headers: [Role, perm1, ...], rows: [[roleName, true, false, ...], ...] }
+ */
+function loadRolesData(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'loadRolesData');
+  checkPermission(user, 'admin', 'loadRolesData');
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var rolesSheet = ss.getSheetByName('Roles');
+  if (!rolesSheet) throw new Error('"Roles" tab not found');
+
+  var data = rolesSheet.getDataRange().getValues();
+  var headers = data.length > 0 ? data[0].map(function(h) { return String(h).trim(); }) : [];
+  var rows = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = [];
+    for (var c = 0; c < headers.length; c++) {
+      var val = data[r][c];
+      if (c === 0) {
+        row.push(String(val).trim());
+      } else {
+        row.push(val === true || String(val).trim().toUpperCase() === 'TRUE');
+      }
+    }
+    rows.push(row);
+  }
+
+  dataAuditLog(user.email, 'read', 'roles', 'all', { rowCount: rows.length });
+  return { headers: headers, rows: rows };
+}
+
+/**
+ * Add a new role to the Roles sheet.
+ * permissions is an object like { read: true, write: false, ... }
+ */
+function addACLRole(sessionToken, roleName, permissions) {
+  var user = validateSessionForData(sessionToken, 'addACLRole');
+  checkPermission(user, 'admin', 'addACLRole');
+
+  if (!roleName || !roleName.trim()) throw new Error('Role name is required');
+  roleName = roleName.trim().toLowerCase();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var rolesSheet = ss.getSheetByName('Roles');
+  if (!rolesSheet) throw new Error('"Roles" tab not found');
+
+  var data = rolesSheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h).trim(); });
+
+  // Check for duplicate
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).trim().toLowerCase() === roleName) {
+      throw new Error('Role already exists: ' + roleName);
+    }
+  }
+
+  var newRow = [roleName];
+  for (var c = 1; c < headers.length; c++) {
+    var perm = headers[c].toLowerCase();
+    newRow.push(permissions && permissions[perm] === true);
+  }
+  rolesSheet.appendRow(newRow);
+
+  // Format permission columns as checkboxes
+  var newRowNum = rolesSheet.getLastRow();
+  for (var cb = 1; cb < headers.length; cb++) {
+    rolesSheet.getRange(newRowNum, cb + 1).insertCheckboxes();
+  }
+
+  // Clear the RBAC cache so new role is picked up
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+  getEpochCache().remove('rbac_roles_matrix');
+
+  dataAuditLog(user.email, 'create', 'acl_role', roleName, { permissions: permissions });
+  return { success: true, message: 'Role added: ' + roleName };
+}
+
+/**
+ * Update an existing role's permissions.
+ */
+function updateACLRole(sessionToken, roleName, permissions) {
+  var user = validateSessionForData(sessionToken, 'updateACLRole');
+  checkPermission(user, 'admin', 'updateACLRole');
+
+  if (!roleName) throw new Error('Role name is required');
+  roleName = roleName.trim().toLowerCase();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var rolesSheet = ss.getSheetByName('Roles');
+  if (!rolesSheet) throw new Error('"Roles" tab not found');
+
+  var data = rolesSheet.getDataRange().getValues();
+  var headers = data[0].map(function(h) { return String(h).trim(); });
+
+  var rowIdx = -1;
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).trim().toLowerCase() === roleName) { rowIdx = r; break; }
+  }
+  if (rowIdx === -1) throw new Error('Role not found: ' + roleName);
+
+  var updatedRow = [roleName];
+  for (var c = 1; c < headers.length; c++) {
+    var perm = headers[c].toLowerCase();
+    updatedRow.push(permissions && permissions[perm] === true);
+  }
+  rolesSheet.getRange(rowIdx + 1, 1, 1, headers.length).setValues([updatedRow]);
+
+  // Re-apply checkbox formatting
+  for (var cb = 1; cb < headers.length; cb++) {
+    rolesSheet.getRange(rowIdx + 1, cb + 1).insertCheckboxes();
+  }
+
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+  getEpochCache().remove('rbac_roles_matrix');
+
+  dataAuditLog(user.email, 'update', 'acl_role', roleName, { permissions: permissions });
+  return { success: true, message: 'Role updated: ' + roleName };
+}
+
+/**
+ * Rename a role — updates both the Roles sheet and all references in the Access sheet.
+ */
+function renameACLRole(sessionToken, oldName, newName) {
+  var user = validateSessionForData(sessionToken, 'renameACLRole');
+  checkPermission(user, 'admin', 'renameACLRole');
+
+  if (!oldName || !newName || !newName.trim()) throw new Error('Role names are required');
+  oldName = oldName.trim().toLowerCase();
+  newName = newName.trim().toLowerCase();
+  if (oldName === newName) return { success: true, message: 'No change' };
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+
+  // Update Roles sheet
+  var rolesSheet = ss.getSheetByName('Roles');
+  if (!rolesSheet) throw new Error('"Roles" tab not found');
+  var rolesData = rolesSheet.getDataRange().getValues();
+  var foundRole = false;
+  for (var r = 1; r < rolesData.length; r++) {
+    if (String(rolesData[r][0]).trim().toLowerCase() === oldName) {
+      rolesSheet.getRange(r + 1, 1).setValue(newName);
+      foundRole = true;
+      break;
+    }
+  }
+  if (!foundRole) throw new Error('Role not found: ' + oldName);
+
+  // Check new name doesn't conflict
+  for (var r2 = 1; r2 < rolesData.length; r2++) {
+    var existing = String(rolesData[r2][0]).trim().toLowerCase();
+    if (existing === newName && existing !== oldName) {
+      throw new Error('Role already exists: ' + newName);
+    }
+  }
+
+  // Update Access sheet — change role column values
+  var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+  if (sheet) {
+    var accessData = sheet.getDataRange().getValues();
+    var accessHeaders = accessData[0].map(function(h) { return String(h).trim().toLowerCase(); });
+    var roleColIdx = accessHeaders.indexOf('role');
+    if (roleColIdx >= 0) {
+      for (var ar = 1; ar < accessData.length; ar++) {
+        if (String(accessData[ar][roleColIdx]).trim().toLowerCase() === oldName) {
+          sheet.getRange(ar + 1, roleColIdx + 1).setValue(newName);
+        }
+      }
+    }
+  }
+
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+  getEpochCache().remove('rbac_roles_matrix');
+
+  dataAuditLog(user.email, 'update', 'acl_role_rename', oldName, { newName: newName });
+  return { success: true, message: 'Role renamed: ' + oldName + ' → ' + newName };
+}
+
+/**
+ * Remove a role from the Roles sheet.
+ * Does NOT reassign users — they keep their current role string.
+ */
+function removeACLRole(sessionToken, roleName) {
+  var user = validateSessionForData(sessionToken, 'removeACLRole');
+  checkPermission(user, 'admin', 'removeACLRole');
+
+  if (!roleName) throw new Error('Role name is required');
+  roleName = roleName.trim().toLowerCase();
+
+  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+  var rolesSheet = ss.getSheetByName('Roles');
+  if (!rolesSheet) throw new Error('"Roles" tab not found');
+
+  var data = rolesSheet.getDataRange().getValues();
+  var rowIdx = -1;
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).trim().toLowerCase() === roleName) { rowIdx = r; break; }
+  }
+  if (rowIdx === -1) throw new Error('Role not found: ' + roleName);
+
+  rolesSheet.deleteRow(rowIdx + 1);
+
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+  getEpochCache().remove('rbac_roles_matrix');
+
+  dataAuditLog(user.email, 'delete', 'acl_role', roleName, {});
+  return { success: true, message: 'Role removed: ' + roleName };
+}
+
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
   var cache = getEpochCache();
@@ -2217,6 +2491,30 @@ function doGet(e) {
         tr.dirty-row td.email-col { color: #e65100; font-weight: 700; }
         #btn-save-all { display: none; }
         #btn-save-all.has-changes { display: inline-block; }
+        /* Page column header interactive */
+        th.page-header { cursor: pointer; position: relative; user-select: none; }
+        th.page-header:hover { background: #e3f2fd; }
+        th.page-header .hdr-icons { font-size: 10px; opacity: .4; margin-left: 4px; }
+        th.page-header:hover .hdr-icons { opacity: 1; }
+        /* Context menu */
+        .ctx-menu { position: fixed; background: #fff; border: 1px solid #ddd; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.15); z-index: 2000; min-width: 160px; padding: 4px 0; font-size: 13px; }
+        .ctx-menu .ctx-item { padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .ctx-menu .ctx-item:hover { background: #f0f4f8; }
+        .ctx-menu .ctx-item.danger { color: #c62828; }
+        .ctx-menu .ctx-item.danger:hover { background: #ffebee; }
+        .ctx-menu .ctx-sep { height: 1px; background: #eee; margin: 4px 0; }
+        /* Roles modal */
+        .roles-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+        .roles-table th { background: #f0f4f8; padding: 8px 10px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+        .roles-table td { padding: 6px 10px; border-top: 1px solid #eee; }
+        .roles-table td.perm-col { text-align: center; }
+        .roles-table td.perm-col input[type="checkbox"] { width: 14px; height: 14px; cursor: pointer; accent-color: #1565c0; }
+        .roles-table .role-name { font-family: monospace; font-weight: 600; }
+        .role-actions { white-space: nowrap; }
+        .role-actions .btn { margin-left: 2px; }
+        .roles-modal .modal { width: 600px; max-height: 80vh; overflow-y: auto; }
+        .roles-add-row { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
+        .roles-add-row input { flex: 1; padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; font-family: monospace; }
         .status-bar { padding: 10px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; display: none; }
         .status-bar.success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
         .status-bar.error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
@@ -2252,7 +2550,8 @@ function doGet(e) {
         <div class="acl-toolbar">
           <button class="btn btn-primary" id="btn-add-user">+ Add User</button>
           <button class="btn btn-secondary" id="btn-refresh">Refresh</button>
-          <button class="btn btn-secondary" id="btn-add-page">+ Add Page Column</button>
+          <button class="btn btn-secondary" id="btn-add-page">+ Page Column</button>
+          <button class="btn btn-secondary" id="btn-manage-roles">Manage Roles</button>
           <button class="btn btn-primary" id="btn-save-all">Save Changes</button>
         </div>
 
@@ -2306,6 +2605,37 @@ function doGet(e) {
           </div>
         </div>
       </div>
+
+      <!-- Manage Roles Modal -->
+      <div class="modal-overlay roles-modal" id="roles-modal">
+        <div class="modal">
+          <h2>Manage Roles</h2>
+          <div id="roles-table-wrap"></div>
+          <div class="roles-add-row">
+            <input type="text" id="new-role-input" placeholder="New role name">
+            <button class="btn btn-primary btn-sm" id="btn-add-role">+ Add Role</button>
+          </div>
+          <div class="modal-actions" style="margin-top:16px;">
+            <button class="btn btn-secondary" id="roles-modal-close">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rename Prompt Modal -->
+      <div class="modal-overlay" id="rename-modal">
+        <div class="modal" style="width:360px;">
+          <h2 id="rename-title">Rename</h2>
+          <label for="rename-input" id="rename-label">New name</label>
+          <input type="text" id="rename-input" autocomplete="off" style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:monospace;">
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="rename-cancel">Cancel</button>
+            <button class="btn btn-primary" id="rename-ok">Rename</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Context menu (injected dynamically) -->
+      <div class="ctx-menu" id="ctx-menu" style="display:none;"></div>
 
       <script>
         // Session token for data operation validation
@@ -2441,11 +2771,20 @@ function doGet(e) {
 
           // Header row
           var thead = document.getElementById('acl-thead-row');
-          thead.innerHTML = '<th>Email</th><th>Role</th>';
+          thead.innerHTML = '';
+          var thEmail = document.createElement('th'); thEmail.textContent = 'Email'; thead.appendChild(thEmail);
+          var thRole = document.createElement('th'); thRole.textContent = 'Role'; thead.appendChild(thRole);
           for (var p = 0; p < _pageHeaders.length; p++) {
-            thead.innerHTML += '<th>' + _escH(_pageHeaders[p]) + '</th>';
+            var thP = document.createElement('th');
+            thP.className = 'page-header';
+            thP.dataset.page = _pageHeaders[p];
+            thP.innerHTML = _escH(_pageHeaders[p]) + '<span class="hdr-icons">&#9660;</span>';
+            thP.addEventListener('click', (function(pageName, el) {
+              return function(e) { showPageContextMenu(e, pageName); };
+            })(_pageHeaders[p], thP));
+            thead.appendChild(thP);
           }
-          thead.innerHTML += '<th>Actions</th>';
+          var thAct = document.createElement('th'); thAct.textContent = 'Actions'; thead.appendChild(thAct);
 
           // Find column indices
           var emailIdx = -1, roleIdx = -1;
@@ -2711,6 +3050,191 @@ function doGet(e) {
           }
         }
 
+        // ── Context menu for page column headers ──
+        function showPageContextMenu(e, pageName) {
+          e.stopPropagation();
+          var menu = document.getElementById('ctx-menu');
+          menu.innerHTML = '';
+
+          var renameItem = document.createElement('div');
+          renameItem.className = 'ctx-item';
+          renameItem.innerHTML = '&#9998; Rename Column';
+          renameItem.addEventListener('click', function() { hideContextMenu(); showRenamePrompt('Rename Page Column', 'New column name:', pageName, function(newName) { renamePage(pageName, newName); }); });
+          menu.appendChild(renameItem);
+
+          var sep = document.createElement('div');
+          sep.className = 'ctx-sep';
+          menu.appendChild(sep);
+
+          var removeItem = document.createElement('div');
+          removeItem.className = 'ctx-item danger';
+          removeItem.innerHTML = '&#10005; Remove Column';
+          removeItem.addEventListener('click', function() {
+            hideContextMenu();
+            showConfirm('Remove Page Column', 'Remove "' + pageName + '"? This will delete the column and all its data for every user.', 'Remove').then(function(ok) {
+              if (!ok) return;
+              setLoading(true);
+              google.script.run
+                .withSuccessHandler(function(result) { showStatus(result.message, 'success'); loadData(); })
+                .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); setLoading(false); })
+                .removeACLPage(_sessionToken, pageName);
+            });
+          });
+          menu.appendChild(removeItem);
+
+          menu.style.display = 'block';
+          menu.style.left = Math.min(e.clientX, window.innerWidth - 180) + 'px';
+          menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+        }
+
+        function hideContextMenu() {
+          document.getElementById('ctx-menu').style.display = 'none';
+        }
+        document.addEventListener('click', hideContextMenu);
+
+        function renamePage(oldName, newName) {
+          if (!newName || newName === oldName) return;
+          setLoading(true);
+          google.script.run
+            .withSuccessHandler(function(result) { showStatus(result.message, 'success'); loadData(); })
+            .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); setLoading(false); })
+            .renameACLPage(_sessionToken, oldName, newName);
+        }
+
+        // ── Rename prompt modal ──
+        var _renameCallback = null;
+        function showRenamePrompt(title, label, currentVal, callback) {
+          _renameCallback = callback;
+          document.getElementById('rename-title').textContent = title;
+          document.getElementById('rename-label').textContent = label;
+          var inp = document.getElementById('rename-input');
+          inp.value = currentVal || '';
+          document.getElementById('rename-modal').classList.add('open');
+          inp.focus();
+          inp.select();
+        }
+        document.getElementById('rename-cancel').addEventListener('click', function() {
+          document.getElementById('rename-modal').classList.remove('open');
+          _renameCallback = null;
+        });
+        document.getElementById('rename-ok').addEventListener('click', function() {
+          var val = document.getElementById('rename-input').value.trim();
+          document.getElementById('rename-modal').classList.remove('open');
+          if (_renameCallback && val) _renameCallback(val);
+          _renameCallback = null;
+        });
+        document.getElementById('rename-input').addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') document.getElementById('rename-ok').click();
+        });
+
+        // ── Roles management ──
+        var _rolesData = null; // { headers, rows }
+
+        function openRolesModal() {
+          showStatus('Loading roles...', 'info');
+          google.script.run
+            .withSuccessHandler(function(result) {
+              _rolesData = result;
+              renderRolesTable();
+              document.getElementById('roles-modal').classList.add('open');
+              document.getElementById('status-bar').className = 'status-bar';
+            })
+            .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); })
+            .loadRolesData(_sessionToken);
+        }
+
+        function renderRolesTable() {
+          if (!_rolesData) return;
+          var headers = _rolesData.headers;
+          var rows = _rolesData.rows;
+          var permHeaders = headers.slice(1); // everything after "Role"
+
+          var html = '<table class="roles-table"><thead><tr><th>Role</th>';
+          for (var p = 0; p < permHeaders.length; p++) {
+            html += '<th>' + _escH(permHeaders[p]) + '</th>';
+          }
+          html += '<th>Actions</th></tr></thead><tbody>';
+
+          for (var r = 0; r < rows.length; r++) {
+            var roleName = rows[r][0];
+            html += '<tr data-role="' + _escH(roleName) + '">';
+            html += '<td class="role-name">' + _escH(roleName) + '</td>';
+            for (var c = 1; c < headers.length; c++) {
+              var checked = rows[r][c] ? ' checked' : '';
+              html += '<td class="perm-col"><input type="checkbox" data-role="' + _escH(roleName) + '" data-perm="' + _escH(headers[c].toLowerCase()) + '"' + checked + '></td>';
+            }
+            html += '<td class="role-actions">';
+            html += '<button class="btn btn-secondary btn-sm btn-role-rename" data-role="' + _escH(roleName) + '">Rename</button>';
+            html += '<button class="btn btn-danger btn-sm btn-role-delete" data-role="' + _escH(roleName) + '">Delete</button>';
+            html += '</td></tr>';
+          }
+          html += '</tbody></table>';
+
+          var wrap = document.getElementById('roles-table-wrap');
+          wrap.innerHTML = html;
+
+          // Wire up permission checkboxes
+          var permCbs = wrap.querySelectorAll('input[type="checkbox"]');
+          for (var i = 0; i < permCbs.length; i++) {
+            permCbs[i].addEventListener('change', function() {
+              var rn = this.dataset.role;
+              var perms = {};
+              var cbs = wrap.querySelectorAll('input[data-role="' + CSS.escape(rn) + '"]');
+              for (var j = 0; j < cbs.length; j++) {
+                perms[cbs[j].dataset.perm] = cbs[j].checked;
+              }
+              google.script.run
+                .withSuccessHandler(function(result) { showStatus(result.message, 'success'); })
+                .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); })
+                .updateACLRole(_sessionToken, rn, perms);
+            });
+          }
+
+          // Wire up rename buttons
+          var renameBtns = wrap.querySelectorAll('.btn-role-rename');
+          for (var rb = 0; rb < renameBtns.length; rb++) {
+            renameBtns[rb].addEventListener('click', function() {
+              var rn = this.dataset.role;
+              showRenamePrompt('Rename Role', 'New role name:', rn, function(newName) {
+                google.script.run
+                  .withSuccessHandler(function(result) { showStatus(result.message, 'success'); openRolesModal(); loadData(); })
+                  .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); })
+                  .renameACLRole(_sessionToken, rn, newName);
+              });
+            });
+          }
+
+          // Wire up delete buttons
+          var delBtns = wrap.querySelectorAll('.btn-role-delete');
+          for (var db = 0; db < delBtns.length; db++) {
+            delBtns[db].addEventListener('click', function() {
+              var rn = this.dataset.role;
+              document.getElementById('roles-modal').classList.remove('open');
+              showConfirm('Delete Role', 'Remove role "' + rn + '"? Users with this role will keep their assignment but it won\\u0027t match any defined role.', 'Delete').then(function(ok) {
+                if (!ok) { document.getElementById('roles-modal').classList.add('open'); return; }
+                google.script.run
+                  .withSuccessHandler(function(result) { showStatus(result.message, 'success'); openRolesModal(); loadData(); })
+                  .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); document.getElementById('roles-modal').classList.add('open'); })
+                  .removeACLRole(_sessionToken, rn);
+              });
+            });
+          }
+        }
+
+        function addRole() {
+          var name = document.getElementById('new-role-input').value.trim();
+          if (!name) { showStatus('Role name is required', 'error'); return; }
+          google.script.run
+            .withSuccessHandler(function(result) {
+              document.getElementById('new-role-input').value = '';
+              showStatus(result.message, 'success');
+              openRolesModal();
+              loadData(); // refresh role dropdowns
+            })
+            .withFailureHandler(function(err) { showStatus('Error: ' + err.message, 'error'); })
+            .addACLRole(_sessionToken, name, {});
+        }
+
         // ── CRUD operations ──
         function saveUser() {
           var vals = getModalValues();
@@ -2773,6 +3297,14 @@ function doGet(e) {
           document.getElementById('page-modal').classList.add('open');
           document.getElementById('page-name-input').focus();
         });
+        document.getElementById('btn-manage-roles').addEventListener('click', openRolesModal);
+        document.getElementById('btn-add-role').addEventListener('click', addRole);
+        document.getElementById('new-role-input').addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') addRole();
+        });
+        document.getElementById('roles-modal-close').addEventListener('click', function() {
+          document.getElementById('roles-modal').classList.remove('open');
+        });
         document.getElementById('modal-cancel').addEventListener('click', closeModal);
         document.getElementById('modal-save').addEventListener('click', saveUser);
         document.getElementById('page-modal-cancel').addEventListener('click', function() {
@@ -2787,12 +3319,22 @@ function doGet(e) {
         document.getElementById('page-modal').addEventListener('click', function(e) {
           if (e.target === this) this.classList.remove('open');
         });
+        document.getElementById('roles-modal').addEventListener('click', function(e) {
+          if (e.target === this) this.classList.remove('open');
+        });
+        document.getElementById('rename-modal').addEventListener('click', function(e) {
+          if (e.target === this) { this.classList.remove('open'); _renameCallback = null; }
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
           if (e.key === 'Escape') {
             closeModal();
+            hideContextMenu();
             document.getElementById('page-modal').classList.remove('open');
+            document.getElementById('roles-modal').classList.remove('open');
+            document.getElementById('rename-modal').classList.remove('open');
+            _renameCallback = null;
           }
         });
 
