@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v05.34r] — 2026-03-20 02:35:04 PM EST
+
+> **Prompt:** "i meant a single save button for all changes, not per user, but you can denote by highlighting the checkboxes somehow the ones that are going to be affected"
+
+### Changed
+- ACL inline editing now uses a single "Save Changes" toolbar button instead of per-row Save buttons — modified cells get an amber highlight and the user's email turns orange to indicate pending changes
+
+#### `globalacl.gs` — v01.09g
+
+##### Changed
+- Replaced per-row Save buttons with a single "Save Changes" button in the toolbar
+- Modified checkboxes and dropdowns now get an amber background highlight to show pending changes
+- User email turns orange for rows with unsaved changes
+- All dirty rows are saved in parallel when clicking Save Changes
 
 ## [v05.33r] — 2026-03-20 02:29:38 PM EST
 

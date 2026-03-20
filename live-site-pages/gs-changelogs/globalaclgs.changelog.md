@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
 
 ## [Unreleased]
+
+## [v01.09g] — 2026-03-20 02:35:04 PM EST — v05.34r
+
+### Changed
+- Replaced per-row Save buttons with a single "Save Changes" button in the toolbar
+- Modified checkboxes and dropdowns now get an amber background highlight to show pending changes
+- User email turns orange for rows with unsaved changes
 
 ## [v01.08g] — 2026-03-20 02:29:38 PM EST — v05.33r
 
