@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11g] — 2026-03-20 04:20:50 PM EST — v05.36r
+
+### Fixed
+- Permission highlights now reset when you change a setting back to its original value — no more persistent yellow highlighting on unchanged fields
 
 ## [v01.10g] — 2026-03-20 02:44:10 PM EST — v05.35r
 

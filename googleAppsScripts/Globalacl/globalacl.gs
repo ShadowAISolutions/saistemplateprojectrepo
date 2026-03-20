@@ -1,4 +1,4 @@
-var VERSION = "v01.10g";
+var VERSION = "v01.11g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2801,12 +2801,14 @@ function doGet(e) {
           }
 
           // Body rows
+          _originalValues = {};
           var tbody = document.getElementById('acl-tbody');
           tbody.innerHTML = '';
           for (var r = 0; r < rows.length; r++) {
             var row = rows[r];
             var email = emailIdx >= 0 ? String(row[emailIdx]) : '';
             var role = roleIdx >= 0 ? String(row[roleIdx]) : '';
+            _originalValues[email] = { role: role, pages: {} };
             var tr = document.createElement('tr');
 
             // Email
@@ -2840,6 +2842,7 @@ function doGet(e) {
               cb.checked = row[pageIndices[pc]] === true;
               cb.dataset.email = email;
               cb.dataset.page = _pageHeaders[pc];
+              _originalValues[email].pages[_pageHeaders[pc]] = cb.checked;
               cb.addEventListener('change', function() { markDirty(this.dataset.email, this); });
               tdP.appendChild(cb);
               tr.appendChild(tdP);
@@ -2964,18 +2967,51 @@ function doGet(e) {
 
         // ── Inline editing helpers ──
         var _dirtyUsers = {};
+        var _originalValues = {};
 
         function markDirty(email, el) {
-          _dirtyUsers[email] = true;
-          // Highlight the changed control's cell
-          if (el && el.parentElement) el.parentElement.classList.add('dirty-cell');
-          // Highlight the role cell too if a select changed
-          if (el && el.tagName === 'SELECT') el.parentElement.classList.add('dirty-cell');
-          // Mark the row
-          var row = el ? el.closest('tr') : null;
-          if (row) row.classList.add('dirty-row');
-          // Show Save Changes button
-          document.getElementById('btn-save-all').classList.add('has-changes');
+          if (!el || !el.parentElement) return;
+          var orig = _originalValues[email];
+          var isOriginal = false;
+
+          if (orig) {
+            if (el.tagName === 'INPUT' && el.type === 'checkbox') {
+              var page = el.dataset.page;
+              if (page && orig.pages.hasOwnProperty(page)) {
+                isOriginal = el.checked === orig.pages[page];
+              }
+            } else if (el.tagName === 'SELECT') {
+              isOriginal = el.value === orig.role;
+            }
+          }
+
+          if (isOriginal) {
+            // Revert: unhighlight this cell
+            el.parentElement.classList.remove('dirty-cell');
+          } else {
+            // Changed: highlight this cell
+            el.parentElement.classList.add('dirty-cell');
+          }
+
+          // Re-evaluate row and user dirty state
+          var row = el.closest('tr');
+          if (row) {
+            var hasDirtyCells = row.querySelector('.dirty-cell');
+            if (hasDirtyCells) {
+              row.classList.add('dirty-row');
+              _dirtyUsers[email] = true;
+            } else {
+              row.classList.remove('dirty-row');
+              delete _dirtyUsers[email];
+            }
+          }
+
+          // Show/hide Save button based on remaining dirty users
+          if (Object.keys(_dirtyUsers).length > 0) {
+            document.getElementById('btn-save-all').classList.add('has-changes');
+          } else {
+            document.getElementById('btn-save-all').classList.remove('has-changes');
+          }
         }
 
         function clearDirtyState() {
@@ -3021,6 +3057,11 @@ function doGet(e) {
                 .withSuccessHandler(function(result) {
                   saved++;
                   delete _dirtyUsers[email];
+                  // Update original values to match saved state
+                  _originalValues[email] = { role: role, pages: {} };
+                  for (var pg in pageAccess) {
+                    if (pageAccess.hasOwnProperty(pg)) _originalValues[email].pages[pg] = pageAccess[pg];
+                  }
                   // Update local data
                   if (_aclData) {
                     var headers = _aclData.headers;
