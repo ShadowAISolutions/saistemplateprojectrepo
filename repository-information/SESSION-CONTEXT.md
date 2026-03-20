@@ -4,38 +4,33 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-20 05:36:14 PM EST
-**Repo version:** v05.40r
+**Date:** 2026-03-20 07:10:27 PM EST
+**Repo version:** v05.43r
 
 ### What was done
-This session continued work on the **Global ACL Manager** page and added/reverted a Session Manager feature:
+Built the **Global Sessions interface** for the GlobalACL page — cross-project session aggregation and management:
 
-- **v05.36r** — Fixed permission highlight reset: checkboxes and role dropdowns now unhighlight when reverted to original values (dirty-cell/dirty-row/Save button state updates accordingly)
-- **v05.37r** — Added bookend protocol prevention rule to `chat-bookends.md` (Response Opener section)
-- **v05.38r** — Rewrote the bookend prevention rule from descriptive to a hard 3-step procedural gate after the descriptive version was violated in the same response it was created
-- **v05.39r** — Built a cross-project Session Manager panel in `globalacl.html` — multi-iframe approach to manage user sessions across all auth-enabled projects. **This broke the page** — stuck on "Loading sessions..." because GAS postMessages lack project identifiers, making it impossible to route messages from multiple per-project iframes to the correct handler
-- **v05.40r** — Reverted the Session Manager completely. Saved full implementation notes (architecture, what broke, fix options) to `repository-information/SESSION-MANAGER-PLAN.md`
+- **v05.41r** — Built Global Sessions interface on GlobalACL: cross-project session aggregation via UrlFetchApp server-to-server calls (option C from SESSION-MANAGER-PLAN.md), green-themed admin panel, kick users across projects or all at once, propagated cross-project `listSessions` and `adminSignOut` endpoints to all three auth GAS projects (globalacl, testauth1, portal) and both auth GAS templates
+- **v05.42r** — Fixed Global Sessions showing no sessions when the Master ACL "Projects" sheet has no SELF entry — added self-project fallback to `listGlobalSessions` and `adminGlobalSignOutUser`
+- **v05.43r** — Zero-config auto-registration: each auth-enabled GAS project registers itself in the Master ACL "Projects" sheet on first page load via `registerSelfProject()`. GlobalACL auto-generates a 64-char shared secret in the "Config" sheet via `ensureCrossProjectSecret()`. Project matching uses stable `ACL_PAGE_NAME` stored in a hidden "Project ID" column (col D), decoupled from user-editable display title
 
 ### Where we left off
-- All changes committed and pushed through v05.40r
-- The Global ACL page is back to its pre-Session Manager state (v01.00w)
-- The existing Sessions dropdown button still works (single-project admin session management)
-- **SESSION-MANAGER-PLAN.md** documents three fix options for a future attempt:
-  - **(A)** Add project identifier to GAS `gas-admin-sessions-ready` messages — requires modifying each project's GAS `?action=adminSessions` handler
-  - **(B)** Use `stopImmediatePropagation()` for Session Manager iframes — separate listener per iframe
-  - **(C)** Centralized server-to-server approach — Global ACL GAS uses `UrlFetchApp` to call each project's GAS endpoint directly (N+1 quota hits vs 2N for multi-iframe)
+- All changes committed and pushed through v05.43r
+- Global Sessions feature is functional with auto-registration — no manual spreadsheet setup needed
+- globalacl.html at v01.01w, globalacl.gs at v01.14g
+- testauth1.gs at v01.74g, portal.gs at v01.05g
+- SESSION-MANAGER-PLAN.md still exists with historical context from the failed multi-iframe approach (v05.39r)
 
 ### Key decisions made
-- **Revert over fix**: user preferred full revert with documentation rather than continued debugging of the Session Manager
-- **Multi-iframe chosen over centralized**: multi-iframe was simpler to implement but failed due to message routing; centralized (option C) would have been more robust
-- **Bookend protocol enforcement**: hard procedural gate (Step 1: `date` → Step 2: opening text → Step 3: everything else) works where descriptive rules don't
+- **Server-to-server UrlFetchApp** (option C from SESSION-MANAGER-PLAN.md) chosen over multi-iframe approach that failed in v05.39r — avoids postMessage routing issues entirely
+- **Auto-registration over manual setup** — zero-config for new projects; each project registers itself on first `doGet()` call
+- **Project matching by ACL_PAGE_NAME** — stable internal identifier, not user-editable TITLE. Stored in hidden col D of Projects sheet
+- **Auto-generated shared secret** — GlobalACL creates 64-char random secret in Config sheet on first run; other projects read it from the same Master ACL spreadsheet
 
 ### Active context
-- Branch: `claude/fix-permission-highlight-reset-gjK9U`
-- Repo version: v05.40r
-- GAS version: v01.11g (globalacl.gs — unchanged this session)
-- HTML version: v01.00w (globalacl.html — reverted from v01.01w)
-- CHANGELOG at 74/100 sections
+- Branch: `claude/global-sessions-interface-0rJrH`
+- Repo version: v05.43r
+- CHANGELOG at 77/100 sections
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -43,19 +38,19 @@ This session continued work on the **Global ACL Manager** page and added/reverte
 
 ## Previous Sessions
 
-**Date:** 2026-03-20 02:58:11 PM EST
-**Repo version:** v05.35r
+**Date:** 2026-03-20 05:36:14 PM EST
+**Repo version:** v05.40r
 
 ### What was done
-Built the **Global ACL Manager** — a GAS-powered admin UI for centralized access control:
+Continued work on the **Global ACL Manager** page and added/reverted a Session Manager feature:
 
-- **v05.24r** — Set up the Global ACL GAS project (10 files created)
-- **v05.25r–v05.32r** — Core ACL management UI: CRUD for users, table rendering, inline editing, page column management, backend wiring
-- **v05.33r–v05.34r** — Replaced auto-save with single "Save Changes" button with amber dirty-state highlighting
-- **v05.35r** — Page column rename/remove (context menu) and Roles management modal
+- **v05.36r** — Fixed permission highlight reset: checkboxes and role dropdowns now unhighlight when reverted to original values
+- **v05.37r–v05.38r** — Added and rewrote bookend protocol prevention rule as hard 3-step procedural gate
+- **v05.39r** — Built cross-project Session Manager (multi-iframe approach) — **broke the page** due to GAS postMessage routing issues
+- **v05.40r** — Reverted Session Manager, saved implementation notes to SESSION-MANAGER-PLAN.md
 
 ### Where we left off
-- ACL Manager feature-complete for core functionality
-- CHANGELOG was at 100/100 — archive rotation ran in the next session
+- All changes committed and pushed through v05.40r
+- GlobalACL page back to pre-Session Manager state
 
 Developed by: ShadowAISolutions
