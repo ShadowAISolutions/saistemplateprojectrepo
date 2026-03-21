@@ -1,4 +1,4 @@
-var VERSION = "v01.11g";
+var VERSION = "v01.12g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1422,6 +1422,12 @@ function doGet(e) {
           var publicContainer = document.getElementById('portal-apps-public');
           var embedUrl = '${escapeJs(EMBED_PAGE_URL)}';
           var baseDir = embedUrl.substring(0, embedUrl.lastIndexOf('/') + 1);
+
+          // Sort: accessible apps first, then inaccessible (within each section)
+          PORTAL_APPS.sort(function(a, b) {
+            if (a.userHasAccess === b.userHasAccess) return 0;
+            return a.userHasAccess ? -1 : 1;
+          });
 
           PORTAL_APPS.forEach(function(app) {
             var card = document.createElement('a');

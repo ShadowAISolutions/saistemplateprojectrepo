@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12g] — 2026-03-20 09:20:40 PM EST — v05.51r
+
+### Changed
+- Apps you have access to now appear before apps you don't when viewing all applications
 
 ## [v01.11g] — 2026-03-20 09:13:56 PM EST — v05.50r
 
