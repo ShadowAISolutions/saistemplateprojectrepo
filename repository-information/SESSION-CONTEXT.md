@@ -4,34 +4,39 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-20 08:47:30 PM EST
-**Repo version:** v05.48r
+**Date:** 2026-03-20 11:31:06 PM EST
+**Repo version:** v05.58r
 
 ### What was done
-Several ACL infrastructure improvements across 3 pushes:
+Major security, UX, and infrastructure improvements across 10 pushes (v05.49r–v05.58r):
 
-- **v05.45r** — Connected Portal to Global ACL: set `MASTER_ACL_SPREADSHEET_ID` to `1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI` and corrected `ACL_SHEET_NAME` to `"Access"` in portal.config.json and portal.gs
-- **v05.46r** — Auto-add Access tab column on project registration: `registerSelfProject()` now creates the page column with FALSE checkboxes if it doesn't exist, eliminating manual spreadsheet setup
-- **v05.47r** — **Major: Consolidated Projects tab into Access tab metadata rows** — project metadata (name, URL, auth enabled) is now stored as `#`-prefixed metadata rows (#NAME, #URL, #AUTH) in rows 2-4 of the Access tab, eliminating the separate Projects tab entirely. Rewrote `registerSelfProject()` and `getRegisteredProjects()` in globalacl.gs. Added `isMetadataRow()` and `ensureMetadataRows()` helpers. Added metadata-row skipping to all user-iteration loops (~8 locations). Updated `addACLPage()` for metadata awareness. Propagated to portal.gs, testauth1.gs, and both auth GAS templates
-- **v05.48r** — Added Global ACL to the portal's PORTAL_APPS registry as the first app card with shield icon
+- **v05.49r–v05.50r** — Portal access control and app sorting improvements
+- **v05.51r** — Sort portal auth apps by access — accessible apps first, inaccessible second
+- **v05.52r** — Swap portal toggle labels — My Apps left, Show All right
+- **v05.53r** — Fix global sessions panel staying open after sign-out
+- **v05.54r** — **Comprehensive auth wall UI deactivation** — when auth is enabled but user isn't signed in, all interactive elements (buttons, inputs, panels, toggles) are now disabled/hidden behind the auth wall across all projects and templates
+- **v05.55r** — **Migrate cross-project admin secret from spreadsheet to Script Properties** — `CROSS_PROJECT_ADMIN_SECRET` moved from the ACL spreadsheet's `#SECRET` metadata row to GAS Script Properties. GlobalACL auto-distributes it to registered projects via `distributeAdminSecret()`. All projects read from Script Properties instead of spreadsheet
+- **v05.56r** — **Auto-initialize HMAC_SECRET and CACHE_EPOCH in Script Properties** — `ensureScriptProperties_()` runs at end of `pullAndDeployFromGitHub()`, auto-generating both values on first deploy. Eliminates manual Script Properties setup entirely
+- **v05.57r** — Simplified gas-project-creator Script Properties section — only GITHUB_TOKEN needs manual entry now. HMAC_SECRET generation UI removed. Auto-generation note added for CACHE_EPOCH/HMAC_SECRET
+- **v05.58r** — Added CROSS_PROJECT_ADMIN_SECRET to the auto-generation note in gas-project-creator
 
 ### Where we left off
-- All changes committed and pushed through v05.48r
-- The old Projects tab in the Master ACL spreadsheet can now be deleted manually — all data is in Access tab rows 2-4
-- Access tab layout: Row 1 = headers (Email, Role, page1, page2, ...), Rows 2-4 = metadata (#NAME, #URL, #AUTH), Rows 5+ = user data
-- globalacl.gs at v01.16g, portal.gs at v01.09g, testauth1.gs at v01.76g
-- CHANGELOG at 82/100 sections
+- All changes committed and pushed through v05.58r
+- **Approved plan pending implementation**: Auto-initialize HMAC_SECRET and CACHE_EPOCH — plan approved but was the session's last push (v05.56r already implemented this; the plan in the plan file may be stale/from before implementation)
+- GAS project setup is now nearly zero-config: only `GITHUB_TOKEN` needs manual entry; `CACHE_EPOCH`, `HMAC_SECRET`, and `CROSS_PROJECT_ADMIN_SECRET` are all auto-managed
+- CHANGELOG at 92/100 sections (getting close to archive rotation threshold)
 
 ### Key decisions made
-- **Metadata rows over separate tab** — user approved consolidating the Projects tab into the Access tab using `#`-prefixed rows (#NAME, #URL, #AUTH) in rows 2-4, keeping all project info in one sheet
-- **`isMetadataRow()` helper** — simple check (`row[0]` starts with `#`) used across all user-iteration loops to skip metadata rows
-- **`ensureMetadataRows()` helper** — auto-inserts the 3 metadata rows if they don't exist, shifting existing user data down
-- **GlobalACL placed first in portal** — as the centralized access control tool, it's the most important app
+- **Auth wall deactivation pattern** — disable all interactive UI behind auth wall rather than just hiding content; prevents partial interaction states
+- **Script Properties over spreadsheet for secrets** — `CROSS_PROJECT_ADMIN_SECRET` moved from spreadsheet metadata row to Script Properties for better security (not visible in spreadsheet UI)
+- **GlobalACL distributes secrets** — GlobalACL is the single source of truth for `CROSS_PROJECT_ADMIN_SECRET`; it auto-distributes to registered projects via their deployment URLs
+- **Auto-initialize on deploy** — `ensureScriptProperties_()` runs at end of `pullAndDeployFromGitHub()` with "if not exists" guards, safe for existing projects
+- **Only GITHUB_TOKEN manual** — all other Script Properties are auto-managed, simplifying the setup guide
 
 ### Active context
-- Branch: `claude/fix-session-conflict-QPqk6`
-- Repo version: v05.48r
-- CHANGELOG at 82/100 sections
+- Branch: `claude/add-app-access-toggle-wl5VC`
+- Repo version: v05.58r
+- CHANGELOG at 92/100 sections
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -39,18 +44,19 @@ Several ACL infrastructure improvements across 3 pushes:
 
 ## Previous Sessions
 
-**Date:** 2026-03-20 07:10:27 PM EST
-**Repo version:** v05.43r
+**Date:** 2026-03-20 08:47:30 PM EST
+**Repo version:** v05.48r
 
 ### What was done
-Built the **Global Sessions interface** for the GlobalACL page — cross-project session aggregation and management:
+Several ACL infrastructure improvements across 4 pushes:
 
-- **v05.41r** — Built Global Sessions interface on GlobalACL: cross-project session aggregation via UrlFetchApp server-to-server calls
-- **v05.42r** — Fixed Global Sessions showing no sessions when no SELF entry exists
-- **v05.43r** — Zero-config auto-registration via `registerSelfProject()`, auto-generated shared secret, stable `ACL_PAGE_NAME` matching
+- **v05.45r** — Connected Portal to Global ACL
+- **v05.46r** — Auto-add Access tab column on project registration
+- **v05.47r** — **Major: Consolidated Projects tab into Access tab metadata rows** — `#`-prefixed metadata rows (#NAME, #URL, #AUTH) in rows 2-4
+- **v05.48r** — Added Global ACL to the portal's PORTAL_APPS registry
 
 ### Where we left off
-- All changes committed and pushed through v05.43r
-- Global Sessions feature functional with auto-registration
+- All changes committed and pushed through v05.48r
+- Access tab layout: Row 1 = headers, Rows 2-4 = metadata, Rows 5+ = user data
 
 Developed by: ShadowAISolutions
