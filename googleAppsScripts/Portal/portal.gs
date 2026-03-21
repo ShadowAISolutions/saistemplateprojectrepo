@@ -1,4 +1,4 @@
-var VERSION = "v01.08g";
+var VERSION = "v01.09g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1247,6 +1247,7 @@ function doGet(e) {
         // PORTAL — Application Registry
         // =============================================
         var PORTAL_APPS = [
+          { name: 'Global ACL', url: 'globalacl.html', icon: '\\uD83D\\uDEE1', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
           { name: 'Test Auth 1', url: 'testauth1.html', icon: '\\uD83D\\uDD10', description: 'Authentication testing environment with full security features.', requiresAuth: true },
           { name: 'Test Environment', url: 'testenvironment.html', icon: '\\uD83E\\uDDEA', description: 'General testing environment for development.', requiresAuth: false },
           { name: 'Homepage', url: 'index.html', icon: '\\uD83C\\uDFE0', description: 'Main landing page.', requiresAuth: false },

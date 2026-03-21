@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v05.48r] — 2026-03-20 08:42:27 PM EST
+
+> **Prompt:** "the application portal, make it also include the globalacl"
+
+### Added
+- Global ACL added to the portal's application registry — appears as the first app card with shield icon and auth-enabled status
+
+#### `portal.gs` — v01.09g
+
+##### Added
+- Global ACL now appears in the application portal as the first entry for centralized access control management
 
 ## [v05.47r] — 2026-03-20 08:34:24 PM EST
 
