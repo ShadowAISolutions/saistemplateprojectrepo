@@ -623,7 +623,7 @@
             gclCache = sanitizeChangelogHtml(parseGasChangelog(md));
             gclBody.innerHTML = gclCache;
             var titleEl = document.getElementById('gcl-title');
-            if (titleEl && currentGasVersion) titleEl.textContent = 'GAS Changelog \u2014 ' + currentGasVersion;
+            if (titleEl && currentGasVersion) titleEl.textContent = 'GAS Changelog \u2014 ' + currentGasVersion.replace(/\|/g, '');
           })
           .catch(function() {
             gclBody.innerHTML = '<p style="color:#888">Could not load changelog.</p>';

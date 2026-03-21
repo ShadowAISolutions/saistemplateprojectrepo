@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 16/100`
+`Sections: 17/100`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-03-21 06:15:12 PM EST — v05.77r
+
+### Fixed
+- GAS changelog popup title no longer shows pipe characters
 
 ## [v01.16w] — 2026-03-21 06:07:27 PM EST — v05.76r
 

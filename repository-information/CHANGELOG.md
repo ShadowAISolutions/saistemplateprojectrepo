@@ -3,9 +3,44 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v05.77r] — 2026-03-21 06:15:12 PM EST
+
+> **Prompt:** "there were places that were not prepared for this change, such as in the example here where its showing the |, look everywhere to see everything that was impacted by this change"
+
+### Fixed
+- Fixed pipe characters leaking into GAS changelog popup title — `GAS Changelog — |v01.90g|` now displays as `GAS Changelog — v01.90g`
+
+#### `index.html` — v01.09w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+#### `testenvironment.html` — v01.09w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+#### `gas-project-creator.html` — v01.26w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+#### `testauth1.html` — v02.61w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+#### `testauth2.html` — v01.09w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+#### `portal.html` — v01.17w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+#### `globalacl.html` — v01.11w
+##### Fixed
+- GAS changelog popup title no longer shows pipe characters
 
 ## [v05.76r] — 2026-03-21 06:07:27 PM EST
 

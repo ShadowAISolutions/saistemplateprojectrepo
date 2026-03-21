@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.61w] — 2026-03-21 06:15:12 PM EST — v05.77r
+
+### Fixed
+- GAS changelog popup title no longer shows pipe characters
 
 ## [v02.60w] — 2026-03-21 06:07:27 PM EST — v05.76r
 
