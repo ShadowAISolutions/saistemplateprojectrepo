@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1341,6 +1341,29 @@ function doGet(e) {
       <div id="version">${escapeHtml(VERSION)}</div>
 
       <script>
+        // PostMessage handshake guard: verify we are embedded in the correct parent page.
+        // GAS wraps content in multiple nested iframes — client-side frame-position checks
+        // (window.parent === window.top) are permanently broken. This handshake sends a
+        // challenge to window.top with PARENT_ORIGIN — only the correct embedding page
+        // receives it. When opened directly, the challenge is silently dropped and the
+        // timeout fires, blocking access.
+        document.body.style.visibility = 'hidden';
+        var _hsId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        var _hsOk = false;
+        window.addEventListener('message', function(ev) {
+          if (ev.data && ev.data.type === 'frame-handshake-response' && ev.data.handshakeId === _hsId) {
+            _hsOk = true;
+            document.body.style.visibility = 'visible';
+          }
+        });
+        window.top.postMessage({type: 'frame-handshake-challenge', handshakeId: _hsId}, '${PARENT_ORIGIN}');
+        setTimeout(function() {
+          if (!_hsOk) {
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its authorized embedding page.</p></div>';
+            document.body.style.visibility = 'visible';
+          }
+        }, 2000);
+
         // Message signing for cryptographic authentication
         var _mk = '${escapeJs(appMsgKey)}';
         function _s(m) {

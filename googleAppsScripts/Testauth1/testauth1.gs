@@ -1,4 +1,4 @@
-var VERSION = "v01.87g";
+var VERSION = "v01.88g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2209,7 +2209,7 @@ function doGet(e) {
   // Normal flow: validate session token (from page_nonce or ?session= parameter)
   // Both paths are valid: ?session= is used for initial sign-in (from gas-session-created),
   // ?page_nonce= is used for page refresh, tab reclaim, and cross-tab sync.
-  // The iframe guard (window.parent === window.top) blocks direct URL access.
+  // The postMessage handshake guard blocks direct URL access.
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {
@@ -2273,15 +2273,29 @@ function doGet(e) {
       <div id="user-email">${escapeHtml(session.email)}</div>
 
       <script>
-        // Iframe guard: prevent direct navigation to session URLs
-        // GAS always runs inside Google's sandbox iframe (userCodeAppPanel),
-        // so window.self is never window.top. Instead, check if our parent
-        // (Google's wrapper) IS the top window — that means direct navigation.
-        // When embedded in our page: parent (Google) !== top (our page) → allowed.
-        if (window.parent === window.top) {
-          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its embedding page.</p></div>';
-          throw new Error('Direct access blocked');
-        }
+        // PostMessage handshake guard: verify we are embedded in the correct parent page.
+        // The old iframe guard (window.parent === window.top) is permanently broken because
+        // GAS wraps content in multiple nested iframes — window.parent is always Google's
+        // wrapper, never window.top, regardless of how the URL is accessed.
+        // This handshake sends a challenge to window.top with PARENT_ORIGIN — only the
+        // correct embedding page receives it. When opened directly, window.top is Google's
+        // shell (different origin), so the challenge is silently dropped and the timeout fires.
+        document.body.style.visibility = 'hidden';
+        var _hsId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        var _hsOk = false;
+        window.addEventListener('message', function(ev) {
+          if (ev.data && ev.data.type === 'frame-handshake-response' && ev.data.handshakeId === _hsId) {
+            _hsOk = true;
+            document.body.style.visibility = 'visible';
+          }
+        });
+        window.top.postMessage({type: 'frame-handshake-challenge', handshakeId: _hsId}, '${PARENT_ORIGIN}');
+        setTimeout(function() {
+          if (!_hsOk) {
+            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its authorized embedding page.</p></div>';
+            document.body.style.visibility = 'visible';
+          }
+        }, 2000);
 
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';

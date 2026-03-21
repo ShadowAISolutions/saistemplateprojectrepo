@@ -1440,6 +1440,20 @@
       //   }
       // }
 
+      // Frame handshake responder — proves to the GAS iframe that it's embedded in our page.
+      // Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
+      // GAS double-iframe architecture: contentWindow → Google's outer shell → sandbox.
+      // event.source is the sandbox frame that sent the challenge.
+      if (data.type === 'frame-handshake-challenge' && data.handshakeId) {
+        if (event.source) {
+          event.source.postMessage({
+            type: 'frame-handshake-response',
+            handshakeId: data.handshakeId
+          }, '*');  // '*' required — GAS sandbox origin is unpredictable
+        }
+        return;  // Handled — don't continue through the message processing chain
+      }
+
       // Layer 1: Only process known GAS message types (allowlist)
       if (!_KNOWN_GAS_MESSAGES[data.type]) {
         _reportSecurityEvent('unknown_message_type', {

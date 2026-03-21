@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v05.70r] — 2026-03-21 04:51:56 PM EST
+
+> **Prompt:** "yes"
+
+### Security
+- Replaced broken iframe guard (`window.parent === window.top`) with postMessage handshake — the old guard never fired because GAS wraps content in multiple nested iframes, making `window.parent` always point to Google's wrapper rather than `window.top`
+- Added postMessage handshake guard to portal.gs (previously had no iframe guard at all)
+- Direct URL access to authenticated GAS apps now shows "Access denied" after 2-second timeout instead of the full authenticated UI
+
+#### `testauth1.html` — v02.58w
+##### Security
+- Added frame handshake responder to verify GAS iframe is embedded in the correct parent page
+
+#### `testauth1.gs` — v01.88g
+##### Security
+- Replaced broken iframe guard with postMessage handshake that verifies embedding via challenge-response with the parent page
+
+#### `portal.html` — v01.15w
+##### Security
+- Added frame handshake responder to verify GAS iframe is embedded in the correct parent page
+
+#### `portal.gs` — v01.16g
+##### Security
+- Added postMessage handshake guard — portal previously had no protection against direct URL access
 
 ## [v05.69r] — 2026-03-21 03:31:22 PM EST
 

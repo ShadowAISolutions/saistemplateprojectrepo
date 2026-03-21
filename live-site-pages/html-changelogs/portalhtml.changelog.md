@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 14/100`
+`Sections: 15/100`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-03-21 04:51:56 PM EST — v05.70r
+
+### Security
+- Improved protection against unauthorized direct access to the portal
 
 ## [v01.14w] — 2026-03-20 10:05:19 PM EST — v05.54r
 

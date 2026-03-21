@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.16g] — 2026-03-21 04:51:56 PM EST — v05.70r
+
+### Security
+- Added protection against unauthorized direct access to the portal backend
 
 ## [v01.15g] — 2026-03-20 11:02:26 PM EST — v05.56r
 
