@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 42/50`
+`Sections: 43/50`
 
 ## [Unreleased]
+
+## [v01.85g] — 2026-03-21 03:06:45 PM EST — v05.66r
+
+### Changed
+- Token exchange now provides a ready-to-use access token, eliminating an extra server round-trip during sign-in
 
 ## [v01.84g] — 2026-03-21 02:51:28 PM EST — v05.65r
 

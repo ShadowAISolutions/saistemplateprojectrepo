@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v05.66r] — 2026-03-21 03:06:45 PM EST
+
+> **Prompt:** "nope, your change causes all of this and we are stuck in signing in page"
+
+### Fixed
+- Fixed sign-in flow stuck on "Signing in..." — the two-step nonce round-trip during OAuth token exchange introduced timing/state issues between `gas-session-created` and `gas-auth-ok`
+- Generate page nonce server-side inside `exchangeTokenForSession()` and include it in the `gas-session-created` response — eliminates the intermediate `?action=getNonce` iframe navigation during sign-in
+
+#### `testauth1.html` — v02.54w
+##### Fixed
+- Sign-in no longer gets stuck on "Signing in..." screen — uses server-provided nonce directly
+
+#### `testauth1.gs` — v01.85g
+##### Changed
+- Token exchange now returns a pre-generated page nonce alongside the session token
 
 ## [v05.65r] — 2026-03-21 02:51:28 PM EST
 

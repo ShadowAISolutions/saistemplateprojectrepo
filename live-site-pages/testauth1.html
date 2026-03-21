@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.53w">
+  <meta name="build-version" content="v02.54w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1714,9 +1714,18 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
           // Normal sign-in flow (OAuth) — reload iframe via one-time nonce
           // so the app UI loads (first load was the token exchange page).
-          // The nonce path serves the app and sends gas-auth-ok (with messageKey)
-          // directly. Key import is handled there.
-          loadIframeViaNonce(data.sessionToken);
+          // The server generated the nonce alongside the session (inside
+          // exchangeTokenForSession), so we can load directly — no extra
+          // getNonce round-trip needed.
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl && data.pageNonce) {
+            _expectingSession = true;
+            gasApp.src = baseUrl + '?page_nonce=' + encodeURIComponent(data.pageNonce);
+          } else {
+            // Fallback: two-step nonce flow (if pageNonce not in response)
+            loadIframeViaNonce(data.sessionToken);
+          }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
           var authError = data.error || '';

@@ -1,4 +1,4 @@
-var VERSION = "v01.84g";
+var VERSION = "v01.85g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1212,9 +1212,15 @@ function exchangeTokenForSession(accessToken) {
     { sessionId: sessionToken.substring(0, 8) + '...', role: accessResult.role,
       isEmergencyAccess: accessResult.isEmergencyAccess });
 
+  // Generate a page nonce for the initial iframe load — eliminates the extra
+  // getNonce round-trip during sign-in. The nonce is one-time-use and expires in 60s.
+  var pageNonce = Utilities.getUuid();
+  cache.put('page_nonce_' + pageNonce, sessionToken, 60);
+
   return {
     success: true,
     sessionToken: sessionToken,
+    pageNonce: pageNonce,
     email: userInfo.email,
     displayName: userInfo.displayName,
     absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0,
@@ -2142,6 +2148,7 @@ function doGet(e) {
             error: result.error || "",
             absoluteTimeout: result.absoluteTimeout || 0,
             messageKey: result.messageKey || "",
+            pageNonce: result.pageNonce || "",
             role: result.role || "",
             permissions: result.permissions || []
           });
@@ -2173,6 +2180,7 @@ function doGet(e) {
       + '        error: result.error || "",'
       + '        absoluteTimeout: result.absoluteTimeout || 0,'
       + '        messageKey: result.messageKey || "",'
+      + '        pageNonce: result.pageNonce || "",'
       + '        role: result.role || "",'
       + '        permissions: result.permissions || [],'
       + '        nonce: nonce'
