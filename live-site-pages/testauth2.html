@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1177,6 +1177,7 @@
 
     var _KNOWN_GAS_MESSAGES = {
       'gas-handshake-challenge': true,  // Page nonce handshake: GAS challenges parent for session token
+      'gas-handshake-complete': true,   // Page nonce handshake: GAS generated nonce, parent must reload iframe
       'gas-ready-for-token': true,
       'gas-session-created': true,
       'gas-needs-auth': true,
@@ -1415,7 +1416,7 @@
       }
       // For all subsequent messages, verify the signature if we have a key (async — HMAC-SHA256)
       // Phase 7: ready signals from action listener pages are exempt — they have no signing key
-      var _SIG_EXEMPT = { 'gas-handshake-challenge': true,
+      var _SIG_EXEMPT = { 'gas-handshake-challenge': true, 'gas-handshake-complete': true,
         'gas-session-created': true, 'gas-needs-auth': true,
         'gas-heartbeat-ready': true, 'gas-signout-ready': true, 'gas-security-event-ready': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
@@ -1454,6 +1455,16 @@
             type: 'heartbeat-token',
             token: session.token
           }, event.origin);
+        }
+        return;
+      }
+
+      // GAS handshake complete — GAS generated a one-time nonce, reload iframe with it.
+      if (data.type === 'gas-handshake-complete' && data.nonce) {
+        var gasApp = document.getElementById('gas-app');
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+        if (gasApp && baseUrl) {
+          gasApp.src = baseUrl + '?page_nonce=' + encodeURIComponent(data.nonce);
         }
         return;
       }

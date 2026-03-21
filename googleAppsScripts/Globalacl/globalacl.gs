@@ -1,4 +1,4 @@
-var VERSION = "v01.19g";
+var VERSION = "v01.20g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3051,7 +3051,8 @@ function doGet(e) {
       + '  google.script.run'
       + '    .withSuccessHandler(function(r) {'
       + '      if (r.success && r.nonce) {'
-      + '        window.location.replace(window.location.pathname + "?page_nonce=" + encodeURIComponent(r.nonce));'
+      + '        window.top.postMessage({type:"gas-handshake-complete",'
+      + '          nonce:r.nonce}, PARENT_ORIGIN);'
       + '      } else {'
       + '        window.top.postMessage({type:"gas-needs-auth",'
       + '          authStatus:r.error || "not_signed_in",email:"",version:"' + escapeJs(VERSION) + '",evictionReason:""'

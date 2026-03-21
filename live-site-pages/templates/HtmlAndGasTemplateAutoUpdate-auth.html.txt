@@ -1233,6 +1233,7 @@
 
     var _KNOWN_GAS_MESSAGES = {
       'gas-handshake-challenge': true,  // Page nonce handshake: GAS challenges parent for session token
+      'gas-handshake-complete': true,   // Page nonce handshake: GAS generated nonce, parent must reload iframe
       'gas-ready-for-token': true,
       'gas-session-created': true,
       'gas-needs-auth': true,
@@ -1480,7 +1481,7 @@
       // may arrive when the signing key is unavailable (session invalidated, pre-auth,
       // or action listener pages that have no signing key). Security impact is minimal —
       // forging these would at most log the user out (DoS), and origin validation still applies.
-      var _SIG_EXEMPT = { 'gas-handshake-challenge': true,
+      var _SIG_EXEMPT = { 'gas-handshake-challenge': true, 'gas-handshake-complete': true,
         'gas-session-created': true, 'gas-needs-auth': true,
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
@@ -1562,6 +1563,19 @@
       if (data.type === 'gas-admin-signout-error') {
         document.getElementById('asp-session-list').innerHTML =
           '<div class="asp-status" style="color:#ef5350">Sign-out failed: ' + _escHtml(String(data.error || '')) + '</div>';
+        return;
+      }
+
+      // GAS handshake complete — GAS generated a one-time nonce, reload iframe with it.
+      // The sandbox can't navigate itself to /exec (different origin), so the parent
+      // must set gasApp.src to the nonce URL. This triggers a new doGet() that validates
+      // the nonce and serves the authenticated app content.
+      if (data.type === 'gas-handshake-complete' && data.nonce) {
+        var gasApp = document.getElementById('gas-app');
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+        if (gasApp && baseUrl) {
+          gasApp.src = baseUrl + '?page_nonce=' + encodeURIComponent(data.nonce);
+        }
         return;
       }
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.81g";
+var VERSION = "v01.82g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2217,8 +2217,11 @@ function doGet(e) {
       + '  google.script.run'
       + '    .withSuccessHandler(function(r) {'
       + '      if (r.success && r.nonce) {'
-      // Navigate to the nonce URL — doGet will validate and serve content
-      + '        window.location.replace(window.location.pathname + "?page_nonce=" + encodeURIComponent(r.nonce));'
+      // Tell the parent to reload the iframe with the nonce URL.
+      // The sandbox can't navigate itself to /exec (wrong origin),
+      // so the parent must set gasApp.src instead.
+      + '        window.top.postMessage({type:"gas-handshake-complete",'
+      + '          nonce:r.nonce}, PARENT_ORIGIN);'
       + '      } else {'
       + '        window.top.postMessage({type:"gas-needs-auth",'
       + '          authStatus:r.error || "not_signed_in",email:"",version:"' + escapeJs(VERSION) + '",evictionReason:""'

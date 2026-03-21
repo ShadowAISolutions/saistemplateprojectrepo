@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v05.63r] — 2026-03-21 12:45:23 PM EST
+
+> **Prompt:** "unfortunately now we are stuck in the setting up your session screen"
+
+### Fixed
+- Fixed handshake page nonce redirect — the GAS sandbox can't navigate itself to `/exec` (different origin), so the handshake now posts `gas-handshake-complete` with the nonce to the parent page, which sets `gasApp.src` to the nonce URL
+- Added `gas-handshake-complete` message type to allowed message whitelist and signature exempt list
+
+#### `testauth1.html` — v02.51w
+##### Fixed
+- Session setup now completes properly after sign-in
+
+#### `testauth2.html` — v01.06w
+##### Fixed
+- Session setup now completes properly after sign-in
+
+#### `globalacl.html` — v01.08w
+##### Fixed
+- Session setup now completes properly after sign-in
+
+#### `testauth1.gs` — v01.82g
+##### Fixed
+- Handshake page now sends nonce to parent for iframe reload instead of navigating within the sandbox
+
+#### `globalacl.gs` — v01.20g
+##### Fixed
+- Handshake page now sends nonce to parent for iframe reload instead of navigating within the sandbox
 
 ## [v05.62r] — 2026-03-21 12:31:09 PM EST
 
