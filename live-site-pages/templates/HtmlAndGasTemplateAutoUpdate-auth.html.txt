@@ -820,10 +820,12 @@
           .then(function(res) { return res.text(); })
           .then(function(v) {
             var fetched = v.trim();
+            var gParts = fetched.split('|');
+            var gasVer = (gParts.length >= 2 && gParts[1]) ? gParts[1] : fetched;
             if (!currentGasVersion) {
               currentGasVersion = fetched;
               if (pill) { pill.style.display = 'flex'; }
-              if (pillLabel) pillLabel.textContent = 'GAS ' + fetched;
+              if (pillLabel) pillLabel.textContent = 'GAS ' + gasVer;
             } else if (fetched !== currentGasVersion) {
               // GAS version changed on GitHub — reload immediately
               if (dot) dot.className = 'dot found';
@@ -860,7 +862,9 @@
         })
         .then(function(v) {
           currentGasVersion = v.trim();
-          if (pillLabel) pillLabel.textContent = 'GAS ' + currentGasVersion;
+          var gInitParts = currentGasVersion.split('|');
+          var gasInitVer = (gInitParts.length >= 2 && gInitParts[1]) ? gInitParts[1] : currentGasVersion;
+          if (pillLabel) pillLabel.textContent = 'GAS ' + gasInitVer;
           if (pill) pill.style.display = 'flex';
           startCountdown(GAS_INITIAL_DELAY);
           setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);

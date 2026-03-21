@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 15/100`
+`Sections: 16/100`
 
 ## [Unreleased]
+
+## [v01.16w] — 2026-03-21 06:07:27 PM EST — v05.76r
+
+### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
 
 ## [v01.15w] — 2026-03-21 04:51:56 PM EST — v05.70r
 

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.15w">
+  <meta name="build-version" content="v01.16w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Portal Title</title>
 <!-- ══════════════ -->
@@ -580,10 +580,12 @@
           .then(function(res) { return res.text(); })
           .then(function(v) {
             var fetched = v.trim();
+            var gParts = fetched.split('|');
+            var gasVer = (gParts.length >= 2 && gParts[1]) ? gParts[1] : fetched;
             if (!currentGasVersion) {
               currentGasVersion = fetched;
               if (pill) { pill.style.display = 'flex'; }
-              if (pillLabel) pillLabel.textContent = 'GAS ' + fetched;
+              if (pillLabel) pillLabel.textContent = 'GAS ' + gasVer;
             } else if (fetched !== currentGasVersion) {
               // GAS version changed on GitHub — reload immediately
               if (dot) dot.className = 'dot found';
@@ -619,7 +621,9 @@
         })
         .then(function(v) {
           currentGasVersion = v.trim();
-          if (pillLabel) pillLabel.textContent = 'GAS ' + currentGasVersion;
+          var gInitParts = currentGasVersion.split('|');
+          var gasInitVer = (gInitParts.length >= 2 && gInitParts[1]) ? gInitParts[1] : currentGasVersion;
+          if (pillLabel) pillLabel.textContent = 'GAS ' + gasInitVer;
           if (pill) pill.style.display = 'flex';
           startCountdown(GAS_INITIAL_DELAY);
           setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);

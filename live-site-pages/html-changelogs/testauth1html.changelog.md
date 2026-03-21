@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v02.60w] — 2026-03-21 06:07:27 PM EST — v05.76r
+
+### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
 
 ## [v02.59w] — 2026-03-21 05:21:32 PM EST — v05.74r
 
@@ -268,21 +273,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Changed
 - Security tests updated to validate the new cryptographic verification
-
-## [v02.12w] — 2026-03-16 03:19:06 PM EST — v04.31r
-
-### Added
-- IP address validation before logging — malformed values are now rejected instead of stored as-is
-
-## [v02.11w] — 2026-03-16 02:54:36 PM EST — v04.28r
-
-### Changed
-- "Signing in…" now shows a spinning ring, "Reconnecting…" now shows pulsing dots — visually distinct animations for each state
-
-## [v02.10w] — 2026-03-16 02:50:53 PM EST — v04.27r
-
-### Added
-- Spinning loading indicator on the "Signing in…" and "Reconnecting…" screens
-
 
 Developed by: ShadowAISolutions

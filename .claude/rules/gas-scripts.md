@@ -15,7 +15,7 @@ paths:
 
 - The `VERSION` variable is near the top of each `.gs` file (look for `var VERSION = "..."`)
 - Format includes a `g` suffix with a `v` prefix: e.g. `"v01.13g"` → `"v01.14g"`
-- Each GAS project also has a `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` that mirrors the `VERSION` variable value (e.g. `v01.00g`). This file is bumped alongside `VERSION` by Pre-Commit #1. There is no copy in `googleAppsScripts/` — the `live-site-pages/gs-versions/` file is the single location, polled by the HTML layer for GAS version display
+- Each GAS project also has a `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` that stores the version in pipe-delimited format (e.g. `|v01.00g|`), matching the `html.version.txt` format. The `.gs` `VERSION` variable uses no pipes (e.g. `"v01.00g"`) — when writing to `gs.version.txt`, wrap the version in pipes. This file is bumped alongside `VERSION` by Pre-Commit #1. There is no copy in `googleAppsScripts/` — the `live-site-pages/gs-versions/` file is the single location, polled by the HTML layer for GAS version display
 - Do NOT bump VERSION if the commit doesn't touch the `.gs` file
 
 ### GAS Projects

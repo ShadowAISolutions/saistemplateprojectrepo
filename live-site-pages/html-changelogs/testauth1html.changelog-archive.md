@@ -8,6 +8,21 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.12w] — 2026-03-16 03:19:06 PM EST — v04.31r — [merged]
+
+### Added
+- IP address validation before logging — malformed values are now rejected instead of stored as-is
+
+## [v02.11w] — 2026-03-16 02:54:36 PM EST — v04.28r — [merged]
+
+### Changed
+- "Signing in…" now shows a spinning ring, "Reconnecting…" now shows pulsing dots — visually distinct animations for each state
+
+## [v02.10w] — 2026-03-16 02:50:53 PM EST — v04.27r — [merged]
+
+### Added
+- Spinning loading indicator on the "Signing in…" and "Reconnecting…" screens
+
 ## [v02.09w] — 2026-03-16 02:40:38 PM EST — v04.26r — [merged]
 
 ### Changed

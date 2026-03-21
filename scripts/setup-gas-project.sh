@@ -382,7 +382,7 @@ ok "Created $GAS_CONFIG"
 # ── Phase 4: Create Version Files ──
 info "Phase 4: Creating version files..."
 echo -n '|v01.00w|' > "$HTML_VERSION"
-echo -n 'v01.00g' > "$GAS_VERSION"
+echo -n '|v01.00g|' > "$GAS_VERSION"
 ok "Created $HTML_VERSION"
 ok "Created $GAS_VERSION"
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.09w">
+  <meta name="build-version" content="v01.10w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -903,10 +903,12 @@
           .then(function(res) { return res.text(); })
           .then(function(v) {
             var fetched = v.trim();
+            var gParts = fetched.split('|');
+            var gasVer = (gParts.length >= 2 && gParts[1]) ? gParts[1] : fetched;
             if (!currentGasVersion) {
               currentGasVersion = fetched;
               if (pill) { pill.style.display = 'flex'; }
-              if (pillLabel) pillLabel.textContent = 'GAS ' + fetched;
+              if (pillLabel) pillLabel.textContent = 'GAS ' + gasVer;
             } else if (fetched !== currentGasVersion) {
               // GAS version changed on GitHub — reload immediately
               if (dot) dot.className = 'dot found';
@@ -943,7 +945,9 @@
         })
         .then(function(v) {
           currentGasVersion = v.trim();
-          if (pillLabel) pillLabel.textContent = 'GAS ' + currentGasVersion;
+          var gInitParts = currentGasVersion.split('|');
+          var gasInitVer = (gInitParts.length >= 2 && gInitParts[1]) ? gInitParts[1] : currentGasVersion;
+          if (pillLabel) pillLabel.textContent = 'GAS ' + gasInitVer;
           if (pill) pill.style.display = 'flex';
           startCountdown(GAS_INITIAL_DELAY);
           setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);

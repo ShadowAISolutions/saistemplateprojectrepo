@@ -3,9 +3,47 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v05.76r] — 2026-03-21 06:07:27 PM EST
+
+> **Prompt:** "noticing that the text files for html and gas have different formatting for version number i.e. v01.90g and |v02.59w| . make the format in every project and template like the html format, i.e. |v01.90g|"
+
+### Changed
+- Standardized GAS version file format from plain `v01.90g` to pipe-delimited `|v01.90g|`, matching the HTML version file format (`|v02.59w|`)
+- Updated GAS version polling code in all HTML pages and templates to parse pipe-delimited format, displaying clean version strings without pipes in the UI pill
+- Updated setup-gas-project.sh to create new GAS version files with pipe-delimited format
+- Updated CLAUDE.md Pre-Commit #1, gas-scripts.md, html-pages.md, and init-scripts.md rules to document the new pipe-delimited GAS version format
+
+#### `index.html` — v01.08w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+#### `testenvironment.html` — v01.08w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+#### `gas-project-creator.html` — v01.25w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+#### `testauth1.html` — v02.60w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+#### `testauth2.html` — v01.08w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+#### `portal.html` — v01.16w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+#### `globalacl.html` — v01.10w
+##### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
 
 ## [v05.75r] — 2026-03-21 05:47:28 PM EST
 
