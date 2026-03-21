@@ -8,6 +8,93 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.42g] — 2026-03-15 10:29:39 PM EST — v04.01r
+
+### Security
+- Session audit log sheet is now protected against accidental edits, matching the data audit log's protection
+
+## [v01.41g] — 2026-03-15 10:24:53 PM EST — v04.00r
+
+### Changed
+- Security audit log tab renamed from "AuditLog" to "SessionAuditLog" for clearer distinction from the data audit log
+
+## [v01.40g] — 2026-03-15 10:21:09 PM EST — v03.99r
+
+### Added
+- Each saved note now gets a unique identifier in the security audit trail for individual record tracing
+
+## [v01.39g] — 2026-03-15 10:15:14 PM EST — v03.98r
+
+### Security
+- Session identifiers are now fully masked in all audit log columns to prevent token theft from shared spreadsheets
+
+## [v01.38g] — 2026-03-15 10:07:11 PM EST — v03.97r
+
+### Fixed
+- Your IP address now reliably appears in security audit records (switched to direct fetch method)
+
+## [v01.37g] — 2026-03-15 09:59:28 PM EST — v03.96r
+
+### Fixed
+- Your IP address now correctly appears in security audit records (was previously blank due to a sandbox restriction)
+
+## [v01.36g] — 2026-03-15 09:38:50 PM EST — v03.95r
+
+### Added
+- IP logging: your public IP address is now captured and included in security audit records for post-incident investigation
+- Data-level audit logging: every save action now creates a detailed audit record (who, what, when) in a dedicated security audit sheet
+- New security settings for IP logging and per-operation audit logging
+
+## [v01.35g] — 2026-03-15 08:44:53 PM EST — v03.93r
+
+### Added
+- Stricter sign-in protection: repeated failed sign-in attempts now trigger escalating lockout periods (HIPAA mode) instead of a single flat limit
+- New security settings for content clearing on session expiry and escalating lockout
+
+## [v01.34g] — 2026-03-15 06:46:09 PM EST — v03.83r
+
+### Added
+- Save Note now validates your session on the server before saving — if your session expired or was ended on another device, the save is blocked and you're prompted to sign in again
+- New security setting to require session checks before every data action (enabled by default in HIPAA mode)
+
+### Changed
+- Save Note button now performs a real server-side save instead of a client-side simulation
+
+## [v01.33g] — 2026-03-15 06:35:54 PM EST — v03.82r
+
+### Changed
+- Sign-in errors now include specific error codes (like missing security key) so the page can show you exactly what to fix instead of a generic "Access denied"
+
+## [v01.32g] — 2026-03-15 06:26:01 PM EST — v03.81r
+
+### Changed
+- Session security now fails safely when the integrity key is not configured — sign-in is blocked with a clear setup message instead of silently skipping protection
+- Domain restriction now detects when no allowed domains are configured — shows a configuration error instead of silently rejecting all users
+
+## [v01.31g] — 2026-03-15 03:36:50 PM EST — v03.75r
+
+### Added
+- "Save Note" test button for simulating EMR data entry — lets you verify that session checks trigger before data actions
+- Interacting with the app now notifies the host page, which triggers an immediate session validity check
+
+## [v01.30g] — 2026-03-15 12:35:33 PM EST — v03.71r
+
+### Added
+- Cross-device session enforcement toggle: administrators can now enable or disable detection of sessions started on other devices
+
+## [v01.29g] — 2026-03-15 12:31:39 PM EST — v03.70r
+
+### Added
+- Session expiration notifications now include a reason explaining why the session ended
+
+### Security
+- All session expiration notifications are now cryptographically signed to prevent tampering
+
+## [v01.28g] — 2026-03-15 12:23:04 PM EST — v03.69r
+
+### Added
+- Cross-device session detection groundwork: when signing in on a new device, previous sessions now record eviction metadata for future notification support
+
 ## [v01.27g] — 2026-03-14 09:18:31 PM EST — v03.55r
 
 ### Fixed

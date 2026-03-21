@@ -79,6 +79,22 @@ function getAppData() {
   return data;
 }
 
+/**
+ * Ensure CACHE_EPOCH exists in Script Properties.
+ * Called after a successful deploy — generates default if missing.
+ * Existing value is never overwritten.
+ */
+function ensureScriptProperties_() {
+  try {
+    var props = PropertiesService.getScriptProperties();
+    if (!props.getProperty('CACHE_EPOCH')) {
+      props.setProperty('CACHE_EPOCH', '1');
+    }
+  } catch (e) {
+    Logger.log('ensureScriptProperties_ error: ' + e.message);
+  }
+}
+
 function pullAndDeployFromGitHub() {
   var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
 
@@ -165,6 +181,9 @@ function pullAndDeployFromGitHub() {
   } catch(cleanupErr) {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
+
+  // Auto-initialize required Script Properties on first deploy
+  ensureScriptProperties_();
 
   return "Updated to " + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }

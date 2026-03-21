@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15g] — 2026-03-20 11:02:26 PM EST — v05.56r
+
+### Added
+- Security keys now auto-generate on first deploy — no manual setup needed
 
 ## [v01.14g] — 2026-03-20 10:38:42 PM EST — v05.55r
 

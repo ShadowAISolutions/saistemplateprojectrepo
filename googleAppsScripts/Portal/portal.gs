@@ -1,4 +1,4 @@
-var VERSION = "v01.14g";
+var VERSION = "v01.15g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -334,6 +334,30 @@ function getAppData() {
   return data;
 }
 
+/**
+ * Ensure HMAC_SECRET and CACHE_EPOCH exist in Script Properties.
+ * Called after a successful deploy — generates defaults if missing.
+ * Existing values are never overwritten.
+ */
+function ensureScriptProperties_() {
+  try {
+    var props = PropertiesService.getScriptProperties();
+    if (!props.getProperty('CACHE_EPOCH')) {
+      props.setProperty('CACHE_EPOCH', '1');
+    }
+    if (!props.getProperty('HMAC_SECRET')) {
+      var chars = '0123456789abcdef';
+      var secret = '';
+      for (var i = 0; i < 64; i++) {
+        secret += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      props.setProperty('HMAC_SECRET', secret);
+    }
+  } catch (e) {
+    Logger.log('ensureScriptProperties_ error: ' + e.message);
+  }
+}
+
 function pullAndDeployFromGitHub() {
   var GITHUB_TOKEN = PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN");
 
@@ -420,6 +444,9 @@ function pullAndDeployFromGitHub() {
   } catch(cleanupErr) {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
+
+  // Auto-initialize required Script Properties on first deploy
+  ensureScriptProperties_();
 
   return "Updated to " + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }

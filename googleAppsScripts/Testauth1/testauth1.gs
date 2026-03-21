@@ -1,4 +1,4 @@
-var VERSION = "v01.77g";
+var VERSION = "v01.78g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -740,6 +740,30 @@ function getAppData() {
   return data;
 }
 
+/**
+ * Ensure HMAC_SECRET and CACHE_EPOCH exist in Script Properties.
+ * Called after a successful deploy — generates defaults if missing.
+ * Existing values are never overwritten.
+ */
+function ensureScriptProperties_() {
+  try {
+    var props = PropertiesService.getScriptProperties();
+    if (!props.getProperty('CACHE_EPOCH')) {
+      props.setProperty('CACHE_EPOCH', '1');
+    }
+    if (!props.getProperty('HMAC_SECRET')) {
+      var chars = '0123456789abcdef';
+      var secret = '';
+      for (var i = 0; i < 64; i++) {
+        secret += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      props.setProperty('HMAC_SECRET', secret);
+    }
+  } catch (e) {
+    Logger.log('ensureScriptProperties_ error: ' + e.message);
+  }
+}
+
 function pullAndDeployFromGitHub() {
   // Audit: Log every deploy trigger for security monitoring
   var auditCache = getEpochCache();
@@ -839,6 +863,9 @@ function pullAndDeployFromGitHub() {
   } catch(cleanupErr) {
     cleanupInfo = " | Version count error: " + cleanupErr.message;
   }
+
+  // Auto-initialize required Script Properties on first deploy
+  ensureScriptProperties_();
 
   return "Updated to " + pulledVersion + " (deployment " + newVersion + ")" + cleanupInfo;
 }
@@ -969,7 +996,8 @@ function generateSessionHmac(sessionData) {
     auditLog('security_alert', sessionData.email || 'system', 'hmac_secret_missing',
       { property: AUTH_CONFIG.HMAC_SECRET_PROPERTY });
     throw new Error('HMAC integrity is enabled but HMAC_SECRET is not configured in Script Properties. '
-      + 'Set the secret via: GAS Editor → Project Settings → Script Properties → Add: '
+      + 'This should auto-generate on first deploy via pullAndDeployFromGitHub(). '
+      + 'If missing, verify deployment completed successfully or set manually: GAS Editor → Project Settings → Script Properties → Add: '
       + AUTH_CONFIG.HMAC_SECRET_PROPERTY + ' = <random-64-char-hex-string>');
   }
   var payload = sessionData.email

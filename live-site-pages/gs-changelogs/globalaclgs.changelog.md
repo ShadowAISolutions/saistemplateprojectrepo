@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.18g] — 2026-03-20 11:02:26 PM EST — v05.56r
+
+### Added
+- Security keys now auto-generate on first deploy — no manual setup needed
+
+### Changed
+- Updated setup error message to reflect auto-generation
 
 ## [v01.17g] — 2026-03-20 10:38:42 PM EST — v05.55r
 

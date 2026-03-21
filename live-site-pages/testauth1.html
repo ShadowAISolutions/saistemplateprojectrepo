@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.47w">
+  <meta name="build-version" content="v02.48w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1654,7 +1654,7 @@
           var authMsg = 'Access denied. Contact your administrator.';
           if (authError === 'hmac_secret_missing') {
             authMsg = 'Setup required: HMAC_SECRET is not configured in Script Properties. '
-              + 'Open GAS Editor → Project Settings → Script Properties → Add: HMAC_SECRET = <random-64-char-hex-string> (run: openssl rand -hex 32). Then redeploy.';
+              + 'This should auto-generate on first deploy. Verify deployment completed successfully, or set manually: GAS Editor → Project Settings → Script Properties → Add: HMAC_SECRET = <random-64-char-hex-string>.';
           } else if (authError === 'domain_not_configured') {
             authMsg = 'Setup required: Domain restriction is enabled but ALLOWED_DOMAINS is empty. '
               + 'Set ALLOWED_DOMAINS in the GAS preset config or disable ENABLE_DOMAIN_RESTRICTION via PROJECT_OVERRIDES.';

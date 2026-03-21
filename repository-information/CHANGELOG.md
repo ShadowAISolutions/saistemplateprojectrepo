@@ -3,9 +3,56 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v05.56r] — 2026-03-20 11:02:26 PM EST
+
+> **Prompt:** "yes do that, and if we dont need it from the gas-project-creator anymore then you can remove those from that also. to clarify, when you say auto generate on first run, what action constitutes as a first run?"
+
+### Added
+- Auto-initialization of HMAC_SECRET and CACHE_EPOCH in Script Properties via `ensureScriptProperties_()` — called at the end of `pullAndDeployFromGitHub()` on first deploy, eliminating manual Script Properties setup
+- CACHE_EPOCH-only auto-initialization for no-auth templates (no HMAC needed)
+
+### Changed
+- Updated HMAC_SECRET error messages in GAS scripts to note auto-generation on deploy and suggest checking deployment status
+- Updated HMAC_SECRET error messages in HTML pages to reflect auto-generation
+- Removed manual HMAC secret generation UI from gas-project-creator (Generate button, input field, Copy button) — no longer needed since HMAC_SECRET auto-generates on first deploy
+- Updated CACHE_EPOCH and HMAC_SECRET descriptions in gas-project-creator to "auto-generated on first deploy"
+
+#### `testauth1.html` — v02.48w
+##### Changed
+- Updated HMAC setup error message to reflect auto-generation on deploy
+
+#### `testauth2.html` — v01.03w
+##### Changed
+- Updated HMAC setup error message to reflect auto-generation on deploy
+
+#### `globalacl.html` — v01.05w
+##### Changed
+- Updated HMAC setup error message to reflect auto-generation on deploy
+
+#### `gas-project-creator.html` — v01.22w
+##### Changed
+- Removed manual HMAC secret generation UI (Generate button, input field, Copy button)
+- Updated CACHE_EPOCH and HMAC_SECRET property descriptions to "auto-generated on first deploy"
+
+#### `testauth1.gs` — v01.78g
+##### Added
+- `ensureScriptProperties_()` function for auto-initializing HMAC_SECRET and CACHE_EPOCH
+##### Changed
+- Updated HMAC_SECRET error message to note auto-generation on deploy
+
+#### `portal.gs` — v01.15g
+##### Added
+- `ensureScriptProperties_()` function for auto-initializing HMAC_SECRET and CACHE_EPOCH
+
+#### `globalacl.gs` — v01.18g
+##### Added
+- `ensureScriptProperties_()` function for auto-initializing HMAC_SECRET and CACHE_EPOCH
+##### Changed
+- Updated HMAC_SECRET error message to note auto-generation on deploy
 
 ## [v05.55r] — 2026-03-20 10:38:42 PM EST
 

@@ -1638,7 +1638,7 @@
           var authMsg = 'Access denied. Contact your administrator.';
           if (authError === 'hmac_secret_missing') {
             authMsg = 'Setup required: HMAC_SECRET is not configured in Script Properties. '
-              + 'Open GAS Editor → Project Settings → Script Properties → Add: HMAC_SECRET = <random-64-char-hex-string> (run: openssl rand -hex 32). Then redeploy.';
+              + 'This should auto-generate on first deploy. Verify deployment completed successfully, or set manually: GAS Editor → Project Settings → Script Properties → Add: HMAC_SECRET = <random-64-char-hex-string>.';
           } else if (authError === 'domain_not_configured') {
             authMsg = 'Setup required: Domain restriction is enabled but ALLOWED_DOMAINS is empty. '
               + 'Set ALLOWED_DOMAINS in the GAS preset config or disable ENABLE_DOMAIN_RESTRICTION via PROJECT_OVERRIDES.';

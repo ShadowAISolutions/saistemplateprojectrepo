@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.48w] — 2026-03-20 11:02:26 PM EST — v05.56r
+
+### Changed
+- Updated setup error message to reflect auto-generation of security keys on first deploy
 
 ## [v02.47w] — 2026-03-20 10:05:19 PM EST — v05.54r
 

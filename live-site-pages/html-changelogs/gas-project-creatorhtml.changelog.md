@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.22w] — 2026-03-20 11:02:26 PM EST — v05.56r
+
+### Changed
+- Removed manual secret generation tool — security keys now auto-generate on first deploy
+- Updated property descriptions to indicate auto-generation
 
 ## [v01.21w] — 2026-03-20 10:34:16 AM EST — v05.23r
 
