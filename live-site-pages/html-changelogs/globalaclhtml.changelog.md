@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
 
 ## [Unreleased]
+
+## [v01.09w] — 2026-03-21 01:01:38 PM EST — v05.64r
+
+### Fixed
+- Sign-in flow restored to working state
 
 ## [v01.08w] — 2026-03-21 12:45:23 PM EST — v05.63r
 

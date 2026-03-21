@@ -1,4 +1,4 @@
-var VERSION = "v01.82g";
+var VERSION = "v01.83g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2184,65 +2184,11 @@ function doGet(e) {
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {
-    // No valid session — serve the handshake page.
-    // The handshake page challenges the parent via postMessage. If no parent
-    // responds (direct browser access), nothing loads — the /exec URL is useless.
-    // If the parent responds with a valid session token, the handshake page
-    // generates a one-time nonce and redirects to ?page_nonce=NONCE.
     var evReason = session.evictionReason || '';
-    var handshakeHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
-      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      + 'var _challenged = false;'
-      // Challenge the parent — ask for session token via postMessage
-      + 'window.top.postMessage({type:"gas-handshake-challenge",'
-      + '  authStatus:"' + escapeJs(session.status) + '",'
-      + '  email:"' + escapeJs(session.email || '') + '",'
-      + '  version:"' + escapeJs(VERSION) + '",'
-      + '  evictionReason:"' + escapeJs(evReason) + '"'
-      + '}, PARENT_ORIGIN);'
-      // Listen for handshake response with session token
-      + 'window.addEventListener("message", function(evt) {'
-      + '  if (evt.origin !== PARENT_ORIGIN) return;'
-      + '  if (!evt.data || evt.data.type !== "gas-handshake-response") return;'
-      + '  if (_challenged) return;'
-      + '  _challenged = true;'
-      + '  var token = evt.data.session || "";'
-      + '  if (!token) {'
-      + '    window.top.postMessage({type:"gas-needs-auth",'
-      + '      authStatus:"not_signed_in",email:"",version:"' + escapeJs(VERSION) + '",evictionReason:""'
-      + '    }, PARENT_ORIGIN);'
-      + '    return;'
-      + '  }'
-      // Generate one-time nonce server-side
-      + '  google.script.run'
-      + '    .withSuccessHandler(function(r) {'
-      + '      if (r.success && r.nonce) {'
-      // Tell the parent to reload the iframe with the nonce URL.
-      // The sandbox can't navigate itself to /exec (wrong origin),
-      // so the parent must set gasApp.src instead.
-      + '        window.top.postMessage({type:"gas-handshake-complete",'
-      + '          nonce:r.nonce}, PARENT_ORIGIN);'
-      + '      } else {'
-      + '        window.top.postMessage({type:"gas-needs-auth",'
-      + '          authStatus:r.error || "not_signed_in",email:"",version:"' + escapeJs(VERSION) + '",evictionReason:""'
-      + '        }, PARENT_ORIGIN);'
-      + '      }'
-      + '    })'
-      + '    .withFailureHandler(function(err) {'
-      + '      window.top.postMessage({type:"gas-needs-auth",'
-      + '        authStatus:"server_error",email:"",version:"' + escapeJs(VERSION) + '",evictionReason:""'
-      + '      }, PARENT_ORIGIN);'
-      + '    })'
-      + '    .generatePageNonce(token);'
-      + '});'
-      // Timeout: if no parent responds in 5 seconds, this is direct access — show nothing
-      + 'setTimeout(function() {'
-      + '  if (!_challenged) {'
-      + '    document.body.innerHTML = "<div style=\\"display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial;color:#666;\\"><p>Access denied. This application must be accessed through its embedding page.</p></div>";'
-      + '  }'
-      + '}, 5000);'
+    var authHtml = '<!DOCTYPE html><html><body><script>'
+      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + escapeJs(session.status) + '",email:"' + escapeJs(session.email || '') + '",version:"' + escapeJs(VERSION) + '",evictionReason:"' + escapeJs(evReason) + '"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
       + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(handshakeHtml)
+    return HtmlService.createHtmlOutput(authHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }

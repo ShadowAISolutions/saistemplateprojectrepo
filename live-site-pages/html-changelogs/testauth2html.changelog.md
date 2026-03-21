@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth2html.changelog-archive.md](testauth2html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-03-21 01:01:38 PM EST — v05.64r
+
+### Fixed
+- Sign-in flow restored to working state
 
 ## [v01.06w] — 2026-03-21 12:45:23 PM EST — v05.63r
 

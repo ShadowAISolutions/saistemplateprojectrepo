@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v05.64r] — 2026-03-21 01:01:38 PM EST
+
+> **Prompt:** "same still suck on setting up your session page"
+
+### Fixed
+- Reverted postMessage handshake flow — GAS sandbox cross-origin constraints prevent reliable multi-step nonce exchange; restored `?session=` URL parameter for iframe loading
+- The iframe guard (`window.parent === window.top`) remains as the primary defense against direct `/exec` access
+
+#### `testauth1.html` — v02.52w
+##### Fixed
+- Sign-in flow restored to working state
+
+#### `testauth2.html` — v01.07w
+##### Fixed
+- Sign-in flow restored to working state
+
+#### `globalacl.html` — v01.09w
+##### Fixed
+- Sign-in flow restored to working state
+
+#### `testauth1.gs` — v01.83g
+##### Fixed
+- Restored simple auth response for unauthorized requests
+
+#### `globalacl.gs` — v01.21g
+##### Fixed
+- Restored simple auth response for unauthorized requests
 
 ## [v05.63r] — 2026-03-21 12:45:23 PM EST
 

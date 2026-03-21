@@ -1144,7 +1144,7 @@
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
-    var _directSessionLoad = false; // true when iframe was loaded directly (Use Here / tab reclaim) — skips the reload in gas-session-created
+    var _directSessionLoad = false; // true when iframe was loaded directly with ?session= (Use Here) — skips the reload in gas-session-created
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
 
     function initGoogleSignIn() {
@@ -1232,8 +1232,6 @@
     // =============================================
 
     var _KNOWN_GAS_MESSAGES = {
-      'gas-handshake-challenge': true,  // Page nonce handshake: GAS challenges parent for session token
-      'gas-handshake-complete': true,   // Page nonce handshake: GAS generated nonce, parent must reload iframe
       'gas-ready-for-token': true,
       'gas-session-created': true,
       'gas-needs-auth': true,
@@ -1481,8 +1479,7 @@
       // may arrive when the signing key is unavailable (session invalidated, pre-auth,
       // or action listener pages that have no signing key). Security impact is minimal —
       // forging these would at most log the user out (DoS), and origin validation still applies.
-      var _SIG_EXEMPT = { 'gas-handshake-challenge': true, 'gas-handshake-complete': true,
-        'gas-session-created': true, 'gas-needs-auth': true,
+      var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
@@ -1566,35 +1563,6 @@
         return;
       }
 
-      // GAS handshake complete — GAS generated a one-time nonce, reload iframe with it.
-      // The sandbox can't navigate itself to /exec (different origin), so the parent
-      // must set gasApp.src to the nonce URL. This triggers a new doGet() that validates
-      // the nonce and serves the authenticated app content.
-      if (data.type === 'gas-handshake-complete' && data.nonce) {
-        var gasApp = document.getElementById('gas-app');
-        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-        if (gasApp && baseUrl) {
-          gasApp.src = baseUrl + '?page_nonce=' + encodeURIComponent(data.nonce);
-        }
-        return;
-      }
-
-      // GAS iframe handshake challenge — GAS is asking for a session token
-      // via postMessage instead of receiving it as a URL parameter.
-      // This ensures the session token NEVER appears in the iframe URL.
-      if (data.type === 'gas-handshake-challenge') {
-        var session = loadSession();
-        // CONSTRAINT: Must use event.source to reach the GAS sandbox frame
-        // (same as gas-ready-for-token — see KNOWN-CONSTRAINTS-AND-FIXES.md Constraint A).
-        if (event.source) {
-          event.source.postMessage({
-            type: 'gas-handshake-response',
-            session: session.token || ''
-          }, '*');  // Constraint: unpredictable GAS sandbox origin requires '*'
-        }
-        return;
-      }
-
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
@@ -1667,15 +1635,15 @@
           // This prevents a forged gas-session-created postMessage from hiding the auth wall
           // before the GAS backend has validated the token.
           _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
-          // Normal sign-in flow (OAuth) — reload iframe to trigger handshake.
-          // The GAS handshake page will challenge the parent for the session token
-          // via postMessage, generate a one-time nonce, and redirect to ?page_nonce=.
-          // The session token never appears in the URL.
+          // Normal sign-in flow (OAuth) — reload iframe with session token
+          // so the app UI loads (first load was the token exchange page).
+          // The ?session path does NOT send gas-session-created — it sends
+          // gas-auth-ok (with messageKey) directly. Key import is handled there.
           var gasApp = document.getElementById('gas-app');
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
-            gasApp.src = baseUrl;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
           }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
@@ -1912,8 +1880,8 @@
         var session = loadSession();
         if (session.token) {
           // Defer showApp until gas-auth-ok confirms the session server-side.
-          // The iframe will trigger the handshake flow — the session token
-          // is exchanged via postMessage, never in the URL.
+          // The iframe will load with the session token and the GAS backend will
+          // validate it — only then does the auth wall come down.
           _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
@@ -1921,7 +1889,7 @@
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
-            gasApp.src = baseUrl;
+            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
           }
         }
       }
@@ -2135,8 +2103,10 @@
         if (gasFrame && session.token) {
           var gasBaseUrl = gasFrame.dataset.baseUrl;
           if (gasBaseUrl) {
-            // Reload iframe — handshake flow will exchange token via postMessage
-            gasFrame.src = gasBaseUrl;
+            var gasUrl = gasBaseUrl + '?session=' + encodeURIComponent(session.token);
+            if (gasFrame.src !== gasUrl) {
+              gasFrame.src = gasUrl;
+            }
           }
         }
       }
@@ -2909,7 +2879,7 @@
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           gasApp.style.visibility = 'hidden';
-          gasApp.src = baseUrl;  // Handshake flow exchanges token via postMessage
+          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {
         // Session was cleared (sign-out happened while this tab was surrendered)
@@ -2929,7 +2899,7 @@
     (function() {
       var session = loadSession();
       if (session.token) {
-        // Resume existing session — load GAS iframe (handshake exchanges token via postMessage)
+        // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
@@ -2939,7 +2909,7 @@
           // silently dropped, leaving the user stuck on "Reconnecting...".
           // _expectingSession is only needed after mid-session iframe navigations
           // (gas-session-created, Use Here) where prior content may still be loaded.
-          gasApp.src = baseUrl;
+          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
         // server-side. Without this, an attacker who injects a forged token into
