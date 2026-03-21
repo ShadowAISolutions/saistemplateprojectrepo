@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v05.61r] — 2026-03-21 11:55:49 AM EST
+
+> **Prompt:** "go with your recommendation, including the extra safety signing out indicator"
+
+### Fixed
+- Fixed sign-out race condition — `showAuthWall()` with DOM clearing was destroying the GAS sign-out iframe before `processSignOut()` could complete server-side session invalidation, leaving sessions alive in CacheService after sign-out
+- Restructured `performSignOut()` to wait for server-side `gas-signed-out` confirmation before calling `showAuthWall()` with DOM clearing
+
+### Added
+- Added "Signing out..." visual blocker overlay — shows immediately on sign-out to block UI interaction while the server-side session invalidation round-trip completes (1-2 seconds)
+- 10-second fallback timeout ensures the auth wall always appears even if the GAS server doesn't respond
+
+#### `testauth1.html` — v02.49w
+##### Fixed
+- Sign-out now properly invalidates server-side sessions before clearing the GAS iframe
+##### Added
+- "Signing out..." overlay with spinner shown during session cleanup
+
+#### `testauth2.html` — v01.04w
+##### Fixed
+- Sign-out now properly invalidates server-side sessions before clearing the GAS iframe
+##### Added
+- "Signing out..." overlay with spinner shown during session cleanup
+
+#### `globalacl.html` — v01.06w
+##### Fixed
+- Sign-out now properly invalidates server-side sessions before clearing the GAS iframe
+##### Added
+- "Signing out..." overlay with spinner shown during session cleanup
 
 ## [v05.60r] — 2026-03-21 11:31:04 AM EST
 
