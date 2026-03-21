@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v05.80r] — 2026-03-21 07:08:43 PM EST
+
+> **Prompt:** "add this feature to the application portal"
+
+### Added
+- Integrated multi-tab project opener into the portal page — floating "Projects" button with expandable panel listing all project pages and "Open All in New Tabs" functionality
+
+#### `portal.html` — v01.18w
+##### Added
+- Floating "Projects" pill button (bottom-left, auth-gated) with expandable panel
+- Panel lists all project pages with individual links and descriptions
+- "Open All in New Tabs" button to bulk-open every project page
+- Popup blocker detection and warning message
+- Click-outside and Escape key dismiss for the panel
 
 ## [v05.79r] — 2026-03-21 06:53:58 PM EST
 

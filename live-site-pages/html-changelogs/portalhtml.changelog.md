@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 17/100`
+`Sections: 18/100`
 
 ## [Unreleased]
+
+## [v01.18w] — 2026-03-21 07:08:43 PM EST — v05.80r
+
+### Added
+- New "Projects" button in bottom-left corner for quick access to all project pages
+- Expandable panel with links to every project page
+- "Open All in New Tabs" button to launch all projects at once
+- Popup blocker warning when tabs are blocked
 
 ## [v01.17w] — 2026-03-21 06:15:12 PM EST — v05.77r
 
