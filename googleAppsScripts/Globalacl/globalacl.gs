@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -364,6 +364,7 @@ function clearAllAccessCache() {
         var data = sheet.getDataRange().getValues();
         var keysToRemove = [];
         for (var r = 1; r < data.length; r++) {
+          if (isMetadataRow(data[r])) continue;
           var email = String(data[r][0]).trim().toLowerCase();
           if (email) {
             keysToRemove.push('access_' + email);
@@ -592,10 +593,30 @@ function adminSignOutUser(sessionToken, targetEmail) {
 // ══════════════
 
 /**
- * Auto-register this project in the "Projects" tab of the Master ACL Spreadsheet.
- * Creates the sheet if it doesn't exist. Runs once per execution (cached flag).
+ * Check if a row in the Access tab is a metadata row (#NAME, #URL, #AUTH).
+ * Metadata rows have '#' as the first character of column A.
+ */
+function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
+
+/**
+ * Ensure the Access tab has the 3 metadata rows (#NAME, #URL, #AUTH) after the header.
+ * If missing, inserts them and shifts existing user data down.
+ */
+function ensureMetadataRows(sheet) {
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2 || String(data[1][0]).trim() !== '#NAME') {
+    sheet.insertRowsAfter(1, 3);
+    sheet.getRange(2, 1).setValue('#NAME');
+    sheet.getRange(3, 1).setValue('#URL');
+    sheet.getRange(4, 1).setValue('#AUTH');
+  }
+}
+
+/**
+ * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
+ * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
+ * Runs once per execution (cached flag).
  * GlobalACL registers as SELF; other projects register with their deployment URL.
- * Schema: Col A = Project Name (TITLE), Col B = Deployment URL, Col C = Auth Enabled, Col D = Project ID (ACL_PAGE_NAME).
  */
 var _selfRegistered = false;
 function registerSelfProject() {
@@ -603,58 +624,52 @@ function registerSelfProject() {
   _selfRegistered = true;
   try {
     var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Projects');
-    if (!sheet) {
-      sheet = ss.insertSheet('Projects');
-      sheet.getRange(1, 1, 1, 4).setValues([['Project Name', 'Deployment URL', 'Auth Enabled', 'Project ID']]);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return;
+
+    ensureMetadataRows(sheet);
+
+    // Find column for this project
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var colIdx = -1;
+    for (var c = 0; c < headers.length; c++) {
+      if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
+        colIdx = c;
+        break;
+      }
     }
-    var data = sheet.getDataRange().getValues();
+
+    // If column doesn't exist, add it
+    if (colIdx === -1) {
+      colIdx = headers.length;
+      sheet.getRange(1, colIdx + 1).setValue(ACL_PAGE_NAME);
+      // Initialize metadata cells for the new column
+      sheet.getRange(2, colIdx + 1).setValue('');
+      sheet.getRange(3, colIdx + 1).setValue('');
+      sheet.getRange(4, colIdx + 1).setValue(false);
+      // Set FALSE checkboxes for all user rows (row 5 onward)
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 4) {
+        var falseValues = [];
+        for (var f = 0; f < lastRow - 4; f++) falseValues.push([false]);
+        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).setValues(falseValues);
+        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).insertCheckboxes();
+      }
+    }
+
     // Determine this project's URL: GlobalACL uses SELF, others use deployment URL
     var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
     var myUrl = isSelfProject ? 'SELF'
       : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
         ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
         : '';
-    if (!myUrl) return; // No valid deployment URL — skip registration
-    // Check if already registered (match by Project ID in col D)
-    for (var r = 1; r < data.length; r++) {
-      var existingId = (data[r].length > 3) ? String(data[r][3]).trim().toLowerCase() : '';
-      if (existingId === ACL_PAGE_NAME.toLowerCase()) {
-        // Already registered — update URL and title if changed
-        if (String(data[r][1]).trim() !== myUrl) {
-          sheet.getRange(r + 1, 2).setValue(myUrl);
-        }
-        if (String(data[r][0]).trim() !== TITLE) {
-          sheet.getRange(r + 1, 1).setValue(TITLE);
-        }
-        return;
-      }
-    }
-    // Not found — register this project
-    sheet.appendRow([TITLE, myUrl, true, ACL_PAGE_NAME]);
-    // Auto-add page column to Access tab if it doesn't exist yet
-    var aclSheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (aclSheet) {
-      var aclHeaders = aclSheet.getRange(1, 1, 1, aclSheet.getLastColumn()).getValues()[0];
-      var colExists = false;
-      for (var c = 0; c < aclHeaders.length; c++) {
-        if (String(aclHeaders[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
-          colExists = true;
-          break;
-        }
-      }
-      if (!colExists) {
-        var nextCol = aclHeaders.length + 1;
-        aclSheet.getRange(1, nextCol).setValue(ACL_PAGE_NAME);
-        var lastRow = aclSheet.getLastRow();
-        if (lastRow > 1) {
-          var falseValues = [];
-          for (var f = 0; f < lastRow - 1; f++) falseValues.push([false]);
-          aclSheet.getRange(2, nextCol, lastRow - 1, 1).setValues(falseValues);
-          aclSheet.getRange(2, nextCol, lastRow - 1, 1).insertCheckboxes();
-        }
-      }
-    }
+    if (!myUrl) return;
+
+    // Write/update metadata rows for this project's column
+    var col = colIdx + 1; // 1-indexed for getRange
+    sheet.getRange(2, col).setValue(TITLE);  // #NAME row
+    sheet.getRange(3, col).setValue(myUrl);  // #URL row
+    sheet.getRange(4, col).setValue(true);   // #AUTH row
   } catch (e) {
     Logger.log('registerSelfProject error: ' + e.message);
   }
@@ -720,9 +735,13 @@ function getCrossProjectSecret() {
 }
 
 /**
- * Read registered projects from the "Projects" tab of the Master ACL Spreadsheet.
- * Expected layout: Row 1 = headers (Project Name, Deployment URL, Auth Enabled, Project ID).
- * Rows 2+ = project data. Projects auto-register via registerSelfProject().
+ * Read registered projects from Access tab metadata rows (#NAME, #URL, #AUTH).
+ * Layout: Row 1 = headers (Email, Role, page1, page2, ...).
+ *         Row 2 = #NAME row (project display names).
+ *         Row 3 = #URL  row (deployment URLs; SELF for the local project).
+ *         Row 4 = #AUTH row (TRUE/FALSE auth enabled).
+ *         Row 5+ = user data.
+ * Page columns start at column C (index 2). Each column header is the projectId.
  * Returns array of { name, url, isSelf, authEnabled, projectId }.
  */
 var _registeredProjects = null;
@@ -731,15 +750,21 @@ function getRegisteredProjects() {
   _registeredProjects = [];
   try {
     var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Projects');
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
     if (!sheet) return _registeredProjects;
-    var data = sheet.getDataRange().getValues();
-    for (var r = 1; r < data.length; r++) {
-      var name = String(data[r][0]).trim();
-      var url = String(data[r][1]).trim();
-      var enabled = data[r][2] === true || String(data[r][2]).toUpperCase() === 'TRUE';
-      var projectId = (data[r].length > 3) ? String(data[r][3]).trim() : '';
-      if (!name || !url) continue;
+    var data = sheet.getRange(1, 1, Math.min(sheet.getLastRow(), 4), sheet.getLastColumn()).getValues();
+    if (data.length < 4) return _registeredProjects;
+    var headers = data[0];  // Row 1: column headers
+    var names   = data[1];  // Row 2: #NAME
+    var urls    = data[2];  // Row 3: #URL
+    var auths   = data[3];  // Row 4: #AUTH
+    // Page columns start at index 2 (column C)
+    for (var c = 2; c < headers.length; c++) {
+      var projectId = String(headers[c]).trim();
+      var url = String(urls[c]).trim();
+      if (!projectId || !url) continue;
+      var name = String(names[c]).trim() || projectId;
+      var enabled = auths[c] === true || String(auths[c]).toUpperCase() === 'TRUE';
       _registeredProjects.push({
         name: name,
         url: url,
@@ -829,6 +854,7 @@ function validateCrossProjectAdmin(params) {
     if (!sheet) return false;
     var data = sheet.getDataRange().getValues();
     for (var r = 1; r < data.length; r++) {
+      if (isMetadataRow(data[r])) continue;
       if (String(data[r][0]).trim().toLowerCase() === callerEmail.toLowerCase()) {
         var role = String(data[r][1]).trim().toLowerCase();
         return role === 'admin';
@@ -1635,6 +1661,7 @@ function loadACLData(sessionToken) {
   var headers = data.length > 0 ? data[0].map(function(h) { return String(h).trim(); }) : [];
   var rows = [];
   for (var r = 1; r < data.length; r++) {
+    if (isMetadataRow(data[r])) continue;
     var row = [];
     for (var c = 0; c < headers.length; c++) {
       var val = data[r][c];
@@ -1677,6 +1704,7 @@ function addACLUser(sessionToken, email, role, pageAccess) {
 
   // Check for duplicate email
   for (var r = 1; r < data.length; r++) {
+    if (isMetadataRow(data[r])) continue;
     if (String(data[r][0]).trim().toLowerCase() === email) {
       throw new Error('User already exists: ' + email);
     }
@@ -1733,6 +1761,7 @@ function updateACLUser(sessionToken, email, role, pageAccess) {
   // Find the row for this email
   var rowIdx = -1;
   for (var r = 1; r < data.length; r++) {
+    if (isMetadataRow(data[r])) continue;
     if (String(data[r][0]).trim().toLowerCase() === email) {
       rowIdx = r;
       break;
@@ -1793,6 +1822,7 @@ function deleteACLUser(sessionToken, email) {
   var data = sheet.getDataRange().getValues();
   var rowIdx = -1;
   for (var r = 1; r < data.length; r++) {
+    if (isMetadataRow(data[r])) continue;
     if (String(data[r][0]).trim().toLowerCase() === email) {
       rowIdx = r;
       break;
@@ -1833,16 +1863,21 @@ function addACLPage(sessionToken, pageName) {
   var nextCol = headers.length + 1;
   sheet.getRange(1, nextCol).setValue(pageName);
 
-  // Set FALSE for all existing rows
+  // Initialize metadata cells for the new column (rows 2-4)
+  ensureMetadataRows(sheet);
+  sheet.getRange(2, nextCol).setValue('');    // #NAME — empty until project registers
+  sheet.getRange(3, nextCol).setValue('');    // #URL  — empty until project registers
+  sheet.getRange(4, nextCol).setValue(false); // #AUTH — default off
+
+  // Set FALSE checkboxes for all user rows (row 5 onward)
   var lastRow = sheet.getLastRow();
-  if (lastRow > 1) {
+  if (lastRow > 4) {
     var falseValues = [];
-    for (var r = 0; r < lastRow - 1; r++) {
+    for (var r = 0; r < lastRow - 4; r++) {
       falseValues.push([false]);
     }
-    sheet.getRange(2, nextCol, lastRow - 1, 1).setValues(falseValues);
-    // Format the new page column as checkboxes
-    sheet.getRange(2, nextCol, lastRow - 1, 1).insertCheckboxes();
+    sheet.getRange(5, nextCol, lastRow - 4, 1).setValues(falseValues);
+    sheet.getRange(5, nextCol, lastRow - 4, 1).insertCheckboxes();
   }
 
   dataAuditLog(user.email, 'create', 'acl_page', pageName, {});

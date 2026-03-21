@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v05.47r] — 2026-03-20 08:34:24 PM EST
+
+> **Prompt:** "we currently have 2 tabs both of which use the names of the projects, can we consolidate them into a single tab, come up with a visual representation of how you would like to make it and i will approve or provide an alternative to what you come up with"
+
+### Changed
+- Consolidated the Projects tab into the Access tab — project metadata (name, URL, auth enabled) is now stored as `#`-prefixed metadata rows (#NAME, #URL, #AUTH) in rows 2-4, eliminating the need for a separate Projects tab
+- All user-data iteration loops now skip metadata rows to prevent them from being treated as user entries
+- `addACLPage()` now initializes metadata cells and fills checkboxes from row 5 onward (after metadata rows)
+
+#### `globalacl.gs` — v01.16g
+
+##### Changed
+- Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
+
+#### `portal.gs` — v01.08g
+
+##### Changed
+- Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
+
+#### `testauth1.gs` — v01.76g
+
+##### Changed
+- Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
 
 ## [v05.46r] — 2026-03-20 08:10:13 PM EST
 

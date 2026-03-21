@@ -312,9 +312,28 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 
 /**
- * Auto-register this project in the Master ACL "Projects" sheet on first doGet().
- * Creates the sheet if it doesn't exist. Matches by ACL_PAGE_NAME (col D).
- * GlobalACL registers as SELF; other projects register with their deployment URL.
+ * Check if a row in the Access tab is a metadata row (#NAME, #URL, #AUTH).
+ */
+function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
+
+/**
+ * Ensure the Access tab has the 3 metadata rows (#NAME, #URL, #AUTH) after the header.
+ * If missing, inserts them and shifts existing user data down.
+ */
+function ensureMetadataRows(sheet) {
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2 || String(data[1][0]).trim() !== '#NAME') {
+    sheet.insertRowsAfter(1, 3);
+    sheet.getRange(2, 1).setValue('#NAME');
+    sheet.getRange(3, 1).setValue('#URL');
+    sheet.getRange(4, 1).setValue('#AUTH');
+  }
+}
+
+/**
+ * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
+ * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
+ * Runs once per execution (cached flag).
  */
 var _selfRegistered = false;
 function registerSelfProject() {
@@ -322,54 +341,50 @@ function registerSelfProject() {
   _selfRegistered = true;
   try {
     var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Projects');
-    if (!sheet) {
-      sheet = ss.insertSheet('Projects');
-      sheet.getRange(1, 1, 1, 4).setValues([['Project Name', 'Deployment URL', 'Auth Enabled', 'Project ID']]);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return;
+
+    ensureMetadataRows(sheet);
+
+    // Find column for this project
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var colIdx = -1;
+    for (var c = 0; c < headers.length; c++) {
+      if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
+        colIdx = c;
+        break;
+      }
     }
-    var data = sheet.getDataRange().getValues();
+
+    // If column doesn't exist, add it
+    if (colIdx === -1) {
+      colIdx = headers.length;
+      sheet.getRange(1, colIdx + 1).setValue(ACL_PAGE_NAME);
+      sheet.getRange(2, colIdx + 1).setValue('');
+      sheet.getRange(3, colIdx + 1).setValue('');
+      sheet.getRange(4, colIdx + 1).setValue(false);
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 4) {
+        var falseValues = [];
+        for (var f = 0; f < lastRow - 4; f++) falseValues.push([false]);
+        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).setValues(falseValues);
+        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).insertCheckboxes();
+      }
+    }
+
+    // Determine this project's URL
     var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
     var myUrl = isSelfProject ? 'SELF'
       : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
         ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
         : '';
     if (!myUrl) return;
-    for (var r = 1; r < data.length; r++) {
-      var existingId = (data[r].length > 3) ? String(data[r][3]).trim().toLowerCase() : '';
-      if (existingId === ACL_PAGE_NAME.toLowerCase()) {
-        if (String(data[r][1]).trim() !== myUrl) {
-          sheet.getRange(r + 1, 2).setValue(myUrl);
-        }
-        if (String(data[r][0]).trim() !== TITLE) {
-          sheet.getRange(r + 1, 1).setValue(TITLE);
-        }
-        return;
-      }
-    }
-    sheet.appendRow([TITLE, myUrl, true, ACL_PAGE_NAME]);
-    // Auto-add page column to Access tab if it doesn't exist yet
-    var aclSheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (aclSheet) {
-      var aclHeaders = aclSheet.getRange(1, 1, 1, aclSheet.getLastColumn()).getValues()[0];
-      var colExists = false;
-      for (var c = 0; c < aclHeaders.length; c++) {
-        if (String(aclHeaders[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
-          colExists = true;
-          break;
-        }
-      }
-      if (!colExists) {
-        var nextCol = aclHeaders.length + 1;
-        aclSheet.getRange(1, nextCol).setValue(ACL_PAGE_NAME);
-        var lastRow = aclSheet.getLastRow();
-        if (lastRow > 1) {
-          var falseValues = [];
-          for (var f = 0; f < lastRow - 1; f++) falseValues.push([false]);
-          aclSheet.getRange(2, nextCol, lastRow - 1, 1).setValues(falseValues);
-          aclSheet.getRange(2, nextCol, lastRow - 1, 1).insertCheckboxes();
-        }
-      }
-    }
+
+    // Write/update metadata rows for this project's column
+    var col = colIdx + 1;
+    sheet.getRange(2, col).setValue(TITLE);
+    sheet.getRange(3, col).setValue(myUrl);
+    sheet.getRange(4, col).setValue(true);
   } catch (e) {
     Logger.log('registerSelfProject error: ' + e.message);
   }
