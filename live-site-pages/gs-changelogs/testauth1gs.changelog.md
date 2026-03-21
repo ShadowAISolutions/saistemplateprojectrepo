@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v01.81g] — 2026-03-21 12:31:09 PM EST — v05.62r
+
+### Added
+- Secure page nonce handshake — session credentials are verified via a private channel instead of being visible in the page address
 
 ## [v01.80g] — 2026-03-21 11:31:04 AM EST — v05.60r
 

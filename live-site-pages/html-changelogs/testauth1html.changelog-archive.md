@@ -8,6 +8,66 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.09w] — 2026-03-16 02:40:38 PM EST — v04.26r — [merged]
+
+### Changed
+- Tab count now updates instantly when the overlay appears instead of relying on a background timer
+
+## [v02.08w] — 2026-03-16 02:33:18 PM EST — v04.25r — [merged]
+
+### Added
+- "Session Active in Another Tab" overlay now shows how many other tabs have this page open
+
+## [v02.07w] — 2026-03-16 02:22:46 PM EST — v04.24r — [merged]
+
+### Fixed
+- Restored centering on the sign-in page
+
+### Added
+- "Signing in…" screen now appears after selecting your Google account while your session is being set up
+
+## [v02.06w] — 2026-03-16 02:16:05 PM EST — v04.23r — [merged]
+
+### Changed
+- Sign-in page now shows "Reconnecting… Verifying your session" during page reload instead of briefly showing the sign-in form
+- "Use Here" button now shows "Reconnecting…" while verifying your session
+
+## [v02.05w] — 2026-03-16 02:08:13 PM EST — v04.22r — [merged]
+
+### Fixed
+- Restored logo display on the sign-in page
+- Restored splash screen sound playback
+
+## [v02.04w] — 2026-03-16 02:02:55 PM EST — v04.21r — [merged]
+
+### Security
+- Stronger protection against unauthorized resource loading (deny-all fallback policy)
+- Blocked web worker and manifest injection attacks
+- Restricted image loading to trusted Google domains only (previously allowed any HTTPS source)
+- Auto-upgrade protection for mixed content
+
+## [v02.03w] — 2026-03-16 01:47:48 PM EST — v04.20r — [merged]
+
+### Security
+- Added protection against form-based data exfiltration attacks
+
+## [v02.02w] — 2026-03-16 10:29:43 AM EST — v04.11r — [merged]
+
+### Added
+- Blocked attacks are now reported to the server for security monitoring
+
+## [v02.01w] — 2026-03-16 09:57:31 AM EST — v04.09r — [merged]
+
+### Security
+- Sign-in screen now stays visible during page reload until the server re-confirms your session is valid
+- A second sign-in attempt from an untrusted source is now rejected entirely instead of overwriting your session
+
+## [v02.00w] — 2026-03-16 09:43:13 AM EST — v04.08r — [merged]
+
+### Security
+- Sign-in screen now stays visible until the server confirms your session is valid, preventing a potential UI spoofing issue
+
+
 ## [v01.99w] — 2026-03-15 09:59:28 PM EST — v03.96r
 
 ### Fixed

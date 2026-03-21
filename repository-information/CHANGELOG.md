@@ -3,9 +3,50 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v05.62r] — 2026-03-21 12:31:09 PM EST
+
+> **Prompt:** "go ahead and do your recommendation, but CSP i will save for much later when im done with coding everything"
+
+### Added
+- postMessage handshake flow for GAS iframe authentication — session tokens never appear in the iframe URL
+- `generatePageNonce()` and `validatePageNonce()` server functions — bind a validated session to a single page load via one-time-use nonce with 30-second TTL
+- Handshake page served by `doGet()` when no valid session/nonce present — challenges parent via postMessage, generates nonce, redirects to `?page_nonce=`
+- 5-second timeout on handshake page — direct `/exec` access shows "Access denied" instead of serving any content
+- `gas-handshake-challenge` message type to allowed message whitelist and signature exempt list
+
+### Changed
+- All 5 `?session=TOKEN` iframe URL assignments replaced with bare `baseUrl` — session token exchange happens exclusively via postMessage
+- GAS `doGet()` now accepts `?page_nonce=` parameter as the primary authentication path (legacy `?session=` still accepted for backward compatibility)
+
+### Security
+- Session tokens no longer exposed in iframe URLs — prevents token extraction via DevTools, network inspector, or URL copy
+- Direct browser access to GAS `/exec` URL now shows nothing useful — handshake requires a parent frame to respond
+
+#### `testauth1.html` — v02.50w
+##### Changed
+- Session token exchange with GAS iframe now uses postMessage handshake instead of URL parameter
+
+#### `testauth2.html` — v01.05w
+##### Changed
+- Session token exchange with GAS iframe now uses postMessage handshake instead of URL parameter
+
+#### `globalacl.html` — v01.07w
+##### Changed
+- Session token exchange with GAS iframe now uses postMessage handshake instead of URL parameter
+
+#### `testauth1.gs` — v01.81g
+##### Added
+- Page nonce handshake flow — `generatePageNonce()` and `validatePageNonce()` functions
+- Handshake page in `doGet()` that challenges the parent frame for session token
+
+#### `globalacl.gs` — v01.19g
+##### Added
+- Page nonce handshake flow — `generatePageNonce()` and `validatePageNonce()` functions
+- Handshake page in `doGet()` that challenges the parent frame for session token
 
 ## [v05.61r] — 2026-03-21 11:55:49 AM EST
 
