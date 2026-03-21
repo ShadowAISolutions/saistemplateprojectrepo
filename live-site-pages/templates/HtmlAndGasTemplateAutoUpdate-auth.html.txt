@@ -1144,8 +1144,28 @@
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
-    var _directSessionLoad = false; // true when iframe was loaded directly with ?session= (Use Here) — skips the reload in gas-session-created
+    var _directSessionLoad = false; // true when iframe loaded via nonce for session reclaim (Use Here) — tells gas-auth-ok to re-show iframe
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
+    var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
+    var _nonceCallback = null;      // callback after nonce is received (optional)
+
+    // Load the GAS iframe via a one-time-use page nonce instead of ?session=TOKEN.
+    // This prevents session URL replay — the nonce expires in 60 seconds and is single-use.
+    // Flow: load ?action=getNonce → gas-nonce-ready → send session token → gas-nonce-result → load ?page_nonce=NONCE
+    // Options:
+    //   skipExpectingSession: true to NOT set _expectingSession (needed on page-load
+    //     where no prior iframe content exists to send stale gas-needs-auth)
+    function loadIframeViaNonce(sessionToken, options) {
+      var gasApp = document.getElementById('gas-app');
+      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!gasApp || !baseUrl || !sessionToken) return;
+      _pendingNonceToken = sessionToken;
+      _nonceCallback = (options && options.callback) || null;
+      if (!(options && options.skipExpectingSession)) {
+        _expectingSession = true;
+      }
+      gasApp.src = baseUrl + '?action=getNonce';
+    }
 
     function initGoogleSignIn() {
       signInClient = google.accounts.oauth2.initTokenClient({
@@ -1250,7 +1270,9 @@
       'gas-admin-sessions-list': true,
       'gas-admin-sessions-error': true,
       'gas-admin-signout-result': true,
-      'gas-admin-signout-error': true
+      'gas-admin-signout-error': true,
+      'gas-nonce-ready': true,            // Nonce generation listener page ready signal
+      'gas-nonce-result': true            // Nonce generation result (success/failure)
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1494,12 +1516,13 @@
       // or action listener pages that have no signing key). Security impact is minimal —
       // forging these would at most log the user out (DoS), and origin validation still applies.
       var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
+        'gas-ready-for-token': true,  // Token exchange listener — no signing key
         'gas-auth-ok': true,          // Immediate unsigned send fires before signed version
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true };
+        'gas-admin-signout-error': true, 'gas-nonce-ready': true, 'gas-nonce-result': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -1536,6 +1559,45 @@
             type: 'heartbeat-token',
             token: session.token
           }, event.origin);
+        }
+        return;
+      }
+
+      // ── Nonce generation flow ──
+      // Step 1: getNonce listener page is ready — send the session token
+      if (data.type === 'gas-nonce-ready' && _pendingNonceToken) {
+        if (event.source) {
+          event.source.postMessage({
+            type: 'request-nonce',
+            sessionToken: _pendingNonceToken
+          }, event.origin);
+        }
+        return;
+      }
+
+      // Step 2: Nonce result received — reload iframe with ?page_nonce=NONCE
+      if (data.type === 'gas-nonce-result') {
+        var nonceToken = _pendingNonceToken;
+        _pendingNonceToken = null;
+        if (data.success && data.nonce) {
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            gasApp.src = baseUrl + '?page_nonce=' + encodeURIComponent(data.nonce);
+          }
+          if (_nonceCallback) {
+            _nonceCallback(null);
+            _nonceCallback = null;
+          }
+        } else {
+          // Nonce generation failed — show error, do NOT fall back to ?session=
+          console.error('Nonce generation failed:', data.error);
+          if (_nonceCallback) {
+            _nonceCallback(data.error || 'nonce_failed');
+            _nonceCallback = null;
+          } else {
+            showAuthWall('Session could not be verified. Please sign in again.');
+          }
         }
         return;
       }
@@ -1652,8 +1714,12 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
-          // The ?session path does NOT send gas-session-created — it sends
-          // gas-auth-ok (with messageKey) directly. Key import is handled there.
+          // Uses ?session= directly for initial sign-in because CacheService
+          // is eventually consistent — a page_nonce written in exchangeTokenForSession
+          // may not be readable by validatePageNonce() moments later (cache.get returns null).
+          // This is safe: the token was just created, the URL is only in the iframe's
+          // network request (not the address bar), and OAuth already verified the user.
+          // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
           var gasApp = document.getElementById('gas-app');
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
@@ -2888,12 +2954,16 @@
         // (the other is clearSession()). Session token stays in storage.
         _hmacKey = null;
         _hmacKeySet = false;
-        _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
+        _directSessionLoad = true;  // Tell gas-auth-ok to re-show iframe and start timers
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+        if (gasApp) gasApp.style.visibility = 'hidden';
+        // Use ?session= directly — the postMessage handshake guard blocks direct
+        // URL access. The nonce flow (loadIframeViaNonce) is unreliable due to
+        // CacheService eventual consistency.
         if (gasApp && baseUrl) {
-          gasApp.style.visibility = 'hidden';
+          _expectingSession = true;
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {
@@ -2914,16 +2984,15 @@
     (function() {
       var session = loadSession();
       if (session.token) {
-        // Resume existing session — load GAS iframe with session token
+        // Resume existing session — load GAS iframe with session token directly.
+        // Using ?session= is safe here: the postMessage handshake guard blocks
+        // direct URL access (copied URLs show "Access denied"). The nonce flow
+        // (loadIframeViaNonce) is unreliable for this path due to CacheService
+        // eventual consistency — the nonce written by generatePageNonce() may not
+        // be readable by validatePageNonce() moments later.
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          // Do NOT set _expectingSession here — on page load, there is no prior
-          // iframe content that could send a stale gas-needs-auth. The flag would
-          // cause the REAL gas-needs-auth (from an admin-invalidated session) to be
-          // silently dropped, leaving the user stuck on "Reconnecting...".
-          // _expectingSession is only needed after mid-session iframe navigations
-          // (gas-session-created, Use Here) where prior content may still be loaded.
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
