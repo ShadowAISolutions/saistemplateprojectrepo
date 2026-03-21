@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v05.57r] — 2026-03-20 11:17:21 PM EST
+
+> **Prompt:** "your first option"
+
+### Changed
+- Simplified Script Properties section in gas-project-creator — removed CACHE_EPOCH and HMAC_SECRET from the visible property list since they auto-generate on first deploy; only GITHUB_TOKEN remains as a manual step
+- Added auto-generation note below the property list that dynamically shows HMAC_SECRET when auth is enabled
+
+#### `gas-project-creator.html` — v01.23w
+##### Changed
+- Simplified setup steps — only the GitHub token needs manual entry now
 
 ## [v05.56r] — 2026-03-20 11:02:26 PM EST
 
