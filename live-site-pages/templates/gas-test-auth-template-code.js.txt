@@ -2310,8 +2310,15 @@ function doGet(e) {
         // Session token for data operation validation
         var _sessionToken = '${escapeJs(sessionToken)}';
 
-        // Notify wrapper that auth is OK
-        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        // Notify wrapper that auth is OK — send immediately so the host page
+        // can show the app without waiting for the async google.script.run call.
+        window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
+          needsReauth: ${session.needsReauth || false},
+          messageKey: '${escapeJs(appMsgKey)}',
+          role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
+          permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
+
+        // Also send a signed version via google.script.run (belt-and-suspenders)
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');

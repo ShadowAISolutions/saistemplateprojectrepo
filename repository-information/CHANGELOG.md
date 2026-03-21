@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v05.73r] — 2026-03-21 05:14:49 PM EST
+
+> **Prompt:** "nope, your last change does not fix the refresh not reconnecting"
+
+### Fixed
+- Restored immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call — v05.69r removed this and left only the async path, but `google.script.run` is too slow on the nonce/refresh path, causing the parent page to stay stuck on "Reconnecting..." indefinitely
+- The immediate `gas-auth-ok` fires synchronously on page load; the signed version follows asynchronously as belt-and-suspenders
+
+#### `testauth1.gs` — v01.90g
+##### Fixed
+- Page refresh and "Use Here" now complete immediately instead of waiting for async server round-trip
 
 ## [v05.72r] — 2026-03-21 05:08:29 PM EST
 

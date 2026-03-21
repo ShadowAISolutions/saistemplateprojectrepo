@@ -1,4 +1,4 @@
-var VERSION = "v01.89g";
+var VERSION = "v01.90g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2327,10 +2327,19 @@ function doGet(e) {
         //   } catch(e) { _clientIp = 'unknown'; }
         // }
 
-        // Notify wrapper that auth is OK — include messageKey so the host page
-        // can import it for HMAC verification (needed for page_nonce path where
-        // gas-session-created is not sent, e.g. "Use Here" reclaim, tab duplicate, refresh)
-        // DJB2→HMAC migration: signed server-side via signAppMessage()
+        // Notify wrapper that auth is OK — send immediately so the host page
+        // can show the app without waiting for the async google.script.run call.
+        // Without this immediate send, page refresh and "Use Here" get stuck on
+        // "Reconnecting..." because google.script.run.signAppMessage() may be slow.
+        window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
+          needsReauth: ${session.needsReauth || false},
+          messageKey: '${escapeJs(appMsgKey)}',
+          role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
+          permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
+
+        // Also send a signed version via google.script.run (belt-and-suspenders —
+        // if the unsigned one above is processed first, this signed one is a no-op;
+        // if HMAC verification rejects the unsigned one, this signed one succeeds)
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
