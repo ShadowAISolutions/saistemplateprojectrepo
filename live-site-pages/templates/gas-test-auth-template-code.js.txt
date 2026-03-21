@@ -347,6 +347,29 @@ function registerSelfProject() {
       }
     }
     sheet.appendRow([TITLE, myUrl, true, ACL_PAGE_NAME]);
+    // Auto-add page column to Access tab if it doesn't exist yet
+    var aclSheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (aclSheet) {
+      var aclHeaders = aclSheet.getRange(1, 1, 1, aclSheet.getLastColumn()).getValues()[0];
+      var colExists = false;
+      for (var c = 0; c < aclHeaders.length; c++) {
+        if (String(aclHeaders[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
+          colExists = true;
+          break;
+        }
+      }
+      if (!colExists) {
+        var nextCol = aclHeaders.length + 1;
+        aclSheet.getRange(1, nextCol).setValue(ACL_PAGE_NAME);
+        var lastRow = aclSheet.getLastRow();
+        if (lastRow > 1) {
+          var falseValues = [];
+          for (var f = 0; f < lastRow - 1; f++) falseValues.push([false]);
+          aclSheet.getRange(2, nextCol, lastRow - 1, 1).setValues(falseValues);
+          aclSheet.getRange(2, nextCol, lastRow - 1, 1).insertCheckboxes();
+        }
+      }
+    }
   } catch (e) {
     Logger.log('registerSelfProject error: ' + e.message);
   }

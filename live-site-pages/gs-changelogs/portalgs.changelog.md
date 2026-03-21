@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07g] — 2026-03-20 08:10:13 PM EST — v05.46r
+
+### Added
+- New projects now automatically get their own access control column when they register for the first time
 
 ## [v01.06g] — 2026-03-20 07:50:37 PM EST — v05.45r
 

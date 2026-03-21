@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v05.46r] — 2026-03-20 08:10:13 PM EST
+
+> **Prompt:** "yes please add that"
+
+### Added
+- Auto-creation of Access tab page column when a new project registers via `registerSelfProject()` — eliminates manual spreadsheet setup
+
+#### `globalacl.gs` — v01.15g
+
+##### Added
+- New projects now automatically get a page column in the Access tab with FALSE checkboxes for all existing users
+
+#### `portal.gs` — v01.07g
+
+##### Added
+- New projects now automatically get a page column in the Access tab with FALSE checkboxes for all existing users
+
+#### `testauth1.gs` — v01.75g
+
+##### Added
+- New projects now automatically get a page column in the Access tab with FALSE checkboxes for all existing users
 
 ## [v05.45r] — 2026-03-20 07:50:37 PM EST
 
