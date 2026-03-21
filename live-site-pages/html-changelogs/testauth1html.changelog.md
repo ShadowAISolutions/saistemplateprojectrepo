@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v02.56w] — 2026-03-21 03:22:38 PM EST — v05.68r
+
+### Fixed
+- Sign-in now completes immediately without getting stuck on loading screen
 
 ## [v02.55w] — 2026-03-21 03:12:33 PM EST — v05.67r
 

@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v05.68r] — 2026-03-21 03:22:38 PM EST
+
+> **Prompt:** "session log is fine, but we are still stuck on the "Setting up your session" page"
+
+### Fixed
+- Send `gas-auth-ok` immediately via `window.top.postMessage()` from the GAS app HTML — `google.script.run.signAppMessage()` async call was not firing or completing, leaving the page stuck on "Signing in..."
+- Added `gas-auth-ok` to HMAC signature-exempt list — allows unsigned immediate `gas-auth-ok` to be processed while signed version arrives later
+
+#### `testauth1.html` — v02.56w
+##### Fixed
+- Sign-in now completes immediately without waiting for async server call
+
+#### `testauth1.gs` — v01.86g
+##### Fixed
+- App sends unsigned `gas-auth-ok` immediately on load, with signed version following asynchronously
 
 ## [v05.67r] — 2026-03-21 03:12:33 PM EST
 
