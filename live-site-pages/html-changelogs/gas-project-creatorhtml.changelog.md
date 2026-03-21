@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.24w] — 2026-03-20 11:21:18 PM EST — v05.58r
+
+### Changed
+- Auto-generation note now lists all three auto-managed properties when authentication is enabled
 
 ## [v01.23w] — 2026-03-20 11:17:21 PM EST — v05.57r
 

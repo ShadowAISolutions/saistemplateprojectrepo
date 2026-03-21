@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.23w">
+  <meta name="build-version" content="v01.24w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -587,7 +587,7 @@
           <div style="margin:8px 0;padding:10px 12px;background:#0d1117;border:1px solid #30363d;border-radius:6px;font:12px/1.8 'SFMono-Regular',Consolas,monospace;color:#c9d1d9;">
             <div style="display:flex;align-items:center;gap:8px;"><code style="color:#79c0ff;border:none;background:none;padding:0;">GITHUB_TOKEN</code><button class="btn-copy-json" onclick="copyText('GITHUB_TOKEN',this)" style="position:static;padding:1px 6px;font-size:10px;line-height:1.4;">Copy</button> <span style="color:#8b949e;">&mdash; your fine-grained personal access token</span></div>
           </div>
-          <div class="step-note" style="margin-top:6px;color:#8b949e;font-style:italic;"><strong>Note:</strong> <code>CACHE_EPOCH</code><span id="hmac-auto-note" style="display:none"> and <code>HMAC_SECRET</code></span> are auto-generated on first deploy &mdash; no manual setup needed.</div>
+          <div class="step-note" style="margin-top:6px;color:#8b949e;font-style:italic;"><strong>Note:</strong> <code>CACHE_EPOCH</code><span id="hmac-auto-note" style="display:none">, <code>HMAC_SECRET</code>, and <code>CROSS_PROJECT_ADMIN_SECRET</code></span> are auto-generated/distributed on first deploy &mdash; no manual setup needed.</div>
           <div class="step-note" style="margin-top:6px"><strong>To create a token:</strong> GitHub.com &rarr; Settings &rarr; Developer settings &rarr; <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener" style="color:#58a6ff">Fine-grained tokens</a> &rarr; Generate new token. Under "Repository access" select <strong>Public repositories (read-only)</strong>. No additional permissions are needed. Copy the <code>github_pat_...</code> value.</div>
           <div class="step-note"><strong>Reuse across projects:</strong> The same token works for all your GAS projects &mdash; you don't need a new one per repo. Just paste the same token into each project's Script Properties. Note: GitHub only shows the token once at the time of creation and permanently hides it afterward &mdash; save it somewhere secure before closing the page.</div>
         </li>

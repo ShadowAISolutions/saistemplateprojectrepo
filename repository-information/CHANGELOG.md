@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v05.58r] — 2026-03-20 11:21:18 PM EST
+
+> **Prompt:** "yes go ahead"
+
+### Changed
+- Added CROSS_PROJECT_ADMIN_SECRET to the auto-generated properties note in gas-project-creator — all three auto-managed properties (CACHE_EPOCH, HMAC_SECRET, CROSS_PROJECT_ADMIN_SECRET) are now listed when auth is enabled
+
+#### `gas-project-creator.html` — v01.24w
+##### Changed
+- Auto-generation note now mentions all three auto-managed properties
 
 ## [v05.57r] — 2026-03-20 11:17:21 PM EST
 
