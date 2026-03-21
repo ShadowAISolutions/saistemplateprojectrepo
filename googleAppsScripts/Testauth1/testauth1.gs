@@ -1,4 +1,4 @@
-var VERSION = "v01.78g";
+var VERSION = "v01.79g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2203,6 +2203,12 @@ function doGet(e) {
       <div id="user-email">${escapeHtml(session.email)}</div>
 
       <script>
+        // Iframe guard: prevent direct navigation to session URLs
+        if (window.self === window.top) {
+          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its embedding page.</p></div>';
+          throw new Error('Direct access blocked');
+        }
+
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';
         // DJB2→HMAC migration complete: _s() and _mk removed.

@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v05.59r] — 2026-03-21 11:09:01 AM EST
+
+> **Prompt:** "trouble in paradise. as per the screenshot which was done in the testauth1, you can see an exec?session= link and that link opens up the gas script, which is opening up the gas. unfortunately it is opening as if the user was logged in"
+
+### Fixed
+- Added iframe guard to GAS auth app HTML — prevents direct navigation to `exec?session=TOKEN` URLs from rendering the authenticated app outside the embedding iframe
+- Applied the same fix to both auth GAS templates (minimal and test) for consistency
+
+#### `testauth1.gs` — v01.79g
+##### Fixed
+- Direct navigation to session URLs no longer renders the app — shows "Access denied" message instead
 
 ## [v05.58r] — 2026-03-20 11:21:18 PM EST
 
