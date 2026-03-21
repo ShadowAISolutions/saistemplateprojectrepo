@@ -1494,6 +1494,7 @@
       // or action listener pages that have no signing key). Security impact is minimal —
       // forging these would at most log the user out (DoS), and origin validation still applies.
       var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
+        'gas-auth-ok': true,          // Immediate unsigned send fires before signed version
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,

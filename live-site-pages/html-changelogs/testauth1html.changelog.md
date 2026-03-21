@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v02.59w] — 2026-03-21 05:21:32 PM EST — v05.74r
+
+### Fixed
+- Page refresh and "Use Here" no longer get stuck on "Reconnecting" screen
+- Sign-in no longer triggers a false security alert in the audit log
 
 ## [v02.58w] — 2026-03-21 04:51:56 PM EST — v05.70r
 
