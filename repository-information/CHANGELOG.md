@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v05.79r] — 2026-03-21 06:53:58 PM EST
+
+> **Prompt:** "is there such thing as a link that opens multiple tabs with different pages, if possible i want a single link in the project structure in the readme that will open all of our html projects in different tabs"
+
+### Added
+- Created `open-all.html` utility page — opens all project pages in separate browser tabs with a single button click
+- Added version file, changelog, and changelog archive for the new page
+- Added `open-all.html` entry to README project tree and REPO-ARCHITECTURE.md diagram
+
+#### `open-all.html` — v01.00w
+##### Added
+- New utility page with "Open All in New Tabs" button that opens all 6 project pages in separate tabs
+- Individual links to each project page as fallback
+- Dark theme matching existing site design
 
 ## [v05.78r] — 2026-03-21 06:28:47 PM EST
 

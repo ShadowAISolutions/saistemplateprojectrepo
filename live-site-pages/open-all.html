@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="build-version" content="v01.00w">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <title>Open All Projects</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      font-size: 24px;
+      color: #f0f6fc;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #8b949e;
+      margin-bottom: 28px;
+    }
+    .project-list {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+    .project-list li {
+      padding: 10px 14px;
+      border-bottom: 1px solid #21262d;
+    }
+    .project-list li:last-child { border-bottom: none; }
+    .project-list a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .project-list a:hover { text-decoration: underline; }
+    .project-label {
+      color: #8b949e;
+      font-size: 12px;
+      display: block;
+      margin-top: 2px;
+    }
+    .open-all-btn {
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      width: 100%;
+    }
+    .open-all-btn:hover { background: #2ea043; }
+    .open-all-btn:active { background: #1a7f37; }
+    .note {
+      font-size: 12px;
+      color: #6e7681;
+      margin-top: 12px;
+    }
+    .footer {
+      font-size: 11px;
+      color: #484f58;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Open All Projects</h1>
+    <p class="subtitle">Open every project page in a separate browser tab</p>
+
+    <ul class="project-list">
+      <li><a href="./index.html" target="_blank" rel="noopener">Homepage</a><span class="project-label">index.html</span></li>
+      <li><a href="./testenvironment.html" target="_blank" rel="noopener">Test Environment</a><span class="project-label">testenvironment.html</span></li>
+      <li><a href="./gas-project-creator.html" target="_blank" rel="noopener">GAS Project Creator</a><span class="project-label">gas-project-creator.html</span></li>
+      <li><a href="./testauth1.html" target="_blank" rel="noopener">Test Auth 1</a><span class="project-label">testauth1.html</span></li>
+      <li><a href="./portal.html" target="_blank" rel="noopener">SSO Portal</a><span class="project-label">portal.html</span></li>
+      <li><a href="./globalacl.html" target="_blank" rel="noopener">Global ACL</a><span class="project-label">globalacl.html</span></li>
+    </ul>
+
+    <button class="open-all-btn" onclick="openAll()">Open All in New Tabs</button>
+    <p class="note">If some tabs are blocked, allow popups for this site in your browser settings.</p>
+
+    <p class="footer">Developed by: ShadowAISolutions</p>
+  </div>
+
+  <script>
+    function openAll() {
+      var pages = [
+        './index.html',
+        './testenvironment.html',
+        './gas-project-creator.html',
+        './testauth1.html',
+        './portal.html',
+        './globalacl.html'
+      ];
+      for (var i = 0; i < pages.length; i++) {
+        window.open(pages[i], '_blank', 'noopener');
+      }
+    }
+  </script>
+<!-- Developed by: ShadowAISolutions -->
+</body>
+</html>
