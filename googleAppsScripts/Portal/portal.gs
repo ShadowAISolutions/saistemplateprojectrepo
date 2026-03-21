@@ -1,4 +1,4 @@
-var VERSION = "v01.10g";
+var VERSION = "v01.11g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1289,12 +1289,12 @@ function doGet(e) {
       </div>
 
       <div class="portal-section" id="portal-section-auth">
-        <h2 class="portal-section-title">\\uD83D\\uDD10 Authentication-Enabled Applications</h2>
+        <h2 class="portal-section-title">\uD83D\uDD10 Authentication-Enabled Applications</h2>
         <div class="portal-apps" id="portal-apps-auth"></div>
         <div class="portal-empty" id="portal-empty-auth" style="display:none">No authorized applications</div>
       </div>
       <div class="portal-section" id="portal-section-public">
-        <h2 class="portal-section-title">\\uD83C\\uDF10 Public Applications</h2>
+        <h2 class="portal-section-title">\uD83C\uDF10 Public Applications</h2>
         <div class="portal-apps" id="portal-apps-public"></div>
       </div>
 
@@ -1360,10 +1360,10 @@ function doGet(e) {
         // =============================================
         var PORTAL_OPEN_MODE_KEY = 'portal_open_mode';
         function getOpenInWindow() {
-          try { return window.top.localStorage.getItem(PORTAL_OPEN_MODE_KEY) === 'window'; } catch(e) { return false; }
+          try { return localStorage.getItem(PORTAL_OPEN_MODE_KEY) === 'window'; } catch(e) { return false; }
         }
         function setOpenMode(val) {
-          try { window.top.localStorage.setItem(PORTAL_OPEN_MODE_KEY, val); } catch(e) {}
+          try { localStorage.setItem(PORTAL_OPEN_MODE_KEY, val); } catch(e) {}
         }
         (function() {
           var toggle = document.getElementById('portal-window-toggle');
@@ -1379,12 +1379,12 @@ function doGet(e) {
         var PORTAL_ACCESS_FILTER_KEY = 'portal_access_filter';
         function getAccessFilterOn() {
           try {
-            var val = window.top.localStorage.getItem(PORTAL_ACCESS_FILTER_KEY);
+            var val = localStorage.getItem(PORTAL_ACCESS_FILTER_KEY);
             return val === null ? true : val === '1'; // Default ON (My apps only)
           } catch(e) { return true; }
         }
         function setAccessFilter(on) {
-          try { window.top.localStorage.setItem(PORTAL_ACCESS_FILTER_KEY, on ? '1' : '0'); } catch(e) {}
+          try { localStorage.setItem(PORTAL_ACCESS_FILTER_KEY, on ? '1' : '0'); } catch(e) {}
         }
 
         function filterApps() {

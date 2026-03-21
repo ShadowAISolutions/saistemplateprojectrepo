@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v05.50r] — 2026-03-20 09:13:56 PM EST
+
+> **Prompt:** "the toggle is there but its not showing all the apps when i toggle it, its only showing the ones that i have access to.the open in new tab and window toggle is also not working, either way its only allowing new tab. also its showing \uD83D\uDD10 Authentication-Enabled Applications and \uD83C\uDF10 Public Applications , what does the uD83D\uDD10 and \uD83C\uDF10 mean"
+
+### Fixed
+- Section headers now display proper emoji icons instead of raw unicode escape sequences
+- "Show all / My apps" toggle now correctly shows all apps when toggled to "Show all"
+- "Open in new tab / New window" toggle now correctly opens apps in a new window when selected
+- All three fixes caused by using `window.top.localStorage` which fails cross-origin in the GAS iframe — switched to `localStorage` directly
+
+#### `portal.gs` — v01.11g
+
+##### Fixed
+- Section headers now show proper emoji icons instead of garbled text
+- Toggling between "Show all" and "My apps" now works correctly
+- "Open in new window" option now works as expected
 
 ## [v05.49r] — 2026-03-20 09:05:01 PM EST
 

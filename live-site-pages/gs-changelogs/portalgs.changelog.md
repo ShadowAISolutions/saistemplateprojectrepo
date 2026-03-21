@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11g] — 2026-03-20 09:13:56 PM EST — v05.50r
+
+### Fixed
+- Section headers now show proper emoji icons instead of garbled text
+- Toggling between "Show all" and "My apps" now works correctly
+- "Open in new window" option now works as expected
 
 ## [v01.10g] — 2026-03-20 09:05:01 PM EST — v05.49r
 
