@@ -3,9 +3,40 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v05.54r] — 2026-03-20 10:05:19 PM EST
+
+> **Prompt:** "can you add something so that this never happens again on any project, make sure that this has high priority since we wont know what is happening to things behind the auth wall, whatever is behind there should be deactivated from functioning in the background. applies to all projects"
+
+### Fixed
+- All auth pages now comprehensively deactivate authenticated UI on sign-out: gcl-overlay, tab-takeover-wall, auth-timers, and admin panels are all cleaned up in `showAuthWall()`
+- Template updated with full auth wall deactivation block for future pages
+
+### Added
+- Auth Wall Completeness rule in `.claude/rules/html-pages.md` — ensures new floating UI elements are always cleaned up on sign-out
+
+#### `globalacl.html` — v01.04w
+
+##### Fixed
+- All popups, overlays, and background timers now properly deactivated on sign-out
+
+#### `testauth1.html` — v02.47w
+
+##### Fixed
+- Popups and overlays no longer persist on screen after signing out
+
+#### `testauth2.html` — v01.02w
+
+##### Fixed
+- Popups and overlays no longer persist on screen after signing out
+
+#### `portal.html` — v01.14w
+
+##### Fixed
+- Popups and overlays no longer persist on screen after signing out
 
 ## [v05.53r] — 2026-03-20 09:56:00 PM EST
 

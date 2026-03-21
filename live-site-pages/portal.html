@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.13w">
+  <meta name="build-version" content="v01.14w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Portal Title</title>
 <!-- ══════════════ -->
@@ -1025,6 +1025,13 @@
 
       wall.classList.remove('hidden');
       userPill.style.display = 'none';
+
+      // — Deactivate all authenticated UI —
+      // Everything behind the auth wall must be hidden and stopped.
+      // High-z-index overlays (gcl-overlay) would otherwise float above
+      // the auth wall and remain interactive.
+      var gclOverlay = document.getElementById('gcl-overlay');
+      if (gclOverlay) gclOverlay.style.display = 'none';
 
       if (message) {
         errorEl.textContent = message;

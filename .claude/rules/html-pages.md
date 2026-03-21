@@ -317,6 +317,25 @@ When writing security tests, feature tests, or any automated verification:
 - **When in doubt, ask**: "if this test passed on broken code, would it catch the bug?" If the answer is no, the test is fake — rewrite it or remove it
 - This applies to **all** test creation — security tests, unit tests, integration checks, validation scripts. The developer should never need to audit tests for legitimacy after the fact
 
+## Auth Wall Completeness — Mandatory UI Deactivation
+
+When `showAuthWall()` is called (whether from sign-out, session expiry, or any other code path), **every** authenticated UI element must be hidden and every background process must be stopped. Nothing behind the auth wall should remain visible or functional.
+
+**Elements that `showAuthWall()` must always clean up:**
+- `admin-sessions-panel` — local sessions panel (hide + reset `_adminPanelOpen`)
+- `gcl-overlay` — GAS changelog popup (z-index 10004, floats above auth wall)
+- `tab-takeover-wall` — single-tab enforcement overlay (hide + reset `_tabSurrendered`)
+- `auth-timers` — session countdown pill (z-index 10003, call `stopCountdownTimers()`)
+- Page-specific panels (e.g. `admin-global-sessions-panel` on Global ACL) — marked with `PROJECT OVERRIDE`
+
+**When adding new authenticated UI elements** (floating panels, modals, popups, status indicators, or any element with z-index ≥ auth-wall's z-index):
+1. Add cleanup code to `showAuthWall()` in the "Deactivate all authenticated UI" block
+2. Use safe null-checks (`if (el) el.style.display = 'none'`) since not all pages have all elements
+3. If the element is page-specific (not in the template), add it with a `PROJECT OVERRIDE` comment
+4. Update the template's `showAuthWall()` if the element exists in the template
+
+**The test:** after any sign-out or session expiry, open DevTools and verify no element with z-index ≥ 10002 is visible except the auth wall itself.
+
 ## GAS UI Layout Awareness
 
 *Rule: see `.claude/rules/gas-scripts.md` — section "GAS UI Layout Awareness". GAS elements are guests in the host HTML page and must defer to its layout.*

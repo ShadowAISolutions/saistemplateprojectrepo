@@ -2025,9 +2025,17 @@
       hideAllWarningBanners();
       userPill.style.display = 'none';
 
-      // Close admin panel if open
+      // — Deactivate all authenticated UI —
+      // Everything behind the auth wall must be hidden and stopped.
+      // High-z-index overlays (gcl-overlay, auth-timers, tab-takeover-wall)
+      // would otherwise float above the auth wall and remain interactive.
       var adminPanel = document.getElementById('admin-sessions-panel');
       if (adminPanel) { adminPanel.style.display = 'none'; _adminPanelOpen = false; }
+      var gclOverlay = document.getElementById('gcl-overlay');
+      if (gclOverlay) gclOverlay.style.display = 'none';
+      var tabWall = document.getElementById('tab-takeover-wall');
+      if (tabWall) { tabWall.style.display = 'none'; _tabSurrendered = false; }
+      if (typeof stopCountdownTimers === 'function') stopCountdownTimers();
 
       // Always show sign-in UI (not reconnecting/signing-in) when showAuthWall is called
       signinEl.style.display = '';

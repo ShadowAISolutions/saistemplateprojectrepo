@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-03-20 10:05:19 PM EST — v05.54r
+
+### Fixed
+- All popups, overlays, and background timers now properly deactivated on sign-out
 
 ## [v01.03w] — 2026-03-20 09:56:00 PM EST — v05.53r
 
