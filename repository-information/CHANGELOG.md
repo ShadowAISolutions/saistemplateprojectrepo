@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v05.49r] — 2026-03-20 09:05:01 PM EST
+
+> **Prompt:** "in the application portal, add a toggle to show/hide all applications that the user has access/authorization to. separate the authentication enabled and the public projects into separate sections."
+
+### Added
+- Application portal now separates apps into "Authentication-Enabled" and "Public" sections
+- Access filter toggle ("Show all / My apps") that shows or hides apps based on user's ACL authorization
+- Server-side per-app access lookup via Master ACL spreadsheet for the logged-in user
+- Visual dimming and "No access" indicator for apps the user is not authorized to use
+- Empty state message when no authorized authentication-enabled apps are available
+- Toggle defaults to "My apps only" and persists preference via localStorage
+
+#### `portal.gs` — v01.10g
+
+##### Added
+- Applications are now organized into two clear sections: authentication-enabled and public
+- New toggle to filter the portal to show only apps you have access to
+- Apps you don't have access to appear dimmed with a "No access" indicator when viewing all apps
 
 ## [v05.48r] — 2026-03-20 08:42:27 PM EST
 

@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10g] — 2026-03-20 09:05:01 PM EST — v05.49r
+
+### Added
+- Applications are now organized into two clear sections: authentication-enabled and public
+- New toggle to filter the portal to show only apps you have access to
+- Apps you don't have access to appear dimmed with a "No access" indicator when viewing all apps
 
 ## [v01.09g] — 2026-03-20 08:42:27 PM EST — v05.48r
 
