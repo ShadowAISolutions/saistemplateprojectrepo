@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v01.87g] — 2026-03-21 03:31:22 PM EST — v05.69r
+
+### Fixed
+- Minor internal improvements to authentication flow reliability
 
 ## [v01.86g] — 2026-03-21 03:22:38 PM EST — v05.68r
 

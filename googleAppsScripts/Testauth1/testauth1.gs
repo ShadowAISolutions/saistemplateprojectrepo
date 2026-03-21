@@ -1,4 +1,4 @@
-var VERSION = "v01.86g";
+var VERSION = "v01.87g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1212,15 +1212,9 @@ function exchangeTokenForSession(accessToken) {
     { sessionId: sessionToken.substring(0, 8) + '...', role: accessResult.role,
       isEmergencyAccess: accessResult.isEmergencyAccess });
 
-  // Generate a page nonce for the initial iframe load — eliminates the extra
-  // getNonce round-trip during sign-in. The nonce is one-time-use and expires in 60s.
-  var pageNonce = Utilities.getUuid();
-  cache.put('page_nonce_' + pageNonce, sessionToken, 60);
-
   return {
     success: true,
     sessionToken: sessionToken,
-    pageNonce: pageNonce,
     email: userInfo.email,
     displayName: userInfo.displayName,
     absoluteTimeout: AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT || 0,
@@ -2148,7 +2142,6 @@ function doGet(e) {
             error: result.error || "",
             absoluteTimeout: result.absoluteTimeout || 0,
             messageKey: result.messageKey || "",
-            pageNonce: result.pageNonce || "",
             role: result.role || "",
             permissions: result.permissions || []
           });
@@ -2180,7 +2173,6 @@ function doGet(e) {
       + '        error: result.error || "",'
       + '        absoluteTimeout: result.absoluteTimeout || 0,'
       + '        messageKey: result.messageKey || "",'
-      + '        pageNonce: result.pageNonce || "",'
       + '        role: result.role || "",'
       + '        permissions: result.permissions || [],'
       + '        nonce: nonce'
@@ -2214,20 +2206,10 @@ function doGet(e) {
     sessionToken = validatePageNonce(pageNonce) || '';
   }
 
-  // Hard block: ?session= parameter is no longer accepted directly.
-  // All authenticated iframe loads must use ?page_nonce= (one-time-use tokens).
-  // This prevents session URL replay attacks — even if someone copies the exec
-  // URL with a valid session token, it will be rejected.
-  if (sessionToken && !pageNonce) {
-    var blockHtml = '<!DOCTYPE html><html><body><script>'
-      + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"not_signed_in",email:"",version:"' + escapeJs(VERSION) + '",evictionReason:"direct_session_blocked"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
-      + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(blockHtml)
-      .setTitle(TITLE)
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-
-  // Normal flow: validate session token (resolved from page_nonce only)
+  // Normal flow: validate session token (from page_nonce or ?session= parameter)
+  // Both paths are valid: ?session= is used for initial sign-in (from gas-session-created),
+  // ?page_nonce= is used for page refresh, tab reclaim, and cross-tab sync.
+  // The iframe guard (window.parent === window.top) blocks direct URL access.
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {
@@ -2328,16 +2310,10 @@ function doGet(e) {
         //   } catch(e) { _clientIp = 'unknown'; }
         // }
 
-        // Notify wrapper that auth is OK — send immediately so the host page
-        // can show the app without waiting for the async google.script.run call.
-        // This unsigned version is sig-exempt on the host page.
-        window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
-          needsReauth: ${session.needsReauth || false},
-          messageKey: '${escapeJs(appMsgKey)}',
-          role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
-          permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
-
-        // Also send a signed version via google.script.run (belt and suspenders)
+        // Notify wrapper that auth is OK — include messageKey so the host page
+        // can import it for HMAC verification (needed for page_nonce path where
+        // gas-session-created is not sent, e.g. "Use Here" reclaim, tab duplicate, refresh)
+        // DJB2→HMAC migration: signed server-side via signAppMessage()
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');

@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v05.69r] — 2026-03-21 03:31:22 PM EST
+
+> **Prompt:** "same deal, deeply think about this and look online for a solution"
+
+### Fixed
+- Root cause identified: GAS CacheService is eventually consistent — `cache.put()` followed by `cache.get()` can return `null`. The page nonce written in `exchangeTokenForSession()` was not readable by `validatePageNonce()` moments later, causing the auth wall to be served silently
+- Reverted initial sign-in to use `?session=TOKEN` directly (safe: token is brand new, URL only in iframe network request, OAuth already verified)
+- Removed hard-block on `?session=` parameter — still needed for sign-in flow
+- Removed immediate unsigned `gas-auth-ok` and sig-exempt workarounds (no longer needed with `?session=` path)
+- Nonce flow (`loadIframeViaNonce`) remains for page refresh, tab reclaim, and cross-tab sync (replay protection for existing tokens)
+
+#### `testauth1.html` — v02.57w
+##### Fixed
+- Sign-in uses `?session=TOKEN` directly, avoiding CacheService race condition
+##### Changed
+- Removed `gas-auth-ok` from signature-exempt list (HMAC verification restored)
+
+#### `testauth1.gs` — v01.87g
+##### Changed
+- Removed hard-block on `?session=` parameter — both `?session=` and `?page_nonce=` are valid
+- Removed `pageNonce` generation from `exchangeTokenForSession()` (not needed for `?session=` sign-in)
+- Removed immediate unsigned `gas-auth-ok` postMessage (reverted to signed-only via `google.script.run`)
 
 ## [v05.68r] — 2026-03-21 03:22:38 PM EST
 
