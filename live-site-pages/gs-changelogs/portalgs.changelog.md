@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13g] — 2026-03-20 09:33:47 PM EST — v05.52r
+
+### Changed
+- "My apps" toggle label now on left, "Show all" on right
 
 ## [v01.12g] — 2026-03-20 09:20:40 PM EST — v05.51r
 

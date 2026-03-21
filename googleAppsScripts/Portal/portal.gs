@@ -1,4 +1,4 @@
-var VERSION = "v01.12g";
+var VERSION = "v01.13g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1272,10 +1272,10 @@ function doGet(e) {
       <div class="portal-toggles">
         <div class="portal-open-toggle">
           <label>
-            <span>Show all</span>
+            <span>My apps</span>
             <input type="checkbox" id="portal-access-toggle">
             <span class="toggle-track"></span>
-            <span>My apps</span>
+            <span>Show all</span>
           </label>
         </div>
         <div class="portal-open-toggle">
@@ -1407,9 +1407,9 @@ function doGet(e) {
 
         (function() {
           var toggle = document.getElementById('portal-access-toggle');
-          toggle.checked = getAccessFilterOn();
+          toggle.checked = !getAccessFilterOn();
           toggle.addEventListener('change', function() {
-            setAccessFilter(this.checked);
+            setAccessFilter(!this.checked);
             filterApps();
           });
         })();

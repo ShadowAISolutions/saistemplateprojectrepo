@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v05.52r] — 2026-03-20 09:33:47 PM EST
+
+> **Prompt:** "the show all apps toggle is working, but the my apps should be on the left and show all should be on the right"
+
+### Changed
+- Swapped portal access toggle labels: "My apps" now on left, "Show all" on right
+
+#### `portal.gs` — v01.13g
+
+##### Changed
+- Toggle label order swapped — "My apps" on left, "Show all" on right (with inverted logic mapping)
 
 ## [v05.51r] — 2026-03-20 09:20:40 PM EST
 
