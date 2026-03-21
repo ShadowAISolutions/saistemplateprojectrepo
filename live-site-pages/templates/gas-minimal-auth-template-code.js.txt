@@ -2141,7 +2141,11 @@ function doGet(e) {
 
       <script>
         // Iframe guard: prevent direct navigation to session URLs
-        if (window.self === window.top) {
+        // GAS always runs inside Google's sandbox iframe (userCodeAppPanel),
+        // so window.self is never window.top. Instead, check if our parent
+        // (Google's wrapper) IS the top window — that means direct navigation.
+        // When embedded in our page: parent (Google) !== top (our page) → allowed.
+        if (window.parent === window.top) {
           document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its embedding page.</p></div>';
           throw new Error('Direct access blocked');
         }
