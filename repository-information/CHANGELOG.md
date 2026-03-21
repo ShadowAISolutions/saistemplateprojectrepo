@@ -3,9 +3,47 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v05.55r] — 2026-03-20 10:38:42 PM EST
+
+> **Prompt:** "alright implement option 2"
+
+### Changed
+- Cross-project admin secret migrated from spreadsheet Config tab to GAS Script Properties — uses built-in encrypted per-project storage instead of a shared spreadsheet cell
+- GlobalACL now pushes the secret to all registered projects via a new `?action=setAdminSecret` endpoint on first setup
+
+### Added
+- Secret rotation capability via `rotateAdminSecret()` — admin can rotate the cross-project secret, which automatically distributes the new secret to all registered projects
+- `setAdminSecret` endpoint on all auth projects (testauth1, portal, templates) — accepts secret updates from GlobalACL with old-secret authentication
+
+#### `globalacl.gs` — v01.17g
+
+##### Changed
+- `ensureCrossProjectSecret()` now stores secret in Script Properties instead of spreadsheet Config tab
+- `getCrossProjectSecret()` now reads from Script Properties instead of spreadsheet
+
+##### Added
+- `distributeSecret_()` — pushes the admin secret to all registered projects via UrlFetchApp.fetchAll
+- `rotateAdminSecret()` — generates a new secret, distributes to all projects, updates local storage
+
+#### `testauth1.gs` — v01.77g
+
+##### Changed
+- `getCrossProjectSecret()` now reads from Script Properties instead of spreadsheet Config tab
+
+##### Added
+- `setAdminSecret` action handler in doGet() — accepts secret distribution from GlobalACL
+
+#### `portal.gs` — v01.14g
+
+##### Changed
+- `getCrossProjectSecret()` now reads from Script Properties instead of spreadsheet Config tab
+
+##### Added
+- `setAdminSecret` action handler in doGet() — accepts secret distribution from GlobalACL
 
 ## [v05.54r] — 2026-03-20 10:05:19 PM EST
 

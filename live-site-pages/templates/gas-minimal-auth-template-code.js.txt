@@ -389,21 +389,18 @@ function registerSelfProject() {
 }
 
 /**
- * Read the cross-project admin secret from the Master ACL Spreadsheet "Config" tab.
+ * Read the cross-project admin secret from Script Properties.
  * Cached in-memory for the duration of a single GAS execution.
  */
 var _cpSecretCache = null;
 function getCrossProjectSecret() {
   if (_cpSecretCache) return _cpSecretCache;
-  var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-  var sheet = ss.getSheetByName('Config');
-  if (!sheet) return '';
-  var data = sheet.getDataRange().getValues();
-  for (var i = 0; i < data.length; i++) {
-    if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
-      _cpSecretCache = String(data[i][1]).trim();
-      return _cpSecretCache;
-    }
+  try {
+    _cpSecretCache = PropertiesService.getScriptProperties()
+      .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    return _cpSecretCache;
+  } catch (e) {
+    Logger.log('getCrossProjectSecret error: ' + e.message);
   }
   return '';
 }
@@ -1894,6 +1891,27 @@ function doGet(e) {
   }
 
   // Cross-project admin sign-out — called by GlobalACL to kick a user from this project
+  // Cross-project admin secret distribution — called by globalacl's distributeSecret_()
+  if (action === 'setAdminSecret') {
+    var newSecret = (e.parameter && e.parameter.newSecret) || '';
+    var oldSecret = (e.parameter && e.parameter.oldSecret) || '';
+    if (!newSecret) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'missing_secret' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var props = PropertiesService.getScriptProperties();
+    var current = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    // Accept if: no current secret (first setup) OR oldSecret matches current
+    if (current && oldSecret !== current) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
+    _cpSecretCache = null; // clear cache
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (action === 'adminSignOut') {
     var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
     var cpAuth2 = validateCrossProjectAdmin(cpParams2);

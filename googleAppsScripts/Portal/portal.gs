@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "Portal Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -216,19 +216,10 @@ function registerSelfProject() {
 var _crossProjectSecret = null;
 function getCrossProjectSecret() {
   if (_crossProjectSecret) return _crossProjectSecret;
-  // Portal may not have Master ACL configured — guard against placeholder
-  if (!MASTER_ACL_SPREADSHEET_ID || MASTER_ACL_SPREADSHEET_ID === 'YOUR_MASTER_ACL_SPREADSHEET_ID') return '';
   try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Config');
-    if (!sheet) return '';
-    var data = sheet.getDataRange().getValues();
-    for (var i = 0; i < data.length; i++) {
-      if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
-        _crossProjectSecret = String(data[i][1]).trim();
-        return _crossProjectSecret;
-      }
-    }
+    _crossProjectSecret = PropertiesService.getScriptProperties()
+      .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    return _crossProjectSecret;
   } catch (e) {
     Logger.log('getCrossProjectSecret error: ' + e.message);
   }
@@ -950,6 +941,27 @@ function doGet(e) {
     }
     var cpSessions = listActiveSessionsInternal((e.parameter && e.parameter.callerEmail) || '');
     return ContentService.createTextOutput(JSON.stringify(cpSessions))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Cross-project admin secret distribution — called by globalacl's distributeSecret_()
+  if (action === 'setAdminSecret') {
+    var newSecret = (e.parameter && e.parameter.newSecret) || '';
+    var oldSecret = (e.parameter && e.parameter.oldSecret) || '';
+    if (!newSecret) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'missing_secret' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var props = PropertiesService.getScriptProperties();
+    var current = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    // Accept if: no current secret (first setup) OR oldSecret matches current
+    if (current && oldSecret !== current) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
+    _crossProjectSecret = null; // clear cache
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 

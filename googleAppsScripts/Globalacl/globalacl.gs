@@ -1,4 +1,4 @@
-var VERSION = "v01.16g";
+var VERSION = "v01.17g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -676,58 +676,102 @@ function registerSelfProject() {
 }
 
 /**
- * Ensure a cross-project admin secret exists in the "Config" tab.
- * GlobalACL-only — generates a random 64-char secret if none exists.
- * Other projects read this secret via getCrossProjectSecret().
+ * Ensure a cross-project admin secret exists in Script Properties.
+ * GlobalACL-only — generates a random 64-char secret if none exists,
+ * then pushes it to all registered projects via distributeSecret_().
  */
 function ensureCrossProjectSecret() {
   try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Config');
-    if (!sheet) {
-      sheet = ss.insertSheet('Config');
-    }
-    var data = sheet.getDataRange().getValues();
-    for (var i = 0; i < data.length; i++) {
-      if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
-        return; // Already exists
-      }
-    }
+    var props = PropertiesService.getScriptProperties();
+    var existing = props.getProperty('CROSS_PROJECT_ADMIN_SECRET');
+    if (existing) return;
     // Generate a random 64-character secret
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var secret = '';
     for (var j = 0; j < 64; j++) {
       secret += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    sheet.appendRow(['CROSS_PROJECT_ADMIN_SECRET', secret]);
+    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', secret);
+    // Push to all registered projects
+    distributeSecret_(secret, '');
   } catch (e) {
     Logger.log('ensureCrossProjectSecret error: ' + e.message);
   }
 }
 
 /**
- * In-memory cache for cross-project admin secret (avoids repeated spreadsheet reads).
+ * Push the cross-project admin secret to all registered projects.
+ * @param {string} newSecret — the new secret to distribute
+ * @param {string} oldSecret — the previous secret (empty on first setup)
+ */
+function distributeSecret_(newSecret, oldSecret) {
+  var projects = getRegisteredProjects();
+  var requests = [];
+  for (var i = 0; i < projects.length; i++) {
+    if (projects[i].isSelf || !projects[i].authEnabled) continue;
+    requests.push({
+      url: projects[i].url + '?action=setAdminSecret'
+          + '&newSecret=' + encodeURIComponent(newSecret)
+          + '&oldSecret=' + encodeURIComponent(oldSecret),
+      method: 'get',
+      muteHttpExceptions: true
+    });
+  }
+  if (requests.length > 0) {
+    var responses = UrlFetchApp.fetchAll(requests);
+    for (var j = 0; j < responses.length; j++) {
+      if (responses[j].getResponseCode() !== 200) {
+        Logger.log('distributeSecret_ failed for project index ' + j
+          + ': ' + responses[j].getContentText());
+      }
+    }
+  }
+}
+
+/**
+ * Rotate the cross-project admin secret. Generates a new secret,
+ * distributes it to all projects, then updates local storage.
+ * Called by admin action from the Global Sessions panel.
+ */
+function rotateAdminSecret(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'rotateAdminSecret');
+  checkPermission(user, 'admin', 'rotateAdminSecret');
+
+  var props = PropertiesService.getScriptProperties();
+  var oldSecret = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var newSecret = '';
+  for (var j = 0; j < 64; j++) {
+    newSecret += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  // Push new secret to all projects first (they accept if oldSecret matches)
+  distributeSecret_(newSecret, oldSecret);
+
+  // Update local only after distribution succeeds
+  props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
+  _crossProjectSecret = null; // clear cache
+
+  auditLog('admin_action', user.email, 'rotate_admin_secret', {});
+  return { success: true };
+}
+
+/**
+ * In-memory cache for cross-project admin secret.
  */
 var _crossProjectSecret = null;
 
 /**
- * Read the cross-project admin secret from the "Config" tab of the Master ACL Spreadsheet.
- * Expected layout: Row with "CROSS_PROJECT_ADMIN_SECRET" in col A, value in col B.
+ * Read the cross-project admin secret from Script Properties.
  * Cached in memory for the current execution.
  */
 function getCrossProjectSecret() {
   if (_crossProjectSecret) return _crossProjectSecret;
   try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Config');
-    if (!sheet) return '';
-    var data = sheet.getDataRange().getValues();
-    for (var i = 0; i < data.length; i++) {
-      if (String(data[i][0]).trim() === 'CROSS_PROJECT_ADMIN_SECRET') {
-        _crossProjectSecret = String(data[i][1]).trim();
-        return _crossProjectSecret;
-      }
-    }
+    _crossProjectSecret = PropertiesService.getScriptProperties()
+      .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    return _crossProjectSecret;
   } catch (e) {
     Logger.log('getCrossProjectSecret error: ' + e.message);
   }

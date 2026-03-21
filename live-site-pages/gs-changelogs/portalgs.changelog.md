@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalgs.changelog-archive.md](portalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14g] — 2026-03-20 10:38:42 PM EST — v05.55r
+
+### Changed
+- Cross-project admin secret now stored in secure per-project storage instead of a shared spreadsheet cell
+- Secret updates from the central admin system are now accepted automatically
 
 ## [v01.13g] — 2026-03-20 09:33:47 PM EST — v05.52r
 

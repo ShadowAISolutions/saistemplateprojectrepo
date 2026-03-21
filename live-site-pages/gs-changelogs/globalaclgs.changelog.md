@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17g] — 2026-03-20 10:38:42 PM EST — v05.55r
+
+### Changed
+- Cross-project admin secret now stored in secure per-project storage instead of a shared spreadsheet cell
+- Secret is automatically distributed to all registered projects on first setup
+
+### Added
+- Admin can now rotate the cross-project secret — generates a new one and pushes it to all projects automatically
 
 ## [v01.16g] — 2026-03-20 08:34:24 PM EST — v05.47r
 
