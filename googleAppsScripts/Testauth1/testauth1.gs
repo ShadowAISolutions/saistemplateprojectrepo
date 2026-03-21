@@ -1,4 +1,4 @@
-var VERSION = "v01.88g";
+var VERSION = "v01.89g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2274,28 +2274,31 @@ function doGet(e) {
 
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.
-        // The old iframe guard (window.parent === window.top) is permanently broken because
+        // Only runs on the ?session= path (initial sign-in). Skipped on the ?page_nonce=
+        // path (refresh, tab reclaim, cross-tab sync) because nonces are one-time-use —
+        // a copied nonce URL is already useless, providing equivalent replay protection.
+        // The old iframe guard (window.parent === window.top) was permanently broken because
         // GAS wraps content in multiple nested iframes — window.parent is always Google's
         // wrapper, never window.top, regardless of how the URL is accessed.
-        // This handshake sends a challenge to window.top with PARENT_ORIGIN — only the
-        // correct embedding page receives it. When opened directly, window.top is Google's
-        // shell (different origin), so the challenge is silently dropped and the timeout fires.
-        document.body.style.visibility = 'hidden';
-        var _hsId = Math.random().toString(36).substring(2) + Date.now().toString(36);
-        var _hsOk = false;
-        window.addEventListener('message', function(ev) {
-          if (ev.data && ev.data.type === 'frame-handshake-response' && ev.data.handshakeId === _hsId) {
-            _hsOk = true;
-            document.body.style.visibility = 'visible';
-          }
-        });
-        window.top.postMessage({type: 'frame-handshake-challenge', handshakeId: _hsId}, '${PARENT_ORIGIN}');
-        setTimeout(function() {
-          if (!_hsOk) {
-            document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its authorized embedding page.</p></div>';
-            document.body.style.visibility = 'visible';
-          }
-        }, 2000);
+        var _loadedViaNonce = ${pageNonce ? 'true' : 'false'};
+        if (!_loadedViaNonce) {
+          document.body.style.visibility = 'hidden';
+          var _hsId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+          var _hsOk = false;
+          window.addEventListener('message', function(ev) {
+            if (ev.data && ev.data.type === 'frame-handshake-response' && ev.data.handshakeId === _hsId) {
+              _hsOk = true;
+              document.body.style.visibility = 'visible';
+            }
+          });
+          window.top.postMessage({type: 'frame-handshake-challenge', handshakeId: _hsId}, '${PARENT_ORIGIN}');
+          setTimeout(function() {
+            if (!_hsOk) {
+              document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its authorized embedding page.</p></div>';
+              document.body.style.visibility = 'visible';
+            }
+          }, 2000);
+        }
 
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';
