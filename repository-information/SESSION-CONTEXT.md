@@ -4,6 +4,47 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-21 02:26:02 PM EST
+**Repo version:** v05.64r
+
+### What was done
+GAS auth security improvements across 6 pushes (v05.59r–v05.64r), focused on preventing direct access to `exec?session=TOKEN` URLs:
+
+- **v05.59r** — Added iframe guard to GAS to prevent direct `/exec?session=` URL access from rendering the authenticated app
+- **v05.60r** — Fixed iframe guard: `window.self === window.top` never fires in GAS sandbox (GAS always runs inside Google's own iframe); changed to `window.parent === window.top` which correctly detects direct navigation vs legitimate embedding
+- **v05.61r** — Fixed sign-out race condition: `showAuthWall()` was destroying the GAS iframe before `processSignOut()` could complete server-side session invalidation; restructured to defer DOM clearing until `gas-signed-out` confirmation; added "Signing out..." visual overlay
+- **v05.62r** — Attempted postMessage handshake for GAS iframe auth — goal was to keep session tokens out of URLs entirely. Added `generatePageNonce()` and `validatePageNonce()` server functions
+- **v05.63r** — Fix handshake nonce redirect — discovered GAS sandbox can't navigate itself to `/exec` (different origin); changed to postMessage-to-parent approach
+- **v05.64r** — **Reverted entire handshake flow** — GAS sandbox cross-origin constraints prevent reliable multi-step nonce exchange; restored `?session=` URL parameter for iframe loading; kept iframe guard (`window.parent === window.top`) as the primary defense against direct `/exec` access
+
+### Key learnings about GAS sandbox
+- GAS sandbox runs on `googleusercontent.com` — always nested inside Google's own iframe, so `window.self === window.top` is **ALWAYS false** (dead code)
+- Correct guard for detecting direct navigation: `window.parent === window.top` — when directly navigated, Google's wrapper IS the top; when embedded in our page, Google's wrapper is NOT the top
+- GAS sandbox **cannot navigate itself** to `/exec` (different origin from `googleusercontent.com` to `script.google.com`) — any approach that requires the GAS HTML to redirect itself to the exec URL will fail
+- The postMessage handshake approach was fundamentally blocked by GAS cross-origin sandbox restrictions — three attempts failed before reverting
+
+### Where we left off
+- **OUTSTANDING BUG — PICK UP NEXT SESSION**: The GAS script URL still thinks there is authorization until logout clears it. After the handshake revert, the `?session=` URL parameter flow is restored and sign-in works, but the script appears authenticated when it shouldn't be. Logging out clears it, suggesting stale session state in CacheService or the `?session=` URL parameter persisting across navigations. This was the original issue that prompted this session's security work and remains unresolved
+- The iframe guard (`window.parent === window.top`) is in place and working — direct navigation to bare `/exec` is blocked
+- The `generatePageNonce()` and `validatePageNonce()` functions were kept in the GAS code (not removed during revert) — they may be useful for a future approach
+- CHANGELOG at 98/100 sections — approaching archive rotation threshold
+
+### Key decisions made
+- **Reverted handshake, kept iframe guard** — the handshake was too ambitious given GAS sandbox constraints; the iframe guard provides meaningful protection against casual direct URL access
+- **`window.parent === window.top`** — the correct cross-origin check for GAS sandbox nesting
+- **Sign-out race condition fix** — server must confirm session invalidation before DOM is cleared; "Signing out..." overlay provides visual feedback during the round-trip
+
+### Active context
+- Branch: `claude/fix-gas-auth-issue-lsTca`
+- Repo version: v05.64r
+- CHANGELOG at 98/100 sections (2 away from archive rotation)
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-20 11:31:06 PM EST
 **Repo version:** v05.58r
 
@@ -22,41 +63,6 @@ Major security, UX, and infrastructure improvements across 10 pushes (v05.49r–
 
 ### Where we left off
 - All changes committed and pushed through v05.58r
-- **Approved plan pending implementation**: Auto-initialize HMAC_SECRET and CACHE_EPOCH — plan approved but was the session's last push (v05.56r already implemented this; the plan in the plan file may be stale/from before implementation)
 - GAS project setup is now nearly zero-config: only `GITHUB_TOKEN` needs manual entry; `CACHE_EPOCH`, `HMAC_SECRET`, and `CROSS_PROJECT_ADMIN_SECRET` are all auto-managed
-- CHANGELOG at 92/100 sections (getting close to archive rotation threshold)
-
-### Key decisions made
-- **Auth wall deactivation pattern** — disable all interactive UI behind auth wall rather than just hiding content; prevents partial interaction states
-- **Script Properties over spreadsheet for secrets** — `CROSS_PROJECT_ADMIN_SECRET` moved from spreadsheet metadata row to Script Properties for better security (not visible in spreadsheet UI)
-- **GlobalACL distributes secrets** — GlobalACL is the single source of truth for `CROSS_PROJECT_ADMIN_SECRET`; it auto-distributes to registered projects via their deployment URLs
-- **Auto-initialize on deploy** — `ensureScriptProperties_()` runs at end of `pullAndDeployFromGitHub()` with "if not exists" guards, safe for existing projects
-- **Only GITHUB_TOKEN manual** — all other Script Properties are auto-managed, simplifying the setup guide
-
-### Active context
-- Branch: `claude/add-app-access-toggle-wl5VC`
-- Repo version: v05.58r
-- CHANGELOG at 92/100 sections
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-20 08:47:30 PM EST
-**Repo version:** v05.48r
-
-### What was done
-Several ACL infrastructure improvements across 4 pushes:
-
-- **v05.45r** — Connected Portal to Global ACL
-- **v05.46r** — Auto-add Access tab column on project registration
-- **v05.47r** — **Major: Consolidated Projects tab into Access tab metadata rows** — `#`-prefixed metadata rows (#NAME, #URL, #AUTH) in rows 2-4
-- **v05.48r** — Added Global ACL to the portal's PORTAL_APPS registry
-
-### Where we left off
-- All changes committed and pushed through v05.48r
-- Access tab layout: Row 1 = headers, Rows 2-4 = metadata, Rows 5+ = user data
 
 Developed by: ShadowAISolutions
