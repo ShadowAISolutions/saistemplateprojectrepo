@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v01.84g] — 2026-03-21 02:51:28 PM EST — v05.65r
+
+### Changed
+- Direct access to the script URL with a session token is now blocked — only one-time-use tokens are accepted
+- Session token lifetime for URL loading increased from 30 to 60 seconds
+
+### Added
+- Secure token generation endpoint for the embedding page to request one-time-use access tokens
 
 ## [v01.83g] — 2026-03-21 01:01:38 PM EST — v05.64r
 

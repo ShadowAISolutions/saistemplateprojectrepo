@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v05.65r] — 2026-03-21 02:51:28 PM EST
+
+> **Prompt:** "continuing where we left off last time, we were trying to make it so that the script link would not be auto authenticated when opened by itself. think deep and research online about this issue"
+
+### Changed
+- Replaced all `?session=TOKEN` iframe loads with one-time-use `?page_nonce=NONCE` flow — session tokens no longer appear in any URL
+- Hard-blocked `?session=` parameter in GAS `doGet()` — direct URL access with session tokens is now rejected
+
+### Added
+- `action=getNonce` listener route in GAS `doGet()` — generates one-time-use page nonces via `google.script.run.generatePageNonce()`
+- `loadIframeViaNonce()` helper function in testauth1.html — centralizes the two-step nonce flow for all authenticated iframe loads
+- `gas-nonce-ready` and `gas-nonce-result` postMessage handlers for the nonce generation flow
+- Increased page nonce TTL from 30 seconds to 60 seconds for the two-step flow
+
+#### `testauth1.html` — v02.53w
+##### Changed
+- Sign-in, session restore, tab reclaim, and cross-tab sync all now use nonce-based iframe loading instead of direct session token URLs
+- Session tokens are never exposed in browser history, network logs, or shareable URLs
+
+#### `testauth1.gs` — v01.84g
+##### Added
+- Nonce generation listener page (`action=getNonce`) for secure iframe loading
+##### Changed
+- Direct `?session=` parameter access is now hard-blocked — serves auth wall instead of authenticated content
+- Page nonce TTL increased from 30s to 60s
 
 ## [v05.64r] — 2026-03-21 01:01:38 PM EST
 

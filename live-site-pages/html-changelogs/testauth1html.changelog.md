@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v02.53w] — 2026-03-21 02:51:28 PM EST — v05.65r
+
+### Changed
+- Session tokens are no longer exposed in browser URLs — all authentication now uses one-time-use tokens that expire in 60 seconds
+- Sign-in, session restore, and tab switching all use the new secure token flow
 
 ## [v02.52w] — 2026-03-21 01:01:38 PM EST — v05.64r
 
