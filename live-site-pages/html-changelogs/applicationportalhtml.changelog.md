@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-03-22 12:29:36 PM EST — v06.00r
+
+### Changed
+- Reconnecting message now mentions that sign-in for linked apps is being prepared
 
 ## [v01.12w] — 2026-03-22 12:23:54 PM EST — v05.99r
 

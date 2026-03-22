@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v06.00r] — 2026-03-22 12:29:36 PM EST
+
+> **Prompt:** "when the application portal is reconnecting, have it mentions something like GIS re-auth is going to happen, but in more user understandable words"
+
+### Changed
+- Application Portal reconnecting subtitle now says "Verifying your session and preparing sign-in for linked apps" to inform users that SSO will be refreshed
+
+#### `applicationportal.html` — v01.13w
+
+##### Changed
+- Reconnecting subtitle updated to mention linked app sign-in preparation
 
 ## [v05.99r] — 2026-03-22 12:23:54 PM EST
 
