@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v05.95r] — 2026-03-22 01:26:48 AM EST
+
+> **Prompt:** "its still saying signing in on the setting up your session page, it should be mentioned there if its signing in via the portal or not there"
+
+### Fixed
+- Fixed SSO sign-in subtitle not showing — the subtitle was being set before `exchangeToken()` which calls `showSigningIn()` and resets it. Now the subtitle is set after `exchangeToken()` so "Signing in via Application Portal" is visible during SSO authentication
+
+#### `applicationportal.html` — v01.09w
+
+##### Fixed
+- "Signing in via [source]" subtitle now correctly displays during SSO authentication
+
+#### `testauth1.html` — v02.65w
+
+##### Fixed
+- "Signing in via [source]" subtitle now correctly displays during SSO authentication
 
 ## [v05.94r] — 2026-03-22 01:19:31 AM EST
 
