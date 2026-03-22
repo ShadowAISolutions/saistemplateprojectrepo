@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v05.81r] — 2026-03-21 08:08:47 PM EST
+
+> **Prompt:** "proceed with the detailed implementation plan, add a note somewhere so we can easily revert to how it currently is should our update not work"
+
+### Added
+- Created pre-SSO backups of `portal.html` and `testauth1.html` in `repository-information/backups/`
+- Added `SSO-REVERT-INSTRUCTIONS.md` with step-by-step revert procedure
 
 ## [v05.80r] — 2026-03-21 07:08:43 PM EST
 

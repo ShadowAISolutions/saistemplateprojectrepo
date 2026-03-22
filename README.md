@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-21 07:08:43 PM EST` · Repo version: `v05.80r`
+Last updated: `2026-03-21 08:08:47 PM EST` · Repo version: `v05.81r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -194,7 +194,11 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SKILLS-REFERENCE.md">SKILLS-REFERENCE.md</a>     — [template] Complete Claude Code skills inventory (custom + imported + bundled)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/repository.version.txt">repository.version.txt</a>  — [template] Repo version (v01.XXr — bumps every push)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/TOKEN-BUDGETS.md">TOKEN-BUDGETS.md</a>        — [template] Token cost reference for CLAUDE.md
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md">SUPPORT.md</a>              — [template] Getting help
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/SUPPORT.md">SUPPORT.md</a>              — [template] Getting help
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information/backups">backups/</a>                — Pre-change backups for safe rollback
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/backups/SSO-REVERT-INSTRUCTIONS.md">SSO-REVERT-INSTRUCTIONS.md</a>        — How to revert SSO changes
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/backups/portal.html.pre-sso.bak">portal.html.pre-sso.bak</a>           — Portal backup (v01.18w, pre-SSO)
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/backups/testauth1.html.pre-sso.bak">testauth1.html.pre-sso.bak</a>        — Testauth1 backup (v02.61w, pre-SSO)
 │
 <b>─── Claude Code ──────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/CLAUDE.md">CLAUDE.md</a>                   — [template] Developer instructions
