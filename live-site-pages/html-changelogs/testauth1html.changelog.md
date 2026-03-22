@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v02.64w] — 2026-03-22 01:19:31 AM EST — v05.94r
+
+### Changed
+- Sign-in screen now shows which page provided your credentials when signing in via SSO
 
 ## [v02.63w] — 2026-03-22 01:03:31 AM EST — v05.93r
 
