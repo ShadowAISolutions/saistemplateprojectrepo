@@ -4,33 +4,35 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-21 09:05:41 PM EST
-**Repo version:** v05.82r
+**Date:** 2026-03-21 11:50:35 PM EST
+**Repo version:** v05.91r
 
 ### What was done
-Multi-tab project opener and HIPAA SSO planning across 4 pushes (v05.79r–v05.82r):
+HIPAA SSO implementation and applicationportal standalone setup across 5 pushes (v05.87r–v05.91r):
 
-- **v05.79r** — Created `open-all.html` utility page in `live-site-pages/` — a lightweight page that opens all project URLs in separate browser tabs with staggered timing (200ms delay between tabs to avoid browser pop-up blockers). Uses the version-polling infrastructure for auto-refresh
-- **v05.80r** — Added multi-tab project opener link to portal page — portal now has a "Open All Projects" button/link that navigates to `open-all.html`, giving users one-click access to launch all project pages simultaneously
-- **v05.81r** — Created pre-SSO backup system: backed up all 6 HTML pages, all GAS scripts, all config files, and key infrastructure files to `repository-information/backups/pre-sso-backup/`. Created `repository-information/backups/pre-sso-backup/REVERT-INSTRUCTIONS.md` with git-based revert commands
-- **v05.82r** — Created comprehensive HIPAA-compliant SSO implementation plan (`repository-information/12-HIPAA-SSO-IMPLEMENTATION-PLAN.md`). 12-phase plan covering: Google OAuth integration, BroadcastChannel session sync across tabs, GAS server-side HMAC verification, automatic session timeout (15min), audit logging, and graceful degradation. Includes HIPAA §164.312 compliance mapping and rollback procedures per phase
+- **v05.87r** — Decoupled applicationportal from portal's GAS deployment. Reset deployment ID to placeholder, restored `TOKEN_EXCHANGE_METHOD: 'postMessage'` to match hipaa GAS preset. Applicationportal is now a standalone project
+- **v05.88r** — Set applicationportal to use portal's deployment ID (`AKfycbzKwEfBKj5mOy4aBtg-nWycCRO8R21s405WoJHR3dLBtPxc3SA4qfzNaQ6OGVlQE7Xm`). User replaced the GAS code in portal's Apps Script project with applicationportal.gs (hipaa preset). Updated `_e`, config.json, .gs, and workflow
+- **v05.89r** — Added `[AUTH DEBUG]` console logging to applicationportal.html postMessage handler to trace auth flow (exchangeToken, exchangeViaPostMessage, all GAS message types)
+- **v05.90r** — Fixed `ReferenceError: pageNonce is not defined` in applicationportal.gs `doGet()`. Added missing `pageNonce` extraction from `e.parameter.page_nonce` and `validatePageNonce()` function — both were present in testauth1.gs but missing from applicationportal.gs. This was the root cause of sign-in getting stuck on "Setting up your session..."
+- **v05.91r** — Added full portal dashboard UI to applicationportal.gs. Replaced the debug "1" placeholder with portal's complete app cards grid, access filter toggle, open mode toggle, dark gradient theme, and `getUserAppAccess()` function for ACL-based visibility
 
 ### Key decisions made
-- **Pre-SSO backups before any auth changes** — full backup of all pages and GAS scripts before beginning SSO implementation, with documented revert instructions
-- **BroadcastChannel for multi-tab session sync** — same-origin, no server round-trips, aligns with existing BroadcastChannel usage in the codebase
-- **Google OAuth as SSO provider** — leverages existing Google sign-in infrastructure already in testauth1
-- **12-phase incremental approach** — each phase is independently testable and revertible, with pause points for developer verification
+- **applicationportal replaces portal** — the user wants to use applicationportal exclusively, not portal. Portal's deployment ID is reused by applicationportal
+- **applicationportal.gs uses hipaa preset** (`ACTIVE_PRESET = 'hipaa'`) with `TOKEN_EXCHANGE_METHOD: 'postMessage'` — differs from portal.gs which used standard preset
+- **User manually deploys GAS code** — applicationportal.gs is maintained in the repo, user copies it to the Apps Script editor and deploys (Deploy → Manage deployments → New version)
+- **Debug logging added** — `[AUTH DEBUG]` console logs remain in applicationportal.html for troubleshooting. Can be removed once auth flow is confirmed stable
 
 ### Where we left off
-- HIPAA SSO implementation plan is complete and ready for execution
-- Pre-SSO backups are in place at `repository-information/backups/pre-sso-backup/`
-- Next step: begin Phase 1 of the SSO implementation plan (Google OAuth shared module extraction from testauth1)
-- 6 pages remain: index, testenvironment, testauth1, portal, globalacl, gas-project-creator
-- Plus 1 utility page: open-all.html
+- Applicationportal is fully functional with the portal dashboard UI
+- User needs to copy updated applicationportal.gs (v01.05g) to their Apps Script project and deploy a new version to see the dashboard
+- The `[AUTH DEBUG]` console logs are still in applicationportal.html — remove them once auth is confirmed working
+- ACL spreadsheet needs an "applicationportal" column (if not already present) for per-page access control
+- The PORTAL_APPS array in applicationportal.gs is hardcoded — to add/remove apps, edit that array
 
 ### Active context
-- Branch: `claude/multi-tab-project-link-6izHU`
-- Repo version: v05.82r
+- Branch: `claude/hipaa-sso-implementation-s5t0I`
+- Repo version: v05.91r
+- applicationportal.html: v01.05w, applicationportal.gs: v01.05g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -38,19 +40,19 @@ Multi-tab project opener and HIPAA SSO planning across 4 pushes (v05.79r–v05.8
 
 ## Previous Sessions
 
-**Date:** 2026-03-21 06:36:52 PM EST
-**Repo version:** v05.78r
+**Date:** 2026-03-21 09:05:41 PM EST
+**Repo version:** v05.82r
 
 ### What was done
-Template infrastructure fixes across 4 pushes (v05.75r–v05.78r):
+Multi-tab project opener and HIPAA SSO planning across 4 pushes (v05.79r–v05.82r):
 
-- **v05.75r** — Standardized GAS version file format to pipe-delimited (`|v01.90g|`) matching HTML version file format
-- **v05.76r** — Extended pipe-delimited format standardization to GAS version polling comparison logic
-- **v05.77r** — Fixed pipe characters leaking into GAS changelog popup title across all 7 pages and 2 templates
-- **v05.78r** — Removed testauth2 environment entirely (shared testauth1's GAS backend)
+- **v05.79r** — Created `open-all.html` utility page
+- **v05.80r** — Added multi-tab project opener link to portal page
+- **v05.81r** — Created pre-SSO backup system
+- **v05.82r** — Created comprehensive HIPAA-compliant SSO implementation plan
 
 ### Where we left off
-- All GAS version display clean — no pipe leakage
-- testauth2 removed, 6 pages remaining
+- HIPAA SSO implementation plan complete and ready for execution
+- Pre-SSO backups in place
 
 Developed by: ShadowAISolutions
