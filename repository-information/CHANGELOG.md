@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v06.01r] — 2026-03-22 12:33:58 PM EST
+
+> **Prompt:** "the application portal is back to saying \uD83D\uDD10 and \uD83C\uDF10 , fix it so it doesnt"
+
+### Fixed
+- Application Portal GAS script emoji rendering — replaced double-escaped Unicode surrogate pairs (`\\uD83D\\uDD10`) with actual emoji characters so they display correctly instead of showing raw escape codes
+
+#### `applicationportal.gs` — v01.06g
+
+##### Fixed
+- All emoji now render correctly instead of showing as `\uD83D\uDD10` escape codes
 
 ## [v06.00r] — 2026-03-22 12:29:36 PM EST
 

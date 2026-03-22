@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06g] — 2026-03-22 12:33:58 PM EST — v06.01r
+
+### Fixed
+- All emoji icons now display correctly instead of showing as escape codes
 
 ## [v01.05g] — 2026-03-21 11:48:05 PM EST — v05.91r
 

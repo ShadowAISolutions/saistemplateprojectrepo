@@ -1,4 +1,4 @@
-var VERSION = "v01.05g";
+var VERSION = "v01.06g";
 var TITLE = "Application Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2290,12 +2290,12 @@ function doGet(e) {
       </div>
 
       <div class="portal-section" id="portal-section-auth">
-        <h2 class="portal-section-title">\\uD83D\\uDD10 Authentication-Enabled Applications</h2>
+        <h2 class="portal-section-title">🔐 Authentication-Enabled Applications</h2>
         <div class="portal-apps" id="portal-apps-auth"></div>
         <div class="portal-empty" id="portal-empty-auth" style="display:none">No authorized applications</div>
       </div>
       <div class="portal-section" id="portal-section-public">
-        <h2 class="portal-section-title">\\uD83C\\uDF10 Public Applications</h2>
+        <h2 class="portal-section-title">🌐 Public Applications</h2>
         <div class="portal-apps" id="portal-apps-public"></div>
       </div>
 
@@ -2333,11 +2333,11 @@ function doGet(e) {
         var ACL_CONFIGURED = ${Object.keys(userAppAccess).length > 0 ? 'true' : 'false'};
 
         var PORTAL_APPS = [
-          { name: 'Global ACL', url: 'globalacl.html', icon: '\\uD83D\\uDEE1', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
-          { name: 'Test Auth 1', url: 'testauth1.html', icon: '\\uD83D\\uDD10', description: 'Authentication testing environment with full security features.', requiresAuth: true },
-          { name: 'Test Environment', url: 'testenvironment.html', icon: '\\uD83E\\uDDEA', description: 'General testing environment for development.', requiresAuth: false },
-          { name: 'Homepage', url: 'index.html', icon: '\\uD83C\\uDFE0', description: 'Main landing page.', requiresAuth: false },
-          { name: 'GAS Project Creator', url: 'gas-project-creator.html', icon: '\\u2699\\uFE0F', description: 'Create and configure new Google Apps Script projects.', requiresAuth: false }
+          { name: 'Global ACL', url: 'globalacl.html', icon: '🛡', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
+          { name: 'Test Auth 1', url: 'testauth1.html', icon: '🔐', description: 'Authentication testing environment with full security features.', requiresAuth: true },
+          { name: 'Test Environment', url: 'testenvironment.html', icon: '🧪', description: 'General testing environment for development.', requiresAuth: false },
+          { name: 'Homepage', url: 'index.html', icon: '🏠', description: 'Main landing page.', requiresAuth: false },
+          { name: 'GAS Project Creator', url: 'gas-project-creator.html', icon: '⚙️', description: 'Create and configure new Google Apps Script projects.', requiresAuth: false }
         ];
 
         // Compute userHasAccess for each app
@@ -2450,7 +2450,7 @@ function doGet(e) {
               + '<span class="app-name">' + app.name + '</span>'
               + '<span class="app-desc">' + app.description + '</span>'
               + '<span class="app-status' + (app.requiresAuth ? ' connected' : '') + '">'
-              + (app.requiresAuth ? '\\uD83D\\uDD12 Auth-enabled' : '\\uD83C\\uDF10 Public') + '</span>';
+              + (app.requiresAuth ? '🔒 Auth-enabled' : '🌐 Public') + '</span>';
 
             if (app.requiresAuth) {
               authContainer.appendChild(card);
