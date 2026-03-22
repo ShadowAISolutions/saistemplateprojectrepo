@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v05.86r] — 2026-03-21 11:01:21 PM EST
+
+> **Prompt:** "the application portal, im stuck in signing in page even though we are getting login success in the session log"
+
+### Fixed
+- Fixed applicationportal sign-in getting stuck on "Signing in..." — changed TOKEN_EXCHANGE_METHOD from 'postMessage' to 'url' to match the deployed GAS backend's standard preset configuration
+
+#### `applicationportal.html` — v01.02w
+
+##### Fixed
+- Sign-in no longer gets stuck on "Signing in..." screen
 
 ## [v05.85r] — 2026-03-21 10:45:49 PM EST
 
