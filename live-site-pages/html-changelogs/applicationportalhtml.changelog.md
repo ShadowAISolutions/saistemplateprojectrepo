@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-03-22 12:45:46 PM EST — v06.02r
+
+### Changed
+- SSO preparation now happens during reconnect instead of after sign-in completes
 
 ## [v01.13w] — 2026-03-22 12:29:36 PM EST — v06.00r
 

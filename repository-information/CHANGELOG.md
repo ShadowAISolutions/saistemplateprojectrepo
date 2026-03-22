@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v06.02r] — 2026-03-22 12:45:46 PM EST
+
+> **Prompt:** "in the application portal, the silent GIS re-auth is showing after the application portal is already visible, can it happen while we are reconnecting instead?"
+
+### Changed
+- Moved silent GIS token re-acquisition from the `gas-auth-ok` handler (after app is visible) to the reconnect path (while "Reconnecting..." overlay is shown), so it runs in parallel with session verification and completes before the app appears
+
+#### `applicationportal.html` — v01.14w
+
+##### Changed
+- SSO token re-acquisition now happens during reconnect overlay instead of after app is shown
+
+#### `testauth1.html` — v02.69w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.15w
+
+##### Changed
+- Minor internal improvements
 
 ## [v06.01r] — 2026-03-22 12:33:58 PM EST
 

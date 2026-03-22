@@ -1840,20 +1840,6 @@
           // Re-acquire Google access token for SSO sharing after reconnect.
           // On page refresh, _ssoAccessToken is lost (in-memory only). Without
           // this, the page cannot respond to sso-token-request from child apps.
-          if (HTML_CONFIG.SSO_PROVIDER && !_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
-            var ssoRefreshClient = google.accounts.oauth2.initTokenClient({
-              client_id: CLIENT_ID,
-              scope: 'openid email profile',
-              prompt: '',  // silent — no user interaction
-              callback: function(response) {
-                if (!response.error && response.access_token) {
-                  _ssoAccessToken = response.access_token;
-                  console.debug('[SSO] Re-acquired access token after reconnect');
-                }
-              }
-            });
-            ssoRefreshClient.requestAccessToken();
-          }
         } else if (data.needsReauth) {
           showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
         }
@@ -3033,6 +3019,23 @@
         // storage can trick the page into hiding the auth wall on reload.
         _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
         showReconnecting();
+        // Re-acquire Google access token for SSO sharing while reconnecting.
+        // Runs in parallel with GAS session verification so the token is ready
+        // by the time the app is shown — no visible prompt to the user.
+        if (HTML_CONFIG.SSO_PROVIDER && !_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+          var ssoRefreshClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: 'openid email profile',
+            prompt: '',  // silent — no user interaction
+            callback: function(response) {
+              if (!response.error && response.access_token) {
+                _ssoAccessToken = response.access_token;
+                console.debug('[SSO] Re-acquired access token during reconnect');
+              }
+            }
+          });
+          ssoRefreshClient.requestAccessToken();
+        }
       } else {
         // No session — the iframe IIFE created the element without navigating it
         // (no src set on auth pages). The auth flow (exchangeViaUrl) will set

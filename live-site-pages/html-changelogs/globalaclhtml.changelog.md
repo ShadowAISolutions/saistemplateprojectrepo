@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-03-22 12:45:46 PM EST — v06.02r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.14w] — 2026-03-22 12:23:54 PM EST — v05.99r
 
