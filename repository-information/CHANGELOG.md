@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v06.03r] — 2026-03-22 12:51:12 PM EST
+
+> **Prompt:** "wait now its not doing the silent GIS re-auth at all"
+
+### Fixed
+- SSO token re-acquisition now polls for GIS library readiness (up to 5s) instead of checking once — GIS loads async and wasn't available when the reconnect IIFE ran at page load
+
+#### `applicationportal.html` — v01.15w
+
+##### Fixed
+- SSO token re-acquisition waits for GIS library to load during reconnect
+
+#### `testauth1.html` — v02.70w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.16w
+
+##### Changed
+- Minor internal improvements
 
 ## [v06.02r] — 2026-03-22 12:45:46 PM EST
 
