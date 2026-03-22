@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v05.91r] — 2026-03-21 11:48:05 PM EST
+
+> **Prompt:** "we are in!, but now add all of the gas features that we had in the "portal" to the "applicationportal""
+
+### Added
+- Added full portal dashboard UI to applicationportal.gs — replaces the debug "1" placeholder with the complete application portal: app cards grid, access filter toggle, open mode toggle, per-user ACL access display
+- Added `getUserAppAccess()` function to applicationportal.gs — reads per-page access from the master ACL spreadsheet
+
+#### `applicationportal.gs` — v01.05g
+
+##### Added
+- Full portal dashboard with app cards, access toggles, and styled UI — replaces debug placeholder
+- Per-user app access display from ACL spreadsheet
 
 ## [v05.90r] — 2026-03-21 11:40:26 PM EST
 

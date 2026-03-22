@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05g] — 2026-03-21 11:48:05 PM EST — v05.91r
+
+### Added
+- Full portal dashboard with app cards, access toggles, and ACL-based visibility
 
 ## [v01.04g] — 2026-03-21 11:40:26 PM EST — v05.90r
 
