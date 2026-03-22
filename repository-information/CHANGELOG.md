@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v05.89r] — 2026-03-21 11:34:54 PM EST
+
+> **Prompt:** "we are getting login success again, but still stuck on the signing in setting up your session page"
+
+### Added
+- Debug logging in applicationportal.html postMessage handler to trace auth flow — logs every GAS message type, pending token state, and session state to browser console
+
+#### `applicationportal.html` — v01.05w
+
+##### Added
+- Console debug logging for auth flow troubleshooting — shows all postMessage traffic and auth state
 
 ## [v05.88r] — 2026-03-21 11:25:17 PM EST
 

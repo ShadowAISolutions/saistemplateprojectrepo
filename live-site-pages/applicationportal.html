@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -1213,6 +1213,7 @@
 
     function exchangeToken(googleAccessToken) {
       _iframeLoadTime = Date.now();
+      console.log('[AUTH DEBUG] exchangeToken called, method:', HTML_CONFIG.TOKEN_EXCHANGE_METHOD, '| token length:', googleAccessToken ? googleAccessToken.length : 0);
       showSigningIn();
       if (HTML_CONFIG.TOKEN_EXCHANGE_METHOD === 'postMessage') {
         exchangeViaPostMessage(googleAccessToken);
@@ -1242,10 +1243,11 @@
       _pendingNonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
         .map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp) return;
+      if (!gasApp) { console.log('[AUTH DEBUG] exchangeViaPostMessage: gas-app iframe not found!'); return; }
       var baseUrl = gasApp.dataset.baseUrl || '';
-      if (!baseUrl) return;
+      if (!baseUrl) { console.log('[AUTH DEBUG] exchangeViaPostMessage: baseUrl is empty!'); return; }
 
+      console.log('[AUTH DEBUG] exchangeViaPostMessage: reloading iframe to baseUrl, nonce:', _pendingNonce.substring(0, 8) + '...');
       // Reload iframe to get a fresh postMessage listener page
       gasApp.src = baseUrl;
     }
@@ -1443,6 +1445,16 @@
     window.addEventListener('message', function(event) {
       var data = event.data;
       if (!data || typeof data !== 'object') return;
+
+      // ── DEBUG: Log all GAS postMessages for auth flow troubleshooting ──
+      if (data.type) {
+        console.log('[AUTH DEBUG] postMessage received:', data.type,
+          '| origin:', event.origin,
+          '| _pendingToken:', !!_pendingToken,
+          '| _expectingSession:', _expectingSession,
+          '| _pendingSessionShow:', !!_pendingSessionShow,
+          '| data:', JSON.stringify(data).substring(0, 200));
+      }
 
       // Layer 0: Origin validation — reject messages from unexpected origins (Phase 2 — H-2)
       if (!_isValidGasOrigin(event.origin)) {
