@@ -3131,6 +3131,24 @@
     (function() {
       var session = loadSession();
       if (session.token) {
+        // With localStorage, stale sessions persist across browser restarts.
+        // Check if the absolute timeout has passed — if so, clear the stale
+        // session immediately instead of showing "Reconnecting" and waiting
+        // for the server round-trip to confirm expiry.
+        var absStart = parseInt(getStorage().getItem(ABSOLUTE_START_KEY) || '0', 10);
+        var sessStart = parseInt(getStorage().getItem(SESSION_START_KEY) || '0', 10);
+        if (absStart && (Date.now() - absStart) / 1000 > ABSOLUTE_SESSION_DURATION) {
+          clearSession();
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+        // Also check rolling session timeout (no heartbeat to extend on page load)
+        if (sessStart && (Date.now() - sessStart) / 1000 > SERVER_SESSION_DURATION) {
+          clearSession();
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+
         // Resume existing session — load GAS iframe with session token directly.
         // Using ?session= is safe here: the postMessage handshake guard blocks
         // direct URL access (copied URLs show "Access denied"). The nonce flow

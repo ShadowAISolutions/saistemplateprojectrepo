@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.21w] — 2026-03-22 03:06:49 PM EST — v06.10r
+
+### Fixed
+- No longer shows "Reconnecting" when opening the page fresh after a session has expired
 
 ## [v01.20w] — 2026-03-22 02:30:05 PM EST — v06.07r
 
