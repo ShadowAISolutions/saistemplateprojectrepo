@@ -1099,6 +1099,12 @@
     // Security: messages contain only tabId (no tokens, emails, or session data).
     var _rollCallResponses = {};  // { tabId: true } — collected during a roll call window
 
+    // SSO — ephemeral cross-page token sharing via BroadcastChannel
+    // Tokens live in memory only (HIPAA) — never persisted to storage
+    var _ssoAccessToken = null;  // Google access token held for SSO sharing
+    var _ssoUserEmail = null;    // Confirmed email after GAS validation
+    var _ssoChannel = null;      // BroadcastChannel('sais-sso-auth') — created in SSO section
+
     function getStorage() {
       return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
         ? window.sessionStorage
@@ -1142,6 +1148,9 @@
       // Phase 6 (H-4): Reset timer enforcer for next session
       _sessionTimerEnforcer.reset();
       _gasAuthOkHandled = false;
+      // SSO: clear held tokens
+      _ssoAccessToken = null;
+      _ssoUserEmail = null;
     }
 
     // =============================================
@@ -1204,6 +1213,7 @@
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
+      _ssoAccessToken = response.access_token;  // Hold for SSO sharing
       exchangeToken(response.access_token);
     }
 
@@ -2126,6 +2136,41 @@
     }
 
     // =============================================
+    // AUTH — SSO (Cross-Page Token Sharing)
+    // =============================================
+
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        _ssoChannel = new BroadcastChannel('sais-sso-auth');
+        _ssoChannel.onmessage = function(e) {
+          if (!e.data) return;
+
+          // Another page is requesting a token — respond if we have one
+          if (e.data.type === 'sso-token-request') {
+            if (_ssoAccessToken && _ssoUserEmail) {
+              _ssoChannel.postMessage({
+                type: 'sso-token-response',
+                accessToken: _ssoAccessToken,
+                email: _ssoUserEmail,
+                sourceTabId: _tabId,
+                sourcePage: _pageName,
+                sourceDisplayName: document.title
+              });
+            }
+          }
+
+          // Another page signed out — propagate sign-out
+          if (e.data.type === 'sso-sign-out' && e.data.tabId !== _tabId) {
+            clearSession();
+            stopCountdownTimers();
+            stopHeartbeat();
+            showAuthWall('Signed out from ' + (e.data.source || 'another page') + '.');
+          }
+        };
+      } catch(e) { /* BroadcastChannel not available */ }
+    }
+
+    // =============================================
     // AUTH — UI State Management
     // =============================================
 
@@ -2204,6 +2249,7 @@
     }
 
     function showApp(email, displayName, role) {
+      if (email) _ssoUserEmail = email;  // Hold for SSO sharing
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
       var emailDisplay = document.getElementById('user-email-display');
@@ -2690,6 +2736,19 @@
       if (_signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out' });
       }
+      // SSO cross-page sign-out — only propagate deliberate sign-outs.
+      // Session expiry ('session-expired', 'absolute-expired') is page-local —
+      // each page has its own independent GAS session and timeout.
+      // Only a user-initiated sign-out should sign out all connected pages.
+      if (_ssoChannel && reason !== 'session-expired' && reason !== 'absolute-expired') {
+        try {
+          _ssoChannel.postMessage({
+            type: 'sso-sign-out',
+            source: _pageName,
+            tabId: _tabId
+          });
+        } catch(e) {}
+      }
 
       // Determine the auth wall message based on sign-out reason
       var message = 'You have been signed out.';
@@ -3016,6 +3075,58 @@
       }
     });
 
+    function attemptSSOAuth() {
+      if (typeof BroadcastChannel === 'undefined' || !_ssoChannel) return false;
+
+      var _ssoTimeout = null;
+      var _ssoHandled = false;
+
+      // Temporarily wrap the response handler
+      var _origHandler = _ssoChannel.onmessage;
+      _ssoChannel.onmessage = function(e) {
+        // Delegate to original handler for non-response messages
+        if (e.data && e.data.type !== 'sso-token-response') {
+          if (_origHandler) _origHandler(e);
+          return;
+        }
+
+        if (!_ssoHandled && e.data && e.data.type === 'sso-token-response' && e.data.accessToken) {
+          _ssoHandled = true;
+          clearTimeout(_ssoTimeout);
+          // Restore original handler
+          _ssoChannel.onmessage = _origHandler;
+          // Exchange the received token with our GAS backend
+          _ssoAccessToken = e.data.accessToken;
+          exchangeToken(e.data.accessToken);
+          // Show SSO-specific signing-in message AFTER exchangeToken(),
+          // because exchangeToken() calls showSigningIn() which resets the subtitle
+          var subtitle = document.getElementById('signing-in-subtitle');
+          if (subtitle) {
+            subtitle.textContent = 'Signing in via ' + (e.data.sourceDisplayName || e.data.sourcePage || 'SSO');
+          }
+        }
+      };
+
+      // Broadcast token request
+      _ssoChannel.postMessage({
+        type: 'sso-token-request',
+        tabId: _tabId,
+        pageName: _pageName
+      });
+
+      // Fallback: if no response in 2 seconds, show auth wall
+      _ssoTimeout = setTimeout(function() {
+        if (!_ssoHandled) {
+          _ssoHandled = true;
+          _ssoChannel.onmessage = _origHandler;
+          // No SSO provider available — show auth wall for manual sign-in
+          showAuthWall();
+        }
+      }, 2000);
+
+      return true; // SSO attempt in progress
+    }
+
     // On page load: check for existing session or start sign-in
     (function() {
       var session = loadSession();
@@ -3073,9 +3184,14 @@
         var sessionWasExpired = sessionStorage.getItem(SESSION_EXPIRED_FLAG);
         sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
         if (sessionWasExpired) {
+          // Session explicitly expired — don't try SSO, show expiry message
           showAuthWall('Session expired. Click "Sign In with Google" to continue.');
         } else {
-          showAuthWall();
+          // Try SSO: ask other auth pages for a token via BroadcastChannel.
+          // Falls back to auth wall after 2 seconds if no response.
+          if (!attemptSSOAuth()) {
+            showAuthWall();
+          }
         }
       }
     })();
