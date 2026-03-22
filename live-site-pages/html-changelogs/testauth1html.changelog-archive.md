@@ -8,6 +8,87 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.26w] — 2026-03-17 10:56:34 PM EST — v04.65r — [merged]
+
+### Fixed
+- Session timer protection now works on all sign-in paths including session resume from stored tokens
+
+## [v02.25w] — 2026-03-17 10:43:37 PM EST — v04.64r — [merged]
+
+### Fixed
+- Session timer protection now properly prevents modification via browser console
+- Security test panel signature verification now works correctly when signed in
+
+## [v02.24w] — 2026-03-17 10:14:46 PM EST — v04.62r — [merged]
+
+### Changed
+- Session timeout values are now tamper-proof — cannot be modified via browser DevTools to prevent automatic logoff
+
+## [v02.23w] — 2026-03-17 09:38:24 PM EST — v04.60r — [merged]
+
+### Changed
+- Improved authentication key management — keys can no longer be overwritten by forged messages mid-session
+
+## [v02.22w] — 2026-03-17 09:21:24 PM EST — v04.59r — [merged]
+
+### Changed
+- Improved session security by removing sensitive data from cross-tab communication
+
+## [v02.21w] — 2026-03-17 08:55:55 PM EST — v04.56r — [merged]
+
+### Changed
+- Minor internal improvements
+
+## [v02.20w] — 2026-03-17 08:48:57 PM EST — v04.55r — [merged]
+
+### Removed
+- Removed third-party IP address collection — your IP is no longer sent to external services when using this page
+
+### Changed
+- Simplified internal security monitoring to no longer include IP addresses in reports
+
+## [v02.19w] — 2026-03-17 07:33:33 PM EST — v04.54r — [merged]
+
+### Fixed
+- Eliminated a console warning that appeared on page load before sign-in
+- Improved internal message security with tighter origin restrictions
+
+## [v02.18w] — 2026-03-17 07:18:47 PM EST — v04.53r — [merged]
+
+### Fixed
+- Console error on page load resolved — internal messages no longer fail due to timing-dependent origin mismatch
+
+## [v02.17w] — 2026-03-17 07:14:06 PM EST — v04.52r — [merged]
+
+### Added
+- Token exchange now uses a one-time cryptographic nonce — prevents forged session creation messages
+- Non-token messages are now restricted to the expected server origin
+
+## [v02.16w] — 2026-03-17 07:03:24 PM EST — v04.50r — [merged]
+
+### Fixed
+- Sign-in now completes successfully — origin validation no longer blocks legitimate server messages
+
+## [v02.15w] — 2026-03-17 06:56:06 PM EST — v04.49r — [merged]
+
+### Added
+- Messages from unexpected origins are now blocked before processing — only legitimate Google server origins are accepted
+- New security test validates the origin allowlist against spoofing patterns
+
+## [v02.14w] — 2026-03-17 06:20:58 PM EST — v04.48r — [merged]
+
+### Fixed
+- Security tests no longer get stuck on "Waiting to run" for tests that verify cryptographic signatures
+
+## [v02.13w] — 2026-03-17 06:09:12 PM EST — v04.46r — [merged]
+
+### Added
+- Messages from the server are now verified using HMAC-SHA256 cryptographic signatures (Web Crypto API)
+- Dual-accept migration: both new HMAC-SHA256 and legacy signatures are accepted during transition
+
+### Changed
+- Security tests updated to validate the new cryptographic verification
+
 ## [v02.12w] — 2026-03-16 03:19:06 PM EST — v04.31r — [merged]
 
 ### Added

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 37/50`
 
 ## [Unreleased]
+
+## [v02.63w] — 2026-03-22 01:03:31 AM EST — v05.93r
+
+### Fixed
+- Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
 
 ## [v02.62w] — 2026-03-22 12:27:41 AM EST — v05.92r
 
@@ -206,86 +211,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Changed
 - Session heartbeats, sign-out, and security event reporting now use secure message channels instead of URL parameters — tokens no longer appear in browser history or server logs
-
-## [v02.26w] — 2026-03-17 10:56:34 PM EST — v04.65r
-
-### Fixed
-- Session timer protection now works on all sign-in paths including session resume from stored tokens
-
-## [v02.25w] — 2026-03-17 10:43:37 PM EST — v04.64r
-
-### Fixed
-- Session timer protection now properly prevents modification via browser console
-- Security test panel signature verification now works correctly when signed in
-
-## [v02.24w] — 2026-03-17 10:14:46 PM EST — v04.62r
-
-### Changed
-- Session timeout values are now tamper-proof — cannot be modified via browser DevTools to prevent automatic logoff
-
-## [v02.23w] — 2026-03-17 09:38:24 PM EST — v04.60r
-
-### Changed
-- Improved authentication key management — keys can no longer be overwritten by forged messages mid-session
-
-## [v02.22w] — 2026-03-17 09:21:24 PM EST — v04.59r
-
-### Changed
-- Improved session security by removing sensitive data from cross-tab communication
-
-## [v02.21w] — 2026-03-17 08:55:55 PM EST — v04.56r
-
-### Changed
-- Minor internal improvements
-
-## [v02.20w] — 2026-03-17 08:48:57 PM EST — v04.55r
-
-### Removed
-- Removed third-party IP address collection — your IP is no longer sent to external services when using this page
-
-### Changed
-- Simplified internal security monitoring to no longer include IP addresses in reports
-
-## [v02.19w] — 2026-03-17 07:33:33 PM EST — v04.54r
-
-### Fixed
-- Eliminated a console warning that appeared on page load before sign-in
-- Improved internal message security with tighter origin restrictions
-
-## [v02.18w] — 2026-03-17 07:18:47 PM EST — v04.53r
-
-### Fixed
-- Console error on page load resolved — internal messages no longer fail due to timing-dependent origin mismatch
-
-## [v02.17w] — 2026-03-17 07:14:06 PM EST — v04.52r
-
-### Added
-- Token exchange now uses a one-time cryptographic nonce — prevents forged session creation messages
-- Non-token messages are now restricted to the expected server origin
-
-## [v02.16w] — 2026-03-17 07:03:24 PM EST — v04.50r
-
-### Fixed
-- Sign-in now completes successfully — origin validation no longer blocks legitimate server messages
-
-## [v02.15w] — 2026-03-17 06:56:06 PM EST — v04.49r
-
-### Added
-- Messages from unexpected origins are now blocked before processing — only legitimate Google server origins are accepted
-- New security test validates the origin allowlist against spoofing patterns
-
-## [v02.14w] — 2026-03-17 06:20:58 PM EST — v04.48r
-
-### Fixed
-- Security tests no longer get stuck on "Waiting to run" for tests that verify cryptographic signatures
-
-## [v02.13w] — 2026-03-17 06:09:12 PM EST — v04.46r
-
-### Added
-- Messages from the server are now verified using HMAC-SHA256 cryptographic signatures (Web Crypto API)
-- Dual-accept migration: both new HMAC-SHA256 and legacy signatures are accepted during transition
-
-### Changed
-- Security tests updated to validate the new cryptographic verification
 
 Developed by: ShadowAISolutions

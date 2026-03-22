@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v05.93r] — 2026-03-22 01:03:31 AM EST
+
+> **Prompt:** "what do you think we should do and why?"
+
+### Fixed
+- Fixed SSO sign-out propagation — session expiry on one page no longer signs out other pages with valid sessions. Only deliberate sign-outs (user clicks "Sign Out") propagate across SSO-connected pages
+
+#### `applicationportal.html` — v01.07w
+
+##### Fixed
+- Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
+
+#### `testauth1.html` — v02.63w
+
+##### Fixed
+- Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
 
 ## [v05.92r] — 2026-03-22 12:27:41 AM EST
 

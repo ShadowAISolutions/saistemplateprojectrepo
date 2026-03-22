@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-03-22 01:03:31 AM EST — v05.93r
+
+### Fixed
+- Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
 
 ## [v01.06w] — 2026-03-22 12:27:41 AM EST — v05.92r
 
