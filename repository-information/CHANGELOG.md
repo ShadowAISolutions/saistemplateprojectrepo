@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v05.84r] — 2026-03-21 10:34:56 PM EST
+
+> **Prompt:** "then use the template to make an environment with the same variables as the "portal", but call it "applicationportal", then when you are done, ask me to tell you to continue, and you will then add the code used for the pre-recreated portal"
+
+### Added
+- New GAS project "applicationportal" — Application Portal page created from auth template with HIPAA preset, using portal's same spreadsheet, ACL, and sound file config values
 
 ## [v05.83r] — 2026-03-21 10:18:19 PM EST
 

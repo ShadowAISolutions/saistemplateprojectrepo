@@ -367,6 +367,16 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
+      - name: Deploy Applicationportal
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Applicationportal/applicationportal.gs" && \
+          curl -L -X POST \
+            "https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID_HERE/exec" \
+            -d "action=deploy" \
+            --max-time 120 || true
+
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |
