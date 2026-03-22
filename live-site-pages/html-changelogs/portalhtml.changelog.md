@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [portalhtml.changelog-archive.md](portalhtml.changelog-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 18/100`
+`Sections: 19/100`
 
 ## [Unreleased]
+
+## [v01.19w] — 2026-03-21 10:18:19 PM EST — v05.83r
+
+### Changed
+- Upgraded security settings for HIPAA compliance — sessions now clear on tab close and tokens are exchanged securely
+- Added session status indicators and warning banners
+- Added "Session Active Elsewhere" overlay for single-tab enforcement
+- Added admin session management panel
 
 ## [v01.18w] — 2026-03-21 07:08:43 PM EST — v05.80r
 

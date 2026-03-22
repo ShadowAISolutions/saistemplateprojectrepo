@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
+  <!-- CSP: CURRENT (unsafe-inline) — Remove this tag when enabling hash-based CSP below -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.18w">
+  <meta name="build-version" content="v01.19w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Portal Title</title>
 <!-- ══════════════ -->
@@ -164,6 +166,60 @@
     #auth-wall .auth-email {
       color: #999; font: 12px/1 monospace; margin-top: 8px; display: none;
     }
+    .auth-spinner {
+      width: 36px; height: 36px; margin: 0 auto;
+      border: 4px solid #e0e0e0; border-top-color: #4285f4;
+      border-radius: 50%;
+      animation: auth-spin 0.8s linear infinite;
+    }
+    @keyframes auth-spin { to { transform: rotate(360deg); } }
+    .auth-pulse-dots { display: flex; gap: 8px; justify-content: center; }
+    .auth-pulse-dots span {
+      width: 10px; height: 10px; border-radius: 50%; background: #999;
+      animation: auth-pulse 1.2s ease-in-out infinite;
+    }
+    .auth-pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .auth-pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes auth-pulse { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
+    #signing-out-wall {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 10002; display: none; align-items: center; justify-content: center;
+      flex-direction: column; background: #f5f5f5;
+    }
+    #signing-out-wall h2 { font: bold 24px/1 sans-serif; color: #666; margin-bottom: 16px; }
+    #signing-out-wall p { font: 14px/1.4 sans-serif; color: #999; margin-bottom: 24px; }
+    #tab-takeover-wall {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 10002; display: none; align-items: center; justify-content: center;
+      flex-direction: column; background: #f0f4f8;
+    }
+    #tab-takeover-wall h2 { font: bold 24px/1 sans-serif; color: #333; margin-bottom: 12px; }
+    #tab-takeover-wall p { font: 14px/1.4 sans-serif; color: #666; margin-bottom: 24px; text-align: center; max-width: 400px; }
+    #tab-takeover-wall .tab-btn {
+      background: #4285f4; color: #fff; border: none; padding: 12px 24px;
+      border-radius: 6px; cursor: pointer; font-size: 16px;
+    }
+    #tab-takeover-wall .tab-btn:hover { background: #3367d6; }
+    .warning-banner {
+      position: fixed; right: 8px; z-index: 9998;
+      padding: 8px 14px; border-radius: 8px;
+      display: none; align-items: center; gap: 10px;
+      font: 12px/1.4 sans-serif; user-select: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      max-width: 340px;
+    }
+    .warning-banner button {
+      background: #4285f4; color: #fff; border: none; padding: 4px 12px;
+      border-radius: 4px; cursor: pointer; font-size: 12px; white-space: nowrap;
+    }
+    #session-warning-banner {
+      top: 40px;
+      background: rgba(255,243,205,0.95); border: 1px solid #ffc107; color: #856404;
+    }
+    #absolute-warning-banner {
+      top: 40px;
+      background: rgba(248,215,218,0.95); border: 1px solid #f5c6cb; color: #721c24;
+    }
     #user-pill {
       position: fixed; top: 8px; right: 8px; z-index: 9999;
       display: none; align-items: center; gap: 6px;
@@ -175,6 +231,81 @@
       font: 11px/1 monospace; padding: 0 4px;
     }
     #sign-out-btn:hover { color: #f44336; }
+    #auth-timers {
+      position: fixed; bottom: 60px; right: 8px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
+    }
+    #auth-timers:hover { background: rgba(0,0,0,0.75); }
+    #auth-timers .timer-pill-label { color: #fff; font-weight: bold; }
+    #auth-timers .timer-pill-label.warn { color: #ffc107; }
+    #auth-timers .timer-pill-label.critical { color: #ef5350; }
+    #auth-timers .timer-body {
+      display: none; flex-direction: column; gap: 4px;
+      border-top: 1px solid rgba(255,255,255,0.15); margin-top: 4px; padding-top: 4px;
+    }
+    #auth-timers .timer-body.expanded { display: flex; }
+    #auth-timers.expanded {
+      flex-direction: column; align-items: stretch;
+      border-radius: 8px; padding: 8px 12px;
+    }
+    #auth-timers .timer-header { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    #auth-timers .timer-header .toggle-icon { font-size: 8px; color: #aaa; }
+    #auth-timers .timer-row { display: flex; justify-content: space-between; gap: 12px; }
+    #auth-timers .timer-label { color: #999; }
+    #auth-timers .timer-value { color: #fff; font-weight: bold; }
+    #auth-timers .timer-value.warn { color: #ffc107; }
+    #auth-timers .timer-value.critical { color: #ef5350; }
+    #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
+    #admin-sessions-btn {
+      background: none; border: none; color: #90caf9; cursor: pointer;
+      font: 11px/1 monospace; padding: 0 4px; display: none;
+    }
+    #admin-sessions-btn:hover { color: #42a5f5; }
+    #admin-sessions-panel {
+      display: none; position: fixed; top: 40px; right: 8px; z-index: 10010;
+      background: rgba(20,20,30,0.95); color: #ccc; border: 1px solid #444;
+      border-radius: 8px; padding: 12px 16px; font: 12px/1.4 monospace;
+      max-width: 420px; min-width: 300px; max-height: 70vh; overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    #admin-sessions-panel .asp-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px;
+    }
+    #admin-sessions-panel .asp-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+    #admin-sessions-panel .asp-close {
+      background: none; border: none; color: #999; cursor: pointer;
+      font-size: 16px; padding: 0 4px; line-height: 1;
+    }
+    #admin-sessions-panel .asp-close:hover { color: #fff; }
+    #admin-sessions-panel .asp-refresh {
+      background: none; border: 1px solid #555; color: #90caf9; cursor: pointer;
+      font: 11px/1 monospace; padding: 3px 8px; border-radius: 4px; margin-left: 8px;
+    }
+    #admin-sessions-panel .asp-refresh:hover { background: rgba(144,202,249,0.1); }
+    #admin-sessions-panel .asp-session {
+      background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px;
+      padding: 8px 10px; margin-bottom: 8px;
+    }
+    #admin-sessions-panel .asp-session.asp-self { border-color: #1565c0; }
+    #admin-sessions-panel .asp-email { color: #fff; font-weight: bold; font-size: 12px; }
+    #admin-sessions-panel .asp-role {
+      display: inline-block; background: rgba(144,202,249,0.15); color: #90caf9;
+      padding: 1px 5px; border-radius: 3px; font-size: 10px; text-transform: uppercase;
+      margin-left: 6px;
+    }
+    #admin-sessions-panel .asp-role.asp-emergency { background: rgba(255,152,0,0.2); color: #ff9800; }
+    #admin-sessions-panel .asp-meta { color: #888; font-size: 11px; margin-top: 4px; }
+    #admin-sessions-panel .asp-kick {
+      background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer;
+      font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px;
+    }
+    #admin-sessions-panel .asp-kick:hover { background: rgba(239,83,80,0.15); }
+    #admin-sessions-panel .asp-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
+    #admin-sessions-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -250,16 +381,74 @@
   <div id="auth-wall">
     <img id="auth-wall-logo" src="" alt="" style="max-width:120px;max-height:120px;margin-bottom:20px;">
     <div id="auth-wall-title" style="font:bold 18px/1.2 sans-serif;color:#555;margin-bottom:24px;text-align:center;"></div>
-    <h2>Sign In Required</h2>
-    <p>Sign in with your Google account to access your applications.</p>
-    <button class="auth-btn" id="auth-sign-in-btn">Sign In with Google</button>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="auth-email" id="auth-email"></div>
+    <div id="auth-wall-signin" style="text-align:center;">
+      <h2>Sign In Required</h2>
+      <p>Sign in with your Google account to access your applications.</p>
+      <button class="auth-btn" id="auth-sign-in-btn">Sign In with Google</button>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-email" id="auth-email"></div>
+    </div>
+    <div id="auth-wall-reconnecting" style="display:none;text-align:center;">
+      <h2 style="color:#666;font-weight:normal;">Reconnecting…</h2>
+      <p style="color:#999;">Verifying your session</p>
+      <div class="auth-pulse-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div id="auth-wall-signing-in" style="display:none;text-align:center;">
+      <h2 style="color:#666;font-weight:normal;">Signing in…</h2>
+      <p style="color:#999;">Setting up your session</p>
+      <div class="auth-spinner"></div>
+    </div>
+  </div>
+
+  <div id="signing-out-wall">
+    <h2>Signing out&hellip;</h2>
+    <p>Clearing your session</p>
+    <div class="auth-spinner"></div>
+  </div>
+
+  <div id="tab-takeover-wall">
+    <h2>Session Active Elsewhere</h2>
+    <p>This session is active in another tab. Only one tab can be active at a time.</p>
+    <button class="tab-btn" id="tab-use-here-btn">Use Here</button>
+  </div>
+
+  <div id="session-warning-banner" class="warning-banner">
+    <span id="session-warning-text"></span>
+  </div>
+
+  <div id="absolute-warning-banner" class="warning-banner">
+    <span id="absolute-warning-text"></span>
+    <button id="reauth-btn">Sign In</button>
   </div>
 
   <div id="user-pill">
     <span id="user-email-display"></span>
+    <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
+    <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
     <button id="sign-out-btn">Sign Out</button>
+  </div>
+
+  <div id="admin-sessions-panel">
+    <div class="asp-header">
+      <span class="asp-title">Active Sessions</span>
+      <span>
+        <button class="asp-refresh" id="asp-refresh-btn" title="Refresh session list">Refresh</button>
+        <button class="asp-close" id="asp-close-btn">&times;</button>
+      </span>
+    </div>
+    <div id="asp-session-list">
+      <div class="asp-status">Loading sessions...</div>
+    </div>
+  </div>
+  <iframe id="admin-sessions-iframe"></iframe>
+
+  <div id="auth-timers" onclick="toggleTimers()">
+    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
+    <div class="timer-body" id="timer-body">
+      <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
+      <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
+      <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
+    </div>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -310,13 +499,23 @@
     var CLIENT_ID = '216764502068-7j0j6svmparsrfgdf784dneltlirpac2.apps.googleusercontent.com';
 
     // HTML-side auth configuration (unified toggleable pattern)
+    // Must match the GAS-side AUTH_CONFIG preset
     var HTML_CONFIG = {
       // 'localStorage' (standard) or 'sessionStorage' (HIPAA — cleared on tab close)
-      STORAGE_TYPE: 'localStorage',
+      STORAGE_TYPE: 'sessionStorage',
       // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
-      TOKEN_EXCHANGE_METHOD: 'url',
-      // Heartbeat: enable to keep server session alive while user is active
+      TOKEN_EXCHANGE_METHOD: 'postMessage',
+      // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
+      // HEARTBEAT_INTERVAL: 300000  // ms — how often to check for activity and send heartbeat (5min)
+      HEARTBEAT_INTERVAL: 30000,  // ⚡ TEST VALUE (30s) — uncomment line above and delete this line to restore
+      // Single-tab enforcement: only one tab can be active at a time.
+      SINGLE_TAB_ENFORCEMENT: true,
+      // Cross-device session enforcement: detect when another device signs in
+      CROSS_DEVICE_ENFORCEMENT: true,
+      // HIPAA: Destroy GAS iframe content on session expiry to clear PHI from DOM.
+      ENABLE_DOM_CLEARING_ON_EXPIRY: true,
+      ENABLE_IP_LOGGING: false  // DISABLED — ipify.org lacks BAA, violates HIPAA
     };
 // ──────────────
 

@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v05.83r] — 2026-03-21 10:18:19 PM EST
+
+> **Prompt:** "Do all groups at once"
+
+### Changed
+- Portal HIPAA conversion: Phase 1 partial — added CSP meta tag, upgraded HTML_CONFIG to HIPAA preset (sessionStorage, postMessage, single-tab, cross-device, DOM clearing), restructured auth-wall with sub-panels (signin/reconnecting/signing-in), added signing-out overlay, tab-takeover wall, session/absolute warning banners, countdown timers widget, admin session panel, role badge in user pill
+
+#### `portal.html` — v01.19w
+
+##### Changed
+- Upgraded security settings for HIPAA compliance — sessions now clear on tab close and tokens are exchanged securely
+- Added session status indicators and warning banners
+- Added "Session Active Elsewhere" overlay for single-tab enforcement
+- Added admin session management panel
 
 ## [v05.82r] — 2026-03-21 08:54:13 PM EST
 
