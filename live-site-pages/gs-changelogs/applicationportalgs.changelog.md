@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.03g] — 2026-03-21 11:25:17 PM EST — v05.88r
+
+### Changed
+- Set deployment ID to match the live GAS project
 
 ## [v01.02g] — 2026-03-21 11:14:52 PM EST — v05.87r
 

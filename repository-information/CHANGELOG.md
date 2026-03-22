@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v05.88r] — 2026-03-21 11:25:17 PM EST
+
+> **Prompt:** "we are still stuck on the signing in page but we are not getting login success.  i want you to use the same exact deployment variables that were used in the "portal" in the "applicationportal", but there might be extra that didnt exist for it so you might have to add those. assume that the "portal" doesnt exist anymore, just the "applicationportal" i have alreadyreplaced the gas with the applicationportal gas"
+
+### Fixed
+- Set applicationportal's deployment ID and encoded URL (`_e`) to portal's working deployment ID — user has already replaced the GAS code in that deployment with applicationportal.gs
+
+#### `applicationportal.html` — v01.04w
+
+##### Fixed
+- Connected to working GAS deployment — sign-in flow should now complete
+
+#### `applicationportal.gs` — v01.03g
+
+##### Changed
+- Set deployment ID to match the live GAS project
 
 ## [v05.87r] — 2026-03-21 11:14:52 PM EST
 

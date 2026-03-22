@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-03-21 11:25:17 PM EST — v05.88r
+
+### Fixed
+- Connected to working GAS deployment — sign-in should now complete successfully
 
 ## [v01.03w] — 2026-03-21 11:14:52 PM EST — v05.87r
 
