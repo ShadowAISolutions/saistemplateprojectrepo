@@ -40,7 +40,7 @@ var ACL_PAGE_NAME  = "TEMPLATE_ACL_PAGE_NAME";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
-var ACTIVE_PRESET = 'standard';     // 'standard' or 'hipaa'
+var ACTIVE_PRESET = 'hipaa';     // 'standard' or 'hipaa'
 var PROJECT_OVERRIDES = {
   ENABLE_DOMAIN_RESTRICTION: false,
   ALLOWED_DOMAINS: [],

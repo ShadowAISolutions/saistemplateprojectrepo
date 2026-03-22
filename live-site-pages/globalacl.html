@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.21w">
+  <meta name="build-version" content="v01.22w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -524,9 +524,9 @@
     // Must match the GAS-side AUTH_CONFIG preset
     var HTML_CONFIG = {
       // 'localStorage' (standard) or 'sessionStorage' (HIPAA — cleared on tab close)
-      STORAGE_TYPE: 'localStorage',
+      STORAGE_TYPE: 'sessionStorage',
       // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
-      TOKEN_EXCHANGE_METHOD: 'url',
+      TOKEN_EXCHANGE_METHOD: 'postMessage',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
       HEARTBEAT_INTERVAL: 300000,  // ms — how often to check for activity and send heartbeat (5min)
@@ -541,7 +541,7 @@
       // Destroy GAS iframe content on session expiry to clear PHI from DOM.
       // When false (standard), auth wall overlays without touching the iframe.
       // When true (HIPAA), sets gasFrame.src = 'about:blank' before showing auth wall.
-      ENABLE_DOM_CLEARING_ON_EXPIRY: false,
+      ENABLE_DOM_CLEARING_ON_EXPIRY: true,
       ENABLE_IP_LOGGING: false,
       ALLOWED_DOMAINS: [],
       ENABLE_DOMAIN_RESTRICTION: false,

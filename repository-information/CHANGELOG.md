@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v06.11r] — 2026-03-22 03:12:04 PM EST
+
+> **Prompt:** "oh i see, its the standard preset vs hipaa preset. i need it to be changed to hipaa preset, i need all our projects with security that we currently have to change all their defaults to the hipaa preset"
+
+### Changed
+- Switched Global ACL and all auth templates from standard preset to HIPAA preset — sessionStorage (cleared on tab close), postMessage token exchange (token never in URL), DOM clearing on expiry
+
+#### `globalacl.html` — v01.22w
+
+##### Changed
+- Switched to HIPAA security defaults — sessions no longer persist across browser restarts
+
+#### `globalacl.gs` — v01.23g
+
+##### Changed
+- Switched from standard to HIPAA preset
 
 ## [v06.10r] — 2026-03-22 03:06:49 PM EST
 

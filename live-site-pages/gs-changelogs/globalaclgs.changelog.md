@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23g] — 2026-03-22 03:12:04 PM EST — v06.11r
+
+### Changed
+- Switched from standard to HIPAA preset
 
 ## [v01.22g] — 2026-03-22 02:58:37 PM EST — v06.09r
 

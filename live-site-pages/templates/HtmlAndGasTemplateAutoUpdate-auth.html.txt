@@ -441,9 +441,9 @@
     // Must match the GAS-side AUTH_CONFIG preset
     var HTML_CONFIG = {
       // 'localStorage' (standard) or 'sessionStorage' (HIPAA — cleared on tab close)
-      STORAGE_TYPE: 'localStorage',
+      STORAGE_TYPE: 'sessionStorage',
       // 'url' (standard) or 'postMessage' (HIPAA — token never in URL)
-      TOKEN_EXCHANGE_METHOD: 'url',
+      TOKEN_EXCHANGE_METHOD: 'postMessage',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
       HEARTBEAT_INTERVAL: 300000,  // ms — how often to check for activity and send heartbeat (5min)
@@ -458,7 +458,7 @@
       // Destroy GAS iframe content on session expiry to clear PHI from DOM.
       // When false (standard), auth wall overlays without touching the iframe.
       // When true (HIPAA), sets gasFrame.src = 'about:blank' before showing auth wall.
-      ENABLE_DOM_CLEARING_ON_EXPIRY: false,
+      ENABLE_DOM_CLEARING_ON_EXPIRY: true,
       ENABLE_IP_LOGGING: false,
       ALLOWED_DOMAINS: [],
       ENABLE_DOMAIN_RESTRICTION: false,

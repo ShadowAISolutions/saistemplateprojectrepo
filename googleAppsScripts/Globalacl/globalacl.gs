@@ -1,4 +1,4 @@
-var VERSION = "v01.22g";
+var VERSION = "v01.23g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -38,7 +38,7 @@ var ACL_PAGE_NAME  = "globalacl";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
-var ACTIVE_PRESET = 'standard';     // 'standard' or 'hipaa'
+var ACTIVE_PRESET = 'hipaa';     // 'standard' or 'hipaa'
 var PROJECT_OVERRIDES = {
   ENABLE_DOMAIN_RESTRICTION: false,
   ALLOWED_DOMAINS: [],
