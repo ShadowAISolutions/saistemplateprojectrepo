@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v06.12r] — 2026-03-22 03:19:28 PM EST
+
+> **Prompt:** "that seemed like you did that way too fast, can you make sure everything is set up correctly"
+
+### Fixed
+- Aligned HTML-side `SERVER_SESSION_DURATION` with HIPAA GAS preset — was 3600s (1hr, standard) but GAS uses 900s (15min, HIPAA). Client countdown now matches server-side session lifetime
+
+#### `globalacl.html` — v01.23w
+
+##### Fixed
+- Session countdown timer now matches server-side 15-minute HIPAA timeout
+
+#### `applicationportal.html` — v01.18w
+
+##### Fixed
+- Session countdown timer now matches server-side 15-minute HIPAA timeout
 
 ## [v06.11r] — 2026-03-22 03:12:04 PM EST
 

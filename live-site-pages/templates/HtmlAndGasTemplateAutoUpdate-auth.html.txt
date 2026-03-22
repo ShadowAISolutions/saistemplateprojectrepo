@@ -2380,8 +2380,8 @@
       icon.innerHTML = expanded ? '&#9662;' : '&#9656;';
     }
 
-    var SERVER_SESSION_DURATION = 3600;    // seconds — must match GAS PRESETS.standard.SESSION_EXPIRATION (1hr)
-    var ABSOLUTE_SESSION_DURATION = 28800; // seconds — must match GAS PRESETS.standard.ABSOLUTE_SESSION_TIMEOUT (8hr)
+    var SERVER_SESSION_DURATION = 900;     // seconds — must match GAS PRESETS.hipaa.SESSION_EXPIRATION (15min)
+    var ABSOLUTE_SESSION_DURATION = 28800; // seconds — must match GAS PRESETS.hipaa.ABSOLUTE_SESSION_TIMEOUT (8hr)
 
     // ── Phase 6 (H-4): Immutable Session Timers ──
     // Closure-scoped timer enforcer — prevents client-side modification of session

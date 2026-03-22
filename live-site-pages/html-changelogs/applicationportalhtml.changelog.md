@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.18w] — 2026-03-22 03:19:28 PM EST — v06.12r
+
+### Fixed
+- Session countdown timer now matches server-side 15-minute HIPAA timeout
 
 ## [v01.17w] — 2026-03-22 02:30:05 PM EST — v06.07r
 
