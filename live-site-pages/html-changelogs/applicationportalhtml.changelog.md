@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.16w] — 2026-03-22 02:05:02 PM EST — v06.05r
+
+### Fixed
+- Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
 
 ## [v01.15w] — 2026-03-22 12:51:12 PM EST — v06.03r
 

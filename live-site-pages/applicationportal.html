@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.15w">
+  <meta name="build-version" content="v01.16w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -1148,6 +1148,7 @@
       _pendingNonce = null;
       // Phase 6 (H-4): Reset timer enforcer for next session
       _sessionTimerEnforcer.reset();
+      _gasAuthOkHandled = false;
       // SSO: clear held tokens
       _ssoAccessToken = null;
       _ssoUserEmail = null;
@@ -1164,6 +1165,7 @@
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
     var _directSessionLoad = false; // true when iframe loaded via nonce for session reclaim (Use Here) — tells gas-auth-ok to re-show iframe
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
+    var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
     var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
     var _nonceCallback = null;      // callback after nonce is received (optional)
 
@@ -1833,6 +1835,10 @@
         //     gasIpFrame.contentWindow.postMessage({type: 'host-client-ip', ip: _clientIp}, event.origin);
         //   }
         // }
+        // Deduplicate: GAS sends gas-auth-ok twice (immediate unsigned + async signed).
+        // After the first is handled, ignore subsequent duplicates to prevent false
+        // needsReauth warnings when the Google token is old but the session is active.
+        if (_gasAuthOkHandled) return;
         // "Use Here" hides the iframe before reload — re-show it now that
         // the GAS app confirmed the session is valid.
         if (_directSessionLoad) {
@@ -1851,6 +1857,7 @@
           // momentarily.  Suppress the false warning.
           _expiryWarningShown = false;
           hideAllWarningBanners();
+          _gasAuthOkHandled = true;
         } else if (_pendingSessionShow) {
           // Deferred UI show — gas-session-created, page-load resume, or cross-tab
           // sync deferred the showApp call until the GAS backend confirmed the
@@ -1860,6 +1867,7 @@
           startHeartbeat();
           broadcastTabClaim();
           _pendingSessionShow = null;
+          _gasAuthOkHandled = true;
           // Re-acquire Google access token for SSO sharing after reconnect.
           // On page refresh, _ssoAccessToken is lost (in-memory only). Without
           // this, the page cannot respond to sso-token-request from child apps.

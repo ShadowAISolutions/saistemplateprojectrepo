@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v06.05r] — 2026-03-22 02:05:02 PM EST
+
+> **Prompt:** "ok can you fix it"
+
+### Fixed
+- False "Session expiring soon" warning caused by duplicate `gas-auth-ok` messages — the GAS backend sends both an immediate unsigned and an async signed version; the second message incorrectly triggered the `needsReauth` warning after the first had already consumed `_pendingSessionShow`
+
+#### `applicationportal.html` — v01.16w
+
+##### Fixed
+- Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
+
+#### `testauth1.html` — v02.71w
+
+##### Fixed
+- Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
+
+#### `globalacl.html` — v01.18w
+
+##### Fixed
+- Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
 
 ## [v06.04r] — 2026-03-22 01:34:18 PM EST
 
