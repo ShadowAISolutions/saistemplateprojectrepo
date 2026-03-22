@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v06.07r] — 2026-03-22 02:30:05 PM EST
+
+> **Prompt:** "there is something wrong with the global ACL. lets exlude the application portal for now and assume im signing in directly. when i duplicate the tab, its expiring the session instead of moving the session to the new tab. it is working properly with the testauth1"
+
+### Fixed
+- Fixed tab duplication causing session expiry on localStorage-based pages (Global ACL) — the surrendering tab's `stopCountdownTimers()` removed `SESSION_START_KEY` from shared localStorage, causing the claiming tab's next timer tick to read a missing value, compute `remaining <= 0`, and trigger `performSignOut('session-expired')` which destroyed the session for both tabs
+
+#### `globalacl.html` — v01.20w
+
+##### Fixed
+- Tab duplication no longer expires the session — the new tab correctly inherits the active session
+
+#### `testauth1.html` — v02.72w
+
+##### Changed
+- Minor internal improvements
+
+#### `applicationportal.html` — v01.17w
+
+##### Changed
+- Minor internal improvements
 
 ## [v06.06r] — 2026-03-22 02:12:54 PM EST
 

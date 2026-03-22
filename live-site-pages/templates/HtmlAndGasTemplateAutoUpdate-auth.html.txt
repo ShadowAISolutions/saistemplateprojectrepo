@@ -2034,11 +2034,17 @@
           if (e.data.tabId !== _tabId) {
             _tabSurrendered = true;
             _evictedByRemote = false;  // Ensure correct overlay text for same-browser claim
-            // Preserve the absolute start time — stopCountdownTimers() clears
-            // it, but "Use Here" needs to continue the original absolute timer
-            // rather than restarting it.
+            // Preserve shared timer keys — stopCountdownTimers() removes them
+            // from storage, but with localStorage the claiming tab still needs
+            // them. Without this, the claiming tab's next timer tick reads a
+            // missing SESSION_START_KEY, computes remaining <= 0, and expires
+            // the session. Also preserve ABSOLUTE_START_KEY for "Use Here".
+            var savedSessionStart = getStorage().getItem(SESSION_START_KEY);
             var savedAbsoluteStart = getStorage().getItem(ABSOLUTE_START_KEY);
             stopCountdownTimers();
+            if (savedSessionStart) {
+              getStorage().setItem(SESSION_START_KEY, savedSessionStart);
+            }
             if (savedAbsoluteStart) {
               getStorage().setItem(ABSOLUTE_START_KEY, savedAbsoluteStart);
             }
