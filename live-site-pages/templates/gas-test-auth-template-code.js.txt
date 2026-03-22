@@ -416,8 +416,9 @@ function validateCrossProjectAdmin(params) {
   if (!secret || !callerEmail) return { valid: false, reason: 'missing_params' };
   var expected = getCrossProjectSecret();
   if (!expected || secret !== expected) return { valid: false, reason: 'invalid_secret' };
-  var roles = getRolesFromSpreadsheet(callerEmail);
-  if (roles.indexOf('admin') === -1) return { valid: false, reason: 'not_admin' };
+  // Verify caller has admin role via ACL
+  var access = checkSpreadsheetAccess(callerEmail);
+  if (!access.hasAccess || access.role !== 'admin') return { valid: false, reason: 'not_admin' };
   return { valid: true, email: callerEmail };
 }
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.90g";
+var VERSION = "v01.91g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -637,24 +637,13 @@ function getCrossProjectSecret() {
 function validateCrossProjectAdmin(params) {
   var secret = (params && params.secret) || '';
   var callerEmail = (params && params.callerEmail) || '';
-  if (!secret || !callerEmail) return false;
+  if (!secret || !callerEmail) return { valid: false, reason: 'missing_params' };
   var expected = getCrossProjectSecret();
-  if (!expected || secret !== expected) return false;
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (!sheet) return false;
-    var data = sheet.getDataRange().getValues();
-    for (var r = 1; r < data.length; r++) {
-      if (String(data[r][0]).trim().toLowerCase() === callerEmail.toLowerCase()) {
-        var role = String(data[r][1]).trim().toLowerCase();
-        return role === 'admin';
-      }
-    }
-  } catch (e) {
-    Logger.log('validateCrossProjectAdmin error: ' + e.message);
-  }
-  return false;
+  if (!expected || secret !== expected) return { valid: false, reason: 'invalid_secret' };
+  // Verify caller has admin role via ACL
+  var access = checkSpreadsheetAccess(callerEmail);
+  if (!access.hasAccess || access.role !== 'admin') return { valid: false, reason: 'not_admin' };
+  return { valid: true, email: callerEmail };
 }
 
 function listActiveSessionsInternal(callerEmail) {
@@ -1987,12 +1976,14 @@ function doGet(e) {
 
   // Cross-project session listing — called by globalacl's listGlobalSessions via UrlFetchApp
   if (action === 'listSessions') {
-    if (!validateCrossProjectAdmin(e.parameter)) {
-      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+    var cpParams = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
+    var cpAuth = validateCrossProjectAdmin(cpParams);
+    if (!cpAuth.valid) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth.reason }))
         .setMimeType(ContentService.MimeType.JSON);
     }
-    var cpSessions = listActiveSessionsInternal((e.parameter && e.parameter.callerEmail) || '');
-    return ContentService.createTextOutput(JSON.stringify(cpSessions))
+    var cpSessions = listActiveSessionsInternal(cpAuth.email);
+    return ContentService.createTextOutput(JSON.stringify({ success: true, sessions: cpSessions, project: TITLE }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
@@ -2019,7 +2010,9 @@ function doGet(e) {
 
   // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
   if (action === 'adminSignOut') {
-    if (!validateCrossProjectAdmin(e.parameter)) {
+    var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
+    var cpAuth2 = validateCrossProjectAdmin(cpParams2);
+    if (!cpAuth2.valid) {
       return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
         .setMimeType(ContentService.MimeType.JSON);
     }

@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07g] — 2026-03-22 02:58:37 PM EST — v06.09r
+
+### Fixed
+- Cross-project admin validation now works correctly
 
 ## [v01.06g] — 2026-03-22 12:33:58 PM EST — v06.01r
 

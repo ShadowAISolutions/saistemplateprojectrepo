@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v06.09r] — 2026-03-22 02:58:37 PM EST
+
+> **Prompt:** "im seeing this in the globalacl, fix it so it will work for all projects moving forward"
+
+### Fixed
+- Global Sessions panel now correctly parses cross-project responses — handles both plain array (legacy) and `{success, sessions}` (template) formats
+- Fixed `validateCrossProjectAdmin` TypeError in template/applicationportal — was calling `.indexOf()` on a roles object instead of using `checkSpreadsheetAccess()` for role verification
+
+#### `globalacl.gs` — v01.22g
+
+##### Fixed
+- Global Sessions panel no longer shows "Invalid JSON response" for other projects
+
+#### `testauth1.gs` — v01.91g
+
+##### Changed
+- Minor internal improvements
+
+#### `applicationportal.gs` — v01.07g
+
+##### Fixed
+- Cross-project admin validation now works correctly
 
 ## [v06.08r] — 2026-03-22 02:46:35 PM EST
 

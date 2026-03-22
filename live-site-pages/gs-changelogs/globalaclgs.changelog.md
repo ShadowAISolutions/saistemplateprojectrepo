@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.22g] — 2026-03-22 02:58:37 PM EST — v06.09r
+
+### Fixed
+- Global Sessions panel no longer shows "Invalid JSON response" for other projects
 
 ## [v01.21g] — 2026-03-21 01:01:38 PM EST — v05.64r
 
