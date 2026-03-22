@@ -1,10 +1,10 @@
-var VERSION = "v01.00g";
+var VERSION = "v01.01g";
 var TITLE = "Application Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Applicationportal/applicationportal.gs";
-var DEPLOYMENT_ID = "PASTE_DEPLOYMENT_ID_HERE";
+var DEPLOYMENT_ID = "AKfycbzKwEfBKj5mOy4aBtg-nWycCRO8R21s405WoJHR3dLBtPxc3SA4qfzNaQ6OGVlQE7Xm";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/applicationportal.html";
 
 // Derive the parent page's origin from EMBED_PAGE_URL for postMessage targeting.

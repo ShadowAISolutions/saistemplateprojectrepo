@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v05.85r] — 2026-03-21 10:45:49 PM EST
+
+> **Prompt:** "oh yes i forgot to tell you to continue, go ahead and make it use the variables that we have in the "portal""
+
+### Changed
+- Configured applicationportal with portal's production values — OAuth Client ID, HIPAA config preset (sessionStorage, postMessage, DOM clearing, 30s test heartbeat), deployment URL encoding, and deployment ID
+
+#### `applicationportal.html` — v01.01w
+
+##### Changed
+- Configured with portal's OAuth Client ID and HIPAA security settings
+- Sessions now clear on tab close and tokens are exchanged securely
+
+#### `applicationportal.gs` — v01.01g
+
+##### Changed
+- Set production deployment ID
 
 ## [v05.84r] — 2026-03-21 10:34:56 PM EST
 
