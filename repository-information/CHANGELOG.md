@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v05.96r] — 2026-03-22 11:28:22 AM EST
+
+> **Prompt:** "remove the "portal" environment, be careful and do not mistake if for the "applicationportal" environment which is its replacement"
+
+### Removed
+- Removed the old "portal" environment entirely — all files deleted: `portal.html`, `portal.gs`, `portal.config.json`, version files, changelogs, changelog archives, diagram, and backup
+- Removed Portal GAS deployment step from the CI/CD workflow
+- Removed Portal from the GAS Projects table in gas-scripts rules
+- Removed portal.html link from `open-all.html`
+- Removed all Portal references from REPO-ARCHITECTURE.md diagram nodes and edges
+
+#### `open-all.html` — v01.01w
+
+##### Removed
+- Removed portal.html link from the project list and Open All button
 
 ## [v05.95r] — 2026-03-22 01:26:48 AM EST
 

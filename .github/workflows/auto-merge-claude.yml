@@ -347,16 +347,6 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
-      - name: Deploy Portal
-        if: steps.guard.outputs.skip != 'true'
-        run: |
-          PRE=${{ steps.merge.outputs.pre_merge_sha }}
-          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Portal/portal.gs" && \
-          curl -L -X POST \
-            "https://script.google.com/macros/s/AKfycbzKwEfBKj5mOy4aBtg-nWycCRO8R21s405WoJHR3dLBtPxc3SA4qfzNaQ6OGVlQE7Xm/exec" \
-            -d "action=deploy" \
-            --max-time 120 || true
-
       - name: Deploy Globalacl
         if: steps.guard.outputs.skip != 'true'
         run: |

@@ -104,7 +104,6 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `googleAppsScripts/Testation8/testation8.config.json` | `live-site-pages/testation8.html` |
 | Testenvironment | `googleAppsScripts/Testenvironment/testenvironment.gs` | `googleAppsScripts/Testenvironment/testenvironment.config.json` | `live-site-pages/testenvironment.html` |
 | Testauth1 | `googleAppsScripts/Testauth1/testauth1.gs` | `googleAppsScripts/Testauth1/testauth1.config.json` | `live-site-pages/testauth1.html` |
-| Portal | `googleAppsScripts/Portal/portal.gs` | `googleAppsScripts/Portal/portal.config.json` | `live-site-pages/portal.html` |
 | Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 | Applicationportal | `googleAppsScripts/Applicationportal/applicationportal.gs` | `googleAppsScripts/Applicationportal/applicationportal.config.json` | `live-site-pages/applicationportal.html` |
 
