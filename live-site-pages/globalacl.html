@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.11w">
+  <meta name="build-version" content="v01.12w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -428,7 +428,7 @@
   </div>
 
   <div id="tab-takeover-wall">
-    <h2>Session Active Elsewhere</h2>
+    <h2 id="tab-takeover-title">Session Active Elsewhere</h2>
     <p>This session is active in another tab. Only one tab can be active at a time.</p>
     <button class="tab-btn" id="tab-use-here-btn">Use Here</button>
   </div>
@@ -2076,10 +2076,14 @@
             // by a previous cross-device eviction).
             var takeoverWall = document.getElementById('tab-takeover-wall');
             if (takeoverWall) {
+              var takeoverTitle = document.getElementById('tab-takeover-title');
+              if (takeoverTitle) {
+                takeoverTitle.textContent = (document.title || 'Session') + ' — Active Elsewhere';
+              }
               var takeoverText = takeoverWall.querySelector('p');
               if (takeoverText) {
                 takeoverText.textContent =
-                  'This session is active in another tab. Only one tab can be active at a time.';
+                  'Your ' + (document.title || 'session') + ' session is active in another tab. Only one tab can be active at a time.';
               }
               var useHereBtn = document.getElementById('tab-use-here-btn');
               if (useHereBtn) {
@@ -2111,16 +2115,20 @@
       if (!takeoverWall || takeoverWall.style.display === 'none') return;
       var takeoverText = takeoverWall.querySelector('p');
       if (!takeoverText) return;
+      var appName = document.title || 'session';
+      var takeoverTitle = document.getElementById('tab-takeover-title');
       var count = Object.keys(_rollCallResponses).length;
       var tabNote = count > 1
         ? ' (' + count + ' other tabs have this page open)'
         : '';
       if (_evictedByRemote) {
+        if (takeoverTitle) takeoverTitle.textContent = (document.title || 'Session') + ' — Active on Another Device';
         takeoverText.textContent =
-          'Your session was started on another device. Sign in again to use it here.' + tabNote;
+          'Your ' + appName + ' session was started on another device. Sign in again to use it here.' + tabNote;
       } else {
+        if (takeoverTitle) takeoverTitle.textContent = (document.title || 'Session') + ' — Active Elsewhere';
         takeoverText.textContent =
-          'This session is active in another tab. Only one tab can be active at a time.' + tabNote;
+          'Your ' + appName + ' session is active in another tab. Only one tab can be active at a time.' + tabNote;
       }
     }
 

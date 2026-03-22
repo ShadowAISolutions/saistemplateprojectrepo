@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
 
 ## [Unreleased]
+
+## [v02.66w] — 2026-03-22 11:38:56 AM EST — v05.97r
+
+### Changed
+- "Session Active Elsewhere" overlay now shows the application name
 
 ## [v02.65w] — 2026-03-22 01:26:48 AM EST — v05.95r
 

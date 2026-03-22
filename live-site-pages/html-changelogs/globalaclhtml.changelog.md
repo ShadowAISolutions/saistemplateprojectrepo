@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-03-22 11:38:56 AM EST — v05.97r
+
+### Changed
+- "Session Active Elsewhere" overlay now shows the application name
 
 ## [v01.11w] — 2026-03-21 06:15:12 PM EST — v05.77r
 

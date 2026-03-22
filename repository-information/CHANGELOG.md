@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v05.97r] — 2026-03-22 11:38:56 AM EST
+
+> **Prompt:** "the session active elsewhere should mention what application its referring to"
+
+### Changed
+- "Session Active Elsewhere" overlay now shows the application name in the heading and message text, using `document.title` to identify which app's session is active elsewhere
+
+#### `testauth1.html` — v02.66w
+
+##### Changed
+- "Session Active Elsewhere" heading and message now include the application name
+
+#### `globalacl.html` — v01.12w
+
+##### Changed
+- "Session Active Elsewhere" heading and message now include the application name
+
+#### `applicationportal.html` — v01.10w
+
+##### Changed
+- "Session Active Elsewhere" heading and message now include the application name
 
 ## [v05.96r] — 2026-03-22 11:28:22 AM EST
 
