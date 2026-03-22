@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v05.99r] — 2026-03-22 12:23:54 PM EST
+
+> **Prompt:** "ok but now its making it so when i refresh the testauth1 page, its doing the silent GIS re-auth, even if i signed into the application directly"
+
+### Fixed
+- Silent GIS token re-acquisition now gated behind `HTML_CONFIG.SSO_PROVIDER` flag — only fires on the application portal (the designated SSO hub), not on child apps like testauth1 or globalacl
+
+#### `applicationportal.html` — v01.12w
+
+##### Changed
+- Added `SSO_PROVIDER: true` config flag — portal re-acquires Google token on reconnect for SSO sharing
+
+#### `testauth1.html` — v02.68w
+
+##### Changed
+- Added `SSO_PROVIDER: false` config flag — no silent GIS re-auth on reconnect
+
+#### `globalacl.html` — v01.14w
+
+##### Changed
+- Added `SSO_PROVIDER: false` config flag — no silent GIS re-auth on reconnect
 
 ## [v05.98r] — 2026-03-22 12:08:17 PM EST
 

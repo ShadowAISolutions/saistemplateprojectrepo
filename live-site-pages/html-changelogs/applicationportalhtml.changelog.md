@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-03-22 12:23:54 PM EST — v05.99r
+
+### Changed
+- Portal now designated as SSO provider — re-acquires Google token after reconnect for seamless child app authentication
 
 ## [v01.11w] — 2026-03-22 12:08:17 PM EST — v05.98r
 

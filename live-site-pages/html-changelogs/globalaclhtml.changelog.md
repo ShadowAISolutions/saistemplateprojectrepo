@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-03-22 12:23:54 PM EST — v05.99r
+
+### Fixed
+- No longer triggers unnecessary Google re-authentication on page refresh
 
 ## [v01.13w] — 2026-03-22 12:08:17 PM EST — v05.98r
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.67w">
+  <meta name="build-version" content="v02.68w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -477,7 +477,11 @@
       // When false (standard), auth wall overlays without touching the iframe.
       // When true (HIPAA), sets gasFrame.src = 'about:blank' before showing auth wall.
       ENABLE_DOM_CLEARING_ON_EXPIRY: true,
-      ENABLE_IP_LOGGING: false  // DISABLED — ipify.org lacks BAA, violates HIPAA (Phase 3: C-3)
+      ENABLE_IP_LOGGING: false,  // DISABLED — ipify.org lacks BAA, violates HIPAA (Phase 3: C-3)
+      // SSO Provider: when true, this page proactively re-acquires a Google
+      // access token after reconnect so it can respond to sso-token-request
+      // from other pages. Only enable on the designated SSO hub (e.g. portal).
+      SSO_PROVIDER: false
     };
 // ──────────────
 
@@ -1862,7 +1866,7 @@
           // Re-acquire Google access token for SSO sharing after reconnect.
           // On page refresh, _ssoAccessToken is lost (in-memory only). Without
           // this, the page cannot respond to sso-token-request from child apps.
-          if (!_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+          if (HTML_CONFIG.SSO_PROVIDER && !_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
             var ssoRefreshClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',

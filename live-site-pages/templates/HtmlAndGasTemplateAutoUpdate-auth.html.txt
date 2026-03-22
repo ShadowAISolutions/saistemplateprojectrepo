@@ -461,7 +461,11 @@
       ENABLE_DOM_CLEARING_ON_EXPIRY: false,
       ENABLE_IP_LOGGING: false,
       ALLOWED_DOMAINS: [],
-      ENABLE_DOMAIN_RESTRICTION: false
+      ENABLE_DOMAIN_RESTRICTION: false,
+      // SSO Provider: when true, this page proactively re-acquires a Google
+      // access token after reconnect so it can respond to sso-token-request
+      // from other pages. Only enable on the designated SSO hub (e.g. portal).
+      SSO_PROVIDER: false
     };
 // ──────────────
 
@@ -1836,7 +1840,7 @@
           // Re-acquire Google access token for SSO sharing after reconnect.
           // On page refresh, _ssoAccessToken is lost (in-memory only). Without
           // this, the page cannot respond to sso-token-request from child apps.
-          if (!_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+          if (HTML_CONFIG.SSO_PROVIDER && !_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
             var ssoRefreshClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',
