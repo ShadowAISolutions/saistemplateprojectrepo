@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04g] — 2026-03-21 11:40:26 PM EST — v05.90r
+
+### Fixed
+- Sign-in no longer crashes — added missing page nonce validation
 
 ## [v01.03g] — 2026-03-21 11:25:17 PM EST — v05.88r
 

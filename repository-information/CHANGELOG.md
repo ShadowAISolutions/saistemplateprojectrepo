@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v05.90r] — 2026-03-21 11:40:26 PM EST
+
+> **Prompt:** "Mar 21, 2026, 11:38:07 PM  Error  ReferenceError: pageNonce is not defined at doGet(Code:2146:33)"
+
+### Fixed
+- Added missing `pageNonce` variable extraction and `validatePageNonce()` function to applicationportal.gs — `doGet()` was crashing with ReferenceError because `pageNonce` was used in the template literal but never defined
+
+#### `applicationportal.gs` — v01.04g
+
+##### Fixed
+- Sign-in no longer crashes — added missing page nonce validation that was present in testauth1 but missing from applicationportal
 
 ## [v05.89r] — 2026-03-21 11:34:54 PM EST
 
