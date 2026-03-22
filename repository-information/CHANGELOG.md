@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v05.87r] — 2026-03-21 11:14:52 PM EST
+
+> **Prompt:** "no it is not working. keep in mind that i dont want to use the "portal" anymore, the code should be for the "applicationportal" only"
+
+### Changed
+- Decoupled applicationportal from portal's GAS deployment — applicationportal is now a standalone project that needs its own GAS deployment
+- Restored `TOKEN_EXCHANGE_METHOD: 'postMessage'` to match the hipaa preset in applicationportal.gs
+- Reset deployment ID to placeholder pending own GAS project deployment
+
+#### `applicationportal.html` — v01.03w
+
+##### Changed
+- Restored postMessage token exchange (HIPAA) — requires own GAS deployment with hipaa preset
+- Cleared deployment URL pending own GAS project setup
+
+#### `applicationportal.gs` — v01.02g
+
+##### Changed
+- Reset deployment ID to placeholder pending own GAS project deployment
 
 ## [v05.86r] — 2026-03-21 11:01:21 PM EST
 

@@ -373,7 +373,7 @@ jobs:
           PRE=${{ steps.merge.outputs.pre_merge_sha }}
           git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Applicationportal/applicationportal.gs" && \
           curl -L -X POST \
-            "https://script.google.com/macros/s/AKfycbzKwEfBKj5mOy4aBtg-nWycCRO8R21s405WoJHR3dLBtPxc3SA4qfzNaQ6OGVlQE7Xm/exec" \
+            "https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID_HERE/exec" \
             -d "action=deploy" \
             --max-time 120 || true
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.03w] — 2026-03-21 11:14:52 PM EST — v05.87r
+
+### Changed
+- Now requires its own GAS deployment — no longer shares portal's backend
+- Restored secure postMessage token exchange
 
 ## [v01.02w] — 2026-03-21 11:01:21 PM EST — v05.86r
 
