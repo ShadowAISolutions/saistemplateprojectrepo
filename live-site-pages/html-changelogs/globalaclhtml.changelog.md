@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-03-22 01:34:18 PM EST — v06.04r
+
+### Added
+- Automatic sign-in via SSO when the Application Portal is open — no manual sign-in needed
+- Cross-page sign-out — signing out of one app signs out all connected apps
+- "Signing in via SSO..." status message during automatic authentication
 
 ## [v01.16w] — 2026-03-22 12:51:12 PM EST — v06.03r
 

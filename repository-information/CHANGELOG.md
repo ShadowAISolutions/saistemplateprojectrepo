@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v06.04r] — 2026-03-22 01:34:18 PM EST
+
+> **Prompt:** "go ahead and implement the SSO from the applicationportal to all remaining applications (testauth1 already has it, i think we are only missing Global ACL)"
+
+### Added
+- SSO consumer support for Global ACL page — BroadcastChannel token sharing, automatic sign-in via applicationportal, and cross-page sign-out propagation
+
+#### `globalacl.html` — v01.17w
+
+##### Added
+- SSO variable declarations for ephemeral token sharing (`_ssoAccessToken`, `_ssoUserEmail`, `_ssoChannel`)
+- BroadcastChannel SSO listener on `sais-sso-auth` channel — responds to token requests and propagates sign-out events
+- `attemptSSOAuth()` function — on page load with no session, requests token from SSO provider via BroadcastChannel with 2-second timeout fallback to auth wall
+- SSO-aware page-load initialization — tries SSO before showing auth wall
+- Token holding in `handleTokenResponse()` and email holding in `showApp()` for SSO sharing
+- SSO sign-out broadcast on manual sign-out (session expiry remains page-local)
+- SSO token cleanup in `clearSession()`
 
 ## [v06.03r] — 2026-03-22 12:51:12 PM EST
 
