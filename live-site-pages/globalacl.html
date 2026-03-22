@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.12w">
+  <meta name="build-version" content="v01.13w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -1873,6 +1873,23 @@
           startHeartbeat();
           broadcastTabClaim();
           _pendingSessionShow = null;
+          // Re-acquire Google access token for SSO sharing after reconnect.
+          // On page refresh, _ssoAccessToken is lost (in-memory only). Without
+          // this, the page cannot respond to sso-token-request from child apps.
+          if (!_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+            var ssoRefreshClient = google.accounts.oauth2.initTokenClient({
+              client_id: CLIENT_ID,
+              scope: 'openid email profile',
+              prompt: '',  // silent — no user interaction
+              callback: function(response) {
+                if (!response.error && response.access_token) {
+                  _ssoAccessToken = response.access_token;
+                  console.debug('[SSO] Re-acquired access token after reconnect');
+                }
+              }
+            });
+            ssoRefreshClient.requestAccessToken();
+          }
         } else if (data.needsReauth) {
           showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
         }

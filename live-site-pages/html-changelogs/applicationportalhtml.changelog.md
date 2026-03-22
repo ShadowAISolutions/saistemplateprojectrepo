@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-03-22 12:08:17 PM EST — v05.98r
+
+### Fixed
+- SSO auto-authentication now works after page refresh
 
 ## [v01.10w] — 2026-03-22 11:38:56 AM EST — v05.97r
 

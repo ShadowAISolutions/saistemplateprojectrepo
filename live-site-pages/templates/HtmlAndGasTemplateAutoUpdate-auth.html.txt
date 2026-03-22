@@ -1833,6 +1833,23 @@
           startHeartbeat();
           broadcastTabClaim();
           _pendingSessionShow = null;
+          // Re-acquire Google access token for SSO sharing after reconnect.
+          // On page refresh, _ssoAccessToken is lost (in-memory only). Without
+          // this, the page cannot respond to sso-token-request from child apps.
+          if (!_ssoAccessToken && typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+            var ssoRefreshClient = google.accounts.oauth2.initTokenClient({
+              client_id: CLIENT_ID,
+              scope: 'openid email profile',
+              prompt: '',  // silent — no user interaction
+              callback: function(response) {
+                if (!response.error && response.access_token) {
+                  _ssoAccessToken = response.access_token;
+                  console.debug('[SSO] Re-acquired access token after reconnect');
+                }
+              }
+            });
+            ssoRefreshClient.requestAccessToken();
+          }
         } else if (data.needsReauth) {
           showSessionWarning('Session expiring soon \u2014 interact with the page to stay signed in.');
         }

@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v05.98r] — 2026-03-22 12:08:17 PM EST
+
+> **Prompt:** "ive noticed that the application portal works great on a fresh sign in to it, when i click on testauth1 it automatically authenticates it via the application portal. however, if i refresh the page of the application portal, and it goes through "reconnecting" the testauth1 link no longer automatically authenticates, it just asks for a sign in required"
+
+### Fixed
+- SSO auto-authentication now works after page refresh/reconnect — the Google access token (`_ssoAccessToken`) is silently re-acquired via GIS after a successful reconnect, so the portal can respond to SSO requests from child apps
+
+#### `applicationportal.html` — v01.11w
+
+##### Fixed
+- SSO token re-acquired after reconnect so child apps can auto-authenticate
+
+#### `testauth1.html` — v02.67w
+
+##### Fixed
+- SSO token re-acquired after reconnect so child apps can auto-authenticate
+
+#### `globalacl.html` — v01.13w
+
+##### Fixed
+- SSO token re-acquired after reconnect so child apps can auto-authenticate
 
 ## [v05.97r] — 2026-03-22 11:38:56 AM EST
 
