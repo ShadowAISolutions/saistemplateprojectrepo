@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-03-22 12:27:41 AM EST — v05.92r
+
+### Added
+- Single sign-on support — sign in once, other auth pages auto-authenticate without a sign-in prompt
+- Cross-page sign-out — signing out from any connected page signs out all pages
 
 ## [v01.05w] — 2026-03-21 11:34:54 PM EST — v05.89r
 

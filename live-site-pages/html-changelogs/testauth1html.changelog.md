@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v02.62w] — 2026-03-22 12:27:41 AM EST — v05.92r
+
+### Added
+- Single sign-on support — auto-authenticates when another auth page (like Application Portal) is already signed in
+- Cross-page sign-out — signing out from any connected page signs out all pages
+
+### Changed
+- Shared Google OAuth client for unified sign-in experience across all auth pages
 
 ## [v02.61w] — 2026-03-21 06:15:12 PM EST — v05.77r
 

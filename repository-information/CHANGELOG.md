@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v05.92r] — 2026-03-22 12:27:41 AM EST
+
+> **Prompt:** "for the repository-information/12-HIPAA-SSO-IMPLEMENTATION-PLAN.md i believe we are ready for phase 2, go ahead and start implementing it if we are ready to proceed. remember that the goal of this is so that we can use the applicationportal as the starting point to authenticate into the other projects, you should have what we are trying to accomplish documented somewhere"
+
+### Added
+- Implemented Phase 2 BroadcastChannel SSO — applicationportal.html and testauth1.html now share Google OAuth tokens via ephemeral in-memory BroadcastChannel ('sais-sso-auth'), enabling single sign-on across auth pages
+- Added `attemptSSOAuth()` function to both pages — on page load (no existing session), broadcasts a token request and auto-authenticates if another auth page responds within 2 seconds
+- Added bidirectional SSO token provision — both pages can act as SSO provider (whichever the user signs into first shares tokens with the other)
+- Added cross-page sign-out propagation via `sso-sign-out` broadcast — signing out from one page signs out all SSO-connected pages
+
+### Changed
+- Changed testauth1.html CLIENT_ID to match applicationportal's shared CLIENT_ID (`216764502068-7j0j6svmparsrfgdf784dneltlirpac2`) — required for cross-page Google token sharing
+
+#### `applicationportal.html` — v01.06w
+
+##### Added
+- Single sign-on support — sign in once, other auth pages auto-authenticate without a sign-in prompt
+- Cross-page sign-out — signing out from any connected page signs out all pages
+
+#### `testauth1.html` — v02.62w
+
+##### Added
+- Single sign-on support — auto-authenticates when another auth page (like Application Portal) is already signed in
+- Cross-page sign-out — signing out from any connected page signs out all pages
+
+##### Changed
+- Shared Google OAuth client for unified sign-in experience across all auth pages
 
 ## [v05.91r] — 2026-03-21 11:48:05 PM EST
 
