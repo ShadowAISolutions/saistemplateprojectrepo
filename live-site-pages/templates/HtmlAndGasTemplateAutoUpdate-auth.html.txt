@@ -348,7 +348,7 @@
     </div>
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Signing in…</h2>
-      <p style="color:#999;">Setting up your session</p>
+      <p id="signing-in-subtitle" style="color:#999;">Setting up your session</p>
       <div class="auth-spinner"></div>
     </div>
   </div>
@@ -2192,6 +2192,9 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = 'none';
       document.getElementById('auth-wall-signing-in').style.display = '';
+      // Reset subtitle to default (SSO path overrides this before showing)
+      var subtitle = document.getElementById('signing-in-subtitle');
+      if (subtitle) subtitle.textContent = 'Setting up your session';
     }
 
     function showApp(email, displayName, role) {

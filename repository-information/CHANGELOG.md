@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v06.06r] — 2026-03-22 02:12:54 PM EST
+
+> **Prompt:** "the global acl is not showing the Signing in via Application Portal like the testauth1 is, make sure the improvements we have made to testauth1 are also done on the global acl"
+
+### Fixed
+- Global ACL now shows "Signing in via Application Portal" during SSO authentication — the `signing-in-subtitle` element ID was missing from the HTML and the subtitle reset logic was missing from `showSigningIn()`
+
+#### `globalacl.html` — v01.19w
+
+##### Fixed
+- "Signing in via Application Portal" message now appears during SSO sign-in instead of generic "Setting up your session"
 
 ## [v06.05r] — 2026-03-22 02:05:02 PM EST
 
