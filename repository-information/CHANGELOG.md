@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v06.27r] — 2026-03-23 01:10:04 PM EST
+
+> **Prompt:** "create a comprehensive implementation-ready reference document that addresses Phase A of the repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md Recommended Implementation Roadmap. This document will be used to implement the fixes in testauth1. Include working code blocks, architecture diagrams, comparison tables, a security checklist, and troubleshooting. This should be a single document someone could follow to implement every fix from scratch. Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+
+### Added
+- Created `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` — comprehensive implementation guide for Privacy Rule compliance (Phase A of the HIPAA remediation roadmap)
+- Covers items #19 (Disclosure Accounting, §164.528), #23 (Right of Access, §164.524), and #24 (Right to Amendment, §164.526)
+- Includes 14 working GAS code blocks following the established `saveNote()` pattern (validateSessionForData → checkPermission → dataAuditLog → operation)
+- Architecture overview with Mermaid system context diagram and data flow pattern
+- Complete spreadsheet schemas for 3 new sheets: `DisclosureLog`, `AccessRequests`, `AmendmentRequests`
+- Security checklist (pre-implementation, per-function, post-implementation, HIPAA-specific)
+- Before/after compliance comparison tables showing scorecard impact (16→19 ✅, 65%→74% current law)
+- Role-permission matrix for all Phase A functions across viewer/billing/clinician/admin roles
+- 16 test scenarios with expected results across all three items
+- Troubleshooting guide covering common issues, GAS-specific gotchas, and HIPAA-specific scenarios
+- HTML UI component templates for disclosure panel, data export, amendment request form, and admin review panel
 
 ## [v06.26r] — 2026-03-23 12:33:53 PM EST
 
