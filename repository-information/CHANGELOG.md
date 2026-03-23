@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v06.36r] — 2026-03-23 06:29:26 PM EST
+
+> **Prompt:** "the amendment requests and disclosure log are currently blank can you put some sample data so i can test all of them"
+
+### Added
+- Seed Sample Data function — admin-only button in the My Data panel that populates DisclosureLog, AmendmentRequests, and notes sheet with realistic HIPAA-compliant sample data for the signed-in user
+- Phase A iframe handler for `phase-a-seed-sample-data` message type
+
+#### `testauth1.gs` — v01.95g
+##### Added
+- New "Seed Sample Data" feature — populates your account with sample disclosures, amendment requests, and clinical notes for testing
+
+#### `testauth1.html` — v02.81w
+##### Added
+- "Seed Sample Data" button in the My Data panel (admin-only) — one click to populate test data across all HIPAA features
 
 ## [v06.35r] — 2026-03-23 06:08:12 PM EST
 

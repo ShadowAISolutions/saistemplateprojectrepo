@@ -1,4 +1,4 @@
-var VERSION = "v01.94g";
+var VERSION = "v01.95g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2025,6 +2025,179 @@ function getPendingAmendments(sessionToken) {
   });
 }
 
+// ═══════════════════════════════════════════════════════
+// PHASE A — SEED SAMPLE DATA (Admin/Testing)
+// Populates DisclosureLog, AmendmentRequests, and Live_Sheet
+// with realistic sample data for the authenticated user.
+// ═══════════════════════════════════════════════════════
+
+function seedSampleData(sessionToken) {
+  return wrapPhaseAOperation('seedSampleData', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'seedSampleData');
+    var email = user.email;
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var now = new Date();
+    var counts = { disclosures: 0, amendments: 0, notes: 0 };
+
+    // ── Seed DisclosureLog ──
+    var discHeaders = [
+      'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
+      'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
+      'ExemptionType', 'TriggeredBy'
+    ];
+    var discSheet = getOrCreateSheet('DisclosureLog', discHeaders);
+    var disclosures = [
+      {
+        daysAgo: 5, recipient: 'Blue Cross Blue Shield', type: 'insurance',
+        phi: 'Claim form with diagnosis codes and treatment dates',
+        purpose: 'Insurance claim processing'
+      },
+      {
+        daysAgo: 12, recipient: 'Dr. Sarah Chen', type: 'healthcare_provider',
+        phi: 'Complete medical record including lab results',
+        purpose: 'Referral for specialist consultation'
+      },
+      {
+        daysAgo: 30, recipient: 'State Health Department', type: 'public_health',
+        phi: 'De-identified aggregate data', purpose: 'Public health reporting',
+        isExempt: true, exemptionType: 'public_health_activity'
+      },
+      {
+        daysAgo: 45, recipient: 'Quest Diagnostics', type: 'business_associate',
+        phi: 'Lab order with patient demographics and test requests',
+        purpose: 'Laboratory testing services'
+      },
+      {
+        daysAgo: 90, recipient: 'Medicare', type: 'government_program',
+        phi: 'Treatment summary and billing codes',
+        purpose: 'Medicare reimbursement'
+      }
+    ];
+    for (var i = 0; i < disclosures.length; i++) {
+      var d = disclosures[i];
+      var ts = new Date(now.getTime() - d.daysAgo * 86400000);
+      var timestamp = Utilities.formatDate(ts, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+      var discId = generateRequestId('DISC');
+      discSheet.appendRow([
+        timestamp, discId, email, d.recipient,
+        d.type, d.phi, d.purpose, d.isExempt || false,
+        d.exemptionType || '', 'system_seed'
+      ]);
+      counts.disclosures++;
+    }
+
+    // ── Seed AmendmentRequests ──
+    var amendHeaders = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var amendSheet = getOrCreateSheet('AmendmentRequests', amendHeaders);
+    var amendments = [
+      {
+        daysAgo: 3, recordId: 'NOTE-20260315-sample1',
+        current: 'Patient reports occasional headaches',
+        proposed: 'Patient reports frequent migraines with aura',
+        reason: 'Original note does not accurately reflect the severity and type of headaches I experience',
+        status: 'Pending'
+      },
+      {
+        daysAgo: 15, recordId: 'NOTE-20260301-sample2',
+        current: 'Allergies: None known',
+        proposed: 'Allergies: Penicillin (causes hives), Sulfa drugs (causes rash)',
+        reason: 'My drug allergies were not recorded during the intake visit',
+        status: 'Approved', reviewer: 'admin@clinic.example.com',
+        decisionDate: 10
+      },
+      {
+        daysAgo: 40, recordId: 'NOTE-20260210-sample3',
+        current: 'Patient is a current smoker',
+        proposed: 'Patient quit smoking 2 years ago',
+        reason: 'My smoking status is outdated — I quit in 2024',
+        status: 'Denied', reviewer: 'admin@clinic.example.com',
+        decisionDate: 35, decisionReason: 'Smoking cessation date confirmed but original entry reflects status at time of visit per clinical documentation standards'
+      }
+    ];
+    for (var j = 0; j < amendments.length; j++) {
+      var a = amendments[j];
+      var reqDate = new Date(now.getTime() - a.daysAgo * 86400000);
+      var reqTimestamp = Utilities.formatDate(reqDate, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+      var amendId = generateRequestId('AMEND');
+      var deadline = new Date(reqDate.getTime() + 60 * 86400000);
+      var deadlineStr = Utilities.formatDate(deadline, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+      var decDate = '';
+      if (a.decisionDate) {
+        var dd = new Date(now.getTime() - a.decisionDate * 86400000);
+        decDate = Utilities.formatDate(dd, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+      }
+      amendSheet.appendRow([
+        amendId, email, a.recordId, reqTimestamp,
+        a.current, a.proposed, a.reason, a.status,
+        a.reviewer || '', decDate, a.decisionReason || '',
+        '', '', deadlineStr, 'Seeded sample data'
+      ]);
+      counts.amendments++;
+    }
+
+    // ── Seed Live_Sheet (notes) ──
+    var notesSheet = ss.getSheetByName(SHEET_NAME);
+    if (notesSheet) {
+      var notesData = notesSheet.getDataRange().getValues();
+      var notesHeaders = notesData.length > 0 ? notesData[0] : [];
+      // Find email column
+      var emailCol = -1;
+      for (var c = 0; c < notesHeaders.length; c++) {
+        if (String(notesHeaders[c]).toLowerCase().indexOf('email') !== -1) {
+          emailCol = c;
+          break;
+        }
+      }
+      // Only seed if we can identify the structure
+      if (emailCol >= 0 && notesHeaders.length >= 2) {
+        // Add a couple of sample notes using existing column structure
+        var sampleNotes = [
+          'Annual wellness visit — vitals normal, BMI 24.2, BP 118/76',
+          'Follow-up: lab results reviewed, cholesterol within normal range'
+        ];
+        for (var n = 0; n < sampleNotes.length; n++) {
+          var noteRow = [];
+          for (var h = 0; h < notesHeaders.length; h++) {
+            var header = String(notesHeaders[h]).toLowerCase();
+            if (h === emailCol) {
+              noteRow.push(email);
+            } else if (header.indexOf('timestamp') !== -1 || header.indexOf('date') !== -1) {
+              var nDate = new Date(now.getTime() - (n + 1) * 7 * 86400000);
+              noteRow.push(Utilities.formatDate(nDate, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss"));
+            } else if (header.indexOf('note') !== -1 || header.indexOf('content') !== -1 || header.indexOf('text') !== -1) {
+              noteRow.push(sampleNotes[n]);
+            } else if (header.indexOf('id') !== -1) {
+              noteRow.push(generateRequestId('NOTE'));
+            } else {
+              noteRow.push('');
+            }
+          }
+          notesSheet.appendRow(noteRow);
+          counts.notes++;
+        }
+      }
+    }
+
+    auditLog('seed_sample_data', email, 'success', {
+      disclosures: counts.disclosures,
+      amendments: counts.amendments,
+      notes: counts.notes
+    });
+
+    return {
+      success: true,
+      message: 'Sample data seeded: ' + counts.disclosures + ' disclosures, '
+        + counts.amendments + ' amendments, ' + counts.notes + ' notes',
+      counts: counts
+    };
+  });
+}
+
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
   var cache = getEpochCache();
@@ -2642,6 +2815,12 @@ function doGet(e) {
       + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-review-result", {result:r}); })'
       + '      .withFailureHandler(function(e) { ok("phase-a-review-result", {result:{success:false,message:String(e)}}); })'
       + '      .reviewAmendment(d.token, d.amendmentId, d.decision, d.decisionReason);'
+      + '  }'
+      // Seed Sample Data
+      + '  if (d.type === "phase-a-seed-sample-data") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-seed-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-seed-result", {result:{success:false,message:String(e)}}); })'
+      + '      .seedSampleData(d.token);'
       + '  }'
       + '});'
       + '</' + 'script></body></html>';

@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v01.95g] — 2026-03-23 06:29:26 PM EST — v06.36r
+
+### Added
+- New "Seed Sample Data" feature — populates your account with sample disclosures, amendment requests, and clinical notes for testing
 
 ## [v01.94g] — 2026-03-23 06:08:12 PM EST — v06.35r
 
