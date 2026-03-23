@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v06.24r] — 2026-03-23 10:04:38 AM EST
+
+> **Prompt:** "no it sstill not working, make sure you actually understand what im asking for. in the instance where the google sign in is closed out, i want the sso pending to go from pending to dismissed. its already properly detecting when ready, just not when its been dismissed. make sure we can even accomplish that think deep and research online"
+
+### Added
+- Added `error_callback: _onGisPopupClosed` to all 5 `initTokenClient` calls — GIS fires this callback with `error.type === 'popup_closed'` when the user closes the Google sign-in popup without completing auth
+- New "dismissed" state for SSO indicator (red dot, red "dismissed" text) — shown when the GIS popup is closed without signing in
+
+### Fixed
+- SSO indicator now correctly detects popup dismissal using GIS's official `error_callback` mechanism instead of relying on OAuth error callbacks (which don't fire when the popup window itself is closed)
+
+#### `applicationportal.html` — v01.28w
+
+##### Added
+- SSO indicator "dismissed" state — red dot and "dismissed" label when the Google sign-in popup is closed without completing auth
 
 ## [v06.23r] — 2026-03-23 09:52:01 AM EST
 
