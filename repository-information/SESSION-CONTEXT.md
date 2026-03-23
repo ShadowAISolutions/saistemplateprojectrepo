@@ -4,37 +4,31 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-22 03:22:27 PM EST
-**Repo version:** v06.12r
+**Date:** 2026-03-23 08:46:50 AM EST
+**Repo version:** v06.17r
 
 ### What was done
-Major SSO and security infrastructure session across 7 pushes (v06.06r–v06.12r):
+SSO access control and sign-out UX improvements across 2 pushes (v06.16r–v06.17r):
 
-- **v06.06r** — Added `id="signing-in-subtitle"` to globalacl's `<p>` element and subtitle reset in `showSigningIn()` — was missing, preventing "Signing in via Application Portal" from displaying during SSO. Also applied to template
-- **v06.07r** — Fixed tab duplication expiring session on localStorage pages. Root cause: `stopCountdownTimers()` in the tab-claim handler removed `SESSION_START_KEY` from shared localStorage, causing the claiming tab's timer to immediately expire. Fix: save/restore `SESSION_START_KEY` across `stopCountdownTimers()`. Applied to all auth pages + template
-- **v06.08r** — Added complete SSO infrastructure to auth template (8 pieces were missing): variable declarations, BroadcastChannel setup, token request/response handlers, sign-out propagation, `attemptSSOAuth()` function, page-load SSO attempt, token capture in `handleTokenResponse`, SSO cleanup in `clearSession()`
-- **v06.09r** — Fixed Global Sessions "Invalid JSON response" — two root causes: (1) `validateCrossProjectAdmin` in template/applicationportal called `getRolesFromSpreadsheet().indexOf('admin')` but that returns an object not an array (TypeError → HTML error page), (2) `listGlobalSessions` parser expected plain arrays but template format wraps in `{success, sessions}`. Fixed by standardizing on `checkSpreadsheetAccess()` and making parser handle both formats
-- **v06.10r** — Added client-side expired session detection for localStorage pages — checks absolute/rolling timeouts before attempting server validation, skips "Reconnecting" for obviously-expired sessions
-- **v06.11r** — Switched globalacl and all templates from standard preset to HIPAA preset (sessionStorage, postMessage, DOM clearing). applicationportal and testauth1 were already HIPAA
-- **v06.12r** — Fixed HTML `SERVER_SESSION_DURATION` mismatch — was 3600s (standard/1hr) but GAS HIPAA uses 900s (15min). Client countdown now matches server-side session lifetime. Fixed in globalacl, applicationportal, and template
+- **v06.16r** — Restricted SSO token sharing to SSO_PROVIDER pages only. Previously any signed-in auth page responded to `sso-token-request` messages — now only pages with `SSO_PROVIDER: true` (Application Portal) respond. This enforces the intended hub-spoke SSO direction: Application Portal can SSO into other pages, but testauth1/globalacl cannot SSO into Application Portal
+- **v06.17r** — Added dual sign-out buttons to all auth pages. Split the single "Sign Out" button into "Sign Out" (local only — signs out of the current page without broadcasting) and "Sign Out All" (broadcasts SSO sign-out to all connected pages). Added `broadcastSSO` option to `performSignOut()` function. Updated template and propagated to all three auth pages
 
 ### Key decisions made
-- **All projects now use HIPAA preset** — developer explicitly requested switching from standard to HIPAA for all auth projects. This means: sessionStorage (cleared on tab close), postMessage token exchange (token never in URL), DOM clearing on expiry, 15-minute rolling session, 8-hour absolute timeout
-- **Template defaults to HIPAA** — new projects from the template will inherit the stronger security posture automatically
-- **Backward-compatible parser** — `listGlobalSessions` handles both plain array (legacy) and `{success, sessions}` (template) response formats so old deployments still work
+- **SSO is one-directional** — developer confirmed SSO should only work when accessed via the Application Portal (hub → spokes, not spokes → hub). The `SSO_PROVIDER` flag now gates both token re-acquisition on reconnect AND token response to requests
+- **Dual sign-out buttons** — developer wanted separate "sign out of this page" vs "sign out of all pages" buttons. Wording: "Sign Out" (local) and "Sign Out All" (global), with tooltips for clarity
+- **CHANGELOG archive rotation** — 42 sections from 2026-03-20 rotated to archive (sections dropped from 101 to 59/100). SHAs marked as `[sha-unavailable]` since those commits are not in the shallow git history
 
 ### Where we left off
-- All auth pages (globalacl, applicationportal, testauth1) are on HIPAA preset
-- All templates (HTML + both GAS) default to HIPAA
-- GAS scripts need redeployment from Apps Script editor for server-side changes to take effect (globalacl.gs ACTIVE_PRESET switch + validateCrossProjectAdmin fix)
-- testauth1 uses intentional test values (180s/300s/30s) for development — documented with comments showing production values to restore
+- All SSO changes are deployed — SSO token sharing restricted to provider, dual sign-out buttons live
+- Template updated with both changes — new pages created from template will inherit the correct behavior
+- No pending work or blockers
 
 ### Active context
-- Branch: `claude/implement-sso-applications-nX8jJ`
-- Repo version: v06.12r
-- globalacl.html: v01.23w, globalacl.gs: v01.23g
-- applicationportal.html: v01.18w, applicationportal.gs: v01.07g
-- testauth1.html: v02.72w, testauth1.gs: v01.91g
+- Branch: `claude/review-portal-console-rLaDR`
+- Repo version: v06.17r
+- applicationportal.html: v01.21w, applicationportal.gs: v01.08g
+- testauth1.html: v02.74w, testauth1.gs: v01.91g
+- globalacl.html: v01.25w, globalacl.gs: v01.24g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -42,16 +36,17 @@ Major SSO and security infrastructure session across 7 pushes (v06.06r–v06.12r
 
 ## Previous Sessions
 
-**Date:** 2026-03-22 01:12:28 PM EST
-**Repo version:** v06.03r
+**Date:** 2026-03-22 03:22:27 PM EST
+**Repo version:** v06.12r
 
 ### What was done
-Session Active Elsewhere improvements, SSO reconnect fix, portal cleanup, and emoji fix across 7 pushes (v05.97r–v06.03r):
+Major SSO and security infrastructure session across 7 pushes (v06.06r–v06.12r):
 
-- **v05.97r–v06.03r** — "Session Active Elsewhere" overlay improvements, SSO auto-auth after portal refresh, SSO_PROVIDER flag, emoji rendering fixes, GIS async loading fix
+- **v06.06r–v06.12r** — SSO subtitle fix, tab duplication session expiry fix, SSO infrastructure added to template, Global Sessions JSON fix, expired session detection for localStorage, switched all projects to HIPAA preset, fixed HTML/GAS session duration mismatch
 
 ### Where we left off
-- SSO auto-auth after portal refresh works
-- All auth pages have `SSO_PROVIDER` config flag (true only on applicationportal)
+- All auth pages on HIPAA preset with matching session durations
+- GAS scripts need redeployment for server-side changes
+- testauth1 uses intentional test values (180s/300s/30s)
 
 Developed by: ShadowAISolutions
