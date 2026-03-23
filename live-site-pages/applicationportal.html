@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.25w">
+  <meta name="build-version" content="v01.26w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -1239,7 +1239,8 @@
       _authNonce = null; // Consume the nonce
 
       if (response.error) {
-        // Silent auth failed — show auth wall with interactive sign-in
+        // Silent auth failed or user closed popup — show auth wall
+        _updateSsoIndicator('off');
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
@@ -2906,6 +2907,7 @@
         prompt: '',
         callback: function(response) {
           if (response.error) {
+            _updateSsoIndicator('off');
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
@@ -3232,6 +3234,8 @@
                     _ssoAccessToken = response.access_token;
                     console.debug('[SSO] Re-acquired access token during reconnect');
                     _updateSsoIndicator('ready');
+                  } else {
+                    _updateSsoIndicator('off');
                   }
                 }
               });

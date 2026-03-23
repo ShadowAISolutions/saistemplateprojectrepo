@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v06.22r] — 2026-03-23 09:42:59 AM EST
+
+> **Prompt:** "idk what you are talking about. im talking about the scenario where like in the screenshot, it says pending, but the user closed the google accounts sign in popup like the other screenshot"
+
+### Fixed
+- SSO indicator now resets to `off` when the user closes the Google sign-in popup without completing auth, or when any GIS auth attempt fails
+
+#### `applicationportal.html` — v01.26w
+
+##### Fixed
+- SSO indicator no longer stays stuck on "pending" after the Google sign-in popup is dismissed
 
 ## [v06.21r] — 2026-03-23 09:34:07 AM EST
 
