@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v02.77w] — 2026-03-23 03:06:26 PM EST — v06.31r
+
+### Fixed
+- HIPAA panels now load correctly — message types were being blocked by security allowlist
 
 ## [v02.76w] — 2026-03-23 02:41:17 PM EST — v06.30r
 
@@ -254,31 +259,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Fixed
 - Security event reports no longer fire from tabs that have been taken over by another tab
-
-## [v02.31w] — 2026-03-18 11:06:43 AM EST — v04.73r
-
-### Fixed
-- Removed global GAS URL exposure — deployment URL no longer accessible via `window._r`
-- Minor internal improvements
-
-## [v02.30w] — 2026-03-18 10:41:45 AM EST — v04.71r
-
-### Added
-- Prepared hash-based Content Security Policy — ready to activate when all security phases are complete
-
-## [v02.29w] — 2026-03-18 09:45:42 AM EST — v04.69r
-
-### Removed
-- Removed unnecessary iframe startup code that was already being cancelled on every page load — cleaner initialization flow
-
-## [v02.28w] — 2026-03-18 09:24:34 AM EST — v04.68r
-
-### Fixed
-- Security event reporting now requires an active session — improved protection against unauthorized resource usage
-
-## [v02.27w] — 2026-03-18 08:38:59 AM EST — v04.67r
-
-### Changed
-- Session heartbeats, sign-out, and security event reporting now use secure message channels instead of URL parameters — tokens no longer appear in browser history or server logs
 
 Developed by: ShadowAISolutions

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v06.31r] — 2026-03-23 03:06:26 PM EST
+
+> **Prompt:** "nope all the same. lets tackle one at a time. when i click on disclosures, and its loading, what is supposed to come up"
+
+### Fixed
+- Phase A messages rejected by `_KNOWN_GAS_MESSAGES` allowlist — added all 8 Phase A message types to the allowlist so they pass Layer 1 validation
+
+#### `testauth1.html` — v02.77w
+##### Fixed
+- Added Phase A message types to `_KNOWN_GAS_MESSAGES` allowlist — root cause of panels stuck on loading
 
 ## [v06.30r] — 2026-03-23 02:41:17 PM EST
 

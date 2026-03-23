@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.76w">
+  <meta name="build-version" content="v02.77w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1451,7 +1451,16 @@
       'gas-admin-signout-result': true,
       'gas-admin-signout-error': true,
       'gas-nonce-ready': true,            // Nonce generation listener page ready signal
-      'gas-nonce-result': true            // Nonce generation result (success/failure)
+      'gas-nonce-result': true,           // Nonce generation result (success/failure)
+      'phase-a-ready': true,              // Phase A: HIPAA listener page ready signal
+      'phase-a-disclosures-result': true, // Phase A: disclosure accounting response
+      'phase-a-export-disclosures-result': true, // Phase A: disclosure export response
+      'phase-a-export-result': true,      // Phase A: data export response
+      'phase-a-amendment-result': true,   // Phase A: amendment request response
+      'phase-a-pending-amendments-result': true, // Phase A: pending amendments list
+      'phase-a-review-result': true,      // Phase A: amendment review response
+      'phase-a-error': true,              // Phase A: error response
+      'frame-handshake-challenge': true   // Frame handshake (processed before allowlist but listed for completeness)
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)

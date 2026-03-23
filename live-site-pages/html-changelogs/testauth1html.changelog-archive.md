@@ -8,6 +8,32 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.31w] — 2026-03-18 11:06:43 AM EST — v04.73r
+
+### Fixed
+- Removed global GAS URL exposure — deployment URL no longer accessible via `window._r`
+- Minor internal improvements
+
+## [v02.30w] — 2026-03-18 10:41:45 AM EST — v04.71r
+
+### Added
+- Prepared hash-based Content Security Policy — ready to activate when all security phases are complete
+
+## [v02.29w] — 2026-03-18 09:45:42 AM EST — v04.69r
+
+### Removed
+- Removed unnecessary iframe startup code that was already being cancelled on every page load — cleaner initialization flow
+
+## [v02.28w] — 2026-03-18 09:24:34 AM EST — v04.68r
+
+### Fixed
+- Security event reporting now requires an active session — improved protection against unauthorized resource usage
+
+## [v02.27w] — 2026-03-18 08:38:59 AM EST — v04.67r
+
+### Changed
+- Session heartbeats, sign-out, and security event reporting now use secure message channels instead of URL parameters — tokens no longer appear in browser history or server logs
+
 ## [v02.26w] — 2026-03-17 10:56:34 PM EST — v04.65r — [merged]
 
 ### Fixed
