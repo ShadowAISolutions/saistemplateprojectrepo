@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v02.82w] — 2026-03-23 06:56:11 PM EST — v06.37r
+
+### Removed
+- Removed "Seed Sample Data" button from the My Data panel (seeding is now done via direct URL)
 
 ## [v02.81w] — 2026-03-23 06:29:26 PM EST — v06.36r
 
@@ -254,30 +259,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Changed
 - Sign-in and session resume now include role information from the server
-
-## [v02.35w] — 2026-03-18 02:50:29 PM EST — v04.81r
-
-### Changed
-- Improved message verification security — all messages are now validated using a single, stronger cryptographic method
-- Security self-test panel updated to reflect the stronger verification system
-
-### Removed
-- Removed support for legacy message verification (no longer needed after server-side upgrade)
-
-## [v02.34w] — 2026-03-18 01:12:40 PM EST — v04.78r
-
-### Fixed
-- Fixed tab duplication causing an iframe reload loop instead of gracefully transferring to the new tab
-- HMAC key is now properly restored after "Use Here" reclaim without causing refresh spam
-
-## [v02.33w] — 2026-03-18 01:02:43 PM EST — v04.77r
-
-### Fixed
-- HMAC key is now properly restored after reclaiming a session with "Use Here"
-
-## [v02.32w] — 2026-03-18 11:49:04 AM EST — v04.76r
-
-### Fixed
-- Security event reports no longer fire from tabs that have been taken over by another tab
 
 Developed by: ShadowAISolutions

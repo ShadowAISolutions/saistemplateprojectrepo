@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v06.37r] — 2026-03-23 06:56:11 PM EST
+
+> **Prompt:** "whatever you did, did not produce any results, undo it, i literally want it in the spreadsheets"
+
+### Changed
+- Replaced broken UI-based seed approach with a direct `doGet` action endpoint (`?action=seedSampleData&email=...&secret=...`) that writes sample data directly to the spreadsheet — no session/iframe required
+- Removed the "Seed Sample Data" button and all Phase A iframe wiring for seeding
+
+#### `testauth1.gs` — v01.96g
+##### Changed
+- Sample data seeding now works via a direct URL call instead of through the app UI — more reliable for populating test data
+
+#### `testauth1.html` — v02.82w
+##### Removed
+- Removed "Seed Sample Data" button from the My Data panel (seeding is now done via direct URL)
 
 ## [v06.36r] — 2026-03-23 06:29:26 PM EST
 

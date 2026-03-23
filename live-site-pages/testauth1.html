@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.81w">
+  <meta name="build-version" content="v02.82w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -496,7 +496,6 @@
         <label><input type="radio" name="export-format" value="csv"> CSV</label>
       </div>
       <button id="data-export-download-btn" class="pa-action" style="margin-top:8px;">Download</button>
-      <button id="seed-sample-data-btn" class="pa-action" data-requires-role="admin" style="margin-top:4px;background:#455a64;font-size:10px;">Seed Sample Data</button>
       <div id="data-export-status" class="pa-status"></div>
     </div>
   </div>
@@ -1460,7 +1459,6 @@
       'phase-a-amendment-result': true,   // Phase A: amendment request response
       'phase-a-pending-amendments-result': true, // Phase A: pending amendments list
       'phase-a-review-result': true,      // Phase A: amendment review response
-      'phase-a-seed-result': true,        // Phase A: seed sample data response
       'phase-a-error': true,              // Phase A: error response
       'frame-handshake-challenge': true   // Frame handshake (processed before allowlist but listed for completeness)
     };
@@ -1716,7 +1714,7 @@
         'phase-a-ready': true, 'phase-a-disclosures-result': true,
         'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
         'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
-        'phase-a-review-result': true, 'phase-a-seed-result': true, 'phase-a-error': true };
+        'phase-a-review-result': true, 'phase-a-error': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -4567,12 +4565,6 @@
     status.textContent = 'Generating export...';
     _sendPhaseA({ type: 'phase-a-request-export', token: _getToken(), format: fmt });
   });
-  document.getElementById('seed-sample-data-btn').addEventListener('click', function() {
-    var status = document.getElementById('data-export-status');
-    status.textContent = 'Seeding sample data...';
-    status.style.color = '#999';
-    _sendPhaseA({ type: 'phase-a-seed-sample-data', token: _getToken() });
-  });
 
   function _handleExportResult(result) {
     var status = document.getElementById('data-export-status');
@@ -4740,16 +4732,6 @@
         break;
       case 'phase-a-pending-amendments-result':
         _renderPendingAmendments(data.amendments || []);
-        break;
-      case 'phase-a-seed-result':
-        var seedStatus = document.getElementById('data-export-status');
-        if (data.result && data.result.success) {
-          seedStatus.textContent = data.result.message;
-          seedStatus.style.color = '#66bb6a';
-        } else {
-          seedStatus.textContent = 'Error: ' + ((data.result && data.result.message) || 'Failed to seed data');
-          seedStatus.style.color = '#ef5350';
-        }
         break;
     }
   });
