@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.74w">
+  <meta name="build-version" content="v02.75w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -310,6 +310,67 @@
     #admin-sessions-panel .asp-kick:hover { background: rgba(239,83,80,0.15); }
     #admin-sessions-panel .asp-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
     #admin-sessions-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
+    /* ── PHASE A — HIPAA Privacy Rule UI ── */
+    .phase-a-btn {
+      background: none; border: none; color: #90caf9; cursor: pointer;
+      font: 11px/1 monospace; padding: 0 4px;
+    }
+    .phase-a-btn:hover { color: #fff; text-decoration: underline; }
+    .phase-a-panel {
+      display: none; position: fixed; top: 40px; right: 8px; z-index: 10010;
+      background: rgba(20,20,30,0.95); color: #ccc; border: 1px solid #444;
+      border-radius: 8px; padding: 12px 16px; font: 12px/1.4 monospace;
+      max-width: 480px; min-width: 320px; max-height: 70vh; overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5); flex-direction: column;
+    }
+    .pa-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px;
+    }
+    .pa-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+    .pa-close { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0 4px; }
+    .pa-close:hover { color: #fff; }
+    .pa-action {
+      border: 1px solid #90caf9; color: #90caf9; background: none;
+      cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px;
+    }
+    .pa-action:hover { background: rgba(144,202,249,0.1); }
+    .pa-body { margin-top: 8px; }
+    .pa-body label { display: block; color: #aaa; font-size: 11px; margin: 8px 0 4px; }
+    .pa-body input, .pa-body textarea, .pa-body select {
+      width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555;
+      color: #eee; padding: 6px 8px; border-radius: 4px; font: 12px monospace;
+      box-sizing: border-box;
+    }
+    .pa-body textarea { resize: vertical; }
+    .pa-format-picker { margin: 8px 0; }
+    .pa-format-picker label { display: inline; margin-right: 12px; color: #ccc; font-size: 12px; }
+    .pa-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
+    .pa-empty { color: #888; font-size: 11px; text-align: center; padding: 16px 0; }
+    .pa-card {
+      background: rgba(255,255,255,0.05); border: 1px solid #444;
+      border-radius: 6px; padding: 8px 10px; margin-bottom: 8px;
+    }
+    .pa-card-header { color: #90caf9; font-weight: bold; font-size: 11px; }
+    .pa-card-meta { color: #888; font-size: 10px; margin: 4px 0; }
+    .pa-card-field { font-size: 11px; margin: 4px 0; }
+    .pa-card-field strong { color: #aaa; }
+    .pa-card-actions { margin-top: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .pa-approve {
+      border: 1px solid #66bb6a; color: #66bb6a; background: none;
+      cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px;
+    }
+    .pa-approve:hover { background: rgba(102,187,106,0.15); }
+    .pa-deny {
+      border: 1px solid #ef5350; color: #ef5350; background: none;
+      cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px;
+    }
+    .pa-deny:hover { background: rgba(239,83,80,0.15); }
+    .pa-deny-reason {
+      width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555;
+      color: #eee; padding: 4px 6px; border-radius: 3px; font: 10px monospace;
+      margin-top: 4px; display: none;
+    }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -379,6 +440,10 @@
     <span id="user-email-display"></span>
     <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
     <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
+    <button id="disclosure-accounting-btn" class="phase-a-btn" title="View disclosure history" data-requires-permission="read">Disclosures</button>
+    <button id="data-export-btn" class="phase-a-btn" title="Download your data" data-requires-permission="export">My Data</button>
+    <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
+    <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-role="admin">Amendments</button>
     <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
     <span class="sign-out-sep">|</span>
     <button id="sign-out-all-btn" title="Sign out of all connected pages">Sign Out All</button>
@@ -397,6 +462,80 @@
     </div>
   </div>
   <iframe id="admin-sessions-iframe"></iframe>
+
+  <!-- ── PHASE A — HIPAA Privacy Rule Panels ── -->
+  <!-- Disclosure Accounting Panel (#19) -->
+  <div id="disclosure-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Disclosure Accounting</span>
+      <span>
+        <select id="disclosure-export-format" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:10px monospace;padding:1px 4px;border-radius:3px;">
+          <option value="json">JSON</option>
+          <option value="csv">CSV</option>
+        </select>
+        <button id="disclosure-export-btn" class="pa-action">Export</button>
+        <button id="disclosure-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div id="disclosure-period" class="pa-status"></div>
+    <div id="disclosure-list"></div>
+    <div id="disclosure-empty" class="pa-empty" style="display:none;">No disclosures found for the reporting period.</div>
+  </div>
+
+  <!-- Data Export Panel (#23) -->
+  <div id="data-export-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Download My Data</span>
+      <button id="data-export-close-btn" class="pa-close">&times;</button>
+    </div>
+    <div class="pa-body">
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Download a copy of all your data stored in this system. This is your right under HIPAA §164.524.</p>
+      <div class="pa-format-picker">
+        <label><input type="radio" name="export-format" value="json" checked> JSON</label>
+        <label><input type="radio" name="export-format" value="csv"> CSV</label>
+      </div>
+      <button id="data-export-download-btn" class="pa-action" style="margin-top:8px;">Download</button>
+      <div id="data-export-status" class="pa-status"></div>
+    </div>
+  </div>
+
+  <!-- Amendment Request Panel (#24) -->
+  <div id="amendment-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Request Record Correction</span>
+      <button id="amendment-close-btn" class="pa-close">&times;</button>
+    </div>
+    <div class="pa-body">
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Under HIPAA §164.526, you have the right to request corrections to your health records.</p>
+      <label>Record ID:
+        <input type="text" id="amend-record-id" placeholder="Record identifier" />
+      </label>
+      <label>What is currently recorded:
+        <textarea id="amend-current" rows="3" placeholder="Current content you believe is incorrect"></textarea>
+      </label>
+      <label>What it should say:
+        <textarea id="amend-proposed" rows="3" placeholder="Your proposed correction"></textarea>
+      </label>
+      <label>Reason for correction:
+        <textarea id="amend-reason" rows="2" placeholder="Why this change is needed"></textarea>
+      </label>
+      <button id="amend-submit-btn" class="pa-action" style="margin-top:8px;">Submit Request</button>
+      <div id="amend-status" class="pa-status"></div>
+    </div>
+  </div>
+
+  <!-- Amendment Review Panel (Admin) -->
+  <div id="amendment-review-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Pending Amendments</span>
+      <span>
+        <button id="amend-review-refresh" class="pa-action">Refresh</button>
+        <button id="amend-review-close" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div id="amend-review-list"></div>
+    <div id="amend-review-empty" class="pa-empty" style="display:none;">No pending amendments.</div>
+  </div>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -4246,6 +4385,294 @@
           'Phase 6 missing: ' + missing.join(', '));
       }
     });
+
+// ══════════════════════════════════════════════
+// PHASE A — HIPAA Privacy Rule UI Handlers
+// ══════════════════════════════════════════════
+
+(function() {
+  // Panel state
+  var _disclosurePanelOpen = false;
+  var _dataExportPanelOpen = false;
+  var _amendmentPanelOpen = false;
+  var _amendmentReviewPanelOpen = false;
+
+  // Helper: get the GAS iframe's message source for postMessage
+  function _getGasSource() {
+    var gasApp = document.getElementById('gas-app');
+    return gasApp ? gasApp.contentWindow : null;
+  }
+
+  // Helper: get current session token
+  function _getToken() {
+    try {
+      var s = JSON.parse(sessionStorage.getItem('__auth_session') || '{}');
+      return s.token || '';
+    } catch(e) { return ''; }
+  }
+
+  // Helper: escape HTML (mirrors server-side escapeHtml)
+  function _escHtmlPA(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Disclosure Accounting Panel ──
+  document.getElementById('disclosure-accounting-btn').addEventListener('click', function() {
+    var panel = document.getElementById('disclosure-panel');
+    if (_disclosurePanelOpen) {
+      panel.style.display = 'none';
+      _disclosurePanelOpen = false;
+    } else {
+      panel.style.display = 'flex';
+      _disclosurePanelOpen = true;
+      _loadDisclosures();
+    }
+  });
+  document.getElementById('disclosure-close-btn').addEventListener('click', function() {
+    document.getElementById('disclosure-panel').style.display = 'none';
+    _disclosurePanelOpen = false;
+  });
+  document.getElementById('disclosure-export-btn').addEventListener('click', function() {
+    var fmt = document.getElementById('disclosure-export-format').value;
+    var src = _getGasSource();
+    if (src) src.postMessage({ type: 'phase-a-export-disclosures', token: _getToken(), format: fmt }, '*');
+  });
+
+  function _loadDisclosures() {
+    document.getElementById('disclosure-list').innerHTML = '<div class="pa-status">Loading...</div>';
+    document.getElementById('disclosure-empty').style.display = 'none';
+    var src = _getGasSource();
+    if (src) src.postMessage({ type: 'phase-a-get-disclosures', token: _getToken() }, '*');
+  }
+
+  function _renderDisclosures(result) {
+    var list = document.getElementById('disclosure-list');
+    var empty = document.getElementById('disclosure-empty');
+    var period = document.getElementById('disclosure-period');
+    if (!result.success) {
+      list.innerHTML = '<div class="pa-status" style="color:#ef5350;">' + _escHtmlPA(result.message) + '</div>';
+      return;
+    }
+    period.textContent = 'Showing ' + result.count + ' disclosure(s) from ' +
+      (result.periodStart || '').substring(0, 10) + ' to ' + (result.periodEnd || '').substring(0, 10);
+    if (result.count === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < result.disclosures.length; i++) {
+      var d = result.disclosures[i];
+      html += '<div class="pa-card">'
+        + '<div class="pa-card-header">' + _escHtmlPA(d.disclosureId) + '</div>'
+        + '<div class="pa-card-meta">' + _escHtmlPA(d.date) + ' — ' + _escHtmlPA(d.purpose) + '</div>'
+        + '<div class="pa-card-field"><strong>Recipient:</strong> ' + _escHtmlPA(d.recipientName) + ' (' + _escHtmlPA(d.recipientType) + ')</div>'
+        + '<div class="pa-card-field"><strong>PHI:</strong> ' + _escHtmlPA(d.phiDescription) + '</div>'
+        + '</div>';
+    }
+    list.innerHTML = html;
+  }
+
+  // ── Data Export Panel ──
+  document.getElementById('data-export-btn').addEventListener('click', function() {
+    var panel = document.getElementById('data-export-panel');
+    if (_dataExportPanelOpen) {
+      panel.style.display = 'none';
+      _dataExportPanelOpen = false;
+    } else {
+      panel.style.display = 'flex';
+      _dataExportPanelOpen = true;
+      document.getElementById('data-export-status').textContent = '';
+    }
+  });
+  document.getElementById('data-export-close-btn').addEventListener('click', function() {
+    document.getElementById('data-export-panel').style.display = 'none';
+    _dataExportPanelOpen = false;
+  });
+  document.getElementById('data-export-download-btn').addEventListener('click', function() {
+    var fmt = document.querySelector('input[name="export-format"]:checked').value;
+    var status = document.getElementById('data-export-status');
+    status.textContent = 'Generating export...';
+    var src = _getGasSource();
+    if (src) src.postMessage({ type: 'phase-a-request-export', token: _getToken(), format: fmt }, '*');
+  });
+
+  function _handleExportResult(result) {
+    var status = document.getElementById('data-export-status');
+    if (!result.success) {
+      status.textContent = 'Error: ' + (result.message || result.error);
+      status.style.color = '#ef5350';
+      return;
+    }
+    var mimeType = result.format === 'csv' ? 'text/csv;charset=utf-8;' : 'application/json;charset=utf-8;';
+    var blob = new Blob([result.data], { type: mimeType });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = result.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    status.textContent = 'Download started — ' + result.filename;
+    status.style.color = '#66bb6a';
+  }
+
+  // ── Amendment Request Panel ──
+  document.getElementById('amendment-request-btn').addEventListener('click', function() {
+    var panel = document.getElementById('amendment-panel');
+    if (_amendmentPanelOpen) {
+      panel.style.display = 'none';
+      _amendmentPanelOpen = false;
+    } else {
+      panel.style.display = 'flex';
+      _amendmentPanelOpen = true;
+      document.getElementById('amend-status').textContent = '';
+    }
+  });
+  document.getElementById('amendment-close-btn').addEventListener('click', function() {
+    document.getElementById('amendment-panel').style.display = 'none';
+    _amendmentPanelOpen = false;
+  });
+  document.getElementById('amend-submit-btn').addEventListener('click', function() {
+    var recordId = document.getElementById('amend-record-id').value.trim();
+    var current = document.getElementById('amend-current').value.trim();
+    var proposed = document.getElementById('amend-proposed').value.trim();
+    var reason = document.getElementById('amend-reason').value.trim();
+    var status = document.getElementById('amend-status');
+    if (!recordId || !proposed || !reason) {
+      status.textContent = 'Please fill in all required fields.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Submitting...';
+    status.style.color = '#999';
+    var src = _getGasSource();
+    if (src) src.postMessage({
+      type: 'phase-a-request-amendment', token: _getToken(),
+      recordId: recordId, currentContent: current, proposedChange: proposed, reason: reason
+    }, '*');
+  });
+
+  function _handleAmendmentResult(result) {
+    var status = document.getElementById('amend-status');
+    if (!result.success) {
+      status.textContent = 'Error: ' + (result.message || result.error);
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = result.message + ' (ID: ' + result.amendmentId + ')';
+    status.style.color = '#66bb6a';
+    document.getElementById('amend-record-id').value = '';
+    document.getElementById('amend-current').value = '';
+    document.getElementById('amend-proposed').value = '';
+    document.getElementById('amend-reason').value = '';
+  }
+
+  // ── Amendment Review Panel (Admin) ──
+  document.getElementById('amendment-review-btn').addEventListener('click', function() {
+    var panel = document.getElementById('amendment-review-panel');
+    if (_amendmentReviewPanelOpen) {
+      panel.style.display = 'none';
+      _amendmentReviewPanelOpen = false;
+    } else {
+      panel.style.display = 'flex';
+      _amendmentReviewPanelOpen = true;
+      _loadPendingAmendments();
+    }
+  });
+  document.getElementById('amend-review-close').addEventListener('click', function() {
+    document.getElementById('amendment-review-panel').style.display = 'none';
+    _amendmentReviewPanelOpen = false;
+  });
+  document.getElementById('amend-review-refresh').addEventListener('click', _loadPendingAmendments);
+
+  function _loadPendingAmendments() {
+    document.getElementById('amend-review-list').innerHTML = '<div class="pa-status">Loading...</div>';
+    document.getElementById('amend-review-empty').style.display = 'none';
+    var src = _getGasSource();
+    if (src) src.postMessage({ type: 'phase-a-get-pending-amendments', token: _getToken() }, '*');
+  }
+
+  function _renderPendingAmendments(amendments) {
+    var list = document.getElementById('amend-review-list');
+    var empty = document.getElementById('amend-review-empty');
+    if (!amendments || amendments.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < amendments.length; i++) {
+      var a = amendments[i];
+      html += '<div class="pa-card">'
+        + '<div class="pa-card-header">' + _escHtmlPA(a.amendmentId) + '</div>'
+        + '<div class="pa-card-meta">By: ' + _escHtmlPA(a.individualEmail) + ' | Record: ' + _escHtmlPA(a.recordId) + ' | ' + _escHtmlPA(a.requestDate) + '</div>'
+        + '<div class="pa-card-field"><strong>Current:</strong> ' + _escHtmlPA(a.currentContent) + '</div>'
+        + '<div class="pa-card-field"><strong>Proposed:</strong> ' + _escHtmlPA(a.proposedChange) + '</div>'
+        + '<div class="pa-card-field"><strong>Reason:</strong> ' + _escHtmlPA(a.reason) + '</div>'
+        + '<div class="pa-card-actions">'
+        + '<button class="pa-approve" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '">Approve</button>'
+        + '<button class="pa-deny" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '">Deny</button>'
+        + '<input type="text" class="pa-deny-reason" placeholder="Denial reason (required)" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '" />'
+        + '</div></div>';
+    }
+    list.innerHTML = html;
+
+    // Attach approve/deny handlers
+    list.querySelectorAll('.pa-approve').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-amendment-id');
+        var src = _getGasSource();
+        if (src) src.postMessage({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Approved' }, '*');
+      });
+    });
+    list.querySelectorAll('.pa-deny').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-amendment-id');
+        var reasonInput = list.querySelector('.pa-deny-reason[data-amendment-id="' + id + '"]');
+        if (reasonInput.style.display === 'none' || !reasonInput.style.display) {
+          reasonInput.style.display = 'block';
+          reasonInput.focus();
+          return;
+        }
+        var reason = reasonInput.value.trim();
+        if (!reason) { reasonInput.style.borderColor = '#ef5350'; return; }
+        var src = _getGasSource();
+        if (src) src.postMessage({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Denied', decisionReason: reason }, '*');
+      });
+    });
+  }
+
+  // ── postMessage Response Router ──
+  window.addEventListener('message', function(event) {
+    var data = event.data;
+    if (!data || !data.type) return;
+    switch (data.type) {
+      case 'phase-a-disclosures-result':
+        _renderDisclosures(data.result);
+        break;
+      case 'phase-a-export-disclosures-result':
+        _handleExportResult(data.result);
+        break;
+      case 'phase-a-export-result':
+        _handleExportResult(data.result);
+        break;
+      case 'phase-a-amendment-result':
+        _handleAmendmentResult(data.result);
+        break;
+      case 'phase-a-review-result':
+        if (data.result && data.result.success) _loadPendingAmendments();
+        break;
+      case 'phase-a-pending-amendments-result':
+        _renderPendingAmendments(data.amendments || []);
+        break;
+    }
+  });
+})();
 
 // ══════════════
 // PROJECT END

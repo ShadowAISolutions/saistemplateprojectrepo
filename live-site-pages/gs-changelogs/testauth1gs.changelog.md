@@ -3,9 +3,19 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.92g] — 2026-03-23 02:20:16 PM EST — v06.29r
+
+### Added
+- Disclosure accounting: track and report PHI disclosures to external parties
+- Data export: download all your stored data in JSON or CSV format
+- Amendment requests: submit corrections to your health records
+- Admin amendment review: approve or deny submitted correction requests
+- Statement of disagreement: respond to denied amendment decisions
+- Amendment history: view the complete correction trail for any record
 
 ## [v01.91g] — 2026-03-22 02:58:37 PM EST — v06.09r
 

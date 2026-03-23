@@ -1,4 +1,4 @@
-var VERSION = "v01.91g";
+var VERSION = "v01.92g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1398,6 +1398,594 @@ function saveNote(sessionToken, noteText) {
     permissionChecked: 'write'
   });
   return { success: true, email: user.email, note: noteText, role: user.role };
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE A — SHARED UTILITIES
+// Implements patient rights per 45 CFR §164.524, §164.526, §164.528
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Generates a unique request ID for tracking compliance requests.
+ * Format: PREFIX-YYYYMMDD-UUID8 (e.g. REQ-20260323-a1b2c3d4)
+ */
+function generateRequestId(prefix) {
+  prefix = prefix || 'REQ';
+  var date = Utilities.formatDate(new Date(), 'America/New_York', 'yyyyMMdd');
+  var uuid = Utilities.getUuid().replace(/-/g, '').substring(0, 8);
+  return prefix + '-' + date + '-' + uuid;
+}
+
+/**
+ * Returns an EST-formatted ISO timestamp for audit entries.
+ * Consistent with existing auditLog() timestamp format.
+ */
+function formatHipaaTimestamp() {
+  return Utilities.formatDate(new Date(), 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+}
+
+/**
+ * Validates that the authenticated user can access the specified individual's data.
+ * Self-service: user can only access their OWN data.
+ * Admin: can access any individual's data.
+ *
+ * @param {Object} user - Session user object (from validateSessionForData)
+ * @param {string} targetEmail - The individual whose data is being accessed
+ * @param {string} operationName - Name of the calling operation (for audit)
+ * @returns {boolean} true if access is permitted
+ * @throws {Error} 'ACCESS_DENIED' if user cannot access this individual's data
+ */
+function validateIndividualAccess(user, targetEmail, operationName) {
+  if (hasPermission(user.role, 'admin')) {
+    auditLog('individual_access', user.email, 'admin_access', {
+      operation: operationName,
+      targetEmail: targetEmail,
+      accessType: 'admin_override'
+    });
+    return true;
+  }
+  if (user.email.toLowerCase() !== targetEmail.toLowerCase()) {
+    auditLog('security_alert', user.email, 'individual_access_denied', {
+      operation: operationName,
+      targetEmail: targetEmail,
+      reason: 'non_admin_accessing_other_user_data'
+    });
+    throw new Error('ACCESS_DENIED');
+  }
+  return true;
+}
+
+/**
+ * Gets or creates a sheet in the Project Data Spreadsheet.
+ * Follows the existing _writeAuditLogEntry() auto-creation pattern.
+ *
+ * @param {string} sheetName - Name of the sheet to get/create
+ * @param {string[]} headers - Column headers for new sheet creation
+ * @returns {Sheet} The Google Sheet object
+ */
+function getOrCreateSheet(sheetName, headers) {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+    var protection = sheet.protect().setDescription('HIPAA Protected — ' + sheetName);
+    protection.setWarningOnly(true);
+    auditLog('sheet_created', 'system', 'success', {
+      sheetName: sheetName,
+      columnCount: headers.length,
+      protection: 'warning_only'
+    });
+  }
+  return sheet;
+}
+
+/**
+ * Wraps a Phase A operation with standard error handling.
+ * Catches known error types and returns structured responses.
+ * HIPAA: never leaks PHI in error messages.
+ */
+function wrapPhaseAOperation(operationName, sessionToken, operationFn) {
+  try {
+    var user = validateSessionForData(sessionToken, operationName);
+    return operationFn(user);
+  } catch (e) {
+    var errorType = e.message || 'UNKNOWN_ERROR';
+    var safeErrors = {
+      'SESSION_EXPIRED': { success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' },
+      'SESSION_INVALID': { success: false, error: 'SESSION_INVALID', message: 'Invalid session. Please sign in again.' },
+      'PERMISSION_DENIED': { success: false, error: 'PERMISSION_DENIED', message: 'You do not have permission for this operation.' },
+      'ACCESS_DENIED': { success: false, error: 'ACCESS_DENIED', message: 'You can only access your own data.' },
+      'NOT_FOUND': { success: false, error: 'NOT_FOUND', message: 'The requested record was not found.' },
+      'INVALID_INPUT': { success: false, error: 'INVALID_INPUT', message: 'Invalid input provided.' }
+    };
+    if (safeErrors[errorType]) {
+      return safeErrors[errorType];
+    }
+    auditLog('phase_a_error', 'system', 'error', {
+      operation: operationName,
+      errorType: errorType,
+      errorMessage: e.message,
+      stack: e.stack
+    });
+    return { success: false, error: 'INTERNAL_ERROR', message: 'An internal error occurred. Please try again.' };
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE A — ITEM #19: DISCLOSURE ACCOUNTING (§164.528)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Records a PHI disclosure to the DisclosureLog sheet.
+ * Called whenever PHI is shared with an external party.
+ */
+function recordDisclosure(params) {
+  var required = ['recipientName', 'recipientType', 'phiDescription', 'purpose', 'individualEmail'];
+  for (var i = 0; i < required.length; i++) {
+    if (!params[required[i]]) {
+      throw new Error('INVALID_INPUT');
+    }
+  }
+  var disclosureId = generateRequestId('DISC');
+  var timestamp = formatHipaaTimestamp();
+  var isExempt = params.isExempt || false;
+  var exemptionType = params.exemptionType || '';
+  var triggeredBy = 'system';
+  if (params.sessionToken) {
+    try {
+      var user = validateSessionForData(params.sessionToken, 'recordDisclosure');
+      triggeredBy = user.email;
+    } catch (e) {
+      triggeredBy = 'system_automated';
+    }
+  }
+  var headers = [
+    'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
+    'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
+    'ExemptionType', 'TriggeredBy'
+  ];
+  var sheet = getOrCreateSheet('DisclosureLog', headers);
+  sheet.appendRow([
+    timestamp, disclosureId, params.individualEmail, params.recipientName,
+    params.recipientType, params.phiDescription, params.purpose, isExempt,
+    exemptionType, triggeredBy
+  ]);
+  auditLog('disclosure_recorded', triggeredBy, 'success', {
+    disclosureId: disclosureId,
+    recipientName: params.recipientName,
+    purpose: params.purpose,
+    isExempt: isExempt,
+    individualEmail: params.individualEmail
+  });
+  return { success: true, disclosureId: disclosureId };
+}
+
+/**
+ * Returns the disclosure accounting for the authenticated individual.
+ * Filters to non-exempt disclosures within the past 6 years.
+ */
+function getDisclosureAccounting(sessionToken, targetEmail) {
+  return wrapPhaseAOperation('getDisclosureAccounting', sessionToken, function(user) {
+    checkPermission(user, 'read', 'getDisclosureAccounting');
+    var lookupEmail = targetEmail || user.email;
+    validateIndividualAccess(user, lookupEmail, 'getDisclosureAccounting');
+    var requestId = generateRequestId('ACCT');
+    var now = new Date();
+    var sixYearsAgo = new Date(now.getTime() - (6 * 365.25 * 24 * 60 * 60 * 1000));
+    var headers = [
+      'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
+      'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
+      'ExemptionType', 'TriggeredBy'
+    ];
+    var sheet = getOrCreateSheet('DisclosureLog', headers);
+    var data = sheet.getDataRange().getValues();
+    var disclosures = [];
+    for (var r = 1; r < data.length; r++) {
+      var row = data[r];
+      var rowEmail = String(row[2]).toLowerCase();
+      var rowIsExempt = row[7] === true || row[7] === 'TRUE' || row[7] === 'true';
+      var rowDate = new Date(row[0]);
+      if (rowEmail === lookupEmail.toLowerCase() && !rowIsExempt && rowDate >= sixYearsAgo) {
+        disclosures.push({
+          disclosureId: row[1],
+          date: row[0],
+          recipientName: row[3],
+          recipientType: row[4],
+          phiDescription: row[5],
+          purpose: row[6]
+        });
+      }
+    }
+    disclosures.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+    dataAuditLog(user, 'read', 'disclosure_accounting', requestId, {
+      targetEmail: lookupEmail,
+      disclosureCount: disclosures.length,
+      periodStart: sixYearsAgo.toISOString(),
+      periodEnd: now.toISOString()
+    });
+    return {
+      success: true, requestId: requestId, individualEmail: lookupEmail,
+      disclosures: disclosures, count: disclosures.length,
+      periodStart: sixYearsAgo.toISOString(), periodEnd: now.toISOString(),
+      generatedAt: formatHipaaTimestamp()
+    };
+  });
+}
+
+/**
+ * Exports the disclosure accounting in JSON or CSV format.
+ */
+function exportDisclosureAccounting(sessionToken, format) {
+  return wrapPhaseAOperation('exportDisclosureAccounting', sessionToken, function(user) {
+    checkPermission(user, 'export', 'exportDisclosureAccounting');
+    var accounting = getDisclosureAccounting(sessionToken);
+    if (!accounting.success) return accounting;
+    format = (format || 'json').toLowerCase();
+    var dateStr = Utilities.formatDate(new Date(), 'America/New_York', 'yyyy-MM-dd');
+    var filename = 'disclosure-accounting-' + dateStr;
+    if (format === 'csv') {
+      var csvRows = ['Date,DisclosureID,RecipientName,RecipientType,PHIDescription,Purpose'];
+      for (var i = 0; i < accounting.disclosures.length; i++) {
+        var d = accounting.disclosures[i];
+        csvRows.push([
+          '"' + d.date + '"',
+          '"' + d.disclosureId + '"',
+          '"' + (d.recipientName || '').replace(/"/g, '""') + '"',
+          '"' + d.recipientType + '"',
+          '"' + (d.phiDescription || '').replace(/"/g, '""') + '"',
+          '"' + d.purpose + '"'
+        ].join(','));
+      }
+      return { success: true, format: 'csv', data: csvRows.join('\n'), filename: filename + '.csv' };
+    }
+    return { success: true, format: 'json', data: JSON.stringify(accounting, null, 2), filename: filename + '.json' };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE A — ITEM #23: RIGHT OF ACCESS (§164.524)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Creates an access request and immediately generates the export.
+ * For testauth1 (small dataset), export is synchronous.
+ */
+function requestDataExport(sessionToken, format) {
+  return wrapPhaseAOperation('requestDataExport', sessionToken, function(user) {
+    checkPermission(user, 'export', 'requestDataExport');
+    var requestId = generateRequestId('ACCESS');
+    var requestDate = formatHipaaTimestamp();
+    format = (format || 'json').toLowerCase();
+    var arHeaders = [
+      'RequestID', 'IndividualEmail', 'RequestDate', 'Format',
+      'Status', 'ResponseDate', 'Notes'
+    ];
+    var arSheet = getOrCreateSheet('AccessRequests', arHeaders);
+    arSheet.appendRow([requestId, user.email, requestDate, format, 'Processing', '', '']);
+    var individualData;
+    try {
+      individualData = getIndividualData(sessionToken);
+    } catch (e) {
+      updateAccessRequestStatus(arSheet, requestId, 'Failed', 'Export generation failed: ' + e.message);
+      throw e;
+    }
+    var dateStr = Utilities.formatDate(new Date(), 'America/New_York', 'yyyy-MM-dd');
+    var filename = 'my-data-export-' + dateStr;
+    var exportData;
+    if (format === 'csv') {
+      exportData = convertToCSV(individualData);
+      filename += '.csv';
+    } else {
+      exportData = JSON.stringify(individualData, null, 2);
+      filename += '.json';
+    }
+    var responseDate = formatHipaaTimestamp();
+    updateAccessRequestStatus(arSheet, requestId, 'Completed', '');
+    dataAuditLog(user, 'export', 'designated_record_set', requestId, {
+      format: format,
+      recordCount: individualData.summary.totalRecords,
+      sheetsQueried: individualData.summary.sheetsQueried
+    });
+    return {
+      success: true, requestId: requestId, format: format,
+      data: exportData, filename: filename,
+      requestDate: requestDate, responseDate: responseDate
+    };
+  });
+}
+
+/** Helper: update AccessRequests sheet status by requestId */
+function updateAccessRequestStatus(sheet, requestId, status, notes) {
+  var data = sheet.getDataRange().getValues();
+  for (var r = 1; r < data.length; r++) {
+    if (data[r][0] === requestId) {
+      sheet.getRange(r + 1, 5).setValue(status);
+      sheet.getRange(r + 1, 6).setValue(formatHipaaTimestamp());
+      if (notes) sheet.getRange(r + 1, 7).setValue(notes);
+      return;
+    }
+  }
+}
+
+/**
+ * Retrieves ALL records from the Designated Record Set for the authenticated individual.
+ */
+function getIndividualData(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'getIndividualData');
+  checkPermission(user, 'read', 'getIndividualData');
+  var email = user.email.toLowerCase();
+  var result = {
+    individual: {
+      email: user.email, displayName: user.displayName,
+      role: user.role, exportDate: formatHipaaTimestamp(),
+      generatedBy: 'testauth1 v' + VERSION
+    },
+    records: {},
+    summary: { totalRecords: 0, sheetsQueried: 0 }
+  };
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheetNames = [
+    { name: SHEET_NAME, key: 'notes' },
+    { name: 'SessionAuditLog', key: 'sessionHistory' },
+    { name: 'DataAuditLog', key: 'dataAccessHistory' },
+    { name: 'DisclosureLog', key: 'disclosures' },
+    { name: 'AmendmentRequests', key: 'amendments' },
+    { name: 'AccessRequests', key: 'accessRequests' }
+  ];
+  for (var i = 0; i < sheetNames.length; i++) {
+    var s = ss.getSheetByName(sheetNames[i].name);
+    if (s) {
+      result.records[sheetNames[i].key] = extractRecordsForEmail(s, email, sheetNames[i].key);
+      result.summary.sheetsQueried++;
+    }
+  }
+  for (var key in result.records) {
+    result.summary.totalRecords += result.records[key].length;
+  }
+  return result;
+}
+
+/**
+ * Extracts rows from a sheet that match the individual's email.
+ * Generic helper — searches all columns for email match.
+ */
+function extractRecordsForEmail(sheet, email, recordType) {
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2) return [];
+  var headers = data[0];
+  var records = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var matched = false;
+    for (var c = 0; c < row.length; c++) {
+      if (String(row[c]).toLowerCase() === email) {
+        matched = true;
+        break;
+      }
+    }
+    if (matched) {
+      var record = { _recordType: recordType, _rowIndex: r + 1 };
+      for (var h = 0; h < headers.length; h++) {
+        record[String(headers[h])] = row[h];
+      }
+      records.push(record);
+    }
+  }
+  return records;
+}
+
+/**
+ * Converts the getIndividualData() output to CSV format.
+ */
+function convertToCSV(individualData) {
+  var lines = [];
+  lines.push('# Data Export for ' + individualData.individual.email);
+  lines.push('# Generated: ' + individualData.individual.exportDate);
+  lines.push('# By: ' + individualData.individual.generatedBy);
+  lines.push('');
+  for (var recordType in individualData.records) {
+    var records = individualData.records[recordType];
+    if (records.length === 0) continue;
+    lines.push('# === ' + recordType.toUpperCase() + ' (' + records.length + ' records) ===');
+    var headers = [];
+    for (var key in records[0]) {
+      if (key.charAt(0) !== '_') headers.push(key);
+    }
+    lines.push(headers.join(','));
+    for (var i = 0; i < records.length; i++) {
+      var values = [];
+      for (var h = 0; h < headers.length; h++) {
+        var val = String(records[i][headers[h]] || '');
+        if (val.indexOf(',') > -1 || val.indexOf('"') > -1 || val.indexOf('\n') > -1) {
+          val = '"' + val.replace(/"/g, '""') + '"';
+        }
+        values.push(val);
+      }
+      lines.push(values.join(','));
+    }
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE A — ITEM #24: RIGHT TO AMENDMENT (§164.526)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Creates an amendment request for a specific record.
+ */
+function requestAmendment(sessionToken, recordId, currentContent, proposedChange, reason) {
+  return wrapPhaseAOperation('requestAmendment', sessionToken, function(user) {
+    checkPermission(user, 'amend', 'requestAmendment');
+    if (!recordId || !proposedChange || !reason) {
+      throw new Error('INVALID_INPUT');
+    }
+    var amendmentId = generateRequestId('AMEND');
+    var requestDate = formatHipaaTimestamp();
+    var deadline = new Date();
+    deadline.setDate(deadline.getDate() + 60);
+    var deadlineStr = Utilities.formatDate(deadline, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+    var headers = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AmendmentRequests', headers);
+    sheet.appendRow([
+      amendmentId, user.email, recordId, requestDate,
+      currentContent, proposedChange, reason, 'Pending',
+      '', '', '', '', '', deadlineStr, ''
+    ]);
+    dataAuditLog(user, 'create', 'amendment_request', amendmentId, {
+      recordId: recordId, reason: reason, deadline: deadlineStr
+    });
+    auditLog('amendment_requested', user.email, 'success', {
+      amendmentId: amendmentId, recordId: recordId
+    });
+    return {
+      success: true, amendmentId: amendmentId, status: 'Pending',
+      deadline: deadlineStr,
+      message: 'Your amendment request has been submitted. You will be notified of the decision within 60 days.'
+    };
+  });
+}
+
+/**
+ * Reviews an amendment request — approves or denies it.
+ * Only users with 'admin' permission can review amendments.
+ */
+function reviewAmendment(sessionToken, amendmentId, decision, decisionReason) {
+  return wrapPhaseAOperation('reviewAmendment', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'reviewAmendment');
+    if (!amendmentId || !decision) throw new Error('INVALID_INPUT');
+    if (decision !== 'Approved' && decision !== 'Denied') throw new Error('INVALID_INPUT');
+    if (decision === 'Denied' && !decisionReason) throw new Error('INVALID_INPUT');
+    var headers = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AmendmentRequests', headers);
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = -1;
+    var amendmentRow = null;
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][0] === amendmentId) {
+        rowIndex = r + 1;
+        amendmentRow = data[r];
+        break;
+      }
+    }
+    if (rowIndex === -1) throw new Error('NOT_FOUND');
+    var currentStatus = amendmentRow[7];
+    if (currentStatus !== 'Pending' && currentStatus !== 'UnderReview') {
+      return { success: false, error: 'INVALID_STATE', message: 'This amendment is in status "' + currentStatus + '" and cannot be reviewed.' };
+    }
+    var decisionDate = formatHipaaTimestamp();
+    sheet.getRange(rowIndex, 8).setValue(decision);
+    sheet.getRange(rowIndex, 9).setValue(user.email);
+    sheet.getRange(rowIndex, 10).setValue(decisionDate);
+    sheet.getRange(rowIndex, 11).setValue(decisionReason || '');
+    dataAuditLog(user, 'review', 'amendment_request', amendmentId, {
+      decision: decision, decisionReason: decisionReason || '',
+      individualEmail: amendmentRow[1], recordId: amendmentRow[2]
+    });
+    auditLog('amendment_reviewed', user.email, decision.toLowerCase(), {
+      amendmentId: amendmentId, individualEmail: amendmentRow[1]
+    });
+    var message = decision === 'Approved'
+      ? 'Amendment approved. The correction has been appended to the record.'
+      : 'Amendment denied. Reason: ' + decisionReason + '. The individual has the right to file a statement of disagreement.';
+    return { success: true, amendmentId: amendmentId, decision: decision, decisionDate: decisionDate, message: message };
+  });
+}
+
+/**
+ * Allows an individual to file a statement of disagreement after a denial.
+ * Per §164.526(d)(3), the statement is appended to the record.
+ */
+function submitDisagreement(sessionToken, amendmentId, statement) {
+  return wrapPhaseAOperation('submitDisagreement', sessionToken, function(user) {
+    checkPermission(user, 'amend', 'submitDisagreement');
+    if (!amendmentId || !statement) throw new Error('INVALID_INPUT');
+    var headers = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AmendmentRequests', headers);
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = -1;
+    var amendmentRow = null;
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][0] === amendmentId) {
+        rowIndex = r + 1;
+        amendmentRow = data[r];
+        break;
+      }
+    }
+    if (rowIndex === -1) throw new Error('NOT_FOUND');
+    validateIndividualAccess(user, amendmentRow[1], 'submitDisagreement');
+    if (amendmentRow[7] !== 'Denied') {
+      return { success: false, error: 'INVALID_STATE', message: 'A statement of disagreement can only be filed for denied amendments.' };
+    }
+    if (amendmentRow[11]) {
+      return { success: false, error: 'ALREADY_EXISTS', message: 'A statement of disagreement has already been filed for this amendment.' };
+    }
+    var disagreementDate = formatHipaaTimestamp();
+    sheet.getRange(rowIndex, 8).setValue('Denied — Disagreement Filed');
+    sheet.getRange(rowIndex, 12).setValue(statement);
+    sheet.getRange(rowIndex, 13).setValue(disagreementDate);
+    dataAuditLog(user, 'create', 'disagreement_statement', amendmentId, {
+      statementLength: statement.length
+    });
+    auditLog('disagreement_filed', user.email, 'success', { amendmentId: amendmentId });
+    return { success: true, amendmentId: amendmentId, status: 'Denied — Disagreement Filed', message: 'Your statement of disagreement has been recorded and appended to the amendment record.' };
+  });
+}
+
+/**
+ * Returns the complete amendment history for a specific record.
+ */
+function getAmendmentHistory(sessionToken, recordId) {
+  return wrapPhaseAOperation('getAmendmentHistory', sessionToken, function(user) {
+    checkPermission(user, 'read', 'getAmendmentHistory');
+    if (!recordId) throw new Error('INVALID_INPUT');
+    var headers = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AmendmentRequests', headers);
+    var data = sheet.getDataRange().getValues();
+    var amendments = [];
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][2] === recordId) {
+        validateIndividualAccess(user, data[r][1], 'getAmendmentHistory');
+        amendments.push({
+          amendmentId: data[r][0], requestDate: data[r][3],
+          currentContent: data[r][4], proposedChange: data[r][5],
+          reason: data[r][6], status: data[r][7],
+          reviewerEmail: data[r][8] || null, decisionDate: data[r][9] || null,
+          decisionReason: data[r][10] || null,
+          hasDisagreement: !!data[r][11], disagreementDate: data[r][12] || null
+        });
+      }
+    }
+    amendments.sort(function(a, b) { return new Date(b.requestDate) - new Date(a.requestDate); });
+    dataAuditLog(user, 'read', 'amendment_history', recordId, {
+      amendmentCount: amendments.length
+    });
+    return { success: true, recordId: recordId, amendments: amendments, count: amendments.length };
+  });
 }
 
 function invalidateSession(sessionToken) {

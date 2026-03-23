@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v06.29r] — 2026-03-23 02:20:16 PM EST
+
+> **Prompt:** "yes plan that now"
+
+### Added
+- Implemented HIPAA Phase A code in `testauth1.gs` — 14 new GAS functions for Disclosure Accounting (§164.528), Right of Access (§164.524), and Right to Amendment (§164.526)
+- Shared utility functions: `generateRequestId()`, `formatHipaaTimestamp()`, `validateIndividualAccess()`, `getOrCreateSheet()`, `wrapPhaseAOperation()`
+- Disclosure Accounting: `recordDisclosure()`, `getDisclosureAccounting()`, `exportDisclosureAccounting()`
+- Right of Access: `requestDataExport()`, `getIndividualData()`, `extractRecordsForEmail()`, `convertToCSV()`, `updateAccessRequestStatus()`
+- Right to Amendment: `requestAmendment()`, `reviewAmendment()`, `submitDisagreement()`, `getAmendmentHistory()`
+- 4 new HIPAA UI buttons in testauth1 user-pill: Disclosures, My Data, Correction, Amendments (RBAC-gated)
+- 4 new panels in testauth1: disclosure accounting panel, data export panel, amendment request form, admin amendment review panel
+- Phase A CSS styles matching existing admin-sessions-panel dark theme
+- JavaScript event handlers, postMessage communication, and rendering functions for all Phase A panels
+
+#### `testauth1.gs` — v01.92g
+##### Added
+- HIPAA Phase A server-side functions (disclosure tracking, data export, amendment workflow)
+
+#### `testauth1.html` — v02.75w
+##### Added
+- HIPAA Phase A UI components (buttons, panels, JavaScript handlers)
 
 ## [v06.28r] — 2026-03-23 02:02:30 PM EST
 

@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.75w] — 2026-03-23 02:20:16 PM EST — v06.29r
+
+### Added
+- HIPAA Privacy Rule compliance buttons: Disclosure History, Download My Data, Request Correction, Review Amendments
+- Disclosure accounting panel showing your PHI disclosure history with JSON/CSV export
+- Data export panel for downloading all your stored data (JSON or CSV format)
+- Amendment request form for submitting record correction requests
+- Admin amendment review panel for approving or denying correction requests
 
 ## [v02.74w] — 2026-03-23 08:38:15 AM EST — v06.17r
 
