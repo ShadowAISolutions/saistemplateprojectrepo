@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.26w">
+  <meta name="build-version" content="v01.27w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -1240,11 +1240,13 @@
 
       if (response.error) {
         // Silent auth failed or user closed popup — show auth wall
+        _ssoRefreshDismissed = true;
         _updateSsoIndicator('off');
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
       _ssoAccessToken = response.access_token;  // Hold for SSO sharing
+      _ssoRefreshDismissed = false;  // Reset — successful auth clears any prior dismissal
       exchangeToken(response.access_token);
     }
 
@@ -1260,6 +1262,7 @@
     // SSO readiness indicator (applicationportal only)
     // Follows the same lifecycle as #auth-timers: shown/hidden at startCountdownTimers/stopCountdownTimers.
     // States: 'off' (not authenticated), 'pending' (session active, acquiring SSO token), 'ready' (can serve SSO tokens)
+    var _ssoRefreshDismissed = false;  // true when user closed GIS popup without completing SSO
     function _updateSsoIndicator(state) {
       if (!HTML_CONFIG.SSO_PROVIDER) return;
       var el = document.getElementById('sso-indicator');
@@ -2556,8 +2559,13 @@
       }
 
       timersEl.style.display = 'flex';
-      // SSO indicator: show as pending (session active) or ready (token already held)
-      _updateSsoIndicator(_ssoAccessToken ? 'ready' : 'pending');
+      // SSO indicator: ready if token held, pending if still acquiring,
+      // off if user dismissed the GIS popup without completing SSO
+      if (_ssoAccessToken) {
+        _updateSsoIndicator('ready');
+      } else if (!_ssoRefreshDismissed) {
+        _updateSsoIndicator('pending');
+      }
 
       if (_timerInterval) clearInterval(_timerInterval);
       _timerInterval = setInterval(function() {
@@ -2907,6 +2915,7 @@
         prompt: '',
         callback: function(response) {
           if (response.error) {
+            _ssoRefreshDismissed = true;
             _updateSsoIndicator('off');
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
@@ -3235,6 +3244,7 @@
                     console.debug('[SSO] Re-acquired access token during reconnect');
                     _updateSsoIndicator('ready');
                   } else {
+                    _ssoRefreshDismissed = true;
                     _updateSsoIndicator('off');
                   }
                 }

@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v06.23r] — 2026-03-23 09:52:01 AM EST
+
+> **Prompt:** "heres the current state of affairs with this. when first signing in, there is no popup because its doing the SSO for me, so it says ready so that is perfect. when i refresh the page, the GIS popup shows up as expected, and the main page says SSO pending until i sign in to the GIS, that is perfect. however, if i close the GIS popup, the SSO stays on pending forever."
+
+### Fixed
+- Added `_ssoRefreshDismissed` flag to prevent `startCountdownTimers` from overwriting the SSO indicator back to `pending` after the user dismisses the GIS popup — the race condition was: error callback sets `off`, then `gas-auth-ok` fires `startCountdownTimers` which resets to `pending`
+
+#### `applicationportal.html` — v01.27w
+
+##### Fixed
+- SSO indicator correctly stays on "off" after dismissing the Google sign-in popup, even when the session resumes via the GAS iframe
 
 ## [v06.22r] — 2026-03-23 09:42:59 AM EST
 
