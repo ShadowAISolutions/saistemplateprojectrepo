@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v06.33r] — 2026-03-23 03:17:49 PM EST
+
+> **Prompt:** "nice its working. though if i sign out while the thing is open, it stays overlayed, make sure that this doesnt happen for this or any others, emphasis on making sure there is no access even if overlapped by the html layer or hiding"
+
+### Fixed
+- Phase A panels now close on signout/session expiry — added to `showAuthWall()` cleanup block alongside existing admin panel cleanup
+- Phase A panel data content (disclosure lists, amendment text, form inputs) cleared on signout to prevent PHI exposure via DevTools
+- Phase A iframe destroyed (`about:blank`) on signout — same HIPAA pattern as main GAS iframe destruction
+
+#### `testauth1.html` — v02.79w
+##### Fixed
+- HIPAA panels close and clear data when you sign out or your session expires
 
 ## [v06.32r] — 2026-03-23 03:11:50 PM EST
 
