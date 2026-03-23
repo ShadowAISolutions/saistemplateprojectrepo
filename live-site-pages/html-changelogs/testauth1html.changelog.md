@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.80w] — 2026-03-23 05:53:51 PM EST — v06.34r
+
+### Fixed
+- Panels and overlays now close immediately when you sign out — no more lingering popups during the sign-out process
 
 ## [v02.79w] — 2026-03-23 03:17:49 PM EST — v06.33r
 

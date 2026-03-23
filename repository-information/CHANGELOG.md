@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v06.34r] — 2026-03-23 05:53:51 PM EST
+
+> **Prompt:** "ok its no longer overlapping when signed out, but its still overlapping while signing out, same thing for all the others, fix it for all and any moving forward"
+
+### Fixed
+- Phase A panels, admin sessions panel, and GCL overlay now close immediately at the start of `performSignOut()` — before the "Signing out..." wall is shown — so no high-z-index overlays float above the signing-out animation
+- Root cause: panels had z-index 10010 while signing-out-wall had z-index 10002, so panels stayed visible and interactive during the sign-out process
+
+#### `testauth1.html` — v02.80w
+##### Fixed
+- Panels and overlays now close immediately when you sign out — no more lingering popups during the sign-out process
 
 ## [v06.33r] — 2026-03-23 03:17:49 PM EST
 
