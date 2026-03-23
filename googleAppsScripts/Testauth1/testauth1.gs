@@ -1,4 +1,4 @@
-var VERSION = "v01.93g";
+var VERSION = "v01.94g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -24,6 +24,7 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 // ══════════════
 // Spreadsheet ID for project data (the GAS app reads/writes user data here).
 var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
+var SHEET_NAME = "Live_Sheet";
 
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
 // Two tabs:
@@ -1496,6 +1497,9 @@ function wrapPhaseAOperation(operationName, sessionToken, operationFn) {
     var safeErrors = {
       'SESSION_EXPIRED': { success: false, error: 'SESSION_EXPIRED', message: 'Your session has expired. Please sign in again.' },
       'SESSION_INVALID': { success: false, error: 'SESSION_INVALID', message: 'Invalid session. Please sign in again.' },
+      'SESSION_EVICTED': { success: false, error: 'SESSION_EVICTED', message: 'Your session was ended. Please sign in again.' },
+      'SESSION_CORRUPT': { success: false, error: 'SESSION_CORRUPT', message: 'Session data is corrupted. Please sign in again.' },
+      'SESSION_INTEGRITY_VIOLATION': { success: false, error: 'SESSION_INTEGRITY_VIOLATION', message: 'Session integrity check failed. Please sign in again.' },
       'PERMISSION_DENIED': { success: false, error: 'PERMISSION_DENIED', message: 'You do not have permission for this operation.' },
       'ACCESS_DENIED': { success: false, error: 'ACCESS_DENIED', message: 'You can only access your own data.' },
       'NOT_FOUND': { success: false, error: 'NOT_FOUND', message: 'The requested record was not found.' },

@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v01.94g] — 2026-03-23 06:08:12 PM EST — v06.35r
+
+### Fixed
+- Data download now works — you can export your data as JSON or CSV from the "My Data" panel
+- Improved error messages when sessions are interrupted — you'll see a clear "please sign in again" message instead of a generic error
 
 ## [v01.93g] — 2026-03-23 02:41:17 PM EST — v06.30r
 

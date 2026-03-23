@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v06.35r] — 2026-03-23 06:08:12 PM EST
+
+> **Prompt:** "now that disclosures works, lets do my data. right now when i try to download, get Error; An internal error occurred. Please try again."
+
+### Fixed
+- Fixed "Download My Data" (Right of Access) crashing with "An internal error occurred" — root cause was missing `var SHEET_NAME` declaration in the GAS script, causing a `ReferenceError` when `getIndividualData()` tried to query the main data sheet
+- Added missing session error types (`SESSION_EVICTED`, `SESSION_CORRUPT`, `SESSION_INTEGRITY_VIOLATION`) to the Phase A error handler so they return user-friendly messages instead of the generic internal error
+
+#### `testauth1.gs` — v01.94g
+##### Fixed
+- Data download now works — you can export your data as JSON or CSV from the "My Data" panel
+- Improved error messages when sessions are interrupted — you'll see a clear "please sign in again" message instead of a generic error
 
 ## [v06.34r] — 2026-03-23 05:53:51 PM EST
 
