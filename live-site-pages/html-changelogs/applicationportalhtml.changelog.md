@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
 
 ## [Unreleased]
+
+## [v01.19w] — 2026-03-23 07:30:39 AM EST — v06.13r
+
+### Fixed
+- Removed verbose debug logging that could expose sensitive session information in browser console
 
 ## [v01.18w] — 2026-03-22 03:19:28 PM EST — v06.12r
 

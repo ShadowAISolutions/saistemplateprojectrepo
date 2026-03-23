@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v06.13r] — 2026-03-23 07:30:39 AM EST
+
+> **Prompt:** "yes"
+
+### Fixed
+- Removed debug logging from Application Portal auth flow that exposed sensitive data (session tokens, message keys, internal state flags) in the browser console
+
+#### `applicationportal.html` — v01.19w
+
+##### Fixed
+- Removed verbose debug logging that exposed session tokens and auth state in the console
+- Converted error-condition logs from debug to warnings for continued troubleshooting visibility
 
 ## [v06.12r] — 2026-03-22 03:19:28 PM EST
 
