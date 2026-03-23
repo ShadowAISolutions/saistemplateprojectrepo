@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 59/100`
+`Sections: 60/100`
 
 ## [Unreleased]
+
+## [v06.18r] — 2026-03-23 09:06:12 AM EST
+
+> **Prompt:** "the GIS re-auth popup in the application portal, is there a way to indicate when it has been activated vs not activated."
+
+### Added
+- Added GIS popup state indicator to the auth timers panel on all auth pages — a small dot and label in the `#auth-timers` pill shows whether a GIS `requestAccessToken()` call is idle (gray), running silently (orange pulsing), or has an interactive popup open (blue pulsing)
+- 120-second safety timeout resets the indicator to idle if the Google popup is dismissed without triggering a callback
+
+#### `applicationportal.html` — v01.22w
+
+##### Added
+- GIS popup state indicator in auth timers panel (idle/silent/interactive states)
+
+#### `testauth1.html` — v02.75w
+
+##### Added
+- GIS popup state indicator in auth timers panel (idle/silent/interactive states)
+
+#### `globalacl.html` — v01.26w
+
+##### Added
+- GIS popup state indicator in auth timers panel (idle/silent/interactive states)
 
 ## [v06.17r] — 2026-03-23 08:38:15 AM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.22w] — 2026-03-23 09:06:12 AM EST — v06.18r
+
+### Added
+- GIS popup state indicator in the auth timers panel — shows whether Google sign-in is idle, running silently, or has a popup open
 
 ## [v01.21w] — 2026-03-23 08:38:15 AM EST — v06.17r
 

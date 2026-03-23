@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.25w">
+  <meta name="build-version" content="v01.26w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -263,6 +263,16 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
+    /* GIS popup state indicator dot (collapsed view) */
+    .gis-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: transparent;
+      transition: background 0.3s ease;
+      display: inline-block; margin: 0 2px;
+    }
+    .gis-dot.gis-silent { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    .gis-dot.gis-interactive { background: #42a5f5; animation: pulse 0.6s infinite alternate; }
+    #auth-timers .timer-value.gis-interactive { color: #42a5f5; }
     #admin-sessions-btn {
       background: none; border: none; color: #90caf9; cursor: pointer;
       font: 11px/1 monospace; padding: 0 4px; display: none;
@@ -482,11 +492,12 @@
   <iframe id="admin-sessions-iframe"></iframe>
 
   <div id="auth-timers" onclick="toggleTimers()">
-    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
+    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="gis-dot" id="gis-dot"></span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
     <div class="timer-body" id="timer-body">
       <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
+      <div class="timer-row"><span class="timer-label">GIS:</span><span class="timer-value disabled" id="timer-gis-status">idle</span></div>
     </div>
   </div>
 <!-- ══════════════ -->
@@ -1261,10 +1272,12 @@
       });
       // Attempt silent sign-in on load
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      _updateGisIndicator('silent');
       signInClient.requestAccessToken();
     }
 
     function handleTokenResponse(response) {
+      _updateGisIndicator('idle');
       // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated.
       // GIS may fire the callback for automatic token renewal or when detecting a returning
       // user — these are legitimate but unsolicited, so silently ignore them.
@@ -1291,6 +1304,34 @@
 
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
+
+    // GIS popup state tracking: 'idle' | 'silent' | 'interactive'
+    var _gisPopupState = 'idle';
+    var _gisPopupTimeout = null;
+    function _updateGisIndicator(state) {
+      _gisPopupState = state;
+      var statusEl = document.getElementById('timer-gis-status');
+      var dotEl = document.getElementById('gis-dot');
+      if (!statusEl || !dotEl) return;
+      statusEl.className = 'timer-value';
+      dotEl.className = 'gis-dot';
+      if (state === 'silent') {
+        statusEl.textContent = 'silent\u2026';
+        statusEl.classList.add('warn');
+        dotEl.classList.add('gis-silent');
+      } else if (state === 'interactive') {
+        statusEl.textContent = 'popup open';
+        statusEl.classList.add('gis-interactive');
+        dotEl.classList.add('gis-interactive');
+      } else {
+        statusEl.textContent = 'idle';
+        statusEl.classList.add('disabled');
+      }
+      if (_gisPopupTimeout) clearTimeout(_gisPopupTimeout);
+      if (state !== 'idle') {
+        _gisPopupTimeout = setTimeout(function() { _updateGisIndicator('idle'); }, 120000);
+      }
+    }
 
     function exchangeToken(googleAccessToken) {
       _iframeLoadTime = Date.now();
@@ -2893,6 +2934,7 @@
         scope: 'openid email profile',
         prompt: '',
         callback: function(response) {
+          _updateGisIndicator('idle');
           if (response.error) {
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
@@ -2908,6 +2950,7 @@
         }
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      _updateGisIndicator('silent');
       signInClient.requestAccessToken();
     }
 
@@ -2924,6 +2967,7 @@
         callback: handleTokenResponse
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      _updateGisIndicator('interactive');
       signInClient.requestAccessToken();
     });
 
@@ -3401,12 +3445,14 @@
                 scope: 'openid email profile',
                 prompt: '',  // silent — no user interaction
                 callback: function(response) {
+                  _updateGisIndicator('idle');
                   if (!response.error && response.access_token) {
                     _ssoAccessToken = response.access_token;
                     console.debug('[SSO] Re-acquired access token during reconnect');
                   }
                 }
               });
+              _updateGisIndicator('silent');
               ssoRefreshClient.requestAccessToken();
             } else if (ssoRetries >= 25) { // 25 × 200ms = 5s
               clearInterval(ssoGisCheck);
