@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.75w">
+  <meta name="build-version" content="v02.76w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -462,6 +462,7 @@
     </div>
   </div>
   <iframe id="admin-sessions-iframe"></iframe>
+  <iframe id="phase-a-iframe" style="display:none;width:0;height:0;border:none;position:absolute;"></iframe>
 
   <!-- ── PHASE A — HIPAA Privacy Rule Panels ── -->
   <!-- Disclosure Accounting Panel (#19) -->
@@ -1700,7 +1701,11 @@
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true, 'gas-nonce-ready': true, 'gas-nonce-result': true };
+        'gas-admin-signout-error': true, 'gas-nonce-ready': true, 'gas-nonce-result': true,
+        'phase-a-ready': true, 'phase-a-disclosures-result': true,
+        'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
+        'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
+        'phase-a-review-result': true, 'phase-a-error': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -1815,6 +1820,15 @@
       if (data.type === 'gas-admin-signout-error') {
         document.getElementById('asp-session-list').innerHTML =
           '<div class="asp-status" style="color:#ef5350">Sign-out failed: ' + _escHtml(String(data.error || '')) + '</div>';
+        return;
+      }
+
+      // ── Phase A — HIPAA Privacy Rule responses ──
+      if (data.type === 'phase-a-ready') {
+        _phaseAIframeReady = true;
+        _phaseAIframeSource = event.source;
+        // If any panel was waiting for the iframe, trigger its load now
+        if (_phaseAPendingAction) { _phaseAPendingAction(); _phaseAPendingAction = null; }
         return;
       }
 
@@ -3055,6 +3069,11 @@
     var _adminIframeReady = false;
     var _adminPanelOpen = false;
     var _adminIframeSource = null;  // WindowProxy of the GAS sandbox frame (event.source)
+
+    // Phase A — HIPAA iframe state (same pattern as admin sessions)
+    var _phaseAIframeReady = false;
+    var _phaseAIframeSource = null;
+    var _phaseAPendingAction = null;  // Callback queued while iframe is loading
 
     function _getGasBaseUrl() {
       var gasApp = document.getElementById('gas-app');
@@ -4397,10 +4416,24 @@
   var _amendmentPanelOpen = false;
   var _amendmentReviewPanelOpen = false;
 
-  // Helper: get the GAS iframe's message source for postMessage
-  function _getGasSource() {
-    var gasApp = document.getElementById('gas-app');
-    return gasApp ? gasApp.contentWindow : null;
+  // Helper: initialize Phase A iframe (lazy — loaded on first panel open)
+  function _initPhaseAIframe() {
+    if (_phaseAIframeReady) return;
+    var iframe = document.getElementById('phase-a-iframe');
+    var baseUrl = _getGasBaseUrl();
+    if (!baseUrl || !iframe) return;
+    iframe.src = baseUrl + '?action=phaseA';
+  }
+
+  // Helper: send message to Phase A iframe, with lazy init
+  function _sendPhaseA(msg, pendingCallback) {
+    if (_phaseAIframeReady && _phaseAIframeSource) {
+      _phaseAIframeSource.postMessage(msg, '*');
+    } else {
+      _phaseAPendingAction = function() { _phaseAIframeSource.postMessage(msg, '*'); };
+      if (pendingCallback) _phaseAPendingAction = function() { _phaseAIframeSource.postMessage(msg, '*'); if (pendingCallback) pendingCallback(); };
+      _initPhaseAIframe();
+    }
   }
 
   // Helper: get current session token
@@ -4435,15 +4468,13 @@
   });
   document.getElementById('disclosure-export-btn').addEventListener('click', function() {
     var fmt = document.getElementById('disclosure-export-format').value;
-    var src = _getGasSource();
-    if (src) src.postMessage({ type: 'phase-a-export-disclosures', token: _getToken(), format: fmt }, '*');
+    _sendPhaseA({ type: 'phase-a-export-disclosures', token: _getToken(), format: fmt });
   });
 
   function _loadDisclosures() {
     document.getElementById('disclosure-list').innerHTML = '<div class="pa-status">Loading...</div>';
     document.getElementById('disclosure-empty').style.display = 'none';
-    var src = _getGasSource();
-    if (src) src.postMessage({ type: 'phase-a-get-disclosures', token: _getToken() }, '*');
+    _sendPhaseA({ type: 'phase-a-get-disclosures', token: _getToken() });
   }
 
   function _renderDisclosures(result) {
@@ -4495,8 +4526,7 @@
     var fmt = document.querySelector('input[name="export-format"]:checked').value;
     var status = document.getElementById('data-export-status');
     status.textContent = 'Generating export...';
-    var src = _getGasSource();
-    if (src) src.postMessage({ type: 'phase-a-request-export', token: _getToken(), format: fmt }, '*');
+    _sendPhaseA({ type: 'phase-a-request-export', token: _getToken(), format: fmt });
   });
 
   function _handleExportResult(result) {
@@ -4549,11 +4579,10 @@
     }
     status.textContent = 'Submitting...';
     status.style.color = '#999';
-    var src = _getGasSource();
-    if (src) src.postMessage({
+    _sendPhaseA({
       type: 'phase-a-request-amendment', token: _getToken(),
       recordId: recordId, currentContent: current, proposedChange: proposed, reason: reason
-    }, '*');
+    });
   });
 
   function _handleAmendmentResult(result) {
@@ -4592,8 +4621,7 @@
   function _loadPendingAmendments() {
     document.getElementById('amend-review-list').innerHTML = '<div class="pa-status">Loading...</div>';
     document.getElementById('amend-review-empty').style.display = 'none';
-    var src = _getGasSource();
-    if (src) src.postMessage({ type: 'phase-a-get-pending-amendments', token: _getToken() }, '*');
+    _sendPhaseA({ type: 'phase-a-get-pending-amendments', token: _getToken() });
   }
 
   function _renderPendingAmendments(amendments) {
@@ -4626,8 +4654,7 @@
     list.querySelectorAll('.pa-approve').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var id = this.getAttribute('data-amendment-id');
-        var src = _getGasSource();
-        if (src) src.postMessage({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Approved' }, '*');
+        _sendPhaseA({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Approved' });
       });
     });
     list.querySelectorAll('.pa-deny').forEach(function(btn) {
@@ -4641,8 +4668,7 @@
         }
         var reason = reasonInput.value.trim();
         if (!reason) { reasonInput.style.borderColor = '#ef5350'; return; }
-        var src = _getGasSource();
-        if (src) src.postMessage({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Denied', decisionReason: reason }, '*');
+        _sendPhaseA({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Denied', decisionReason: reason });
       });
     });
   }

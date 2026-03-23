@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v06.30r] — 2026-03-23 02:41:17 PM EST
+
+> **Prompt:** "disclosure accounting is stuck on loading, the download my data when clicking download is stuck on generating export, amendments is stuck on loading"
+
+### Fixed
+- Phase A panels stuck on "Loading..." — missing postMessage communication bridge between HTML page and GAS backend
+- Added `action=phaseA` listener page in `doGet()` to handle Phase A message routing via `google.script.run`
+- Added dedicated Phase A iframe with lazy initialization (loaded on first panel open)
+- Replaced broken `_getGasSource()` calls with `_sendPhaseA()` using dedicated iframe source
+- Added Phase A response types to `_SIG_EXEMPT` signature exemption list
+
+### Added
+- `getPendingAmendments()` GAS function for admin amendment review panel (returns all Pending/UnderReview amendments)
+
+#### `testauth1.gs` — v01.93g
+##### Fixed
+- Added Phase A postMessage listener page (`action=phaseA`) in `doGet()` for all 6 Phase A operations
+##### Added
+- `getPendingAmendments()` — admin-only function to list all pending amendment requests
+
+#### `testauth1.html` — v02.76w
+##### Fixed
+- Phase A panels now communicate through dedicated iframe with proper handshake
+- Replaced `_getGasSource()` with `_sendPhaseA()` using Phase A iframe source
+- Added Phase A message types to signature exemption list
 
 ## [v06.29r] — 2026-03-23 02:20:16 PM EST
 

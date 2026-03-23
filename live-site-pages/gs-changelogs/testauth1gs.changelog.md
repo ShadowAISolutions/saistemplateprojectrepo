@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v01.93g] — 2026-03-23 02:41:17 PM EST — v06.30r
+
+### Fixed
+- Phase A postMessage communication — added listener page in `doGet()` for all HIPAA operations
+
+### Added
+- Admin function to list all pending amendment requests for the review panel
 
 ## [v01.92g] — 2026-03-23 02:20:16 PM EST — v06.29r
 
@@ -269,23 +277,4 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ### Added
 - New server-side message signing capability for stronger protection against forged messages
 
-## [v01.46g] — 2026-03-16 03:19:06 PM EST — v04.31r
-
-### Added
-- Server-side IP format validation — rejects non-IP strings before storing in audit logs
-
-## [v01.45g] — 2026-03-16 12:57:47 PM EST — v04.17r
-
-### Security
-- Stronger flood protection — attack reports are now capped at 50 per 5 minutes across all sources, preventing attackers from spamming the security log by rotating IP addresses
-
-## [v01.44g] — 2026-03-16 10:52:13 AM EST — v04.12r
-
-### Changed
-- Attack report rate limiting now tells you when an attacker was cut off
-
-## [v01.43g] — 2026-03-16 10:29:43 AM EST — v04.11r
-
-### Added
-- Server now receives and logs blocked attack reports from the page
 

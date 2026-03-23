@@ -1,4 +1,4 @@
-var VERSION = "v01.92g";
+var VERSION = "v01.93g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1988,6 +1988,39 @@ function getAmendmentHistory(sessionToken, recordId) {
   });
 }
 
+/**
+ * Returns all pending/under-review amendment requests (admin only).
+ * Used by the amendment review panel to list amendments needing action.
+ */
+function getPendingAmendments(sessionToken) {
+  return wrapPhaseAOperation('getPendingAmendments', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'getPendingAmendments');
+    var headers = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AmendmentRequests', headers);
+    var data = sheet.getDataRange().getValues();
+    var pending = [];
+    for (var r = 1; r < data.length; r++) {
+      var status = data[r][7];
+      if (status === 'Pending' || status === 'UnderReview') {
+        pending.push({
+          amendmentId: data[r][0], individualEmail: data[r][1],
+          recordId: data[r][2], requestDate: data[r][3],
+          currentContent: data[r][4], proposedChange: data[r][5],
+          reason: data[r][6], status: status, deadline: data[r][13]
+        });
+      }
+    }
+    pending.sort(function(a, b) { return new Date(a.requestDate) - new Date(b.requestDate); });
+    auditLog('admin_action', user.email, 'list_pending_amendments', { count: pending.length });
+    return pending;
+  });
+}
+
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
   var cache = getEpochCache();
@@ -2558,6 +2591,57 @@ function doGet(e) {
       + '});'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(adminListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Phase A — HIPAA Privacy Rule operations listener
+  if (action === 'phaseA') {
+    var phaseAListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"phase-a-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data) return;'
+      + '  var d = evt.data;'
+      + '  function ok(type, payload) { window.top.postMessage(Object.assign({type:type}, payload), PARENT_ORIGIN); }'
+      + '  function fail(type, e) { window.top.postMessage({type:type, error:String(e)}, PARENT_ORIGIN); }'
+      // Disclosure Accounting
+      + '  if (d.type === "phase-a-get-disclosures") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-disclosures-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-disclosures-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getDisclosureAccounting(d.token);'
+      + '  }'
+      + '  if (d.type === "phase-a-export-disclosures") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-export-disclosures-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-export-disclosures-result", {result:{success:false,message:String(e)}}); })'
+      + '      .exportDisclosureAccounting(d.token, d.format);'
+      + '  }'
+      // Right of Access
+      + '  if (d.type === "phase-a-request-export") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-export-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-export-result", {result:{success:false,message:String(e)}}); })'
+      + '      .requestDataExport(d.token, d.format);'
+      + '  }'
+      // Right to Amendment
+      + '  if (d.type === "phase-a-request-amendment") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-amendment-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-amendment-result", {result:{success:false,message:String(e)}}); })'
+      + '      .requestAmendment(d.token, d.recordId, d.currentContent, d.proposedChange, d.reason);'
+      + '  }'
+      + '  if (d.type === "phase-a-get-pending-amendments") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-pending-amendments-result", {amendments:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-pending-amendments-result", {amendments:[],error:String(e)}); })'
+      + '      .getPendingAmendments(d.token);'
+      + '  }'
+      + '  if (d.type === "phase-a-review-amendment") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-review-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-review-result", {result:{success:false,message:String(e)}}); })'
+      + '      .reviewAmendment(d.token, d.amendmentId, d.decision, d.decisionReason);'
+      + '  }'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(phaseAListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }

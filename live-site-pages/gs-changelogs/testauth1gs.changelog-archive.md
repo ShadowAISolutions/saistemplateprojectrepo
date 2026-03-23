@@ -8,6 +8,26 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.46g] — 2026-03-16 03:19:06 PM EST — v04.31r
+
+### Added
+- Server-side IP format validation — rejects non-IP strings before storing in audit logs
+
+## [v01.45g] — 2026-03-16 12:57:47 PM EST — v04.17r
+
+### Security
+- Stronger flood protection — attack reports are now capped at 50 per 5 minutes across all sources, preventing attackers from spamming the security log by rotating IP addresses
+
+## [v01.44g] — 2026-03-16 10:52:13 AM EST — v04.12r
+
+### Changed
+- Attack report rate limiting now tells you when an attacker was cut off
+
+## [v01.43g] — 2026-03-16 10:29:43 AM EST — v04.11r
+
+### Added
+- Server now receives and logs blocked attack reports from the page
+
 ## [v01.42g] — 2026-03-15 10:29:39 PM EST — v04.01r
 
 ### Security
