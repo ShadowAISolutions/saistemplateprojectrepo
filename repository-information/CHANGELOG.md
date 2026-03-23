@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 62/100`
+`Sections: 63/100`
 
 ## [Unreleased]
+
+## [v06.21r] — 2026-03-23 09:34:07 AM EST
+
+> **Prompt:** "the sso pending indicator is not very accurate. its only saying ready if the GIS was completed before the page load rather than when it actually happens. i think it was much more accurate when it was merged with the heartbeat, dont actually merge it but make it work in the same way"
+
+### Fixed
+- Rewired SSO indicator to follow the auth-timers lifecycle — shown/hidden at `startCountdownTimers`/`stopCountdownTimers` instead of at scattered `requestAccessToken` call sites
+- Indicator now shows `pending` when session starts (timers appear) and transitions to `ready` when SSO token is actually acquired, matching the accuracy of the heartbeat timer
+
+#### `applicationportal.html` — v01.25w
+
+##### Fixed
+- SSO readiness indicator now accurately tracks SSO token acquisition by hooking into the same auth lifecycle as the session timers
 
 ## [v06.20r] — 2026-03-23 09:24:08 AM EST
 
