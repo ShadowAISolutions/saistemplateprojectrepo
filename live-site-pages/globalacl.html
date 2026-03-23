@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.24w">
+  <meta name="build-version" content="v01.25w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -229,11 +229,12 @@
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
     }
-    #sign-out-btn {
+    #sign-out-btn, #sign-out-all-btn {
       background: none; border: none; color: #ef5350; cursor: pointer;
       font: 11px/1 monospace; padding: 0 4px;
     }
-    #sign-out-btn:hover { color: #f44336; }
+    #sign-out-btn:hover, #sign-out-all-btn:hover { color: #f44336; }
+    .sign-out-sep { color: rgba(255,255,255,0.25); font: 11px/1 monospace; user-select: none; }
     #auth-timers {
       position: fixed; bottom: 60px; right: 8px; z-index: 10003;
       display: none; align-items: center; gap: 6px;
@@ -447,7 +448,9 @@
     <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
     <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
     <button id="admin-global-sessions-btn" title="View sessions across all projects" data-requires-role="admin">Global Sessions</button>
-    <button id="sign-out-btn">Sign Out</button>
+    <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
+    <span class="sign-out-sep">|</span>
+    <button id="sign-out-all-btn" title="Sign out of all connected pages">Sign Out All</button>
   </div>
 
   <div id="admin-global-sessions-panel">
@@ -2765,7 +2768,9 @@
     // AUTH — Sign Out
     // =============================================
 
-    function performSignOut(reason) {
+    function performSignOut(reason, opts) {
+      opts = opts || {};
+      var broadcastSSO = opts.broadcastSSO !== false; // default true for backwards compat
       var session = loadSession();
       clearSession();
       stopCountdownTimers();
@@ -2782,7 +2787,8 @@
       // SSO: broadcast sign-out to other apps (not for session expiry — that's page-local)
       // Session expiry is page-local — each page has its own independent GAS session and timeout.
       // Only user-initiated sign-out should sign out all connected pages.
-      if (_ssoChannel && reason !== 'session-expired' && reason !== 'absolute-expired') {
+      // When broadcastSSO is false (local-only sign-out), skip the SSO broadcast.
+      if (broadcastSSO && _ssoChannel && reason !== 'session-expired' && reason !== 'absolute-expired') {
         try {
           _ssoChannel.postMessage({
             type: 'sso-sign-out',
@@ -2921,8 +2927,13 @@
       signInClient.requestAccessToken();
     });
 
-    // Sign-out button handler
+    // Sign-out button handlers
+    // "Sign Out" — signs out of this page only (no SSO broadcast)
     document.getElementById('sign-out-btn').addEventListener('click', function() {
+      performSignOut('manual', { broadcastSSO: false });
+    });
+    // "Sign Out All" — signs out of all connected pages (broadcasts via SSO channel)
+    document.getElementById('sign-out-all-btn').addEventListener('click', function() {
       performSignOut('manual');
     });
 

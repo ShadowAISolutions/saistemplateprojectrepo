@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v02.74w] — 2026-03-23 08:38:15 AM EST — v06.17r
+
+### Added
+- New "Sign Out" and "Sign Out All" buttons — sign out of just this page or all connected pages at once
 
 ## [v02.73w] — 2026-03-23 08:20:05 AM EST — v06.16r
 
