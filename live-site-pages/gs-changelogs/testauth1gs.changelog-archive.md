@@ -8,6 +8,35 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.51g] — 2026-03-17 08:55:55 PM EST — v04.56r
+
+### Changed
+- Minor internal improvements
+
+## [v01.50g] — 2026-03-17 08:48:57 PM EST — v04.55r
+
+### Removed
+- IP address collection and logging removed for privacy compliance
+- Third-party IP lookup service dependency removed
+
+### Changed
+- Audit log entries now record 'not-collected' instead of IP addresses
+
+## [v01.49g] — 2026-03-17 07:14:06 PM EST — v04.52r
+
+### Changed
+- Token exchange now echoes a security nonce back to the page for verification
+
+## [v01.48g] — 2026-03-17 05:34:24 PM EST — v04.44r
+
+### Changed
+- Messages are now signed on the server before being sent, replacing the previous client-side signing approach
+
+## [v01.47g] — 2026-03-17 05:27:44 PM EST — v04.43r
+
+### Added
+- New server-side message signing capability for stronger protection against forged messages
+
 ## [v01.46g] — 2026-03-16 03:19:06 PM EST — v04.31r
 
 ### Added

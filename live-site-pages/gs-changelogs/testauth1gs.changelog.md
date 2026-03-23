@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.97g] — 2026-03-23 07:13:41 PM EST — v06.38r
+
+### Removed
+- Removed the temporary data seeding endpoint — test data has been populated and the endpoint is no longer needed
 
 ## [v01.96g] — 2026-03-23 06:56:11 PM EST — v06.37r
 
@@ -263,34 +268,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Added
 - New secure communication endpoints for heartbeat, sign-out, and security event operations
-
-## [v01.51g] — 2026-03-17 08:55:55 PM EST — v04.56r
-
-### Changed
-- Minor internal improvements
-
-## [v01.50g] — 2026-03-17 08:48:57 PM EST — v04.55r
-
-### Removed
-- IP address collection and logging removed for privacy compliance
-- Third-party IP lookup service dependency removed
-
-### Changed
-- Audit log entries now record 'not-collected' instead of IP addresses
-
-## [v01.49g] — 2026-03-17 07:14:06 PM EST — v04.52r
-
-### Changed
-- Token exchange now echoes a security nonce back to the page for verification
-
-## [v01.48g] — 2026-03-17 05:34:24 PM EST — v04.44r
-
-### Changed
-- Messages are now signed on the server before being sent, replacing the previous client-side signing approach
-
-## [v01.47g] — 2026-03-17 05:27:44 PM EST — v04.43r
-
-### Added
-- New server-side message signing capability for stronger protection against forged messages
 
 

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v06.38r] — 2026-03-23 07:13:41 PM EST
+
+> **Prompt:** "ok i did that and it worked. now is the method that we did this a vulnerability or will you close it now?"
+
+### Security
+- Removed the `seedSampleData` doGet action endpoint from the GAS script — served its purpose, no reason to leave a data-writing endpoint exposed
+
+#### `testauth1.gs` — v01.97g
+##### Removed
+- Removed the temporary data seeding endpoint — test data has been populated and the endpoint is no longer needed
 
 ## [v06.37r] — 2026-03-23 06:56:11 PM EST
 

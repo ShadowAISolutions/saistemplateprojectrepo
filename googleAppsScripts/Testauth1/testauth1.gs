@@ -1,4 +1,4 @@
-var VERSION = "v01.96g";
+var VERSION = "v01.97g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2648,112 +2648,6 @@ function doGet(e) {
     return HtmlService.createHtmlOutput(phaseAListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-
-  // Seed sample data — writes test data directly to spreadsheet sheets
-  // Usage: ?action=seedSampleData&email=user@example.com
-  // Requires the cross-project admin secret for authorization
-  if (action === 'seedSampleData') {
-    var seedSecret = (e.parameter && e.parameter.secret) || '';
-    var seedEmail = (e.parameter && e.parameter.email) || '';
-    var cpSecretCheck = PropertiesService.getScriptProperties().getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
-    if (!seedSecret || seedSecret !== cpSecretCheck) {
-      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    if (!seedEmail) {
-      return ContentService.createTextOutput(JSON.stringify({ error: 'missing email parameter' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    var now = new Date();
-    var counts = { disclosures: 0, amendments: 0 };
-
-    // ── Seed DisclosureLog ──
-    var discHeaders = [
-      'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
-      'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-      'ExemptionType', 'TriggeredBy'
-    ];
-    var discSheet = getOrCreateSheet('DisclosureLog', discHeaders);
-    var disclosures = [
-      { daysAgo: 5, recipient: 'Blue Cross Blue Shield', type: 'insurance',
-        phi: 'Claim form with diagnosis codes and treatment dates', purpose: 'Insurance claim processing' },
-      { daysAgo: 12, recipient: 'Dr. Sarah Chen', type: 'healthcare_provider',
-        phi: 'Complete medical record including lab results', purpose: 'Referral for specialist consultation' },
-      { daysAgo: 30, recipient: 'State Health Department', type: 'public_health',
-        phi: 'De-identified aggregate data', purpose: 'Public health reporting',
-        isExempt: true, exemptionType: 'public_health_activity' },
-      { daysAgo: 45, recipient: 'Quest Diagnostics', type: 'business_associate',
-        phi: 'Lab order with patient demographics and test requests', purpose: 'Laboratory testing services' },
-      { daysAgo: 90, recipient: 'Medicare', type: 'government_program',
-        phi: 'Treatment summary and billing codes', purpose: 'Medicare reimbursement' }
-    ];
-    for (var si = 0; si < disclosures.length; si++) {
-      var sd = disclosures[si];
-      var sTs = new Date(now.getTime() - sd.daysAgo * 86400000);
-      var sTimestamp = Utilities.formatDate(sTs, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
-      var sDiscId = generateRequestId('DISC');
-      discSheet.appendRow([
-        sTimestamp, sDiscId, seedEmail, sd.recipient,
-        sd.type, sd.phi, sd.purpose, sd.isExempt || false,
-        sd.exemptionType || '', 'system_seed'
-      ]);
-      counts.disclosures++;
-    }
-
-    // ── Seed AmendmentRequests ──
-    var amendHeaders = [
-      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
-      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
-      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
-      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
-    ];
-    var amendSheet = getOrCreateSheet('AmendmentRequests', amendHeaders);
-    var amendments = [
-      { daysAgo: 3, recordId: 'NOTE-20260315-sample1',
-        current: 'Patient reports occasional headaches',
-        proposed: 'Patient reports frequent migraines with aura',
-        reason: 'Original note does not accurately reflect the severity and type of headaches I experience',
-        status: 'Pending' },
-      { daysAgo: 15, recordId: 'NOTE-20260301-sample2',
-        current: 'Allergies: None known',
-        proposed: 'Allergies: Penicillin (causes hives), Sulfa drugs (causes rash)',
-        reason: 'My drug allergies were not recorded during the intake visit',
-        status: 'Approved', reviewer: 'admin@clinic.example.com', decisionDate: 10 },
-      { daysAgo: 40, recordId: 'NOTE-20260210-sample3',
-        current: 'Patient is a current smoker',
-        proposed: 'Patient quit smoking 2 years ago',
-        reason: 'My smoking status is outdated — I quit in 2024',
-        status: 'Denied', reviewer: 'admin@clinic.example.com', decisionDate: 35,
-        decisionReason: 'Smoking cessation date confirmed but original entry reflects status at time of visit per clinical documentation standards' }
-    ];
-    for (var sj = 0; sj < amendments.length; sj++) {
-      var sa = amendments[sj];
-      var sReqDate = new Date(now.getTime() - sa.daysAgo * 86400000);
-      var sReqTimestamp = Utilities.formatDate(sReqDate, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
-      var sAmendId = generateRequestId('AMEND');
-      var sDeadline = new Date(sReqDate.getTime() + 60 * 86400000);
-      var sDeadlineStr = Utilities.formatDate(sDeadline, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
-      var sDecDate = '';
-      if (sa.decisionDate) {
-        var sdd = new Date(now.getTime() - sa.decisionDate * 86400000);
-        sDecDate = Utilities.formatDate(sdd, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
-      }
-      amendSheet.appendRow([
-        sAmendId, seedEmail, sa.recordId, sReqTimestamp,
-        sa.current, sa.proposed, sa.reason, sa.status,
-        sa.reviewer || '', sDecDate, sa.decisionReason || '',
-        '', '', sDeadlineStr, 'Seeded sample data'
-      ]);
-      counts.amendments++;
-    }
-
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      message: 'Sample data seeded for ' + seedEmail + ': ' + counts.disclosures + ' disclosures, ' + counts.amendments + ' amendments',
-      counts: counts
-    })).setMimeType(ContentService.MimeType.JSON);
   }
 
   // Cross-project session listing — called by globalacl's listGlobalSessions via UrlFetchApp
