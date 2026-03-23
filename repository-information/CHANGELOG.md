@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v06.40r] — 2026-03-23 07:44:01 PM EST
+
+> **Prompt:** "right now if i click on all of the buttons the menus can overlap eachother, make it so that it closes any already open ones if one is clicked, but have there be a 5 second cooldown before it allows to click another one."
+
+### Changed
+- Panel buttons (Sessions, Disclosures, My Data, Correction, Amendments) now enforce mutual exclusion — opening one panel automatically closes any other open panel
+- Added 5-second cooldown after opening a panel before another can be opened (closing the current panel is always allowed during cooldown)
+
+#### `testauth1.html` — v02.83w
+##### Changed
+- Navigation panels no longer overlap — only one panel can be open at a time
+- Added a brief cooldown between switching panels to prevent rapid toggling
 
 ## [v06.39r] — 2026-03-23 07:32:02 PM EST
 
