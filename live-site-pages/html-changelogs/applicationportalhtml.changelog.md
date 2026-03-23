@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20w] — 2026-03-23 08:20:05 AM EST — v06.16r
+
+### Fixed
+- Single sign-on now only shares authentication when this page is the designated SSO hub — other pages can no longer provide sign-in tokens to this portal
 
 ## [v01.19w] — 2026-03-23 07:30:39 AM EST — v06.13r
 

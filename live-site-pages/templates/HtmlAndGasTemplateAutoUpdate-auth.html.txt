@@ -2145,9 +2145,9 @@
         _ssoChannel.onmessage = function(e) {
           if (!e.data) return;
 
-          // Another page is requesting a token — respond if we have one
+          // Another page is requesting a token — respond only if we are the SSO provider
           if (e.data.type === 'sso-token-request') {
-            if (_ssoAccessToken && _ssoUserEmail) {
+            if (HTML_CONFIG.SSO_PROVIDER && _ssoAccessToken && _ssoUserEmail) {
               _ssoChannel.postMessage({
                 type: 'sso-token-response',
                 accessToken: _ssoAccessToken,
