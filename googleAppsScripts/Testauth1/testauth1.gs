@@ -1,4 +1,4 @@
-var VERSION = "v01.97g";
+var VERSION = "v01.98g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1595,7 +1595,7 @@ function getDisclosureAccounting(sessionToken, targetEmail) {
       if (rowEmail === lookupEmail.toLowerCase() && !rowIsExempt && rowDate >= sixYearsAgo) {
         disclosures.push({
           disclosureId: row[1],
-          date: row[0],
+          date: row[0] instanceof Date ? row[0].toISOString() : String(row[0]),
           recipientName: row[3],
           recipientType: row[4],
           phiDescription: row[5],
@@ -1773,7 +1773,8 @@ function extractRecordsForEmail(sheet, email, recordType) {
     if (matched) {
       var record = { _recordType: recordType, _rowIndex: r + 1 };
       for (var h = 0; h < headers.length; h++) {
-        record[String(headers[h])] = row[h];
+        var _val = row[h];
+        record[String(headers[h])] = _val instanceof Date ? _val.toISOString() : _val;
       }
       records.push(record);
     }
@@ -1974,13 +1975,14 @@ function getAmendmentHistory(sessionToken, recordId) {
     for (var r = 1; r < data.length; r++) {
       if (data[r][2] === recordId) {
         validateIndividualAccess(user, data[r][1], 'getAmendmentHistory');
+        var _rd = data[r][3], _dd = data[r][9], _dgd = data[r][12];
         amendments.push({
-          amendmentId: data[r][0], requestDate: data[r][3],
+          amendmentId: data[r][0], requestDate: _rd instanceof Date ? _rd.toISOString() : String(_rd || ''),
           currentContent: data[r][4], proposedChange: data[r][5],
           reason: data[r][6], status: data[r][7],
-          reviewerEmail: data[r][8] || null, decisionDate: data[r][9] || null,
+          reviewerEmail: data[r][8] || null, decisionDate: _dd instanceof Date ? _dd.toISOString() : (_dd || null),
           decisionReason: data[r][10] || null,
-          hasDisagreement: !!data[r][11], disagreementDate: data[r][12] || null
+          hasDisagreement: !!data[r][11], disagreementDate: _dgd instanceof Date ? _dgd.toISOString() : (_dgd || null)
         });
       }
     }
@@ -2013,9 +2015,9 @@ function getPendingAmendments(sessionToken) {
       if (status === 'Pending' || status === 'UnderReview') {
         pending.push({
           amendmentId: data[r][0], individualEmail: data[r][1],
-          recordId: data[r][2], requestDate: data[r][3],
+          recordId: data[r][2], requestDate: data[r][3] instanceof Date ? data[r][3].toISOString() : String(data[r][3]),
           currentContent: data[r][4], proposedChange: data[r][5],
-          reason: data[r][6], status: status, deadline: data[r][13]
+          reason: data[r][6], status: status, deadline: data[r][13] instanceof Date ? data[r][13].toISOString() : String(data[r][13])
         });
       }
     }

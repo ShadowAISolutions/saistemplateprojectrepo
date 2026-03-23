@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v06.39r] — 2026-03-23 07:32:02 PM EST
+
+> **Prompt:** "disclosure accounting is stuck on loading"
+
+### Fixed
+- Fixed Disclosure Accounting panel stuck on "Loading..." — `google.script.run` silently drops Date objects returned from spreadsheet cells; converted all date fields to ISO strings before returning from GAS functions
+- Fixed same Date serialization issue in Pending Amendments, Amendment History, and Individual Data Export functions
+
+#### `testauth1.gs` — v01.98g
+##### Fixed
+- Fixed disclosure accounting and amendment panels not loading — date values from spreadsheet are now properly converted to strings
 
 ## [v06.38r] — 2026-03-23 07:13:41 PM EST
 

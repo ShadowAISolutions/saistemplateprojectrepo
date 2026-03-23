@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v01.98g] — 2026-03-23 07:32:02 PM EST — v06.39r
+
+### Fixed
+- Fixed disclosure accounting and amendment panels not loading — date values from spreadsheet are now properly converted to strings
 
 ## [v01.97g] — 2026-03-23 07:13:41 PM EST — v06.38r
 
