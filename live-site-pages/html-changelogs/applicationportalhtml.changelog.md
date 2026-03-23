@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 28/50`
+`Sections: 29/50`
 
 ## [Unreleased]
+
+## [v01.29w] — 2026-03-23 10:12:15 AM EST — v06.25r
+
+### Added
+- Click the SSO indicator when it shows "retry" to re-attempt Google sign-in for SSO
 
 ## [v01.28w] — 2026-03-23 10:04:38 AM EST — v06.24r
 

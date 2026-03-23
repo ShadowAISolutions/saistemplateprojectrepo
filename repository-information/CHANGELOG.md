@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
 
 ## [Unreleased]
+
+## [v06.25r] — 2026-03-23 10:12:15 AM EST
+
+> **Prompt:** "great. can you make it so that when the sso is dismissed that clicking on that pill will bring it back to try again"
+
+### Added
+- SSO indicator pill is now clickable when in "dismissed" state — clicking it retries the GIS token acquisition, showing "pending" then "ready" or "dismissed" based on the result
+- Dismissed state label changed from "dismissed" to "retry" to indicate the action available
+
+#### `applicationportal.html` — v01.29w
+
+##### Added
+- Click-to-retry on the SSO indicator when dismissed — re-attempts Google sign-in for SSO token
 
 ## [v06.24r] — 2026-03-23 10:04:38 AM EST
 

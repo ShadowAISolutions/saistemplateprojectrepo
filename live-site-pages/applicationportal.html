@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.28w">
+  <meta name="build-version" content="v01.29w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -269,8 +269,10 @@
       display: none; align-items: center; gap: 6px;
       background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
       border-radius: 12px; font: 11px/1 monospace; user-select: none;
-      pointer-events: none; transition: all 0.3s ease;
+      pointer-events: auto; transition: all 0.3s ease;
     }
+    #sso-indicator.sso-clickable { cursor: pointer; }
+    #sso-indicator.sso-clickable:hover { background: rgba(0,0,0,0.75); }
     #sso-indicator .sso-dot {
       width: 7px; height: 7px; border-radius: 50%;
       display: inline-block; transition: background 0.3s ease;
@@ -1279,8 +1281,14 @@
       }
       dot.className = 'sso-dot sso-' + state;
       val.className = 'sso-value sso-' + state;
-      var labels = { ready: 'ready', pending: 'pending\u2026', dismissed: 'dismissed', off: 'off' };
+      var labels = { ready: 'ready', pending: 'pending\u2026', dismissed: 'retry', off: 'off' };
       val.textContent = labels[state] || 'off';
+      // Clickable only when dismissed — clicking retries SSO
+      if (state === 'dismissed') {
+        el.classList.add('sso-clickable');
+      } else {
+        el.classList.remove('sso-clickable');
+      }
     }
     // GIS error_callback handler — fires when popup is closed or blocked (not an OAuth error)
     function _onGisPopupClosed() {
@@ -3106,6 +3114,30 @@
       stopHeartbeat();
       clearSession();
       attemptReauth();
+    });
+
+    // SSO indicator click handler — retry SSO token acquisition when dismissed
+    document.getElementById('sso-indicator').addEventListener('click', function() {
+      if (!_ssoRefreshDismissed) return;  // Only clickable when dismissed
+      _ssoRefreshDismissed = false;
+      _updateSsoIndicator('pending');
+      // Re-attempt SSO token acquisition via GIS
+      var retryClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile',
+        prompt: '',
+        callback: function(response) {
+          if (!response.error && response.access_token) {
+            _ssoAccessToken = response.access_token;
+            _updateSsoIndicator('ready');
+          } else {
+            _ssoRefreshDismissed = true;
+            _updateSsoIndicator('dismissed');
+          }
+        },
+        error_callback: _onGisPopupClosed
+      });
+      retryClient.requestAccessToken();
     });
 
     // "Use Here" button handler (single-tab enforcement — reclaim session from other tab)
