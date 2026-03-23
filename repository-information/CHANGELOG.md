@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v06.20r] — 2026-03-23 09:24:08 AM EST
+
+> **Prompt:** "you have to make sure its not overlapped by our other elements"
+
+### Fixed
+- Fixed SSO readiness indicator position from `bottom: 8px` to `bottom: 86px` to avoid overlapping the version indicator, GAS pill, and auth timers stack
+
+#### `applicationportal.html` — v01.24w
+
+##### Fixed
+- SSO indicator no longer overlaps other bottom-right UI elements
 
 ## [v06.19r] — 2026-03-23 09:19:18 AM EST
 

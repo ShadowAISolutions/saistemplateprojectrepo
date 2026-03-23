@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.24w] — 2026-03-23 09:24:08 AM EST — v06.20r
+
+### Fixed
+- SSO readiness indicator no longer hidden behind other status elements
 
 ## [v01.23w] — 2026-03-23 09:19:18 AM EST — v06.19r
 
