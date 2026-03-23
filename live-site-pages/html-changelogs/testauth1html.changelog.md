@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v02.78w] — 2026-03-23 03:11:50 PM EST — v06.32r
+
+### Fixed
+- HIPAA panels now correctly read your active session — no more "session expired" errors
 
 ## [v02.77w] — 2026-03-23 03:06:26 PM EST — v06.31r
 

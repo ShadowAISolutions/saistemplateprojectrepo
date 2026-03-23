@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v06.32r] — 2026-03-23 03:11:50 PM EST
+
+> **Prompt:** "ok well at least finally we have something, its saying your session has expired please sign in again in the disclosures button, even though we are already signed in"
+
+### Fixed
+- Phase A `_getToken()` read from wrong storage key (`__auth_session` JSON) — now uses existing `loadSession()` which reads from the correct dynamic key (`_pageName + '_gas_session_token'`)
+
+#### `testauth1.html` — v02.78w
+##### Fixed
+- Session token now correctly retrieved for Phase A operations
 
 ## [v06.31r] — 2026-03-23 03:06:26 PM EST
 
