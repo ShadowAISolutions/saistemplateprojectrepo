@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.83w">
+  <meta name="build-version" content="v02.84w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -3103,6 +3103,13 @@
     // Registry of all closeable panels: { id, closeHandler }
     var _panelRegistry = [];
 
+    // All panel toggle button IDs (for cooldown disable/enable)
+    var _panelBtnIds = [
+      'admin-sessions-btn', 'disclosure-accounting-btn', 'data-export-btn',
+      'amendment-request-btn', 'amendment-review-btn'
+    ];
+    var _panelCooldownTimer = null;
+
     function _registerPanel(panelId, closeHandler) {
       _panelRegistry.push({ id: panelId, close: closeHandler });
     }
@@ -3121,9 +3128,23 @@
       return Date.now() < _panelCooldownUntil;
     }
 
-    // Start cooldown timer
-    function _startPanelCooldown() {
+    // Start cooldown: disable all panel buttons except the active one, re-enable after timeout
+    function _startPanelCooldown(activeBtnId) {
       _panelCooldownUntil = Date.now() + _PANEL_COOLDOWN_MS;
+      for (var i = 0; i < _panelBtnIds.length; i++) {
+        if (_panelBtnIds[i] !== activeBtnId) {
+          var btn = document.getElementById(_panelBtnIds[i]);
+          if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed'; }
+        }
+      }
+      if (_panelCooldownTimer) clearTimeout(_panelCooldownTimer);
+      _panelCooldownTimer = setTimeout(function() {
+        for (var j = 0; j < _panelBtnIds.length; j++) {
+          var b = document.getElementById(_panelBtnIds[j]);
+          if (b) { b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; }
+        }
+        _panelCooldownTimer = null;
+      }, _PANEL_COOLDOWN_MS);
     }
 
     // =============================================
@@ -3242,7 +3263,7 @@
       _closeAllPanelsExcept('admin-sessions-panel');
       document.getElementById('admin-sessions-panel').style.display = 'block';
       _adminPanelOpen = true;
-      _startPanelCooldown();
+      _startPanelCooldown('admin-sessions-btn');
       document.getElementById('asp-session-list').innerHTML =
         '<div class="asp-status">Loading sessions...</div>';
       if (!_adminIframeReady) {
@@ -4551,7 +4572,7 @@
     _closeAllPanelsExcept('disclosure-panel');
     document.getElementById('disclosure-panel').style.display = 'flex';
     _disclosurePanelOpen = true;
-    _startPanelCooldown();
+    _startPanelCooldown('disclosure-accounting-btn');
     _loadDisclosures();
   });
   document.getElementById('disclosure-close-btn').addEventListener('click', function() {
@@ -4607,7 +4628,7 @@
     _closeAllPanelsExcept('data-export-panel');
     document.getElementById('data-export-panel').style.display = 'flex';
     _dataExportPanelOpen = true;
-    _startPanelCooldown();
+    _startPanelCooldown('data-export-btn');
     document.getElementById('data-export-status').textContent = '';
   });
   document.getElementById('data-export-close-btn').addEventListener('click', function() {
@@ -4651,7 +4672,7 @@
     _closeAllPanelsExcept('amendment-panel');
     document.getElementById('amendment-panel').style.display = 'flex';
     _amendmentPanelOpen = true;
-    _startPanelCooldown();
+    _startPanelCooldown('amendment-request-btn');
     document.getElementById('amend-status').textContent = '';
   });
   document.getElementById('amendment-close-btn').addEventListener('click', function() {
@@ -4701,7 +4722,7 @@
     _closeAllPanelsExcept('amendment-review-panel');
     document.getElementById('amendment-review-panel').style.display = 'flex';
     _amendmentReviewPanelOpen = true;
-    _startPanelCooldown();
+    _startPanelCooldown('amendment-review-btn');
     _loadPendingAmendments();
   });
   document.getElementById('amend-review-close').addEventListener('click', function() {

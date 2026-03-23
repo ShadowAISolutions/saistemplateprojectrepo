@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v06.41r] — 2026-03-23 07:55:08 PM EST
+
+> **Prompt:** "the timeout should disable the buttons so that they dont seem clickable"
+
+### Changed
+- Panel cooldown now visually disables other nav buttons (dimmed, not-allowed cursor, disabled attribute) during the 5-second window — the active panel's button stays enabled so it can be closed
+
+#### `testauth1.html` — v02.84w
+##### Changed
+- Other panel buttons now appear visually disabled during the cooldown period
 
 ## [v06.40r] — 2026-03-23 07:44:01 PM EST
 
