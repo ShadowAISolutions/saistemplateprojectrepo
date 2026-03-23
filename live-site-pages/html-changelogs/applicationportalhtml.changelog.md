@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23w] — 2026-03-23 09:19:18 AM EST — v06.19r
+
+### Changed
+- Replaced GIS popup indicator with standalone SSO readiness indicator — shows whether the portal is ready to authenticate other applications (off/pending/ready)
 
 ## [v01.22w] — 2026-03-23 09:06:12 AM EST — v06.18r
 

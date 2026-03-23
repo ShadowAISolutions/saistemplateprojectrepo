@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v06.19r] — 2026-03-23 09:19:18 AM EST
+
+> **Prompt:** "i didnt mean for it to be put on all pages, just for the SSO on the application portal so that we know when its ready to be used to authenticate for the other applications. dont merge it with the heartbeat, it should be its own thing"
+
+### Changed
+- Redesigned GIS indicator as a standalone SSO readiness indicator on the application portal only — shows whether the portal is ready to serve SSO tokens to other auth pages (off/pending/ready states)
+- Moved indicator out of `#auth-timers` into its own fixed-position pill (`#sso-indicator`) at bottom-right
+- Reverted GIS indicator from auth template, testauth1, and globalacl — SSO provider functionality is applicationportal-specific
+
+#### `applicationportal.html` — v01.23w
+
+##### Changed
+- Replaced GIS popup state indicator with standalone SSO readiness indicator — shows off (gray), pending (orange pulsing), or ready (green) based on whether the portal can serve SSO tokens
 
 ## [v06.18r] — 2026-03-23 09:06:12 AM EST
 
@@ -13,19 +27,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ### Added
 - Added GIS popup state indicator to the auth timers panel on all auth pages — a small dot and label in the `#auth-timers` pill shows whether a GIS `requestAccessToken()` call is idle (gray), running silently (orange pulsing), or has an interactive popup open (blue pulsing)
-- 120-second safety timeout resets the indicator to idle if the Google popup is dismissed without triggering a callback
 
 #### `applicationportal.html` — v01.22w
 
 ##### Added
 - GIS popup state indicator in auth timers panel (idle/silent/interactive states)
 
-#### `testauth1.html` — v02.75w
+#### `testauth1.html` — v02.74w (no change)
 
 ##### Added
 - GIS popup state indicator in auth timers panel (idle/silent/interactive states)
 
-#### `globalacl.html` — v01.26w
+#### `globalacl.html` — v01.25w (no change)
 
 ##### Added
 - GIS popup state indicator in auth timers panel (idle/silent/interactive states)

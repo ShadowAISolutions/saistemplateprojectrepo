@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.22w">
+  <meta name="build-version" content="v01.23w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -263,16 +263,26 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
-    /* GIS popup state indicator dot (collapsed view) */
-    .gis-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: transparent;
-      transition: background 0.3s ease;
-      display: inline-block; margin: 0 2px;
+    /* SSO readiness indicator — standalone pill (applicationportal only) */
+    #sso-indicator {
+      position: fixed; bottom: 8px; right: 8px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: none; transition: all 0.3s ease;
     }
-    .gis-dot.gis-silent { background: #ffa726; animation: pulse 0.6s infinite alternate; }
-    .gis-dot.gis-interactive { background: #42a5f5; animation: pulse 0.6s infinite alternate; }
-    #auth-timers .timer-value.gis-interactive { color: #42a5f5; }
+    #sso-indicator .sso-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      display: inline-block; transition: background 0.3s ease;
+    }
+    #sso-indicator .sso-dot.sso-off { background: #666; }
+    #sso-indicator .sso-dot.sso-pending { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    #sso-indicator .sso-dot.sso-ready { background: #4caf50; }
+    #sso-indicator .sso-label { color: #999; }
+    #sso-indicator .sso-value { font-weight: bold; }
+    #sso-indicator .sso-value.sso-off { color: #666; }
+    #sso-indicator .sso-value.sso-pending { color: #ffa726; }
+    #sso-indicator .sso-value.sso-ready { color: #4caf50; }
     #admin-sessions-btn {
       background: none; border: none; color: #90caf9; cursor: pointer;
       font: 11px/1 monospace; padding: 0 4px; display: none;
@@ -409,13 +419,18 @@
   <iframe id="admin-sessions-iframe"></iframe>
 
   <div id="auth-timers" onclick="toggleTimers()">
-    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="gis-dot" id="gis-dot"></span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
+    <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
     <div class="timer-body" id="timer-body">
       <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
-      <div class="timer-row"><span class="timer-label">GIS:</span><span class="timer-value disabled" id="timer-gis-status">idle</span></div>
     </div>
+  </div>
+
+  <div id="sso-indicator">
+    <span class="sso-label">SSO</span>
+    <span class="sso-dot sso-off"></span>
+    <span class="sso-value sso-off" id="sso-status">off</span>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -1166,6 +1181,7 @@
       // SSO: clear held tokens
       _ssoAccessToken = null;
       _ssoUserEmail = null;
+      _updateSsoIndicator();
     }
 
     // =============================================
@@ -1210,12 +1226,12 @@
       });
       // Attempt silent sign-in on load
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      _updateGisIndicator('silent');
+      _updateSsoIndicator();
       signInClient.requestAccessToken();
     }
 
     function handleTokenResponse(response) {
-      _updateGisIndicator('idle');
+      _updateSsoIndicator();
       // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated.
       // GIS may fire the callback for automatic token renewal or when detecting a returning
       // user — these are legitimate but unsolicited, so silently ignore them.
@@ -1243,32 +1259,26 @@
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
 
-    // GIS popup state tracking: 'idle' | 'silent' | 'interactive'
-    var _gisPopupState = 'idle';
-    var _gisPopupTimeout = null;
-    function _updateGisIndicator(state) {
-      _gisPopupState = state;
-      var statusEl = document.getElementById('timer-gis-status');
-      var dotEl = document.getElementById('gis-dot');
-      if (!statusEl || !dotEl) return;
-      statusEl.className = 'timer-value';
-      dotEl.className = 'gis-dot';
-      if (state === 'silent') {
-        statusEl.textContent = 'silent\u2026';
-        statusEl.classList.add('warn');
-        dotEl.classList.add('gis-silent');
-      } else if (state === 'interactive') {
-        statusEl.textContent = 'popup open';
-        statusEl.classList.add('gis-interactive');
-        dotEl.classList.add('gis-interactive');
+    // SSO readiness indicator (applicationportal only)
+    // States: 'off' (not authenticated), 'pending' (authenticating/acquiring token), 'ready' (can serve SSO tokens)
+    function _updateSsoIndicator() {
+      if (!HTML_CONFIG.SSO_PROVIDER) return;
+      var el = document.getElementById('sso-indicator');
+      var dot = el && el.querySelector('.sso-dot');
+      var val = document.getElementById('sso-status');
+      if (!el || !dot || !val) return;
+      el.style.display = 'flex';
+      var state;
+      if (_ssoAccessToken && _ssoUserEmail) {
+        state = 'ready';
+      } else if (_authNonce || _ssoAccessToken || _ssoUserEmail) {
+        state = 'pending';
       } else {
-        statusEl.textContent = 'idle';
-        statusEl.classList.add('disabled');
+        state = 'off';
       }
-      if (_gisPopupTimeout) clearTimeout(_gisPopupTimeout);
-      if (state !== 'idle') {
-        _gisPopupTimeout = setTimeout(function() { _updateGisIndicator('idle'); }, 120000);
-      }
+      dot.className = 'sso-dot sso-' + state;
+      val.className = 'sso-value sso-' + state;
+      val.textContent = state === 'ready' ? 'ready' : state === 'pending' ? 'pending\u2026' : 'off';
     }
 
     function exchangeToken(googleAccessToken) {
@@ -2297,6 +2307,7 @@
 
     function showApp(email, displayName, role) {
       if (email) _ssoUserEmail = email;  // Hold for SSO sharing
+      _updateSsoIndicator();
 
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
@@ -2898,7 +2909,7 @@
         scope: 'openid email profile',
         prompt: '',
         callback: function(response) {
-          _updateGisIndicator('idle');
+          _updateSsoIndicator();
           if (response.error) {
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
@@ -2914,7 +2925,7 @@
         }
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      _updateGisIndicator('silent');
+      _updateSsoIndicator();
       signInClient.requestAccessToken();
     }
 
@@ -2931,7 +2942,7 @@
         callback: handleTokenResponse
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      _updateGisIndicator('interactive');
+      _updateSsoIndicator();
       signInClient.requestAccessToken();
     });
 
@@ -3224,14 +3235,14 @@
                 scope: 'openid email profile',
                 prompt: '',  // silent — no user interaction
                 callback: function(response) {
-                  _updateGisIndicator('idle');
+                  _updateSsoIndicator();
                   if (!response.error && response.access_token) {
                     _ssoAccessToken = response.access_token;
                     console.debug('[SSO] Re-acquired access token during reconnect');
                   }
                 }
               });
-              _updateGisIndicator('silent');
+              _updateSsoIndicator();
               ssoRefreshClient.requestAccessToken();
             } else if (ssoRetries >= 25) { // 25 × 200ms = 5s
               clearInterval(ssoGisCheck);
