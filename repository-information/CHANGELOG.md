@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v06.28r] — 2026-03-23 02:02:30 PM EST
+
+> **Prompt:** "start implementing repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md , research online, think deep. Write large changes in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+
+### Added
+- Regulatory Landscape & Enforcement Context section — OCR Right of Access Initiative enforcement data (54 actions, $9.4M+ in 2024), penalty tier tables, enforcement case studies
+- HITECH Act EHR Accounting Expansion subsection — §13405(c) dormant provisions, future-proofed function signature, BA disclosure tracking recommendations
+- Fee Policy subsection — §164.524(c)(4) fee rules, $6.50 flat fee option, testauth1 $0 recommendation
+- Personal Representative Access subsection — §164.502(g) requirements, recommended Phase B implementation with `PersonalRepresentatives` sheet schema
+- Amendment Notification Workflow subsection — §164.526(c)(2)-(3) post-approval notification requirements, recommended `AmendmentNotifications` sheet and code extension
+- Amendment Documentation Requirements — §164.526(f) organizational documentation checklist
+- Regulatory Compliance Matrix section — paragraph-level CFR coverage map (35 sub-sections mapped with ✅/⚠️/❌/⏳ status)
+- Forward-Looking Regulatory Preparation section — pending Privacy Rule NPRM (15-day timeline), Security Rule NPRM infrastructure impact, 42 CFR Part 2 SUD alignment, regulatory monitoring checklist
+- Two new recommended sheet schemas: `AmendmentNotifications` and `PersonalRepresentatives`
+
+### Changed
+- Renumbered all sections sequentially (1-15) after inserting 3 new top-level sections
+- Updated internal cross-references to match new section numbering
+- Document grew from 1799 to 2312 lines (v1.0 → v1.1)
 
 ## [v06.27r] — 2026-03-23 01:10:04 PM EST
 

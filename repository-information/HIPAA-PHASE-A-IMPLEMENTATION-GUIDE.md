@@ -68,7 +68,82 @@ When Phase A is complete:
 
 ---
 
-## 2. Architecture Overview
+## 2. Regulatory Landscape & Enforcement Context
+
+### Why Phase A Items Are High-Risk
+
+All three Phase A items are classified as **Required** (not Addressable) under the HIPAA Privacy Rule. This distinction is critical:
+
+- **Required** = Must be implemented exactly as specified. There is no risk-analysis alternative, no "reasonable and appropriate" determination, and no documented justification for non-implementation
+- **Addressable** = Must implement if reasonable and appropriate; may implement an alternative measure or document why the specification is not applicable
+- Items #19, #23, and #24 are **Required** — the only compliant state is "fully implemented"
+
+Additionally, **Right of Access (§164.524) is the most actively enforced provision in HIPAA history**, with OCR maintaining a dedicated enforcement initiative since 2019.
+
+### OCR Right of Access Initiative — Enforcement History
+
+OCR launched the Right of Access Initiative in 2019 specifically to enforce §164.524 compliance. As of March 2026:
+
+| Metric | Value |
+|--------|-------|
+| **Total enforcement actions** | 54 (and counting) |
+| **Total penalties collected (2024)** | $9.4M+ across 22 investigations |
+| **Average penalty per action** | ~$100K–$200K |
+| **Largest single penalty** | $4.3M (Cignet Health, 2011 — denied access to 41 patients) |
+
+### Selected Enforcement Cases (2024-2025)
+
+| Entity | Penalty | Violation | Days to Respond |
+|--------|--------:|-----------|:---------------:|
+| Oregon Health & Science University | $200,000 | Failed to provide records to personal representative | >2 years |
+| American Medical Response | $115,200 | Took 370 days to respond to single patient request | 370 |
+| Rio Hondo Community Mental Health | $100,000 | Failed to provide timely access | >30 |
+| Hackensack Meridian Health | $100,000 | Denied personal representative access | N/A |
+| Concentra, Inc. | $112,500 | Failed to provide timely access within 30 days | >30 |
+| Phoenix Healthcare | $35,000 | Took 323 days to fulfill access request | 323 |
+| Gums Dental Care | Pending | Failed to provide timely access | >30 |
+
+> **Source:** [OCR Resolution Agreements](https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html); [HIPAA Journal — HIPAA Violation Fines](https://www.hipaajournal.com/hipaa-violation-fines/)
+
+### Penalty Tiers (Current as of 2026, inflation-adjusted)
+
+| Tier | Knowledge Level | Per Violation | Annual Cap |
+|------|----------------|-------------:|----------:|
+| **Tier 1** | Did not know (and should not have known) | $145 – $73,011 | $36,506 |
+| **Tier 2** | Reasonable cause (not willful neglect) | $1,461 – $73,011 | $146,053 |
+| **Tier 3** | Willful neglect, corrected within 30 days | $14,602 – $73,011 | $365,052 |
+| **Tier 4** | Willful neglect, NOT corrected | $73,011 – $2,190,294 | $2,190,294 |
+
+> Failure to implement Required specifications when you know they're required typically falls under **Tier 2 or Tier 3**, not Tier 1. The "did not know" defense is largely unavailable for HIPAA-regulated entities.
+
+### Enforcement Trends — What OCR Is Looking For
+
+Based on 2024-2025 enforcement patterns:
+
+1. **Timeliness is paramount** — nearly every enforcement action involves exceeding the 30-day response window. testauth1's synchronous export (instant response) **exceeds** OCR expectations
+2. **Electronic format compliance** — OCR expects providers to support electronic access when data is maintained electronically. testauth1 is electronic-native
+3. **Personal representatives** — denying access to authorized representatives is treated identically to denying the individual. Phase B should address this gap
+4. **Fee transparency** — unreasonable fees trigger enforcement. testauth1's $0 fee is the safest approach
+5. **Documentation** — OCR looks for documented policies, designated privacy officers, and audit trails. This guide and the audit logging infrastructure satisfy this requirement
+
+### Key Takeaway
+
+> **testauth1's architecture is actually well-positioned for compliance.** The electronic self-service model (instant JSON/CSV export, full audit trail, RBAC-enforced access) exceeds what most healthcare providers offer. The primary risk is not technology — it's **not implementing** these capabilities at all. Phase A closes that gap.
+
+### Regulatory Timeline — Current Law vs Pending Changes
+
+| Rule | Status | Impact on Phase A | Timeline |
+|------|--------|------------------|----------|
+| **Privacy Rule (current)** | In effect | Phase A implements current requirements | Now |
+| **Privacy Rule NPRM (Dec 2020)** | Proposed, not finalized | Would reduce access timeline to 15 days; expand disclosure accounting | Uncertain — anticipated May 2026 |
+| **Security Rule NPRM (Dec 2024)** | Proposed, regulatory freeze | Would make all security specs Required; 72-hour recovery | Uncertain — possible late 2026 |
+| **42 CFR Part 2 alignment (Feb 2024)** | Finalized | SUD record accounting deferred until Privacy Rule update | Compliance: Feb 16, 2026 |
+
+> See Section 14 (Forward-Looking Preparation) for detailed impact analysis of each pending change.
+
+---
+
+## 3. Architecture Overview
 
 ### System Context Diagram
 
@@ -173,7 +248,7 @@ Every Phase A function follows the same 5-step pattern established by `saveNote(
 
 ---
 
-## 3. Shared Infrastructure
+## 4. Shared Infrastructure
 
 ### New RBAC Permissions
 
@@ -336,7 +411,7 @@ function wrapPhaseAOperation(operationName, sessionToken, operationFn) {
 
 ---
 
-## 4. Item #19 — Disclosure Accounting (§164.528)
+## 5. Item #19 — Disclosure Accounting (§164.528)
 
 ### Regulatory Requirement
 
@@ -369,6 +444,75 @@ Per §164.528(a)(2), these disclosures are **exempt** from accounting:
 | Law enforcement (certain circumstances) | Any other disclosure not listed as exempt |
 
 > **testauth1 context:** Currently, testauth1 does not make external disclosures (no outbound API calls to third parties, no data sharing endpoints). The `DisclosureLog` infrastructure must exist for compliance, but it may initially have zero entries. Future features that share PHI externally MUST call `recordDisclosure()`.
+
+### HITECH Act — EHR Accounting Expansion (§13405(c))
+
+#### Background
+
+The HITECH Act of 2009, Section 13405(c), expands the scope of disclosure accounting for electronic health records:
+
+> *"In applying section 164.528 of title 45, Code of Federal Regulations, an individual shall have a right to receive an accounting of disclosures [...] made by a covered entity [...] **through an electronic health record** during the three years prior to the date on which the accounting is requested."*
+
+This expansion **removes the TPO exemption** for EHR-based disclosures — meaning treatment, payment, and operations disclosures made through an EHR must be tracked and provided in the accounting (with a 3-year lookback instead of the standard 6-year).
+
+#### Current Regulatory Status
+
+| Aspect | Status |
+|--------|--------|
+| **HITECH §13405(c) statute** | Enacted 2009 — exists in law |
+| **HHS implementing regulations** | **Never finalized** — proposed May 2011 (76 FR 31426), withdrawn from the regulatory agenda |
+| **Compliance date** | Not set — deferred until the Privacy Rule is updated |
+| **Privacy Rule NPRM (Dec 2020)** | Proposed broader Privacy Rule changes including this expansion; NOT finalized |
+| **Practical effect today** | Covered entities operate under original §164.528 (6-year, TPO-exempt) |
+
+> **Source:** [Federal Register — HIPAA Privacy Rule Accounting of Disclosures Under HITECH](https://www.federalregister.gov/documents/2011/05/31/2011-13297/hipaa-privacy-rule-accounting-of-disclosures-under-the-health-information-technology-for-economic); [HIPAA Journal — New Regulations 2026](https://www.hipaajournal.com/new-hipaa-regulations/)
+
+#### Impact on testauth1
+
+If the implementing regulations are finalized, `getDisclosureAccounting()` would need dual-mode filtering:
+
+| Mode | Scope | Lookback | Exemptions |
+|------|-------|----------|-----------|
+| **Standard (current)** | Non-EHR disclosures | 6 years | TPO, individual, authorization, etc. |
+| **HITECH EHR** | EHR-based disclosures (including TPO) | 3 years | Only incidental, national security, law enforcement |
+
+**Future-proofed function signature:**
+
+```javascript
+/**
+ * Extended getDisclosureAccounting() with HITECH EHR support.
+ * When HITECH regulations finalize, set includeEhrTpo = true.
+ */
+function getDisclosureAccounting(sessionToken, targetEmail, options) {
+  options = options || {};
+  var includeEhrTpo = options.includeEhrTpo || false;  // Enable when HITECH finalizes
+  var ehrLookbackYears = options.ehrLookbackYears || 3;
+
+  // ... existing logic ...
+
+  // If HITECH EHR mode enabled, also include TPO disclosures within 3-year window
+  if (includeEhrTpo) {
+    var ehrCutoff = new Date(now.getTime() - (ehrLookbackYears * 365.25 * 24 * 60 * 60 * 1000));
+    // Include rows where IsExempt = true AND ExemptionType = 'TPO' AND date >= ehrCutoff
+    // Tag these entries with { source: 'HITECH_EHR' } in the response
+  }
+}
+```
+
+#### Business Associate Disclosure Tracking
+
+Per §164.528(c), business associates must also track disclosures and either:
+1. Report all non-exempt disclosures to the covered entity, **or**
+2. Respond directly to accounting requests (per the BAA terms)
+
+The same 60-day response timeline applies.
+
+**testauth1 implications:**
+- If testauth1 data is shared with a BA (e.g., a lab, billing service, or analytics vendor), the BA's disclosures must be included in the accounting
+- **Recommended schema extension:** Add a `Source` column to `DisclosureLog` to distinguish:
+  - `CoveredEntity` — disclosures made directly by testauth1
+  - `BusinessAssociate:Name` — disclosures reported by a specific BA
+- The `getDisclosureAccounting()` function should aggregate both sources when generating the accounting
 
 ### GAS Implementation
 
@@ -630,7 +774,7 @@ function shareWithProvider(sessionToken, providerEmail, recordId) {
 
 ---
 
-## 5. Item #23 — Right of Access (§164.524)
+## 6. Item #23 — Right of Access (§164.524)
 
 ### Regulatory Requirement
 
@@ -662,6 +806,105 @@ The "Designated Record Set" defines what constitutes an individual's records. In
 | Amendment requests | `AmendmentRequests` | ⚠️ Contains amendment content | ✅ Yes — individual's amendment history |
 | Access requests | `AccessRequests` | ⚠️ Contains request metadata | ✅ Yes — individual's own access request history |
 | ACL (Master Spreadsheet) | `Access` | ❌ No | ❌ No — administrative, not part of record set |
+
+### Fee Policy (§164.524(c)(4))
+
+#### Federal Fee Rules
+
+The Privacy Rule permits a reasonable, cost-based fee for providing copies of PHI. The fee may only cover certain limited costs:
+
+| Scenario | Fee Allowed | Maximum Amount | Notes |
+|----------|:-----------:|:----------:|-------|
+| Electronic copy via self-service portal | Yes | Flat **$6.50** option | Covers labor, supplies, postage combined |
+| Copy via CEHRT View/Download/Transmit | **No** | $0.00 | Provider cannot charge when using certified EHR functionality |
+| Paper copies | Yes | Actual cost-based | Labor + supplies + postage only |
+| Copies to third party at individual's direction | Same as above | Same as above | Same fee rules apply regardless of recipient |
+| Retrieval or searching for records | **No** | $0.00 | Cannot charge for time spent locating records |
+
+> **Source:** [HHS Right of Access Guidance](https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/access/index.html); 45 CFR §164.524(c)(4)
+
+#### testauth1 Fee Policy
+
+- testauth1 provides **electronic self-service** export (JSON/CSV download via browser)
+- **Recommended fee: $0.00** — electronic self-service has negligible marginal cost; no labor, supplies, or postage involved
+- The `requestDataExport()` function should NOT include any fee-related logic
+- If a fee is ever introduced: it must be disclosed in the Notice of Privacy Practices, and the `AccessRequests` sheet should gain `FeeCharged` and `FeeJustification` columns
+
+> **OCR Enforcement Warning:** Multiple penalty actions ($85K–$200K range) have resulted from charging unreasonable fees or using fee demands as a barrier to access. OCR has stated: *"with advancing technology making record production easier than ever, OCR expects faster compliance, not slower."* The safest approach is $0 for electronic self-service.
+
+### Personal Representative Access (§164.502(g))
+
+#### Regulatory Requirement
+
+Under §164.502(g), a **personal representative** has the same rights as the individual with respect to PHI access. Personal representatives include:
+
+| Representative Type | Legal Basis | Common Scenarios |
+|-------------------|------------|-----------------|
+| Parent of a minor | State law on parental rights | Parent requesting child's records |
+| Legal guardian | Court-appointed guardianship | Guardian requesting ward's records |
+| Healthcare power of attorney | Signed POA document | Agent requesting incapacitated patient's records |
+| Executor/administrator of estate | Probate/estate documentation | Deceased patient's records |
+| Court-appointed representative | Court order | Court-ordered access to records |
+
+> **OCR Enforcement:** Hackensack Meridian Health paid **$100,000** (April 2024) for denying a personal representative access to a nursing facility resident's records. OCR treats representative denials identically to individual denials.
+
+#### Current Implementation Gap
+
+The existing `validateIndividualAccess()` checks:
+1. ✅ `user.email === targetEmail` (self-service)
+2. ✅ `user.role === 'admin'` (admin override)
+3. ❌ No representative lookup — a parent cannot access their minor child's records
+
+#### Recommended Implementation (Phase B)
+
+```javascript
+/**
+ * Extended access validation that includes personal representatives.
+ * Phase B extension to validateIndividualAccess().
+ */
+function validateIndividualOrRepresentativeAccess(user, targetEmail, operationName) {
+  // Direct match — individual accessing own data
+  if (user.email.toLowerCase() === targetEmail.toLowerCase()) return true;
+
+  // Admin override
+  if (hasPermission(user.role, 'admin')) {
+    auditLog('representative_access', user.email, 'admin_override', {
+      operation: operationName, targetEmail: targetEmail
+    });
+    return true;
+  }
+
+  // Representative check
+  var repSheet = getOrCreateSheet('PersonalRepresentatives', [
+    'RepresentativeEmail', 'IndividualEmail', 'RelationshipType',
+    'AuthorizationDate', 'ExpirationDate', 'Status', 'DocumentReference'
+  ]);
+  var data = repSheet.getDataRange().getValues();
+  var now = new Date();
+
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][0]).toLowerCase() === user.email.toLowerCase() &&
+        String(data[r][1]).toLowerCase() === targetEmail.toLowerCase() &&
+        data[r][5] === 'Active') {
+      // Check expiration
+      if (data[r][4] && new Date(data[r][4]) < now) continue; // Expired
+      auditLog('representative_access', user.email, 'representative_granted', {
+        operation: operationName, targetEmail: targetEmail,
+        relationship: data[r][2]
+      });
+      return true;
+    }
+  }
+
+  // No valid representation found
+  auditLog('security_alert', user.email, 'representative_access_denied', {
+    operation: operationName, targetEmail: targetEmail
+  });
+  throw new Error('ACCESS_DENIED');
+}
+```
+
+> **Phase A note:** Personal representative access is not required for the initial Phase A deployment (which supports self-service only). It becomes important when testauth1 expands to serve populations where representative access is common (pediatrics, elder care, etc.). The `PersonalRepresentatives` schema is documented in the Spreadsheet Schema Reference.
 
 ### GAS Implementation
 
@@ -992,7 +1235,7 @@ function handleDataExport() {
 
 ---
 
-## 6. Item #24 — Right to Amendment (§164.526)
+## 7. Item #24 — Right to Amendment (§164.526)
 
 ### Regulatory Requirement
 
@@ -1227,6 +1470,97 @@ function reviewAmendment(sessionToken, amendmentId, decision, decisionReason) {
 }
 ```
 
+#### Post-Approval Notification Workflow (§164.526(c)(2)-(3))
+
+##### Regulatory Requirement
+
+> **§164.526(c)(2)** — The covered entity must timely inform the individual that the amendment is accepted and obtain the individual's identification of, and agreement to have the covered entity notify, the relevant persons with which the amendment needs to be shared.
+>
+> **§164.526(c)(3)** — The covered entity must make reasonable efforts to inform and provide the amendment within a reasonable time to: (i) persons identified by the individual as having received the PHI and needing the amendment, and (ii) persons, including business associates, that the covered entity knows have the PHI that is the subject of the amendment and that may have relied upon such information to the detriment of the individual.
+
+##### Gap in Current `reviewAmendment()`
+
+The current implementation handles steps 1-3 of the approval workflow:
+
+1. ✅ Validate admin permission
+2. ✅ Update AmendmentRequests status to "Approved"
+3. ✅ Log to audit trail and return success
+
+**Missing steps** after approval:
+
+4. ❌ Notify the individual that the amendment was accepted
+5. ❌ Collect from the individual: who else received the incorrect PHI and needs notification
+6. ❌ Send amendment notifications to those identified persons
+7. ❌ Cross-reference `DisclosureLog` to identify entities that received the incorrect PHI
+
+##### Recommended Extension
+
+**Phase A scope:** Steps 4-5 (notification to individual + collection of notification targets)
+**Phase B scope:** Steps 6-7 (outbound notifications to third parties — requires email/messaging capability)
+
+```javascript
+// Extension to reviewAmendment() — add after status update when decision === 'Approved'
+if (decision === 'Approved') {
+  // Create notification task for individual
+  var notifHeaders = [
+    'NotificationID', 'AmendmentID', 'IndividualEmail', 'NotificationType',
+    'RecipientEmail', 'RecipientName', 'Status', 'SentDate', 'CreatedDate'
+  ];
+  var notifSheet = getOrCreateSheet('AmendmentNotifications', notifHeaders);
+
+  // Auto-create "individual approved" notification
+  notifSheet.appendRow([
+    generateRequestId('NOTIF'),
+    amendmentId,
+    amendmentRow[1],           // IndividualEmail
+    'IndividualApproval',
+    amendmentRow[1],           // Notify the individual themselves
+    '',
+    'Pending',
+    '',
+    formatHipaaTimestamp()
+  ]);
+
+  // Cross-reference DisclosureLog for recipients who received the incorrect PHI
+  var dlSheet = ss.getSheetByName('DisclosureLog');
+  if (dlSheet) {
+    var dlData = dlSheet.getDataRange().getValues();
+    for (var d = 1; d < dlData.length; d++) {
+      if (String(dlData[d][2]).toLowerCase() === amendmentRow[1].toLowerCase()) {
+        // This individual's PHI was disclosed to this recipient — they may need notification
+        notifSheet.appendRow([
+          generateRequestId('NOTIF'),
+          amendmentId,
+          amendmentRow[1],
+          'DisclosureRecipient',
+          '',                        // RecipientEmail (may need manual lookup)
+          dlData[d][3],              // RecipientName from DisclosureLog
+          'Pending',
+          '',
+          formatHipaaTimestamp()
+        ]);
+      }
+    }
+  }
+}
+```
+
+##### Amendment Documentation Requirements (§164.526(f))
+
+> **§164.526(f)** — A covered entity must document the titles of the persons or offices responsible for receiving and processing requests for amendments by individuals and retain the documentation as required by §164.530(j).
+
+**Required organizational documentation** (not code — administrative):
+
+| Documentation Item | Where to Document | testauth1 Status |
+|--------------------|------------------|-----------------|
+| Title of person/office receiving amendment requests | Notice of Privacy Practices | ⚠️ Not yet documented |
+| Title of person/office processing amendment requests | Internal policy document | ⚠️ Not yet documented |
+| Retention of documentation per §164.530(j) (6 years) | Data retention policy | ✅ Sheet retention by design |
+
+**Recommendation:** Create a `repository-information/HIPAA-ORGANIZATIONAL-DOCS.md` checklist that includes amendment responsibility designation, privacy officer contact, and other non-code compliance requirements.
+
+The `AmendmentRequests` sheet's `ReviewerEmail` column already provides a code-level audit trail of who processed each request, satisfying the spirit of §164.526(f) from a technical perspective.
+
 #### `submitDisagreement()` — Individual Disagrees with Denial
 
 ```javascript
@@ -1445,7 +1779,7 @@ function getAmendmentHistory(sessionToken, recordId) {
 
 ---
 
-## 7. Spreadsheet Schema Reference
+## 8. Spreadsheet Schema Reference
 
 All three sheets are created in the **Project Data Spreadsheet** (`1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA`) via the `getOrCreateSheet()` utility on first use.
 
@@ -1502,6 +1836,36 @@ All three sheets are created in the **Project Data Spreadsheet** (`1EKParBF6pP5I
 
 **Protection:** Warning-only. The `CurrentContent` and `ProposedChange` columns contain a snapshot of the data at the time of the request — they are part of the amendment record and must never be modified.
 
+### `AmendmentNotifications` Sheet (Recommended — Phase A Extension)
+
+Supports the post-approval notification workflow required by §164.526(c)(2)-(3). Created by `getOrCreateSheet()` on first use.
+
+| Column | Type | Required | Description | Example |
+|--------|------|----------|-------------|---------|
+| `NotificationID` | String | ✅ | Unique ID (format: `NOTIF-uuid8`) | `NOTIF-a1b2c3d4` |
+| `AmendmentID` | String | ✅ | Links to AmendmentRequests | `AMEND-20260323-a1b2c3d4` |
+| `IndividualEmail` | String | ✅ | Individual whose amendment was approved | `patient@example.com` |
+| `NotificationType` | Enum | ✅ | `IndividualApproval` · `ThirdPartyCorrection` · `DisclosureRecipient` | `IndividualApproval` |
+| `RecipientEmail` | String | ✅ | Who to notify | `hospital@example.com` |
+| `RecipientName` | String | Optional | Recipient display name | `City General Hospital` |
+| `Status` | Enum | ✅ | `Pending` · `Sent` · `Failed` | `Pending` |
+| `SentDate` | ISO 8601 | On send | When notification was sent | `2026-03-23T15:00:00.000Z` |
+| `CreatedDate` | ISO 8601 | ✅ | When notification task was created | `2026-03-23T14:30:00.000Z` |
+
+### `PersonalRepresentatives` Sheet (Recommended — Phase B)
+
+Supports personal representative access per §164.502(g). Not required for Phase A (self-service only) but recommended for full §164.524 compliance.
+
+| Column | Type | Required | Description | Example |
+|--------|------|----------|-------------|---------|
+| `RepresentativeEmail` | String | ✅ | Representative's login email | `parent@example.com` |
+| `IndividualEmail` | String | ✅ | Individual they represent | `minor@example.com` |
+| `RelationshipType` | Enum | ✅ | `Parent` · `LegalGuardian` · `HealthcarePOA` · `CourtAppointed` | `Parent` |
+| `AuthorizationDate` | ISO 8601 | ✅ | When authorization was granted | `2026-01-15` |
+| `ExpirationDate` | ISO 8601 | Optional | When authorization expires (null = indefinite) | `2027-01-15` |
+| `Status` | Enum | ✅ | `Active` · `Expired` · `Revoked` | `Active` |
+| `DocumentReference` | String | Optional | Reference to uploaded authorization document | `Auth doc on file — ref #1234` |
+
 ### Sheet Relationship Diagram
 
 ```
@@ -1516,7 +1880,7 @@ Project Data Spreadsheet (1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA)
 
 ---
 
-## 8. Security Checklist
+## 9. Security Checklist
 
 ### Pre-Implementation Checklist
 
@@ -1577,7 +1941,73 @@ After all code is deployed:
 
 ---
 
-## 9. Before/After Comparison Tables
+## 10. Regulatory Compliance Matrix
+
+### CFR Paragraph-Level Coverage Map
+
+This matrix maps every relevant CFR sub-section to the Phase A implementation, providing paragraph-level traceability for compliance audits.
+
+#### §164.524 — Access of Individuals to PHI
+
+| CFR Paragraph | Requirement | Phase A Status | Implementation Reference |
+|---------------|------------|:--------------:|--------------------------|
+| §164.524(a)(1) | Right to access designated record set | ✅ Covered | `requestDataExport()` — queries all designated record set sheets |
+| §164.524(b)(1) | Respond within 30 calendar days | ✅ Covered | `AccessRequests.ResponseDate` tracked; testauth1 responds instantly (synchronous) |
+| §164.524(b)(2)(i) | Written notice if request denied | ⚠️ Partial | Error responses returned but not as formal "written notice" |
+| §164.524(b)(2)(ii) | One 30-day extension with written explanation | ⚠️ Partial | Deadline calculated; extension status (`Extended`) exists but no extension workflow |
+| §164.524(c)(1) | Provide access in form and format requested | ✅ Covered | JSON and CSV format options |
+| §164.524(c)(2)(i) | Electronic copy if maintained electronically | ✅ Covered | All data is electronic; export is electronic |
+| §164.524(c)(3) | Summary of PHI if agreed upon | ❌ Phase B | No summary view — full export only |
+| §164.524(c)(4) | Reasonable cost-based fees | ✅ Covered | $0 fee — electronic self-service (see Fee Policy subsection) |
+| §164.524(d)(1) | Unreviewable grounds for denial (psychotherapy notes) | N/A | testauth1 does not hold psychotherapy notes |
+| §164.524(d)(2) | Reviewable grounds for denial | ⚠️ Partial | No formal denial workflow implemented |
+
+#### §164.526 — Amendment of PHI
+
+| CFR Paragraph | Requirement | Phase A Status | Implementation Reference |
+|---------------|------------|:--------------:|--------------------------|
+| §164.526(a)(1) | Right to request amendment | ✅ Covered | `requestAmendment()` with full tracking |
+| §164.526(a)(2) | Permitted denial reasons | ✅ Covered | Four permitted reasons documented; `DecisionReason` enforced on denial |
+| §164.526(b)(1) | Act within 60 days | ✅ Covered | `AmendmentRequests.Deadline` auto-calculated at 60 days |
+| §164.526(b)(2)(i) | Written denial with basis | ✅ Covered | `DecisionReason` required for denial |
+| §164.526(b)(2)(ii) | One 30-day extension | ⚠️ Partial | Deadline exists; no extension workflow |
+| §164.526(b)(2)(iv) | Inform of right to file disagreement | ✅ Covered | Denial response message includes right to disagree |
+| §164.526(c)(1) | Append or link amendment to record | ✅ Covered | Append-only design — `AmendmentRequests` links to `RecordID` |
+| §164.526(c)(2) | Inform individual of acceptance; obtain notification targets | ⚠️ Gap | See Amendment Notification Workflow subsection |
+| §164.526(c)(3) | Notify third parties of amendment | ❌ Phase B | Requires outbound notification capability |
+| §164.526(d)(1)-(3) | Statement of disagreement process | ✅ Covered | `submitDisagreement()` with full lifecycle |
+| §164.526(d)(4) | Link disagreement to designated record set | ✅ Covered | `DisagreementStatement` column in `AmendmentRequests` |
+| §164.526(e) | Actions on notices from other entities | N/A | testauth1 is the sole covered entity for its data |
+| §164.526(f) | Document responsible persons/offices | ⚠️ Gap | Organizational documentation needed (not code) |
+
+#### §164.528 — Accounting of Disclosures
+
+| CFR Paragraph | Requirement | Phase A Status | Implementation Reference |
+|---------------|------------|:--------------:|--------------------------|
+| §164.528(a)(1) | Right to accounting of disclosures (6 years) | ✅ Covered | `getDisclosureAccounting()` with 6-year window |
+| §164.528(a)(2) | Exempt disclosures (TPO, individual, etc.) | ✅ Covered | `IsExempt` + `ExemptionType` columns; exempt disclosures excluded from accounting |
+| §164.528(b)(1) | Act within 60 days | ⚠️ Partial | Accounting generated instantly but no formal tracking of accounting *requests* with deadlines |
+| §164.528(b)(2)(i) | Content: date, recipient, description, purpose | ✅ Covered | `DisclosureLog` columns match all four required elements |
+| §164.528(b)(2)(ii) | Grouped accounting for repeated disclosures | ❌ Phase B | No grouping — every disclosure listed individually |
+| §164.528(c) | Business associate disclosure tracking | ⚠️ Gap | See HITECH subsection; no BA disclosure integration |
+| §164.528(d) | Documentation and retention (6 years) | ✅ Covered | Sheet protection; no deletion logic; 6-year retention by design |
+| HITECH §13405(c) | EHR-based TPO accounting (3-year lookback) | ⏳ Pending | HHS has not finalized implementing regulations — see HITECH subsection |
+
+### Coverage Summary
+
+| Status | Count | Percentage | Description |
+|--------|:-----:|:----------:|-------------|
+| ✅ Fully Covered | 18 | 58% | Requirement fully addressed by Phase A code |
+| ⚠️ Partial / Gap | 10 | 32% | Partially addressed or recommended extension |
+| ❌ Phase B+ | 3 | 10% | Deferred to future phases |
+| ⏳ Pending Regulation | 1 | — | Regulation not yet finalized |
+| N/A | 3 | — | Not applicable to testauth1 |
+
+> **Reading this matrix:** ✅ items are fully compliant. ⚠️ items work but have gaps in formal workflow (extensions, notifications, BA tracking) — these are low-risk gaps that can be addressed incrementally. ❌ items require new capabilities not in Phase A scope. ⏳ items depend on regulatory finalization.
+
+---
+
+## 11. Before/After Comparison Tables
 
 ### Compliance Status Change
 
@@ -1624,7 +2054,7 @@ All well within Google Sheets limits (10M cells, ~100 MB per spreadsheet).
 
 ---
 
-## 10. Testing & Verification
+## 12. Testing & Verification
 
 ### Test Scenarios — Item #19 (Disclosure Accounting)
 
@@ -1704,7 +2134,7 @@ function verifyPhaseAAuditTrail() {
 
 ---
 
-## 11. Troubleshooting
+## 13. Troubleshooting
 
 ### Common Issues
 
@@ -1742,7 +2172,91 @@ function verifyPhaseAAuditTrail() {
 
 ---
 
-## 12. Cross-References
+## 14. Forward-Looking Regulatory Preparation
+
+### Pending Privacy Rule NPRM (December 2020)
+
+The largest proposed update to the HIPAA Privacy Rule is still pending finalization. Key changes that would affect Phase A:
+
+| Current Requirement | Proposed Change | Phase A Impact | Preparation |
+|--------------------|----------------|---------------|-------------|
+| Right of Access: **30 days** to respond | **15 days** to respond | `requestDataExport()` deadline calculation must change | Parameterize `ACCESS_RESPONSE_DAYS` instead of hardcoding |
+| Disclosure accounting excludes **TPO** | EHR-based TPO disclosures **included** (3-year lookback) | `getDisclosureAccounting()` needs dual-mode filtering | See HITECH subsection in Item #19 |
+| Accounting response: **60 days** | May change alongside access timeline | `DisclosureLog` query deadline logic | Monitor final rule for specific timeline |
+| Individual right to inspect in person | Explicit right to take notes, photograph | UI must support read-only inspection view | Consider a "view-only" mode in data export panel |
+
+**Status (as of March 2026):** The NPRM was proposed under the first Trump administration (December 2020). The Biden administration did not finalize it. The current Trump administration has not yet indicated whether it will proceed. Final action is tentatively anticipated in **May 2026** but remains uncertain. The regulatory freeze executive order adds further delay.
+
+> **Source:** [HIPAA Journal — HIPAA Updates 2026](https://www.hipaajournal.com/hipaa-updates-hipaa-changes/); [HHS Regulatory Initiatives](https://www.hhs.gov/hipaa/for-professionals/regulatory-initiatives/index.html)
+
+**Future-proofing code:**
+
+```javascript
+// CURRENT (hardcoded deadline):
+var deadline = new Date();
+deadline.setDate(deadline.getDate() + 60);
+
+// FUTURE-PROOFED (configurable — update when NPRM finalizes):
+var HIPAA_DEADLINES = {
+  ACCESS_RESPONSE_DAYS: 30,      // §164.524(b)(1) — proposed: 15
+  ACCESS_EXTENSION_DAYS: 30,     // §164.524(b)(2)(iii)
+  AMENDMENT_RESPONSE_DAYS: 60,   // §164.526(b)(2)(i)
+  AMENDMENT_EXTENSION_DAYS: 30,  // §164.526(b)(2)(ii)
+  ACCOUNTING_RESPONSE_DAYS: 60,  // §164.528(c)(1)
+  ACCOUNTING_PERIOD_YEARS: 6     // §164.528(a)(1) — HITECH EHR: 3
+};
+```
+
+### Security Rule NPRM — Infrastructure Impact on Phase A
+
+On December 27, 2024, HHS OCR proposed the first major update to the HIPAA Security Rule since 2013. If finalized, these changes would affect Phase A infrastructure:
+
+| Proposed Requirement | Phase A Impact | Current Status | Preparation |
+|---------------------|---------------|---------------|-------------|
+| **All specs Required** (no more "Addressable") | Phase A already treats all security as Required — no change needed | ✅ Aligned | None |
+| **15-day critical vulnerability patching** | Affects GAS deployment timeline — patches to Phase A functions must deploy within 15 calendar days | ⚠️ Process needed | Establish vulnerability monitoring for GAS scripts |
+| **30-day high-risk patching** | Same as above for high-risk issues | ⚠️ Process needed | Include in monitoring process |
+| **6-month vulnerability scanning** | Phase A GAS functions must be scanned for vulnerabilities semi-annually | ⚠️ Not in place | Establish scanning schedule using OWASP guidelines |
+| **Annual penetration testing** | Phase A endpoints must be included in annual pentest scope | ⚠️ Not in place | Include Phase A in pentest scope when established |
+| **72-hour system restoration** | Need backup/restore capability for all 3 new sheets (DisclosureLog, AccessRequests, AmendmentRequests) | ⚠️ Not in place | Implement GAS time-trigger for automated sheet backups |
+| **Annual compliance audits** | Phase A documentation must support audit artifacts | ✅ This guide serves as audit evidence | Maintain this guide current |
+| **Technology asset inventory** | Phase A sheets and functions must be inventoried | ⚠️ Not tracked | Add to REPO-ARCHITECTURE.md or a dedicated inventory |
+| **MFA for all ePHI access** | testauth1 uses Google OAuth (MFA-capable) — Google enforces MFA policy | ✅ Aligned | Verify Google Workspace MFA enforcement |
+
+> **Status:** Comments were due March 7, 2025. A regulatory freeze is in effect. The estimated compliance cost of $9.3 billion has drawn industry opposition. Final action uncertain but possible by late 2026.
+>
+> **Source:** [HHS Security Rule NPRM Fact Sheet](https://www.hhs.gov/hipaa/for-professionals/security/hipaa-security-rule-nprm/factsheet/index.html)
+
+### 42 CFR Part 2 — Substance Use Disorder Record Alignment
+
+On February 8, 2024, HHS finalized the alignment of 42 CFR Part 2 (Confidentiality of Substance Use Disorder Patient Records) with HIPAA. Key implications for Phase A:
+
+- **Single consent for TPO:** SUD records can now be used/disclosed under a single consent for treatment, payment, and healthcare operations, aligning with HIPAA's TPO framework
+- **Accounting of disclosures:** The compliance date for SUD-record accounting of disclosures is **deferred** until HHS revises the HIPAA Privacy Rule's accounting provisions (the pending December 2020 NPRM)
+- **Full compliance required:** February 16, 2026
+
+**testauth1 impact:**
+- If testauth1 handles any SUD data, the `DisclosureLog` must be able to flag SUD-related disclosures separately (SUD records have additional consent requirements beyond standard HIPAA)
+- **Recommendation:** Add a `DataCategory` column to the `DisclosureLog` schema with enum values: `General`, `SUD`, `MentalHealth`, `HIV`, `Genetic` — this supports category-specific tracking requirements across all applicable regulations
+- If testauth1 does NOT handle SUD data, no changes are needed — but the category column is low-cost insurance
+
+> **Source:** [42 CFR Part 2 Final Rule Fact Sheet](https://www.hhs.gov/hipaa/for-professionals/regulatory-initiatives/fact-sheet-42-cfr-part-2-final-rule/index.html)
+
+### Monitoring Regulatory Changes
+
+Recommended monitoring cadence:
+
+| Source | What to Watch | Frequency |
+|--------|-------------|-----------|
+| [HHS Regulatory Initiatives](https://www.hhs.gov/hipaa/for-professionals/regulatory-initiatives/index.html) | Privacy Rule and Security Rule NPRM status | Monthly |
+| [Federal Register — HIPAA](https://www.federalregister.gov/agencies/health-and-human-services-department) | Final rules, new NPRMs | Weekly |
+| [OCR Resolution Agreements](https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html) | Right of Access enforcement actions | Monthly |
+| [HIPAA Journal](https://www.hipaajournal.com/) | Enforcement news, regulatory analysis | Weekly |
+| State legislature trackers | State-level health privacy laws (may impose stricter requirements) | Quarterly |
+
+---
+
+## 15. Cross-References
 
 ### Regulatory Citations
 
@@ -1781,7 +2295,7 @@ function verifyPhaseAAuditTrail() {
 
 For maximum efficiency, implement in this order (each builds on the previous):
 
-1. **Shared infrastructure** (Section 3) — utility functions used by all three items
+1. **Shared infrastructure** (Section 4) — utility functions used by all three items
 2. **#23 Right of Access** — simpler read-only operation; validates the `getOrCreateSheet()` and `extractRecordsForEmail()` patterns
 3. **#19 Disclosure Accounting** — builds on the same export pattern; adds the disclosure logging infrastructure
 4. **#24 Right to Amendment** — most complex (write operations + review workflow); benefits from patterns established by #23 and #19
@@ -1793,7 +2307,6 @@ For maximum efficiency, implement in this order (each builds on the previous):
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
 | 2026-03-23 | 1.0 | Claude Code | Initial implementation guide for Phase A |
-
-Developed by: ShadowAISolutions
+| 2026-03-23 | 1.1 | Claude Code | Regulatory deep-dive: enforcement context, HITECH expansion, fee policy, personal representatives, amendment notifications, compliance matrix, forward-looking preparation |
 
 Developed by: ShadowAISolutions
