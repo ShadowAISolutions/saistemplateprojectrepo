@@ -1,4 +1,4 @@
-var VERSION = "v01.07g";
+var VERSION = "v01.08g";
 var TITLE = "Application Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -426,31 +426,52 @@ function validateCrossProjectAdmin(params) {
  */
 function listActiveSessionsInternal(callerEmail) {
   var cache = getEpochCache();
-  var sessions = [];
-  var indexRaw = cache.get('session_index');
-  if (!indexRaw) return sessions;
-  var index;
-  try { index = JSON.parse(indexRaw); } catch (err) { return sessions; }
-  var now = Date.now();
-  for (var email in index) {
-    var tokens = index[email];
-    if (!Array.isArray(tokens)) continue;
-    for (var i = 0; i < tokens.length; i++) {
-      var sessionRaw = cache.get('session_' + tokens[i]);
-      if (!sessionRaw) continue;
-      try {
-        var session = JSON.parse(sessionRaw);
-        sessions.push({
-          email: session.email || email,
-          role: session.role || RBAC_DEFAULT_ROLE,
-          loginTime: session.loginTime || '',
-          lastSeen: session.lastActivity || session.loginTime || '',
+  var activeSessions = [];
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return activeSessions;
+    var data = sheet.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) continue;
+      var trackKey = 'sessions_' + email;
+      var raw = cache.get(trackKey);
+      if (!raw) continue;
+      var tokens;
+      try { tokens = JSON.parse(raw); } catch (e) { continue; }
+      for (var i = 0; i < tokens.length; i++) {
+        var sessionRaw = cache.get('session_' + tokens[i]);
+        if (!sessionRaw) continue;
+        var sess;
+        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
+        var absRemaining = 0;
+        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+          absRemaining = Math.max(0, Math.round(
+            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
+          ));
+        }
+        var rollingRemaining = Math.max(0, Math.round(
+          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
+        ));
+        activeSessions.push({
+          email: sess.email,
+          displayName: sess.displayName || '',
+          role: sess.role || RBAC_DEFAULT_ROLE,
+          createdAt: sess.absoluteCreatedAt || sess.createdAt,
+          lastActivity: sess.lastActivity,
+          absoluteRemaining: absRemaining,
+          rollingRemaining: rollingRemaining,
+          isEmergencyAccess: sess.isEmergencyAccess || false,
+          isSelf: (sess.email || '').toLowerCase() === (callerEmail || '').toLowerCase(),
           project: TITLE
         });
-      } catch (err) { /* skip corrupt entries */ }
+      }
     }
+  } catch (e) {
+    Logger.log('listActiveSessionsInternal error: ' + e.message);
   }
-  return sessions;
+  return activeSessions;
 }
 
 // ══════════════

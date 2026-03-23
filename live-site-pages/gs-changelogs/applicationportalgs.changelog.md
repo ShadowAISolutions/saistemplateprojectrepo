@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08g] — 2026-03-23 07:56:51 AM EST — v06.15r
+
+### Fixed
+- Fixed session listing so Global Sessions panel correctly shows active sessions
 
 ## [v01.07g] — 2026-03-22 02:58:37 PM EST — v06.09r
 
