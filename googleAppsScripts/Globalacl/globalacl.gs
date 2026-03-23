@@ -1,4 +1,4 @@
-var VERSION = "v01.23g";
+var VERSION = "v01.24g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -918,6 +918,8 @@ function listGlobalSessions(sessionToken) {
     if (!projects[i].authEnabled) continue;
     if (projects[i].isSelf) {
       var local = listActiveSessionsInternal(user.email);
+      // Override project name to match spreadsheet display name
+      for (var li = 0; li < local.length; li++) local[li].project = projects[i].name;
       allSessions = allSessions.concat(local);
       projectStatus.push({ name: projects[i].name, status: 'ok', count: local.length });
     } else {
@@ -956,8 +958,10 @@ function listGlobalSessions(sessionToken) {
             continue;
           }
           // Ensure isSelf is computed relative to the calling admin
+          // and override project name to match the master spreadsheet display name
           for (var k = 0; k < remoteSessions.length; k++) {
             remoteSessions[k].isSelf = (remoteSessions[k].email || '').toLowerCase() === (user.email || '').toLowerCase();
+            remoteSessions[k].project = projectName;
           }
           allSessions = allSessions.concat(remoteSessions);
           projectStatus.push({ name: projectName, status: 'ok', count: remoteSessions.length });
