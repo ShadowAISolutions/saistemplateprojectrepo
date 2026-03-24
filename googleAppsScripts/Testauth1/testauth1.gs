@@ -1,4 +1,4 @@
-var VERSION = "v01.98g";
+var VERSION = "v01.99g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2644,6 +2644,11 @@ function doGet(e) {
       + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-review-result", {result:r}); })'
       + '      .withFailureHandler(function(e) { ok("phase-a-review-result", {result:{success:false,message:String(e)}}); })'
       + '      .reviewAmendment(d.token, d.amendmentId, d.decision, d.decisionReason);'
+      + '  }'
+      + '  if (d.type === "phase-a-submit-disagreement") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-disagreement-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-disagreement-result", {result:{success:false,message:String(e)}}); })'
+      + '      .submitDisagreement(d.token, d.amendmentId, d.statement);'
       + '  }'
       + '});'
       + '</' + 'script></body></html>';

@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v06.43r] — 2026-03-23 08:34:55 PM EST
+
+> **Prompt:** "i mean in regards to implementing it in testauth1, not changing the guide"
+
+### Added
+- Disagreement submission form UI — the last missing Phase A HIPAA element, completing all 9/9 UI components
+- GAS listener routing for `submitDisagreement()` via Phase A iframe messaging
+
+#### `testauth1.html` — v02.86w
+##### Added
+- "Disagree" button in the Phase A nav bar (permission-gated to `amend` role)
+- Disagreement statement panel with amendment ID input, statement textarea, and submit button
+- Client-side handler for disagreement submission with success/error feedback
+- `phase-a-disagreement-result` message type added to postMessage allowlists and response router
+
+#### `testauth1.gs` — v01.99g
+##### Added
+- `phase-a-submit-disagreement` message handler in the Phase A listener iframe, routing to `submitDisagreement()` GAS function
 
 ## [v06.42r] — 2026-03-23 08:05:48 PM EST
 

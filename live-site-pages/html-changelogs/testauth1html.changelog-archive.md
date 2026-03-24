@@ -8,6 +8,61 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.45w] — 2026-03-19 05:46:46 PM EST — v05.14r
+
+### Fixed
+- Admin session management button is now properly clickable for admin users
+
+## [v02.44w] — 2026-03-19 02:36:10 PM EST — v05.10r
+
+### Fixed
+- Admin session management button now appears correctly for admin users
+
+## [v02.43w] — 2026-03-19 02:15:50 PM EST — v05.07r
+
+### Changed
+- Buttons and sections are now gated using simple HTML attributes — no external configuration needed to hide features based on your role
+
+## [v02.42w] — 2026-03-19 02:07:08 PM EST — v05.06r
+
+### Changed
+- Page elements (buttons, sections) are now automatically hidden or shown based on your role — no more seeing features you can't use
+
+## [v02.41w] — 2026-03-19 12:45:41 PM EST — v05.04r
+
+### Fixed
+- Admin sign-out now immediately shows "An administrator ended your session" without requiring a page refresh
+- Heartbeat no longer gets stuck on "sending..." when session is admin-invalidated
+
+## [v02.40w] — 2026-03-19 12:37:20 PM EST — v05.03r
+
+### Fixed
+- Users signed out by an admin now see a clear sign-in page instead of being stuck on "Reconnecting..."
+- Admin sign-out now shows "An administrator ended your session" instead of a generic expiration message
+
+## [v02.39w] — 2026-03-19 12:24:13 PM EST — v05.02r
+
+### Fixed
+- Session management panel now loads and displays active sessions correctly
+
+## [v02.38w] — 2026-03-19 12:16:19 PM EST — v05.01r
+
+### Added
+- New "Sessions" button for admins — view all active sessions and sign out any user directly from the page
+
+## [v02.37w] — 2026-03-19 11:23:01 AM EST — v04.98r
+
+### Added
+- Your assigned role (e.g. admin, clinician, viewer) now appears as a badge next to your email after signing in
+
+## [v02.36w] — 2026-03-19 10:46:42 AM EST — v04.96r
+
+### Added
+- Your role and access level are now remembered when you sign in, preparing for future role-based features
+
+### Changed
+- Sign-in and session resume now include role information from the server
+
 ## [v02.35w] — 2026-03-18 02:50:29 PM EST — v04.81r
 
 ### Changed

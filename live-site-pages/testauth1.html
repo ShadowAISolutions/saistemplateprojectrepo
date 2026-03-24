@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.85w">
+  <meta name="build-version" content="v02.86w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -444,6 +444,7 @@
     <button id="data-export-btn" class="phase-a-btn" title="Download your data" data-requires-permission="export">My Data</button>
     <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
     <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-role="admin">Amendments</button>
+    <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend" style="display:none;">Disagree</button>
     <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
     <span class="sign-out-sep">|</span>
     <button id="sign-out-all-btn" title="Sign out of all connected pages">Sign Out All</button>
@@ -536,6 +537,25 @@
     </div>
     <div id="amend-review-list"></div>
     <div id="amend-review-empty" class="pa-empty" style="display:none;">No pending amendments.</div>
+  </div>
+
+  <!-- Disagreement Statement Panel (#24 — §164.526(d)) -->
+  <div id="disagreement-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Statement of Disagreement</span>
+      <button id="disagreement-close-btn" class="pa-close">&times;</button>
+    </div>
+    <div class="pa-body">
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Under HIPAA §164.526(d), if your amendment request was denied, you may file a statement of disagreement that will be appended to your record.</p>
+      <label>Amendment ID:
+        <input type="text" id="disagree-amendment-id" placeholder="AMEND-XXXXXXXX-XXXXXXXX" />
+      </label>
+      <label>Your statement of disagreement:
+        <textarea id="disagree-statement" rows="4" placeholder="Explain why you disagree with the denial of your amendment request"></textarea>
+      </label>
+      <button id="disagree-submit-btn" class="pa-action" style="margin-top:8px;">Submit Disagreement</button>
+      <div id="disagree-status" class="pa-status"></div>
+    </div>
   </div>
 
   <div id="auth-timers" onclick="toggleTimers()">
@@ -1459,6 +1479,7 @@
       'phase-a-amendment-result': true,   // Phase A: amendment request response
       'phase-a-pending-amendments-result': true, // Phase A: pending amendments list
       'phase-a-review-result': true,      // Phase A: amendment review response
+      'phase-a-disagreement-result': true, // Phase A: disagreement submission response
       'phase-a-error': true,              // Phase A: error response
       'frame-handshake-challenge': true   // Frame handshake (processed before allowlist but listed for completeness)
     };
@@ -1714,7 +1735,7 @@
         'phase-a-ready': true, 'phase-a-disclosures-result': true,
         'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
         'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
-        'phase-a-review-result': true, 'phase-a-error': true };
+        'phase-a-review-result': true, 'phase-a-disagreement-result': true, 'phase-a-error': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -2383,7 +2404,8 @@
       _closeAllPanelsExcept(null);
       // Clear data-bearing elements (PHI could be in these)
       var _phaseADataEls = ['disclosure-list', 'disclosure-period', 'data-export-status',
-        'amend-status', 'amend-review-list', 'amend-record-id', 'amend-current', 'amend-proposed', 'amend-reason'];
+        'amend-status', 'amend-review-list', 'amend-record-id', 'amend-current', 'amend-proposed', 'amend-reason',
+        'disagree-amendment-id', 'disagree-statement', 'disagree-status'];
       for (var _di = 0; _di < _phaseADataEls.length; _di++) {
         var _de = document.getElementById(_phaseADataEls[_di]);
         if (_de) { if (_de.tagName === 'INPUT' || _de.tagName === 'TEXTAREA') _de.value = ''; else _de.innerHTML = ''; }
@@ -3106,7 +3128,7 @@
     // All panel toggle button IDs (for cooldown disable/enable)
     var _panelBtnIds = [
       'admin-sessions-btn', 'disclosure-accounting-btn', 'data-export-btn',
-      'amendment-request-btn', 'amendment-review-btn'
+      'amendment-request-btn', 'amendment-review-btn', 'disagreement-btn'
     ];
     var _panelCooldownTimer = null;
 
@@ -4768,6 +4790,53 @@
     });
   }
 
+  // ── Disagreement Statement Panel (#24 — §164.526(d)) ──
+  var _disagreementPanelOpen = false;
+  function _closeDisagreementPanel() {
+    document.getElementById('disagreement-panel').style.display = 'none';
+    _disagreementPanelOpen = false;
+  }
+  _registerPanel('disagreement-panel', _closeDisagreementPanel);
+
+  document.getElementById('disagreement-btn').addEventListener('click', function() {
+    if (_disagreementPanelOpen) return;
+    _closeAllPanelsExcept('disagreement-panel');
+    document.getElementById('disagreement-panel').style.display = 'flex';
+    _disagreementPanelOpen = true;
+    document.getElementById('disagree-status').textContent = '';
+  });
+  document.getElementById('disagreement-close-btn').addEventListener('click', function() {
+    _closeDisagreementPanel();
+  });
+  document.getElementById('disagree-submit-btn').addEventListener('click', function() {
+    var amendmentId = document.getElementById('disagree-amendment-id').value.trim();
+    var statement = document.getElementById('disagree-statement').value.trim();
+    var status = document.getElementById('disagree-status');
+    if (!amendmentId || !statement) {
+      status.textContent = 'Please provide both the amendment ID and your statement.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Submitting...';
+    status.style.color = '#aaa';
+    _sendPhaseA({
+      type: 'phase-a-submit-disagreement', token: _getToken(),
+      amendmentId: amendmentId, statement: statement
+    });
+  });
+  function _handleDisagreementResult(result) {
+    var status = document.getElementById('disagree-status');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || 'Failed to submit disagreement.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = result.message;
+    status.style.color = '#66bb6a';
+    document.getElementById('disagree-amendment-id').value = '';
+    document.getElementById('disagree-statement').value = '';
+  }
+
   // ── postMessage Response Router ──
   window.addEventListener('message', function(event) {
     var data = event.data;
@@ -4790,6 +4859,9 @@
         break;
       case 'phase-a-pending-amendments-result':
         _renderPendingAmendments(data.amendments || []);
+        break;
+      case 'phase-a-disagreement-result':
+        _handleDisagreementResult(data.result);
         break;
     }
   });
