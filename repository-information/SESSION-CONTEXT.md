@@ -4,6 +4,42 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-23 08:21:09 PM EST
+**Repo version:** v06.42r
+
+### What was done
+Fixed several bugs and added UI improvements across 5 pushes (v06.38r–v06.42r):
+
+- **v06.38r** — Removed the `seedSampleData` doGet endpoint from testauth1.gs after successfully seeding test data. The endpoint was gated by the admin secret but was no longer needed — closed the temporary backdoor
+- **v06.39r** — Fixed Disclosure Accounting panel stuck on "Loading..." — root cause was `google.script.run` silently dropping return values containing native JavaScript `Date` objects. Google Sheets `getValues()` returns `Date` objects for date-formatted cells. Fixed by converting all date fields to ISO strings in `getDisclosureAccounting`, `getPendingAmendments`, `getAmendmentHistory`, and `getIndividualData`
+- **v06.40r** — Added panel mutual exclusion — only one nav panel (Sessions, Disclosures, My Data, Correction, Amendments) can be open at a time. Opening one closes any other. Added 5-second cooldown. Implemented via shared `_panelRegistry` and `_closeAllPanelsExcept()` at top-level scope, accessible to both admin sessions handler and Phase A IIFE
+- **v06.41r** — Enhanced cooldown to visually disable other nav buttons (dimmed opacity, not-allowed cursor, disabled attribute) during the cooldown window
+- **v06.42r** — Panel buttons no longer toggle-close their own panel (closing only via X button or opening a different panel). Cooldown reduced from 5s to 1s. All buttons disabled during cooldown
+
+### Key decisions made
+- **Date serialization in GAS** — `google.script.run` cannot serialize native `Date` objects. This is a GAS platform quirk. All date fields from spreadsheet `getValues()` must be converted to strings (`.toISOString()`) before returning from any function called via `google.script.run`
+- **Panel manager architecture** — shared panel manager lives at top-level script scope (not inside the Phase A IIFE) so both the admin sessions handler and Phase A panels can use it. Uses a registry pattern: `_registerPanel(id, closeHandler)` + `_closeAllPanelsExcept(id)`
+- **Panel UX** — buttons only open panels (no toggle-close). Closing is via X button or switching panels. 1-second cooldown with visual disabled state on all buttons
+
+### Where we left off
+- All Phase A panels are functional: Disclosures loads data, Amendments panel works
+- Panel mutual exclusion and cooldown are in place
+- The seeded test data (5 disclosures, 3 amendments) is in the spreadsheet
+- GAS v01.98g deployed with Date serialization fixes
+
+### Active context
+- Branch: `claude/fix-data-download-error-ppa8e`
+- Repo version: v06.42r
+- testauth1.html: v02.85w, testauth1.gs: v01.98g
+- applicationportal.html: v01.29w, applicationportal.gs: v01.08g
+- globalacl.html: v01.25w, globalacl.gs: v01.24g
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-23 05:58:32 PM EST
 **Repo version:** v06.34r
 
@@ -15,48 +51,9 @@ HIPAA Phase A implementation for testauth1 across 8 pushes (v06.28r–v06.34r):
 - **v06.33r** — Fixed Phase A panels persisting after signout — added cleanup to `showAuthWall()` that hides panels, clears PHI data content, and destroys Phase A iframe (`about:blank`)
 - **v06.34r** — Fixed Phase A panels overlapping the "Signing out..." animation — root cause was z-index layering (panels at 10010 vs signing-out-wall at 10002). Added immediate overlay cleanup at the start of `performSignOut()` before the signing-out wall is shown. Two-layer defense: immediate visual hiding in `performSignOut()`, then thorough PHI data scrubbing in `showAuthWall()`
 
-### Key decisions made
-- **Phase A iframe approach changed** — originally planned a separate Phase A iframe, but switched to routing through the existing authenticated GAS iframe via postMessage (the GAS iframe already has the session token and sheet access)
-- **Two-layer signout cleanup** — `performSignOut()` immediately hides all high-z-index overlays (visual), then `showAuthWall()` later clears PHI data content and destroys iframes (security/HIPAA)
-- **Panel IDs**: `disclosure-panel`, `data-export-panel`, `amendment-panel`, `amendment-review-panel`
-- **State variables**: `_phaseAIframeReady`, `_phaseAIframeSource`, `_phaseAPendingAction`
-- **z-index hierarchy**: signing-out-wall (10002) < Phase A panels / admin panel (10010) — panels must be hidden before signing-out-wall is shown
-
 ### Where we left off
-- Phase A UI panels are implemented and connected to the signout cleanup flow
-- The GAS-side handlers for Phase A actions still need to be implemented in testauth1.gs (the postMessage bridge sends actions but GAS doesn't process them yet)
-- Follow the implementation guide at `repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` for GAS-side implementation
-- User confirmed: panels close correctly after signout is complete (v06.33r fix) and during the signing-out animation (v06.34r fix)
-
-### Active context
-- Branch: `claude/hipaa-phase-a-guide-imHxw`
-- Repo version: v06.34r
-- testauth1.html: v02.80w, testauth1.gs: v01.93g
-- applicationportal.html: v01.29w, applicationportal.gs: v01.08g
-- globalacl.html: v01.25w, globalacl.gs: v01.24g
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-- Key HIPAA documents:
-  - `repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` — original assessment (2026-03-19)
-  - `repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` — follow-up (2026-03-23)
-  - `repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` — Phase A implementation guide (2026-03-23)
-  - `repository-information/HIPAA-CODING-REQUIREMENTS.md` — 40-item regulatory checklist
-
-## Previous Sessions
-
-**Date:** 2026-03-23 01:14:56 PM EST
-**Repo version:** v06.27r
-
-### What was done
-HIPAA compliance documentation for testauth1 across 2 pushes (v06.26r–v06.27r):
-
-- **v06.26r** — Created `HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` — follow-up compliance report documenting all security improvements between v01.56g/v02.35w and v01.91g/v02.74w
-- **v06.27r** — Created `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` (1,799 lines) — comprehensive implementation-ready reference document for Privacy Rule compliance Phase A
-
-### Where we left off
-- Both HIPAA documents created, committed, and pushed
-- Phase A guide ready to be used for actual implementation
+- Phase A UI panels implemented and connected to signout cleanup flow
+- GAS-side handlers for Phase A actions implemented in testauth1.gs
+- User confirmed panels close correctly after signout
 
 Developed by: ShadowAISolutions
