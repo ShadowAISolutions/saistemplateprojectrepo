@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v06.42r] — 2026-03-23 08:05:48 PM EST
+
+> **Prompt:** "after one is clicked, clicking it again should not close it, that should be left to the x button or clicking on a different one. also lower the timeout to 1 second"
+
+### Changed
+- Panel buttons no longer toggle-close their own panel — use the X button or open a different panel to close
+- Panel cooldown reduced from 5 seconds to 1 second
+- All buttons are now disabled during cooldown (including the active panel's button, since it no longer toggles)
+
+#### `testauth1.html` — v02.85w
+##### Changed
+- Panel buttons now only open — closing is done via the X button or by switching panels
+- Cooldown reduced to 1 second
 
 ## [v06.41r] — 2026-03-23 07:55:08 PM EST
 
