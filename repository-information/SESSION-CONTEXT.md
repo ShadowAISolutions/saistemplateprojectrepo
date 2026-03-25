@@ -4,6 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-25 02:30:56 PM EST
+**Repo version:** v06.53r
+
+### What was done
+- **v06.50r** — Converted RND Live Data from REST API chat/messaging app to live real-time spreadsheet data viewer using Google Visualization API. Replaced entire GAS PROJECT SECTION with presence-only functions (writePresence, getActiveUsers). Replaced HTML PROJECT SECTION with dark-themed dual-view data viewer (Table View with sortable columns + Dashboard View with metric cards). Added connection status indicator, user presence tracking, config hint overlay, cell-level change detection with green flash animation. Architecture: zero GAS execution for data reads (client-side Visualization API), GAS only for presence writes via iframe heartbeat
+- **v06.51r** — Fixed CSP `script-src` — added `https://www.google.com` (Google Charts dynamically loads visualization library from this domain)
+- **v06.52r** — Fixed CSP `style-src` — added `https://www.gstatic.com` (Google Charts loads CSS during initialization; blocking it caused `google.charts.load()` to fail silently). Also added `font-src`, and `https://www.shadowaisolutions.com` to `img-src`
+- **v06.53r** — Fixed CSP `connect-src` — added `https://accounts.google.com` and `https://www.google.com` (Visualization Query XHR redirects through Google's auth endpoint)
+
+### Where we left off
+- All changes committed and merged to main
+- RND Live Data page is **working** — confirmed by user after publishing the spreadsheet to web
+- User asked if it can work without "Anyone with the link" sharing — answered no, the client-side Visualization API requires public access. Alternatives discussed: GAS proxy (costs GAS executions), Sheets API v4 with API key (requires GCP setup), hybrid cache approach
+- The page requires the Google Spreadsheet to be: (1) Published to web, AND (2) Shared as "Anyone with the link can view"
+
+### Key decisions made
+- Used `google.visualization.Query` class (JSONP internally) instead of raw `fetch()` — bypasses CORS on the gviz endpoint
+- CSP required three rounds of fixes — Google Charts/Visualization API touches `script-src`, `style-src`, `connect-src`, `font-src` across multiple Google domains (gstatic.com, google.com, docs.google.com, accounts.google.com)
+- Client-side Visualization API approach requires public spreadsheet access — this is an inherent tradeoff of "zero GAS execution for reads"
+- Presence tracking uses a hidden `_Presence` sheet (auto-created, hidden) with GAS iframe heartbeat every 30s
+
+### Active context
+- Branch: `claude/research-live-data-viewer-IkJ7m`
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-25 12:14:00 PM EST
 **Repo version:** v06.49r
 
@@ -15,34 +45,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### Where we left off
 - All changes committed and merged to main
-- RND Live Data project is fully set up and deployed — frontend at `rndlivedata.html`, backend at `rndlivedata.gs`
-- The GAS script needs to be manually deployed as a web app in Google Apps Script editor (Execute as: Me, Anyone can access), and the GITHUB_TOKEN script property needs to be set for self-update to work
-
-### Key decisions made
-- Used event-driven sync (zero polling) architecture — server calls only on page load, submit, tab switch, or manual sync
-- POST uses `Content-Type: text/plain` to avoid CORS preflight
-- GAS iframe hidden (1x1px offscreen) rather than removed — keeps template version polling alive
-- PROJECT OVERRIDE markers on doGet (added `e` parameter, action routing) and doPost (JSON body parsing after deploy handler) to coexist with template behavior
-
-### Active context
-- Branch: `claude/setup-gas-project-8s05v`
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-25 11:27:00 AM EST
-**Reconstructed:** Auto-recovered from CHANGELOG (original session did not save context)
-**Repo version:** v06.45r
-
-### What was done
-- Added disagreement submission form UI — completing all 9/9 Phase A HIPAA UI components (v06.43r)
-- Synced template improvements to auth pages — panel overlay persistence fix during sign-out, GAS adminSignOut error handling, cache variable naming, panel registry infrastructure, secure nonce endpoint (v06.44r)
-- Added secure nonce endpoint to globalacl.gs and applicationportal.gs, added setAdminSecret handler to globalacl.gs, fixed nonce TTL (v06.45r)
-
-### Where we left off
-All changes committed and merged to main
 
 Developed by: ShadowAISolutions
