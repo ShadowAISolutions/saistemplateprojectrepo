@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-25 09:24:15 AM EST` · Repo version: `v06.45r`
+Last updated: `2026-03-25 11:32:41 AM EST` · Repo version: `v06.46r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -49,6 +49,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/applicationportal.html">applicationportal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/applicationportal.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Applicationportal/applicationportal.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/applicationportalhtml.changelog.md">v01.30w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/applicationportalgs.changelog.md">v01.10g</a> | [template] Application Portal page
 │   │
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/rndlivedata.html">rndlivedata.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/rndlivedata.html">🌐</a>🟢 · ◽ · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Rndlivedata/rndlivedata.gs">⛽</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/rndlivedata-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/rndlivedatahtml.changelog.md">v01.00w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/rndlivedatags.changelog.md">v01.00g</a> | [template] RND Live Data page
+│   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>
 │   │
@@ -68,13 +70,15 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/testauth1html.version.txt">testauth1html.version.txt</a>          — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/globalaclhtml.version.txt">globalaclhtml.version.txt</a>          — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/open-allhtml.version.txt">open-allhtml.version.txt</a>           — [template]
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/applicationportalhtml.version.txt">applicationportalhtml.version.txt</a>          — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/applicationportalhtml.version.txt">applicationportalhtml.version.txt</a>          — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/rndlivedatahtml.version.txt">rndlivedatahtml.version.txt</a>          — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-versions">gs-versions/</a>             — [template] GAS version files for GAS version pill polling
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/indexgs.version.txt">indexgs.version.txt</a>            — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testenvironmentgs.version.txt">testenvironmentgs.version.txt</a>      — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testauth1gs.version.txt">testauth1gs.version.txt</a>            — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/globalaclgs.version.txt">globalaclgs.version.txt</a>            — [template]
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/applicationportalgs.version.txt">applicationportalgs.version.txt</a>            — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/applicationportalgs.version.txt">applicationportalgs.version.txt</a>            — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/rndlivedatags.version.txt">rndlivedatags.version.txt</a>            — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-changelogs">html-changelogs/</a>         — [template] HTML changelogs (source of truth + deployed)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">indexhtml.changelog.md</a>                 — [template] Homepage changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog-archive.md">indexhtml.changelog-archive.md</a>         — [template] Older sections (rotated)
@@ -89,7 +93,9 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/open-allhtml.changelog.md">open-allhtml.changelog.md</a>              — [template] Open All page changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/open-allhtml.changelog-archive.md">open-allhtml.changelog-archive.md</a>      — [template] Older sections (rotated)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/applicationportalhtml.changelog.md">applicationportalhtml.changelog.md</a>             — [template] Applicationportal page changelog
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/applicationportalhtml.changelog-archive.md">applicationportalhtml.changelog-archive.md</a>     — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/applicationportalhtml.changelog-archive.md">applicationportalhtml.changelog-archive.md</a>     — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/rndlivedatahtml.changelog.md">rndlivedatahtml.changelog.md</a>             — [template] Rndlivedata page changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/rndlivedatahtml.changelog-archive.md">rndlivedatahtml.changelog-archive.md</a>     — [template] Older sections (rotated)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-changelogs">gs-changelogs/</a>           — [template] GAS changelogs (source of truth + deployed)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog.md">indexgs.changelog.md</a>                   — [template] Index GAS changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog-archive.md">indexgs.changelog-archive.md</a>           — [template] Older sections (rotated)
@@ -100,7 +106,9 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog.md">globalaclgs.changelog.md</a>               — [template] Globalacl GAS changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog-archive.md">globalaclgs.changelog-archive.md</a>       — [template] Older sections (rotated)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/applicationportalgs.changelog.md">applicationportalgs.changelog.md</a>               — [template] Applicationportal GAS changelog
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/applicationportalgs.changelog-archive.md">applicationportalgs.changelog-archive.md</a>       — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/applicationportalgs.changelog-archive.md">applicationportalgs.changelog-archive.md</a>       — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/rndlivedatags.changelog.md">rndlivedatags.changelog.md</a>               — [template] Rndlivedata GAS changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/rndlivedatags.changelog-archive.md">rndlivedatags.changelog-archive.md</a>       — [template] Older sections (rotated)
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/sounds">sounds/</a>                 — [template] Audio feedback files
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Website_Ready_Voice_1.mp3">Website_Ready_Voice_1.mp3</a>   — [template] "Website Ready" splash sound
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/sounds/Code_Ready_Voice_1.mp3">Code_Ready_Voice_1.mp3</a>      — [template] "Code Ready" splash sound
@@ -116,9 +124,12 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Testauth1">Testauth1/</a>             — [template] GAS for live-site-pages/testauth1.html
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">testauth1.gs</a>              — [template] Self-updating GAS web app (auth)
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.config.json">testauth1.config.json</a>     — [template] Project config (source of truth)
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Applicationportal">Applicationportal/</a>     — [template] GAS for live-site-pages/applicationportal.html
-│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Applicationportal/applicationportal.gs">applicationportal.gs</a>              — [template] Self-updating GAS web app (auth)
-│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Applicationportal/applicationportal.config.json">applicationportal.config.json</a>     — [template] Project config (source of truth)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Applicationportal">Applicationportal/</a>     — [template] GAS for live-site-pages/applicationportal.html
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Applicationportal/applicationportal.gs">applicationportal.gs</a>              — [template] Self-updating GAS web app (auth)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Applicationportal/applicationportal.config.json">applicationportal.config.json</a>     — [template] Project config (source of truth)
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Rndlivedata">Rndlivedata/</a>           — [template] GAS for live-site-pages/rndlivedata.html
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Rndlivedata/rndlivedata.gs">rndlivedata.gs</a>                — [template] Self-updating GAS web app
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Rndlivedata/rndlivedata.config.json">rndlivedata.config.json</a>       — [template] Project config (source of truth)
 │
 <b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]
@@ -152,7 +163,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/index-diagram.md">index-diagram.md</a>              — [template] Homepage component interaction
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testenvironment-diagram.md">testenvironment-diagram.md</a>    — [template] Testenvironment page GAS integration sequence
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testauth1-diagram.md">testauth1-diagram.md</a>         — [template] Testauth1 page GAS integration sequence (auth)
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/applicationportal-diagram.md">applicationportal-diagram.md</a>  — [template] Application Portal page GAS integration sequence (auth)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/applicationportal-diagram.md">applicationportal-diagram.md</a>  — [template] Application Portal page GAS integration sequence (auth)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/rndlivedata-diagram.md">rndlivedata-diagram.md</a>       — [template] RND Live Data page GAS integration sequence
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md">CHANGELOG-archive.md</a>    — [template] Older changelog sections (rotated from CHANGELOG.md)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md">CODING-GUIDELINES.md</a>    — [template] Domain-specific coding knowledge

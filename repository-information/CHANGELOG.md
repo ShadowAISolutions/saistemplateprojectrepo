@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v06.46r] — 2026-03-25 11:32:41 AM EST
+
+> **Prompt:** "Set up a new GAS project. Run the script, then commit and push.
+bash scripts/setup-gas-project.sh <<'CONFIG'
+{
+  "PROJECT_ENVIRONMENT_NAME": "rndlivedata",
+  "TITLE": "RND Live Data",
+  "DEPLOYMENT_ID": "AKfycbxnhplqv-s116CtveTF-8Efdpd_MWA9RZwdJ0th4-4QK_1cRpngS0CBJemY4Znb6ND7",
+  "SHEET_NAME": "Live_Sheet",
+  "SOUND_FILE_ID": "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN",
+  "SPLASH_LOGO_URL": "https://www.shadowaisolutions.com/SAIS_Logo.png",
+  "INCLUDE_TEST": false,
+  "INCLUDE_AUTH": false
+}
+CONFIG"
+
+### Added
+- New GAS project: RND Live Data (`rndlivedata`) — noauth page with GAS backend, deployed via auto-merge workflow webhook
+- 10 new files: HTML page, GAS script, config, version files, changelogs, archives, per-environment diagram
+- Workflow deploy step for Rndlivedata GAS self-update webhook
 
 ## [v06.45r] — 2026-03-25 09:24:15 AM EST
 

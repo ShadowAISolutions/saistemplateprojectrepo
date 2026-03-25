@@ -49,6 +49,7 @@ graph TB
             GLOBALACL_PAGE["[template] globalacl.html\n(Global ACL)"]
             OPENALL_PAGE["[template] open-all.html\n(Open All Projects)"]
             APPLICATIONPORTAL_PAGE["[template] applicationportal.html\n(Application Portal)"]
+            RNDLIVEDATA_PAGE["[template] rndlivedata.html\n(RND Live Data)"]
         end
 
         subgraph "Google Apps Scripts [template]"
@@ -93,11 +94,13 @@ graph TB
             CSP_HASH["[template] scripts/compute-csp-hash.sh\n(CSP SHA-256 hash computation)"]
             GAS_GLOBALACL["[template] globalacl.gs"]
             GAS_APPLICATIONPORTAL["[template] applicationportal.gs"]
+            GAS_RNDLIVEDATA["[template] rndlivedata.gs"]
             INIT_SCRIPT -.->|"auto-detects org/repo\nreplaces 22 files"| CLAUDE_MD
         end
     end
 
     TPL_NOAUTH -.->|"copy to create\nnew pages"| INDEX
+    TPL_NOAUTH -.->|"copy to create\nnew pages"| RNDLIVEDATA_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTH1_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| GLOBALACL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| APPLICATIONPORTAL_PAGE
@@ -106,6 +109,7 @@ graph TB
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_GLOBALACL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_APPLICATIONPORTAL
+    GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_RNDLIVEDATA
     INDEX -.->|"embeds via iframe"| GAS_INDEX
     TEST_PAGE -.->|"embeds via iframe"| GAS_TEST
     TESTAUTH1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTH1
@@ -116,11 +120,13 @@ graph TB
     LIVE -.->|"serves"| GLOBALACL_PAGE
     LIVE -.->|"serves"| OPENALL_PAGE
     LIVE -.->|"serves"| APPLICATIONPORTAL_PAGE
+    LIVE -.->|"serves"| RNDLIVEDATA_PAGE
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INDEX
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TEST
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
     GAS_DEPLOY -.->|"triggers self-update"| GAS_GLOBALACL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_APPLICATIONPORTAL
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_RNDLIVEDATA
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| INDEX
@@ -129,6 +135,7 @@ graph TB
     HTML_VERS -.->|"version polling"| TESTAUTH1_PAGE
     HTML_VERS -.->|"version polling"| GLOBALACL_PAGE
     HTML_VERS -.->|"version polling"| APPLICATIONPORTAL_PAGE
+    HTML_VERS -.->|"version polling"| RNDLIVEDATA_PAGE
 
     style DEV fill:#4a90d9,color:#fff
     style LIVE fill:#66bb6a,color:#fff
@@ -344,6 +351,7 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
 | Global ACL | [`repository-information/diagrams/globalacl-diagram.md`](diagrams/globalacl-diagram.md) |
 | Application Portal | [`repository-information/diagrams/applicationportal-diagram.md`](diagrams/applicationportal-diagram.md) |
+| RND Live Data | [`repository-information/diagrams/rndlivedata-diagram.md`](diagrams/rndlivedata-diagram.md) |
 
 ## 4. Git Graph — Branching Strategy
 
@@ -537,6 +545,7 @@ classDiagram
     HTMLPage "1" --> "0..1" GASScript : embeds via iframe
     GLOBALACL_PAGE -.->|"embeds via iframe"| GAS_GLOBALACL
     APPLICATIONPORTAL_PAGE -.->|"embeds via iframe"| GAS_APPLICATIONPORTAL
+    RNDLIVEDATA_PAGE -.->|"embeds via iframe"| GAS_RNDLIVEDATA
     HTMLPage "1" --> "1" Changelog : html changelog
     HTMLPage "1" --> "1" EnvironmentDiagram : internals documented in
     GASScript "1" --> "1" VersionFile : gs.version.txt

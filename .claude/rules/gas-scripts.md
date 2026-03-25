@@ -106,6 +106,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | Testauth1 | `googleAppsScripts/Testauth1/testauth1.gs` | `googleAppsScripts/Testauth1/testauth1.config.json` | `live-site-pages/testauth1.html` |
 | Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 | Applicationportal | `googleAppsScripts/Applicationportal/applicationportal.gs` | `googleAppsScripts/Applicationportal/applicationportal.config.json` | `live-site-pages/applicationportal.html` |
+| Rndlivedata | `googleAppsScripts/Rndlivedata/rndlivedata.gs` | `googleAppsScripts/Rndlivedata/rndlivedata.config.json` | `live-site-pages/rndlivedata.html` |
 
 ## GAS Architecture Overview
 
