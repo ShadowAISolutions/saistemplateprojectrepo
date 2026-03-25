@@ -1,4 +1,4 @@
-var VERSION = "v01.04g";
+var VERSION = "v01.05g";
 var TITLE = "RND Live Data";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -14,15 +14,16 @@ var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrep
 // PROJECT START
 // ══════════════
 
-// PROJECT OVERRIDE: Data reads via CacheService — refreshed by time trigger.
-// Spreadsheet stays private. writePresence/getActiveUsers piggyback cached data
-// on existing calls so viewers incur zero additional GAS quota for data reads.
+// PROJECT OVERRIDE: Data reads via CacheService — refreshed by onEdit trigger
+// and self-healing reads. Spreadsheet stays private. writePresence/getActiveUsers
+// piggyback cached data on existing calls. Heartbeat reads re-up the cache TTL
+// (testauth1 pattern) so data never expires while viewers are present.
+// No time-driven trigger required — zero quota when nobody is viewing or editing.
 
 /**
  * refreshDataCache() — reads the private spreadsheet and stores data in CacheService.
- * Called by a time-driven trigger (every 1 minute). This is the ONLY function that
- * hits the Spreadsheet API for live data — all viewer-facing calls read from cache.
- * Set up trigger: Apps Script editor → Triggers → Add → refreshDataCache → Time-driven → Every minute.
+ * Called by onEdit() when the data sheet is edited, and as a self-repair fallback
+ * when getCachedData() finds an empty cache. No time-driven trigger needed.
  */
 function refreshDataCache() {
   try {
@@ -34,19 +35,51 @@ function refreshDataCache() {
     var rows = data.slice(1);
     var result = JSON.stringify({ headers: headers, rows: rows, ts: Date.now() });
     // 100KB CacheService limit per key — large sheets may need chunking in the future
-    CacheService.getScriptCache().put('livedata_' + SHEET_NAME, result, 90);
+    // 21600s (6h) TTL — heartbeat reads re-up this TTL so it never expires while viewers
+    // are present. The long TTL is a safety net for gaps between the last viewer leaving
+    // and the next one arriving.
+    CacheService.getScriptCache().put('livedata_' + SHEET_NAME, result, 21600);
   } catch (e) {
     Logger.log('refreshDataCache error: ' + e.message);
   }
 }
 
 /**
- * getCachedData() — reads live data from CacheService (no spreadsheet hit).
- * Returns parsed object { headers, rows, ts } or null if cache is empty.
+ * getCachedData() — reads live data from CacheService with self-healing.
+ * On cache hit: re-ups the TTL (testauth1 heartbeat pattern) so data stays alive
+ * as long as viewers are present. On cache miss: self-repairs by calling
+ * refreshDataCache() to read the spreadsheet and warm the cache.
+ * Returns parsed object { headers, rows, ts } or null if spreadsheet is unavailable.
  */
 function getCachedData() {
-  var cached = CacheService.getScriptCache().get('livedata_' + SHEET_NAME);
+  var cache = CacheService.getScriptCache();
+  var key = 'livedata_' + SHEET_NAME;
+  var cached = cache.get(key);
+  if (cached) {
+    // Re-up TTL on every read — cache never expires while viewers are present
+    cache.put(key, cached, 21600);
+    return JSON.parse(cached);
+  }
+  // Self-repair: cache miss → read spreadsheet, warm cache
+  refreshDataCache();
+  cached = cache.get(key);
   return cached ? JSON.parse(cached) : null;
+}
+
+/**
+ * onEdit(e) — refreshes CacheService immediately when the data sheet is edited.
+ * Simple trigger — fires automatically for manual edits, no trigger setup needed.
+ * Only refreshes when the edited sheet matches SHEET_NAME.
+ */
+function onEdit(e) {
+  try {
+    if (!e || !e.range) return;
+    if (e.range.getSheet().getName() === SHEET_NAME) {
+      refreshDataCache();
+    }
+  } catch (err) {
+    Logger.log('onEdit cache refresh error: ' + err.message);
+  }
 }
 
 /**

@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [rndlivedatags.changelog-archive.md](rndlivedatags.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05g] — 2026-03-25 04:36:47 PM EST — v06.55r
+
+### Added
+- Data cache now refreshes instantly when the spreadsheet is edited — no more waiting up to 60 seconds
+
+### Changed
+- Cache stays alive as long as viewers are present — data no longer disappears during quiet periods
+- No time-driven trigger setup needed — everything is automatic
 
 ## [v01.04g] — 2026-03-25 02:58:00 PM EST — v06.54r
 

@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v06.55r] — 2026-03-25 04:36:47 PM EST
+
+> **Prompt:** "yes implement this"
+
+### Changed
+- Replaced time-driven trigger with edit-triggered + self-healing cache for rndlivedata
+- Cache TTL extended to 6 hours with heartbeat-based TTL re-up (testauth1 pattern)
+- Zero GAS quota when nobody is viewing or editing — no time-driven trigger needed
+
+#### `rndlivedata.gs` — v01.05g
+##### Added
+- `onEdit(e)` simple trigger — refreshes cache instantly when the data sheet is edited
+##### Changed
+- `getCachedData()` now re-ups cache TTL on every read (self-healing heartbeat pattern)
+- `getCachedData()` self-repairs on cache miss by calling `refreshDataCache()` as fallback
+- Cache TTL increased from 90 seconds to 6 hours (21,600s)
+
+#### `rndlivedata.html` — v01.06w (no change)
+##### Changed
+- Setup instructions updated — time-driven trigger no longer needed
 
 ## [v06.54r] — 2026-03-25 02:58:00 PM EST
 
