@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
 
 ## [Unreleased]
+
+## [v01.09g] — 2026-03-25 09:07:53 AM EST — v06.44r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.08g] — 2026-03-23 07:56:51 AM EST — v06.15r
 

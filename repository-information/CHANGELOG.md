@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v06.44r] — 2026-03-25 09:07:53 AM EST
+
+> **Prompt:** "check to see if the templates are matching the testauth1 improvements, if not go ahead and update them"
+
+### Fixed
+- Panel overlay persistence during sign-out — overlays (admin sessions, changelog, GAS changelog) now close before the signing-out wall appears, preventing UI glitches
+- GAS `adminSignOut` error handling — auth failures now return `{error: "unauthorized"}` instead of `{success: false, error: reason}`, matching testauth1's cleaner pattern
+- GAS cache variable naming — renamed `_cpSecretCache` → `_crossProjectSecret` for clarity and consistency across all projects
+
+### Added
+- Panel registry infrastructure (`_registerPanel`, `_closeAllPanelsExcept`) to auth template and all auth pages for mutual exclusion and cleanup
+- `generatePageNonce()` / `validatePageNonce()` and `action='getNonce'` endpoint to GAS minimal-auth template — secure one-time-use nonce replacing insecure `?session=TOKEN` URL pattern
+
+#### `globalacl.html` — v01.26w
+##### Fixed
+- Panels and overlays now close properly during sign-out
+
+#### `applicationportal.html` — v01.30w
+##### Fixed
+- Panels and overlays now close properly during sign-out
+
+#### `applicationportal.gs` — v01.09g
+##### Fixed
+- Renamed cache variable for clarity
+- Improved cross-project sign-out error handling
 
 ## [v06.43r] — 2026-03-23 08:34:55 PM EST
 

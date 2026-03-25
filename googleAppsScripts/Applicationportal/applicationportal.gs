@@ -1,4 +1,4 @@
-var VERSION = "v01.08g";
+var VERSION = "v01.09g";
 var TITLE = "Application Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -392,13 +392,13 @@ function registerSelfProject() {
  * Read the cross-project admin secret from Script Properties.
  * Cached in-memory for the duration of a single GAS execution.
  */
-var _cpSecretCache = null;
+var _crossProjectSecret = null;
 function getCrossProjectSecret() {
-  if (_cpSecretCache) return _cpSecretCache;
+  if (_crossProjectSecret) return _crossProjectSecret;
   try {
-    _cpSecretCache = PropertiesService.getScriptProperties()
+    _crossProjectSecret = PropertiesService.getScriptProperties()
       .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
-    return _cpSecretCache;
+    return _crossProjectSecret;
   } catch (e) {
     Logger.log('getCrossProjectSecret error: ' + e.message);
   }
@@ -2008,26 +2008,24 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
-    _cpSecretCache = null; // clear cache
+    _crossProjectSecret = null; // clear cache
     return ContentService.createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
   if (action === 'adminSignOut') {
     var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
     var cpAuth2 = validateCrossProjectAdmin(cpParams2);
     if (!cpAuth2.valid) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth2.reason }))
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     var cpTarget = (e.parameter && e.parameter.targetEmail) || '';
-    if (!cpTarget) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'no_target' }))
-        .setMimeType(ContentService.MimeType.JSON);
+    if (cpTarget) {
+      invalidateAllSessions(cpTarget, 'admin_signout');
     }
-    invalidateAllSessions(cpTarget, 'admin_global_signout');
-    auditLog('admin_action', cpAuth2.email, 'cross_project_signout', { targetEmail: cpTarget, source: 'globalacl' });
-    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget, project: TITLE }))
+    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 

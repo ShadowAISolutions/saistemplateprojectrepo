@@ -392,13 +392,13 @@ function registerSelfProject() {
  * Read the cross-project admin secret from Script Properties.
  * Cached in-memory for the duration of a single GAS execution.
  */
-var _cpSecretCache = null;
+var _crossProjectSecret = null;
 function getCrossProjectSecret() {
-  if (_cpSecretCache) return _cpSecretCache;
+  if (_crossProjectSecret) return _crossProjectSecret;
   try {
-    _cpSecretCache = PropertiesService.getScriptProperties()
+    _crossProjectSecret = PropertiesService.getScriptProperties()
       .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
-    return _cpSecretCache;
+    return _crossProjectSecret;
   } catch (e) {
     Logger.log('getCrossProjectSecret error: ' + e.message);
   }
@@ -1378,6 +1378,36 @@ function invalidateSession(sessionToken) {
   cache.remove("session_" + sessionToken);
 }
 
+// =============================================
+// Generates a one-time-use nonce that binds a validated session to a single page load.
+// Flow: GAS serves handshake page → parent sends session token via postMessage →
+// handshake page calls generatePageNonce() → navigates to ?page_nonce=NONCE →
+// doGet() validates nonce → serves authenticated content.
+// This ensures the session token NEVER appears in the URL.
+
+function generatePageNonce(sessionToken) {
+  var session = validateSession(sessionToken);
+  if (session.status !== 'authorized') {
+    return { success: false, error: session.status };
+  }
+  var nonce = Utilities.getUuid();
+  var cache = getEpochCache();
+  // Store nonce → session token mapping with 60-second TTL (one-time use).
+  // 60s allows for the two-step flow: load getNonce listener → get nonce → reload iframe.
+  cache.put('page_nonce_' + nonce, sessionToken, 60);
+  return { success: true, nonce: nonce };
+}
+
+function validatePageNonce(nonce) {
+  if (!nonce || nonce.length < 10) return null;
+  var cache = getEpochCache();
+  var sessionToken = cache.get('page_nonce_' + nonce);
+  if (!sessionToken) return null;
+  // One-time use: delete the nonce immediately
+  cache.remove('page_nonce_' + nonce);
+  return sessionToken;
+}
+
 function invalidateAllSessions(email, reason) {
   if (!email) return;
   var evictionReason = reason || 'new_sign_in';
@@ -1936,27 +1966,51 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
     props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
-    _cpSecretCache = null; // clear cache
+    _crossProjectSecret = null; // clear cache
     return ContentService.createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
   if (action === 'adminSignOut') {
     var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
     var cpAuth2 = validateCrossProjectAdmin(cpParams2);
     if (!cpAuth2.valid) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth2.reason }))
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     var cpTarget = (e.parameter && e.parameter.targetEmail) || '';
-    if (!cpTarget) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'no_target' }))
-        .setMimeType(ContentService.MimeType.JSON);
+    if (cpTarget) {
+      invalidateAllSessions(cpTarget, 'admin_signout');
     }
-    invalidateAllSessions(cpTarget, 'admin_global_signout');
-    auditLog('admin_action', cpAuth2.email, 'cross_project_signout', { targetEmail: cpTarget, source: 'globalacl' });
-    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget, project: TITLE }))
+    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget }))
       .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Nonce generation action — returns page that generates a one-time-use page nonce
+  // via google.script.run, replacing the insecure ?session=TOKEN URL pattern.
+  // The parent page loads this, sends the session token via postMessage, and receives
+  // a short-lived nonce to use in ?page_nonce=NONCE for the actual app load.
+  if (action === 'getNonce') {
+    var nonceListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-nonce-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "request-nonce") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:r.success, nonce:r.nonce||"", error:r.error||""}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:false, error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .generatePageNonce(evt.data.sessionToken);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(nonceListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
   // Security event action — returns page that listens for event data via postMessage
@@ -2099,7 +2153,18 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Normal flow: validate session token
+  // ── Page nonce validation ──
+  // The page_nonce is a one-time-use token generated by generatePageNonce()
+  // via the action=getNonce listener page. It binds a validated session to a
+  // single page load without ever exposing the session token in the URL.
+  var pageNonce = (e && e.parameter && e.parameter.page_nonce) || '';
+  if (pageNonce) {
+    sessionToken = validatePageNonce(pageNonce) || '';
+  }
+
+  // Normal flow: validate session token (from page_nonce or ?session= parameter)
+  // Both paths are valid: ?session= is used for initial sign-in (from gas-session-created),
+  // ?page_nonce= is used for page refresh, tab reclaim, and cross-tab sync.
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {

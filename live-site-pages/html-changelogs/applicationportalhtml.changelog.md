@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v01.30w] — 2026-03-25 09:07:53 AM EST — v06.44r
+
+### Fixed
+- Panels and overlays now close properly during sign-out, preventing UI glitches
 
 ## [v01.29w] — 2026-03-23 10:12:15 AM EST — v06.25r
 

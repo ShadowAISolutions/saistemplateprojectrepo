@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.25w">
+  <meta name="build-version" content="v01.26w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -2765,6 +2765,23 @@
     }
 
     // =============================================
+    // =============================================
+    // Panel registry — mutual exclusion and cleanup
+    // =============================================
+    var _panelRegistry = [];
+    function _registerPanel(panelId, closeHandler) {
+      _panelRegistry.push({ id: panelId, close: closeHandler });
+    }
+    // Close all panels except the one being opened (pass null to close all)
+    function _closeAllPanelsExcept(exceptPanelId) {
+      for (var i = 0; i < _panelRegistry.length; i++) {
+        if (_panelRegistry[i].id !== exceptPanelId) {
+          _panelRegistry[i].close();
+        }
+      }
+    }
+
+    // =============================================
     // AUTH — Sign Out
     // =============================================
 
@@ -2775,6 +2792,12 @@
       clearSession();
       stopCountdownTimers();
       stopHeartbeat();
+      // — Immediately close all high-z-index overlays (z-index > signing-out-wall) —
+      // These panels sit above the signing-out wall and would remain visible/interactive
+      // during the sign-out animation. Close them BEFORE showing the signing-out wall.
+      _closeAllPanelsExcept(null);
+      var gclOverlay = document.getElementById('gcl-overlay');
+      if (gclOverlay) gclOverlay.style.display = 'none';
       // Hide tab-takeover overlay if visible (sign-out takes priority)
       document.getElementById('tab-takeover-wall').style.display = 'none';
       _tabSurrendered = false;
