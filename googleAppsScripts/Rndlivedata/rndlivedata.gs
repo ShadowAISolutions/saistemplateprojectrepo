@@ -1,11 +1,11 @@
-var VERSION = "v01.01g";
+var VERSION = "v01.02g";
 var TITLE = "RND Live Data";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Rndlivedata/rndlivedata.gs";
 var DEPLOYMENT_ID = "AKfycbxnhplqv-s116CtveTF-8Efdpd_MWA9RZwdJ0th4-4QK_1cRpngS0CBJemY4Znb6ND7";
-var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";
+var SPREADSHEET_ID = "1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU";
 var SHEET_NAME = "Live_Sheet";
 var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/rndlivedata.html";

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v06.48r] — 2026-03-25 11:55:30 AM EST
+
+> **Prompt:** "the spreadsheet id wasnt swapped for the placeholder, go ahead and swap it now : 1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU"
+
+### Changed
+- Connected RND Live Data backend to its Google Sheet by replacing the placeholder Spreadsheet ID with the actual ID
+
+#### `rndlivedata.gs` — v01.02g
+##### Changed
+- Connected to actual Google Sheet for data storage
 
 ## [v06.47r] — 2026-03-25 11:43:03 AM EST
 
