@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v06.57r] — 2026-03-25 05:01:08 PM EST
+
+> **Prompt:** "update the __gas-project-creator to include this change for all scripts moving forward__"
+
+### Changed
+- Added `script.scriptapp` OAuth scope to the GAS project creator's `appsscript.json` manifest template so all new projects include the permission needed for installable triggers
+
+#### `gas-project-creator.html` — v01.28w
+##### Changed
+- Manifest template now includes the `script.scriptapp` scope for installable trigger support
 
 ## [v06.56r] — 2026-03-25 04:52:58 PM EST
 

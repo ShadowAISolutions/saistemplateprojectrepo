@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 27/50`
+`Sections: 28/50`
 
 ## [Unreleased]
+
+## [v01.28w] — 2026-03-25 05:01:08 PM EST — v06.57r
+
+### Changed
+- Setup instructions now include the permission needed for installable edit triggers
 
 ## [v01.27w] — 2026-03-25 12:04:52 PM EST — v06.49r
 
