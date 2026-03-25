@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 24/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v01.25g] — 2026-03-25 09:24:15 AM EST — v06.45r
+
+### Added
+- Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
+- Admin secret distribution endpoint — allows the Global ACL hub to push shared secrets to this project
+
+### Fixed
+- Nonce expiry window extended from 30 seconds to 60 seconds, preventing timeouts during slower connections
 
 ## [v01.24g] — 2026-03-23 07:45:16 AM EST — v06.14r
 

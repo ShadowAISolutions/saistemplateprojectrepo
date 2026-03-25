@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10g] — 2026-03-25 09:24:15 AM EST — v06.45r
+
+### Added
+- Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
 
 ## [v01.09g] — 2026-03-25 09:07:53 AM EST — v06.44r
 

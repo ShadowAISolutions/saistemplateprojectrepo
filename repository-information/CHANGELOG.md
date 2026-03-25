@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v06.45r] — 2026-03-25 09:24:15 AM EST
+
+> **Prompt:** "every feature that is in the templates should be available in the live projects, and vice versa, make sure that both the projects and the templates match exactly other than the project specific features"
+
+### Added
+- Secure nonce endpoint (`getNonce` action + `generatePageNonce()`) to globalacl.gs and applicationportal.gs — completes the secure page-load flow that replaces insecure `?session=TOKEN` URL pattern
+- `setAdminSecret` handler to globalacl.gs — enables the Global ACL hub to distribute shared admin secrets to its own GAS backend (was already present in other projects)
+
+### Fixed
+- Page nonce TTL in globalacl.gs increased from 30s to 60s, matching template and other projects — prevents timeout during the two-step nonce handshake on slower connections
+
+#### `globalacl.gs` — v01.25g
+##### Added
+- Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
+- Admin secret distribution endpoint — allows the Global ACL hub to push shared secrets to this project
+##### Fixed
+- Nonce expiry window extended from 30 seconds to 60 seconds, preventing timeouts during slower connections
+
+#### `applicationportal.gs` — v01.10g
+##### Added
+- Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
 
 ## [v06.44r] — 2026-03-25 09:07:53 AM EST
 

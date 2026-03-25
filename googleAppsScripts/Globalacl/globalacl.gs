@@ -1,4 +1,4 @@
-var VERSION = "v01.24g";
+var VERSION = "v01.25g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2265,8 +2265,9 @@ function generatePageNonce(sessionToken) {
   }
   var nonce = Utilities.getUuid();
   var cache = getEpochCache();
-  // Store nonce → session token mapping with 30-second TTL (one-time use)
-  cache.put('page_nonce_' + nonce, sessionToken, 30);
+  // Store nonce → session token mapping with 60-second TTL (one-time use).
+  // 60s allows for the two-step flow: load getNonce listener → get nonce → reload iframe.
+  cache.put('page_nonce_' + nonce, sessionToken, 60);
   return { success: true, nonce: nonce };
 }
 
@@ -2822,6 +2823,27 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Cross-project admin secret distribution — called by globalacl's distributeSecret_()
+  if (action === 'setAdminSecret') {
+    var newSecret = (e.parameter && e.parameter.newSecret) || '';
+    var oldSecret = (e.parameter && e.parameter.oldSecret) || '';
+    if (!newSecret) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'missing_secret' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var props = PropertiesService.getScriptProperties();
+    var current = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    // Accept if: no current secret (first setup) OR oldSecret matches current
+    if (current && oldSecret !== current) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
+    _crossProjectSecret = null; // clear cache
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
   if (action === 'adminSignOut') {
     var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
@@ -2871,6 +2893,32 @@ function doGet(e) {
       + '});'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(globalAdminHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+  // Nonce generation action — returns page that generates a one-time-use page nonce
+  // via google.script.run, replacing the insecure ?session=TOKEN URL pattern.
+  // The parent page loads this, sends the session token via postMessage, and receives
+  // a short-lived nonce to use in ?page_nonce=NONCE for the actual app load.
+  if (action === 'getNonce') {
+    var nonceListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-nonce-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "request-nonce") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:r.success, nonce:r.nonce||"", error:r.error||""}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:false, error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .generatePageNonce(evt.data.sessionToken);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(nonceListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
