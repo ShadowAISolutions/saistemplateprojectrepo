@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v06.51r] — 2026-03-25 02:07:29 PM EST
+
+> **Prompt:** "so how do i use this? it says connecting... and doesnt move from there"
+
+### Fixed
+- Fixed live data page stuck on "Connecting..." — CSP was blocking Google Charts from loading visualization library from `www.google.com`
+
+#### `rndlivedata.html` — v01.03w
+##### Fixed
+- Added `https://www.google.com` to Content Security Policy `script-src` directive — Google Charts dynamically loads the visualization library from this domain after the initial loader.js
 
 ## [v06.50r] — 2026-03-25 01:57:21 PM EST
 

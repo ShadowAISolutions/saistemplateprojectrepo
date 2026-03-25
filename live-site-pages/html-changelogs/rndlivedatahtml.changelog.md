@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [rndlivedatahtml.changelog-archive.md](rndlivedatahtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.03w] — 2026-03-25 02:07:29 PM EST — v06.51r
+
+### Fixed
+- Fixed page stuck on "Connecting..." — data now loads correctly from Google Sheets
 
 ## [v01.02w] — 2026-03-25 01:57:21 PM EST — v06.50r
 
