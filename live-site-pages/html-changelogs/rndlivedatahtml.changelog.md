@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [rndlivedatahtml.changelog-archive.md](rndlivedatahtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-03-25 04:52:58 PM EST — v06.56r
+
+### Changed
+- Setup instructions updated with trigger installation step
 
 ## [v01.06w] — 2026-03-25 02:58:00 PM EST — v06.54r
 

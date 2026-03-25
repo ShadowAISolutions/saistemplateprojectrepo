@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [rndlivedatags.changelog-archive.md](rndlivedatags.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06g] — 2026-03-25 04:52:58 PM EST — v06.56r
+
+### Fixed
+- Data now refreshes instantly when the spreadsheet is edited
+
+### Added
+- One-time setup step to connect the edit trigger to your spreadsheet
 
 ## [v01.05g] — 2026-03-25 04:36:47 PM EST — v06.55r
 

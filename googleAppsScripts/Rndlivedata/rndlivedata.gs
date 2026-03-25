@@ -1,4 +1,4 @@
-var VERSION = "v01.05g";
+var VERSION = "v01.06g";
 var TITLE = "RND Live Data";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -14,16 +14,16 @@ var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrep
 // PROJECT START
 // ══════════════
 
-// PROJECT OVERRIDE: Data reads via CacheService — refreshed by onEdit trigger
-// and self-healing reads. Spreadsheet stays private. writePresence/getActiveUsers
-// piggyback cached data on existing calls. Heartbeat reads re-up the cache TTL
-// (testauth1 pattern) so data never expires while viewers are present.
-// No time-driven trigger required — zero quota when nobody is viewing or editing.
+// PROJECT OVERRIDE: Data reads via CacheService — refreshed by installable onEdit
+// trigger bound to the target spreadsheet. Spreadsheet stays private.
+// writePresence/getActiveUsers piggyback cached data on existing calls. Heartbeat
+// reads re-up the cache TTL (testauth1 pattern) so data never expires while viewers
+// are present. One-time setup: run installEditTrigger() from the script editor.
 
 /**
  * refreshDataCache() — reads the private spreadsheet and stores data in CacheService.
- * Called by onEdit() when the data sheet is edited, and as a self-repair fallback
- * when getCachedData() finds an empty cache. No time-driven trigger needed.
+ * Called by the installable onEdit trigger when the data sheet is edited, and as a
+ * self-repair fallback when getCachedData() finds an empty cache.
  */
 function refreshDataCache() {
   try {
@@ -67,19 +67,44 @@ function getCachedData() {
 }
 
 /**
- * onEdit(e) — refreshes CacheService immediately when the data sheet is edited.
- * Simple trigger — fires automatically for manual edits, no trigger setup needed.
+ * onEditInstallable(e) — refreshes CacheService immediately when the data sheet is edited.
+ * Installable trigger — required because this is a standalone script (not container-bound).
+ * Simple onEdit() only works for scripts created inside the spreadsheet.
+ * One-time setup: run installEditTrigger() from the Apps Script editor.
  * Only refreshes when the edited sheet matches SHEET_NAME.
  */
-function onEdit(e) {
+function onEditInstallable(e) {
   try {
     if (!e || !e.range) return;
     if (e.range.getSheet().getName() === SHEET_NAME) {
       refreshDataCache();
     }
   } catch (err) {
-    Logger.log('onEdit cache refresh error: ' + err.message);
+    Logger.log('onEditInstallable cache refresh error: ' + err.message);
   }
+}
+
+/**
+ * installEditTrigger() — one-time setup function. Run this manually from the
+ * Apps Script editor (Run → installEditTrigger) to create an installable onEdit
+ * trigger bound to the target spreadsheet. This is needed because the script is
+ * standalone (not container-bound), so simple onEdit() triggers don't fire.
+ * Safe to run multiple times — removes existing triggers before creating a new one.
+ */
+function installEditTrigger() {
+  // Remove any existing onEditInstallable triggers to avoid duplicates
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'onEditInstallable') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+  // Create installable onEdit trigger bound to the target spreadsheet
+  ScriptApp.newTrigger('onEditInstallable')
+    .forSpreadsheet(SPREADSHEET_ID)
+    .onEdit()
+    .create();
+  Logger.log('Edit trigger installed for spreadsheet: ' + SPREADSHEET_ID);
 }
 
 /**

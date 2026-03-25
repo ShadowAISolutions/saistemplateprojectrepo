@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v06.56r] — 2026-03-25 04:52:58 PM EST
+
+> **Prompt:** "yes implement it"
+
+### Fixed
+- Fixed onEdit trigger not firing — simple triggers don't work on standalone GAS scripts; switched to installable trigger with one-time `installEditTrigger()` setup function
+
+#### `rndlivedata.gs` — v01.06g
+##### Fixed
+- Data now refreshes instantly on spreadsheet edits (installable trigger replaces non-functional simple trigger)
+##### Added
+- One-time setup function to connect the edit trigger to the spreadsheet
+
+#### `rndlivedata.html` — v01.07w
+##### Changed
+- Setup instructions updated with trigger installation step
 
 ## [v06.55r] — 2026-03-25 04:36:47 PM EST
 
