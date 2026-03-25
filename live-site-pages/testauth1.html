@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.88w">
+  <meta name="build-version" content="v02.89w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -2969,17 +2969,20 @@
           if (nextTickIn < 0) nextTickIn = 0;
           var isActive = _lastHeartbeatActivity > (_lastHeartbeatTick - HTML_CONFIG.HEARTBEAT_INTERVAL);
           if (_heartbeatInFlight) {
-            heartbeatEl.textContent = 'sending...';
+            heartbeatEl.textContent = '\u25B6 sending...';
             heartbeatEl.className = 'timer-value warn';
+          } else if (_idleDataInFlight) {
+            heartbeatEl.textContent = '\u25C7 polling data...';
+            heartbeatEl.className = 'timer-value';
           } else if (_heartbeatIdle) {
-            heartbeatEl.textContent = formatCountdown(nextTickIn) + ' (idle)';
-            heartbeatEl.className = 'timer-value warn';
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + ' \u25C7 idle';
+            heartbeatEl.className = 'timer-value';
           } else {
             // isActive already tells us if the next tick will fire (activity within
             // the current interval window = what the heartbeat interval checks).
-            var indicator = isActive ? ' \u25B6 ready' : ' (idle)';
+            var indicator = isActive ? ' \u25B6 ready' : ' \u25C7 idle';
             heartbeatEl.textContent = formatCountdown(nextTickIn) + indicator;
-            heartbeatEl.className = isActive ? 'timer-value' : 'timer-value warn';
+            heartbeatEl.className = isActive ? 'timer-value' : 'timer-value';
           }
         } else if (remaining <= 0 && heartbeatEl) {
           heartbeatEl.textContent = 'expired';
@@ -3014,6 +3017,8 @@
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatInFlightTimer = null;  // timeout to auto-clear _heartbeatInFlight if response never arrives
     var _heartbeatIdle = false;      // true when last tick found no activity
+    var _idleDataPollInterval = null;  // Option C: lightweight data-only poll when idle
+    var _idleDataInFlight = false;     // prevents overlapping idle data requests
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
@@ -3034,16 +3039,48 @@
         if (_lastHeartbeatActivity < lastTick) {
           // No activity since last heartbeat tick — skip (let session expire if idle)
           _heartbeatIdle = true;
+          _startIdleDataPoll();
           return;
         }
         _heartbeatIdle = false;
+        _stopIdleDataPoll();
         sendHeartbeat();
       }, HTML_CONFIG.HEARTBEAT_INTERVAL);
     }
 
     function _onHeartbeatActivity() {
       _lastHeartbeatActivity = Date.now();
-      _heartbeatIdle = false;  // clear idle so display immediately shows ▶ ready
+      if (_heartbeatIdle) {
+        _heartbeatIdle = false;
+        _stopIdleDataPoll();  // activity resumed — stop idle poll, heartbeat takes over
+      }
+    }
+
+    // Option C: lightweight data-only poll — runs when heartbeat is idle.
+    // Uses google.script.run.getCachedData() via the GAS iframe (no session
+    // validation, no HMAC, no session write — ~10x lighter than a heartbeat).
+    function _startIdleDataPoll() {
+      if (_idleDataPollInterval) return;  // already running
+      _sendIdleDataPoll();  // fire immediately on transition to idle
+      _idleDataPollInterval = setInterval(_sendIdleDataPoll, HTML_CONFIG.HEARTBEAT_INTERVAL);
+    }
+
+    function _stopIdleDataPoll() {
+      if (_idleDataPollInterval) {
+        clearInterval(_idleDataPollInterval);
+        _idleDataPollInterval = null;
+      }
+      _idleDataInFlight = false;
+    }
+
+    function _sendIdleDataPoll() {
+      if (_idleDataInFlight) return;  // don't stack
+      var gasApp = document.getElementById('gas-app');
+      if (!gasApp || !gasApp.contentWindow) return;
+      _idleDataInFlight = true;
+      gasApp.contentWindow.postMessage({ type: 'get-live-data' }, '*');
+      // Safety timeout — clear in-flight flag if no response in 15s
+      setTimeout(function() { _idleDataInFlight = false; }, 15000);
     }
 
     // Phase 7 (H-5): postMessage-based heartbeat — token never appears in URL
@@ -3087,6 +3124,7 @@
     function stopHeartbeat() {
       if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
       if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
+      _stopIdleDataPoll();
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
@@ -3926,6 +3964,7 @@
           console.error('Cell write failed:', e.data.error);
         }
         if (e.data.type === 'live-data' && e.data.data) {
+          _idleDataInFlight = false;  // clear idle poll in-flight flag
           window._handleLiveData(e.data.data);
         }
       });

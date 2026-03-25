@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v02.89w] — 2026-03-25 07:14:40 PM EST — v06.60r
+
+### Changed
+- Data stays live even when you step away — a lightweight background poll keeps the table updated without extending your session
+- Heartbeat timer now shows different icons: `▶` when actively extending your session, `◇` when just polling for data in the background
 
 ## [v02.88w] — 2026-03-25 05:56:05 PM EST — v06.59r
 
