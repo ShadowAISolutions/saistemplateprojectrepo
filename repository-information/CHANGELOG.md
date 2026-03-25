@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v06.49r] — 2026-03-25 12:04:52 PM EST
+
+> **Prompt:** "the copy Code.gs for GAS using the gas-project-creator did not include the spreadsheet ID, fix that and make sure everything in the gas-project-creator is accounted for in the code copying and copy config."
+
+### Fixed
+- Copy Code.gs button now includes SPREADSHEET_ID for noauth projects (was gated on auth-only)
+- Copy Config button now always includes SPREADSHEET_ID in output (was gated on auth-only)
+- Setup script (`setup-gas-project.sh`) now replaces SPREADSHEET_ID in .gs files for all project types (was auth-only)
+- Added SPREADSHEET_ID, SHEET_NAME, and SOUND_FILE_ID variables to minimal noauth GAS template so Copy Code.gs replacements have targets to match
+
+#### `gas-project-creator.html` — v01.27w
+##### Fixed
+- Copy Code.gs now includes spreadsheet ID for all project types, not just authenticated ones
+- Copy Config now always includes spreadsheet ID in the generated setup command
 
 ## [v06.48r] — 2026-03-25 11:55:30 AM EST
 

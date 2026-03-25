@@ -5,6 +5,9 @@ var GITHUB_REPO   = "YOUR_REPO_NAME";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/YOUR_PROJECT_FOLDER/YOUR_PAGE_NAME.gs";
 var DEPLOYMENT_ID = "YOUR_DEPLOYMENT_ID";
+var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";
+var SHEET_NAME     = "Live_Sheet";
+var SOUND_FILE_ID = "";
 var EMBED_PAGE_URL = "YOUR_EMBED_PAGE_URL";
 
 // ══════════════

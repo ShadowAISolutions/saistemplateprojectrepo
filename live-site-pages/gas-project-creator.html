@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.26w">
+  <meta name="build-version" content="v01.27w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1344,7 +1344,7 @@
         var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
         if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
         if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
-        if (sheetId.trim() && useAuth) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
+        if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
         if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
         if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
@@ -1555,7 +1555,7 @@
         + '  "PROJECT_ENVIRONMENT_NAME": "' + envName + '",\n'
         + '  "TITLE": "' + title + '",\n'
         + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
-        + (includeAuth ? '  "SPREADSHEET_ID": "' + sheetId + '",\n' : '')
+        + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
         + '  "SHEET_NAME": "' + sheetName + '",\n'
         + '  "SOUND_FILE_ID": "' + soundId + '",\n'
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'

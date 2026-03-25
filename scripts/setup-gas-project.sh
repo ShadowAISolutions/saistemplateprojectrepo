@@ -203,7 +203,7 @@ CFGEOF
     if [ -f "$GAS_FILE" ]; then
         sed -i "s|var TITLE = .*;|var TITLE = \"${TITLE}\";|" "$GAS_FILE"
         sed -i "s|var DEPLOYMENT_ID = .*;|var DEPLOYMENT_ID = \"${DEPLOYMENT_ID}\";|" "$GAS_FILE"
-        if [ "$INCLUDE_AUTH" = "true" ] && [ -n "$SPREADSHEET_ID" ]; then
+        if [ -n "$SPREADSHEET_ID" ]; then
             sed -i "s|var SPREADSHEET_ID = .*;|var SPREADSHEET_ID = \"${SPREADSHEET_ID}\";|" "$GAS_FILE"
         fi
         sed -i "s|var SHEET_NAME     = .*;|var SHEET_NAME     = \"${SHEET_NAME}\";|" "$GAS_FILE"
@@ -304,7 +304,7 @@ sed -i 's|var VERSION = "[^"]*";|var VERSION = "v01.00g";|' "$GAS_FILE"
 # Set config-tracked variables
 sed -i "s|var TITLE = .*;|var TITLE = \"${TITLE}\";|" "$GAS_FILE"
 sed -i "s|var DEPLOYMENT_ID = .*;|var DEPLOYMENT_ID = \"${DEPLOYMENT_ID}\";|" "$GAS_FILE"
-if [ "$INCLUDE_AUTH" = "true" ] && [ -n "$SPREADSHEET_ID" ]; then
+if [ -n "$SPREADSHEET_ID" ]; then
     sed -i "s|var SPREADSHEET_ID = .*;|var SPREADSHEET_ID = \"${SPREADSHEET_ID}\";|" "$GAS_FILE"
 fi
 sed -i "s|var SHEET_NAME     = .*;|var SHEET_NAME     = \"${SHEET_NAME}\";|" "$GAS_FILE"
