@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.00g] — 2026-03-25 05:41:07 PM EST — v06.58r
+
+### Added
+- Live data updates now arrive with every heartbeat — no extra loading or delays
+- Cell editing support — changes you make in the table are saved to the spreadsheet instantly
+- Data refreshes automatically when the spreadsheet is edited directly
 
 ## [v01.99g] — 2026-03-23 08:34:55 PM EST — v06.43r
 

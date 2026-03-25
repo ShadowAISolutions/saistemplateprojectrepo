@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.86w">
+  <meta name="build-version" content="v02.87w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -573,7 +573,149 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- YOUR PAGE CONTENT HERE -->
+  <style>
+    /* ── Live Data Viewer Layout ── */
+    #live-data-app {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
+      display: none; flex-direction: column;
+      background: #0f1117; color: #e1e4e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #live-data-app.active { display: flex; }
+    /* ── Header ── */
+    #ld-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; background: #1a1b26; border-bottom: 1px solid #2a2b3d;
+      flex-shrink: 0; flex-wrap: wrap; gap: 8px;
+    }
+    #ld-header .left { display: flex; align-items: center; gap: 10px; }
+    #ld-header h2 { margin: 0; font-size: 16px; color: #fff; white-space: nowrap; }
+    #ld-header .right { display: flex; align-items: center; gap: 8px; }
+    /* ── Connection Status ── */
+    #ld-conn-status {
+      display: flex; align-items: center; gap: 6px; padding: 4px 12px;
+      background: rgba(0,0,0,0.3); border-radius: 20px; font-size: 12px; color: #8b949e;
+    }
+    #ld-conn-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #888;
+      transition: background 0.3s;
+    }
+    #ld-conn-dot.live { background: #3fb950; }
+    #ld-conn-dot.updating { background: #d29922; animation: ld-pulse 0.6s infinite alternate; }
+    #ld-conn-dot.disconnected { background: #f85149; }
+    #ld-conn-label { white-space: nowrap; }
+    #ld-countdown { font-size: 11px; color: #6e7681; min-width: 20px; text-align: right; }
+    @keyframes ld-pulse { from { opacity: 1; } to { opacity: 0.4; } }
+    /* ── Tabs ── */
+    #ld-view-tabs {
+      display: flex; background: #1a1b26; border-bottom: 1px solid #2a2b3d; flex-shrink: 0;
+    }
+    .ld-view-tab {
+      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #8b949e;
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+      background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .ld-view-tab:hover { color: #e1e4e8; }
+    .ld-view-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+    /* ── Table View ── */
+    #ld-table-view { flex: 1; overflow: auto; padding: 16px; }
+    #ld-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    #ld-data-table th {
+      position: sticky; top: 0; background: #1a1b26; color: #8b949e;
+      padding: 10px 12px; text-align: left; border-bottom: 2px solid #2a2b3d;
+      cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600;
+    }
+    #ld-data-table th:hover { color: #e1e4e8; }
+    #ld-data-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+    #ld-data-table td {
+      padding: 8px 12px; border-bottom: 1px solid #1e2030; color: #c9d1d9;
+      transition: background 0.3s; cursor: default;
+    }
+    #ld-data-table tr:hover td { background: rgba(88,166,255,0.05); }
+    @keyframes ld-cell-flash {
+      0% { background: rgba(46,160,67,0.45); }
+      100% { background: transparent; }
+    }
+    .ld-cell-changed { animation: ld-cell-flash 1.5s ease-out; }
+    /* ── Cell editing ── */
+    #ld-data-table td.editing {
+      padding: 2px 4px; background: rgba(88,166,255,0.1);
+    }
+    #ld-data-table td.editing input {
+      width: 100%; padding: 6px 8px; font-size: 13px; font-family: inherit;
+      background: #161b22; color: #c9d1d9; border: 1px solid #58a6ff;
+      border-radius: 4px; outline: none; box-sizing: border-box;
+    }
+    #ld-data-table td.editing input:focus {
+      box-shadow: 0 0 0 2px rgba(88,166,255,0.3);
+    }
+    /* ── Dashboard View ── */
+    #ld-dashboard-view { flex: 1; overflow: auto; padding: 16px; display: none; }
+    #ld-dashboard-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+    }
+    .ld-dash-card {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+      padding: 20px; transition: border-color 0.2s;
+    }
+    .ld-dash-card:hover { border-color: #58a6ff; }
+    .ld-dash-card .card-label {
+      font-size: 12px; color: #8b949e; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .ld-dash-card .card-value {
+      font-size: 28px; font-weight: 700; color: #fff; word-break: break-word;
+      transition: color 0.3s;
+    }
+    .ld-dash-card .card-meta { font-size: 11px; color: #6e7681; margin-top: 8px; }
+    .ld-dash-card.stats { background: #161b22; border-color: #30363d; }
+    .ld-dash-card .card-value.changed { color: #3fb950; }
+    @keyframes ld-card-flash {
+      0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); }
+      100% { border-color: #2a2b3d; box-shadow: none; }
+    }
+    .ld-card-changed { animation: ld-card-flash 1.5s ease-out; }
+    /* ── Empty State ── */
+    #ld-empty-state {
+      display: none; flex: 1; align-items: center; justify-content: center;
+      color: #6e7681; font-size: 14px; text-align: center; padding: 40px;
+    }
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      #ld-header { padding: 10px 12px; }
+      #ld-dashboard-grid { grid-template-columns: 1fr; }
+      .ld-dash-card .card-value { font-size: 22px; }
+      #ld-data-table { font-size: 12px; }
+    }
+  </style>
+
+  <!-- Live Data App (shown after auth) -->
+  <div id="live-data-app">
+    <div id="ld-header">
+      <div class="left">
+        <h2>Live Data</h2>
+        <div id="ld-conn-status">
+          <div id="ld-conn-dot"></div>
+          <span id="ld-conn-label">Connecting...</span>
+          <span id="ld-countdown"></span>
+        </div>
+      </div>
+      <div class="right">
+        <span id="ld-user-email" style="font-size:12px;color:#8b949e;"></span>
+      </div>
+    </div>
+    <div id="ld-view-tabs">
+      <button class="ld-view-tab active" data-view="table">Table</button>
+      <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
+    </div>
+    <div id="ld-table-view">
+      <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="ld-dashboard-view">
+      <div id="ld-dashboard-grid"></div>
+    </div>
+    <div id="ld-empty-state">Waiting for data...</div>
+  </div>
+
   <div id="force-heartbeat-panel" style="position:fixed;bottom:140px;left:8px;z-index:9999;">
     <button id="force-heartbeat-btn" style="background:#1a1a2e;color:#ff8c42;border:1px solid #ff8c42;padding:8px 14px;border-radius:8px;font:12px/1 monospace;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Force Heartbeat</button>
   </div>
@@ -1735,7 +1877,8 @@
         'phase-a-ready': true, 'phase-a-disclosures-result': true,
         'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
         'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
-        'phase-a-review-result': true, 'phase-a-disagreement-result': true, 'phase-a-error': true };
+        'phase-a-review-result': true, 'phase-a-disagreement-result': true, 'phase-a-error': true,
+        'live-data': true, 'gas-write-error': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -2075,6 +2218,11 @@
         // Hide session warning and reset flag — session was extended
         _expiryWarningShown = false;
         hideSessionWarning();
+
+        // Extract piggybacked live data from heartbeat response
+        if (data.liveData && typeof window._handleLiveData === 'function') {
+          window._handleLiveData(data.liveData);
+        }
       }
 
       // Heartbeat failed — session already expired on server
@@ -2500,6 +2648,12 @@
       // data-requires-role attributes based on session storage.
       // Admin sessions button uses data-requires-role="admin" in HTML.
       applyUIGating();
+
+      // Show the live data app with user context
+      if (typeof window._showLiveDataApp === 'function') {
+        var session = loadSession();
+        window._showLiveDataApp(email, session.permissions || []);
+      }
     }
 
     /**
@@ -3491,6 +3645,280 @@
 // ══════════════
 // PROJECT START
 // ══════════════
+
+    // ── Live Data Viewer ──
+    // Displays spreadsheet data in a sortable table with cell editing.
+    // Data arrives piggybacked on the auth heartbeat (zero extra quota).
+    (function() {
+      var LD_STALE_THRESHOLD = 60000; // 60s without data → disconnected
+      var _ldPrevDataJSON = null;
+      var _ldPrevCells = {};
+      var _ldCurrentView = 'table';
+      var _ldSortCol = -1;
+      var _ldSortAsc = true;
+      var _ldHeaders = [];
+      var _ldRows = [];
+      var _ldLastDataTs = 0;
+      var _ldStaleTimer = null;
+      var _ldCanEdit = false; // set true when user has 'write' permission
+
+      var ldConnDot = document.getElementById('ld-conn-dot');
+      var ldConnLabel = document.getElementById('ld-conn-label');
+      var ldCountdown = document.getElementById('ld-countdown');
+      var ldTableView = document.getElementById('ld-table-view');
+      var ldDashView = document.getElementById('ld-dashboard-view');
+      var ldDataTable = document.getElementById('ld-data-table');
+      var ldDashGrid = document.getElementById('ld-dashboard-grid');
+      var ldEmptyState = document.getElementById('ld-empty-state');
+      var ldApp = document.getElementById('live-data-app');
+      var ldUserEmail = document.getElementById('ld-user-email');
+
+      function ldSetConnectionStatus(state) {
+        if (!ldConnDot) return;
+        ldConnDot.className = state;
+        if (state === 'live') {
+          var age = Math.round((Date.now() - _ldLastDataTs) / 1000);
+          ldConnLabel.textContent = 'Live';
+          ldCountdown.textContent = age > 0 ? age + 's ago' : '';
+        } else if (state === 'updating') {
+          ldConnLabel.textContent = 'Updating...';
+        } else {
+          ldConnLabel.textContent = 'Disconnected';
+        }
+      }
+
+      function ldStartStaleCheck() {
+        if (_ldStaleTimer) clearInterval(_ldStaleTimer);
+        _ldStaleTimer = setInterval(function() {
+          if (_ldLastDataTs === 0) return;
+          var age = Date.now() - _ldLastDataTs;
+          if (age > LD_STALE_THRESHOLD) {
+            ldSetConnectionStatus('disconnected');
+          } else {
+            ldSetConnectionStatus('live');
+          }
+        }, 1000);
+      }
+
+      // Tab switching
+      var ldTabs = document.querySelectorAll('.ld-view-tab');
+      for (var ti = 0; ti < ldTabs.length; ti++) {
+        ldTabs[ti].addEventListener('click', function() {
+          for (var j = 0; j < ldTabs.length; j++) ldTabs[j].classList.remove('active');
+          this.classList.add('active');
+          _ldCurrentView = this.getAttribute('data-view');
+          ldTableView.style.display = _ldCurrentView === 'table' ? 'block' : 'none';
+          ldDashView.style.display = _ldCurrentView === 'dashboard' ? 'block' : 'none';
+        });
+      }
+
+      function ldDetectChanges(headers, rows) {
+        var changed = {};
+        var newCells = {};
+        for (var r = 0; r < rows.length; r++) {
+          for (var c = 0; c < rows[r].length; c++) {
+            var key = r + ':' + c;
+            var val = (rows[r][c] !== undefined && rows[r][c] !== null) ? String(rows[r][c]) : '';
+            newCells[key] = val;
+            if (_ldPrevCells.hasOwnProperty(key) && _ldPrevCells[key] !== val) {
+              changed[key] = true;
+            }
+          }
+        }
+        _ldPrevCells = newCells;
+        return changed;
+      }
+
+      function ldRenderTableView(changedCells) {
+        if (!ldDataTable) return;
+        var thead = ldDataTable.querySelector('thead tr');
+        var tbody = ldDataTable.querySelector('tbody');
+
+        thead.innerHTML = '';
+        _ldHeaders.forEach(function(h, ci) {
+          var th = document.createElement('th');
+          th.textContent = h;
+          var arrow = document.createElement('span');
+          arrow.className = 'sort-arrow';
+          if (_ldSortCol === ci) arrow.textContent = _ldSortAsc ? ' \u25B2' : ' \u25BC';
+          th.appendChild(arrow);
+          th.addEventListener('click', function() {
+            if (_ldSortCol === ci) { _ldSortAsc = !_ldSortAsc; }
+            else { _ldSortCol = ci; _ldSortAsc = true; }
+            ldRenderTableView({});
+          });
+          thead.appendChild(th);
+        });
+
+        var rows = _ldRows.slice();
+        if (_ldSortCol >= 0 && _ldSortCol < _ldHeaders.length) {
+          rows.sort(function(a, b) {
+            var va = a[_ldSortCol] || '', vb = b[_ldSortCol] || '';
+            var na = parseFloat(va), nb = parseFloat(vb);
+            if (!isNaN(na) && !isNaN(nb)) return _ldSortAsc ? na - nb : nb - na;
+            return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+          });
+        }
+
+        tbody.innerHTML = '';
+        rows.forEach(function(row, ri) {
+          var tr = document.createElement('tr');
+          row.forEach(function(val, ci) {
+            var td = document.createElement('td');
+            td.textContent = val;
+            td.setAttribute('data-row', ri);
+            td.setAttribute('data-col', ci);
+            var key = ri + ':' + ci;
+            if (changedCells[key]) td.classList.add('ld-cell-changed');
+            // Double-click to edit (if user has write permission)
+            if (_ldCanEdit) {
+              td.style.cursor = 'pointer';
+              td.addEventListener('dblclick', function() {
+                ldStartCellEdit(this, ri, ci, val);
+              });
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+
+      function ldStartCellEdit(td, row, col, currentVal) {
+        if (td.classList.contains('editing')) return;
+        td.classList.add('editing');
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentVal;
+        td.textContent = '';
+        td.appendChild(input);
+        input.focus();
+        input.select();
+
+        function commitEdit() {
+          var newVal = input.value;
+          td.classList.remove('editing');
+          td.textContent = newVal; // Optimistic UI
+          if (newVal !== currentVal) {
+            // Send to GAS via the main iframe
+            var gasApp = document.getElementById('gas-app');
+            if (gasApp && gasApp.contentWindow) {
+              var session = loadSession();
+              gasApp.contentWindow.postMessage({
+                type: 'write-cell',
+                token: session.token,
+                row: row,
+                col: col,
+                value: newVal
+              }, '*');
+            }
+          }
+        }
+
+        input.addEventListener('blur', commitEdit);
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { input.blur(); }
+          if (e.key === 'Escape') {
+            td.classList.remove('editing');
+            td.textContent = currentVal;
+          }
+        });
+      }
+
+      function ldRenderDashboardView(changedCells) {
+        if (!ldDashGrid) return;
+        ldDashGrid.innerHTML = '';
+        if (_ldRows.length === 0) return;
+
+        var firstRow = _ldRows[0];
+        _ldHeaders.forEach(function(h, ci) {
+          var card = document.createElement('div');
+          card.className = 'ld-dash-card';
+          if (changedCells['0:' + ci]) card.classList.add('ld-card-changed');
+          var label = document.createElement('div');
+          label.className = 'card-label';
+          label.textContent = h;
+          var value = document.createElement('div');
+          value.className = 'card-value';
+          value.textContent = firstRow[ci] || '\u2014';
+          if (changedCells['0:' + ci]) value.classList.add('changed');
+          var meta = document.createElement('div');
+          meta.className = 'card-meta';
+          meta.textContent = _ldRows.length > 1 ? (_ldRows.length - 1) + ' more rows' : 'Only row';
+          card.appendChild(label);
+          card.appendChild(value);
+          card.appendChild(meta);
+          ldDashGrid.appendChild(card);
+        });
+
+        var stats = document.createElement('div');
+        stats.className = 'ld-dash-card stats';
+        var sl = document.createElement('div');
+        sl.className = 'card-label';
+        sl.textContent = 'Stats';
+        var sv = document.createElement('div');
+        sv.className = 'card-value';
+        sv.style.fontSize = '20px';
+        sv.textContent = _ldRows.length + ' rows \u00D7 ' + _ldHeaders.length + ' cols';
+        var sm = document.createElement('div');
+        sm.className = 'card-meta';
+        sm.textContent = 'Data via GAS CacheService (private spreadsheet)';
+        stats.appendChild(sl);
+        stats.appendChild(sv);
+        stats.appendChild(sm);
+        ldDashGrid.appendChild(stats);
+      }
+
+      // Main data handler — called when live data arrives
+      window._handleLiveData = function(data) {
+        if (!data || !data.headers) return;
+        _ldLastDataTs = Date.now();
+        ldSetConnectionStatus('live');
+
+        var currentJSON = JSON.stringify(data);
+        if (currentJSON !== _ldPrevDataJSON) {
+          var changedCells = ldDetectChanges(data.headers, data.rows);
+          _ldPrevDataJSON = currentJSON;
+
+          _ldHeaders = data.headers.map(function(h, i) {
+            var val = (h !== undefined && h !== null) ? String(h) : '';
+            return val || String.fromCharCode(65 + i);
+          });
+          _ldRows = (data.rows || []).map(function(row) {
+            return row.map(function(v) {
+              return (v !== undefined && v !== null) ? String(v) : '';
+            });
+          });
+
+          if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+          ldRenderTableView(changedCells);
+          ldRenderDashboardView(changedCells);
+        }
+      };
+
+      // Show the live data app after auth completes
+      window._showLiveDataApp = function(email, permissions) {
+        if (ldApp) ldApp.classList.add('active');
+        if (ldUserEmail) ldUserEmail.textContent = email || '';
+        // Check if user has write permission for cell editing
+        _ldCanEdit = permissions && permissions.indexOf('write') !== -1;
+        ldSetConnectionStatus('updating');
+        ldStartStaleCheck();
+      };
+
+      // Handle write-cell responses
+      window.addEventListener('message', function(e) {
+        if (!e.data) return;
+        if (e.data.type === 'gas-write-ok' && e.data.liveData) {
+          window._handleLiveData(e.data.liveData);
+        }
+        if (e.data.type === 'gas-write-error') {
+          console.error('Cell write failed:', e.data.error);
+        }
+        if (e.data.type === 'live-data' && e.data.data) {
+          window._handleLiveData(e.data.data);
+        }
+      });
+    })();
 
     // Security test registry — each test has a name and a run function
     var _securityTests = [];

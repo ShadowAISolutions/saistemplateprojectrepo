@@ -3,9 +3,19 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v02.87w] — 2026-03-25 05:41:07 PM EST — v06.58r
+
+### Added
+- Live data table replacing the placeholder content area — view your spreadsheet data in real-time with sortable columns
+- Cell change detection with green flash animation when data updates
+- Dashboard card view as an alternative to the table layout
+- Connection status indicator showing how fresh the data is
+- Double-click any cell to edit it directly (requires write permission)
+- View toggle to switch between Table and Dashboard layouts
 
 ## [v02.86w] — 2026-03-23 08:34:55 PM EST — v06.43r
 

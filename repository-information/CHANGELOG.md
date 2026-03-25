@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v06.58r] — 2026-03-25 05:41:07 PM EST
+
+> **Prompt:** "alright, write up this idea of live data editing with the intention of applying it for the testauth1 environment in a prompt format to use with you in a new session, including all context to begin coding. you can show the same type of data table we made in the rnd live data in the testauth1 instead of the giant 1 in the center."
+
+### Added
+- Live data table with cell editing in testauth1 — private spreadsheet data served via CacheService, piggybacked on the existing auth heartbeat at zero additional GAS quota
+- Cell editing with RBAC enforcement — double-click to edit, writes gated by 'write' permission via `checkPermission()`
+- Dashboard card view with change detection (green flash animation on updated cells/cards)
+- Sortable table columns (click header to toggle ascending/descending)
+- Connection status indicator with staleness detection (live/updating/disconnected states)
+
+#### `testauth1.html` — v02.87w
+##### Added
+- Live data table replacing the placeholder content area — sortable columns, cell change detection with green flash animation
+- Dashboard card view with automatic change highlighting
+- Connection status indicator showing data freshness
+- Double-click cell editing for users with write permission
+- View toggle between Table and Dashboard layouts
+
+#### `testauth1.gs` — v02.00g
+##### Added
+- CacheService-based live data serving — `refreshDataCache()`, `getCachedData()` with self-healing cache pattern
+- Installable onEdit trigger support — `onEditInstallable()` and `installEditTrigger()` for instant cache refresh on spreadsheet edits
+- `writeCell()` function with session validation, RBAC permission check, and audit logging
+- Live data piggybacked on heartbeat response — `processHeartbeat()` now includes `liveData: getCachedData()` in its signed payload
 
 ## [v06.57r] — 2026-03-25 05:01:08 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.99g";
+var VERSION = "v02.00g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -533,6 +533,124 @@ function adminSignOutUser(sessionToken, targetEmail) {
     { targetEmail: targetEmail });
 
   return { success: true, email: targetEmail };
+}
+
+// ── Live Data via CacheService ──
+// PROJECT OVERRIDE: Data reads via CacheService — refreshed by installable onEdit
+// trigger bound to the target spreadsheet. Spreadsheet stays private.
+// processHeartbeat() piggybacks cached data on existing heartbeat calls (zero extra quota).
+// Heartbeat reads re-up the cache TTL so data never expires while viewers are present.
+// One-time setup: run installEditTrigger() from the script editor.
+
+/**
+ * refreshDataCache() — reads the private spreadsheet and stores data in CacheService.
+ * Called by the installable onEdit trigger when the data sheet is edited, and as a
+ * self-repair fallback when getCachedData() finds an empty cache.
+ */
+function refreshDataCache() {
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return;
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0] || [];
+    var rows = data.slice(1);
+    var result = JSON.stringify({ headers: headers, rows: rows, ts: Date.now() });
+    // 100KB CacheService limit per key — large sheets may need chunking in the future
+    // 21600s (6h) TTL — heartbeat reads re-up this TTL so it never expires while viewers
+    // are present. The long TTL is a safety net for gaps between the last viewer leaving
+    // and the next one arriving.
+    CacheService.getScriptCache().put('livedata_' + SHEET_NAME, result, 21600);
+  } catch (e) {
+    Logger.log('refreshDataCache error: ' + e.message);
+  }
+}
+
+/**
+ * getCachedData() — reads live data from CacheService with self-healing.
+ * On cache hit: re-ups the TTL so data stays alive as long as viewers are present.
+ * On cache miss: self-repairs by calling refreshDataCache() to read the spreadsheet.
+ * Returns parsed object { headers, rows, ts } or null if spreadsheet is unavailable.
+ */
+function getCachedData() {
+  var cache = CacheService.getScriptCache();
+  var key = 'livedata_' + SHEET_NAME;
+  var cached = cache.get(key);
+  if (cached) {
+    // Re-up TTL on every read — cache never expires while viewers are present
+    cache.put(key, cached, 21600);
+    return JSON.parse(cached);
+  }
+  // Self-repair: cache miss → read spreadsheet, warm cache
+  refreshDataCache();
+  cached = cache.get(key);
+  return cached ? JSON.parse(cached) : null;
+}
+
+/**
+ * onEditInstallable(e) — refreshes CacheService immediately when the data sheet is edited.
+ * Installable trigger — required because this is a standalone script (not container-bound).
+ * One-time setup: run installEditTrigger() from the Apps Script editor.
+ * Only refreshes when the edited sheet matches SHEET_NAME.
+ */
+function onEditInstallable(e) {
+  try {
+    if (!e || !e.range) return;
+    if (e.range.getSheet().getName() === SHEET_NAME) {
+      refreshDataCache();
+    }
+  } catch (err) {
+    Logger.log('onEditInstallable cache refresh error: ' + err.message);
+  }
+}
+
+/**
+ * installEditTrigger() — one-time setup function. Run this manually from the
+ * Apps Script editor (Run → installEditTrigger) to create an installable onEdit
+ * trigger bound to the target spreadsheet.
+ * Safe to run multiple times — removes existing triggers before creating a new one.
+ */
+function installEditTrigger() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'onEditInstallable') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+  ScriptApp.newTrigger('onEditInstallable')
+    .forSpreadsheet(SPREADSHEET_ID)
+    .onEdit()
+    .create();
+  Logger.log('Edit trigger installed for spreadsheet: ' + SPREADSHEET_ID);
+}
+
+/**
+ * writeCell(token, row, col, value) — writes a single cell value to the data spreadsheet.
+ * Validates the session first (requires 'write' permission via RBAC).
+ * After writing, refreshes the cache immediately for instant feedback.
+ * Returns signed response with updated live data.
+ */
+function writeCell(token, row, col, value) {
+  var user = validateSessionForData(token, 'writeCell');
+  checkPermission(user, 'write', 'writeCell');
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2), +1 for 1-indexed
+  sheet.getRange(row + 2, col + 1).setValue(value);
+
+  // Refresh cache immediately for instant feedback (onEditInstallable will also fire)
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'cell_edit', {
+    row: row, col: col, sheet: SHEET_NAME
+  });
+
+  return signMessage({ type: 'gas-write-ok', liveData: getCachedData() }, user.messageKey || '');
 }
 
 // ══════════════
@@ -2370,7 +2488,7 @@ function processHeartbeat(token) {
   var hbAbsRemaining = hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT
     ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
     : 0;
-  return signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
+  return signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining, liveData: getCachedData()}, msgKey);
 }
 
 // ── Phase 7 (H-6): Server-side sign-out processing ──
@@ -2906,7 +3024,9 @@ function doGet(e) {
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
 
-  // Session valid — build the app HTML (same as noauth doGet but with user context)
+  // Session valid — build the app HTML with live data table
+  var initialData = getCachedData();
+  var initialDataJSON = initialData ? JSON.stringify(initialData) : 'null';
   var html = `
     <html>
     <head>
@@ -2915,36 +3035,12 @@ function doGet(e) {
       <meta http-equiv="Expires" content="0">
       <style>
         html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; display: flex; justify-content: center; align-items: center; }
-        #debug-marker { font-size: 200px; color: #1565c0; font-weight: bold; }
+        body { font-family: Arial; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
-        #hb-test-area { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; text-align: center; }
-        #hb-test-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
-        #hb-test-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #1565c0; border-radius: 6px; outline: none; }
-        #hb-test-input:focus { border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(21,101,192,0.2); }
-        #save-note-area { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; text-align: center; }
-        #save-note-area label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-family: monospace; }
-        #save-note-input { width: 300px; padding: 8px 12px; font-size: 14px; font-family: monospace; border: 2px solid #2e7d32; border-radius: 6px; outline: none; margin-bottom: 6px; }
-        #save-note-input:focus { border-color: #1b5e20; box-shadow: 0 0 0 3px rgba(46,125,50,0.2); }
-        #save-note-btn { background: #2e7d32; color: #fff; border: none; padding: 8px 20px; border-radius: 6px; font: 13px/1 monospace; cursor: pointer; }
-        #save-note-btn:hover { background: #1b5e20; }
-        #save-note-status { font-size: 11px; color: #999; margin-top: 4px; font-family: monospace; min-height: 16px; }
       </style>
     </head>
     <body>
-      <div id="debug-marker">1</div>
-      <div id="save-note-area">
-        <label for="save-note-input">Patient note (test — triggers session check on interaction)</label>
-        <input type="text" id="save-note-input" placeholder="Type a note and click Save..." autocomplete="off">
-        <br>
-        <button id="save-note-btn">Save Note</button>
-        <div id="save-note-status"></div>
-      </div>
-      <div id="hb-test-area">
-        <label for="hb-test-input">Type here to test heartbeat interruption</label>
-        <input type="text" id="hb-test-input" placeholder="Type continuously and watch for disruption..." autocomplete="off">
-      </div>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
 
@@ -3076,52 +3172,35 @@ function doGet(e) {
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // Save Note button — real EMR data entry action with server-side session validation
-        document.getElementById('save-note-btn').addEventListener('click', function() {
-          var noteInput = document.getElementById('save-note-input');
-          var statusEl = document.getElementById('save-note-status');
-          var note = noteInput.value.trim();
-          if (!note) {
-            statusEl.textContent = 'Enter a note first.';
-            statusEl.style.color = '#f57c00';
-            return;
+        // Initial data embedded at iframe load time — zero extra calls
+        var _initialData = ${initialDataJSON};
+        if (_initialData) {
+          top.postMessage({type: 'live-data', data: _initialData}, '${PARENT_ORIGIN}');
+        }
+
+        // Listen for write-cell requests from parent
+        window.addEventListener('message', function(evt) {
+          if (evt.origin !== '${PARENT_ORIGIN}') return;
+          if (evt.data && evt.data.type === 'write-cell') {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                top.postMessage(result, '${PARENT_ORIGIN}');
+              })
+              .withFailureHandler(function(err) {
+                top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
+              })
+              .writeCell(evt.data.token, evt.data.row, evt.data.col, evt.data.value);
           }
-          _notifyActivity();
-          statusEl.textContent = 'Validating session & saving...';
-          statusEl.style.color = '#999';
-          google.script.run
-            .withSuccessHandler(function(result) {
-              if (result.success) {
-                statusEl.textContent = 'Saved: "' + result.note + '" (validated as ' + result.email + ')';
-                statusEl.style.color = '#2e7d32';
-                noteInput.value = '';
-              } else {
-                statusEl.textContent = 'Save failed.';
-                statusEl.style.color = '#c62828';
-              }
-            })
-            .withFailureHandler(function(err) {
-              var msg = err.message || '';
-              if (msg.indexOf('SESSION_') === 0) {
-                statusEl.textContent = 'Session invalid — re-authenticate to save.';
-                statusEl.style.color = '#c62828';
-                // DJB2→HMAC migration: signed server-side via signAppMessage()
-                google.script.run
-                  .withSuccessHandler(function(signed) {
-                    window.top.postMessage(signed, '${PARENT_ORIGIN}');
-                  })
-                  .withFailureHandler(function() {
-                    // Double failure — can't even sign the invalid notification.
-                    // User already sees "re-authenticate" text in the GAS iframe.
-                    // Don't send unsigned — host page would drop it anyway.
-                  })
-                  .signAppMessage(_sessionToken, 'gas-session-invalid', {reason: msg});
-              } else {
-                statusEl.textContent = 'Error: ' + msg;
-                statusEl.style.color = '#c62828';
-              }
-            })
-            .saveNote(_sessionToken, note);  // Phase 3: was .saveNote(_sessionToken, note, _clientIp)
+          if (evt.data && evt.data.type === 'get-live-data') {
+            google.script.run
+              .withSuccessHandler(function(data) {
+                top.postMessage({type: 'live-data', data: data}, '${PARENT_ORIGIN}');
+              })
+              .withFailureHandler(function() {
+                top.postMessage({type: 'live-data', data: null}, '${PARENT_ORIGIN}');
+              })
+              .getCachedData();
+          }
         });
       </script>
     </body>
