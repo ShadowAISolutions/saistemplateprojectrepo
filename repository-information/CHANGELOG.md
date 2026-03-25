@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v06.52r] — 2026-03-25 02:13:00 PM EST
+
+> **Prompt:** "still says connecting, showing console in case it helps"
+
+### Fixed
+- Fixed live data page still stuck on "Connecting..." — CSP `style-src` was blocking Google Charts CSS from `www.gstatic.com`, causing `google.charts.load()` initialization to fail entirely
+- Fixed CSP `img-src` blocking developer logo from `www.shadowaisolutions.com`
+
+#### `rndlivedata.html` — v01.04w
+##### Fixed
+- Added `https://www.gstatic.com` to CSP `style-src` — Google Charts loads CSS (tooltip.css, etc.) from this domain during initialization
+- Added `https://fonts.googleapis.com` to CSP `style-src` and `https://fonts.gstatic.com` to CSP `font-src` — preemptive for Google Charts font loading
+- Added `https://www.shadowaisolutions.com` to CSP `img-src` — developer logo was blocked
 
 ## [v06.51r] — 2026-03-25 02:07:29 PM EST
 

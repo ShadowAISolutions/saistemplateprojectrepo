@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [rndlivedatahtml.changelog-archive.md](rndlivedatahtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-03-25 02:13:00 PM EST — v06.52r
+
+### Fixed
+- Fixed page stuck on "Connecting..." — browser security policy was blocking required stylesheets from loading
 
 ## [v01.03w] — 2026-03-25 02:07:29 PM EST — v06.51r
 
