@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.00w">
+  <meta name="build-version" content="v01.01w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>RND Live Data</title>
   <style>
@@ -154,7 +154,487 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- YOUR PAGE CONTENT HERE -->
+  <style>
+    /* ── App Layout ── */
+    #rnd-app {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
+      display: flex; flex-direction: column;
+      background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    /* ── Name Entry Modal ── */
+    #name-modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
+      background: #0f0f1a; display: flex; align-items: center; justify-content: center;
+    }
+    #name-modal.hidden { display: none; }
+    .name-box {
+      background: #1a1a2e; border-radius: 16px; padding: 40px; text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5); max-width: 360px; width: 90%;
+    }
+    .name-box h1 { margin: 0 0 8px; font-size: 24px; color: #fff; }
+    .name-box p { margin: 0 0 24px; color: #888; font-size: 14px; }
+    .name-box input {
+      width: 100%; padding: 12px 16px; border: 2px solid #333; border-radius: 8px;
+      background: #0f0f1a; color: #fff; font-size: 16px; outline: none;
+      box-sizing: border-box; transition: border-color 0.2s;
+    }
+    .name-box input:focus { border-color: #5c6bc0; }
+    .name-box button {
+      margin-top: 16px; width: 100%; padding: 12px; border: none; border-radius: 8px;
+      background: #5c6bc0; color: #fff; font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .name-box button:hover { background: #7986cb; }
+    .name-box button:disabled { background: #333; cursor: not-allowed; }
+    /* ── Header ── */
+    #app-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; background: #1a1a2e; border-bottom: 1px solid #2a2a4a;
+      flex-shrink: 0;
+    }
+    #app-header .left { display: flex; align-items: center; gap: 10px; }
+    #app-header h2 { margin: 0; font-size: 16px; color: #fff; white-space: nowrap; }
+    #status-dot {
+      width: 10px; height: 10px; border-radius: 50%; background: #888;
+      transition: background 0.3s;
+    }
+    #status-dot.ready { background: #66bb6a; }
+    #status-dot.syncing { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    #status-dot.error { background: #ef5350; }
+    #status-dot.stale { background: #888; }
+    #last-synced { font-size: 11px; color: #666; white-space: nowrap; }
+    #app-header .right { display: flex; align-items: center; gap: 8px; }
+    #sync-btn {
+      padding: 6px 14px; border: 1px solid #444; border-radius: 6px;
+      background: transparent; color: #ccc; font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    #sync-btn:hover { background: #2a2a4a; border-color: #666; }
+    #sync-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #sync-btn .spinner {
+      width: 14px; height: 14px; border: 2px solid #555; border-top-color: #fff;
+      border-radius: 50%; display: none; animation: spin 0.6s linear infinite;
+    }
+    #sync-btn.loading .spinner { display: inline-block; }
+    #sync-btn.loading .sync-icon { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #user-badge {
+      padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+      color: #fff; white-space: nowrap;
+    }
+    /* ── Stale Banner ── */
+    #stale-banner {
+      display: none; padding: 10px 16px; background: #3a3a1a; border-bottom: 1px solid #555522;
+      text-align: center; font-size: 13px; color: #dda; flex-shrink: 0; cursor: pointer;
+    }
+    #stale-banner:hover { background: #4a4a2a; }
+    /* ── Feed ── */
+    #feed {
+      flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;
+    }
+    #feed:empty::after {
+      content: 'No entries yet. Be the first to post!';
+      color: #555; text-align: center; margin-top: 40px; font-size: 14px;
+    }
+    .entry {
+      display: flex; gap: 10px; padding: 10px 12px; background: #1a1a2e;
+      border-radius: 10px; transition: background 0.2s;
+    }
+    .entry.optimistic { opacity: 0.6; }
+    .entry .avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 15px; color: #fff;
+    }
+    .entry .body { flex: 1; min-width: 0; }
+    .entry .meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+    .entry .username { font-weight: 600; font-size: 13px; color: #fff; }
+    .entry .time { font-size: 11px; color: #666; }
+    .entry .msg { font-size: 14px; line-height: 1.4; word-wrap: break-word; color: #ccc; white-space: pre-wrap; }
+    /* ── Input ── */
+    #input-area {
+      padding: 12px 16px; background: #1a1a2e; border-top: 1px solid #2a2a4a;
+      display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+    }
+    #msg-input {
+      flex: 1; padding: 10px 14px; border: 2px solid #333; border-radius: 8px;
+      background: #0f0f1a; color: #fff; font-size: 14px; outline: none;
+      resize: none; max-height: 120px; min-height: 40px; line-height: 1.4;
+      font-family: inherit; transition: border-color 0.2s;
+    }
+    #msg-input:focus { border-color: #5c6bc0; }
+    #send-btn {
+      padding: 10px 20px; border: none; border-radius: 8px;
+      background: #5c6bc0; color: #fff; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    #send-btn:hover { background: #7986cb; }
+    #send-btn:disabled { background: #333; cursor: not-allowed; }
+    /* ── Error Toast ── */
+    #error-toast {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 200;
+      background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 8px;
+      font-size: 13px; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      max-width: 90%; text-align: center;
+    }
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      #app-header { padding: 10px 12px; }
+      #feed { padding: 8px 10px; }
+      #input-area { padding: 10px 12px; }
+      .entry { padding: 8px 10px; }
+    }
+  </style>
+
+  <div id="rnd-app">
+    <!-- Name Entry Modal -->
+    <div id="name-modal">
+      <div class="name-box">
+        <h1>RND Live Data</h1>
+        <p>Enter your display name to start</p>
+        <input type="text" id="name-input" placeholder="Your name" maxlength="50" autocomplete="off">
+        <button id="name-submit" disabled>Join</button>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div id="app-header" style="display:none;">
+      <div class="left">
+        <div id="status-dot"></div>
+        <h2>RND Live Data</h2>
+        <span id="last-synced"></span>
+      </div>
+      <div class="right">
+        <span id="user-badge"></span>
+        <button id="sync-btn"><span class="sync-icon">&#x21bb;</span><span class="spinner"></span> Sync</button>
+      </div>
+    </div>
+
+    <!-- Stale Banner -->
+    <div id="stale-banner">&#x26a0; Data may be stale. Tap here to sync.</div>
+
+    <!-- Entry Feed -->
+    <div id="feed"></div>
+
+    <!-- Input Area -->
+    <div id="input-area" style="display:none;">
+      <textarea id="msg-input" rows="1" placeholder="Type your message..." maxlength="1000"></textarea>
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <!-- Error Toast -->
+  <div id="error-toast"></div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // ── GAS URL ──
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbxnhplqv-s116CtveTF-8Efdpd_MWA9RZwdJ0th4-4QK_1cRpngS0CBJemY4Znb6ND7/exec';
+
+    // ── State ──
+    var currentUser = sessionStorage.getItem('rnd-user') || '';
+    var entries = [];
+    var lastSyncTime = 0;
+    var dataVersion = '0';
+    var isSyncing = false;
+    var optimisticEntry = null;
+
+    // ── DOM refs ──
+    var nameModal = document.getElementById('name-modal');
+    var nameInput = document.getElementById('name-input');
+    var nameSubmit = document.getElementById('name-submit');
+    var appHeader = document.getElementById('app-header');
+    var inputArea = document.getElementById('input-area');
+    var feed = document.getElementById('feed');
+    var msgInput = document.getElementById('msg-input');
+    var sendBtn = document.getElementById('send-btn');
+    var syncBtn = document.getElementById('sync-btn');
+    var statusDot = document.getElementById('status-dot');
+    var lastSyncedEl = document.getElementById('last-synced');
+    var staleBanner = document.getElementById('stale-banner');
+    var userBadge = document.getElementById('user-badge');
+    var errorToast = document.getElementById('error-toast');
+
+    // ── Color from name hash ──
+    var AVATAR_COLORS = [
+      '#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab',
+      '#1e88e5','#039be5','#00897b','#43a047','#c0ca33',
+      '#f4511e','#6d4c41','#546e7a','#ff8f00','#00acc1'
+    ];
+    function hashName(name) {
+      var h = 0;
+      for (var i = 0; i < name.length; i++) {
+        h = ((h << 5) - h) + name.charCodeAt(i);
+        h |= 0;
+      }
+      return Math.abs(h);
+    }
+    function avatarColor(name) { return AVATAR_COLORS[hashName(name) % AVATAR_COLORS.length]; }
+    function avatarInitial(name) { return (name || '?')[0].toUpperCase(); }
+
+    // ── Status helpers ──
+    function setStatus(state) {
+      statusDot.className = state;
+    }
+    function updateLastSynced() {
+      if (!lastSyncTime) { lastSyncedEl.textContent = ''; return; }
+      var ago = Math.round((Date.now() - lastSyncTime) / 1000);
+      if (ago < 5) lastSyncedEl.textContent = 'just now';
+      else if (ago < 60) lastSyncedEl.textContent = ago + 's ago';
+      else if (ago < 3600) lastSyncedEl.textContent = Math.floor(ago / 60) + 'm ago';
+      else lastSyncedEl.textContent = Math.floor(ago / 3600) + 'h ago';
+    }
+    // Update "last synced" display every 10s
+    setInterval(updateLastSynced, 10000);
+
+    function showError(msg) {
+      errorToast.textContent = msg;
+      errorToast.style.display = 'block';
+      setTimeout(function() { errorToast.style.display = 'none'; }, 4000);
+    }
+
+    // ── Render feed ──
+    function renderFeed() {
+      feed.innerHTML = '';
+      // Show entries newest-first
+      var sorted = entries.slice().reverse();
+      if (optimisticEntry) {
+        sorted.unshift(optimisticEntry);
+      }
+      sorted.forEach(function(e) {
+        var div = document.createElement('div');
+        div.className = 'entry' + (e._optimistic ? ' optimistic' : '');
+
+        var avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.style.background = avatarColor(e.user);
+        avatar.textContent = avatarInitial(e.user);
+
+        var body = document.createElement('div');
+        body.className = 'body';
+
+        var meta = document.createElement('div');
+        meta.className = 'meta';
+        var uname = document.createElement('span');
+        uname.className = 'username';
+        uname.textContent = e.user;
+        var time = document.createElement('span');
+        time.className = 'time';
+        time.textContent = formatTime(e.timestamp);
+        meta.appendChild(uname);
+        meta.appendChild(time);
+
+        var msg = document.createElement('div');
+        msg.className = 'msg';
+        msg.textContent = e.message;
+
+        body.appendChild(meta);
+        body.appendChild(msg);
+        div.appendChild(avatar);
+        div.appendChild(body);
+        feed.appendChild(div);
+      });
+    }
+
+    function formatTime(ts) {
+      if (!ts) return '';
+      var d = new Date(ts);
+      if (isNaN(d.getTime())) return String(ts);
+      var now = new Date();
+      var time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (d.toDateString() !== now.toDateString()) {
+        return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + time;
+      }
+      return time;
+    }
+
+    // ── API calls ──
+    function fetchData() {
+      if (isSyncing) return;
+      isSyncing = true;
+      setStatus('syncing');
+      syncBtn.classList.add('loading');
+      syncBtn.disabled = true;
+
+      fetch(GAS_URL + '?action=fetch', { redirect: 'follow' })
+        .then(function(res) { return res.json(); })
+        .then(function(result) {
+          if (result.success) {
+            entries = result.data || [];
+            dataVersion = result.version || '0';
+            lastSyncTime = Date.now();
+            optimisticEntry = null;
+            renderFeed();
+            setStatus('ready');
+            staleBanner.style.display = 'none';
+          } else {
+            throw new Error(result.error || 'Fetch failed');
+          }
+        })
+        .catch(function(err) {
+          setStatus('error');
+          showError('Sync failed: ' + err.message);
+          setTimeout(function() { if (!isSyncing) setStatus(lastSyncTime ? 'ready' : ''); }, 3000);
+        })
+        .finally(function() {
+          isSyncing = false;
+          syncBtn.classList.remove('loading');
+          syncBtn.disabled = false;
+          updateLastSynced();
+        });
+    }
+
+    function submitData(message) {
+      // Optimistic UI
+      optimisticEntry = {
+        timestamp: new Date().toISOString(),
+        user: currentUser,
+        message: message,
+        entryId: 'optimistic-' + Date.now(),
+        _optimistic: true
+      };
+      renderFeed();
+
+      var savedInput = message;
+      msgInput.value = '';
+      autoResize();
+      sendBtn.disabled = true;
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'submit', user: currentUser, message: message }),
+        redirect: 'follow'
+      })
+        .then(function(res) { return res.json(); })
+        .then(function(result) {
+          if (result.success) {
+            entries = result.data || [];
+            dataVersion = result.version || '0';
+            lastSyncTime = Date.now();
+            optimisticEntry = null;
+            renderFeed();
+            setStatus('ready');
+          } else {
+            throw new Error(result.error || 'Submit failed');
+          }
+        })
+        .catch(function(err) {
+          // Roll back optimistic entry, restore input
+          optimisticEntry = null;
+          renderFeed();
+          msgInput.value = savedInput;
+          autoResize();
+          showError('Send failed: ' + err.message);
+          setStatus('error');
+          setTimeout(function() { if (!isSyncing) setStatus(lastSyncTime ? 'ready' : ''); }, 3000);
+        })
+        .finally(function() {
+          sendBtn.disabled = false;
+          updateLastSynced();
+        });
+    }
+
+    // ── Visibility API — event-driven sync ──
+    var wasHidden = false;
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        wasHidden = true;
+        return;
+      }
+      if (!wasHidden || !currentUser) return;
+      wasHidden = false;
+
+      var awayFor = Date.now() - lastSyncTime;
+      if (awayFor > 10000 && awayFor < 120000) {
+        // Quick switch (10s–2min): auto-sync silently
+        fetchData();
+      } else if (awayFor >= 120000) {
+        // Long absence: show stale banner
+        setStatus('stale');
+        staleBanner.style.display = 'block';
+      }
+      // < 10s: do nothing, data is fresh enough
+    });
+
+    // ── Stale banner tap ──
+    staleBanner.addEventListener('click', function() {
+      staleBanner.style.display = 'none';
+      fetchData();
+    });
+
+    // ── Sync button ──
+    syncBtn.addEventListener('click', function() { fetchData(); });
+
+    // ── Send message ──
+    function handleSend() {
+      var msg = msgInput.value.trim();
+      if (!msg || sendBtn.disabled) return;
+      submitData(msg);
+    }
+    sendBtn.addEventListener('click', handleSend);
+    msgInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+
+    // Auto-resize textarea
+    function autoResize() {
+      msgInput.style.height = 'auto';
+      msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+    }
+    msgInput.addEventListener('input', autoResize);
+
+    // ── Name entry ──
+    nameInput.addEventListener('input', function() {
+      nameSubmit.disabled = !nameInput.value.trim();
+    });
+    function joinWithName() {
+      var name = nameInput.value.trim();
+      if (!name) return;
+      currentUser = name;
+      sessionStorage.setItem('rnd-user', name);
+      nameModal.classList.add('hidden');
+      startApp();
+    }
+    nameSubmit.addEventListener('click', joinWithName);
+    nameInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); joinWithName(); }
+    });
+
+    // ── Start app ──
+    function startApp() {
+      appHeader.style.display = 'flex';
+      inputArea.style.display = 'flex';
+      userBadge.textContent = currentUser;
+      userBadge.style.background = avatarColor(currentUser);
+
+      // Hide the template GAS iframe (we use fetch() instead)
+      var gasFrame = document.getElementById('gas-app');
+      if (gasFrame) {
+        gasFrame.style.width = '1px';
+        gasFrame.style.height = '1px';
+        gasFrame.style.position = 'absolute';
+        gasFrame.style.left = '-9999px';
+      }
+
+      fetchData();
+      msgInput.focus();
+    }
+
+    // ── Init ──
+    if (currentUser) {
+      nameModal.classList.add('hidden');
+      startApp();
+    } else {
+      nameInput.focus();
+    }
+  })();
+  </script>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
