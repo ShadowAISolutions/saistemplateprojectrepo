@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
-  <!-- PROJECT OVERRIDE: CSP extended for Google Visualization API (Charts loader + gviz JSONP) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.google.com https://docs.google.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://docs.google.com https://accounts.google.com https://www.google.com; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://www.gstatic.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
+  <!-- PROJECT OVERRIDE: CSP for private data via GAS CacheService (no Google Visualization API / Charts needed) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>RND Live Data</title>
   <style>
@@ -300,14 +300,14 @@
     <div id="config-hint">
       <div class="hint-box">
         <h2>Configuration Required</h2>
-        <p>Set up a Google Spreadsheet to use the live data viewer.</p>
+        <p>Set up a Google Spreadsheet to use the live data viewer. The spreadsheet stays <strong>private</strong> &mdash; data is served through the GAS script.</p>
         <ol>
-          <li>Create or open a Google Spreadsheet</li>
-          <li>Go to <code>File &rarr; Share &rarr; Publish to web</code> and publish it</li>
-          <li>Click <code>Share</code> and set access to <code>Anyone with the link</code> (Viewer)</li>
+          <li>Create or open a Google Spreadsheet (keep it private)</li>
           <li>Copy the spreadsheet ID from the URL</li>
           <li>Set <code>SPREADSHEET_ID</code> in <code>rndlivedata.config.json</code></li>
           <li>Set <code>SHEET_NAME</code> to the tab name you want to display</li>
+          <li>In the Apps Script editor, create a <strong>time-driven trigger</strong> for <code>refreshDataCache</code> (every 1 minute)</li>
+          <li>Deploy the GAS web app</li>
         </ol>
       </div>
     </div>
@@ -348,24 +348,16 @@
     <div id="empty-state">Waiting for data...</div>
   </div>
 
-  <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script>
   (function() {
     'use strict';
 
     // ── Config ──
-    var SHEET_ID = '1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU';
-    var SHEET_NAME = 'Live_Sheet';
-    var POLL_INTERVAL = 2500;
+    // Data is served via GAS CacheService (private spreadsheet).
+    // No SHEET_ID needed in HTML — GAS reads the spreadsheet server-side.
     var PRESENCE_POLL = 10000;
-
-    // ── Config hint ──
-    if (!SHEET_ID) {
-      document.getElementById('config-hint').style.display = 'flex';
-      document.getElementById('app-header').style.display = 'none';
-      document.getElementById('view-tabs').style.display = 'none';
-      return;
-    }
+    var DATA_STALE_THRESHOLD = 60000; // 60s without data → show disconnected
+    var GAS_IFRAME_READY = false;
 
     // ── State ──
     var previousDataJSON = null;
@@ -375,10 +367,8 @@
     var sortAsc = true;
     var lastHeaders = [];
     var lastRows = [];
-    var pollTimer = null;
-    var countdownTimer = null;
-    var nextPollAt = 0;
-    var consecutiveErrors = 0;
+    var lastDataTs = 0;
+    var staleCheckTimer = null;
 
     // ── DOM refs ──
     var connDot = document.getElementById('conn-dot');
@@ -408,19 +398,27 @@
     // ── Connection status ──
     function setConnectionStatus(state) {
       connDot.className = state;
-      if (state === 'live') connLabel.textContent = 'Live';
+      if (state === 'live') {
+        var age = Math.round((Date.now() - lastDataTs) / 1000);
+        connLabel.textContent = 'Live';
+        countdownEl.textContent = age > 0 ? age + 's ago' : '';
+      }
       else if (state === 'updating') connLabel.textContent = 'Updating...';
       else connLabel.textContent = 'Disconnected';
     }
 
-    // ── Countdown timer ──
-    function startCountdown() {
-      nextPollAt = Date.now() + POLL_INTERVAL;
-      if (countdownTimer) clearInterval(countdownTimer);
-      countdownTimer = setInterval(function() {
-        var remaining = Math.max(0, Math.ceil((nextPollAt - Date.now()) / 1000));
-        countdownEl.textContent = remaining + 's';
-      }, 250);
+    // ── Staleness checker — updates "Xs ago" and detects disconnection ──
+    function startStaleCheck() {
+      if (staleCheckTimer) clearInterval(staleCheckTimer);
+      staleCheckTimer = setInterval(function() {
+        if (lastDataTs === 0) return;
+        var age = Date.now() - lastDataTs;
+        if (age > DATA_STALE_THRESHOLD) {
+          setConnectionStatus('disconnected');
+        } else {
+          setConnectionStatus('live');
+        }
+      }, 1000);
     }
 
     // ── Tab switching ──
@@ -434,67 +432,43 @@
       });
     });
 
-    // ── Data polling via Google Visualization API ──
-    function pollData() {
-      setConnectionStatus('updating');
-      var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=' + encodeURIComponent(SHEET_NAME);
-      var query = new google.visualization.Query(url);
-      query.send(handleQueryResponse);
-    }
+    // ── Handle incoming live data from GAS iframe (piggybacked on heartbeats) ──
+    function handleLiveData(data) {
+      if (!data || !data.headers) return;
 
-    function handleQueryResponse(response) {
-      if (response.isError()) {
-        consecutiveErrors++;
-        setConnectionStatus('disconnected');
-        var delay = Math.min(POLL_INTERVAL * Math.pow(2, consecutiveErrors - 1), 30000);
-        pollTimer = setTimeout(pollData, delay);
-        startCountdown();
-        return;
-      }
-
-      consecutiveErrors = 0;
+      lastDataTs = Date.now();
       setConnectionStatus('live');
 
-      var dt = response.getDataTable();
-      var currentJSON = dt.toJSON();
-
+      var currentJSON = JSON.stringify(data);
       if (currentJSON !== previousDataJSON) {
-        var changedCells = detectChanges(dt);
+        var changedCells = detectChanges(data.headers, data.rows);
         previousDataJSON = currentJSON;
 
-        // Extract headers and rows
-        lastHeaders = [];
-        for (var c = 0; c < dt.getNumberOfColumns(); c++) {
-          lastHeaders.push(dt.getColumnLabel(c) || String.fromCharCode(65 + c));
-        }
-        lastRows = [];
-        for (var r = 0; r < dt.getNumberOfRows(); r++) {
-          var row = [];
-          for (var c2 = 0; c2 < dt.getNumberOfColumns(); c2++) {
-            var v = dt.getFormattedValue(r, c2);
-            row.push(v !== undefined && v !== null ? v : '');
-          }
-          lastRows.push(row);
-        }
+        lastHeaders = data.headers.map(function(h, i) {
+          var val = (h !== undefined && h !== null) ? String(h) : '';
+          return val || String.fromCharCode(65 + i);
+        });
+        lastRows = (data.rows || []).map(function(row) {
+          return row.map(function(v) {
+            return (v !== undefined && v !== null) ? String(v) : '';
+          });
+        });
 
         emptyState.style.display = lastRows.length === 0 ? 'flex' : 'none';
 
         renderTableView(changedCells);
         renderDashboardView(changedCells);
       }
-
-      pollTimer = setTimeout(pollData, POLL_INTERVAL);
-      startCountdown();
     }
 
-    // ── Change detection ──
-    function detectChanges(dt) {
+    // ── Change detection (array-based, no DataTable dependency) ──
+    function detectChanges(headers, rows) {
       var changed = {};
       var newCells = {};
-      for (var r = 0; r < dt.getNumberOfRows(); r++) {
-        for (var c = 0; c < dt.getNumberOfColumns(); c++) {
+      for (var r = 0; r < rows.length; r++) {
+        for (var c = 0; c < rows[r].length; c++) {
           var key = r + ':' + c;
-          var val = dt.getFormattedValue(r, c);
+          var val = (rows[r][c] !== undefined && rows[r][c] !== null) ? String(rows[r][c]) : '';
           newCells[key] = val;
           if (previousCells.hasOwnProperty(key) && previousCells[key] !== val) {
             changed[key] = true;
@@ -596,32 +570,14 @@
       sv.textContent = lastRows.length + ' rows \u00D7 ' + lastHeaders.length + ' cols';
       var sm = document.createElement('div');
       sm.className = 'card-meta';
-      sm.textContent = 'Polling every ' + (POLL_INTERVAL / 1000) + 's';
+      sm.textContent = 'Data via GAS CacheService (private spreadsheet)';
       stats.appendChild(sl);
       stats.appendChild(sv);
       stats.appendChild(sm);
       dashGrid.appendChild(stats);
     }
 
-    // ── User Presence ──
-    function pollPresence() {
-      var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=' + encodeURIComponent('_Presence');
-      var query = new google.visualization.Query(url);
-      query.send(function(response) {
-        if (response.isError()) return;
-        var dt = response.getDataTable();
-        var cutoff = Date.now() - 120000;
-        var activeUsers = [];
-        for (var r = 0; r < dt.getNumberOfRows(); r++) {
-          var name = dt.getFormattedValue(r, 0);
-          var lastSeen = dt.getValue(r, 1);
-          var ts = lastSeen instanceof Date ? lastSeen.getTime() : new Date(String(lastSeen)).getTime();
-          if (ts > cutoff && name) activeUsers.push(name);
-        }
-        renderPresence(activeUsers);
-      });
-    }
-
+    // ── User Presence (via GAS iframe postMessage) ──
     function renderPresence(users) {
       presenceArea.innerHTML = '';
       var max = 5;
@@ -643,29 +599,28 @@
       viewerCountEl.textContent = users.length > 0 ? users.length + ' viewer' + (users.length > 1 ? 's' : '') : '';
     }
 
-    // Also request active users from GAS iframe for more accurate presence
+    // ── Message handler — receives data + presence from GAS iframe ──
     window.addEventListener('message', function(e) {
-      if (e.data && e.data.type === 'active-users') {
-        // Merge GAS-reported users with Viz API users (GAS has 60s window, Viz has 120s)
-        // Prefer Viz API data since it's already displayed
+      if (!e.data || !e.data.type) return;
+      if (e.data.type === 'live-data' && e.data.data) {
+        handleLiveData(e.data.data);
+      }
+      if (e.data.type === 'active-users') {
+        renderPresence(e.data.users || []);
       }
     });
 
     // ── Init ──
-    google.charts.load('current');
-    google.charts.setOnLoadCallback(function() {
-      pollData();
-      pollPresence();
-      setInterval(pollPresence, PRESENCE_POLL);
+    setConnectionStatus('updating');
+    startStaleCheck();
 
-      // Request presence from GAS iframe periodically
-      setInterval(function() {
-        var gasFrame = document.getElementById('gas-app');
-        if (gasFrame && gasFrame.contentWindow) {
-          gasFrame.contentWindow.postMessage({type: 'get-active-users'}, '*');
-        }
-      }, PRESENCE_POLL);
-    });
+    // Request presence from GAS iframe periodically
+    setInterval(function() {
+      var gasFrame = document.getElementById('gas-app');
+      if (gasFrame && gasFrame.contentWindow) {
+        gasFrame.contentWindow.postMessage({type: 'get-active-users'}, '*');
+      }
+    }, PRESENCE_POLL);
   })();
   </script>
 <!-- ══════════════ -->

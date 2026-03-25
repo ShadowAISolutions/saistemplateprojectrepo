@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v06.54r] — 2026-03-25 02:58:00 PM EST
+
+> **Prompt:** "for rndlivedata , see if you can come up with a way for it to work without sharing the spreadsheet publicly, that defeats the whole purpose. the users might as well be looking at the spreadsheet"
+
+### Changed
+- Redesigned rndlivedata to serve data from a private spreadsheet via GAS CacheService instead of requiring public Google Sheets access
+- Data piggybacks on existing presence heartbeats (zero additional GAS quota per viewer)
+- Time-driven trigger refreshes CacheService every minute (~1,440 calls/day regardless of viewer count)
+- Removed Google Visualization API / Charts dependency from the page
+
+#### `rndlivedata.html` — v01.06w
+##### Changed
+- Data now arrives via the GAS script instead of requiring a publicly shared spreadsheet
+- Removed dependency on Google Charts library for faster page loading
+- Connection status shows "Last updated Xs ago" instead of polling countdown
+- Setup instructions updated — no longer asks to share spreadsheet publicly
+
+#### `rndlivedata.gs` — v01.04g
+##### Changed
+- Added CacheService-based data serving — spreadsheet data cached server-side
+- Presence heartbeats now also deliver live data to viewers (zero extra calls)
+- Active user queries include live data alongside the user list
 
 ## [v06.53r] — 2026-03-25 02:18:30 PM EST
 

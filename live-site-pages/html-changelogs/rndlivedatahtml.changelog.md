@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [rndlivedatahtml.changelog-archive.md](rndlivedatahtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-03-25 02:58:00 PM EST — v06.54r
+
+### Changed
+- Data now arrives via the GAS script instead of requiring a publicly shared spreadsheet
+- Removed dependency on Google Charts library for faster page loading
+- Connection status shows "Last updated Xs ago" instead of polling countdown
+- Setup instructions updated — no longer asks to share spreadsheet publicly
 
 ## [v01.05w] — 2026-03-25 02:18:30 PM EST — v06.53r
 

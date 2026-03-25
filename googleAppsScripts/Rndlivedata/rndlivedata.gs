@@ -1,4 +1,4 @@
-var VERSION = "v01.03g";
+var VERSION = "v01.04g";
 var TITLE = "RND Live Data";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -14,18 +14,50 @@ var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrep
 // PROJECT START
 // ══════════════
 
-// PROJECT OVERRIDE: Live data is served via Google Visualization API (gviz/tq endpoint).
-// GAS is only used for presence tracking (write operations).
-// Data reads happen client-side via google.visualization.Query — zero GAS execution for reads.
+// PROJECT OVERRIDE: Data reads via CacheService — refreshed by time trigger.
+// Spreadsheet stays private. writePresence/getActiveUsers piggyback cached data
+// on existing calls so viewers incur zero additional GAS quota for data reads.
+
+/**
+ * refreshDataCache() — reads the private spreadsheet and stores data in CacheService.
+ * Called by a time-driven trigger (every 1 minute). This is the ONLY function that
+ * hits the Spreadsheet API for live data — all viewer-facing calls read from cache.
+ * Set up trigger: Apps Script editor → Triggers → Add → refreshDataCache → Time-driven → Every minute.
+ */
+function refreshDataCache() {
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return;
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0] || [];
+    var rows = data.slice(1);
+    var result = JSON.stringify({ headers: headers, rows: rows, ts: Date.now() });
+    // 100KB CacheService limit per key — large sheets may need chunking in the future
+    CacheService.getScriptCache().put('livedata_' + SHEET_NAME, result, 90);
+  } catch (e) {
+    Logger.log('refreshDataCache error: ' + e.message);
+  }
+}
+
+/**
+ * getCachedData() — reads live data from CacheService (no spreadsheet hit).
+ * Returns parsed object { headers, rows, ts } or null if cache is empty.
+ */
+function getCachedData() {
+  var cached = CacheService.getScriptCache().get('livedata_' + SHEET_NAME);
+  return cached ? JSON.parse(cached) : null;
+}
 
 /**
  * writePresence(userName) — writes a heartbeat to the hidden _Presence sheet.
  * Creates the sheet with "User"/"Last Seen" headers if it doesn't exist.
  * Updates existing user rows or appends new ones.
  * Called from the HTML page via GAS iframe every 30 seconds.
+ * Returns cached live data piggybacked on the response (zero extra quota).
  */
 function writePresence(userName) {
-  if (!userName || typeof userName !== 'string') return;
+  if (!userName || typeof userName !== 'string') return getCachedData();
   userName = userName.substring(0, 50);
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName('_Presence');
@@ -39,19 +71,21 @@ function writePresence(userName) {
   for (var i = 1; i < data.length; i++) {
     if (data[i][0] === userName) {
       sheet.getRange(i + 1, 2).setValue(now);
-      return;
+      return getCachedData();
     }
   }
   sheet.appendRow([userName, now]);
+  return getCachedData();
 }
 
 /**
- * getActiveUsers() — returns array of users active within the last 60 seconds.
+ * getActiveUsers() — returns object with active users (within 60s) and cached live data.
+ * Format: { users: [...], data: { headers, rows, ts } | null }
  */
 function getActiveUsers() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName('_Presence');
-  if (!sheet) return [];
+  if (!sheet) return { users: [], data: getCachedData() };
   var data = sheet.getDataRange().getValues();
   var cutoff = Date.now() - 60000;
   var active = [];
@@ -61,7 +95,7 @@ function getActiveUsers() {
       active.push(data[i][0]);
     }
   }
-  return active;
+  return { users: active, data: getCachedData() };
 }
 
 // ══════════════
@@ -73,10 +107,13 @@ function getActiveUsers() {
 // ══════════════
 
 function doGet(e) {
-  // PROJECT OVERRIDE START: Presence heartbeat + active users via GAS iframe
-  // Data reads are handled client-side via Google Visualization API — zero GAS execution for reads.
-  // GAS iframe only handles: (1) presence heartbeat writes, (2) active user queries, (3) version checks.
+  // PROJECT OVERRIDE START: GAS iframe embeds cached spreadsheet data on load and
+  // receives updated data via writePresence/getActiveUsers responses.
+  // Data is served from CacheService (refreshed by time trigger) — zero direct spreadsheet reads per viewer.
+  // GAS iframe handles: (1) presence heartbeat + live data piggyback, (2) active user + data queries, (3) version checks, (4) on-demand data requests.
   // PROJECT OVERRIDE END
+  var initialData = getCachedData();
+  var initialDataJSON = initialData ? JSON.stringify(initialData) : 'null';
   var html = `
     <html>
     <head>
@@ -91,9 +128,15 @@ function doGet(e) {
     </head>
     <body>
       <h2 id="version">${VERSION}</h2>
-      <p style="font-size:13px;color:#888;margin:8px;">Live data via Google Visualization API</p>
+      <p style="font-size:13px;color:#888;margin:8px;">Live data via CacheService (private spreadsheet)</p>
 
       <script>
+        // Initial data embedded at iframe load time — zero extra calls
+        var _initialData = ${initialDataJSON};
+        if (_initialData) {
+          top.postMessage({type: 'live-data', data: _initialData}, '*');
+        }
+
         // Generate or retrieve viewer name
         var _viewerName = sessionStorage.getItem('rnd-viewer');
         if (!_viewerName) {
@@ -101,21 +144,27 @@ function doGet(e) {
           sessionStorage.setItem('rnd-viewer', _viewerName);
         }
 
-        // Presence heartbeat — write every 30 seconds
+        // Presence heartbeat — write every 30 seconds, piggybacks live data on response
         function sendPresence() {
           google.script.run
+            .withSuccessHandler(function(data) {
+              if (data) top.postMessage({type: 'live-data', data: data}, '*');
+            })
             .withFailureHandler(function() {})
             .writePresence(_viewerName);
         }
         sendPresence();
         setInterval(sendPresence, 30000);
 
-        // Listen for active-users requests from parent
+        // Listen for requests from parent
         window.addEventListener('message', function(e) {
           if (e.data && e.data.type === 'get-active-users') {
             google.script.run
-              .withSuccessHandler(function(users) {
-                top.postMessage({type: 'active-users', users: users || []}, '*');
+              .withSuccessHandler(function(result) {
+                var users = (result && result.users) || [];
+                var data = (result && result.data) || null;
+                top.postMessage({type: 'active-users', users: users}, '*');
+                if (data) top.postMessage({type: 'live-data', data: data}, '*');
               })
               .withFailureHandler(function() {
                 top.postMessage({type: 'active-users', users: []}, '*');
@@ -131,6 +180,16 @@ function doGet(e) {
                 top.postMessage({type: 'gas-version', version: null}, '*');
               })
               .getAppData();
+          }
+          if (e.data && e.data.type === 'get-live-data') {
+            google.script.run
+              .withSuccessHandler(function(data) {
+                top.postMessage({type: 'live-data', data: data}, '*');
+              })
+              .withFailureHandler(function() {
+                top.postMessage({type: 'live-data', data: null}, '*');
+              })
+              .getCachedData();
           }
         });
       </script>
