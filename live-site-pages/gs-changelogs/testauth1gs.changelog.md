@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v02.01g] — 2026-03-25 05:56:05 PM EST — v06.59r
+
+### Fixed
+- Heartbeat response time restored to normal speed — data updates no longer slow down the connection check
 
 ## [v02.00g] — 2026-03-25 05:41:07 PM EST — v06.58r
 

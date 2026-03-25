@@ -1,4 +1,4 @@
-var VERSION = "v02.00g";
+var VERSION = "v02.01g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -577,8 +577,6 @@ function getCachedData() {
   var key = 'livedata_' + SHEET_NAME;
   var cached = cache.get(key);
   if (cached) {
-    // Re-up TTL on every read — cache never expires while viewers are present
-    cache.put(key, cached, 21600);
     return JSON.parse(cached);
   }
   // Self-repair: cache miss → read spreadsheet, warm cache
@@ -650,7 +648,10 @@ function writeCell(token, row, col, value) {
     row: row, col: col, sheet: SHEET_NAME
   });
 
-  return signMessage({ type: 'gas-write-ok', liveData: getCachedData() }, user.messageKey || '');
+  var writeResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  // Attach liveData AFTER signing — nested objects cause HMAC mismatch
+  writeResult.liveData = getCachedData();
+  return writeResult;
 }
 
 // ══════════════
@@ -2488,7 +2489,10 @@ function processHeartbeat(token) {
   var hbAbsRemaining = hbData.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT
     ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
     : 0;
-  return signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining, liveData: getCachedData()}, msgKey);
+  var hbResult = signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
+  // Attach liveData AFTER signing — nested objects cause HMAC mismatch between GAS and browser JSON.stringify
+  hbResult.liveData = getCachedData();
+  return hbResult;
 }
 
 // ── Phase 7 (H-6): Server-side sign-out processing ──
