@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
+  <!-- PROJECT OVERRIDE: CSP extended for Google Visualization API (Charts loader + gviz JSONP) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://docs.google.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://docs.google.com; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>RND Live Data</title>
   <style>
@@ -155,484 +156,516 @@
 <!-- PROJECT START -->
 <!-- ══════════════ -->
   <style>
-    /* ── App Layout ── */
+    /* ── Live Data Viewer Layout ── */
     #rnd-app {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
       display: flex; flex-direction: column;
-      background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f1117; color: #e1e4e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    /* ── Name Entry Modal ── */
-    #name-modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
-      background: #0f0f1a; display: flex; align-items: center; justify-content: center;
-    }
-    #name-modal.hidden { display: none; }
-    .name-box {
-      background: #1a1a2e; border-radius: 16px; padding: 40px; text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5); max-width: 360px; width: 90%;
-    }
-    .name-box h1 { margin: 0 0 8px; font-size: 24px; color: #fff; }
-    .name-box p { margin: 0 0 24px; color: #888; font-size: 14px; }
-    .name-box input {
-      width: 100%; padding: 12px 16px; border: 2px solid #333; border-radius: 8px;
-      background: #0f0f1a; color: #fff; font-size: 16px; outline: none;
-      box-sizing: border-box; transition: border-color 0.2s;
-    }
-    .name-box input:focus { border-color: #5c6bc0; }
-    .name-box button {
-      margin-top: 16px; width: 100%; padding: 12px; border: none; border-radius: 8px;
-      background: #5c6bc0; color: #fff; font-size: 16px; font-weight: 600;
-      cursor: pointer; transition: background 0.2s;
-    }
-    .name-box button:hover { background: #7986cb; }
-    .name-box button:disabled { background: #333; cursor: not-allowed; }
     /* ── Header ── */
     #app-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 16px; background: #1a1a2e; border-bottom: 1px solid #2a2a4a;
-      flex-shrink: 0;
+      padding: 12px 16px; background: #1a1b26; border-bottom: 1px solid #2a2b3d;
+      flex-shrink: 0; flex-wrap: wrap; gap: 8px;
     }
     #app-header .left { display: flex; align-items: center; gap: 10px; }
     #app-header h2 { margin: 0; font-size: 16px; color: #fff; white-space: nowrap; }
-    #status-dot {
-      width: 10px; height: 10px; border-radius: 50%; background: #888;
+    #app-header .right { display: flex; align-items: center; gap: 8px; }
+    #presence-area { display: flex; align-items: center; gap: 4px; }
+    .presence-bubble {
+      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-weight: 700; font-size: 12px; color: #fff;
+      border: 2px solid #0f1117; margin-left: -8px; cursor: default; position: relative;
+    }
+    .presence-bubble:first-child { margin-left: 0; }
+    .presence-bubble[title]:hover::after {
+      content: attr(title); position: absolute; bottom: -24px; left: 50%;
+      transform: translateX(-50%); background: #333; color: #fff; padding: 2px 6px;
+      border-radius: 4px; font-size: 10px; white-space: nowrap; z-index: 10;
+    }
+    #viewer-count { font-size: 12px; color: #8b949e; margin-left: 4px; }
+    /* ── Connection Status ── */
+    #conn-status {
+      display: flex; align-items: center; gap: 6px; padding: 4px 12px;
+      background: rgba(0,0,0,0.3); border-radius: 20px; font-size: 12px; color: #8b949e;
+    }
+    #conn-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #888;
       transition: background 0.3s;
     }
-    #status-dot.ready { background: #66bb6a; }
-    #status-dot.syncing { background: #ffa726; animation: pulse 0.6s infinite alternate; }
-    #status-dot.error { background: #ef5350; }
-    #status-dot.stale { background: #888; }
-    #last-synced { font-size: 11px; color: #666; white-space: nowrap; }
-    #app-header .right { display: flex; align-items: center; gap: 8px; }
-    #sync-btn {
-      padding: 6px 14px; border: 1px solid #444; border-radius: 6px;
-      background: transparent; color: #ccc; font-size: 13px; cursor: pointer;
-      display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    #conn-dot.live { background: #3fb950; }
+    #conn-dot.updating { background: #d29922; animation: pulse 0.6s infinite alternate; }
+    #conn-dot.disconnected { background: #f85149; }
+    #conn-label { white-space: nowrap; }
+    #countdown { font-size: 11px; color: #6e7681; min-width: 20px; text-align: right; }
+    /* ── Tabs ── */
+    #view-tabs {
+      display: flex; background: #1a1b26; border-bottom: 1px solid #2a2b3d; flex-shrink: 0;
     }
-    #sync-btn:hover { background: #2a2a4a; border-color: #666; }
-    #sync-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    #sync-btn .spinner {
-      width: 14px; height: 14px; border: 2px solid #555; border-top-color: #fff;
-      border-radius: 50%; display: none; animation: spin 0.6s linear infinite;
+    .view-tab {
+      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #8b949e;
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+      background: none; border-top: none; border-left: none; border-right: none;
     }
-    #sync-btn.loading .spinner { display: inline-block; }
-    #sync-btn.loading .sync-icon { display: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #user-badge {
-      padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
-      color: #fff; white-space: nowrap;
+    .view-tab:hover { color: #e1e4e8; }
+    .view-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+    /* ── Table View ── */
+    #table-view {
+      flex: 1; overflow: auto; padding: 16px;
     }
-    /* ── Stale Banner ── */
-    #stale-banner {
-      display: none; padding: 10px 16px; background: #3a3a1a; border-bottom: 1px solid #555522;
-      text-align: center; font-size: 13px; color: #dda; flex-shrink: 0; cursor: pointer;
+    #data-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
     }
-    #stale-banner:hover { background: #4a4a2a; }
-    /* ── Feed ── */
-    #feed {
-      flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;
+    #data-table th {
+      position: sticky; top: 0; background: #1a1b26; color: #8b949e;
+      padding: 10px 12px; text-align: left; border-bottom: 2px solid #2a2b3d;
+      cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600;
     }
-    #feed:empty::after {
-      content: 'No entries yet. Be the first to post!';
-      color: #555; text-align: center; margin-top: 40px; font-size: 14px;
+    #data-table th:hover { color: #e1e4e8; }
+    #data-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+    #data-table td {
+      padding: 8px 12px; border-bottom: 1px solid #1e2030; color: #c9d1d9;
+      transition: background 0.3s;
     }
-    .entry {
-      display: flex; gap: 10px; padding: 10px 12px; background: #1a1a2e;
-      border-radius: 10px; transition: background 0.2s;
+    #data-table tr:hover td { background: rgba(88,166,255,0.05); }
+    @keyframes cell-flash {
+      0% { background: rgba(46,160,67,0.45); }
+      100% { background: transparent; }
     }
-    .entry.optimistic { opacity: 0.6; }
-    .entry .avatar {
-      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 15px; color: #fff;
+    .cell-changed { animation: cell-flash 1.5s ease-out; }
+    /* ── Dashboard View ── */
+    #dashboard-view {
+      flex: 1; overflow: auto; padding: 16px; display: none;
     }
-    .entry .body { flex: 1; min-width: 0; }
-    .entry .meta { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
-    .entry .username { font-weight: 600; font-size: 13px; color: #fff; }
-    .entry .time { font-size: 11px; color: #666; }
-    .entry .msg { font-size: 14px; line-height: 1.4; word-wrap: break-word; color: #ccc; white-space: pre-wrap; }
-    /* ── Input ── */
-    #input-area {
-      padding: 12px 16px; background: #1a1a2e; border-top: 1px solid #2a2a4a;
-      display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0;
+    #dashboard-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
     }
-    #msg-input {
-      flex: 1; padding: 10px 14px; border: 2px solid #333; border-radius: 8px;
-      background: #0f0f1a; color: #fff; font-size: 14px; outline: none;
-      resize: none; max-height: 120px; min-height: 40px; line-height: 1.4;
-      font-family: inherit; transition: border-color 0.2s;
+    .dash-card {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+      padding: 20px; transition: border-color 0.2s;
     }
-    #msg-input:focus { border-color: #5c6bc0; }
-    #send-btn {
-      padding: 10px 20px; border: none; border-radius: 8px;
-      background: #5c6bc0; color: #fff; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    .dash-card:hover { border-color: #58a6ff; }
+    .dash-card .card-label {
+      font-size: 12px; color: #8b949e; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
     }
-    #send-btn:hover { background: #7986cb; }
-    #send-btn:disabled { background: #333; cursor: not-allowed; }
-    /* ── Error Toast ── */
-    #error-toast {
-      position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 200;
-      background: #d32f2f; color: #fff; padding: 10px 20px; border-radius: 8px;
-      font-size: 13px; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      max-width: 90%; text-align: center;
+    .dash-card .card-value {
+      font-size: 28px; font-weight: 700; color: #fff; word-break: break-word;
+      transition: color 0.3s;
+    }
+    .dash-card .card-meta { font-size: 11px; color: #6e7681; margin-top: 8px; }
+    .dash-card.stats { background: #161b22; border-color: #30363d; }
+    .dash-card .card-value.changed { color: #3fb950; }
+    @keyframes card-flash {
+      0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); }
+      100% { border-color: #2a2b3d; box-shadow: none; }
+    }
+    .card-changed { animation: card-flash 1.5s ease-out; }
+    /* ── Config Hint ── */
+    #config-hint {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 50; background: #0f1117; align-items: center; justify-content: center;
+    }
+    .hint-box {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 16px;
+      padding: 40px; max-width: 480px; width: 90%; text-align: center;
+    }
+    .hint-box h2 { margin: 0 0 12px; color: #f0883e; font-size: 20px; }
+    .hint-box p { margin: 0 0 16px; color: #8b949e; font-size: 14px; line-height: 1.6; }
+    .hint-box ol {
+      text-align: left; color: #c9d1d9; font-size: 13px; line-height: 1.8;
+      padding-left: 20px;
+    }
+    .hint-box code {
+      background: #161b22; padding: 2px 6px; border-radius: 4px; font-size: 12px;
+      color: #58a6ff;
+    }
+    /* ── Empty State ── */
+    #empty-state {
+      display: none; flex: 1; align-items: center; justify-content: center;
+      color: #6e7681; font-size: 14px; text-align: center; padding: 40px;
     }
     /* ── Responsive ── */
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
       #app-header { padding: 10px 12px; }
-      #feed { padding: 8px 10px; }
-      #input-area { padding: 10px 12px; }
-      .entry { padding: 8px 10px; }
+      #dashboard-grid { grid-template-columns: 1fr; }
+      .dash-card .card-value { font-size: 22px; }
+      #data-table { font-size: 12px; }
     }
   </style>
 
   <div id="rnd-app">
-    <!-- Name Entry Modal -->
-    <div id="name-modal">
-      <div class="name-box">
-        <h1>RND Live Data</h1>
-        <p>Enter your display name to start</p>
-        <input type="text" id="name-input" placeholder="Your name" maxlength="50" autocomplete="off">
-        <button id="name-submit" disabled>Join</button>
+    <!-- Config Hint (shown when SHEET_ID is empty) -->
+    <div id="config-hint">
+      <div class="hint-box">
+        <h2>Configuration Required</h2>
+        <p>Set up a Google Spreadsheet to use the live data viewer.</p>
+        <ol>
+          <li>Create or open a Google Spreadsheet</li>
+          <li>Go to <code>File &rarr; Share &rarr; Publish to web</code> and publish it</li>
+          <li>Click <code>Share</code> and set access to <code>Anyone with the link</code> (Viewer)</li>
+          <li>Copy the spreadsheet ID from the URL</li>
+          <li>Set <code>SPREADSHEET_ID</code> in <code>rndlivedata.config.json</code></li>
+          <li>Set <code>SHEET_NAME</code> to the tab name you want to display</li>
+        </ol>
       </div>
     </div>
 
     <!-- Header -->
-    <div id="app-header" style="display:none;">
+    <div id="app-header">
       <div class="left">
-        <div id="status-dot"></div>
         <h2>RND Live Data</h2>
-        <span id="last-synced"></span>
+        <div id="conn-status">
+          <div id="conn-dot"></div>
+          <span id="conn-label">Connecting...</span>
+          <span id="countdown"></span>
+        </div>
       </div>
       <div class="right">
-        <span id="user-badge"></span>
-        <button id="sync-btn"><span class="sync-icon">&#x21bb;</span><span class="spinner"></span> Sync</button>
+        <div id="presence-area"></div>
+        <span id="viewer-count"></span>
       </div>
     </div>
 
-    <!-- Stale Banner -->
-    <div id="stale-banner">&#x26a0; Data may be stale. Tap here to sync.</div>
-
-    <!-- Entry Feed -->
-    <div id="feed"></div>
-
-    <!-- Input Area -->
-    <div id="input-area" style="display:none;">
-      <textarea id="msg-input" rows="1" placeholder="Type your message..." maxlength="1000"></textarea>
-      <button id="send-btn">Send</button>
+    <!-- View Tabs -->
+    <div id="view-tabs">
+      <button class="view-tab active" data-view="table">Table</button>
+      <button class="view-tab" data-view="dashboard">Dashboard</button>
     </div>
+
+    <!-- Table View -->
+    <div id="table-view">
+      <table id="data-table"><thead><tr></tr></thead><tbody></tbody></table>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view">
+      <div id="dashboard-grid"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state">Waiting for data...</div>
   </div>
 
-  <!-- Error Toast -->
-  <div id="error-toast"></div>
-
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script>
   (function() {
     'use strict';
 
-    // ── GAS URL ──
-    var GAS_URL = 'https://script.google.com/macros/s/AKfycbxnhplqv-s116CtveTF-8Efdpd_MWA9RZwdJ0th4-4QK_1cRpngS0CBJemY4Znb6ND7/exec';
+    // ── Config ──
+    var SHEET_ID = '1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU';
+    var SHEET_NAME = 'Live_Sheet';
+    var POLL_INTERVAL = 2500;
+    var PRESENCE_POLL = 10000;
+
+    // ── Config hint ──
+    if (!SHEET_ID) {
+      document.getElementById('config-hint').style.display = 'flex';
+      document.getElementById('app-header').style.display = 'none';
+      document.getElementById('view-tabs').style.display = 'none';
+      return;
+    }
 
     // ── State ──
-    var currentUser = sessionStorage.getItem('rnd-user') || '';
-    var entries = [];
-    var lastSyncTime = 0;
-    var dataVersion = '0';
-    var isSyncing = false;
-    var optimisticEntry = null;
+    var previousDataJSON = null;
+    var previousCells = {};
+    var currentView = 'table';
+    var sortCol = -1;
+    var sortAsc = true;
+    var lastHeaders = [];
+    var lastRows = [];
+    var pollTimer = null;
+    var countdownTimer = null;
+    var nextPollAt = 0;
+    var consecutiveErrors = 0;
 
     // ── DOM refs ──
-    var nameModal = document.getElementById('name-modal');
-    var nameInput = document.getElementById('name-input');
-    var nameSubmit = document.getElementById('name-submit');
-    var appHeader = document.getElementById('app-header');
-    var inputArea = document.getElementById('input-area');
-    var feed = document.getElementById('feed');
-    var msgInput = document.getElementById('msg-input');
-    var sendBtn = document.getElementById('send-btn');
-    var syncBtn = document.getElementById('sync-btn');
-    var statusDot = document.getElementById('status-dot');
-    var lastSyncedEl = document.getElementById('last-synced');
-    var staleBanner = document.getElementById('stale-banner');
-    var userBadge = document.getElementById('user-badge');
-    var errorToast = document.getElementById('error-toast');
+    var connDot = document.getElementById('conn-dot');
+    var connLabel = document.getElementById('conn-label');
+    var countdownEl = document.getElementById('countdown');
+    var tableView = document.getElementById('table-view');
+    var dashView = document.getElementById('dashboard-view');
+    var dataTable = document.getElementById('data-table');
+    var dashGrid = document.getElementById('dashboard-grid');
+    var emptyState = document.getElementById('empty-state');
+    var presenceArea = document.getElementById('presence-area');
+    var viewerCountEl = document.getElementById('viewer-count');
 
-    // ── Color from name hash ──
+    // ── Avatar colors ──
     var AVATAR_COLORS = [
       '#e53935','#d81b60','#8e24aa','#5e35b1','#3949ab',
       '#1e88e5','#039be5','#00897b','#43a047','#c0ca33',
       '#f4511e','#6d4c41','#546e7a','#ff8f00','#00acc1'
     ];
-    function hashName(name) {
+    function hashStr(s) {
       var h = 0;
-      for (var i = 0; i < name.length; i++) {
-        h = ((h << 5) - h) + name.charCodeAt(i);
-        h |= 0;
-      }
+      for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
       return Math.abs(h);
     }
-    function avatarColor(name) { return AVATAR_COLORS[hashName(name) % AVATAR_COLORS.length]; }
-    function avatarInitial(name) { return (name || '?')[0].toUpperCase(); }
+    function avatarColor(name) { return AVATAR_COLORS[hashStr(name) % AVATAR_COLORS.length]; }
 
-    // ── Status helpers ──
-    function setStatus(state) {
-      statusDot.className = state;
-    }
-    function updateLastSynced() {
-      if (!lastSyncTime) { lastSyncedEl.textContent = ''; return; }
-      var ago = Math.round((Date.now() - lastSyncTime) / 1000);
-      if (ago < 5) lastSyncedEl.textContent = 'just now';
-      else if (ago < 60) lastSyncedEl.textContent = ago + 's ago';
-      else if (ago < 3600) lastSyncedEl.textContent = Math.floor(ago / 60) + 'm ago';
-      else lastSyncedEl.textContent = Math.floor(ago / 3600) + 'h ago';
-    }
-    // Update "last synced" display every 10s
-    setInterval(updateLastSynced, 10000);
-
-    function showError(msg) {
-      errorToast.textContent = msg;
-      errorToast.style.display = 'block';
-      setTimeout(function() { errorToast.style.display = 'none'; }, 4000);
+    // ── Connection status ──
+    function setConnectionStatus(state) {
+      connDot.className = state;
+      if (state === 'live') connLabel.textContent = 'Live';
+      else if (state === 'updating') connLabel.textContent = 'Updating...';
+      else connLabel.textContent = 'Disconnected';
     }
 
-    // ── Render feed ──
-    function renderFeed() {
-      feed.innerHTML = '';
-      // Show entries newest-first
-      var sorted = entries.slice().reverse();
-      if (optimisticEntry) {
-        sorted.unshift(optimisticEntry);
+    // ── Countdown timer ──
+    function startCountdown() {
+      nextPollAt = Date.now() + POLL_INTERVAL;
+      if (countdownTimer) clearInterval(countdownTimer);
+      countdownTimer = setInterval(function() {
+        var remaining = Math.max(0, Math.ceil((nextPollAt - Date.now()) / 1000));
+        countdownEl.textContent = remaining + 's';
+      }, 250);
+    }
+
+    // ── Tab switching ──
+    document.querySelectorAll('.view-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.view-tab').forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        currentView = tab.getAttribute('data-view');
+        tableView.style.display = currentView === 'table' ? 'block' : 'none';
+        dashView.style.display = currentView === 'dashboard' ? 'block' : 'none';
+      });
+    });
+
+    // ── Data polling via Google Visualization API ──
+    function pollData() {
+      setConnectionStatus('updating');
+      var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=' + encodeURIComponent(SHEET_NAME);
+      var query = new google.visualization.Query(url);
+      query.send(handleQueryResponse);
+    }
+
+    function handleQueryResponse(response) {
+      if (response.isError()) {
+        consecutiveErrors++;
+        setConnectionStatus('disconnected');
+        var delay = Math.min(POLL_INTERVAL * Math.pow(2, consecutiveErrors - 1), 30000);
+        pollTimer = setTimeout(pollData, delay);
+        startCountdown();
+        return;
       }
-      sorted.forEach(function(e) {
-        var div = document.createElement('div');
-        div.className = 'entry' + (e._optimistic ? ' optimistic' : '');
 
-        var avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.style.background = avatarColor(e.user);
-        avatar.textContent = avatarInitial(e.user);
+      consecutiveErrors = 0;
+      setConnectionStatus('live');
 
-        var body = document.createElement('div');
-        body.className = 'body';
+      var dt = response.getDataTable();
+      var currentJSON = dt.toJSON();
 
-        var meta = document.createElement('div');
-        meta.className = 'meta';
-        var uname = document.createElement('span');
-        uname.className = 'username';
-        uname.textContent = e.user;
-        var time = document.createElement('span');
-        time.className = 'time';
-        time.textContent = formatTime(e.timestamp);
-        meta.appendChild(uname);
-        meta.appendChild(time);
+      if (currentJSON !== previousDataJSON) {
+        var changedCells = detectChanges(dt);
+        previousDataJSON = currentJSON;
 
-        var msg = document.createElement('div');
-        msg.className = 'msg';
-        msg.textContent = e.message;
+        // Extract headers and rows
+        lastHeaders = [];
+        for (var c = 0; c < dt.getNumberOfColumns(); c++) {
+          lastHeaders.push(dt.getColumnLabel(c) || String.fromCharCode(65 + c));
+        }
+        lastRows = [];
+        for (var r = 0; r < dt.getNumberOfRows(); r++) {
+          var row = [];
+          for (var c2 = 0; c2 < dt.getNumberOfColumns(); c2++) {
+            var v = dt.getFormattedValue(r, c2);
+            row.push(v !== undefined && v !== null ? v : '');
+          }
+          lastRows.push(row);
+        }
 
-        body.appendChild(meta);
-        body.appendChild(msg);
-        div.appendChild(avatar);
-        div.appendChild(body);
-        feed.appendChild(div);
+        emptyState.style.display = lastRows.length === 0 ? 'flex' : 'none';
+
+        renderTableView(changedCells);
+        renderDashboardView(changedCells);
+      }
+
+      pollTimer = setTimeout(pollData, POLL_INTERVAL);
+      startCountdown();
+    }
+
+    // ── Change detection ──
+    function detectChanges(dt) {
+      var changed = {};
+      var newCells = {};
+      for (var r = 0; r < dt.getNumberOfRows(); r++) {
+        for (var c = 0; c < dt.getNumberOfColumns(); c++) {
+          var key = r + ':' + c;
+          var val = dt.getFormattedValue(r, c);
+          newCells[key] = val;
+          if (previousCells.hasOwnProperty(key) && previousCells[key] !== val) {
+            changed[key] = true;
+          }
+        }
+      }
+      previousCells = newCells;
+      return changed;
+    }
+
+    // ── Render Table View ──
+    function renderTableView(changedCells) {
+      var thead = dataTable.querySelector('thead tr');
+      var tbody = dataTable.querySelector('tbody');
+
+      // Headers
+      thead.innerHTML = '';
+      lastHeaders.forEach(function(h, ci) {
+        var th = document.createElement('th');
+        th.textContent = h;
+        var arrow = document.createElement('span');
+        arrow.className = 'sort-arrow';
+        if (sortCol === ci) arrow.textContent = sortAsc ? ' \u25B2' : ' \u25BC';
+        th.appendChild(arrow);
+        th.addEventListener('click', function() {
+          if (sortCol === ci) { sortAsc = !sortAsc; }
+          else { sortCol = ci; sortAsc = true; }
+          renderTableView({});
+        });
+        thead.appendChild(th);
+      });
+
+      // Sort rows
+      var rows = lastRows.slice();
+      if (sortCol >= 0 && sortCol < lastHeaders.length) {
+        rows.sort(function(a, b) {
+          var va = a[sortCol] || '', vb = b[sortCol] || '';
+          var na = parseFloat(va), nb = parseFloat(vb);
+          if (!isNaN(na) && !isNaN(nb)) return sortAsc ? na - nb : nb - na;
+          return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+      }
+
+      // Body
+      tbody.innerHTML = '';
+      rows.forEach(function(row, ri) {
+        var tr = document.createElement('tr');
+        row.forEach(function(val, ci) {
+          var td = document.createElement('td');
+          td.textContent = val;
+          var key = ri + ':' + ci;
+          if (changedCells[key]) td.classList.add('cell-changed');
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
       });
     }
 
-    function formatTime(ts) {
-      if (!ts) return '';
-      var d = new Date(ts);
-      if (isNaN(d.getTime())) return String(ts);
-      var now = new Date();
-      var time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      if (d.toDateString() !== now.toDateString()) {
-        return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + time;
+    // ── Render Dashboard View ──
+    function renderDashboardView(changedCells) {
+      dashGrid.innerHTML = '';
+
+      if (lastRows.length === 0) return;
+
+      var firstRow = lastRows[0];
+      lastHeaders.forEach(function(h, ci) {
+        var card = document.createElement('div');
+        card.className = 'dash-card';
+        if (changedCells['0:' + ci]) card.classList.add('card-changed');
+
+        var label = document.createElement('div');
+        label.className = 'card-label';
+        label.textContent = h;
+
+        var value = document.createElement('div');
+        value.className = 'card-value';
+        value.textContent = firstRow[ci] || '\u2014';
+        if (changedCells['0:' + ci]) value.classList.add('changed');
+
+        var meta = document.createElement('div');
+        meta.className = 'card-meta';
+        meta.textContent = lastRows.length > 1 ? (lastRows.length - 1) + ' more rows' : 'Only row';
+
+        card.appendChild(label);
+        card.appendChild(value);
+        card.appendChild(meta);
+        dashGrid.appendChild(card);
+      });
+
+      // Stats card
+      var stats = document.createElement('div');
+      stats.className = 'dash-card stats';
+      var sl = document.createElement('div');
+      sl.className = 'card-label';
+      sl.textContent = 'Stats';
+      var sv = document.createElement('div');
+      sv.className = 'card-value';
+      sv.style.fontSize = '20px';
+      sv.textContent = lastRows.length + ' rows \u00D7 ' + lastHeaders.length + ' cols';
+      var sm = document.createElement('div');
+      sm.className = 'card-meta';
+      sm.textContent = 'Polling every ' + (POLL_INTERVAL / 1000) + 's';
+      stats.appendChild(sl);
+      stats.appendChild(sv);
+      stats.appendChild(sm);
+      dashGrid.appendChild(stats);
+    }
+
+    // ── User Presence ──
+    function pollPresence() {
+      var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=' + encodeURIComponent('_Presence');
+      var query = new google.visualization.Query(url);
+      query.send(function(response) {
+        if (response.isError()) return;
+        var dt = response.getDataTable();
+        var cutoff = Date.now() - 120000;
+        var activeUsers = [];
+        for (var r = 0; r < dt.getNumberOfRows(); r++) {
+          var name = dt.getFormattedValue(r, 0);
+          var lastSeen = dt.getValue(r, 1);
+          var ts = lastSeen instanceof Date ? lastSeen.getTime() : new Date(String(lastSeen)).getTime();
+          if (ts > cutoff && name) activeUsers.push(name);
+        }
+        renderPresence(activeUsers);
+      });
+    }
+
+    function renderPresence(users) {
+      presenceArea.innerHTML = '';
+      var max = 5;
+      users.slice(0, max).forEach(function(name) {
+        var bubble = document.createElement('div');
+        bubble.className = 'presence-bubble';
+        bubble.style.background = avatarColor(name);
+        bubble.textContent = (name || '?')[0].toUpperCase();
+        bubble.title = name;
+        presenceArea.appendChild(bubble);
+      });
+      if (users.length > max) {
+        var more = document.createElement('div');
+        more.className = 'presence-bubble';
+        more.style.background = '#30363d';
+        more.textContent = '+' + (users.length - max);
+        presenceArea.appendChild(more);
       }
-      return time;
+      viewerCountEl.textContent = users.length > 0 ? users.length + ' viewer' + (users.length > 1 ? 's' : '') : '';
     }
 
-    // ── API calls ──
-    function fetchData() {
-      if (isSyncing) return;
-      isSyncing = true;
-      setStatus('syncing');
-      syncBtn.classList.add('loading');
-      syncBtn.disabled = true;
-
-      fetch(GAS_URL + '?action=fetch', { redirect: 'follow' })
-        .then(function(res) { return res.json(); })
-        .then(function(result) {
-          if (result.success) {
-            entries = result.data || [];
-            dataVersion = result.version || '0';
-            lastSyncTime = Date.now();
-            optimisticEntry = null;
-            renderFeed();
-            setStatus('ready');
-            staleBanner.style.display = 'none';
-          } else {
-            throw new Error(result.error || 'Fetch failed');
-          }
-        })
-        .catch(function(err) {
-          setStatus('error');
-          showError('Sync failed: ' + err.message);
-          setTimeout(function() { if (!isSyncing) setStatus(lastSyncTime ? 'ready' : ''); }, 3000);
-        })
-        .finally(function() {
-          isSyncing = false;
-          syncBtn.classList.remove('loading');
-          syncBtn.disabled = false;
-          updateLastSynced();
-        });
-    }
-
-    function submitData(message) {
-      // Optimistic UI
-      optimisticEntry = {
-        timestamp: new Date().toISOString(),
-        user: currentUser,
-        message: message,
-        entryId: 'optimistic-' + Date.now(),
-        _optimistic: true
-      };
-      renderFeed();
-
-      var savedInput = message;
-      msgInput.value = '';
-      autoResize();
-      sendBtn.disabled = true;
-
-      fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'submit', user: currentUser, message: message }),
-        redirect: 'follow'
-      })
-        .then(function(res) { return res.json(); })
-        .then(function(result) {
-          if (result.success) {
-            entries = result.data || [];
-            dataVersion = result.version || '0';
-            lastSyncTime = Date.now();
-            optimisticEntry = null;
-            renderFeed();
-            setStatus('ready');
-          } else {
-            throw new Error(result.error || 'Submit failed');
-          }
-        })
-        .catch(function(err) {
-          // Roll back optimistic entry, restore input
-          optimisticEntry = null;
-          renderFeed();
-          msgInput.value = savedInput;
-          autoResize();
-          showError('Send failed: ' + err.message);
-          setStatus('error');
-          setTimeout(function() { if (!isSyncing) setStatus(lastSyncTime ? 'ready' : ''); }, 3000);
-        })
-        .finally(function() {
-          sendBtn.disabled = false;
-          updateLastSynced();
-        });
-    }
-
-    // ── Visibility API — event-driven sync ──
-    var wasHidden = false;
-    document.addEventListener('visibilitychange', function() {
-      if (document.hidden) {
-        wasHidden = true;
-        return;
-      }
-      if (!wasHidden || !currentUser) return;
-      wasHidden = false;
-
-      var awayFor = Date.now() - lastSyncTime;
-      if (awayFor > 10000 && awayFor < 120000) {
-        // Quick switch (10s–2min): auto-sync silently
-        fetchData();
-      } else if (awayFor >= 120000) {
-        // Long absence: show stale banner
-        setStatus('stale');
-        staleBanner.style.display = 'block';
-      }
-      // < 10s: do nothing, data is fresh enough
-    });
-
-    // ── Stale banner tap ──
-    staleBanner.addEventListener('click', function() {
-      staleBanner.style.display = 'none';
-      fetchData();
-    });
-
-    // ── Sync button ──
-    syncBtn.addEventListener('click', function() { fetchData(); });
-
-    // ── Send message ──
-    function handleSend() {
-      var msg = msgInput.value.trim();
-      if (!msg || sendBtn.disabled) return;
-      submitData(msg);
-    }
-    sendBtn.addEventListener('click', handleSend);
-    msgInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleSend();
+    // Also request active users from GAS iframe for more accurate presence
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'active-users') {
+        // Merge GAS-reported users with Viz API users (GAS has 60s window, Viz has 120s)
+        // Prefer Viz API data since it's already displayed
       }
     });
-
-    // Auto-resize textarea
-    function autoResize() {
-      msgInput.style.height = 'auto';
-      msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-    }
-    msgInput.addEventListener('input', autoResize);
-
-    // ── Name entry ──
-    nameInput.addEventListener('input', function() {
-      nameSubmit.disabled = !nameInput.value.trim();
-    });
-    function joinWithName() {
-      var name = nameInput.value.trim();
-      if (!name) return;
-      currentUser = name;
-      sessionStorage.setItem('rnd-user', name);
-      nameModal.classList.add('hidden');
-      startApp();
-    }
-    nameSubmit.addEventListener('click', joinWithName);
-    nameInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); joinWithName(); }
-    });
-
-    // ── Start app ──
-    function startApp() {
-      appHeader.style.display = 'flex';
-      inputArea.style.display = 'flex';
-      userBadge.textContent = currentUser;
-      userBadge.style.background = avatarColor(currentUser);
-
-      // Hide the template GAS iframe (we use fetch() instead)
-      var gasFrame = document.getElementById('gas-app');
-      if (gasFrame) {
-        gasFrame.style.width = '1px';
-        gasFrame.style.height = '1px';
-        gasFrame.style.position = 'absolute';
-        gasFrame.style.left = '-9999px';
-      }
-
-      fetchData();
-      msgInput.focus();
-    }
 
     // ── Init ──
-    if (currentUser) {
-      nameModal.classList.add('hidden');
-      startApp();
-    } else {
-      nameInput.focus();
-    }
+    google.charts.load('current');
+    google.charts.setOnLoadCallback(function() {
+      pollData();
+      pollPresence();
+      setInterval(pollPresence, PRESENCE_POLL);
+
+      // Request presence from GAS iframe periodically
+      setInterval(function() {
+        var gasFrame = document.getElementById('gas-app');
+        if (gasFrame && gasFrame.contentWindow) {
+          gasFrame.contentWindow.postMessage({type: 'get-active-users'}, '*');
+        }
+      }, PRESENCE_POLL);
+    });
   })();
   </script>
 <!-- ══════════════ -->

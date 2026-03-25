@@ -3,9 +3,50 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v06.50r] — 2026-03-25 01:57:21 PM EST
+
+> **Prompt:** "for the rndlivedata, what do you think of the following plan, research online and think deeply about it. Set up the GAS project called "rndlivedata" and implement a live real-time spreadsheet data viewer using the Google Visualization API — zero GAS execution for data reads. ## What to build Add a PROJECT OVERRIDE comment explaining live data is served via Google Visualization API. Add these PROJECT section functions: 1. **writePresence(userName)** — writes a heartbeat to a hidden `_Presence` sheet. Creates the sheet with "User"/"Last Seen" headers if it doesn't exist. Updates existing user rows or appends new ones. Called from the HTML page via GAS iframe every 30 seconds. 2. **getActiveUsers()** — returns array of users active within the last 60 seconds by reading the `_Presence` sheet. In the doGet() HTML: - Replace the B1 display with "Live data via Google Visualization API" text - Replace pollB1FromCache and pollQuotaAndLimits with presence heartbeat logic: - Generate a random viewer name (Viewer_XXXX), store in sessionStorage - Call google.script.run.writePresence(name) every 30 seconds - Add message listener for 'get-active-users' that calls getActiveUsers() and posts results back ### rndlivedata.html — Live Data Page with Google Visualization API Dark theme (#0f1117 background) with these features: **Data Engine:** - Load Google Charts API from `https://www.gstatic.com/charts/loader.js` - Query `https://docs.google.com/spreadsheets/d/SHEET_ID/gviz/tq?sheet=SHEET_NAME&tqx=out:json` every 2.5 seconds - Parse the JSONP-style response (strip `google.visualization.Query.setResponse(` wrapper) - Only re-render when data actually changes (hash comparison) - Cell-level change detection comparing previous vs current data **Dual View Modes (tabbed UI):** 1. **Table View** — full spreadsheet data as styled HTML table - Sortable columns (click header to sort, toggle asc/desc) - Cell-level change animation: green flash on changed cells (`@keyframes cell-flash`) - Responsive layout with overflow-x scroll 2. **Dashboard View** — first row displayed as large cards/tiles - Each card shows: column header as label, cell value as large text, "N more rows" as meta - Stats card showing rows × cols and poll interval - Value change animation on cards **Connection Status Indicator:** - Top-right pill showing: Live (green dot) / Updating... (orange dot) / Disconnected (red dot) - Countdown timer showing seconds until next refresh **User Presence Tracking:** - Read the `_Presence` sheet via Viz API (zero GAS calls for reading) - Display colored avatar bubbles with initials in the header - Show viewer count - Active = seen within last 120 seconds **Config Hint:** - When SHEET_ID is empty, show a centered config hint with instructions to set the ID and publish the spreadsheet to the web **Keep all TEMPLATE sections intact** — splash screens, version polling, GAS pill, changelog popups, wake lock, audio system. Only customize within PROJECT START/END markers. ## Architecture: Zero-GAS Reads"
+
+### Changed
+- Converted RND Live Data from REST API chat/messaging app to live real-time spreadsheet data viewer using Google Visualization API
+- GAS PROJECT SECTION: replaced REST API handlers with presence-only functions (writePresence, getActiveUsers)
+- GAS doGet: replaced REST API routing with presence heartbeat logic and active-users message listener
+- Removed doPost PROJECT OVERRIDE (no more REST API routing needed)
+- CSP extended to allow Google Charts loader and gviz JSONP queries
+
+### Added
+- Live spreadsheet data polling via `google.visualization.Query` every 2.5 seconds (zero GAS execution for reads)
+- Dual view modes: Table View (sortable columns, cell-level change flash animation) and Dashboard View (first-row cards/tiles with stats)
+- Connection status indicator (Live/Updating/Disconnected) with countdown timer
+- User presence tracking: writes via GAS iframe heartbeat, reads via Visualization API
+- Config hint overlay when SPREADSHEET_ID is empty
+- Cell-level change detection with green flash animation on changed values
+
+### Removed
+- REST API chat/messaging functionality (handleGetAction_, handlePostAction_, CacheService, LockService, entry submission)
+- Name entry modal and message feed UI
+
+#### `rndlivedata.html` — v01.02w
+##### Changed
+- Redesigned as live spreadsheet data viewer with dark theme
+- Data now loads directly from Google Sheets via Visualization API
+##### Added
+- Real-time data table with sortable columns and change highlighting
+- Dashboard view with metric cards for first-row values
+- Connection status pill with live/updating/disconnected states
+- User presence avatars showing active viewers
+- Configuration hint when spreadsheet not connected
+
+#### `rndlivedata.gs` — v01.03g
+##### Changed
+- Replaced data entry backend with lightweight presence tracking
+- GAS iframe now handles heartbeat writes and active user queries only
+##### Removed
+- REST API endpoints for data fetch and submission
 
 ## [v06.49r] — 2026-03-25 12:04:52 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "RND Live Data";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -14,143 +14,54 @@ var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrep
 // PROJECT START
 // ══════════════
 
-var CACHE_KEY = 'rndlivedata_entries';
-var VERSION_KEY = 'rndlivedata_version';
-var CACHE_TTL = 600;
-var MAX_ENTRIES = 200;
+// PROJECT OVERRIDE: Live data is served via Google Visualization API (gviz/tq endpoint).
+// GAS is only used for presence tracking (write operations).
+// Data reads happen client-side via google.visualization.Query — zero GAS execution for reads.
 
 /**
- * Handle GET API requests routed from doGet.
- * @param {string} action - The action parameter from the query string.
- * @param {Object} params - All query parameters.
- * @returns {Object} JSON-serializable response.
+ * writePresence(userName) — writes a heartbeat to the hidden _Presence sheet.
+ * Creates the sheet with "User"/"Last Seen" headers if it doesn't exist.
+ * Updates existing user rows or appends new ones.
+ * Called from the HTML page via GAS iframe every 30 seconds.
  */
-function handleGetAction_(action, params) {
-  if (action === 'fetch') {
-    return fetchEntries_();
-  }
-  return { success: false, error: 'Unknown GET action: ' + action };
-}
-
-/**
- * Handle POST API requests routed from doPost.
- * @param {string} action - The action from the parsed JSON body.
- * @param {Object} payload - The full parsed JSON body.
- * @returns {Object} JSON-serializable response.
- */
-function handlePostAction_(action, payload) {
-  if (action === 'submit') {
-    return submitEntry_(payload);
-  }
-  return { success: false, error: 'Unknown POST action: ' + action };
-}
-
-/**
- * Fetch all entries from CacheService (fast) or Sheet (fallback).
- */
-function fetchEntries_() {
-  try {
-    var cache = CacheService.getScriptCache();
-    var cached = cache.get(CACHE_KEY);
-    var version = cache.get(VERSION_KEY) || '0';
-
-    if (cached) {
-      return { success: true, data: JSON.parse(cached), version: version };
-    }
-
-    var data = readFromSheet_();
-    version = String(Date.now());
-    cache.put(CACHE_KEY, JSON.stringify(data), CACHE_TTL);
-    cache.put(VERSION_KEY, version, CACHE_TTL);
-    return { success: true, data: data, version: version };
-  } catch (e) {
-    return { success: false, error: e.message };
-  }
-}
-
-/**
- * Submit a new entry. Uses LockService to prevent concurrent write collisions.
- * Returns the full fresh dataset after writing.
- */
-function submitEntry_(payload) {
-  var lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(15000);
-
-    var user = String(payload.user || '').substring(0, 50).trim();
-    var message = String(payload.message || '').substring(0, 1000).trim();
-    if (!user || !message) {
-      return { success: false, error: 'User and message are required' };
-    }
-
-    var sheet = getOrCreateSheet_();
-    var entryId = Utilities.getUuid();
-    var timestamp = new Date();
-
-    sheet.appendRow([timestamp, user, message, entryId]);
-    SpreadsheetApp.flush();
-
-    var data = readFromSheet_();
-    var version = String(Date.now());
-    var cache = CacheService.getScriptCache();
-    cache.put(CACHE_KEY, JSON.stringify(data), CACHE_TTL);
-    cache.put(VERSION_KEY, version, CACHE_TTL);
-
-    return { success: true, data: data, version: version };
-  } catch (e) {
-    return { success: false, error: e.message };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-/**
- * Read entries from the Sheet, capped at MAX_ENTRIES (most recent).
- * Dates are serialized to ISO strings to avoid google.script.run Date issues.
- */
-function readFromSheet_() {
-  var sheet = getOrCreateSheet_();
-  var lastRow = sheet.getLastRow();
-  if (lastRow <= 1) return [];
-
-  var range = sheet.getRange(2, 1, lastRow - 1, 4);
-  var values = range.getValues();
-
-  if (values.length > MAX_ENTRIES) {
-    values = values.slice(values.length - MAX_ENTRIES);
-  }
-
-  return values.map(function(row) {
-    return {
-      timestamp: row[0] instanceof Date ? row[0].toISOString() : String(row[0]),
-      user: String(row[1]),
-      message: String(row[2]),
-      entryId: String(row[3])
-    };
-  });
-}
-
-/**
- * Get or create the data sheet with headers.
- */
-function getOrCreateSheet_() {
+function writePresence(userName) {
+  if (!userName || typeof userName !== 'string') return;
+  userName = userName.substring(0, 50);
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(SHEET_NAME);
+  var sheet = ss.getSheetByName('_Presence');
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(['Timestamp', 'User', 'Message', 'EntryID']);
-    sheet.setFrozenRows(1);
+    sheet = ss.insertSheet('_Presence');
+    sheet.appendRow(['User', 'Last Seen']);
+    sheet.hideSheet();
   }
-  return sheet;
+  var now = new Date().toISOString();
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] === userName) {
+      sheet.getRange(i + 1, 2).setValue(now);
+      return;
+    }
+  }
+  sheet.appendRow([userName, now]);
 }
 
 /**
- * One-time setup: ensures the Sheet tab exists with headers.
- * Run this manually from the Apps Script editor after first deploy.
+ * getActiveUsers() — returns array of users active within the last 60 seconds.
  */
-function setupSheet() {
-  getOrCreateSheet_();
-  Logger.log('Sheet "' + SHEET_NAME + '" is ready.');
+function getActiveUsers() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('_Presence');
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  var cutoff = Date.now() - 60000;
+  var active = [];
+  for (var i = 1; i < data.length; i++) {
+    var lastSeen = new Date(data[i][1]).getTime();
+    if (lastSeen > cutoff) {
+      active.push(data[i][0]);
+    }
+  }
+  return active;
 }
 
 // ══════════════
@@ -162,14 +73,9 @@ function setupSheet() {
 // ══════════════
 
 function doGet(e) {
-  // PROJECT OVERRIDE START: REST API routing for rndlivedata data entry
-  // When ?action= is present, return JSON API response instead of iframe HTML
-  var action = (e && e.parameter && e.parameter.action) || '';
-  if (action) {
-    var result = handleGetAction_(action, e.parameter);
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
+  // PROJECT OVERRIDE START: Presence heartbeat + active users via GAS iframe
+  // Data reads are handled client-side via Google Visualization API — zero GAS execution for reads.
+  // GAS iframe only handles: (1) presence heartbeat writes, (2) active user queries, (3) version checks.
   // PROJECT OVERRIDE END
   var html = `
     <html>
@@ -185,9 +91,37 @@ function doGet(e) {
     </head>
     <body>
       <h2 id="version">${VERSION}</h2>
+      <p style="font-size:13px;color:#888;margin:8px;">Live data via Google Visualization API</p>
 
       <script>
+        // Generate or retrieve viewer name
+        var _viewerName = sessionStorage.getItem('rnd-viewer');
+        if (!_viewerName) {
+          _viewerName = 'Viewer_' + Math.random().toString(16).substring(2, 6).toUpperCase();
+          sessionStorage.setItem('rnd-viewer', _viewerName);
+        }
+
+        // Presence heartbeat — write every 30 seconds
+        function sendPresence() {
+          google.script.run
+            .withFailureHandler(function() {})
+            .writePresence(_viewerName);
+        }
+        sendPresence();
+        setInterval(sendPresence, 30000);
+
+        // Listen for active-users requests from parent
         window.addEventListener('message', function(e) {
+          if (e.data && e.data.type === 'get-active-users') {
+            google.script.run
+              .withSuccessHandler(function(users) {
+                top.postMessage({type: 'active-users', users: users || []}, '*');
+              })
+              .withFailureHandler(function() {
+                top.postMessage({type: 'active-users', users: []}, '*');
+              })
+              .getActiveUsers();
+          }
           if (e.data && e.data.type === 'gas-version-check') {
             google.script.run
               .withSuccessHandler(function(data) {
@@ -221,22 +155,6 @@ function doPost(e) {
     var result = pullAndDeployFromGitHub();
     return ContentService.createTextOutput(result);
   }
-
-  // PROJECT OVERRIDE START: REST API routing for rndlivedata data entry
-  // POST body is text/plain JSON (avoids CORS preflight). Parse and route by action.
-  if (e && e.postData && e.postData.contents) {
-    try {
-      var payload = JSON.parse(e.postData.contents);
-      if (payload.action && payload.action !== 'deploy') {
-        var postResult = handlePostAction_(payload.action, payload);
-        return ContentService.createTextOutput(JSON.stringify(postResult))
-          .setMimeType(ContentService.MimeType.JSON);
-      }
-    } catch (parseError) {
-      // Not valid JSON — fall through to default
-    }
-  }
-  // PROJECT OVERRIDE END
 
   return ContentService.createTextOutput("Unknown action");
 }
