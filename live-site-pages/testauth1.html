@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.98w">
+  <meta name="build-version" content="v02.99w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1936,8 +1936,11 @@
       }
 
       // ── Phase 7: Data poll listener page signals ready ──
-      // Send token via postMessage for session validation before data delivery
+      // Send token via postMessage for session validation before data delivery.
+      // Also set _dataPollIframeReady so subsequent polls reuse the iframe.
       if (data.type === 'gas-data-poll-ready') {
+        _dataPollIframeReady = true;
+        _dataPollIframeOrigin = event.origin;
         var dpSession = loadSession();
         if (dpSession.token && event.source) {
           event.source.postMessage({
@@ -3051,6 +3054,8 @@
     var _dataPollInterval = null;  // continuous lightweight data-only poll
     var _dataPollInFlight = false;     // prevents overlapping data poll requests
     var _lastDataPollTick = 0;         // timestamp of last data poll fire
+    var _dataPollIframeReady = false;  // true once gas-data-poll-ready received
+    var _dataPollIframeOrigin = '';   // origin of the data poll iframe (for postMessage targeting)
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
@@ -3100,6 +3105,8 @@
         _dataPollInterval = null;
       }
       _dataPollInFlight = false;
+      _dataPollIframeReady = false;
+      _dataPollIframeOrigin = '';
       _lastDataPollTick = 0;
       var dpFrame = document.getElementById('gas-data-poll');
       if (dpFrame) dpFrame.remove();
@@ -3114,17 +3121,27 @@
       if (!baseUrl) return;
       _dataPollInFlight = true;
       _lastDataPollTick = Date.now();
-      // Use a dedicated hidden iframe (same pattern as the heartbeat) —
-      // postMessage into the GAS sandbox doesn't work because Google's
-      // nested iframe wrapper drops parent→child messages.
+      // Persistent iframe — load once, reuse for all polls. Reloading the iframe
+      // on every poll would abort pending google.script.run calls from the previous
+      // page load, causing responses to never arrive.
       var dpFrame = document.getElementById('gas-data-poll');
-      if (!dpFrame) {
+      if (!dpFrame || !_dataPollIframeReady) {
+        // First poll or iframe was removed — create and load the listener page
+        _dataPollIframeReady = false;
+        if (dpFrame) dpFrame.remove();
         dpFrame = document.createElement('iframe');
         dpFrame.id = 'gas-data-poll';
         dpFrame.style.cssText = 'display:none;width:0;height:0;border:0';
         document.body.appendChild(dpFrame);
+        dpFrame.src = baseUrl + '?action=getData';
+        // Token will be sent when gas-data-poll-ready arrives (handled in _processVerifiedMessage)
+      } else {
+        // Iframe already loaded and ready — send token directly for a new poll
+        dpFrame.contentWindow.postMessage({
+          type: 'data-poll-token',
+          token: session.token
+        }, _dataPollIframeOrigin);
       }
-      dpFrame.src = baseUrl + '?action=getData';
       // Safety timeout — if no response in 15s, clear in-flight flag and reset
       // the tick timestamp so the countdown timer shows fresh values (not 0:00)
       setTimeout(function() {

@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v06.71r] — 2026-03-25 11:04:58 PM EST
+
+> **Prompt:** "the data poll lolling seems to be resetting its timer, but its only happening after the heartbeat is going off"
+
+### Fixed
+- Data poll iframe now persists across polls instead of being reloaded every 15s — reloading the iframe aborted pending `google.script.run` calls, causing responses to never arrive unless a heartbeat warmed up the GAS context first
+- Added `_dataPollIframeReady` flag and `_dataPollIframeOrigin` to track iframe state — subsequent polls send token via `postMessage` to the existing iframe instead of reloading it
+- `_stopDataPoll()` now resets `_dataPollIframeReady` and `_dataPollIframeOrigin` for clean teardown
+
+#### `testauth1.html` — v02.99w
+##### Fixed
+- Data refresh now works reliably — no longer requires a heartbeat to trigger
 
 ## [v06.70r] — 2026-03-25 10:57:30 PM EST
 

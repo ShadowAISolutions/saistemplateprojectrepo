@@ -8,6 +8,45 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.55w] — 2026-03-21 03:12:33 PM EST — v05.67r — [`8858273`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8858273713793a23261c8ae042168351e3f92a4d)
+
+### Fixed
+- Fixed sign-in flow being blocked when returning to the page with an existing session
+
+## [v02.54w] — 2026-03-21 03:06:45 PM EST — v05.66r — [`2e44cbe`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2e44cbe919f8dfaaf0ba2bc36bffdc6dd367b0a6)
+
+### Fixed
+- Fixed sign-in getting stuck on "Signing in..." screen
+
+## [v02.53w] — 2026-03-21 02:51:28 PM EST — v05.65r — [`1da646b`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1da646b6c298b0c0f93ef5fe4913d8d3ba4685dd)
+
+### Changed
+- Session tokens are no longer exposed in browser URLs — all authentication now uses one-time-use tokens that expire in 60 seconds
+- Sign-in, session restore, and tab switching all use the new secure token flow
+
+## [v02.52w] — 2026-03-21 01:01:38 PM EST — v05.64r — [`c4cfe8f`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c4cfe8f8132f0428b3f992a1877b9e367bb6f1a4)
+
+### Fixed
+- Sign-in flow restored to working state
+
+## [v02.51w] — 2026-03-21 12:45:23 PM EST — v05.63r — [`9140b31`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9140b31d4be4a69979d838fb75f790c6209b67c7)
+
+### Fixed
+- Session setup now completes properly after sign-in
+
+## [v02.50w] — 2026-03-21 12:31:09 PM EST — v05.62r — [`6799cb8`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6799cb811bf15e44386907073cdb774271c507de)
+
+### Changed
+- Session authentication now uses a secure handshake instead of passing credentials in the page address
+
+## [v02.49w] — 2026-03-21 11:55:49 AM EST — v05.61r — [`650a7b9`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/650a7b907248555c71ebe06bcc17b02e798d11d0)
+
+### Fixed
+- Sign-out now properly invalidates server-side sessions before clearing the page
+
+### Added
+- "Signing out..." overlay with spinner shown during session cleanup
+
 ## [v02.48w] — 2026-03-20 11:02:26 PM EST — v05.56r — [`e56d019`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e56d01972eaa70d0a52b5adbc6a3148a25408f82)
 
 ### Changed

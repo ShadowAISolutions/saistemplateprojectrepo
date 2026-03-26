@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v02.99w] — 2026-03-25 11:04:58 PM EST — v06.71r
+
+### Fixed
+- Data refresh now works reliably — no longer requires a heartbeat to trigger
 
 ## [v02.98w] — 2026-03-25 10:57:30 PM EST — v06.70r
 
@@ -239,44 +244,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Fixed
 - Sign-in now completes immediately without getting stuck on loading screen
-
-## [v02.55w] — 2026-03-21 03:12:33 PM EST — v05.67r
-
-### Fixed
-- Fixed sign-in flow being blocked when returning to the page with an existing session
-
-## [v02.54w] — 2026-03-21 03:06:45 PM EST — v05.66r
-
-### Fixed
-- Fixed sign-in getting stuck on "Signing in..." screen
-
-## [v02.53w] — 2026-03-21 02:51:28 PM EST — v05.65r
-
-### Changed
-- Session tokens are no longer exposed in browser URLs — all authentication now uses one-time-use tokens that expire in 60 seconds
-- Sign-in, session restore, and tab switching all use the new secure token flow
-
-## [v02.52w] — 2026-03-21 01:01:38 PM EST — v05.64r
-
-### Fixed
-- Sign-in flow restored to working state
-
-## [v02.51w] — 2026-03-21 12:45:23 PM EST — v05.63r
-
-### Fixed
-- Session setup now completes properly after sign-in
-
-## [v02.50w] — 2026-03-21 12:31:09 PM EST — v05.62r
-
-### Changed
-- Session authentication now uses a secure handshake instead of passing credentials in the page address
-
-## [v02.49w] — 2026-03-21 11:55:49 AM EST — v05.61r
-
-### Fixed
-- Sign-out now properly invalidates server-side sessions before clearing the page
-
-### Added
-- "Signing out..." overlay with spinner shown during session cleanup
 
 Developed by: ShadowAISolutions
