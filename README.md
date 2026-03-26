@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-26 03:11:20 PM EST` · Repo version: `v07.02r`
+Last updated: `2026-03-26 03:14:18 PM EST` · Repo version: `v07.03r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -27,9 +27,6 @@ Initialize your repository and Claude will update the live site link and QR code
 > <sub>**Tip:** Links below navigate away from this page. `Right-click` → `Open link in new window` to keep this ReadMe visible while you work.</sub>
 
 <pre>
-<b>Repository Root ─────────────────────────────────────────────────────────────</b>
-<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REPO-ARCHITECTURE.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">v02.89r</a>
-│
 <b>─── Emoji Legend ──────────────────────────────────────────────────────────────</b>
 │
 │   <b>Page Resources</b> (shown after → on each page entry)
@@ -38,6 +35,9 @@ Initialize your repository and Claude will update the live site link and QR code
 │   📁  Google Drive folder   — ◽  No Drive folder
 │   ⛽  Google Apps Script    — 🔻  No GAS script
 │   🧜‍♀️  Architecture diagram  — ◽  No diagram
+
+<b>Repository Root ─────────────────────────────────────────────────────────────</b>
+<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REPO-ARCHITECTURE.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">v02.89r</a>
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
