@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v06.80r] — 2026-03-26 12:12:54 AM EST
+
+> **Prompt:** "in the scaling comparison and combined cost, can you add what the max for a free/workspace account is so that we know relative total %"
+
+### Changed
+- Added GAS Quota Limits section to `DATA-POLL-ARCHITECTURE.md` — documents free vs Workspace account limits (CacheService has no limit, trigger runtime is 90min/6hr)
+- Added daily call counts to scaling tables (calls/day per viewer count)
+- Added Quota Headroom table showing % of daily trigger runtime consumed per scenario (1/10/50/100 viewers × test/production intervals)
+- Free tier hits ceiling at ~50 concurrent viewers; Workspace handles 100+ viewers at ~39% capacity
 
 ## [v06.79r] — 2026-03-26 12:07:03 AM EST
 

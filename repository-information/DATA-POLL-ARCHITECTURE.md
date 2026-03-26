@@ -109,16 +109,39 @@ At production intervals, the heartbeat overhead is negligible — data polling d
 
 ---
 
+## GAS Quota Limits (per account, per day)
+
+> Source: [Google Apps Script Quotas](https://developers.google.com/apps-script/guides/services/quotas) — verified 2026-03-26. Quotas are **per account** (not per script) and reset 24 hours after first request. Subject to change without notice.
+
+| Quota | Free (Gmail) | Google Workspace |
+|---|---|---|
+| **Script runtime** | 6 min/execution | 6 min/execution |
+| **Trigger total runtime** | 90 min/day | 6 hr/day |
+| **URL Fetch calls** | 20,000/day | 100,000/day |
+| **Properties read/write** | 50,000/day | 500,000/day |
+| **Simultaneous executions** | 30/user | 30/user |
+| **CacheService** | **No documented limit** | **No documented limit** |
+
+**Key insight:** CacheService (used by both `processDataPoll` and `processHeartbeat`) has no published daily quota. The binding constraint is **script executions** — each data poll and heartbeat triggers a `doGet()` execution. Google does not publish a hard daily execution limit for web apps, but the trigger runtime limit (90 min free / 6 hr Workspace) applies to time-driven triggers, NOT web app requests. Web app `doGet()`/`doPost()` calls run under the deploying user's quota but are not subject to the trigger runtime cap.
+
+**Practical ceiling:** With `processDataPoll` taking ~10-15ms per execution, a single viewer at 15s intervals generates 5,760 executions/day consuming ~86s of runtime. The 6-min-per-execution limit is irrelevant (each call takes milliseconds). The simultaneous execution limit (30/user) means at most 30 data polls can process concurrently — with ~15ms per poll, this supports ~2,000 polls/second before queueing.
+
+---
+
 ## Scaling Comparison
 
 | Metric | Heartbeat only (60s) | Data Poll (15s) | Data Poll (20s) | Data Poll (30s) |
 |---|---|---|---|---|
 | **Calls/hour (1 viewer)** | 60 | 240 | 180 | 120 |
+| **Calls/day (1 viewer)** | 1,440 | 5,760 | 4,320 | 2,880 |
 | **Compute/hour (1 viewer)** | ~4.5s | ~3s | ~2.3s | ~1.5s |
 | **Calls/hour (10 viewers)** | 600 | 2,400 | 1,800 | 1,200 |
+| **Calls/day (10 viewers)** | 14,400 | 57,600 | 43,200 | 28,800 |
 | **Compute/hour (10 viewers)** | ~45s | ~30s | ~23s | ~15s |
 | **Calls/hour (50 viewers)** | 3,000 | 12,000 | 9,000 | 6,000 |
+| **Calls/day (50 viewers)** | 72,000 | 288,000 | 216,000 | 144,000 |
 | **Compute/hour (50 viewers)** | ~225s | ~150s | ~113s | ~75s |
+| **Compute/day (50 viewers)** | ~0.9hr | ~0.6hr | ~0.45hr | ~0.3hr |
 | **Data freshness** | ≤60s | ≤15s | ≤20s | ≤30s |
 | **Cost vs Heartbeat** | 1x (baseline) | 0.67x | 0.50x | 0.33x |
 
@@ -127,9 +150,28 @@ At production intervals, the heartbeat overhead is negligible — data polling d
 | Metric | HB 60s + DP 15s | HB 60s + DP 20s | HB 60s + DP 30s |
 |---|---|---|---|
 | **Calls/hour (1 viewer)** | 60 + 240 = 300 | 60 + 180 = 240 | 60 + 120 = 180 |
+| **Calls/day (1 viewer)** | 7,200 | 5,760 | 4,320 |
 | **Compute/hour (1 viewer)** | ~4.5s + ~3s = ~7.5s | ~4.5s + ~2.3s = ~6.8s | ~4.5s + ~1.5s = ~6s |
 | **Calls/hour (50 viewers)** | 3,000 + 12,000 = 15,000 | 3,000 + 9,000 = 12,000 | 3,000 + 6,000 = 9,000 |
+| **Calls/day (50 viewers)** | 360,000 | 288,000 | 216,000 |
 | **Compute/hour (50 viewers)** | ~225s + ~150s = ~375s | ~225s + ~113s = ~338s | ~225s + ~75s = ~300s |
+| **Compute/day (50 viewers)** | ~1.5hr | ~1.4hr | ~1.2hr |
+
+### Quota Headroom (% of daily trigger runtime limit)
+
+> Note: These percentages use the **trigger runtime limit** as a reference ceiling (90 min free / 6 hr Workspace), even though web app `doGet()` calls may not be subject to this specific cap. Shown for conservative capacity planning.
+
+| Scenario | Compute/day | % of Free (90 min) | % of Workspace (6 hr) |
+|---|---|---|---|
+| 1 viewer (HB 60s + DP 15s) | ~3 min | **3.3%** | **0.8%** |
+| 10 viewers (HB 60s + DP 15s) | ~30 min | **33%** | **8.3%** |
+| 50 viewers (HB 60s + DP 15s) | ~1.5 hr | **100%** ⚠️ | **25%** |
+| 1 viewer (HB 5min + DP 15s) | ~1.4 min | **1.6%** | **0.4%** |
+| 10 viewers (HB 5min + DP 15s) | ~14 min | **16%** | **3.9%** |
+| 50 viewers (HB 5min + DP 15s) | ~70 min | **78%** | **19%** |
+| 100 viewers (HB 5min + DP 15s) | ~140 min | **156%** ⚠️ | **39%** |
+
+⚠️ = exceeds free-tier ceiling. Switch to Workspace or increase `DATA_POLL_INTERVAL`.
 
 ---
 
