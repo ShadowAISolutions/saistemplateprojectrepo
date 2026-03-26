@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.91w">
+  <meta name="build-version" content="v02.92w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -2976,8 +2976,14 @@
           } else if (_idleDataInFlight) {
             heartbeatEl.textContent = '\u25C7 polling data...';
             heartbeatEl.className = 'timer-value';
+          } else if (_heartbeatIdle && _lastIdlePollTick) {
+            var sinceIdlePoll = (Date.now() - _lastIdlePollTick) / 1000;
+            var nextIdlePollIn = (HTML_CONFIG.IDLE_DATA_POLL_INTERVAL / 1000) - sinceIdlePoll;
+            if (nextIdlePollIn < 0) nextIdlePollIn = 0;
+            heartbeatEl.textContent = '\u25C7 ' + formatCountdown(nextIdlePollIn) + ' idle';
+            heartbeatEl.className = 'timer-value';
           } else if (_heartbeatIdle) {
-            heartbeatEl.textContent = formatCountdown(nextTickIn) + ' \u25C7 idle';
+            heartbeatEl.textContent = '\u25C7 idle';
             heartbeatEl.className = 'timer-value';
           } else {
             // isActive already tells us if the next tick will fire (activity within
@@ -3021,6 +3027,7 @@
     var _heartbeatIdle = false;      // true when last tick found no activity
     var _idleDataPollInterval = null;  // Option C: lightweight data-only poll when idle
     var _idleDataInFlight = false;     // prevents overlapping idle data requests
+    var _lastIdlePollTick = 0;         // timestamp of last idle data poll fire
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
@@ -3073,6 +3080,7 @@
         _idleDataPollInterval = null;
       }
       _idleDataInFlight = false;
+      _lastIdlePollTick = 0;
       var dpFrame = document.getElementById('gas-data-poll');
       if (dpFrame) dpFrame.remove();
     }
@@ -3083,6 +3091,7 @@
       var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;
       _idleDataInFlight = true;
+      _lastIdlePollTick = Date.now();
       // Use a dedicated hidden iframe (same pattern as the heartbeat) —
       // postMessage into the GAS sandbox doesn't work because Google's
       // nested iframe wrapper drops parent→child messages.

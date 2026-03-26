@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v02.92w] — 2026-03-25 09:05:04 PM EST — v06.63r
+
+### Changed
+- When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
 
 ## [v02.91w] — 2026-03-25 09:00:26 PM EST — v06.62r
 
