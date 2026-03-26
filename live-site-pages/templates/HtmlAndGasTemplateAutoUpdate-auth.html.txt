@@ -1238,10 +1238,12 @@
     }
 
     function initGoogleSignIn() {
+      var session = loadSession();
       signInClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: '',                // silent first (no user interaction)
+        login_hint: session.email || '',
         callback: handleTokenResponse,
         error_callback: _onGisPopupDismissed
       });
@@ -3169,17 +3171,21 @@
     // =============================================
 
     function attemptReauth() {
+      var session = loadSession();
+      var hint = session.email || '';
       signInClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: '',
+        login_hint: hint,
         callback: function(response) {
           if (response.error) {
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',
-              prompt: 'select_account',
+              prompt: 'consent',
+              login_hint: hint,
               callback: handleTokenResponse,
               error_callback: _onGisPopupDismissed
             });

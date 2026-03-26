@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
 
 ## [Unreleased]
+
+## [v01.40w] — 2026-03-26 12:58:10 PM EST — v06.96r
+
+### Changed
+- Re-authenticating now automatically signs you in with the same Google account instead of showing the account picker
 
 ## [v01.39w] — 2026-03-26 10:49:30 AM EST — v06.92r
 

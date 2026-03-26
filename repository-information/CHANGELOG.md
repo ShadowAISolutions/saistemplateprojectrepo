@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v06.96r] — 2026-03-26 12:58:10 PM EST
+
+> **Prompt:** "idk what you did since its still not working as i want it to, but what i meant was that with the application portal we made it so that it automatically detects which google account to sign into if using the sign in button when absolute is about to time out, so that the user cant try to sign in under another account, so apply the same here, auto sign in the same way we have it when refreshing the page in the application portal"
+
+### Changed
+- Added `login_hint` with stored email to `attemptReauth()` and `initGoogleSignIn()` across all auth pages — when re-authenticating (via the absolute warning banner or on page load), Google now auto-selects the same account instead of showing the full account picker, preventing the user from trying to sign in under a different account while their session is expiring
+- Changed `attemptReauth()` interactive fallback from `prompt: 'select_account'` to `prompt: 'consent'` with `login_hint` — forces re-auth for the same account without showing the account picker
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
+##### Changed
+- Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
+
+#### `testauth1.html` — v03.15w
+##### Changed
+- Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
+
+#### `globalacl.html` — v01.34w
+##### Changed
+- Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
+
+#### `applicationportal.html` — v01.40w
+##### Changed
+- Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
 
 ## [v06.95r] — 2026-03-26 12:03:38 PM EST
 

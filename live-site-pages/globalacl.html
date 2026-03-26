@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.33w">
+  <meta name="build-version" content="v01.34w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -1302,10 +1302,12 @@
     var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
 
     function initGoogleSignIn() {
+      var session = loadSession();
       signInClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: '',                // silent first (no user interaction)
+        login_hint: session.email || '',
         callback: handleTokenResponse,
         error_callback: _onGisPopupDismissed
       });
@@ -3215,17 +3217,21 @@
     // =============================================
 
     function attemptReauth() {
+      var session = loadSession();
+      var hint = session.email || '';
       signInClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: '',
+        login_hint: hint,
         callback: function(response) {
           if (response.error) {
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
               scope: 'openid email profile',
-              prompt: 'select_account',
+              prompt: 'consent',
+              login_hint: hint,
               callback: handleTokenResponse,
               error_callback: _onGisPopupDismissed
             });
