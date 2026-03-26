@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v06.75r] — 2026-03-25 11:36:58 PM EST
+
+> **Prompt:** "nice its pulling fresh data now. though the data poll countdown istelf after the first pull is no longer properly showing when its pulling, its going straight from 0 to 15 on a loop, but its not affecting the fresh data pulling so dont break that"
+
+### Fixed
+- Data poll timer now shows "polling..." during the request round-trip — moved `_lastDataPollTick` assignment from `_sendDataPoll()` (request sent) to the `live-data` handler (response received), so the timer stays in "polling..." state until the response arrives instead of immediately starting the countdown
+
+#### `testauth1.html` — v03.03w
+##### Fixed
+- Data refresh countdown now briefly shows "polling..." before resetting, instead of jumping from 0 to 15
 
 ## [v06.74r] — 2026-03-25 11:30:27 PM EST
 
