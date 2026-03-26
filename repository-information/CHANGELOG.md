@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v06.98r] — 2026-03-26 01:58:55 PM EST
+
+> **Prompt:** "for some reason its allowing the SSO to show in the application portal even if signed out"
+
+### Fixed
+- Fixed SSO indicator badge remaining visible on the auth wall in Application Portal — the `#sso-indicator` element (z-index 10003) was appearing above the auth wall (z-index ~10002) because async GIS token callbacks called `_updateSsoIndicator('ready'/'pending')` after `showAuthWall()` had already hidden it
+- Added auth-wall visibility guard to `_updateSsoIndicator()` — when the auth wall is visible and the requested state is not 'off', the function now returns early without showing the badge, preventing all race conditions at the single control point
+
+#### `applicationportal.html` — v01.42w
+##### Fixed
+- SSO status badge no longer appears when signed out or on the sign-in screen
 
 ## [v06.97r] — 2026-03-26 01:17:37 PM EST
 
