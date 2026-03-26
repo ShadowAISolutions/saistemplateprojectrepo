@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.05g] — 2026-03-25 11:21:12 PM EST — v06.73r
+
+### Fixed
+- Data refresh now works correctly with session authentication
 
 ## [v02.04g] — 2026-03-25 10:23:52 PM EST — v06.68r
 

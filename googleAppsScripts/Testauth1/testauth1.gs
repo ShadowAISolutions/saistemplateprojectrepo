@@ -1,4 +1,4 @@
-var VERSION = "v02.04g";
+var VERSION = "v02.05g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2679,25 +2679,17 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Data poll action — returns page that listens for token via postMessage, then
-  // validates session before returning cached data. Same Phase 7 pattern as heartbeat.
+  // Data poll action — validates session token then returns cached data inline.
+  // Token is passed as URL parameter (not postMessage — Google's nested iframe
+  // wrapper drops parent→child messages, making the ready/token handshake unreliable).
+  // Security: token is HTTPS-encrypted in transit, and only validates session existence
+  // (read-only CacheService check, no session extension).
   if (action === 'getData') {
+    var dpToken = (e && e.parameter && e.parameter.token) || '';
+    var dpResult = processDataPoll(dpToken);
     var dataListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
       + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      + 'window.top.postMessage({type:"gas-data-poll-ready"}, PARENT_ORIGIN);'
-      + 'window.addEventListener("message", function(evt) {'
-      + '  if (evt.origin !== PARENT_ORIGIN) return;'
-      + '  if (!evt.data || evt.data.type !== "data-poll-token") return;'
-      + '  google.script.run'
-      + '    .withSuccessHandler(function(r) {'
-      + '      window.top.postMessage(r, PARENT_ORIGIN);'
-      + '    })'
-      + '    .withFailureHandler(function(e) {'
-      + '      window.top.postMessage({type:"live-data", data:null,'
-      + '        error:String(e)}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .processDataPoll(evt.data.token);'
-      + '});'
+      + 'window.top.postMessage(' + JSON.stringify(dpResult) + ', PARENT_ORIGIN);'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(dataListenerHtml)
       .setTitle(TITLE)
