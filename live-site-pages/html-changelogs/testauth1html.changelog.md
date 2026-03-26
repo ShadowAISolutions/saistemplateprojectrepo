@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v02.91w] — 2026-03-25 09:00:26 PM EST — v06.62r
+
+### Changed
+- Data updates twice as fast when you step away — background polling now runs every 15 seconds instead of 30
 
 ## [v02.90w] — 2026-03-25 08:47:57 PM EST — v06.61r
 
