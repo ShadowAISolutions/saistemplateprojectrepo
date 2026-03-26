@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v06.89r] — 2026-03-26 09:25:30 AM EST
+
+> **Prompt:** "we are sometimes getting stuck on the exchanging credentials with the server part indefinitely, the screenshot shows what it says in the console, address cleanly, no silent fallbacks"
+
+### Fixed
+- Fixed credential exchange hanging indefinitely when GAS server responds after >30s — the replay guard now shows an explicit "Sign-in timed out" error via `showAuthWall()` instead of silently dropping the `gas-session-created` message with no user feedback
+
+#### `applicationportal.html` — v01.36w
+##### Fixed
+- Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
+
+#### `globalacl.html` — v01.29w
+##### Fixed
+- Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
+
+#### `testauth1.html` — v03.09w
+##### Fixed
+- Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
 
 ## [v06.88r] — 2026-03-26 09:13:59 AM EST
 

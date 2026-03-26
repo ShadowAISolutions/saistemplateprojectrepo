@@ -1569,6 +1569,7 @@
             delay: Date.now() - _iframeLoadTime,
             origin: event.origin
           });
+          showAuthWall('Sign-in timed out \u2014 the server took too long to respond. Please try again.');
           return;
         }
         // Phase 5 (H-3): First-write-wins with _hmacKeySet guard — only accept the first
