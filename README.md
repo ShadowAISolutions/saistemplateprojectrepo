@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-26 03:08:32 PM EST` · Repo version: `v07.01r`
+Last updated: `2026-03-26 03:11:20 PM EST` · Repo version: `v07.02r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -33,14 +33,11 @@ Initialize your repository and Claude will update the live site link and QR code
 <b>─── Emoji Legend ──────────────────────────────────────────────────────────────</b>
 │
 │   <b>Page Resources</b> (shown after → on each page entry)
-│   🌐  Webpage               — 🔻  No webpage
+│   🌐  Webpage  🟢 Active · 🟡 Maintenance · 🔴 Inactive
 │   📊  Google Spreadsheet    — 🔸  No spreadsheet
 │   📁  Google Drive folder   — ◽  No Drive folder
 │   ⛽  Google Apps Script    — 🔻  No GAS script
 │   🧜‍♀️  Architecture diagram  — ◽  No diagram
-│
-│   <b>Page Status</b> (shown after 🌐)
-│   🟢  Active                — 🟡  Maintenance  — 🔴  Inactive
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
