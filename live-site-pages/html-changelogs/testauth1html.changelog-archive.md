@@ -8,6 +8,37 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.61w] — 2026-03-21 06:15:12 PM EST — v05.77r — [`eefc841`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eefc841335662509b5e2298957d74368dec518ca)
+
+### Fixed
+- GAS changelog popup title no longer shows pipe characters
+
+## [v02.60w] — 2026-03-21 06:07:27 PM EST — v05.76r — [`fea9002`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fea90027b138010b3a3707914e962ff0c7c09164)
+
+### Changed
+- GAS version polling now parses pipe-delimited format from gs.version.txt
+
+## [v02.59w] — 2026-03-21 05:21:32 PM EST — v05.74r — [`d6a5f9c`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d6a5f9cbb803d993e88b150edb19de83736d0ab6)
+
+### Fixed
+- Page refresh and "Use Here" no longer get stuck on "Reconnecting" screen
+- Sign-in no longer triggers a false security alert in the audit log
+
+## [v02.58w] — 2026-03-21 04:51:56 PM EST — v05.70r — [`f7106b5`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f7106b5d55c8912726b5b4bc0d5bd091b6ebc6c3)
+
+### Security
+- Improved protection against unauthorized direct access to the application
+
+## [v02.57w] — 2026-03-21 03:31:22 PM EST — v05.69r — [`a529846`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a529846ba902b1b7d4d4dd48831fb5c138caeb28)
+
+### Fixed
+- Sign-in now works reliably — resolved a background timing issue that could prevent the app from loading
+
+## [v02.56w] — 2026-03-21 03:22:38 PM EST — v05.68r — [`19079c4`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/19079c4eaedeb960ba8127df0d9be1240fcfd931)
+
+### Fixed
+- Sign-in now completes immediately without getting stuck on loading screen
+
 ## [v02.55w] — 2026-03-21 03:12:33 PM EST — v05.67r — [`8858273`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8858273713793a23261c8ae042168351e3f92a4d)
 
 ### Fixed

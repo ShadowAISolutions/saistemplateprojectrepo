@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v03.06w] — 2026-03-25 11:54:00 PM EST — v06.78r
+
+### Fixed
+- Data poll countdown now shows "polling..." indicator on every poll cycle, not just the first
 
 ## [v03.05w] — 2026-03-25 11:47:57 PM EST — v06.77r
 
@@ -243,36 +248,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Changed
 - Shared Google OAuth client for unified sign-in experience across all auth pages
-
-## [v02.61w] — 2026-03-21 06:15:12 PM EST — v05.77r
-
-### Fixed
-- GAS changelog popup title no longer shows pipe characters
-
-## [v02.60w] — 2026-03-21 06:07:27 PM EST — v05.76r
-
-### Changed
-- GAS version polling now parses pipe-delimited format from gs.version.txt
-
-## [v02.59w] — 2026-03-21 05:21:32 PM EST — v05.74r
-
-### Fixed
-- Page refresh and "Use Here" no longer get stuck on "Reconnecting" screen
-- Sign-in no longer triggers a false security alert in the audit log
-
-## [v02.58w] — 2026-03-21 04:51:56 PM EST — v05.70r
-
-### Security
-- Improved protection against unauthorized direct access to the application
-
-## [v02.57w] — 2026-03-21 03:31:22 PM EST — v05.69r
-
-### Fixed
-- Sign-in now works reliably — resolved a background timing issue that could prevent the app from loading
-
-## [v02.56w] — 2026-03-21 03:22:38 PM EST — v05.68r
-
-### Fixed
-- Sign-in now completes immediately without getting stuck on loading screen
 
 Developed by: ShadowAISolutions

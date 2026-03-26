@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v06.78r] — 2026-03-25 11:54:00 PM EST
+
+> **Prompt:** "nope. in the data poll, its doing the yellow pulling... once, but then moving forward always going from 0 to 14 . the data is still properly being pulled, its just the data poll countdown and polling indication that we are having issues with."
+
+### Fixed
+- Data poll timer now shows "polling..." for at least 2 seconds after each poll fires — the GAS inline-JS response arrives faster than the 1s timer tick, so `_dataPollInFlight` was clearing before the timer could display the polling state. Added a 2-second minimum display window based on `_lastDataPollTick` timestamp
+
+#### `testauth1.html` — v03.06w
+##### Fixed
+- Data poll countdown now shows "polling..." indicator on every poll cycle, not just the first
 
 ## [v06.77r] — 2026-03-25 11:47:57 PM EST
 
