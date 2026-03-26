@@ -4,6 +4,40 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-26 09:16:21 AM EST
+**Repo version:** v06.88r
+
+### What was done
+- **v06.82r–v06.86r** (prior session) — Added dynamic sign-in stage indicators under the session spinner in applicationportal.html's auth sign-in flow. Evolved from simple subtitle updates → checklist format → descriptive labels → elapsed timing per stage. Then added equivalent checklists for sign-out and reconnecting flows. All three checklists (sign-in, sign-out, reconnecting) completed for applicationportal.html
+- **v06.87r** — Propagated all three checklists (sign-in, sign-out, reconnecting) to testauth1.html (v03.08w) and globalacl.html (v01.28w). Both pages use `SSO_PROVIDER: false` so their reconnecting checklists have 2 stages instead of 3 (no "Preparing sign-in for linked apps")
+- **v06.88r** — Added all three checklists to the auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) so new pages inherit them automatically. Made the reconnecting checklist dynamic based on `SSO_PROVIDER` config — 3 stages when true, 2 when false. The SSO reconnect stage is in the HTML but hidden by default; `showReconnecting()` shows/hides it dynamically
+
+### Where we left off
+- All changes committed and merged to main
+- Auth template now includes full checklist infrastructure:
+  - CSS for all three checklist types (pending ○ gray, active ● blue, done ✓ green, elapsed time)
+  - HTML checklists in sign-in wall (5 stages), sign-out wall (5 stages), reconnecting wall (2-3 stages dynamic)
+  - Full JS functions: `_stageMap`, `_formatStageTime()`, `_setStageTime()`, `_updateSignInStage()`, `_completeAllStages()`, sign-out functions, reconnect functions
+  - Sign-out hooks in `performSignOut()` at each phase
+  - Stage completions in `gas-auth-ok` handler (both `_directSessionLoad` and `_pendingSessionShow` paths)
+  - SSO override in `attemptSSOAuth()` — hides checklist, shows "Signing in via [Source]" subtitle
+- Existing auth pages (applicationportal, testauth1, globalacl) have checklists as PROJECT code — they were not affected by the template update
+
+### Key decisions made
+- **Checklists are template code, not project code** — added to the TEMPLATE region of the auth template so all future auth pages get them automatically. Existing pages keep their PROJECT-marked versions
+- **Dynamic SSO stage** — the `rc-stage-sso` HTML element is always present but hidden with `style="display:none;"`. `showReconnecting()` shows/hides it based on `HTML_CONFIG.SSO_PROVIDER`. The `_rcStageOrder` array is also built dynamically at init time
+- **`_setStageTime()` checks all three time maps** — `_stageStartTimes || _soStageStartTimes || _rcStageStartTimes` — works because `var` declarations are hoisted in JS
+- **Sign-in `_stageMap` maps text strings to element IDs** — display text comes from HTML `<li>` content, not the map. Multiple text strings can map to the same stage (e.g. both "Verifying your identity…" and "Sending credentials…" map to `stage-verifying`)
+
+### Active context
+- Branch: `claude/document-signin-steps-lNXg1`
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-26 12:20:49 AM EST
 **Repo version:** v06.81r
 
@@ -31,35 +65,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
   - "Live Xs ago" connection indicator working correctly
   - Heartbeat fires every 60s (test) for session extension only — no data delivery
   - HIPAA compliant across all 4 relevant §164.312 sections
-
-### Key decisions made
-- **Separated pipelines permanently** — heartbeat = session extension, data poll = data freshness. Different cadences, independent tuning, fault isolation
-- **URL parameter for data poll token** — postMessage handshake failed because Google's GAS iframe sandbox drops parent→child messages. Token in URL is HTTPS-encrypted, acceptable tradeoff vs HIPAA violation
-- **`getEpochCache()` mandatory** — all session operations MUST use `getEpochCache()`, not `CacheService.getScriptCache()` directly. The epoch prefix is required for session key lookup
-- **2s minimum polling display** — timer checks `sinceDataPoll < 2` in addition to `_dataPollInFlight` to guarantee visibility of the polling state
-- **Production recommendations** — heartbeat: 5min (300s), session: 15min (900s), absolute: 8hr (28800s), data poll: 15s. Free tier supports ~50 viewers, Workspace handles 100+
-
-### Active context
-- Branch: `claude/fix-testauth1-polling-CiD9R`
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-- Reference doc: `repository-information/DATA-POLL-ARCHITECTURE.md` — comprehensive architecture, quota, HIPAA, and scaling reference
-
-## Previous Sessions
-
-**Date:** 2026-03-25 09:23:26 PM EST
-**Repo version:** v06.65r
-
-### What was done
-- **v06.54r–v06.57r** — Implemented CacheService-based private data serving for rndlivedata (replaced public Visualization API). Added `refreshDataCache()`, `getCachedData()`, `onEditInstallable()` to rndlivedata.gs. Data is cached server-side with 6h TTL, served to viewers piggybacked on existing heartbeat calls (zero additional GAS quota per viewer). Fixed CSP and iframe sandbox issues
-- **v06.58r–v06.60r** — Brought live data table into testauth1 (auth-gated page). Added `refreshDataCache()`, `getCachedData()`, `onEditInstallable()`, `writeCell()` to testauth1.gs. Piggybacked `liveData` on existing heartbeat response (HMAC-signed). Added full table/dashboard UI with sortable columns, cell change detection (green flash), double-click cell editing, connection status indicator, view toggle
-- **v06.61r** — Added idle data polling (Option C) — when user is idle, lightweight `getCachedData()` polls replace the heavier heartbeat, keeping data fresh at ~10x lower server cost. Activity-gated heartbeat only fires when user activity detected
-- **v06.62r–v06.65r** — Decoupled idle poll interval, added countdown timer, separated Data Poll into its own row, made all timer rows always visible
-
-### Where we left off
-- All changes committed and merged to main
-- testauth1 live data table fully working with heartbeat-piggybacked data + idle data polling
 
 Developed by: ShadowAISolutions
