@@ -4,6 +4,42 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-25 09:23:26 PM EST
+**Repo version:** v06.65r
+
+### What was done
+- **v06.54r–v06.57r** — Implemented CacheService-based private data serving for rndlivedata (replaced public Visualization API). Added `refreshDataCache()`, `getCachedData()`, `onEditInstallable()` to rndlivedata.gs. Data is cached server-side with 6h TTL, served to viewers piggybacked on existing heartbeat calls (zero additional GAS quota per viewer). Fixed CSP and iframe sandbox issues
+- **v06.58r–v06.60r** — Brought live data table into testauth1 (auth-gated page). Added `refreshDataCache()`, `getCachedData()`, `onEditInstallable()`, `writeCell()` to testauth1.gs. Piggybacked `liveData` on existing heartbeat response (HMAC-signed). Added full table/dashboard UI with sortable columns, cell change detection (green flash), double-click cell editing, connection status indicator, view toggle
+- **v06.61r** — Added idle data polling (Option C) — when user is idle, lightweight `getCachedData()` polls replace the heavier heartbeat, keeping data fresh at ~10x lower server cost. Activity-gated heartbeat only fires when user activity detected
+- **v06.62r** — Decoupled idle poll interval to its own config variable `IDLE_DATA_POLL_INTERVAL` (15s), separate from `HEARTBEAT_INTERVAL` (30s)
+- **v06.63r** — Added idle poll countdown timer showing when next data poll fires
+- **v06.64r** — Separated Data Poll countdown into its own row in auth-timers panel (user requested separate row, not merged with heartbeat)
+- **v06.65r** — Made all timer rows always visible (Absolute, Session, Heartbeat, Data Poll) — Data Poll shows `--` when idle polling is not active instead of being hidden
+
+### Where we left off
+- All changes committed and merged to main
+- testauth1 live data table is **fully working** with:
+  - Heartbeat-piggybacked data updates (every 30s when active)
+  - Idle data polling via dedicated hidden iframe (every 15s when idle)
+  - Cell editing via double-click (writes back to spreadsheet)
+  - Auth-timers panel shows 4 rows: Absolute, Session, Heartbeat, Data Poll
+  - `onEditInstallable` trigger needs to be set up in Apps Script editor (run `installEditTrigger()` once)
+
+### Key decisions made
+- **CacheService pattern** for private spreadsheet data — spreadsheet stays private, data cached server-side, viewers get updates piggybacked on existing GAS calls
+- **Dedicated hidden iframe** for idle data polls — same pattern as heartbeat iframe, bypasses GAS sandbox origin mismatch (parent→child postMessage doesn't work through Google's nested sandbox)
+- **Activity-gated heartbeat** — heartbeat only fires if user activity detected; when idle, lightweight data-only poll takes over (~10x cheaper per call)
+- **Always-visible timer rows** — user prefers all 4 rows visible at all times, showing `--` when inactive rather than hiding/showing dynamically
+
+### Active context
+- Branch: `claude/rndlivedata-private-access-5kPt2`
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-25 02:30:56 PM EST
 **Repo version:** v06.53r
 
@@ -18,32 +54,5 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 - RND Live Data page is **working** — confirmed by user after publishing the spreadsheet to web
 - User asked if it can work without "Anyone with the link" sharing — answered no, the client-side Visualization API requires public access. Alternatives discussed: GAS proxy (costs GAS executions), Sheets API v4 with API key (requires GCP setup), hybrid cache approach
 - The page requires the Google Spreadsheet to be: (1) Published to web, AND (2) Shared as "Anyone with the link can view"
-
-### Key decisions made
-- Used `google.visualization.Query` class (JSONP internally) instead of raw `fetch()` — bypasses CORS on the gviz endpoint
-- CSP required three rounds of fixes — Google Charts/Visualization API touches `script-src`, `style-src`, `connect-src`, `font-src` across multiple Google domains (gstatic.com, google.com, docs.google.com, accounts.google.com)
-- Client-side Visualization API approach requires public spreadsheet access — this is an inherent tradeoff of "zero GAS execution for reads"
-- Presence tracking uses a hidden `_Presence` sheet (auto-created, hidden) with GAS iframe heartbeat every 30s
-
-### Active context
-- Branch: `claude/research-live-data-viewer-IkJ7m`
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-25 12:14:00 PM EST
-**Repo version:** v06.49r
-
-### What was done
-- **v06.46r** — Set up new GAS project "rndlivedata" (RND Live Data) — ran `setup-gas-project.sh`, fixed script warnings (workflow deploy step, README tree entries), committed and pushed
-- **v06.47r** — Implemented full multi-user data entry web app per PROJECT BRIEF: dark-theme frontend on GitHub Pages with event-driven sync (zero polling), GAS REST API backend with CacheService + LockService + Google Sheets, optimistic UI, Page Visibility API sync, stale data banners. Added PROJECT OVERRIDE markers on doGet/doPost for API routing alongside template iframe/deploy behavior
-- **v06.48r** — Swapped SPREADSHEET_ID placeholder (`YOUR_SPREADSHEET_ID`) with actual ID (`1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU`) in rndlivedata.gs and rndlivedata.config.json
-- **v06.49r** — Fixed bug where Copy Code.gs and Copy Config buttons in gas-project-creator.html gated SPREADSHEET_ID on auth-only. Also fixed same bug in setup-gas-project.sh (2 occurrences). Added SPREADSHEET_ID, SHEET_NAME, SOUND_FILE_ID vars to minimal noauth GAS template so Copy Code.gs regex replacements have targets
-
-### Where we left off
-- All changes committed and merged to main
 
 Developed by: ShadowAISolutions
