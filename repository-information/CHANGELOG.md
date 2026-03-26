@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v06.86r] — 2026-03-26 08:35:21 AM EST
+
+> **Prompt:** "good. again just for the application portal, make the equivalent checklist for whatever is happening with the signing out...clearing your session, and also for reconnecting..."
+
+### Added
+- Added sign-out stage checklist to Application Portal — replaces static "Clearing your session" with a 5-stage checklist (clearing local session data, notifying other tabs, signing out connected apps, invalidating server session, waiting for server confirmation) using the same visual pattern as the sign-in checklist with timing for each stage
+- Added reconnecting stage checklist to Application Portal — replaces static "Verifying your session" text with a 3-stage checklist (verifying session, preparing sign-in for linked apps, confirming session with server) with timing for each stage
+- Added `_updateSignOutStage()`, `_completeAllSignOutStages()`, `_resetSignOutChecklist()` functions for sign-out checklist management
+- Added `_updateReconnectStage()`, `_completeAllReconnectStages()`, `_resetReconnectChecklist()` functions for reconnecting checklist management
+- Extended `_setStageTime()` to check all three stage time maps (sign-in, sign-out, reconnect)
+
+#### `applicationportal.html` — v01.35w
+
+##### Added
+- Sign-out now shows a real-time checklist with timing for each step
+- Reconnecting now shows a real-time checklist with timing for each step
 
 ## [v06.85r] — 2026-03-26 08:23:47 AM EST
 

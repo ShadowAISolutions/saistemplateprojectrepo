@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.35w] — 2026-03-26 08:35:21 AM EST — v06.86r
+
+### Added
+- Sign-out now shows a real-time checklist (clearing session, notifying tabs, signing out connected apps, invalidating server session, waiting for confirmation) with timing for each step
+- Reconnecting now shows a real-time checklist (verifying session, preparing linked app sign-in, confirming with server) with timing for each step
 
 ## [v01.34w] — 2026-03-26 08:23:47 AM EST — v06.85r
 
