@@ -3388,12 +3388,8 @@
           // Exchange the received token with our GAS backend
           _ssoAccessToken = e.data.accessToken;
           exchangeToken(e.data.accessToken);
-          // Show SSO-specific signing-in message AFTER exchangeToken(),
-          // because exchangeToken() calls showSigningIn() which resets the checklist
-          // SSO override — hide checklist, show subtitle with SSO source
-          var checklist = document.getElementById('signin-checklist');
+          // Show SSO source as subtitle — checklist stays visible to track progress
           var subtitle = document.getElementById('signing-in-subtitle');
-          if (checklist) checklist.style.display = 'none';
           if (subtitle) {
             subtitle.textContent = 'Signing in via ' + (e.data.sourceDisplayName || e.data.sourcePage || 'SSO');
             subtitle.style.display = '';

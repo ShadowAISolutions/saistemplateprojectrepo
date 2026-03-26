@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v06.90r] — 2026-03-26 09:32:01 AM EST
+
+> **Prompt:** "add the checklists for when we are on the sign in via application portal parge for all applications, including the templates"
+
+### Changed
+- SSO sign-in flow now shows the sign-in progress checklist alongside the "Signing in via [Source]" subtitle instead of hiding the checklist — users can track authentication progress during SSO sign-in just like during direct sign-in
+
+#### `applicationportal.html` — v01.37w
+##### Changed
+- SSO sign-in now shows the progress checklist with "Signing in via Application Portal" subtitle above it
+
+#### `globalacl.html` — v01.30w
+##### Changed
+- SSO sign-in now shows the progress checklist with "Signing in via Application Portal" subtitle above it
+
+#### `testauth1.html` — v03.10w
+##### Changed
+- SSO sign-in now shows the progress checklist with "Signing in via Application Portal" subtitle above it
 
 ## [v06.89r] — 2026-03-26 09:25:30 AM EST
 

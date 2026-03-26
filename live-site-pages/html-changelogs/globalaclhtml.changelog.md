@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v01.30w] — 2026-03-26 09:32:01 AM EST — v06.90r
+
+### Changed
+- SSO sign-in now shows the authentication progress checklist with timing alongside the source indicator
 
 ## [v01.29w] — 2026-03-26 09:25:30 AM EST — v06.89r
 
