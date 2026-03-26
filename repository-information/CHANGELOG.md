@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v06.68r] — 2026-03-25 10:23:52 PM EST
+
+> **Prompt:** "yes implement this fix"
+
+### Security
+- Data poll endpoint now requires session authentication — `processDataPoll(token)` validates session in CacheService before returning data (HIPAA §164.312(a)(1) Access Control, §164.312(d) Person/Entity Authentication)
+- Data poll uses Phase 7 postMessage pattern — token never appears in URL parameters
+- Data poll client-side now checks `loadSession().token` before sending requests
+
+### Changed
+- `?action=getData` GAS handler now returns a postMessage listener page (same pattern as heartbeat/signout) instead of directly calling `getCachedData()`
+- Added `processDataPoll(token)` server-side function — lightweight session validation (CacheService lookup only, no HMAC regen, no session extension)
+- Added `gas-data-poll-ready` message type to allowed messages and HMAC exemption list
+- Added `gas-data-poll-ready` handler in `_processVerifiedMessage` to send token via postMessage
+
+#### `testauth1.gs` — v02.04g
+##### Security
+- Data poll endpoint now validates session token before returning spreadsheet data
+
+#### `testauth1.html` — v02.97w
+##### Security
+- Data requests now include session authentication — unauthenticated data access is no longer possible
 
 ## [v06.67r] — 2026-03-25 10:05:15 PM EST
 

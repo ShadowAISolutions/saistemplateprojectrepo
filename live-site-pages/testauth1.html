@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.96w">
+  <meta name="build-version" content="v02.97w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -1604,6 +1604,7 @@
       'gas-heartbeat-expired': true,
       'gas-heartbeat-error': true,
       'gas-heartbeat-ready': true,       // Phase 7: heartbeat listener page ready signal
+      'gas-data-poll-ready': true,      // Phase 7: data poll listener page ready signal
       'gas-signout-ready': true,         // Phase 7: signout listener page ready signal
       'gas-security-event-ready': true,  // Phase 7: security event listener page ready signal
       'gas-user-activity': true,
@@ -1873,6 +1874,7 @@
         'gas-ready-for-token': true,  // Token exchange listener — no signing key
         'gas-auth-ok': true,          // Immediate unsigned send fires before signed version
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
+        'gas-data-poll-ready': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
@@ -1928,6 +1930,19 @@
           event.source.postMessage({
             type: 'heartbeat-token',
             token: session.token
+          }, event.origin);
+        }
+        return;
+      }
+
+      // ── Phase 7: Data poll listener page signals ready ──
+      // Send token via postMessage for session validation before data delivery
+      if (data.type === 'gas-data-poll-ready') {
+        var dpSession = loadSession();
+        if (dpSession.token && event.source) {
+          event.source.postMessage({
+            type: 'data-poll-token',
+            token: dpSession.token
           }, event.origin);
         }
         return;
@@ -3092,6 +3107,8 @@
 
     function _sendDataPoll() {
       if (_dataPollInFlight) return;  // don't stack
+      var session = loadSession();
+      if (!session.token) return;  // no session — skip (auth required for data access)
       var gasApp = document.getElementById('gas-app');
       var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;

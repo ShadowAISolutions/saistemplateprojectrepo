@@ -1,4 +1,4 @@
-var VERSION = "v02.03g";
+var VERSION = "v02.04g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2493,6 +2493,25 @@ function processHeartbeat(token) {
   return hbResult;
 }
 
+// ── Authenticated data poll — lightweight session check + data return ──
+// Called via google.script.run from the data poll listener page (action=getData).
+// Token is received via postMessage, NOT URL parameters (Phase 7 pattern).
+// Unlike processHeartbeat(), this does NOT extend the session — it only verifies
+// the session exists in CacheService, then returns cached data. ~2x lighter than
+// heartbeat (no HMAC regen, no session write, no absolute timeout check).
+function processDataPoll(token) {
+  if (!token) {
+    return {type: 'live-data', data: null, error: 'no_token'};
+  }
+  var cache = CacheService.getScriptCache();
+  var sessionRaw = cache.get("session_" + token);
+  if (!sessionRaw) {
+    return {type: 'live-data', data: null, error: 'no_session'};
+  }
+  // Session exists — user is authenticated. Return cached data.
+  return {type: 'live-data', data: getCachedData()};
+}
+
 // ── Phase 7 (H-6): Server-side sign-out processing ──
 // Called via google.script.run from the signout listener page (action=signout).
 // Token is received via postMessage, NOT URL parameters.
@@ -2660,20 +2679,25 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Data poll action — lightweight page that fetches cached data and sends it back
-  // Used by the idle data poll (Option C) when the heartbeat is inactive.
-  // No session validation needed — getCachedData() reads from CacheService only.
+  // Data poll action — returns page that listens for token via postMessage, then
+  // validates session before returning cached data. Same Phase 7 pattern as heartbeat.
   if (action === 'getData') {
     var dataListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
       + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      + 'google.script.run'
-      + '  .withSuccessHandler(function(data) {'
-      + '    window.top.postMessage({type:"live-data", data:data}, PARENT_ORIGIN);'
-      + '  })'
-      + '  .withFailureHandler(function() {'
-      + '    window.top.postMessage({type:"live-data", data:null}, PARENT_ORIGIN);'
-      + '  })'
-      + '  .getCachedData();'
+      + 'window.top.postMessage({type:"gas-data-poll-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "data-poll-token") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage(r, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"live-data", data:null,'
+      + '        error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .processDataPoll(evt.data.token);'
+      + '});'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(dataListenerHtml)
       .setTitle(TITLE)

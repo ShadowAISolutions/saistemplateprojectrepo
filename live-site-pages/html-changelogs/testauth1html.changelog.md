@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v02.97w] — 2026-03-25 10:23:52 PM EST — v06.68r
+
+### Security
+- Data requests now include session authentication — unauthenticated data access is no longer possible
 
 ## [v02.96w] — 2026-03-25 10:05:15 PM EST — v06.67r
 
