@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v06.83r] — 2026-03-26 08:10:52 AM EST
+
+> **Prompt:** "make it show underneath the spinner instead and have it be a checklist format instead of showing one by one. while we are making this, just do it for the application portal, not the others"
+
+### Changed
+- Converted sign-in stage indicator from single-line subtitle to a checklist format on the Application Portal — all stages are displayed as a list below the spinner with visual state progression (○ pending → ● active → ✓ done)
+- SSO sign-in path hides the checklist and shows a simple "Signing in via [Source]" message instead
+
+#### `applicationportal.html` — v01.32w
+
+##### Changed
+- Sign-in progress now shows as a visual checklist under the spinner instead of one line at a time
 
 ## [v06.82r] — 2026-03-26 08:02:27 AM EST
 
