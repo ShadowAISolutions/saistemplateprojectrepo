@@ -3,7 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
+
+## [v07.01r] — 2026-03-26 03:08:32 PM EST
+
+> **Prompt:** "the following is an example. for each row have both the active and inactive ones, so instead of 📊  Google Spreadsheet    — links to the page's data spreadsheet , have it be something like 📊  Google Spreadsheet         — 🔸  No spreadsheet . dont need to include the end of links to the page's data spreadsheet . do the same for all of them"
+
+### Changed
+- Restructured README emoji legend to pair each active icon with its inactive/placeholder counterpart on the same row (e.g. `📊 Google Spreadsheet — 🔸 No spreadsheet`), removing verbose link descriptions
+- Consolidated Page Status into a single row (`🟢 Active — 🟡 Maintenance — 🔴 Inactive`)
 
 ## [v07.00r] — 2026-03-26 03:03:45 PM EST
 

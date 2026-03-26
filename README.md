@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-26 03:03:45 PM EST` · Repo version: `v07.00r`
+Last updated: `2026-03-26 03:08:32 PM EST` · Repo version: `v07.01r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -32,22 +32,15 @@ Initialize your repository and Claude will update the live site link and QR code
 │
 <b>─── Emoji Legend ──────────────────────────────────────────────────────────────</b>
 │
-│   <b>Page Action Icons</b> (shown after → on each page entry)
-│   🌐  Live webpage          — links to the GitHub Pages site
-│   📊  Google Spreadsheet    — links to the page's data spreadsheet
-│   ⛽  Google Apps Script    — links to the .gs source file
-│   🧜‍♀️  Architecture diagram  — links to per-page Mermaid diagram
-│   📁  Google Drive folder   — links to the Drive folder for the page's files
-│
-│   <b>Placeholder Icons</b> (shown when a resource doesn't exist)
-│   🔸  No spreadsheet        — no GAS project or placeholder ID
-│   ◽  No Drive folder       — no Google Drive folder linked
-│   🔻  No GAS script         — page has no associated .gs file
+│   <b>Page Resources</b> (shown after → on each page entry)
+│   🌐  Webpage               — 🔻  No webpage
+│   📊  Google Spreadsheet    — 🔸  No spreadsheet
+│   📁  Google Drive folder   — ◽  No Drive folder
+│   ⛽  Google Apps Script    — 🔻  No GAS script
+│   🧜‍♀️  Architecture diagram  — ◽  No diagram
 │
 │   <b>Page Status</b> (shown after 🌐)
-│   🟢  Active                — page is live and operational
-│   🟡  Maintenance           — page shows maintenance overlay
-│   🔴  Inactive              — page is deactivated
+│   🟢  Active                — 🟡  Maintenance  — 🔴  Inactive
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
