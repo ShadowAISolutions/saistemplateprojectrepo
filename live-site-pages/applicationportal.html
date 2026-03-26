@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.37w">
+  <meta name="build-version" content="v01.38w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -1344,6 +1344,37 @@
     function _onGisPopupClosed() {
       _ssoRefreshDismissed = true;
       _updateSsoIndicator('dismissed');
+    }
+
+    // PROJECT: Validate SSO token matches the active session's Google account.
+    // After page refresh, the GIS popup may let the user pick a different account.
+    // This check ensures only the same account's token is accepted for SSO sharing.
+    function _validateSSOTokenEmail(accessToken, onValid, onMismatch) {
+      var session = loadSession();
+      if (!session.email) {
+        if (onMismatch) onMismatch('no_session');
+        return;
+      }
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      })
+      .then(function(resp) { return resp.json(); })
+      .then(function(info) {
+        if (info.email && info.email.toLowerCase() === session.email.toLowerCase()) {
+          onValid();
+        } else {
+          console.warn('[SSO] Token email mismatch \u2014 session: ' + session.email + ', Google: ' + (info.email || 'unknown'));
+          _reportSecurityEvent('sso_email_mismatch', {
+            sessionEmail: session.email,
+            tokenEmail: info.email || 'unknown'
+          });
+          if (onMismatch) onMismatch('mismatch');
+        }
+      })
+      .catch(function(err) {
+        console.warn('[SSO] Failed to validate token email:', err);
+        if (onMismatch) onMismatch('error');
+      });
     }
 
     function exchangeToken(googleAccessToken) {
@@ -3406,14 +3437,21 @@
       _ssoRefreshDismissed = false;
       _updateSsoIndicator('pending');
       // Re-attempt SSO token acquisition via GIS
+      var retrySession = loadSession();
       var retryClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: '',
+        login_hint: retrySession.email || '',
         callback: function(response) {
           if (!response.error && response.access_token) {
-            _ssoAccessToken = response.access_token;
-            _updateSsoIndicator('ready');
+            _validateSSOTokenEmail(response.access_token, function() {
+              _ssoAccessToken = response.access_token;
+              _updateSsoIndicator('ready');
+            }, function() {
+              _ssoRefreshDismissed = true;
+              _updateSsoIndicator('dismissed');
+            });
           } else {
             _ssoRefreshDismissed = true;
             _updateSsoIndicator('dismissed');
@@ -3567,11 +3605,17 @@
                 client_id: CLIENT_ID,
                 scope: 'openid email profile',
                 prompt: '',  // silent — no user interaction
+                login_hint: session.email || '',
                 callback: function(response) {
                   if (!response.error && response.access_token) {
-                    _ssoAccessToken = response.access_token;
-                    console.debug('[SSO] Re-acquired access token during reconnect');
-                    _updateSsoIndicator('ready');
+                    _validateSSOTokenEmail(response.access_token, function() {
+                      _ssoAccessToken = response.access_token;
+                      console.debug('[SSO] Re-acquired access token during reconnect');
+                      _updateSsoIndicator('ready');
+                    }, function() {
+                      _ssoRefreshDismissed = true;
+                      _updateSsoIndicator('dismissed');
+                    });
                   } else {
                     _ssoRefreshDismissed = true;
                     _updateSsoIndicator('dismissed');

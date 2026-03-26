@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v06.91r] — 2026-03-26 09:47:33 AM EST
+
+> **Prompt:** "ive noticed something. when i refresh the application portal, the google sign in pops up to enable SSO, however, its letting me select another account and still counting for SSO active. can you make it make sure that the account selected is the same as the one signed in to the application portal or else block it"
+
+### Security
+- SSO token re-acquisition on the Application Portal now validates that the Google account selected in the GIS popup matches the active session's email — mismatched accounts are rejected and the SSO indicator shows "retry" instead of falsely showing "ready"
+- Added `login_hint` to SSO re-acquisition GIS clients so the correct account is pre-selected in the popup
+
+#### `applicationportal.html` — v01.38w
+##### Security
+- SSO re-acquisition now validates the Google token's email against the active session — selecting a different Google account no longer falsely enables SSO
+- Added `login_hint` to pre-select the correct Google account during SSO token refresh
 
 ## [v06.90r] — 2026-03-26 09:32:01 AM EST
 
