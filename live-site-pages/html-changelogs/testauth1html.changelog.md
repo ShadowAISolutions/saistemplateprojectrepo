@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v03.05w] — 2026-03-25 11:47:57 PM EST — v06.77r
+
+### Fixed
+- Data poll countdown now counts down smoothly from 15 to 0 without random jumps
 
 ## [v03.04w] — 2026-03-25 11:42:42 PM EST — v06.76r
 

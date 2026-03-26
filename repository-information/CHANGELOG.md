@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v06.77r] — 2026-03-25 11:47:57 PM EST
+
+> **Prompt:** "nope. to recap the state we are in, it seems like things are being polled at differennt intervals. the most accurate indicator i have to the real timing is the live indicator top left which seems to be resetting between 15-17 seconds, the dapa poll however is refreshing at random times like 4 seconds remaining going straight to 15, without saying polling or anything"
+
+### Fixed
+- Fixed data poll countdown jumping randomly mid-countdown — removed duplicate `_lastDataPollTick = Date.now()` from the `live-data` response handler that was overwriting the request-time timestamp, causing the countdown to reset to 15 at a random point during the cycle
+
+#### `testauth1.html` — v03.05w
+##### Fixed
+- Data poll countdown now counts down smoothly from 15 to 0 without random jumps
 
 ## [v06.76r] — 2026-03-25 11:42:42 PM EST
 
