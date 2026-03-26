@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 31/50`
+`Sections: 32/50`
 
 ## [Unreleased]
+
+## [v01.32w] — 2026-03-26 11:14:47 AM EST — v06.94r
+
+### Security
+- Improved sign-in security — SSO token refresh now validates the correct Google account is used
 
 ## [v01.31w] — 2026-03-26 10:49:30 AM EST — v06.92r
 

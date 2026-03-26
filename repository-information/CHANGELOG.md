@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v06.94r] — 2026-03-26 11:14:47 AM EST
+
+> **Prompt:** "make sure everything we have fixed is applied to the templates also"
+
+### Security
+- Propagated SSO email validation (`_validateSSOTokenEmail`) from applicationportal.html to the auth template, testauth1.html, and globalacl.html — ensures SSO token re-acquisition on reconnect validates the Google account matches the active session across all auth pages, not just the Application Portal
+- Added `login_hint` parameter to reconnect SSO GIS `initTokenClient` calls in the auth template, testauth1.html, and globalacl.html — pre-selects the correct Google account during silent token refresh
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
+##### Security
+- Added `_validateSSOTokenEmail` function for SSO token email validation
+- Added `login_hint` and `_validateSSOTokenEmail` wrapper to reconnect SSO GIS token client
+
+#### `testauth1.html` — v03.13w
+##### Security
+- Added SSO token email validation to reconnect flow — mismatched Google accounts are rejected
+- Added `login_hint` to pre-select the correct Google account during SSO token refresh
+
+#### `globalacl.html` — v01.32w
+##### Security
+- Added SSO token email validation to reconnect flow — mismatched Google accounts are rejected
+- Added `login_hint` to pre-select the correct Google account during SSO token refresh
 
 ## [v06.93r] — 2026-03-26 11:06:12 AM EST
 

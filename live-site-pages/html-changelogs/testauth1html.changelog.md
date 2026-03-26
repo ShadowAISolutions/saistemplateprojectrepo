@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v03.13w] — 2026-03-26 11:14:47 AM EST — v06.94r
+
+### Security
+- Improved sign-in security — SSO token refresh now validates the correct Google account is used
 
 ## [v03.12w] — 2026-03-26 11:06:12 AM EST — v06.93r
 

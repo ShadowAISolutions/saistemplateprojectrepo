@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.12w">
+  <meta name="build-version" content="v03.13w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -1786,6 +1786,36 @@
         }
         if (frame.parentNode) frame.parentNode.removeChild(frame);
       }, 10000);
+    }
+
+    // Validate that a Google access token's email matches the active session.
+    // Prevents wrong-account tokens from being accepted for SSO sharing.
+    function _validateSSOTokenEmail(accessToken, onValid, onMismatch) {
+      var session = loadSession();
+      if (!session.email) {
+        if (onMismatch) onMismatch('no_session');
+        return;
+      }
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      })
+      .then(function(resp) { return resp.json(); })
+      .then(function(info) {
+        if (info.email && info.email.toLowerCase() === session.email.toLowerCase()) {
+          onValid();
+        } else {
+          console.warn('[SSO] Token email mismatch \u2014 session: ' + session.email + ', Google: ' + (info.email || 'unknown'));
+          _reportSecurityEvent('sso_email_mismatch', {
+            sessionEmail: session.email,
+            tokenEmail: info.email || 'unknown'
+          });
+          if (onMismatch) onMismatch('mismatch');
+        }
+      })
+      .catch(function(err) {
+        console.warn('[SSO] Failed to validate token email:', err);
+        if (onMismatch) onMismatch('error');
+      });
     }
 
     // ── HMAC Key Import (Web Crypto API) ──
@@ -3959,10 +3989,15 @@
                 client_id: CLIENT_ID,
                 scope: 'openid email profile',
                 prompt: '',  // silent — no user interaction
+                login_hint: session.email || '',
                 callback: function(response) {
                   if (!response.error && response.access_token) {
-                    _ssoAccessToken = response.access_token;
-                    console.debug('[SSO] Re-acquired access token during reconnect');
+                    _validateSSOTokenEmail(response.access_token, function() {
+                      _ssoAccessToken = response.access_token;
+                      console.debug('[SSO] Re-acquired access token during reconnect');
+                    }, function() {
+                      console.warn('[SSO] Token email mismatch during reconnect — token discarded');
+                    });
                   }
                 }
               });
