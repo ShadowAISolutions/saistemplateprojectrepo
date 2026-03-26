@@ -3340,6 +3340,7 @@
         _hmacKey = null;
         _hmacKeySet = false;
         _directSessionLoad = true;  // Tell gas-auth-ok to re-show iframe and start timers
+        _gasAuthOkHandled = false;  // Reset so the new gas-auth-ok from the reloaded iframe is not deduplicated
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';

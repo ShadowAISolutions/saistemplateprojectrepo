@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v03.11w] — 2026-03-26 10:49:30 AM EST — v06.92r
+
+### Fixed
+- "Use Here" session reclaim no longer gets stuck on reconnecting
 
 ## [v03.10w] — 2026-03-26 09:32:01 AM EST — v06.90r
 

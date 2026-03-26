@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v01.39w] — 2026-03-26 10:49:30 AM EST — v06.92r
+
+### Fixed
+- "Use Here" session reclaim no longer gets stuck on reconnecting
 
 ## [v01.38w] — 2026-03-26 09:47:33 AM EST — v06.91r
 
