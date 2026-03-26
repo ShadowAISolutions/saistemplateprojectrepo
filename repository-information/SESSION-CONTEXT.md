@@ -4,6 +4,37 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-03-26 02:48:13 PM EST
+**Repo version:** v06.99r
+
+### What was done
+- **v06.95r–v06.98r** — Fixed several auth UX issues: re-authentication login_hint not capturing email before session clear, SSO indicator badge showing on auth wall in Application Portal (added auth-wall guard to `_updateSsoIndicator`)
+- **v06.99r** — Ported the SSO indicator system from `applicationportal.html` into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) and propagated to all auth pages:
+  - Added SSO indicator CSS, HTML element, `_ssoRefreshDismissed` variable, `_updateSsoIndicator()` function with auth-wall guard
+  - Merged `_onGisPopupClosed()` into `_onGisPopupDismissed()` — single handler for both SSO indicator state and auth wall display
+  - Added SSO indicator calls to `handleTokenResponse`, `startCountdownTimers`, `stopCountdownTimers`, `attemptReauth`, SSO reconnect callback, and click handler
+  - Relocated AP's SSO indicator CSS/HTML/JS from AUTH sections to TEMPLATE sections
+- **Research:** Analyzed testauth1.html and globalacl.html for other features that should be template-level — determined that remaining PROJECT-section features are genuinely page-specific (Live Data Viewer, HIPAA panels, Global Sessions Panel, Security Test Suite, Force Heartbeat debug button). Panel Registry/Cooldown and RBAC UI Gating are reusable patterns but would add dead code to pages that don't use them
+
+### Where we left off
+- All changes committed and pushed (v06.99r on `claude/fix-signin-timer-popup-1WdyA`) — workflow will auto-merge to main
+- All 4 auth pages + template are now fully synchronized on SSO indicator system
+- Verified: `_onGisPopupClosed` has zero references (fully replaced), `_updateSsoIndicator` appears 14 times per file across all 4 auth files, counts match perfectly
+
+### Key decisions made
+- **SSO indicator is template code, not project code** — even though only Application Portal currently uses `SSO_PROVIDER: true`, the indicator system belongs in the template because it's gated behind `SSO_PROVIDER` config (completely inert when false) and will be needed by any future auth page that enables SSO
+- **No other features need template promotion** — after thorough analysis, testauth1's Live Data Viewer, Security Test Suite, HIPAA panels, and globalacl's Global Sessions Panel are all genuinely page-specific. Panel Registry and RBAC UI Gating are reusable but would add unnecessary dead code
+
+### Active context
+- Branch: `claude/fix-signin-timer-popup-1WdyA`
+- Page versions: testauth1 v03.17w, globalacl v01.36w, applicationportal v01.43w
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
+- `MULTI_SESSION_MODE` = `Off`
+
+## Previous Sessions
+
 **Date:** 2026-03-26 11:41:00 AM EST
 **Repo version:** v06.94r
 
@@ -17,41 +48,6 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### Where we left off
 - All changes committed and pushed (v06.94r on `claude/fix-credential-exchange-hang-PseUD`) — workflow will auto-merge to main
-- All 4 auth UX fixes are now present in:
-  - Auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
-  - applicationportal.html (v01.39w)
-  - testauth1.html (v03.13w)
-  - globalacl.html (v01.32w)
-- The 4 fixes applied across this session:
-  1. **Replay guard auth wall** — `showAuthWall()` in replay guard block (prevents hanging on credential exchange timeout)
-  2. **SSO checklist visibility** — checklist not hidden during SSO flow
-  3. **SSO email validation** — `_validateSSOTokenEmail()` + `login_hint` on GIS clients (prevents wrong-account SSO tokens)
-  4. **Use Here reset** — `_gasAuthOkHandled = false` in Use Here handler (prevents stuck reconnecting)
-
-### Key decisions made
-- **SSO email validation is template code, not project code** — initially added to applicationportal.html as PROJECT-specific code, then propagated to the auth template so all auth pages inherit it. Existing pages got it via manual propagation
-- **`_validateSSOTokenEmail` validates via Google userinfo API** — fetches `googleapis.com/oauth2/v3/userinfo` with the access token to get the email, compares against `loadSession().email`. Mismatches trigger `_reportSecurityEvent('sso_email_mismatch')`
-- **`login_hint` parameter on GIS `initTokenClient`** — pre-selects the correct Google account during silent token refresh, reducing the chance of wrong-account selection
-
-### Active context
-- Branch: `claude/fix-credential-exchange-hang-PseUD`
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
-- `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-03-26 09:16:21 AM EST
-**Repo version:** v06.88r
-
-### What was done
-- **v06.82r–v06.86r** (prior session) — Added dynamic sign-in stage indicators under the session spinner in applicationportal.html's auth sign-in flow. Evolved from simple subtitle updates → checklist format → descriptive labels → elapsed timing per stage. Then added equivalent checklists for sign-out and reconnecting flows
-- **v06.87r** — Propagated all three checklists (sign-in, sign-out, reconnecting) to testauth1.html (v03.08w) and globalacl.html (v01.28w)
-- **v06.88r** — Added all three checklists to the auth HTML template with dynamic SSO stage based on `SSO_PROVIDER` config
-
-### Where we left off
-- All changes committed and merged to main
-- Auth template includes full checklist infrastructure (sign-in, sign-out, reconnecting)
+- All 4 auth UX fixes are now present in all auth pages and the template
 
 Developed by: ShadowAISolutions
