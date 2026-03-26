@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v06.87r] — 2026-03-26 08:58:20 AM EST
+
+> **Prompt:** "alright, now make the equivalent checklists for all the other applications"
+
+### Added
+- Added sign-in, sign-out, and reconnecting stage checklists with timing to testauth1.html — replaces old single-line subtitle and static text with interactive checklists matching the Application Portal pattern
+- Added sign-in, sign-out, and reconnecting stage checklists with timing to globalacl.html — same pattern as testauth1
+- Both pages use 2-stage reconnecting checklist (no SSO stage) since `SSO_PROVIDER: false`
+- SSO sign-in override hides checklist and shows "Signing in via [Source]" subtitle on both pages
+
+#### `testauth1.html` — v03.08w
+
+##### Added
+- Sign-in now shows a real-time checklist with timing for each authentication step
+- Sign-out now shows a real-time checklist with timing for each step
+- Reconnecting now shows a real-time checklist with timing for each step
+
+#### `globalacl.html` — v01.28w
+
+##### Added
+- Sign-in now shows a real-time checklist with timing for each authentication step
+- Sign-out now shows a real-time checklist with timing for each step
+- Reconnecting now shows a real-time checklist with timing for each step
 
 ## [v06.86r] — 2026-03-26 08:35:21 AM EST
 

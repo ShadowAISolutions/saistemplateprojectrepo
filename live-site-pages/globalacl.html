@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.27w">
+  <meta name="build-version" content="v01.28w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -176,6 +176,36 @@
       animation: auth-spin 0.8s linear infinite;
     }
     @keyframes auth-spin { to { transform: rotate(360deg); } }
+    /* PROJECT: Sign-in stage checklist */
+    .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
+    .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
+    .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
+    .signin-checklist li.stage-active { color: #4285f4; font-weight: 500; }
+    .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
+    .signin-checklist li.stage-done { color: #34a853; }
+    .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
+    .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    /* PROJECT: Sign-out stage checklist */
+    .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
+    .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
+    .signout-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
+    .signout-checklist li.stage-active { color: #4285f4; font-weight: 500; }
+    .signout-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
+    .signout-checklist li.stage-done { color: #34a853; }
+    .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
+    .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    /* PROJECT: Reconnecting stage checklist */
+    .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
+    .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .reconnect-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
+    .reconnect-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
+    .reconnect-checklist li.stage-active { color: #4285f4; font-weight: 500; }
+    .reconnect-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
+    .reconnect-checklist li.stage-done { color: #34a853; }
+    .reconnect-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
+    .reconnect-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
     .auth-pulse-dots { display: flex; gap: 8px; justify-content: center; }
     .auth-pulse-dots span {
       width: 10px; height: 10px; border-radius: 50%; background: #999;
@@ -411,21 +441,40 @@
       <div class="auth-email" id="auth-email"></div>
     </div>
     <div id="auth-wall-reconnecting" style="display:none;text-align:center;">
-      <h2 style="color:#666;font-weight:normal;">Reconnecting…</h2>
-      <p style="color:#999;">Verifying your session</p>
+      <h2 style="color:#666;font-weight:normal;">Reconnecting&hellip;</h2>
       <div class="auth-pulse-dots"><span></span><span></span><span></span></div>
+      <!-- PROJECT: Reconnecting stage checklist (no SSO stage — SSO_PROVIDER: false) -->
+      <ul id="reconnect-checklist" class="reconnect-checklist">
+        <li id="rc-stage-verify" class="stage-pending"><span class="chk-icon"></span>Verifying your session</li>
+        <li id="rc-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
+      </ul>
     </div>
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
-      <h2 style="color:#666;font-weight:normal;">Signing in…</h2>
-      <p id="signing-in-subtitle" style="color:#999;">Setting up your session</p>
+      <h2 style="color:#666;font-weight:normal;">Signing in&hellip;</h2>
       <div class="auth-spinner"></div>
+      <!-- PROJECT: Sign-in stage checklist -->
+      <ul id="signin-checklist" class="signin-checklist">
+        <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
+        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server</li>
+        <li id="stage-creating" class="stage-pending"><span class="chk-icon"></span>Setting up your secure session</li>
+        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading the application</li>
+        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
+      </ul>
+      <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
     </div>
   </div>
 
   <div id="signing-out-wall">
     <h2>Signing out&hellip;</h2>
-    <p>Clearing your session</p>
     <div class="auth-spinner"></div>
+    <!-- PROJECT: Sign-out stage checklist -->
+    <ul id="signout-checklist" class="signout-checklist">
+      <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
+      <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
+      <li id="so-stage-apps" class="stage-pending"><span class="chk-icon"></span>Signing out connected apps</li>
+      <li id="so-stage-server" class="stage-pending"><span class="chk-icon"></span>Invalidating server session</li>
+      <li id="so-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Waiting for server confirmation</li>
+    </ul>
   </div>
 
   <div id="tab-takeover-wall">
@@ -1879,6 +1928,10 @@
         if (_directSessionLoad) {
           _directSessionLoad = false;
           _updateSignInStage('Almost ready\u2026');
+          _completeAllStages();
+          // PROJECT: Complete reconnecting checklist (Use Here reclaim confirmed)
+          _updateReconnectStage('rc-stage-confirm');
+          _completeAllReconnectStages();
           var gasAppReshow = document.getElementById('gas-app');
           if (gasAppReshow) gasAppReshow.style.visibility = '';
           // The "Use Here" handler deferred these to avoid premature UI —
@@ -1896,6 +1949,10 @@
           _gasAuthOkHandled = true;
         } else if (_pendingSessionShow) {
           _updateSignInStage('Almost ready\u2026');
+          _completeAllStages();
+          // PROJECT: Complete reconnecting checklist (gas-auth-ok confirms session)
+          _updateReconnectStage('rc-stage-confirm');
+          _completeAllReconnectStages();
           // Deferred UI show — gas-session-created, page-load resume, or cross-tab
           // sync deferred the showApp call until the GAS backend confirmed the
           // session is valid via gas-auth-ok.
@@ -2288,6 +2345,9 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = '';
       document.getElementById('auth-wall-signing-in').style.display = 'none';
+      // PROJECT: Reset and start reconnecting checklist
+      _resetReconnectChecklist();
+      _updateReconnectStage('rc-stage-verify');
     }
 
     function showSigningIn() {
@@ -2296,13 +2356,189 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = 'none';
       document.getElementById('auth-wall-signing-in').style.display = '';
-      // Reset subtitle to default (SSO path overrides this before showing)
+      // PROJECT: Reset checklist — show checklist, hide SSO subtitle, clear timers
+      _stageStartTimes = {};
+      var checklist = document.getElementById('signin-checklist');
+      var subtitle = document.getElementById('signing-in-subtitle');
+      if (checklist) {
+        checklist.style.display = '';
+        var items = checklist.getElementsByTagName('li');
+        for (var i = 0; i < items.length; i++) {
+          items[i].className = 'stage-pending';
+          var oldTime = items[i].querySelector('.stage-time');
+          if (oldTime) oldTime.remove();
+        }
+      }
+      if (subtitle) subtitle.style.display = 'none';
       _updateSignInStage('Contacting Google\u2026');
     }
 
+    // PROJECT: Sign-in stage checklist logic
+    var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
+    var _stageStartTimes = {};
+    var _stageMap = {
+      'Contacting Google\u2026': 'stage-contacting',
+      'Verifying your identity\u2026': 'stage-verifying',
+      'Sending credentials\u2026': 'stage-verifying',
+      'Creating your session\u2026': 'stage-creating',
+      'Loading application\u2026': 'stage-loading',
+      'Almost ready\u2026': 'stage-ready'
+    };
+
+    function _formatStageTime(ms) {
+      if (ms < 1000) return ms + 'ms';
+      return (ms / 1000).toFixed(1) + 's';
+    }
+
+    function _setStageTime(el, stageId) {
+      var start = _stageStartTimes[stageId] || _soStageStartTimes[stageId] || _rcStageStartTimes[stageId];
+      if (!start) return;
+      var elapsed = Date.now() - start;
+      var timeSpan = el.querySelector('.stage-time');
+      if (!timeSpan) {
+        timeSpan = document.createElement('span');
+        timeSpan.className = 'stage-time';
+        el.appendChild(timeSpan);
+      }
+      timeSpan.textContent = _formatStageTime(elapsed);
+    }
+
     function _updateSignInStage(text) {
-      var subtitle = document.getElementById('signing-in-subtitle');
-      if (subtitle) subtitle.textContent = text;
+      var targetId = _stageMap[text];
+      if (!targetId) return;
+      var targetIdx = _stageOrder.indexOf(targetId);
+      if (targetIdx === -1) return;
+      var now = Date.now();
+      for (var i = 0; i < _stageOrder.length; i++) {
+        var el = document.getElementById(_stageOrder[i]);
+        if (!el) continue;
+        if (i < targetIdx) {
+          if (el.className !== 'stage-done') {
+            _setStageTime(el, _stageOrder[i]);
+            el.className = 'stage-done';
+          }
+        } else if (i === targetIdx) {
+          el.className = 'stage-active';
+          if (!_stageStartTimes[_stageOrder[i]]) {
+            _stageStartTimes[_stageOrder[i]] = now;
+          }
+        } else {
+          el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _completeAllStages() {
+      for (var i = 0; i < _stageOrder.length; i++) {
+        var el = document.getElementById(_stageOrder[i]);
+        if (!el) continue;
+        if (el.className !== 'stage-done') {
+          _setStageTime(el, _stageOrder[i]);
+          el.className = 'stage-done';
+        }
+      }
+    }
+
+    // PROJECT: Sign-out stage checklist logic
+    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm'];
+    var _soStageStartTimes = {};
+
+    function _updateSignOutStage(stageId) {
+      var targetIdx = _soStageOrder.indexOf(stageId);
+      if (targetIdx === -1) return;
+      var now = Date.now();
+      for (var i = 0; i < _soStageOrder.length; i++) {
+        var el = document.getElementById(_soStageOrder[i]);
+        if (!el) continue;
+        if (i < targetIdx) {
+          if (el.className !== 'stage-done') {
+            _setStageTime(el, _soStageOrder[i]);
+            el.className = 'stage-done';
+          }
+        } else if (i === targetIdx) {
+          el.className = 'stage-active';
+          if (!_soStageStartTimes[_soStageOrder[i]]) {
+            _soStageStartTimes[_soStageOrder[i]] = now;
+          }
+        } else {
+          el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _completeAllSignOutStages() {
+      for (var i = 0; i < _soStageOrder.length; i++) {
+        var el = document.getElementById(_soStageOrder[i]);
+        if (!el) continue;
+        if (el.className !== 'stage-done') {
+          _setStageTime(el, _soStageOrder[i]);
+          el.className = 'stage-done';
+        }
+      }
+    }
+
+    function _resetSignOutChecklist() {
+      _soStageStartTimes = {};
+      var checklist = document.getElementById('signout-checklist');
+      if (checklist) {
+        var items = checklist.getElementsByTagName('li');
+        for (var i = 0; i < items.length; i++) {
+          items[i].className = 'stage-pending';
+          var oldTime = items[i].querySelector('.stage-time');
+          if (oldTime) oldTime.remove();
+        }
+      }
+    }
+
+    // PROJECT: Reconnecting stage checklist logic (no SSO stage — SSO_PROVIDER: false)
+    var _rcStageOrder = ['rc-stage-verify', 'rc-stage-confirm'];
+    var _rcStageStartTimes = {};
+
+    function _updateReconnectStage(stageId) {
+      var targetIdx = _rcStageOrder.indexOf(stageId);
+      if (targetIdx === -1) return;
+      var now = Date.now();
+      for (var i = 0; i < _rcStageOrder.length; i++) {
+        var el = document.getElementById(_rcStageOrder[i]);
+        if (!el) continue;
+        if (i < targetIdx) {
+          if (el.className !== 'stage-done') {
+            _setStageTime(el, _rcStageOrder[i]);
+            el.className = 'stage-done';
+          }
+        } else if (i === targetIdx) {
+          el.className = 'stage-active';
+          if (!_rcStageStartTimes[_rcStageOrder[i]]) {
+            _rcStageStartTimes[_rcStageOrder[i]] = now;
+          }
+        } else {
+          el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _completeAllReconnectStages() {
+      for (var i = 0; i < _rcStageOrder.length; i++) {
+        var el = document.getElementById(_rcStageOrder[i]);
+        if (!el) continue;
+        if (el.className !== 'stage-done') {
+          _setStageTime(el, _rcStageOrder[i]);
+          el.className = 'stage-done';
+        }
+      }
+    }
+
+    function _resetReconnectChecklist() {
+      _rcStageStartTimes = {};
+      var checklist = document.getElementById('reconnect-checklist');
+      if (checklist) {
+        var items = checklist.getElementsByTagName('li');
+        for (var i = 0; i < items.length; i++) {
+          items[i].className = 'stage-pending';
+          var oldTime = items[i].querySelector('.stage-time');
+          if (oldTime) oldTime.remove();
+        }
+      }
     }
 
     function showApp(email, displayName, role) {
@@ -2799,6 +3035,9 @@
     function performSignOut(reason, opts) {
       opts = opts || {};
       var broadcastSSO = opts.broadcastSSO !== false; // default true for backwards compat
+      // PROJECT: Reset and start sign-out checklist
+      _resetSignOutChecklist();
+      _updateSignOutStage('so-stage-clearing');
       var session = loadSession();
       clearSession();
       stopCountdownTimers();
@@ -2813,11 +3052,15 @@
       document.getElementById('tab-takeover-wall').style.display = 'none';
       _tabSurrendered = false;
 
+      // PROJECT: Advance to tabs stage
+      _updateSignOutStage('so-stage-tabs');
       // Notify other tabs (sessionStorage/hipaa mode — BroadcastChannel)
       // For localStorage/standard mode, cross-tab sync happens automatically via the storage event.
       if (_signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out' });
       }
+      // PROJECT: Advance to connected apps stage
+      _updateSignOutStage('so-stage-apps');
       // SSO: broadcast sign-out to other apps (not for session expiry — that's page-local)
       // Session expiry is page-local — each page has its own independent GAS session and timeout.
       // Only user-initiated sign-out should sign out all connected pages.
@@ -2850,6 +3093,7 @@
 
       // Helper: finalize sign-out — show auth wall with DOM clearing
       function _finalizeSignOut() {
+        _completeAllSignOutStages(); // PROJECT: mark all stages done before hiding
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);
       }
@@ -2864,6 +3108,8 @@
         if (gasApp && baseUrl) {
           var _soToken = session.token;  // capture for closure
           var _soComplete = false;
+          // PROJECT: Advance to server invalidation stage
+          _updateSignOutStage('so-stage-server');
           gasApp.src = baseUrl + '?action=signout';
 
           // Listen for GAS sign-out confirmation (gas-signed-out)
@@ -2883,6 +3129,8 @@
             if (!event.data || event.data.type !== 'gas-signout-ready') return;
             _soHandled = true;
             window.removeEventListener('message', _soHandler);
+            // PROJECT: Advance to waiting for confirmation stage
+            _updateSignOutStage('so-stage-confirm');
             event.source.postMessage({
               type: 'signout-token',
               token: _soToken
@@ -3354,10 +3602,14 @@
           _ssoAccessToken = e.data.accessToken;
           exchangeToken(e.data.accessToken);
           // Show SSO-specific signing-in message AFTER exchangeToken(),
-          // because exchangeToken() calls showSigningIn() which resets the subtitle
+          // because exchangeToken() calls showSigningIn() which resets the checklist
+          // PROJECT: SSO override — hide checklist, show subtitle with SSO source
+          var checklist = document.getElementById('signin-checklist');
           var subtitle = document.getElementById('signing-in-subtitle');
+          if (checklist) checklist.style.display = 'none';
           if (subtitle) {
             subtitle.textContent = 'Signing in via ' + (e.data.sourceDisplayName || e.data.sourcePage || 'SSO');
+            subtitle.style.display = '';
           }
         }
       };

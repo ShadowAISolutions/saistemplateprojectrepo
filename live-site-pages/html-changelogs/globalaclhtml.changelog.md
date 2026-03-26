@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 27/50`
+`Sections: 28/50`
 
 ## [Unreleased]
+
+## [v01.28w] — 2026-03-26 08:58:20 AM EST — v06.87r
+
+### Added
+- Sign-in now shows a real-time checklist with timing for each authentication step
+- Sign-out now shows a real-time checklist tracking each step of the sign-out process with timing
+- Reconnecting now shows a real-time checklist tracking session verification with timing
 
 ## [v01.27w] — 2026-03-26 08:02:27 AM EST — v06.82r
 

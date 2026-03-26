@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v03.08w] — 2026-03-26 08:58:20 AM EST — v06.87r
+
+### Added
+- Sign-in now shows a real-time checklist with timing for each authentication step
+- Sign-out now shows a real-time checklist tracking each step of the sign-out process with timing
+- Reconnecting now shows a real-time checklist tracking session verification with timing
 
 ## [v03.07w] — 2026-03-26 08:02:27 AM EST — v06.82r
 
