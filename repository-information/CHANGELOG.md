@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v06.88r] — 2026-03-26 09:13:59 AM EST
+
+> **Prompt:** "add these checklists to the templates, so that it can be used dynamically for whatever type of project it is, i.e. the application portal or any other application"
+
+### Added
+- Added sign-in, sign-out, and reconnecting stage checklists with elapsed timing to the auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — all three checklist types are now part of the template, so any new auth page inherits them automatically
+- Reconnecting checklist dynamically shows/hides the SSO stage based on `SSO_PROVIDER` config — 3 stages when `SSO_PROVIDER: true`, 2 stages when `false`
+- SSO sign-in override in template — hides checklist and shows "Signing in via [Source]" subtitle when authentication is handled via SSO
+- Checklist CSS for all three checklist types (`.signin-checklist`, `.signout-checklist`, `.reconnect-checklist`) with pending (○ gray), active (● blue), and done (✓ green) states plus right-aligned elapsed time
+- Sign-out stage hooks in `performSignOut()` — advances through clearing → tabs → apps → server → confirm stages
+- Sign-in and reconnecting stage completions in `gas-auth-ok` handler for both `_directSessionLoad` and `_pendingSessionShow` paths
 
 ## [v06.87r] — 2026-03-26 08:58:20 AM EST
 
