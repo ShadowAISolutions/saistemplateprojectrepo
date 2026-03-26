@@ -175,6 +175,57 @@ At production intervals, the heartbeat overhead is negligible — data polling d
 
 ---
 
+## Simultaneous Execution Limit (30 per deploying account)
+
+The 30 simultaneous executions limit is **per deploying user**, not per viewer. Every GAS web app you deploy runs under **your** Google account — the account that clicked "Deploy as Web App." All viewers' `doGet()` calls across **all your GAS apps** execute under your account's single pool of 30 concurrent slots.
+
+### Why it matters for multi-app deployments
+
+If you deploy multiple GAS projects (testauth1, rndlivedata, applicationportal, globalacl, etc.), all of their data polls, heartbeats, and other GAS calls share the same 30-slot pool. The calls don't get separate pools per project — they all compete for the same 30 concurrent execution slots under the deploying account.
+
+### When you're safe
+
+Each `processDataPoll()` takes ~10-15ms. At 15s intervals with 100 viewers across all apps, you get ~7 calls/second. At 10ms each, that's ~0.07 concurrent executions — nowhere near 30.
+
+| Viewers (all apps combined) | Polls/second (@ 15s interval) | Avg concurrent (@ 10ms/call) | % of 30 limit |
+|---|---|---|---|
+| 10 | 0.67 | 0.007 | 0.02% |
+| 50 | 3.3 | 0.03 | 0.1% |
+| 100 | 6.7 | 0.07 | 0.2% |
+| 500 | 33 | 0.33 | 1.1% |
+
+### When it becomes dangerous
+
+The 10ms average assumes warm GAS runtime. Three scenarios can spike concurrent executions:
+
+**1. Cold starts (2-5 seconds per call)**
+If the GAS runtime hasn't been used recently, the first call triggers JIT compilation. If 30+ viewers all open their pages simultaneously (e.g. start of a clinical shift), each cold-start call holds an execution slot for 2-5 seconds instead of 10ms. 30 simultaneous cold starts = pool exhausted.
+
+**2. `refreshDataCache()` self-repair (1-3 seconds per call)**
+If the CacheService cache expires (6-hour TTL) and `getCachedData()` finds a cache miss, it triggers `refreshDataCache()` — a Sheets API read that takes 1-3 seconds. If multiple viewers trigger this simultaneously, each holds an execution slot for seconds.
+
+**3. Large spreadsheets**
+If the spreadsheet has thousands of rows, `refreshDataCache()` takes even longer, extending how long each execution slot is occupied.
+
+### What to do
+
+1. **Keep `DATA_POLL_INTERVAL` at 15s or higher** — lower intervals mean more calls/second, less headroom for slow calls
+2. **Set up `onEditInstallable` trigger for every spreadsheet** — this keeps the cache warm proactively (refreshes on every edit). Without it, the cache expires after 6 hours and the next data poll triggers a slow Sheets API read
+3. **Don't reduce `DATA_POLL_INTERVAL` below 10s** — at 100 viewers × 1 poll/10s = 10 polls/second. If 5 of them hit cold starts (3s each), you have 15 concurrent + new arrivals = approaching 30
+4. **Each GAS project already uses its own deployment** — but they all run under the same deploying account. If you ever need more headroom, deploying some projects under a different Google account gives that account its own pool of 30
+5. **Monitor execution logs** — if "Service invoked too many times" errors appear, you've hit the ceiling
+
+### Practical ceiling
+
+| Scenario | Risk level | Notes |
+|---|---|---|
+| <50 viewers, all apps combined | **None** | Normal operations, ~0.03 concurrent |
+| 50-200 viewers | **Low** | Safe in steady state; cold starts at shift change could briefly spike |
+| 200-500 viewers | **Moderate** | Ensure cache is warm, monitor for bursts, consider 20-30s poll interval |
+| 500+ viewers | **High** | Split deployments across multiple Google accounts, increase poll interval |
+
+---
+
 ## HIPAA Compliance Summary
 
 | Requirement | §164.312 Section | Heartbeat | Data Poll (old) | Data Poll (new) |

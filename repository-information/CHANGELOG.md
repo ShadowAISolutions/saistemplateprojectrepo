@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v06.81r] — 2026-03-26 12:18:17 AM EST
+
+> **Prompt:** "add these explanations to the repository-information/DATA-POLL-ARCHITECTURE.md"
+
+### Added
+- Added "Simultaneous Execution Limit" section to `DATA-POLL-ARCHITECTURE.md` — explains the 30-concurrent-execution pool shared across all GAS apps under one deploying account, with danger scenarios (cold starts, cache miss self-repair, large spreadsheets), mitigation strategies, and practical ceiling table (safe up to ~200 viewers, moderate at 200-500, high risk at 500+)
 
 ## [v06.80r] — 2026-03-26 12:12:54 AM EST
 
