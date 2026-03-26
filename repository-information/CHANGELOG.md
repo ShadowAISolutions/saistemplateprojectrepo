@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v06.97r] — 2026-03-26 01:17:37 PM EST
+
+> **Prompt:** "nope its still poping up"
+
+### Fixed
+- Fixed `attemptReauth()` `login_hint` always being empty — `clearSession()` was wiping the email from localStorage before `attemptReauth()` called `loadSession()` to read it, so the hint was always `''` and Google showed the full account picker every time
+- Changed `attemptReauth()` to accept an `emailHint` parameter instead of reading the email internally via `loadSession()`
+- Changed `reauth-btn` click handler to capture the session email before calling `clearSession()`, then pass it to `attemptReauth(emailHint)` — the login hint now contains the actual email, so Google auto-selects the correct account
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
+##### Fixed
+- `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
+
+#### `testauth1.html` — v03.16w
+##### Fixed
+- `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
+
+#### `globalacl.html` — v01.35w
+##### Fixed
+- `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
+
+#### `applicationportal.html` — v01.41w
+##### Fixed
+- `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
 
 ## [v06.96r] — 2026-03-26 12:58:10 PM EST
 

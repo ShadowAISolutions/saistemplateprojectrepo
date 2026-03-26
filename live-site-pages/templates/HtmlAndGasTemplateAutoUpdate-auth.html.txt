@@ -3170,9 +3170,8 @@
     // AUTH — Re-Auth (Silent with Interactive Fallback)
     // =============================================
 
-    function attemptReauth() {
-      var session = loadSession();
-      var hint = session.email || '';
+    function attemptReauth(emailHint) {
+      var hint = emailHint || '';
       signInClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'openid email profile',
@@ -3356,11 +3355,13 @@
     // Stop timers first to prevent performSignOut from firing during the OAuth flow.
     // Phase 5 (H-3): clearSession() handles HMAC key clearing — no separate nulling needed.
     document.getElementById('reauth-btn').addEventListener('click', function() {
+      var session = loadSession();
+      var emailHint = session.email || '';
       hideAllWarningBanners();
       stopCountdownTimers();
       stopHeartbeat();
       clearSession();
-      attemptReauth();
+      attemptReauth(emailHint);
     });
 
     // "Use Here" button handler (single-tab enforcement — reclaim session from other tab)

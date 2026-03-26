@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v03.16w] — 2026-03-26 01:17:37 PM EST — v06.97r
+
+### Fixed
+- Fixed re-authentication to properly auto-select the same Google account without showing the account picker
 
 ## [v03.15w] — 2026-03-26 12:58:10 PM EST — v06.96r
 
