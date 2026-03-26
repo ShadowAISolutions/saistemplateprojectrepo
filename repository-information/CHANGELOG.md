@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v06.65r] — 2026-03-25 09:17:26 PM EST
+
+> **Prompt:** "i want each row always visible dont hide any"
+
+### Changed
+- All timer rows (Absolute, Session, Heartbeat, Data Poll) are now always visible in the auth-timers panel — Data Poll shows `--` when idle polling is not active instead of being hidden
+
+#### `testauth1.html` — v02.94w
+##### Changed
+- All timer rows are now always visible — the Data Poll row shows `--` when inactive instead of disappearing
 
 ## [v06.64r] — 2026-03-25 09:11:17 PM EST
 
