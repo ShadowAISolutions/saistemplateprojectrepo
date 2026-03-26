@@ -3,7 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v06.99r] — 2026-03-26 02:29:03 PM EST
+
+> **Prompt:** "i see that there are some project specific things such as the SSO indicator, but i want things like that to also be applied to the templates as they will be used with the gas-project-creator. do the same for anything else you can find like that"
+
+### Changed
+- Ported the SSO indicator system (CSS, HTML, JS) from `applicationportal.html` into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) so all new auth pages inherit it automatically via the gas-project-creator
+- Propagated SSO indicator to `testauth1.html` and `globalacl.html` — both pages now have the full SSO indicator system (gated behind `SSO_PROVIDER: false`, so completely inert)
+- Merged `_onGisPopupClosed()` into `_onGisPopupDismissed()` across all auth pages — single handler now manages both SSO indicator state and auth wall display
+- Added `_updateSsoIndicator()` function with auth-wall guard to template — prevents SSO badge from appearing on the sign-in screen
+- Added `_ssoRefreshDismissed` variable, SSO indicator calls to `handleTokenResponse`, `startCountdownTimers`, `stopCountdownTimers`, `attemptReauth`, SSO reconnect callback, and click handler to template
+- Relocated SSO indicator CSS/HTML/JS in `applicationportal.html` from AP-specific AUTH sections to TEMPLATE sections for consistency with the template source
+
+#### `testauth1.html` — v03.17w
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.36w
+##### Changed
+- Minor internal improvements
+
+#### `applicationportal.html` — v01.43w
+##### Changed
+- Minor internal improvements
 
 ## [Unreleased]
 

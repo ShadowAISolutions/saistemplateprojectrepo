@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.35w">
+  <meta name="build-version" content="v01.36w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -143,6 +143,26 @@
     }
     #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
     #gcl-body li { margin-bottom: 4px; }
+    #sso-indicator {
+      position: fixed; bottom: 86px; right: 8px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; transition: all 0.3s ease;
+    }
+    #sso-indicator.sso-clickable { cursor: pointer; }
+    #sso-indicator.sso-clickable:hover { background: rgba(0,0,0,0.75); }
+    #sso-indicator .sso-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; transition: background 0.3s ease; }
+    #sso-indicator .sso-dot.sso-off { background: #666; }
+    #sso-indicator .sso-dot.sso-pending { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    #sso-indicator .sso-dot.sso-ready { background: #4caf50; }
+    #sso-indicator .sso-dot.sso-dismissed { background: #ef5350; }
+    #sso-indicator .sso-label { color: #999; }
+    #sso-indicator .sso-value { font-weight: bold; }
+    #sso-indicator .sso-value.sso-off { color: #666; }
+    #sso-indicator .sso-value.sso-pending { color: #ffa726; }
+    #sso-indicator .sso-value.sso-ready { color: #4caf50; }
+    #sso-indicator .sso-value.sso-dismissed { color: #ef5350; }
 /* ══════════════ */
 /* TEMPLATE END */
 /* ══════════════ */
@@ -423,6 +443,11 @@
 
   <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
   <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
+  <div id="sso-indicator">
+    <span class="sso-label">SSO</span>
+    <span class="sso-dot sso-off"></span>
+    <span class="sso-value sso-off" id="sso-status">off</span>
+  </div>
 <!-- ══════════════ -->
 <!-- TEMPLATE END -->
 <!-- ══════════════ -->
@@ -1239,6 +1264,7 @@
     var _ssoAccessToken = null;  // Google access token held for SSO sharing
     var _ssoUserEmail = null;    // Confirmed email after GAS validation
     var _ssoChannel = null;      // BroadcastChannel('sais-sso-auth') — created in SSO section
+    var _ssoRefreshDismissed = false;  // true when user closed GIS popup without completing SSO
 
     function getStorage() {
       return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
@@ -1328,10 +1354,13 @@
 
       if (response.error) {
         // Silent auth failed — show auth wall with interactive sign-in
+        _ssoRefreshDismissed = true;
+        _updateSsoIndicator('dismissed');
         showAuthWall('Click "Sign In with Google" to continue.');
         return;
       }
       _ssoAccessToken = response.access_token;  // Hold for SSO sharing
+      _ssoRefreshDismissed = false;  // Reset — successful auth clears any prior dismissal
       exchangeToken(response.access_token);
     }
 
@@ -1344,12 +1373,38 @@
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
 
+    function _updateSsoIndicator(state) {
+      if (!HTML_CONFIG.SSO_PROVIDER) return;
+      // Never show SSO badge when auth wall is visible (user is signed out)
+      var wall = document.getElementById('auth-wall');
+      if (state !== 'off' && wall && !wall.classList.contains('hidden')) return;
+      var el = document.getElementById('sso-indicator');
+      var dot = el && el.querySelector('.sso-dot');
+      var val = document.getElementById('sso-status');
+      if (!el || !dot || !val) return;
+      if (state === 'off') {
+        el.style.display = 'none';
+      } else {
+        el.style.display = 'flex';
+      }
+      dot.className = 'sso-dot sso-' + state;
+      val.className = 'sso-value sso-' + state;
+      var labels = { ready: 'ready', pending: 'pending\u2026', dismissed: 'retry', off: 'off' };
+      val.textContent = labels[state] || 'off';
+      if (state === 'dismissed') {
+        el.classList.add('sso-clickable');
+      } else {
+        el.classList.remove('sso-clickable');
+      }
+    }
+
     // GIS error_callback handler — fires when the Google sign-in popup is
     // closed or blocked without completing authentication.
-    // If the session has already expired (e.g. absolute timer ran out while
-    // the popup was open), ensure the auth wall is properly visible.
-    // If the session is still valid, the user just changed their mind — no action needed.
+    // Updates SSO indicator to "dismissed" (retry state) and shows auth wall
+    // if the session has expired while the popup was open.
     function _onGisPopupDismissed() {
+      _ssoRefreshDismissed = true;
+      _updateSsoIndicator('dismissed');
       var session = loadSession();
       if (!session.token) {
         // Session gone (expired or cleared while popup was open) — show auth wall
@@ -2844,6 +2899,13 @@
 
       timersEl.style.display = 'flex';
 
+      // SSO indicator: ready if token held, pending if still acquiring
+      if (_ssoAccessToken) {
+        _updateSsoIndicator('ready');
+      } else if (!_ssoRefreshDismissed) {
+        _updateSsoIndicator('pending');
+      }
+
       if (_timerInterval) clearInterval(_timerInterval);
       _timerInterval = setInterval(function() {
         // Phase 6 (H-4): Read from enforcer each tick (tamper-proof source)
@@ -2954,6 +3016,7 @@
 
     function stopCountdownTimers() {
       if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+      _updateSsoIndicator('off');
       var timersEl = document.getElementById('auth-timers');
       if (timersEl) timersEl.style.display = 'none';
       var storage = getStorage();
@@ -3225,6 +3288,8 @@
         login_hint: hint,
         callback: function(response) {
           if (response.error) {
+            _ssoRefreshDismissed = true;
+            _updateSsoIndicator('dismissed');
             showAbsoluteWarning('Session expired. Click "Sign In" to continue.');
             signInClient = google.accounts.oauth2.initTokenClient({
               client_id: CLIENT_ID,
@@ -3743,10 +3808,16 @@
                   if (!response.error && response.access_token) {
                     _validateSSOTokenEmail(response.access_token, function() {
                       _ssoAccessToken = response.access_token;
+                      _updateSsoIndicator('ready');
                       console.debug('[SSO] Re-acquired access token during reconnect');
                     }, function() {
+                      _ssoRefreshDismissed = true;
+                      _updateSsoIndicator('dismissed');
                       console.warn('[SSO] Token email mismatch during reconnect — token discarded');
                     });
+                  } else {
+                    _ssoRefreshDismissed = true;
+                    _updateSsoIndicator('dismissed');
                   }
                 },
                 error_callback: _onGisPopupDismissed
@@ -3780,6 +3851,36 @@
         }
       }
     })();
+
+    // SSO indicator click handler — retry SSO token acquisition when user clicks "retry"
+    document.getElementById('sso-indicator').addEventListener('click', function() {
+      if (!_ssoRefreshDismissed) return;  // Only clickable when dismissed
+      _ssoRefreshDismissed = false;
+      _updateSsoIndicator('pending');
+      var retrySession = loadSession();
+      var retryClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: 'openid email profile',
+        prompt: '',
+        login_hint: retrySession.email || '',
+        callback: function(response) {
+          if (!response.error && response.access_token) {
+            _validateSSOTokenEmail(response.access_token, function() {
+              _ssoAccessToken = response.access_token;
+              _updateSsoIndicator('ready');
+            }, function() {
+              _ssoRefreshDismissed = true;
+              _updateSsoIndicator('dismissed');
+            });
+          } else {
+            _ssoRefreshDismissed = true;
+            _updateSsoIndicator('dismissed');
+          }
+        },
+        error_callback: _onGisPopupDismissed
+      });
+      retryClient.requestAccessToken();
+    });
 
 // ══════════════
 // AUTH END

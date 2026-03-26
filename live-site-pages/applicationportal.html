@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.42w">
+  <meta name="build-version" content="v01.43w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -143,6 +143,26 @@
     }
     #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
     #gcl-body li { margin-bottom: 4px; }
+    #sso-indicator {
+      position: fixed; bottom: 86px; right: 8px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace; user-select: none;
+      pointer-events: auto; transition: all 0.3s ease;
+    }
+    #sso-indicator.sso-clickable { cursor: pointer; }
+    #sso-indicator.sso-clickable:hover { background: rgba(0,0,0,0.75); }
+    #sso-indicator .sso-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; transition: background 0.3s ease; }
+    #sso-indicator .sso-dot.sso-off { background: #666; }
+    #sso-indicator .sso-dot.sso-pending { background: #ffa726; animation: pulse 0.6s infinite alternate; }
+    #sso-indicator .sso-dot.sso-ready { background: #4caf50; }
+    #sso-indicator .sso-dot.sso-dismissed { background: #ef5350; }
+    #sso-indicator .sso-label { color: #999; }
+    #sso-indicator .sso-value { font-weight: bold; }
+    #sso-indicator .sso-value.sso-off { color: #666; }
+    #sso-indicator .sso-value.sso-pending { color: #ffa726; }
+    #sso-indicator .sso-value.sso-ready { color: #4caf50; }
+    #sso-indicator .sso-value.sso-dismissed { color: #ef5350; }
 /* ══════════════ */
 /* TEMPLATE END */
 /* ══════════════ */
@@ -293,30 +313,6 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
-    /* SSO readiness indicator — standalone pill (applicationportal only) */
-    #sso-indicator {
-      position: fixed; bottom: 86px; right: 8px; z-index: 10003;
-      display: none; align-items: center; gap: 6px;
-      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
-      border-radius: 12px; font: 11px/1 monospace; user-select: none;
-      pointer-events: auto; transition: all 0.3s ease;
-    }
-    #sso-indicator.sso-clickable { cursor: pointer; }
-    #sso-indicator.sso-clickable:hover { background: rgba(0,0,0,0.75); }
-    #sso-indicator .sso-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      display: inline-block; transition: background 0.3s ease;
-    }
-    #sso-indicator .sso-dot.sso-off { background: #666; }
-    #sso-indicator .sso-dot.sso-pending { background: #ffa726; animation: pulse 0.6s infinite alternate; }
-    #sso-indicator .sso-dot.sso-ready { background: #4caf50; }
-    #sso-indicator .sso-dot.sso-dismissed { background: #ef5350; }
-    #sso-indicator .sso-label { color: #999; }
-    #sso-indicator .sso-value { font-weight: bold; }
-    #sso-indicator .sso-value.sso-off { color: #666; }
-    #sso-indicator .sso-value.sso-pending { color: #ffa726; }
-    #sso-indicator .sso-value.sso-ready { color: #4caf50; }
-    #sso-indicator .sso-value.sso-dismissed { color: #ef5350; }
     #admin-sessions-btn {
       background: none; border: none; color: #90caf9; cursor: pointer;
       font: 11px/1 monospace; padding: 0 4px; display: none;
@@ -379,6 +375,11 @@
 
   <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
   <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
+  <div id="sso-indicator">
+    <span class="sso-label">SSO</span>
+    <span class="sso-dot sso-off"></span>
+    <span class="sso-value sso-off" id="sso-status">off</span>
+  </div>
 <!-- ══════════════ -->
 <!-- TEMPLATE END -->
 <!-- ══════════════ -->
@@ -479,12 +480,6 @@
       <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
     </div>
-  </div>
-
-  <div id="sso-indicator">
-    <span class="sso-label">SSO</span>
-    <span class="sso-dot sso-off"></span>
-    <span class="sso-value sso-off" id="sso-status">off</span>
   </div>
 <!-- ══════════════ -->
 <!-- AUTH END -->
@@ -1188,6 +1183,7 @@
     var _ssoAccessToken = null;  // Google access token held for SSO sharing
     var _ssoUserEmail = null;    // Confirmed email after GAS validation
     var _ssoChannel = null;      // BroadcastChannel('sais-sso-auth') — created in SSO section
+    var _ssoRefreshDismissed = false;  // true when user closed GIS popup without completing SSO
 
     function getStorage() {
       return HTML_CONFIG.STORAGE_TYPE === 'sessionStorage'
@@ -1278,7 +1274,7 @@
         prompt: '',                // silent first (no user interaction)
         login_hint: session.email || '',
         callback: handleTokenResponse,
-        error_callback: _onGisPopupClosed
+        error_callback: _onGisPopupDismissed
       });
       // Attempt silent sign-in on load
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1316,10 +1312,8 @@
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
 
-    // SSO readiness indicator (applicationportal only)
-    // Follows the same lifecycle as #auth-timers: shown/hidden at startCountdownTimers/stopCountdownTimers.
-    // States: 'off' (hidden), 'pending' (acquiring SSO token), 'ready' (can serve SSO tokens), 'dismissed' (user closed GIS popup)
-    var _ssoRefreshDismissed = false;  // true when user closed GIS popup without completing SSO
+    // SSO indicator — shows SSO token status (off/pending/ready/dismissed)
+    // Gated behind SSO_PROVIDER — no-op on non-SSO pages.
     function _updateSsoIndicator(state) {
       if (!HTML_CONFIG.SSO_PROVIDER) return;
       // Never show SSO badge when auth wall is visible (user is signed out)
@@ -1338,17 +1332,25 @@
       val.className = 'sso-value sso-' + state;
       var labels = { ready: 'ready', pending: 'pending\u2026', dismissed: 'retry', off: 'off' };
       val.textContent = labels[state] || 'off';
-      // Clickable only when dismissed — clicking retries SSO
       if (state === 'dismissed') {
         el.classList.add('sso-clickable');
       } else {
         el.classList.remove('sso-clickable');
       }
     }
-    // GIS error_callback handler — fires when popup is closed or blocked (not an OAuth error)
-    function _onGisPopupClosed() {
+
+    // GIS error_callback handler — fires when the Google sign-in popup is
+    // closed or blocked without completing authentication.
+    // Updates SSO indicator to "dismissed" (retry state) and shows auth wall
+    // if the session has expired while the popup was open.
+    function _onGisPopupDismissed() {
       _ssoRefreshDismissed = true;
       _updateSsoIndicator('dismissed');
+      var session = loadSession();
+      if (!session.token) {
+        // Session gone (expired or cleared while popup was open) — show auth wall
+        showAuthWall('Sign-in was not completed. Click "Sign In with Google" to continue.');
+      }
     }
 
     // PROJECT: Validate SSO token matches the active session's Google account.
@@ -3263,14 +3265,14 @@
               prompt: 'consent',
               login_hint: hint,
               callback: handleTokenResponse,
-              error_callback: _onGisPopupClosed
+              error_callback: _onGisPopupDismissed
             });
           } else {
             _authNonce = null; // Consume nonce on successful silent re-auth
             exchangeToken(response.access_token);
           }
         },
-        error_callback: _onGisPopupClosed
+        error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
       signInClient.requestAccessToken();
@@ -3287,7 +3289,7 @@
         scope: 'openid email profile',
         prompt: 'select_account',
         callback: handleTokenResponse,
-        error_callback: _onGisPopupClosed
+        error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
       signInClient.requestAccessToken();
@@ -3467,7 +3469,7 @@
             _updateSsoIndicator('dismissed');
           }
         },
-        error_callback: _onGisPopupClosed
+        error_callback: _onGisPopupDismissed
       });
       retryClient.requestAccessToken();
     });
@@ -3632,7 +3634,7 @@
                     _updateSsoIndicator('dismissed');
                   }
                 },
-                error_callback: _onGisPopupClosed
+                error_callback: _onGisPopupDismissed
               });
               ssoRefreshClient.requestAccessToken();
             } else if (ssoRetries >= 25) { // 25 × 200ms = 5s
