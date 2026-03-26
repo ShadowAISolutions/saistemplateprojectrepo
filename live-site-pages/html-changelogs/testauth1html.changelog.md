@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v03.07w] — 2026-03-26 08:02:27 AM EST — v06.82r
+
+### Added
+- Sign-in now shows real-time progress messages ("Contacting Google…", "Verifying your identity…", "Creating your session…", "Almost ready…") so you can see exactly what stage of authentication you're at
 
 ## [v03.06w] — 2026-03-25 11:54:00 PM EST — v06.78r
 

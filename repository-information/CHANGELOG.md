@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v06.82r] — 2026-03-26 08:02:27 AM EST
+
+> **Prompt:** "ok what im looking for is a list of items that can be shown underneath the session spinner so that we know what stage of the login process we are at at any point, start with the application portal"
+
+### Added
+- Added dynamic sign-in stage indicator messages to the auth sign-in flow — users now see real-time subtitle updates under the "Signing in…" spinner showing what stage of authentication they're at: "Contacting Google…" → "Verifying your identity…" → "Sending credentials…" → "Creating your session…" → "Loading application…" → "Almost ready…"
+- Added `_updateSignInStage()` helper function to the auth HTML template for centralized subtitle text updates
+
+#### `applicationportal.html` — v01.31w
+
+##### Added
+- Sign-in stage indicator messages showing authentication progress under the session spinner
+
+#### `testauth1.html` — v03.07w
+
+##### Added
+- Sign-in stage indicator messages showing authentication progress under the session spinner
+
+#### `globalacl.html` — v01.27w
+
+##### Added
+- Sign-in stage indicator messages showing authentication progress under the session spinner
 
 ## [v06.81r] — 2026-03-26 12:18:17 AM EST
 

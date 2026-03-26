@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 30/50`
+`Sections: 31/50`
 
 ## [Unreleased]
+
+## [v01.31w] — 2026-03-26 08:02:27 AM EST — v06.82r
+
+### Added
+- Sign-in now shows real-time progress messages ("Contacting Google…", "Verifying your identity…", "Creating your session…", "Almost ready…") so you can see exactly what stage of authentication you're at
 
 ## [v01.30w] — 2026-03-25 09:07:53 AM EST — v06.44r
 

@@ -1247,6 +1247,7 @@
       if (!baseUrl) return;
 
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
+      _updateSignInStage('Verifying your identity\u2026');
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
     }
 
@@ -1265,6 +1266,7 @@
       if (!baseUrl) return;
 
       // Reload iframe to get a fresh postMessage listener page
+      _updateSignInStage('Verifying your identity\u2026');
       gasApp.src = baseUrl;
     }
 
@@ -1665,6 +1667,7 @@
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
+        _updateSignInStage('Sending credentials\u2026');
         // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
         // GAS double-iframe architecture: the <iframe> contentWindow is the outer script.google.com
         // shell, but the actual listener runs in an inner googleusercontent.com sandbox frame.
@@ -1710,6 +1713,7 @@
           return;
         }
         if (data.success) {
+          _updateSignInStage('Creating your session\u2026');
           saveSession(data.sessionToken, data.email, data.role, data.permissions);
           // Reset the rolling session timer (activity extends it).
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
@@ -1743,6 +1747,7 @@
           // This is safe: the token was just created, the URL is only in the iframe's
           // network request (not the address bar), and OAuth already verified the user.
           // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
+          _updateSignInStage('Loading application\u2026');
           var gasApp = document.getElementById('gas-app');
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
@@ -1833,6 +1838,7 @@
         // the GAS app confirmed the session is valid.
         if (_directSessionLoad) {
           _directSessionLoad = false;
+          _updateSignInStage('Almost ready\u2026');
           var gasAppReshow = document.getElementById('gas-app');
           if (gasAppReshow) gasAppReshow.style.visibility = '';
           // The "Use Here" handler deferred these to avoid premature UI —
@@ -1849,6 +1855,7 @@
           hideAllWarningBanners();
           _gasAuthOkHandled = true;
         } else if (_pendingSessionShow) {
+          _updateSignInStage('Almost ready\u2026');
           // Deferred UI show — gas-session-created, page-load resume, or cross-tab
           // sync deferred the showApp call until the GAS backend confirmed the
           // session is valid via gas-auth-ok.
@@ -2247,8 +2254,12 @@
       document.getElementById('auth-wall-reconnecting').style.display = 'none';
       document.getElementById('auth-wall-signing-in').style.display = '';
       // Reset subtitle to default (SSO path overrides this before showing)
+      _updateSignInStage('Contacting Google\u2026');
+    }
+
+    function _updateSignInStage(text) {
       var subtitle = document.getElementById('signing-in-subtitle');
-      if (subtitle) subtitle.textContent = 'Setting up your session';
+      if (subtitle) subtitle.textContent = text;
     }
 
     function showApp(email, displayName, role) {
