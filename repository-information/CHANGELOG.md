@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v06.85r] — 2026-03-26 08:23:47 AM EST
+
+> **Prompt:** "can you have it show how long it took to do each stage next to it"
+
+### Added
+- Added elapsed time display to each sign-in checklist stage on Application Portal — each completed stage shows how long it took (e.g. "0.3s", "1.2s") right-aligned next to the label
+- Added `_completeAllStages()` function to mark all stages as done with their times just before the app becomes visible
+
+#### `applicationportal.html` — v01.34w
+
+##### Added
+- Each sign-in stage now shows how long it took to complete, displayed next to the checkmark
 
 ## [v06.84r] — 2026-03-26 08:19:16 AM EST
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.33w">
+  <meta name="build-version" content="v01.34w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -185,6 +185,7 @@
     .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; /* ● */ }
     .signin-checklist li.stage-done { color: #34a853; }
     .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; /* ✓ */ }
+    .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
     .auth-pulse-dots { display: flex; gap: 8px; justify-content: center; }
     .auth-pulse-dots span {
       width: 10px; height: 10px; border-radius: 50%; background: #999;
@@ -1923,6 +1924,7 @@
         if (_directSessionLoad) {
           _directSessionLoad = false;
           _updateSignInStage('Almost ready\u2026');
+          _completeAllStages();
           var gasAppReshow = document.getElementById('gas-app');
           if (gasAppReshow) gasAppReshow.style.visibility = '';
           // The "Use Here" handler deferred these to avoid premature UI —
@@ -1940,6 +1942,7 @@
           _gasAuthOkHandled = true;
         } else if (_pendingSessionShow) {
           _updateSignInStage('Almost ready\u2026');
+          _completeAllStages();
           // Deferred UI show — gas-session-created, page-load resume, or cross-tab
           // sync deferred the showApp call until the GAS backend confirmed the
           // session is valid via gas-auth-ok.
@@ -2339,7 +2342,8 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = 'none';
       document.getElementById('auth-wall-signing-in').style.display = '';
-      // PROJECT: Reset checklist — show checklist, hide SSO subtitle
+      // PROJECT: Reset checklist — show checklist, hide SSO subtitle, clear timers
+      _stageStartTimes = {};
       var checklist = document.getElementById('signin-checklist');
       var subtitle = document.getElementById('signing-in-subtitle');
       if (checklist) {
@@ -2347,6 +2351,8 @@
         var items = checklist.getElementsByTagName('li');
         for (var i = 0; i < items.length; i++) {
           items[i].className = 'stage-pending';
+          var oldTime = items[i].querySelector('.stage-time');
+          if (oldTime) oldTime.remove();
         }
       }
       if (subtitle) subtitle.style.display = 'none';
@@ -2355,6 +2361,7 @@
 
     // PROJECT: Sign-in stage checklist logic (applicationportal only)
     var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
+    var _stageStartTimes = {};  // tracks when each stage became active
     var _stageMap = {
       'Contacting Google\u2026': 'stage-contacting',
       'Verifying your identity\u2026': 'stage-verifying',
@@ -2364,20 +2371,56 @@
       'Almost ready\u2026': 'stage-ready'
     };
 
+    function _formatStageTime(ms) {
+      if (ms < 1000) return ms + 'ms';
+      return (ms / 1000).toFixed(1) + 's';
+    }
+
+    function _setStageTime(el, stageId) {
+      var start = _stageStartTimes[stageId];
+      if (!start) return;
+      var elapsed = Date.now() - start;
+      var timeSpan = el.querySelector('.stage-time');
+      if (!timeSpan) {
+        timeSpan = document.createElement('span');
+        timeSpan.className = 'stage-time';
+        el.appendChild(timeSpan);
+      }
+      timeSpan.textContent = _formatStageTime(elapsed);
+    }
+
     function _updateSignInStage(text) {
       var targetId = _stageMap[text];
       if (!targetId) return;
       var targetIdx = _stageOrder.indexOf(targetId);
       if (targetIdx === -1) return;
+      var now = Date.now();
       for (var i = 0; i < _stageOrder.length; i++) {
         var el = document.getElementById(_stageOrder[i]);
         if (!el) continue;
         if (i < targetIdx) {
-          el.className = 'stage-done';
+          if (el.className !== 'stage-done') {
+            _setStageTime(el, _stageOrder[i]);
+            el.className = 'stage-done';
+          }
         } else if (i === targetIdx) {
           el.className = 'stage-active';
+          if (!_stageStartTimes[_stageOrder[i]]) {
+            _stageStartTimes[_stageOrder[i]] = now;
+          }
         } else {
           el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _completeAllStages() {
+      for (var i = 0; i < _stageOrder.length; i++) {
+        var el = document.getElementById(_stageOrder[i]);
+        if (!el) continue;
+        if (el.className !== 'stage-done') {
+          _setStageTime(el, _stageOrder[i]);
+          el.className = 'stage-done';
         }
       }
     }

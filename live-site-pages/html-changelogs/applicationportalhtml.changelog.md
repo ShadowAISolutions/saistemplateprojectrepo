@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.34w] — 2026-03-26 08:23:47 AM EST — v06.85r
+
+### Added
+- Each sign-in step now shows how long it took to complete
 
 ## [v01.33w] — 2026-03-26 08:19:16 AM EST — v06.84r
 
