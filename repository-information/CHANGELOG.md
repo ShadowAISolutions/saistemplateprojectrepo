@@ -3,7 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
+
+## [v07.00r] — 2026-03-26 03:03:45 PM EST
+
+> **Prompt:** "in the readme project structure, make a legend to identify what each emoji means. i.e. 🌐 is webpage, 📊google sheet, etc.. both the included and not included icons like 🔸◽🔻"
+
+### Added
+- Added emoji legend to README project structure — documents all page action icons (🌐 📊 ⛽ 🧜‍♀️ 📁), placeholder icons (🔸 ◽ 🔻), and page status indicators (🟢 🟡 🔴) so readers can interpret the tree at a glance
 
 ## [v06.99r] — 2026-03-26 02:29:03 PM EST
 
