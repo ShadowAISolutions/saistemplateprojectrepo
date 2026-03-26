@@ -1,6 +1,6 @@
 # Data Poll vs Heartbeat — Architecture & Quota Reference
 
-> **Context:** In v06.66r, data polling was decoupled from the heartbeat pipeline. Previously, the heartbeat piggybacked `liveData` on its response — data delivery flipped between heartbeat (when active) and data poll (when idle). Now each pipeline has a single responsibility: heartbeat = session extension, data poll = data freshness. In v06.68r, the data poll was upgraded to require session authentication (HIPAA compliance).
+> **Context:** In v06.66r, data polling was decoupled from the heartbeat pipeline. Previously, the heartbeat piggybacked `liveData` on its response — data delivery flipped between heartbeat (when active) and data poll (when idle). Now each pipeline has a single responsibility: heartbeat = session extension, data poll = data freshness. In v06.68r, the data poll was upgraded to require session authentication (HIPAA compliance). In v06.73r, the token delivery was switched from postMessage handshake to URL parameter after discovering that Google's GAS iframe sandbox drops parent→child postMessage calls. In v06.74r, the session lookup was fixed to use `getEpochCache()` (matching all other session operations). In v06.78r, a 2-second minimum display window was added to the timer so the "polling..." indicator is visible on every cycle.
 
 ## Architecture Overview
 
@@ -10,14 +10,13 @@
 |---|---|---|
 | **Purpose** | Session extension (keep-alive) | Data freshness (spreadsheet updates) |
 | **Fires when** | User is active (mouse/keyboard/touch/scroll) | Always (continuous, independent of activity) |
-| **Interval** | `HEARTBEAT_INTERVAL` (30s test / 5min prod) | `DATA_POLL_INTERVAL` (15s) |
+| **Interval** | `HEARTBEAT_INTERVAL` (60s test / 5min prod) | `DATA_POLL_INTERVAL` (15s) |
 | **GAS function** | `processHeartbeat(token)` | `processDataPoll(token)` |
-| **Auth method** | Full session validation + HMAC | Session existence check (CacheService lookup) |
+| **Auth method** | Full session validation + HMAC | Session existence check (`getEpochCache()` lookup) |
 | **Session extension** | Yes (resets `createdAt`) | No |
-| **Token delivery** | Phase 7 postMessage (never in URL) | Phase 7 postMessage (never in URL) |
+| **Token delivery** | Phase 7 postMessage (never in URL) | URL parameter (HTTPS-encrypted) |
+| **Execution model** | Async (`google.script.run` callback) | Synchronous (inline in `doGet()` response) |
 | **Transport** | Hidden iframe (`gas-heartbeat`) | Hidden iframe (`gas-data-poll`) |
-| **Ready signal** | `gas-heartbeat-ready` | `gas-data-poll-ready` |
-| **Token message** | `heartbeat-token` | `data-poll-token` |
 | **Response type** | `gas-heartbeat-ok` | `live-data` |
 
 ### Why Two Pipelines (Not One)
@@ -35,7 +34,16 @@ The original design piggybacked `liveData = getCachedData()` on the heartbeat re
 2. Data freshness was coupled to heartbeat timing (30s/5min), not its own interval (15s)
 3. If heartbeat failed or was rate-limited, data delivery was also lost
 4. Two response handlers needed to know about data extraction
-5. After HIPAA review, the unauthenticated data poll needed its own auth — making it almost as self-contained as the heartbeat anyway
+5. After HIPAA review, the data poll needed its own session authentication — and the GAS iframe sandbox makes postMessage unreliable for parent→child token delivery, so the data poll uses a URL-parameter approach that processes the token synchronously in `doGet()`
+
+### Why Different Token Delivery Methods
+
+The heartbeat uses Phase 7 postMessage (child signals ready → parent sends token → child processes). The data poll uses a URL parameter instead. This is because:
+
+- Google's GAS iframe wraps `HtmlService` output in nested iframes. **Child→parent** postMessage works (the inner page can reach `window.top`). **Parent→child** postMessage does NOT work — the parent's `contentWindow.postMessage()` reaches the outer wrapper, not the inner page where the listener runs.
+- The heartbeat works around this because the child always initiates: it signals `gas-heartbeat-ready`, the parent responds, and the child's `addEventListener` inside the GAS sandbox receives the reply (same-origin within the GAS wrapper).
+- The data poll fires every 15s. Reloading the iframe each time (to get a fresh child→parent signal) aborts any pending `google.script.run` calls. A persistent iframe approach was attempted (v06.71r) but failed because subsequent parent→child token deliveries were dropped by the sandbox.
+- The URL parameter approach avoids postMessage entirely: the token goes in the URL, `doGet()` reads it synchronously, calls `processDataPoll(token)`, and embeds the result as inline JavaScript that postMessages back to the parent. One round-trip, no handshake.
 
 ---
 
@@ -57,7 +65,7 @@ The original design piggybacked `liveData = getCachedData()` on the heartbeat re
 | CacheService read (live data) | — | 1x `cache.get(livedata_*)` |
 | JSON parse (live data) | — | 1x `JSON.parse(cached)` |
 | HMAC sign response | 1x `signMessage()` | — |
-| postMessage handshake | Yes (token via postMessage) | Yes (token via postMessage) |
+| postMessage handshake | Yes (token via postMessage) | No (token in URL, result inline) |
 | **Total CacheService calls** | **5** (3 reads + 2 writes) | **2** (2 reads) |
 | **Total crypto operations** | **3** (verify + re-sign + sign response) | **0** |
 | **Total JSON parse/stringify** | **3** | **1** |
@@ -74,9 +82,9 @@ The original design piggybacked `liveData = getCachedData()` on the heartbeat re
 
 | Pipeline | Interval | CacheService calls/tick | Crypto ops/tick | Ticks/min | CacheService calls/min |
 |---|---|---|---|---|---|
-| Heartbeat | 30s | 5 | 3 | 2 | 10 |
+| Heartbeat | 60s | 5 | 3 | 1 | 5 |
 | Data Poll | 15s | 2 | 0 | 4 | 8 |
-| **Total** | | | | | **18** |
+| **Total** | | | | | **13** |
 
 ### When User is Idle (only data poll fires)
 
@@ -86,31 +94,42 @@ The original design piggybacked `liveData = getCachedData()` on the heartbeat re
 | Data Poll | 15s | 2 | 0 | 4 | 8 |
 | **Total** | | | | | **8** |
 
-**Idle users consume less than half the quota of active users.** The expensive heartbeat (5 CacheService calls + 3 crypto ops) drops to zero.
+**Idle users consume ~60% of active users' quota.** The expensive heartbeat (5 CacheService calls + 3 crypto ops) drops to zero.
+
+### Production Values (Heartbeat @ 5min)
+
+| Pipeline | Interval | Ticks/min | CacheService calls/min |
+|---|---|---|---|
+| Heartbeat (active) | 5min | 0.2 | 1 |
+| Data Poll | 15s | 4 | 8 |
+| **Total (active)** | | | **9** |
+| **Total (idle)** | | | **8** |
+
+At production intervals, the heartbeat overhead is negligible — data polling dominates the quota budget.
 
 ---
 
 ## Scaling Comparison
 
-| Metric | Heartbeat only (30s) | Data Poll (15s) | Data Poll (20s) | Data Poll (30s) |
+| Metric | Heartbeat only (60s) | Data Poll (15s) | Data Poll (20s) | Data Poll (30s) |
 |---|---|---|---|---|
-| **Calls/hour (1 viewer)** | 120 | 240 | 180 | 120 |
-| **Compute/hour (1 viewer)** | ~9s | ~3s | ~2.3s | ~1.5s |
-| **Calls/hour (10 viewers)** | 1,200 | 2,400 | 1,800 | 1,200 |
-| **Compute/hour (10 viewers)** | ~90s | ~30s | ~23s | ~15s |
-| **Calls/hour (50 viewers)** | 6,000 | 12,000 | 9,000 | 6,000 |
-| **Compute/hour (50 viewers)** | ~450s | ~150s | ~113s | ~75s |
-| **Data freshness** | ≤30s | ≤15s | ≤20s | ≤30s |
-| **Cost vs Heartbeat** | 1x (baseline) | 0.33x | 0.25x | 0.17x |
+| **Calls/hour (1 viewer)** | 60 | 240 | 180 | 120 |
+| **Compute/hour (1 viewer)** | ~4.5s | ~3s | ~2.3s | ~1.5s |
+| **Calls/hour (10 viewers)** | 600 | 2,400 | 1,800 | 1,200 |
+| **Compute/hour (10 viewers)** | ~45s | ~30s | ~23s | ~15s |
+| **Calls/hour (50 viewers)** | 3,000 | 12,000 | 9,000 | 6,000 |
+| **Compute/hour (50 viewers)** | ~225s | ~150s | ~113s | ~75s |
+| **Data freshness** | ≤60s | ≤15s | ≤20s | ≤30s |
+| **Cost vs Heartbeat** | 1x (baseline) | 0.67x | 0.50x | 0.33x |
 
-### Combined Cost (Active User — Heartbeat @ 30s + Data Poll)
+### Combined Cost (Active User — Heartbeat @ 60s + Data Poll)
 
-| Metric | HB 30s + DP 15s | HB 30s + DP 20s | HB 30s + DP 30s |
+| Metric | HB 60s + DP 15s | HB 60s + DP 20s | HB 60s + DP 30s |
 |---|---|---|---|
-| **Calls/hour (1 viewer)** | 120 + 240 = 360 | 120 + 180 = 300 | 120 + 120 = 240 |
-| **Compute/hour (1 viewer)** | ~9s + ~3s = ~12s | ~9s + ~2.3s = ~11.3s | ~9s + ~1.5s = ~10.5s |
-| **Calls/hour (50 viewers)** | 6,000 + 12,000 = 18,000 | 6,000 + 9,000 = 15,000 | 6,000 + 6,000 = 12,000 |
-| **Compute/hour (50 viewers)** | ~450s + ~150s = ~600s | ~450s + ~113s = ~563s | ~450s + ~75s = ~525s |
+| **Calls/hour (1 viewer)** | 60 + 240 = 300 | 60 + 180 = 240 | 60 + 120 = 180 |
+| **Compute/hour (1 viewer)** | ~4.5s + ~3s = ~7.5s | ~4.5s + ~2.3s = ~6.8s | ~4.5s + ~1.5s = ~6s |
+| **Calls/hour (50 viewers)** | 3,000 + 12,000 = 15,000 | 3,000 + 9,000 = 12,000 | 3,000 + 6,000 = 9,000 |
+| **Compute/hour (50 viewers)** | ~225s + ~150s = ~375s | ~225s + ~113s = ~338s | ~225s + ~75s = ~300s |
 
 ---
 
@@ -121,10 +140,43 @@ The original design piggybacked `liveData = getCachedData()` on the heartbeat re
 | Access Control | §164.312(a)(1) — Required | Compliant | **Non-compliant** | Compliant |
 | Person/Entity Auth | §164.312(d) — Required | Compliant | **Non-compliant** | Compliant |
 | Audit Controls | §164.312(b) — Required | Compliant | **Non-compliant** | Compliant |
-| Integrity (HMAC) | §164.312(c)(1) — Addressable | Compliant | **Non-compliant** | N/A (no data modification) |
+| Integrity (HMAC) | §164.312(c)(1) — Addressable | Compliant | **Non-compliant** | N/A (read-only) |
 | Transmission Security | §164.312(e)(1) — Addressable | Compliant (HTTPS) | Compliant (HTTPS) | Compliant (HTTPS) |
 
-The old data poll (`getCachedData()` called directly with no auth) violated 3 required HIPAA specifications. The new `processDataPoll(token)` validates session existence via CacheService lookup before returning data.
+The old data poll (`getCachedData()` called directly with no auth) violated 3 required HIPAA specifications. The new `processDataPoll(token)` validates session existence via `getEpochCache()` lookup before returning data.
+
+---
+
+## Token-in-URL Security Assessment
+
+The data poll passes the session token as a URL parameter (`?action=getData&token=...`). This diverges from Phase 7's postMessage pattern (used by heartbeat/signout) because Google's GAS iframe sandbox drops parent→child postMessage calls, making the handshake unreliable.
+
+| Concern | Assessment |
+|---|---|
+| URL visible to user | No — iframe is `display:none`, URL never appears in address bar |
+| HTTPS encryption | Yes — GAS web apps enforce HTTPS; token encrypted in transit |
+| Server-side logs | Token may appear in GAS execution logs — only script owner has access |
+| Browser history | Iframe URLs may be cached — but the iframe is not user-navigable |
+| Token reuse risk | Token only validates session existence (read-only) — no write operations possible |
+| Alternative attempted | postMessage handshake (v06.68r) and persistent iframe (v06.71r) — both failed due to GAS sandbox |
+
+**Risk level: LOW** — acceptable tradeoff vs. the HIPAA violation of unauthenticated data access.
+
+---
+
+## Timer Display Logic
+
+The Data Poll countdown in the auth-timers panel shows three states:
+
+| State | Display | Condition |
+|---|---|---|
+| Polling | `▷ polling...` (yellow) | `_dataPollInFlight` is true, OR within 2s of last poll fire |
+| Countdown | `▷ M:SS` | Between polls — counts down from ~13s to 0:00 |
+| Inactive | `--` | Data poll not running (no session) |
+
+The 2-second polling window (checking `sinceDataPoll < 2`) ensures the "polling..." state is visible on every cycle. Without it, the GAS inline-JS response arrives in <1 second — faster than the 1-second timer update interval — so `_dataPollInFlight` would clear before the timer could display the polling state.
+
+The countdown starts at ~13s (not 15s) because ~2 seconds are consumed by the polling display window.
 
 ---
 
@@ -133,16 +185,19 @@ The old data poll (`getCachedData()` called directly with no auth) violated 3 re
 ```javascript
 // In HTML_CONFIG (testauth1.html)
 ENABLE_HEARTBEAT: true,
-HEARTBEAT_INTERVAL: 30000,    // 30s test / 300000 (5min) production
+// HEARTBEAT_INTERVAL: 300000  // ms — production (5min)
+HEARTBEAT_INTERVAL: 60000,    // ⚡ TEST VALUE (60s)
 DATA_POLL_INTERVAL: 15000,    // 15s — continuous lightweight data poll
 ```
 
 | Config | Purpose | Tuning guidance |
 |---|---|---|
-| `HEARTBEAT_INTERVAL` | How often to check for activity and extend session | Increase for lower session management overhead. Production: 5min. |
-| `DATA_POLL_INTERVAL` | How often to fetch fresh data | Decrease for more real-time data (more quota). Increase to save quota. |
+| `HEARTBEAT_INTERVAL` | How often to check for activity and extend session | Increase for lower session management overhead. Production: 5min (300000ms). Keep ratio ≥3x vs `SESSION_EXPIRATION` |
+| `DATA_POLL_INTERVAL` | How often to fetch fresh data | Decrease for more real-time data (more quota). Increase to save quota. 15s is a good balance |
+| `SESSION_EXPIRATION` | Rolling session timeout (GAS-side) | Production: 900s (15min). HIPAA/CMS standard for inactivity timeout |
+| `ABSOLUTE_SESSION_TIMEOUT` | Hard session ceiling (GAS-side) | Production: 28800s (8hr). Clinical shift boundary |
 
-These are fully independent — changing one has zero effect on the other.
+`HEARTBEAT_INTERVAL` and `DATA_POLL_INTERVAL` are fully independent — changing one has zero effect on the other.
 
 ---
 
@@ -150,7 +205,7 @@ These are fully independent — changing one has zero effect on the other.
 
 | File | What it contains |
 |---|---|
-| `googleAppsScripts/Testauth1/testauth1.gs` | `processHeartbeat()` (line ~2419), `processDataPoll()` (line ~2502), `getCachedData()` (line ~575) |
-| `live-site-pages/testauth1.html` | `sendHeartbeat()` (line ~3116), `_sendDataPoll()` (line ~3093), `_startDataPoll()` / `_stopDataPoll()` (line ~3079), heartbeat/data-poll ready handlers (line ~1925) |
+| `googleAppsScripts/Testauth1/testauth1.gs` | `processHeartbeat()` (line ~2422), `processDataPoll()` (line ~2501), `getCachedData()` (line ~575), `doGet()` getData handler (line ~2686) |
+| `live-site-pages/testauth1.html` | `sendHeartbeat()` (line ~3129), `_sendDataPoll()` (line ~3096), `_startDataPoll()` (line ~3079), `_stopDataPoll()` (line ~3085), `live-data` handler (line ~4006), timer display logic (line ~2984) |
 
 Developed by: ShadowAISolutions

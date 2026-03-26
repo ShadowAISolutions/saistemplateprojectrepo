@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v06.79r] — 2026-03-26 12:07:03 AM EST
+
+> **Prompt:** "yes update it, think deeply"
+
+### Changed
+- Updated `DATA-POLL-ARCHITECTURE.md` to reflect final working implementation — token delivery changed from postMessage to URL parameter, added sections for token security assessment, timer display logic, GAS sandbox constraints, and production timer recommendations
 
 ## [v06.78r] — 2026-03-25 11:54:00 PM EST
 
