@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v02.96w] — 2026-03-25 10:05:15 PM EST — v06.67r
+
+### Fixed
+- Heartbeat timer countdown now remains visible during idle state — shows time until next tick with idle indicator
 
 ## [v02.95w] — 2026-03-25 09:47:45 PM EST — v06.66r
 
@@ -263,20 +268,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Added
 - "Signing out..." overlay with spinner shown during session cleanup
-
-## [v02.48w] — 2026-03-20 11:02:26 PM EST — v05.56r
-
-### Changed
-- Updated setup error message to reflect auto-generation of security keys on first deploy
-
-## [v02.47w] — 2026-03-20 10:05:19 PM EST — v05.54r
-
-### Fixed
-- Popups and overlays no longer persist on screen after signing out
-
-## [v02.46w] — 2026-03-20 07:27:24 PM EST — v05.44r
-
-### Fixed
-- Sessions no longer conflict with other projects open in the same browser
 
 Developed by: ShadowAISolutions

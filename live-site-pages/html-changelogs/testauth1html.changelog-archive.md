@@ -8,6 +8,21 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.48w] — 2026-03-20 11:02:26 PM EST — v05.56r — [`e56d019`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e56d01972eaa70d0a52b5adbc6a3148a25408f82)
+
+### Changed
+- Updated setup error message to reflect auto-generation of security keys on first deploy
+
+## [v02.47w] — 2026-03-20 10:05:19 PM EST — v05.54r — [`e5e0036`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e5e0036d8ecf063f24a46bef0cdf43ac50af2c6e)
+
+### Fixed
+- Popups and overlays no longer persist on screen after signing out
+
+## [v02.46w] — 2026-03-20 07:27:24 PM EST — v05.44r — [`05f3571`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/05f35710c7de11e6540ed16900858fc19b29a4c0)
+
+### Fixed
+- Sessions no longer conflict with other projects open in the same browser
+
 ## [v02.45w] — 2026-03-19 05:46:46 PM EST — v05.14r
 
 ### Fixed

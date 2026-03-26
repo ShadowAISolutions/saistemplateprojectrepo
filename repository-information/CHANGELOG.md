@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v06.67r] — 2026-03-25 10:05:15 PM EST
+
+> **Prompt:** "im noticing that when the heartbeat is idle, its not showing a countdown timer anymore until we make it ready"
+
+### Fixed
+- Heartbeat timer now shows countdown even when idle — previously displayed static "◇ idle" text with no countdown until activity resumed
+
+#### `testauth1.html` — v02.96w
+##### Fixed
+- Heartbeat timer countdown now remains visible during idle state — shows time until next tick with "◇ idle" indicator
 
 ## [v06.66r] — 2026-03-25 09:47:45 PM EST
 
