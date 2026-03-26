@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v06.93r] — 2026-03-26 11:06:12 AM EST
+
+> **Prompt:** "go ahead and change the title of testauth1 from "CHANGE THIS PROJECT TITLE TEMPLATE" to "Testauth1 Title""
+
+### Changed
+- Updated testauth1 page title from the template placeholder to "Testauth1 Title"
+
+#### `testauth1.html` — v03.12w
+##### Changed
+- Page title updated from placeholder to "Testauth1 Title"
 
 ## [v06.92r] — 2026-03-26 10:49:30 AM EST
 

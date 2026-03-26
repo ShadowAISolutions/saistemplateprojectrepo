@@ -8,6 +8,70 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+<!-- Rotated 2026-03-26: 11 sections from 2026-03-22 (SHAs unavailable — commits not in shallow history) -->
+
+## [v02.72w] — 2026-03-22 02:30:05 PM EST — v06.07r — [sha-unavailable]
+
+### Changed
+- Minor internal improvements
+
+## [v02.71w] — 2026-03-22 02:05:02 PM EST — v06.05r — [sha-unavailable]
+
+### Fixed
+- Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
+
+## [v02.70w] — 2026-03-22 12:51:12 PM EST — v06.03r — [sha-unavailable]
+
+### Changed
+- Minor internal improvements
+
+## [v02.69w] — 2026-03-22 12:45:46 PM EST — v06.02r — [sha-unavailable]
+
+### Changed
+- Minor internal improvements
+
+## [v02.68w] — 2026-03-22 12:23:54 PM EST — v05.99r — [sha-unavailable]
+
+### Fixed
+- No longer triggers unnecessary Google re-authentication on page refresh
+
+## [v02.67w] — 2026-03-22 12:08:17 PM EST — v05.98r — [sha-unavailable]
+
+### Fixed
+- SSO auto-authentication now works after page refresh
+
+## [v02.66w] — 2026-03-22 11:38:56 AM EST — v05.97r — [sha-unavailable]
+
+### Changed
+- "Session Active Elsewhere" overlay now shows the application name
+
+## [v02.65w] — 2026-03-22 01:26:48 AM EST — v05.95r — [sha-unavailable]
+
+### Fixed
+- "Signing in via [source]" subtitle now correctly displays during SSO authentication
+
+## [v02.64w] — 2026-03-22 01:19:31 AM EST — v05.94r — [sha-unavailable]
+
+### Changed
+- Sign-in screen now shows which page provided your credentials when signing in via SSO
+
+## [v02.63w] — 2026-03-22 01:03:31 AM EST — v05.93r — [sha-unavailable]
+
+### Fixed
+- Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
+
+## [v02.62w] — 2026-03-22 12:27:41 AM EST — v05.92r — [sha-unavailable]
+
+### Added
+- Single sign-on support — auto-authenticates when another auth page (like Application Portal) is already signed in
+- Cross-page sign-out — signing out from any connected page signs out all pages
+
+### Changed
+- Shared Google OAuth client for unified sign-in experience across all auth pages
+
+Developed by: ShadowAISolutions
+
+
 ## [v02.61w] — 2026-03-21 06:15:12 PM EST — v05.77r — [`eefc841`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eefc841335662509b5e2298957d74368dec518ca)
 
 ### Fixed
