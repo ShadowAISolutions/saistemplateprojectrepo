@@ -1,4 +1,4 @@
-var VERSION = "v02.01g";
+var VERSION = "v02.02g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2662,6 +2662,26 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
+  // Data poll action — lightweight page that fetches cached data and sends it back
+  // Used by the idle data poll (Option C) when the heartbeat is inactive.
+  // No session validation needed — getCachedData() reads from CacheService only.
+  if (action === 'getData') {
+    var dataListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'google.script.run'
+      + '  .withSuccessHandler(function(data) {'
+      + '    window.top.postMessage({type:"live-data", data:data}, PARENT_ORIGIN);'
+      + '  })'
+      + '  .withFailureHandler(function() {'
+      + '    window.top.postMessage({type:"live-data", data:null}, PARENT_ORIGIN);'
+      + '  })'
+      + '  .getCachedData();'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(dataListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
   // Sign-out action — returns page that listens for token via postMessage
   if (action === 'signout') {
     var soListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
@@ -3194,16 +3214,6 @@ function doGet(e) {
                 top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
               })
               .writeCell(evt.data.token, evt.data.row, evt.data.col, evt.data.value);
-          }
-          if (evt.data && evt.data.type === 'get-live-data') {
-            google.script.run
-              .withSuccessHandler(function(data) {
-                top.postMessage({type: 'live-data', data: data}, '${PARENT_ORIGIN}');
-              })
-              .withFailureHandler(function() {
-                top.postMessage({type: 'live-data', data: null}, '${PARENT_ORIGIN}');
-              })
-              .getCachedData();
           }
         });
       </script>

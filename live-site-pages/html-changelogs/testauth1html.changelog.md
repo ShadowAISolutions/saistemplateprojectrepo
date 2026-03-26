@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v02.90w] — 2026-03-25 08:47:57 PM EST — v06.61r
+
+### Fixed
+- Background data polling now works correctly when idle — the table updates with the latest spreadsheet data even when you step away
 
 ## [v02.89w] — 2026-03-25 07:14:40 PM EST — v06.60r
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.89w">
+  <meta name="build-version" content="v02.90w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -3071,14 +3071,27 @@
         _idleDataPollInterval = null;
       }
       _idleDataInFlight = false;
+      var dpFrame = document.getElementById('gas-data-poll');
+      if (dpFrame) dpFrame.remove();
     }
 
     function _sendIdleDataPoll() {
       if (_idleDataInFlight) return;  // don't stack
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp || !gasApp.contentWindow) return;
+      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!baseUrl) return;
       _idleDataInFlight = true;
-      gasApp.contentWindow.postMessage({ type: 'get-live-data' }, '*');
+      // Use a dedicated hidden iframe (same pattern as the heartbeat) —
+      // postMessage into the GAS sandbox doesn't work because Google's
+      // nested iframe wrapper drops parent→child messages.
+      var dpFrame = document.getElementById('gas-data-poll');
+      if (!dpFrame) {
+        dpFrame = document.createElement('iframe');
+        dpFrame.id = 'gas-data-poll';
+        dpFrame.style.cssText = 'display:none;width:0;height:0;border:0';
+        document.body.appendChild(dpFrame);
+      }
+      dpFrame.src = baseUrl + '?action=getData';
       // Safety timeout — clear in-flight flag if no response in 15s
       setTimeout(function() { _idleDataInFlight = false; }, 15000);
     }
