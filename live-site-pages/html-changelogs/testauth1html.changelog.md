@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v03.14w] — 2026-03-26 12:03:38 PM EST — v06.95r
+
+### Fixed
+- Closing the Google sign-in popup without completing sign-in now properly returns you to the sign-in screen if your session has expired
 
 ## [v03.13w] — 2026-03-26 11:14:47 AM EST — v06.94r
 

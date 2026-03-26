@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v06.95r] — 2026-03-26 12:03:38 PM EST
+
+> **Prompt:** "when the absolute timer is low (for example in testauth1), and i click sign in again, it shows the popup to select a google account, but it stops the countdown from happening, and disconnects the data sync, which is fine but to should still be showing an indicator, unless this has timed out everything. however when i close the GIS, its not doing anything, not signing out or anything. i think it should be handled how we handled the SSO GIS reconnecting in the application portal, but do your own analysis. fix this everywhere it applies to"
+
+### Fixed
+- Added GIS popup dismissal handling (`_onGisPopupDismissed`) to the auth template, testauth1.html, and globalacl.html — when the user closes the Google sign-in popup without completing authentication and the session has already expired (e.g. absolute timer ran out while the popup was open), the auth wall is now properly shown with a clear message instead of leaving the page in a limbo state
+- Added `error_callback: _onGisPopupDismissed` to all 5 `initTokenClient` calls in the auth template, testauth1, and globalacl (initGoogleSignIn, attemptReauth outer/inner, sign-in button handler, SSO refresh) — mirrors the Application Portal's existing `error_callback: _onGisPopupClosed` pattern
+
+#### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
+##### Fixed
+- Added `_onGisPopupDismissed()` function and `error_callback` to all GIS `initTokenClient` calls
+
+#### `testauth1.html` — v03.14w
+##### Fixed
+- Added `_onGisPopupDismissed()` function and `error_callback` to all GIS `initTokenClient` calls
+
+#### `globalacl.html` — v01.33w
+##### Fixed
+- Added `_onGisPopupDismissed()` function and `error_callback` to all GIS `initTokenClient` calls
 
 ## [v06.94r] — 2026-03-26 11:14:47 AM EST
 

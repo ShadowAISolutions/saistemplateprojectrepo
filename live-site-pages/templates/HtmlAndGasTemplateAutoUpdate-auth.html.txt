@@ -1242,7 +1242,8 @@
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: '',                // silent first (no user interaction)
-        callback: handleTokenResponse
+        callback: handleTokenResponse,
+        error_callback: _onGisPopupDismissed
       });
       // Attempt silent sign-in on load
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -1276,6 +1277,19 @@
 
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
+
+    // GIS error_callback handler — fires when the Google sign-in popup is
+    // closed or blocked without completing authentication.
+    // If the session has already expired (e.g. absolute timer ran out while
+    // the popup was open), ensure the auth wall is properly visible.
+    // If the session is still valid, the user just changed their mind — no action needed.
+    function _onGisPopupDismissed() {
+      var session = loadSession();
+      if (!session.token) {
+        // Session gone (expired or cleared while popup was open) — show auth wall
+        showAuthWall('Sign-in was not completed. Click "Sign In with Google" to continue.');
+      }
+    }
 
     function exchangeToken(googleAccessToken) {
       _iframeLoadTime = Date.now();
@@ -3166,13 +3180,15 @@
               client_id: CLIENT_ID,
               scope: 'openid email profile',
               prompt: 'select_account',
-              callback: handleTokenResponse
+              callback: handleTokenResponse,
+              error_callback: _onGisPopupDismissed
             });
           } else {
             _authNonce = null; // Consume nonce on successful silent re-auth
             exchangeToken(response.access_token);
           }
-        }
+        },
+        error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
       signInClient.requestAccessToken();
@@ -3188,7 +3204,8 @@
         client_id: CLIENT_ID,
         scope: 'openid email profile',
         prompt: 'select_account',
-        callback: handleTokenResponse
+        callback: handleTokenResponse,
+        error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
       signInClient.requestAccessToken();
@@ -3508,7 +3525,8 @@
                       console.warn('[SSO] Token email mismatch during reconnect — token discarded');
                     });
                   }
-                }
+                },
+                error_callback: _onGisPopupDismissed
               });
               ssoRefreshClient.requestAccessToken();
             } else if (ssoRetries >= 25) { // 25 × 200ms = 5s
