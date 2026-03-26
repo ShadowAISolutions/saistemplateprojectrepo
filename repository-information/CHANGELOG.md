@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v06.84r] — 2026-03-26 08:19:16 AM EST
+
+> **Prompt:** "can you make the desriptions more descriptive. the contacting google seems instantaneous and i dont even get a chance to ever see it at almost ready, whatever that means"
+
+### Changed
+- Rewrote sign-in checklist stage labels on Application Portal to be more descriptive: "Requesting sign-in from Google", "Exchanging credentials with server", "Setting up your secure session", "Loading the application", "Confirming session with server"
+
+#### `applicationportal.html` — v01.33w
+
+##### Changed
+- Sign-in checklist stages now have more descriptive labels explaining what each step does
 
 ## [v06.83r] — 2026-03-26 08:10:52 AM EST
 

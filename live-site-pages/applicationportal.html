@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.32w">
+  <meta name="build-version" content="v01.33w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -385,11 +385,11 @@
       <div class="auth-spinner"></div>
       <!-- PROJECT: Sign-in stage checklist (applicationportal only) -->
       <ul id="signin-checklist" class="signin-checklist">
-        <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Contacting Google</li>
-        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Verifying your identity</li>
-        <li id="stage-creating" class="stage-pending"><span class="chk-icon"></span>Creating your session</li>
-        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading application</li>
-        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Almost ready</li>
+        <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
+        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server</li>
+        <li id="stage-creating" class="stage-pending"><span class="chk-icon"></span>Setting up your secure session</li>
+        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading the application</li>
+        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
       </ul>
       <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
     </div>
