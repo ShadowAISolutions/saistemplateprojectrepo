@@ -1,4 +1,4 @@
-var VERSION = "v02.05g";
+var VERSION = "v02.06g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2494,8 +2494,7 @@ function processHeartbeat(token) {
 }
 
 // ── Authenticated data poll — lightweight session check + data return ──
-// Called via google.script.run from the data poll listener page (action=getData).
-// Token is received via postMessage, NOT URL parameters (Phase 7 pattern).
+// Called from doGet(action=getData) with token passed as URL parameter.
 // Unlike processHeartbeat(), this does NOT extend the session — it only verifies
 // the session exists in CacheService, then returns cached data. ~2x lighter than
 // heartbeat (no HMAC regen, no session write, no absolute timeout check).
@@ -2503,7 +2502,7 @@ function processDataPoll(token) {
   if (!token) {
     return {type: 'live-data', data: null, error: 'no_token'};
   }
-  var cache = CacheService.getScriptCache();
+  var cache = getEpochCache();
   var sessionRaw = cache.get("session_" + token);
   if (!sessionRaw) {
     return {type: 'live-data', data: null, error: 'no_session'};
