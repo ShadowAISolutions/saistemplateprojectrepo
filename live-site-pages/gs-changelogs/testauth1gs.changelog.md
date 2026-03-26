@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 51/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v02.03g] — 2026-03-25 09:47:45 PM EST — v06.66r
+
+### Changed
+- Data updates now arrive through a dedicated lightweight channel instead of being bundled with session management — more consistent refresh timing
 
 ## [v02.02g] — 2026-03-25 08:47:57 PM EST — v06.61r
 
@@ -262,38 +267,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 - Access checks now include role assignment from the access control list
 - Audit logs now record which role performed each action
 - Emergency access users are automatically assigned the admin role
-
-## [v01.56g] — 2026-03-18 02:50:29 PM EST — v04.81r
-
-### Changed
-- All messages from the app session page are now signed with stronger cryptographic protection before being sent to the host page
-- Version check responses are now processed more securely on the server before delivery
-- Activity detection messages are now verified server-side before reaching the host page
-
-### Removed
-- Removed legacy message signing that used a weaker algorithm
-
-## [v01.55g] — 2026-03-18 02:02:28 PM EST — v04.80r
-
-### Changed
-- Removed unused legacy session routes — heartbeat and sign-out now use the newer, more secure communication method
-
-## [v01.54g] — 2026-03-18 01:12:40 PM EST — v04.78r
-
-### Changed
-- Session confirmation now includes the signing key for the host page to verify messages after tab reclaim
-
-## [v01.53g] — 2026-03-18 01:02:43 PM EST — v04.77r
-
-### Fixed
-- Session reclaim now delivers the signing key to the host page for continued message verification
-
-## [v01.52g] — 2026-03-18 08:38:59 AM EST — v04.67r
-
-### Changed
-- Session heartbeats, sign-out, and security event reporting now use secure message channels instead of URL parameters — tokens no longer appear in server logs
-
-### Added
-- New secure communication endpoints for heartbeat, sign-out, and security event operations
 
 

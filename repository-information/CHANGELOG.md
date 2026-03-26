@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v06.66r] — 2026-03-25 09:47:45 PM EST
+
+> **Prompt:** "in the testauth1, it seems like the data poll is happening both in the heartbeat or in the data poll, i think it should always be done with the data poll rather than flipping back and forth between the pipelines. what do you think?"
+
+### Changed
+- Decoupled data polling from heartbeat pipeline in testauth1 — data poll now runs continuously and independently, heartbeat only handles session extension
+- Removed `liveData` piggybacking from `processHeartbeat()` in testauth1.gs — heartbeat response no longer carries spreadsheet data
+- Removed `data.liveData` extraction from heartbeat OK handler in testauth1.html
+- Data poll starts at session establishment and runs on its own interval regardless of user activity state
+- Renamed all `_idle*` variables/functions to `_data*` (e.g. `_idleDataPollInterval` → `_dataPollInterval`, `IDLE_DATA_POLL_INTERVAL` → `DATA_POLL_INTERVAL`) since the poll is no longer idle-only
+- Data poll timer display no longer depends on `_heartbeatIdle` — shows countdown whenever poll is active
+
+#### `testauth1.gs` — v02.03g
+##### Changed
+- Heartbeat response no longer carries spreadsheet data — removed `liveData` piggybacking from `processHeartbeat()`
+
+#### `testauth1.html` — v02.95w
+##### Changed
+- Data polling now runs continuously via dedicated pipeline, independent of heartbeat activity state
+- Data poll timer always shows countdown when active, not just when idle
 
 ## [v06.65r] — 2026-03-25 09:17:26 PM EST
 

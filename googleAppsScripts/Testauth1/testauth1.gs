@@ -1,4 +1,4 @@
-var VERSION = "v02.02g";
+var VERSION = "v02.03g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2490,8 +2490,6 @@ function processHeartbeat(token) {
     ? Math.round(AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - hbData.absoluteCreatedAt) / 1000))
     : 0;
   var hbResult = signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
-  // Attach liveData AFTER signing — nested objects cause HMAC mismatch between GAS and browser JSON.stringify
-  hbResult.liveData = getCachedData();
   return hbResult;
 }
 

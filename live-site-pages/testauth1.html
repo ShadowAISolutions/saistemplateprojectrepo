@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v02.94w">
+  <meta name="build-version" content="v02.95w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>CHANGE THIS PROJECT TITLE TEMPLATE</title>
 <!-- ══════════════ -->
@@ -771,8 +771,8 @@
       ENABLE_HEARTBEAT: true,
       // HEARTBEAT_INTERVAL: 300000  // ms — how often to check for activity and send heartbeat (5min)
       HEARTBEAT_INTERVAL: 30000,  // ⚡ TEST VALUE (30s) — uncomment line above and delete this line to restore
-      // IDLE_DATA_POLL_INTERVAL: 15000  // ms — how often to poll for data when idle (independent of heartbeat)
-      IDLE_DATA_POLL_INTERVAL: 15000,  // 15s — lightweight data-only poll when user is idle
+      // DATA_POLL_INTERVAL: 15000  // ms — how often to poll for data (continuous, independent of heartbeat)
+      DATA_POLL_INTERVAL: 15000,  // 15s — continuous lightweight data-only poll
       // Single-tab enforcement: only one tab can be active at a time.
       // When enabled, opening the page in a new tab claims the session and
       // shows a "session active elsewhere" overlay on the old tab.
@@ -2197,6 +2197,7 @@
           showApp(session.email, null, session.role);
           startCountdownTimers();
           startHeartbeat();
+          _startDataPoll();
           // The server may report needsReauth because the server-side
           // session was close to expiring, but the client just reset its
           // rolling timer and the heartbeat will extend the server session
@@ -2211,6 +2212,7 @@
           showApp(_pendingSessionShow.email, _pendingSessionShow.displayName, _pendingSessionShow.role);
           startCountdownTimers();
           startHeartbeat();
+          _startDataPoll();
           broadcastTabClaim();
           _pendingSessionShow = null;
           _gasAuthOkHandled = true;
@@ -2232,11 +2234,6 @@
         // Hide session warning and reset flag — session was extended
         _expiryWarningShown = false;
         hideSessionWarning();
-
-        // Extract piggybacked live data from heartbeat response
-        if (data.liveData && typeof window._handleLiveData === 'function') {
-          window._handleLiveData(data.liveData);
-        }
       }
 
       // Heartbeat failed — session already expired on server
@@ -2987,18 +2984,18 @@
           // Data Poll row — always visible
           var dpEl = document.getElementById('timer-datapoll');
           if (dpEl) {
-            if (_heartbeatIdle && (_idleDataPollInterval || _idleDataInFlight)) {
-              if (_idleDataInFlight) {
-                dpEl.textContent = '\u25C7 polling...';
+            if (_dataPollInterval || _dataPollInFlight) {
+              if (_dataPollInFlight) {
+                dpEl.textContent = '\u25B7 polling...';
                 dpEl.className = 'timer-value warn';
-              } else if (_lastIdlePollTick) {
-                var sinceIdlePoll = (Date.now() - _lastIdlePollTick) / 1000;
-                var nextIdlePollIn = (HTML_CONFIG.IDLE_DATA_POLL_INTERVAL / 1000) - sinceIdlePoll;
-                if (nextIdlePollIn < 0) nextIdlePollIn = 0;
-                dpEl.textContent = '\u25C7 ' + formatCountdown(nextIdlePollIn);
+              } else if (_lastDataPollTick) {
+                var sinceDataPoll = (Date.now() - _lastDataPollTick) / 1000;
+                var nextDataPollIn = (HTML_CONFIG.DATA_POLL_INTERVAL / 1000) - sinceDataPoll;
+                if (nextDataPollIn < 0) nextDataPollIn = 0;
+                dpEl.textContent = '\u25B7 ' + formatCountdown(nextDataPollIn);
                 dpEl.className = 'timer-value';
               } else {
-                dpEl.textContent = '\u25C7 starting...';
+                dpEl.textContent = '\u25B7 starting...';
                 dpEl.className = 'timer-value';
               }
             } else {
@@ -3039,9 +3036,9 @@
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatInFlightTimer = null;  // timeout to auto-clear _heartbeatInFlight if response never arrives
     var _heartbeatIdle = false;      // true when last tick found no activity
-    var _idleDataPollInterval = null;  // Option C: lightweight data-only poll when idle
-    var _idleDataInFlight = false;     // prevents overlapping idle data requests
-    var _lastIdlePollTick = 0;         // timestamp of last idle data poll fire
+    var _dataPollInterval = null;  // continuous lightweight data-only poll
+    var _dataPollInFlight = false;     // prevents overlapping data poll requests
+    var _lastDataPollTick = 0;         // timestamp of last data poll fire
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
@@ -3062,11 +3059,9 @@
         if (_lastHeartbeatActivity < lastTick) {
           // No activity since last heartbeat tick — skip (let session expire if idle)
           _heartbeatIdle = true;
-          _startIdleDataPoll();
           return;
         }
         _heartbeatIdle = false;
-        _stopIdleDataPoll();
         sendHeartbeat();
       }, HTML_CONFIG.HEARTBEAT_INTERVAL);
     }
@@ -3075,37 +3070,36 @@
       _lastHeartbeatActivity = Date.now();
       if (_heartbeatIdle) {
         _heartbeatIdle = false;
-        _stopIdleDataPoll();  // activity resumed — stop idle poll, heartbeat takes over
       }
     }
 
-    // Option C: lightweight data-only poll — runs when heartbeat is idle.
+    // Continuous lightweight data-only poll — runs independently of heartbeat.
     // Uses google.script.run.getCachedData() via the GAS iframe (no session
     // validation, no HMAC, no session write — ~10x lighter than a heartbeat).
-    function _startIdleDataPoll() {
-      if (_idleDataPollInterval) return;  // already running
-      _sendIdleDataPoll();  // fire immediately on transition to idle
-      _idleDataPollInterval = setInterval(_sendIdleDataPoll, HTML_CONFIG.IDLE_DATA_POLL_INTERVAL);
+    function _startDataPoll() {
+      if (_dataPollInterval) return;  // already running
+      _sendDataPoll();  // fire immediately on start
+      _dataPollInterval = setInterval(_sendDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL);
     }
 
-    function _stopIdleDataPoll() {
-      if (_idleDataPollInterval) {
-        clearInterval(_idleDataPollInterval);
-        _idleDataPollInterval = null;
+    function _stopDataPoll() {
+      if (_dataPollInterval) {
+        clearInterval(_dataPollInterval);
+        _dataPollInterval = null;
       }
-      _idleDataInFlight = false;
-      _lastIdlePollTick = 0;
+      _dataPollInFlight = false;
+      _lastDataPollTick = 0;
       var dpFrame = document.getElementById('gas-data-poll');
       if (dpFrame) dpFrame.remove();
     }
 
-    function _sendIdleDataPoll() {
-      if (_idleDataInFlight) return;  // don't stack
+    function _sendDataPoll() {
+      if (_dataPollInFlight) return;  // don't stack
       var gasApp = document.getElementById('gas-app');
       var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;
-      _idleDataInFlight = true;
-      _lastIdlePollTick = Date.now();
+      _dataPollInFlight = true;
+      _lastDataPollTick = Date.now();
       // Use a dedicated hidden iframe (same pattern as the heartbeat) —
       // postMessage into the GAS sandbox doesn't work because Google's
       // nested iframe wrapper drops parent→child messages.
@@ -3118,7 +3112,7 @@
       }
       dpFrame.src = baseUrl + '?action=getData';
       // Safety timeout — clear in-flight flag if no response in 15s
-      setTimeout(function() { _idleDataInFlight = false; }, 15000);
+      setTimeout(function() { _dataPollInFlight = false; }, 15000);
     }
 
     // Phase 7 (H-5): postMessage-based heartbeat — token never appears in URL
@@ -3162,7 +3156,7 @@
     function stopHeartbeat() {
       if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
       if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
-      _stopIdleDataPoll();
+      _stopDataPoll();
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
@@ -4002,7 +3996,7 @@
           console.error('Cell write failed:', e.data.error);
         }
         if (e.data.type === 'live-data' && e.data.data) {
-          _idleDataInFlight = false;  // clear idle poll in-flight flag
+          _dataPollInFlight = false;  // clear data poll in-flight flag
           window._handleLiveData(e.data.data);
         }
       });

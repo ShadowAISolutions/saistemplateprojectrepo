@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v02.95w] — 2026-03-25 09:47:45 PM EST — v06.66r
+
+### Changed
+- Data polling now runs continuously via dedicated pipeline, independent of user activity state
+- Data poll timer always shows countdown when active, not just when idle
 
 ## [v02.94w] — 2026-03-25 09:17:26 PM EST — v06.65r
 

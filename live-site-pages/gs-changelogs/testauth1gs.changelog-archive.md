@@ -8,6 +8,39 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.56g] — 2026-03-18 02:50:29 PM EST — v04.81r — [`3b44344`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3b44344eed6531db0a15b96169038c15a6d29d5e)
+
+### Changed
+- All messages from the app session page are now signed with stronger cryptographic protection before being sent to the host page
+- Version check responses are now processed more securely on the server before delivery
+- Activity detection messages are now verified server-side before reaching the host page
+
+### Removed
+- Removed legacy message signing that used a weaker algorithm
+
+## [v01.55g] — 2026-03-18 02:02:28 PM EST — v04.80r — [`4da70c5`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4da70c5d555a30f36632b946d45357f99100b6b8)
+
+### Changed
+- Removed unused legacy session routes — heartbeat and sign-out now use the newer, more secure communication method
+
+## [v01.54g] — 2026-03-18 01:12:40 PM EST — v04.78r — [`dc54c33`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dc54c33eded0dd9840363ca81024884793762f44)
+
+### Changed
+- Session confirmation now includes the signing key for the host page to verify messages after tab reclaim
+
+## [v01.53g] — 2026-03-18 01:02:43 PM EST — v04.77r — [`ec195e7`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ec195e70e79548cbcb97cebe5d89181341845e28)
+
+### Fixed
+- Session reclaim now delivers the signing key to the host page for continued message verification
+
+## [v01.52g] — 2026-03-18 08:38:59 AM EST — v04.67r — [`caaa379`](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/caaa37933e9a7cb9ce6fe72d997bfca4dc45aad6)
+
+### Changed
+- Session heartbeats, sign-out, and security event reporting now use secure message channels instead of URL parameters — tokens no longer appear in server logs
+
+### Added
+- New secure communication endpoints for heartbeat, sign-out, and security event operations
+
 ## [v01.51g] — 2026-03-17 08:55:55 PM EST — v04.56r
 
 ### Changed
