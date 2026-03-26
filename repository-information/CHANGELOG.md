@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v06.64r] — 2026-03-25 09:11:17 PM EST
+
+> **Prompt:** "i meant as a separate row, right now i still only see the heartbeat."
+
+### Changed
+- Data poll countdown now shows as its own dedicated row (`Data Poll:`) in the auth-timers panel, separate from the heartbeat row — appears only when idle polling is active and disappears when regular heartbeat resumes
+
+#### `testauth1.html` — v02.93w
+##### Changed
+- When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
 
 ## [v06.63r] — 2026-03-25 09:05:04 PM EST
 
