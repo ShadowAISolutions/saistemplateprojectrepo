@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 103/100`
+`Sections: 104/100`
+
+## [v07.16r] — 2026-03-27 07:42:13 PM EST
+
+> **Prompt:** "ok at least now we have 1 less error at a time, but still getting it." (screenshot of CSP blocking script.googleusercontent.com)
+
+### Fixed
+- Added `https://script.googleusercontent.com` to CSP `connect-src` on testauth1 — GAS redirects fetch from `script.google.com` to `script.googleusercontent.com` for the response payload
+
+#### `testauth1.html` — v03.29w
+
+##### Fixed
+- Fixed data polling blocked after redirect to response server
 
 ## [v07.15r] — 2026-03-27 07:39:38 PM EST
 
