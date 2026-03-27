@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
+
+## [v01.44w] — 2026-03-27 06:53:06 PM EST — v07.10r
+
+### Fixed
+- Eliminated font loading errors that appeared on every page load
 
 ## [v01.43w] — 2026-03-26 02:29:03 PM EST — v06.99r
 

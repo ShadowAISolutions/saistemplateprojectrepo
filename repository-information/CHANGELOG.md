@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v07.10r] — 2026-03-27 06:53:06 PM EST
+
+> **Prompt:** "when the page reloaded, instantly showed 47 errors even before logging in."
+
+### Fixed
+- Added `font-src 'self' data: https://fonts.gstatic.com https://www.slant.co` to CSP on all auth pages and the auth template — Google Identity Services loads fonts from these origins, which were blocked by `default-src 'none'` with no `font-src` directive
+
+#### `testauth1.html` — v03.23w
+
+##### Fixed
+- Eliminated 47 font loading errors that appeared on every page load
+
+#### `globalacl.html` — v01.37w
+
+##### Fixed
+- Eliminated font loading errors on page load
+
+#### `applicationportal.html` — v01.44w
+
+##### Fixed
+- Eliminated font loading errors on page load
 
 ## [v07.09r] — 2026-03-27 06:37:42 PM EST
 

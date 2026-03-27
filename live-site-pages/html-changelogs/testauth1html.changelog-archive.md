@@ -8,6 +8,84 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+<!-- Rotated 2026-03-27: 14 sections from 2026-03-23 (SHAs unavailable — commits not in history) -->
+
+## [v02.86w] — 2026-03-23 08:34:55 PM EST — v06.43r — [merged]
+
+### Added
+- New "Disagree" button — if your correction request is denied, you can now file a formal statement of disagreement that is permanently attached to your record
+
+## [v02.85w] — 2026-03-23 08:05:48 PM EST — v06.42r — [merged]
+
+### Changed
+- Panel buttons now only open — closing is done via the X button or by switching panels
+- Cooldown reduced to 1 second
+
+## [v02.84w] — 2026-03-23 07:55:08 PM EST — v06.41r — [merged]
+
+### Changed
+- Other panel buttons now appear visually disabled during the cooldown period
+
+## [v02.83w] — 2026-03-23 07:44:01 PM EST — v06.40r — [merged]
+
+### Changed
+- Navigation panels no longer overlap — only one panel can be open at a time
+- Added a brief cooldown between switching panels to prevent rapid toggling
+
+## [v02.82w] — 2026-03-23 06:56:11 PM EST — v06.37r — [merged]
+
+### Removed
+- Removed "Seed Sample Data" button from the My Data panel (seeding is now done via direct URL)
+
+## [v02.81w] — 2026-03-23 06:29:26 PM EST — v06.36r — [merged]
+
+### Added
+- "Seed Sample Data" button in the My Data panel (admin-only) — one click to populate test data across all HIPAA features
+
+## [v02.80w] — 2026-03-23 05:53:51 PM EST — v06.34r — [merged]
+
+### Fixed
+- Panels and overlays now close immediately when you sign out — no more lingering popups during the sign-out process
+
+## [v02.79w] — 2026-03-23 03:17:49 PM EST — v06.33r — [merged]
+
+### Fixed
+- HIPAA panels now close and clear all data when you sign out or your session expires — no leftover information visible
+
+## [v02.78w] — 2026-03-23 03:11:50 PM EST — v06.32r — [merged]
+
+### Fixed
+- HIPAA panels now correctly read your active session — no more "session expired" errors
+
+## [v02.77w] — 2026-03-23 03:06:26 PM EST — v06.31r — [merged]
+
+### Fixed
+- HIPAA panels now load correctly — message types were being blocked by security allowlist
+
+## [v02.76w] — 2026-03-23 02:41:17 PM EST — v06.30r — [merged]
+
+### Fixed
+- HIPAA panels (Disclosures, My Data, Corrections, Amendments) now load and respond correctly
+
+## [v02.75w] — 2026-03-23 02:20:16 PM EST — v06.29r — [merged]
+
+### Added
+- HIPAA Privacy Rule compliance buttons: Disclosure History, Download My Data, Request Correction, Review Amendments
+- Disclosure accounting panel showing your PHI disclosure history with JSON/CSV export
+- Data export panel for downloading all your stored data (JSON or CSV format)
+- Amendment request form for submitting record correction requests
+- Admin amendment review panel for approving or denying correction requests
+
+## [v02.74w] — 2026-03-23 08:38:15 AM EST — v06.17r — [merged]
+
+### Added
+- New "Sign Out" and "Sign Out All" buttons — sign out of just this page or all connected pages at once
+
+## [v02.73w] — 2026-03-23 08:20:05 AM EST — v06.16r — [merged]
+
+### Changed
+- Minor internal improvements
+
 <!-- Rotated 2026-03-26: 11 sections from 2026-03-22 (SHAs unavailable — commits not in shallow history) -->
 
 ## [v02.72w] — 2026-03-22 02:30:05 PM EST — v06.07r — [sha-unavailable]
