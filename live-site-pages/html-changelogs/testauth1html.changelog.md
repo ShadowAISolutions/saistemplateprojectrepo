@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
+
+## [v03.21w] — 2026-03-27 05:23:48 PM EST — v07.07r
+
+### Fixed
+- Testing buttons no longer overlap the version indicator at the bottom of the page
 
 ## [v03.20w] — 2026-03-27 05:16:57 PM EST — v07.06r
 

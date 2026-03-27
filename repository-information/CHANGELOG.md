@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v07.07r] — 2026-03-27 05:23:48 PM EST
+
+> **Prompt:** "ok but it shouldnt overlap the version on the gas layer bottom left"
+
+### Changed
+- Raised testauth1 testing buttons from bottom:8px to bottom:34px so they don't overlap the GAS version indicator at bottom-left
+
+#### `testauth1.html` — v03.21w
+
+##### Changed
+- Repositioned testing buttons higher to avoid overlapping the GAS version indicator
 
 ## [v07.06r] — 2026-03-27 05:16:57 PM EST
 
