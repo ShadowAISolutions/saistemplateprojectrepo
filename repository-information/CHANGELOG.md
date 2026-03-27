@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v07.11r] — 2026-03-27 07:00:26 PM EST
+
+> **Prompt:** "wait i dont want any external dependencies at all."
+
+### Changed
+- Removed external font domains from CSP `font-src` on all auth pages — now `'self' data:` only, no external font CDN dependencies
+
+#### `testauth1.html` — v03.24w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.38w
+
+##### Changed
+- Minor internal improvements
+
+#### `applicationportal.html` — v01.45w
+
+##### Changed
+- Minor internal improvements
 
 ## [v07.10r] — 2026-03-27 06:53:06 PM EST
 
