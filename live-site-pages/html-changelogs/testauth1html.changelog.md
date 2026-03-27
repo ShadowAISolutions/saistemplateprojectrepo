@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
+
+## [v03.19w] — 2026-03-27 04:31:41 PM EST — v07.05r
+
+### Changed
+- Live data table now appears as a contained panel in the center of the page instead of covering the entire screen, keeping navigation and status indicators visible
 
 ## [v03.18w] — 2026-03-27 04:25:25 PM EST — v07.04r
 

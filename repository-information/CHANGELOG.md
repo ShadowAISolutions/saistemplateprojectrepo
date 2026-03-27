@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [v07.05r] — 2026-03-27 04:31:41 PM EST
+
+> **Prompt:** "I meant that I want the live data table to be underneath the top row where the sign out is and also not be so tall so that the version on the right side are underneath coordinate wise don't actually move them, so the live table is not full page height but is somewhere in the center"
+
+### Changed
+- Changed testauth1 live-data-app from full-screen fixed overlay to a contained panel that starts below the user-pill top bar (top: 36px) and stops above the version indicators (bottom: 120px), so the table sits in the center of the page with the sign-out row above and version pills visible below
+
+#### `testauth1.html` — v03.19w
+
+##### Changed
+- Reduced live data viewer from full-page overlay to a contained panel between the top bar and version indicators
 
 ## [v07.04r] — 2026-03-27 04:25:25 PM EST
 
