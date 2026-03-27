@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 104/100`
+`Sections: 105/100`
+
+## [v07.17r] — 2026-03-27 07:51:34 PM EST
+
+> **Prompt:** "i waited a while, and then these showed up" (screenshot of heartbeat iframe causing "A listener indicated an asynchronous response" errors)
+
+### Fixed
+- Converted heartbeat from iframe navigation to `fetch()` via `doPost(action=heartbeat)` — same pattern as data poll fix, eliminates the last source of iframe churn console errors
+
+#### `testauth1.html` — v03.30w
+
+##### Fixed
+- Eliminated remaining console errors from heartbeat iframe navigation
+
+#### `testauth1.gs` — v02.10g
+
+##### Changed
+- Minor internal improvements
 
 ## [v07.16r] — 2026-03-27 07:42:13 PM EST
 

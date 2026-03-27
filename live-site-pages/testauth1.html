@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.29w">
+  <meta name="build-version" content="v03.30w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -3495,7 +3495,10 @@
       });
     }
 
-    // Phase 7 (H-5): postMessage-based heartbeat — token never appears in URL
+    // Heartbeat via fetch() — uses doPost(action=heartbeat) to avoid iframe
+    // navigation churn that caused "A listener indicated an asynchronous response"
+    // errors. Token is sent as a URL parameter (same security as the old iframe
+    // approach which also passed the token to the server).
     function sendHeartbeat() {
       if (_heartbeatInFlight) return;  // don't stack requests
       var session = loadSession();
@@ -3506,8 +3509,6 @@
       if (!gasApp || !baseUrl) return;
 
       _heartbeatInFlight = true;
-      // Safety timeout: if no response arrives within 15s, clear the in-flight
-      // flag so future heartbeats aren't permanently blocked by a dropped response
       if (_heartbeatInFlightTimer) clearTimeout(_heartbeatInFlightTimer);
       _heartbeatInFlightTimer = setTimeout(function() {
         _heartbeatInFlight = false;
@@ -3519,18 +3520,18 @@
         hbEl.className = 'timer-value warn';
       }
 
-      // Use a hidden iframe so the heartbeat doesn't destroy the main GAS app UI
-      var hbFrame = document.getElementById('gas-heartbeat');
-      if (!hbFrame) {
-        hbFrame = document.createElement('iframe');
-        hbFrame.id = 'gas-heartbeat';
-        hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
-        document.body.appendChild(hbFrame);
-      }
-      // Phase 7: Load with action parameter only — NO token in URL
-      hbFrame.src = baseUrl + '?action=heartbeat';
-      // Token is sent via postMessage after the iframe signals ready
-      // (handled by gas-heartbeat-ready message handler below)
+      var hbUrl = baseUrl + '?action=heartbeat&token=' + encodeURIComponent(session.token);
+      fetch(hbUrl, { method: 'POST', mode: 'cors', cache: 'no-store' })
+        .then(function(resp) { return resp.json(); })
+        .then(function(result) {
+          _heartbeatInFlight = false;
+          if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
+          if (result) _processVerifiedMessage(result, { source: null, origin: '' });
+        })
+        .catch(function() {
+          _heartbeatInFlight = false;
+          if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
+        });
     }
 
     function stopHeartbeat() {
@@ -3541,8 +3542,6 @@
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
       _heartbeatInFlight = false;
-      var hbFrame = document.getElementById('gas-heartbeat');
-      if (hbFrame) hbFrame.remove();
     }
 
     // =============================================

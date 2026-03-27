@@ -1,4 +1,4 @@
-var VERSION = "v02.09g";
+var VERSION = "v02.10g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -888,6 +888,14 @@ function doPost(e) {
     var dpToken = (e && e.parameter && e.parameter.token) || "";
     var dpResult = processDataPoll(dpToken);
     return ContentService.createTextOutput(JSON.stringify(dpResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Heartbeat via fetch() — same pattern as getData to eliminate iframe churn.
+  if (action === "heartbeat") {
+    var hbToken = (e && e.parameter && e.parameter.token) || "";
+    var hbResult = processHeartbeat(hbToken);
+    return ContentService.createTextOutput(JSON.stringify(hbResult))
       .setMimeType(ContentService.MimeType.JSON);
   }
 

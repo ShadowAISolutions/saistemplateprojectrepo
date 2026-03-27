@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
+
+## [v03.30w] — 2026-03-27 07:51:34 PM EST — v07.17r
+
+### Fixed
+- Eliminated remaining console errors from background session checks
 
 ## [v03.29w] — 2026-03-27 07:42:13 PM EST — v07.16r
 
