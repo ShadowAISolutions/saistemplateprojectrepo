@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
+
+## [v07.04r] — 2026-03-27 04:25:25 PM EST
+
+> **Prompt:** "In testauth1 make it so that the live table part is squished between the top row and the testing buttons"
+
+### Changed
+- Moved testing buttons (Force Heartbeat, Security Tests) from fixed-position overlays into the live-data-app flex layout as a bottom bar, so the live table is constrained between the header row and the button bar instead of extending full-height behind floating buttons
+
+#### `testauth1.html` — v03.18w
+
+##### Changed
+- Restructured live data layout to place testing buttons in a bottom bar within the app container, keeping the table view squished between the top header and the buttons
 
 ## [v07.03r] — 2026-03-26 03:14:18 PM EST
 
