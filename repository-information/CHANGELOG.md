@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
+
+## [v07.06r] — 2026-03-27 05:16:57 PM EST
+
+> **Prompt:** "the foce heartbeat and security tests shouldnt be in the live data table, should be below near the version number on the left"
+
+### Changed
+- Moved Force Heartbeat and Security Tests buttons out of the live-data-app container to fixed-position bottom-left, near the version indicators — the live data table is no longer affected by the button layout
+
+#### `testauth1.html` — v03.20w
+
+##### Changed
+- Repositioned testing buttons from inside the data table to a fixed bottom-left bar alongside the version indicators
 
 ## [v07.05r] — 2026-03-27 04:31:41 PM EST
 
