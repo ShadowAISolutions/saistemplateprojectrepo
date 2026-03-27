@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 100/100`
+`Sections: 101/100`
+
+## [v07.13r] — 2026-03-27 07:18:05 PM EST
+
+> **Prompt:** "ok its finally writing. now lets fix the loading font error, its happening when opening the html fresh"
+
+### Fixed
+- Added Google Sign-In font domains (`fonts.gstatic.com`, `www.slant.co`) to CSP `font-src` on all auth pages — the GSI client library loads Mulish and Plus Jakarta Display fonts which were blocked by the `'self' data:` only policy
+
+#### `testauth1.html` — v03.26w
+
+##### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+#### `globalacl.html` — v01.39w
+
+##### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+#### `applicationportal.html` — v01.46w
+
+##### Fixed
+- Eliminated font loading errors that appeared on every page load
 
 ## [v07.12r] — 2026-03-27 07:12:09 PM EST
 

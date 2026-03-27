@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
+
+## [v01.39w] — 2026-03-27 07:18:05 PM EST — v07.13r
+
+### Fixed
+- Eliminated font loading errors that appeared on every page load
 
 ## [v01.38w] — 2026-03-27 07:00:26 PM EST — v07.11r
 
