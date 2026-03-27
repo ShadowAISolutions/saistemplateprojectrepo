@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.21w">
+  <meta name="build-version" content="v03.22w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -782,6 +782,13 @@
     <div id="ld-view-tabs">
       <button class="ld-view-tab active" data-view="table">Table</button>
       <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
+    </div>
+    <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
+      <input id="ld-add-col1" type="text" placeholder="Column 1" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <input id="ld-add-col2" type="text" placeholder="Column 2" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <input id="ld-add-col3" type="text" placeholder="Column 3" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <input id="ld-add-col4" type="text" placeholder="Column 4" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <button id="ld-add-row-btn" style="padding:6px 14px;background:#238636;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">Add Row</button>
     </div>
     <div id="ld-table-view">
       <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
@@ -4395,6 +4402,7 @@
             var val = (h !== undefined && h !== null) ? String(h) : '';
             return val || String.fromCharCode(65 + i);
           });
+          if (typeof window._updateAddRowPlaceholders === 'function') window._updateAddRowPlaceholders(_ldHeaders);
           _ldRows = (data.rows || []).map(function(row) {
             return row.map(function(v) {
               return (v !== undefined && v !== null) ? String(v) : '';
@@ -4413,9 +4421,66 @@
         if (ldUserEmail) ldUserEmail.textContent = email || '';
         // Check if user has write permission for cell editing
         _ldCanEdit = permissions && permissions.indexOf('write') !== -1;
+        // Show add-row bar for users with write permission
+        var addRowBar = document.getElementById('ld-add-row-bar');
+        if (addRowBar && _ldCanEdit) addRowBar.style.display = 'flex';
         ldSetConnectionStatus('updating');
         ldStartStaleCheck();
       };
+
+      // Add-row input bar — update placeholders when headers arrive, send to GAS on submit
+      (function() {
+        var addRowBar = document.getElementById('ld-add-row-bar');
+        var addRowBtn = document.getElementById('ld-add-row-btn');
+        var inputs = [
+          document.getElementById('ld-add-col1'),
+          document.getElementById('ld-add-col2'),
+          document.getElementById('ld-add-col3'),
+          document.getElementById('ld-add-col4')
+        ];
+
+        // Update input placeholders to match actual spreadsheet headers
+        window._updateAddRowPlaceholders = function(headers) {
+          if (!headers) return;
+          inputs.forEach(function(inp, i) {
+            if (inp && headers[i]) inp.placeholder = String(headers[i]);
+          });
+          // Hide/show extra inputs based on actual column count
+          inputs.forEach(function(inp, i) {
+            if (inp) inp.style.display = i < headers.length ? '' : 'none';
+          });
+        };
+
+        if (addRowBtn) {
+          addRowBtn.addEventListener('click', function() {
+            var gasApp = document.getElementById('gas-app');
+            if (!gasApp || !gasApp.contentWindow) return;
+            var session = loadSession();
+            if (!session || !session.token) return;
+
+            var values = inputs.map(function(inp) { return inp ? inp.value : ''; });
+            // Trim to actual header count
+            if (_ldHeaders.length) values = values.slice(0, _ldHeaders.length);
+
+            gasApp.contentWindow.postMessage({
+              type: 'add-row',
+              token: session.token,
+              values: values
+            }, '*');
+
+            // Clear inputs after submit
+            inputs.forEach(function(inp) { if (inp) inp.value = ''; });
+            inputs[0].focus();
+          });
+        }
+
+        // Submit on Enter key in any input
+        inputs.forEach(function(inp) {
+          if (inp) inp.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && addRowBtn) addRowBtn.click();
+          });
+        });
+      })();
 
       // Handle write-cell responses
       window.addEventListener('message', function(e) {

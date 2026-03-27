@@ -3,9 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 35/50`
 
-## [Unreleased]
+## [v02.07g] — 2026-03-27 06:14:47 PM EST — v07.08r
+
+### Added
+- You can now add new rows to the live data table directly from the page
 
 ## [v02.06g] — 2026-03-25 11:30:27 PM EST — v06.74r
 
@@ -195,92 +198,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Added
 - Cross-project session endpoints enabling the Global ACL admin to view and manage sessions on this project remotely
-
-## [v01.72g] — 2026-03-19 02:57:40 PM EST — v05.13r
-
-### Added
-- New diagnostic tool to view cache contents from the GAS editor
-
-## [v01.71g] — 2026-03-19 02:53:47 PM EST — v05.12r
-
-### Changed
-- Cache clearing now invalidates everything at once — no more stale entries from any source
-
-## [v01.70g] — 2026-03-19 02:46:22 PM EST — v05.11r
-
-### Fixed
-- Cache clearing now covers all users regardless of which access method originally cached them
-
-## [v01.69g] — 2026-03-19 02:36:10 PM EST — v05.10r
-
-### Changed
-- Minor internal improvements
-
-## [v01.68g] — 2026-03-19 02:30:31 PM EST — v05.09r
-
-### Changed
-- Minor internal improvements
-
-## [v01.67g] — 2026-03-19 02:25:25 PM EST — v05.08r
-
-### Fixed
-- Changing a user's role in the spreadsheet now takes effect immediately after clearing the cache — previously required waiting for the session to expire
-
-## [v01.66g] — 2026-03-19 02:15:50 PM EST — v05.07r
-
-### Changed
-- Simplified permission handling — UI element visibility is now managed entirely by the page, reducing server response size
-
-## [v01.65g] — 2026-03-19 02:07:08 PM EST — v05.06r
-
-### Changed
-- Roles and permissions are now managed from your spreadsheet instead of being hardcoded — changes take effect without redeploying
-- The app now sends a UI element visibility map to the page so buttons and sections are automatically shown or hidden based on your role
-
-## [v01.64g] — 2026-03-19 01:24:26 PM EST — v05.05r
-
-### Changed
-- Minor internal improvements
-
-## [v01.63g] — 2026-03-19 12:45:41 PM EST — v05.04r
-
-### Fixed
-- Eviction tombstones are no longer consumed on first read, allowing multiple consumers to detect the sign-out reason
-
-## [v01.62g] — 2026-03-19 12:37:20 PM EST — v05.03r
-
-### Fixed
-- Admin sign-out now properly notifies the signed-out user's browser via distinct eviction reason
-
-## [v01.61g] — 2026-03-19 12:16:19 PM EST — v05.01r
-
-### Added
-- Admins can now view all active sessions and remotely sign out any user from the session management panel
-
-## [v01.60g] — 2026-03-19 11:43:05 AM EST — v05.00r
-
-### Added
-- Admin can now instantly clear cached access decisions so ACL changes take effect without waiting
-
-## [v01.59g] — 2026-03-19 11:34:59 AM EST — v04.99r
-
-### Fixed
-- Users not listed in the access control list are now properly denied access instead of being admitted through spreadsheet sharing permissions
-
-## [v01.58g] — 2026-03-19 10:55:31 AM EST — v04.97r
-
-### Changed
-- Access control now checks roles from the project's data spreadsheet — a dedicated ACL tab determines who can access the app and what role they have
-
-## [v01.57g] — 2026-03-19 10:46:42 AM EST — v04.96r
-
-### Added
-- Role-based access control — your account is now assigned a role (admin, clinician, billing, or viewer) that determines what actions you can perform
-- Permission checks before data operations — only users with the appropriate role can save or modify records
-
-### Changed
-- Access checks now include role assignment from the access control list
-- Audit logs now record which role performed each action
-- Emergency access users are automatically assigned the admin role
 
 

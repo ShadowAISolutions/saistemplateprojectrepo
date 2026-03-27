@@ -1,4 +1,4 @@
-var VERSION = "v02.06g";
+var VERSION = "v02.07g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -652,6 +652,37 @@ function writeCell(token, row, col, value) {
   // Attach liveData AFTER signing — nested objects cause HMAC mismatch
   writeResult.liveData = getCachedData();
   return writeResult;
+}
+
+/**
+ * addRow(token, values) — appends a new row to the data spreadsheet.
+ * values is an array of cell values matching the header columns.
+ * Validates the session first (requires 'write' permission via RBAC).
+ * After writing, refreshes the cache immediately for instant feedback.
+ * Returns signed response with updated live data.
+ */
+function addRow(token, values) {
+  var user = validateSessionForData(token, 'addRow');
+  checkPermission(user, 'write', 'addRow');
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  sheet.appendRow(values);
+
+  // Refresh cache immediately for instant feedback
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'add_row', {
+    cols: values.length, sheet: SHEET_NAME
+  });
+
+  var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  addResult.liveData = getCachedData();
+  return addResult;
 }
 
 // ══════════════
@@ -3227,6 +3258,17 @@ function doGet(e) {
                 top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
               })
               .writeCell(evt.data.token, evt.data.row, evt.data.col, evt.data.value);
+          }
+          // PROJECT: add-row support for testing multi-user writes
+          if (evt.data && evt.data.type === 'add-row') {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                top.postMessage(result, '${PARENT_ORIGIN}');
+              })
+              .withFailureHandler(function(err) {
+                top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
+              })
+              .addRow(evt.data.token, evt.data.values);
           }
         });
       </script>

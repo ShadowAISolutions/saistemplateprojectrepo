@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
+
+## [v03.22w] — 2026-03-27 06:14:47 PM EST — v07.08r
+
+### Added
+- New input bar for adding rows directly to the live data table — type values and press Enter or click Add Row
 
 ## [v03.21w] — 2026-03-27 05:23:48 PM EST — v07.07r
 

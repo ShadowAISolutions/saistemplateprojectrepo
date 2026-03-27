@@ -3,7 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v07.08r] — 2026-03-27 06:14:47 PM EST
+
+> **Prompt:** "add input fields into the gas so i can test multiple users writing to the live data"
+
+### Added
+- Added input fields and "Add Row" button to testauth1 live data viewer for testing multi-user writes to the spreadsheet
+- Added `addRow()` function to testauth1 GAS script that appends new rows via authenticated postMessage
+- Input placeholders dynamically update to match actual spreadsheet column headers
+
+#### `testauth1.html` — v03.22w
+
+##### Added
+- New input bar below the tabs for adding rows to the live data table
+- Inputs auto-label to match your spreadsheet columns
+
+#### `testauth1.gs` — v02.07g
+
+##### Added
+- Support for adding new rows to the live data spreadsheet from the page
 
 ## [v07.07r] — 2026-03-27 05:23:48 PM EST
 
