@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [v07.12r] — 2026-03-27 07:12:09 PM EST
+
+> **Prompt:** "in the testauth1, we are still getting these errors when using the input fields and nothing is being written into the spreadsheet"
+
+### Fixed
+- Fixed write-cell and add-row messages not reaching the GAS sandbox frame — `gasApp.contentWindow.postMessage()` sends to the outer script.google.com shell, not the inner googleusercontent.com sandbox where the listener runs. Now captures `event.source` from `gas-auth-ok` (which comes from the sandbox) and uses that stored `_gasSandboxSource` reference for all data write operations
+- Added `_gasSandboxSource` reset on `clearSession()` and iframe reload to prevent stale references
+
+#### `testauth1.html` — v03.25w
+
+##### Fixed
+- Fixed spreadsheet writes not working — input field submissions and cell edits now correctly reach the server
 
 ## [v07.11r] — 2026-03-27 07:00:26 PM EST
 

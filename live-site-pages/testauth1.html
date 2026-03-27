@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data:; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.24w">
+  <meta name="build-version" content="v03.25w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -1553,6 +1553,7 @@
       // Phase 6 (H-4): Reset timer enforcer for next session
       _sessionTimerEnforcer.reset();
       _gasAuthOkHandled = false;
+      _gasSandboxSource = null;  // Clear stale sandbox reference — new gas-auth-ok will refresh it
       // SSO: clear held tokens
       _ssoAccessToken = null;
       _ssoUserEmail = null;
@@ -1570,6 +1571,7 @@
     var _directSessionLoad = false; // true when iframe loaded via nonce for session reclaim (Use Here) — tells gas-auth-ok to re-show iframe
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
     var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
+    var _gasSandboxSource = null;   // WindowProxy of the GAS inner sandbox frame (captured from event.source on gas-auth-ok)
     var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
     var _nonceCallback = null;      // callback after nonce is received (optional)
 
@@ -2320,6 +2322,11 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
+        // Capture the sandbox frame's WindowProxy so we can send messages back to it.
+        // GAS double-iframe: gasApp.contentWindow is the outer shell (script.google.com),
+        // but the listener runs in the inner sandbox (googleusercontent.com).
+        // event.source from gas-auth-ok IS the sandbox — store it for write-cell/add-row.
+        if (event.source) _gasSandboxSource = event.source;
         // Phase 5: Import messageKey if delivered via gas-auth-ok (the ?session path
         // includes it). This handles "Use Here" reclaim, tab duplicate, and page refresh
         // where gas-session-created is not sent. Only import if no key is set yet.
@@ -3972,6 +3979,7 @@
         _hmacKeySet = false;
         _directSessionLoad = true;  // Tell gas-auth-ok to re-show iframe and start timers
         _gasAuthOkHandled = false;  // Reset so the new gas-auth-ok from the reloaded iframe is not deduplicated
+        _gasSandboxSource = null;   // Clear stale sandbox reference — new gas-auth-ok will refresh it
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
@@ -4318,11 +4326,11 @@
           td.classList.remove('editing');
           td.textContent = newVal; // Optimistic UI
           if (newVal !== currentVal) {
-            // Send to GAS via the main iframe
-            var gasApp = document.getElementById('gas-app');
-            if (gasApp && gasApp.contentWindow) {
+            // Send to GAS via the sandbox frame (not gasApp.contentWindow — that's the
+            // outer shell, the sandbox never receives it). See gas-auth-ok handler.
+            if (_gasSandboxSource) {
               var session = loadSession();
-              gasApp.contentWindow.postMessage({
+              _gasSandboxSource.postMessage({
                 type: 'write-cell',
                 token: session.token,
                 row: row,
@@ -4453,8 +4461,7 @@
 
         if (addRowBtn) {
           addRowBtn.addEventListener('click', function() {
-            var gasApp = document.getElementById('gas-app');
-            if (!gasApp || !gasApp.contentWindow) return;
+            if (!_gasSandboxSource) return;  // sandbox not ready yet
             var session = loadSession();
             if (!session || !session.token) return;
 
@@ -4462,7 +4469,9 @@
             // Trim to actual header count
             if (_ldHeaders.length) values = values.slice(0, _ldHeaders.length);
 
-            gasApp.contentWindow.postMessage({
+            // Send to GAS via the sandbox frame (not gasApp.contentWindow — that's the
+            // outer shell, the sandbox never receives it). See gas-auth-ok handler.
+            _gasSandboxSource.postMessage({
               type: 'add-row',
               token: session.token,
               values: values
