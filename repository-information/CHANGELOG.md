@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 102/100`
+`Sections: 103/100`
+
+## [v07.15r] — 2026-03-27 07:39:38 PM EST
+
+> **Prompt:** "now after signing in, getting this" (screenshot of CSP connect-src blocking fetch to script.google.com)
+
+### Fixed
+- Added `https://script.google.com` to CSP `connect-src` on testauth1 — required by the new fetch-based data poll which calls the GAS doPost endpoint directly
+
+#### `testauth1.html` — v03.28w
+
+##### Fixed
+- Fixed data polling blocked by content security policy after sign-in
 
 ## [v07.14r] — 2026-03-27 07:35:03 PM EST
 
