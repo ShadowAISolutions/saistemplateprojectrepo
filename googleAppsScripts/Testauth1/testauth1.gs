@@ -1,4 +1,4 @@
-var VERSION = "v02.08g";
+var VERSION = "v02.09g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -878,6 +878,17 @@ function doPost(e) {
   if (action === "deploy") {
     var result = pullAndDeployFromGitHub();
     return ContentService.createTextOutput(result);
+  }
+
+  // Data poll via fetch() — eliminates iframe navigation churn that caused
+  // "A listener indicated an asynchronous response" errors in the console.
+  // Uses doPost + ContentService (which sets CORS headers on ANYONE_ANONYMOUS
+  // deployments) instead of doGet + HtmlService iframe navigation.
+  if (action === "getData") {
+    var dpToken = (e && e.parameter && e.parameter.token) || "";
+    var dpResult = processDataPoll(dpToken);
+    return ContentService.createTextOutput(JSON.stringify(dpResult))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
   return ContentService.createTextOutput("Unknown action");

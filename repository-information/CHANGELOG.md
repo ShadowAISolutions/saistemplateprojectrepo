@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 101/100`
+`Sections: 102/100`
+
+## [v07.14r] — 2026-03-27 07:35:03 PM EST
+
+> **Prompt:** "great. now address this" (screenshot of "A listener indicated an asynchronous response" console errors from data poll iframe navigations)
+
+### Fixed
+- Replaced iframe-based data poll with `fetch()` via `doPost` — eliminates the repeated iframe navigation that caused "A listener indicated an asynchronous response by returning true" errors in the console every 15 seconds
+
+#### `testauth1.html` — v03.27w
+
+##### Fixed
+- Eliminated console errors caused by data poll iframe navigation destroying extension content scripts
+
+#### `testauth1.gs` — v02.09g
+
+##### Changed
+- Minor internal improvements
 
 ## [v07.13r] — 2026-03-27 07:18:05 PM EST
 

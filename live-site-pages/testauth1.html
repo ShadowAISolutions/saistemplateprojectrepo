@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.26w">
+  <meta name="build-version" content="v03.27w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -3459,8 +3459,6 @@
       }
       _dataPollInFlight = false;
       _lastDataPollTick = 0;
-      var dpFrame = document.getElementById('gas-data-poll');
-      if (dpFrame) dpFrame.remove();
     }
 
     function _sendDataPoll() {
@@ -3472,27 +3470,29 @@
       if (!baseUrl) return;
       _dataPollInFlight = true;
       _lastDataPollTick = Date.now();
-      // Token is passed as URL parameter — parent→child postMessage doesn't work
-      // through Google's nested GAS iframe wrapper, so the ready/token handshake
-      // pattern (used by heartbeat) is unreliable for the data poll. The GAS doGet()
-      // handler reads the token, validates the session server-side, and returns the
-      // result as inline JavaScript that postMessages back to the parent.
-      var dpFrame = document.getElementById('gas-data-poll');
-      if (!dpFrame) {
-        dpFrame = document.createElement('iframe');
-        dpFrame.id = 'gas-data-poll';
-        dpFrame.style.cssText = 'display:none;width:0;height:0;border:0';
-        document.body.appendChild(dpFrame);
-      }
-      dpFrame.src = baseUrl + '?action=getData&token=' + encodeURIComponent(session.token);
-      // Safety timeout — if no response in 15s, clear in-flight flag and reset
-      // the tick timestamp so the countdown timer shows fresh values (not 0:00)
-      setTimeout(function() {
-        if (_dataPollInFlight) {
-          _dataPollInFlight = false;
-          _lastDataPollTick = Date.now();
+      // Use fetch() via doPost instead of iframe navigation. GAS ContentService
+      // sets CORS headers on ANYONE_ANONYMOUS deployments, so fetch() works
+      // cross-origin. This eliminates the iframe churn that caused "A listener
+      // indicated an asynchronous response" errors in the console — each iframe
+      // navigation destroyed the previous sandbox and its extension content scripts.
+      var pollUrl = baseUrl + '?action=getData&token=' + encodeURIComponent(session.token);
+      fetch(pollUrl, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-store'
+      })
+      .then(function(resp) { return resp.json(); })
+      .then(function(result) {
+        _dataPollInFlight = false;
+        _lastDataPollTick = Date.now();
+        if (result && result.type === 'live-data' && result.data) {
+          window._handleLiveData(result.data);
         }
-      }, 15000);
+      })
+      .catch(function() {
+        _dataPollInFlight = false;
+        _lastDataPollTick = Date.now();
+      });
     }
 
     // Phase 7 (H-5): postMessage-based heartbeat — token never appears in URL
@@ -4501,7 +4501,7 @@
           console.error('Cell write failed:', e.data.error);
         }
         if (e.data.type === 'live-data') {
-          _dataPollInFlight = false;  // clear regardless of success/failure
+          // Initial data from GAS iframe load (not from data poll — poll uses fetch now)
           if (e.data.data) {
             window._handleLiveData(e.data.data);
           }

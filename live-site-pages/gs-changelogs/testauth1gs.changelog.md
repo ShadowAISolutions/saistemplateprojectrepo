@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 36/50`
+`Sections: 37/50`
+
+## [v02.09g] — 2026-03-27 07:35:03 PM EST — v07.14r
+
+### Changed
+- Minor internal improvements
 
 ## [v02.08g] — 2026-03-27 06:37:42 PM EST — v07.09r
 
