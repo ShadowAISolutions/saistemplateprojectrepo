@@ -1,4 +1,4 @@
-var VERSION = "v02.07g";
+var VERSION = "v02.08g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -655,15 +655,23 @@ function writeCell(token, row, col, value) {
 }
 
 /**
- * addRow(token, values) — appends a new row to the data spreadsheet.
- * values is an array of cell values matching the header columns.
+ * addRow(token, valuesJSON) — appends a new row to the data spreadsheet.
+ * valuesJSON is a JSON string of an array of cell values matching the header columns.
+ * Accepts JSON string because google.script.run can mangle array parameters.
  * Validates the session first (requires 'write' permission via RBAC).
  * After writing, refreshes the cache immediately for instant feedback.
  * Returns signed response with updated live data.
  */
-function addRow(token, values) {
+function addRow(token, valuesJSON) {
   var user = validateSessionForData(token, 'addRow');
   checkPermission(user, 'write', 'addRow');
+
+  var values;
+  try {
+    values = JSON.parse(valuesJSON);
+  } catch (e) {
+    return signMessage({ type: 'gas-write-error', error: 'invalid_values: ' + e.message }, user.messageKey || '');
+  }
 
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName(SHEET_NAME);
@@ -3268,7 +3276,7 @@ function doGet(e) {
               .withFailureHandler(function(err) {
                 top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
               })
-              .addRow(evt.data.token, evt.data.values);
+              .addRow(evt.data.token, JSON.stringify(evt.data.values));
           }
         });
       </script>

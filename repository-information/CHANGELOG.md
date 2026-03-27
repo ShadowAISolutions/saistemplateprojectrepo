@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
+
+## [v07.09r] — 2026-03-27 06:37:42 PM EST
+
+> **Prompt:** "its already updated. assume that its always updated when i test it"
+
+### Fixed
+- Fixed testauth1 add-row failing silently — `google.script.run` was mangling the array parameter. Changed GAS `addRow()` to accept a JSON string instead, with the GAS iframe serializing the values before the server call
+
+#### `testauth1.gs` — v02.08g
+
+##### Fixed
+- Adding rows to the live data table now works correctly
 
 ## [v07.08r] — 2026-03-27 06:14:47 PM EST
 
