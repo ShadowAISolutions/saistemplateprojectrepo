@@ -4,31 +4,30 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-27 08:10:18 AM EST
-**Repo version:** v07.03r
+**Date:** 2026-03-27 07:03:38 PM EST
+**Repo version:** v07.11r
 
 ### What was done
-- **Research-only session** — brainstormed approaches for synchronizing data poll timing across all users and applications connected through the Application Portal
-- Explored 8 approaches: Server-Anchored Clock, Epoch-Aligned Intervals, Static Heartbeat File, BroadcastChannel Leader Election, SharedWorker, SSE via Intermediary, Firebase Push, and Hybrid (Epoch + BroadcastChannel)
-- Deep-dived into **Option B (Epoch-Aligned Intervals)** as the preferred approach — aligning all clients to fixed wall-clock boundaries (Unix epoch modulo interval)
-- Analyzed **thundering herd risk** in detail: GAS has a 30-concurrent-execution limit per deploying account (shared across ALL scripts). Each `processDataPoll()` takes ~500ms (cache hit), giving ~60 requests/sec throughput
-- Scaled analysis to 50 users × 5 apps = 250 requests/cycle — determined that epoch alignment requires 8-10s jitter at this scale, which defeats the sync purpose
-- Explored **BroadcastChannel cross-app leader election** to reduce 250 requests to 50 (one per user) — but realized each app polls a **different GAS backend** (different deployment, different spreadsheet, different data), so one app can't poll on behalf of another. Combined with single-tab enforcement (1 tab per app), there are zero redundant calls to eliminate
-- **Final conclusion: leaving the current design as-is is actually optimal** — random page-load times naturally distribute 250 requests across the full 15s window (~17/sec average), well under the 60/sec capacity. Epoch alignment would concentrate load and require jitter to compensate, effectively recreating the random distribution that already exists. No code changes were made
+- **v07.04r–v07.07r** — Adjusted testauth1 live data table layout: changed from full-page fixed overlay to a contained panel (`top: 36px; bottom: 120px`) that sits below the user-pill sign-out bar and above the version indicators. Moved Force Heartbeat and Security Tests buttons to fixed bottom-left (`bottom: 34px; left: 8px`) to avoid overlapping the GAS version indicator
+- **v07.08r** — Added `addRow()` function to testauth1 GAS script and input fields to the HTML page for testing multi-user writes to the live data spreadsheet. Input bar appears below tabs for users with write permission, with placeholders that dynamically match spreadsheet column headers
+- **v07.09r** — Fixed addRow silently failing — `google.script.run` was mangling the array parameter. Changed to pass values as JSON string (serialize in GAS iframe, parse on server)
+- **v07.10r** — Added `font-src` to CSP on all auth pages (testauth1, globalacl, applicationportal) and auth template to fix 47 font loading errors from Google Identity Services
+- **v07.11r** — Removed external font CDN domains (`fonts.gstatic.com`, `slant.co`) from CSP `font-src` per developer preference for no external dependencies — now `'self' data:` only. GIS falls back to system fonts
 
 ### Where we left off
-- No code changes — this was a pure research/brainstorming session
-- The current independent-random-poll architecture scales comfortably to ~150 users × 5 apps before hitting the 30-concurrent GAS execution limit
-- True cross-user visual sync ("everyone sees data update at the same time") fundamentally requires server-push (Firebase, SSE), not any client-pull timing scheme
+- All changes committed and pushed (v07.11r) — workflow will auto-merge to main
+- The add-row feature on testauth1 was deployed but **not yet confirmed working** by the developer — the addRow fix (JSON string serialization) was pushed but the developer hasn't tested it yet
+- The 47 CSP font errors will still appear as console warnings (GIS tries to load external fonts that CSP blocks) but they're harmless — sign-in renders fine with system fonts
 
 ### Key decisions made
-- **No data poll sync implementation** — after thorough analysis, the current design's natural load distribution is superior to any synchronized approach at the current and near-future scale
-- **Each app's data poll is unique and non-redundant** — different apps poll different GAS backends (different deployment IDs, different spreadsheets, different data). BroadcastChannel leader election can't reduce calls because no app can poll on behalf of another
-- **Scaling ceiling is ~150 users × 5 apps** — beyond that, the 30-concurrent GAS execution limit becomes a bottleneck regardless of timing strategy. The path past this ceiling is server-push (Firebase/SSE), not client-side optimization
+- **No external font dependencies** — developer explicitly wants no external CDN dependencies in CSP. GIS font loading errors are acceptable as harmless warnings
+- **Live data table is a contained panel, not full-page** — sits between the user-pill bar and version indicators, leaving both visible
+- **Testing buttons are fixed bottom-left** — separate from the live data table, positioned above the GAS version indicator
+- **addRow uses JSON string serialization** — `google.script.run` mangles array parameters, so values are serialized to JSON on the client and parsed on the server
 
 ### Active context
-- Branch: `claude/sync-data-poll-0HXJj`
-- Repo version: v07.03r
+- Branch: `claude/adjust-testauth1-layout-8PyEB`
+- Repo version: v07.11r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -36,16 +35,16 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-26 02:48:13 PM EST
-**Repo version:** v06.99r
+**Date:** 2026-03-27 08:10:18 AM EST
+**Repo version:** v07.03r
 
 ### What was done
-- **v06.95r–v06.98r** — Fixed several auth UX issues: re-authentication login_hint not capturing email before session clear, SSO indicator badge showing on auth wall in Application Portal (added auth-wall guard to `_updateSsoIndicator`)
-- **v06.99r** — Ported the SSO indicator system from `applicationportal.html` into the auth template and propagated to all auth pages
-- **Research:** Analyzed testauth1.html and globalacl.html for other features that should be template-level — determined remaining PROJECT-section features are genuinely page-specific
+- **Research-only session** — brainstormed approaches for synchronizing data poll timing across all users and applications connected through the Application Portal
+- Explored 8 approaches, deep-dived into Epoch-Aligned Intervals, analyzed thundering herd risk
+- **Final conclusion: leaving the current design as-is is actually optimal** — random page-load times naturally distribute requests, epoch alignment would concentrate load
 
 ### Where we left off
-- All changes committed and pushed (v06.99r on `claude/fix-signin-timer-popup-1WdyA`) — workflow will auto-merge to main
-- All 4 auth pages + template are now fully synchronized on SSO indicator system
+- No code changes — pure research session
+- Current independent-random-poll architecture scales to ~150 users × 5 apps
 
 Developed by: ShadowAISolutions
