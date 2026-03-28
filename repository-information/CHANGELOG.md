@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
+
+## [v07.25r] — 2026-03-27 11:13:56 PM EST
+
+> **Prompt:** "delete is working. make it have a splash that says deleting, similar but different from the sending.. after adding row"
+
+### Changed
+- Delete row now shows a "Deleting..." overlay on the row being deleted — row dims to 35% opacity with red "Deleting..." text centered over it, interactions disabled. Row is removed when the server confirms, or restored to normal on error
+
+#### `testauth1.html` — v03.38w
+
+##### Changed
+- Delete row shows "Deleting..." overlay on the row while waiting for server confirmation
 
 ## [v07.24r] — 2026-03-27 09:52:43 PM EST
 

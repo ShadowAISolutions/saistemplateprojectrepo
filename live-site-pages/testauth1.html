@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.37w">
+  <meta name="build-version" content="v03.38w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -4347,7 +4347,7 @@
         });
       }
 
-      // Delete a row by its original index in _ldRows — optimistic rendering
+      // Delete a row by its original index in _ldRows — shows "Deleting..." state on the row
       function ldDeleteRow(rowIndex) {
         if (!_gasSandboxSource || window._deleteRowPending) return;
         var session = loadSession();
@@ -4357,11 +4357,27 @@
         var deletedRow = _ldRows[rowIndex];
         if (!deletedRow) return;
 
-        // Optimistic rendering — remove row immediately
-        _ldRows.splice(rowIndex, 1);
-        if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
-        ldRenderTableView({});
-        ldRenderDashboardView({});
+        // Show "Deleting..." state on the row — dim it and show overlay
+        var tbody = ldDataTable ? ldDataTable.querySelector('tbody') : null;
+        if (tbody) {
+          var rows = tbody.querySelectorAll('tr');
+          for (var i = 0; i < rows.length; i++) {
+            var firstTd = rows[i].querySelector('td[data-row]');
+            if (firstTd && parseInt(firstTd.getAttribute('data-row'), 10) === rowIndex) {
+              rows[i].style.opacity = '0.35';
+              rows[i].style.pointerEvents = 'none';
+              rows[i].style.position = 'relative';
+              // Add "Deleting..." overlay
+              var overlay = document.createElement('div');
+              overlay.className = 'ld-deleting-overlay';
+              overlay.textContent = 'Deleting\u2026';
+              overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#f85149;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
+              rows[i].style.position = 'relative';
+              rows[i].appendChild(overlay);
+              break;
+            }
+          }
+        }
 
         window._deleteRowPending = { index: rowIndex, row: deletedRow };
 
@@ -4599,7 +4615,7 @@
             var btn = document.getElementById('ld-add-row-btn');
             if (btn) { btn.textContent = 'Add Row'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
           }
-          // Clear delete-row pending state on success
+          // Clear delete-row pending state on success — _handleLiveData already re-rendered
           if (window._deleteRowPending) window._deleteRowPending = null;
         }
         if (e.data.type === 'gas-write-error') {
@@ -4614,12 +4630,9 @@
             var btn = document.getElementById('ld-add-row-btn');
             if (btn) { btn.textContent = 'Add Row'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
           }
-          // Restore deleted row on delete-row error
+          // Restore row visual state on delete-row error (row was never removed from _ldRows)
           if (window._deleteRowPending) {
-            var pending = window._deleteRowPending;
             window._deleteRowPending = null;
-            _ldRows.splice(pending.index, 0, pending.row);
-            if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
             ldRenderTableView({});
             ldRenderDashboardView({});
           }
