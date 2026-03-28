@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.53w">
+  <meta name="build-version" content="v03.54w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -206,6 +206,13 @@
     .signin-checklist li.stage-done { color: #34a853; }
     .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    /* PROJECT: Sign-in sub-steps */
+    .signin-checklist .sub-steps {
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none;
+    }
+    .signin-checklist .sub-steps.visible { display: block; }
+    .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
+    .signin-checklist .sub-steps .stage-time { font-size: 10px; }
     /* PROJECT: Sign-out stage checklist */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
@@ -482,9 +489,20 @@
       <!-- PROJECT: Sign-in stage checklist -->
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
-        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server</li>
+        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server
+          <ul class="sub-steps" id="sub-steps-verifying">
+            <li id="sub-connecting" class="stage-pending"><span class="chk-icon"></span>Connecting to server</li>
+            <li id="sub-sending" class="stage-pending"><span class="chk-icon"></span>Sending credentials</li>
+            <li id="sub-processing" class="stage-pending"><span class="chk-icon"></span>Server authenticating</li>
+          </ul>
+        </li>
         <li id="stage-creating" class="stage-pending"><span class="chk-icon"></span>Setting up your secure session</li>
-        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading the application</li>
+        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading the application
+          <ul class="sub-steps" id="sub-steps-loading">
+            <li id="sub-downloading" class="stage-pending"><span class="chk-icon"></span>Downloading app</li>
+            <li id="sub-starting" class="stage-pending"><span class="chk-icon"></span>Starting up</li>
+          </ul>
+        </li>
         <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
       </ul>
       <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
@@ -1571,7 +1589,13 @@
 
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       _updateSignInStage('Verifying your identity\u2026');
+      _updateSubStep('sub-connecting');
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
+      // URL path: transition to processing when iframe starts loading
+      gasApp.addEventListener('load', function _urlExchangeLoad() {
+        gasApp.removeEventListener('load', _urlExchangeLoad);
+        _updateSubStep('sub-processing');
+      }, { once: true });
     }
 
     // --- postMessage Path (HIPAA) ---
@@ -1590,6 +1614,7 @@
 
       // Reload iframe to get a fresh postMessage listener page
       _updateSignInStage('Verifying your identity\u2026');
+      _updateSubStep('sub-connecting');
       gasApp.src = baseUrl;
     }
 
@@ -2059,6 +2084,7 @@
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         _updateSignInStage('Sending credentials\u2026');
+        _updateSubStep('sub-sending');
         // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
         // GAS double-iframe architecture: the <iframe> contentWindow is the outer script.google.com
         // shell, but the actual listener runs in an inner googleusercontent.com sandbox frame.
@@ -2074,6 +2100,7 @@
             timestamp: Date.now()
           }, '*');  // Constraint: unpredictable GAS sandbox origin requires '*'
           _pendingToken = null;  // One-shot delivery — clear immediately
+          _updateSubStep('sub-processing');
         }
       }
 
@@ -2139,11 +2166,17 @@
           // network request (not the address bar), and OAuth already verified the user.
           // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
           _updateSignInStage('Loading application\u2026');
+          _updateSubStep('sub-downloading');
           var gasApp = document.getElementById('gas-app');
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+            // Track iframe load as sub-step transition
+            gasApp.addEventListener('load', function _appLoadSub() {
+              gasApp.removeEventListener('load', _appLoadSub);
+              _updateSubStep('sub-starting');
+            }, { once: true });
           }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
@@ -2755,6 +2788,98 @@
           el.className = 'stage-done';
         }
       }
+      _completeAllSubSteps();
+    }
+
+    // PROJECT: Sign-in sub-step tracking
+    var _subStepGroups = {
+      'sub-steps-verifying': ['sub-connecting', 'sub-sending', 'sub-processing'],
+      'sub-steps-loading': ['sub-downloading', 'sub-starting']
+    };
+    var _subStepStartTimes = {};
+    var _subStepTickTimer = null;
+    var _activeSubStepId = null;
+
+    function _updateSubStep(subStepId) {
+      var parentUl = null;
+      var order = null;
+      for (var gId in _subStepGroups) {
+        var arr = _subStepGroups[gId];
+        if (arr.indexOf(subStepId) !== -1) {
+          parentUl = document.getElementById(gId);
+          order = arr;
+          break;
+        }
+      }
+      if (!parentUl || !order) return;
+      // Show the sub-steps container
+      parentUl.classList.add('visible');
+      var targetIdx = order.indexOf(subStepId);
+      var now = Date.now();
+      for (var i = 0; i < order.length; i++) {
+        var el = document.getElementById(order[i]);
+        if (!el) continue;
+        if (i < targetIdx) {
+          if (el.className !== 'stage-done') {
+            _setSubStepTime(el, order[i]);
+            el.className = 'stage-done';
+          }
+        } else if (i === targetIdx) {
+          el.className = 'stage-active';
+          if (!_subStepStartTimes[order[i]]) {
+            _subStepStartTimes[order[i]] = now;
+          }
+          _activeSubStepId = order[i];
+          _startSubStepTick();
+        } else {
+          el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _setSubStepTime(el, subStepId) {
+      var start = _subStepStartTimes[subStepId];
+      if (!start) return;
+      var elapsed = Date.now() - start;
+      var timeSpan = el.querySelector('.stage-time');
+      if (!timeSpan) {
+        timeSpan = document.createElement('span');
+        timeSpan.className = 'stage-time';
+        el.appendChild(timeSpan);
+      }
+      timeSpan.textContent = _formatStageTime(elapsed);
+    }
+
+    function _startSubStepTick() {
+      if (_subStepTickTimer) clearInterval(_subStepTickTimer);
+      _subStepTickTimer = setInterval(function() {
+        if (!_activeSubStepId) { clearInterval(_subStepTickTimer); return; }
+        var el = document.getElementById(_activeSubStepId);
+        if (!el || el.className !== 'stage-active') { clearInterval(_subStepTickTimer); return; }
+        _setSubStepTime(el, _activeSubStepId);
+      }, 100);
+    }
+
+    function _completeAllSubSteps() {
+      if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      _activeSubStepId = null;
+      for (var gId in _subStepGroups) {
+        var arr = _subStepGroups[gId];
+        for (var i = 0; i < arr.length; i++) {
+          var el = document.getElementById(arr[i]);
+          if (!el) continue;
+          if (el.className !== 'stage-done') {
+            _setSubStepTime(el, arr[i]);
+            el.className = 'stage-done';
+          }
+        }
+      }
+    }
+
+    // Hide sub-sending on URL path (no postMessage exchange)
+    if (HTML_CONFIG.TOKEN_EXCHANGE_METHOD !== 'postMessage') {
+      var subSending = document.getElementById('sub-sending');
+      if (subSending) subSending.style.display = 'none';
     }
 
     // PROJECT: Sign-out stage checklist logic

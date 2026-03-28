@@ -3,7 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
+
+## [v03.54w] — 2026-03-28 04:33:31 PM EST — v07.47r
+
+### Added
+- Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
+- Sub-steps include: Connecting to server, Sending credentials, Server authenticating, Downloading app, and Starting up
+- Active sub-steps display a real-time elapsed timer that updates every 100ms
 
 ## [v03.53w] — 2026-03-28 02:51:47 PM EST — v07.45r
 

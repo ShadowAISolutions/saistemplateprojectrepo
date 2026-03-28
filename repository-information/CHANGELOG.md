@@ -3,7 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
+
+## [v07.47r] — 2026-03-28 04:33:31 PM EST
+
+> **Prompt:** "on the checklists when signing in, i see that exchanging credentials with server can take between 5 and 15 seconds. are there intermediary steps that can be tracked for their timing? same with loading application"
+
+### Added
+- Sign-in checklist sub-steps with live timing for "Exchanging credentials with server" — tracks Connecting, Sending credentials (postMessage path), and Server authenticating as separate timed phases
+- Sign-in checklist sub-steps for "Loading the application" — tracks Downloading app and Starting up using iframe load event detection
+- Live ticking timer (100ms interval) on active sub-steps so users see real-time progress during the 5–15s server wait
+- CSS for nested sub-step list items within the sign-in checklist
+- URL path auto-hides "Sending credentials" sub-step (only relevant to postMessage/HIPAA path)
+
+#### `testauth1.html` — v03.54w
+
+##### Added
+- Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
+- Sub-steps include: Connecting to server, Sending credentials, Server authenticating, Downloading app, and Starting up
+- Active sub-steps display a real-time elapsed timer that updates every 100ms
 
 ## [v07.46r] — 2026-03-28 03:49:09 PM EST
 
