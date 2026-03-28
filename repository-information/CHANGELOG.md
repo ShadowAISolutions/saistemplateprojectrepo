@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
+
+## [v07.31r] — 2026-03-28 12:28:26 AM EST
+
+> **Prompt:** "it seems to be working. move the data poll countdown from where it was in the html layer into the gas layer, making it work how it worked before the migration"
+
+### Changed
+- Data poll countdown timer now works across the layer boundary: GAS layer tracks poll state and sends `gas-datapoll-state` postMessage to the HTML layer, which renders the countdown/polling display in the timer panel — restoring the pre-migration behavior
+
+#### `testauth1.html` — v03.44w
+
+##### Changed
+- Data poll timer display restored — receives state from GAS layer and renders countdown
+
+#### `testauth1.gs` — v02.15g
+
+##### Changed
+- Data poll now tracks in-flight state and sends countdown state to the parent page for timer display
 
 ## [v07.30r] — 2026-03-28 12:12:58 AM EST
 

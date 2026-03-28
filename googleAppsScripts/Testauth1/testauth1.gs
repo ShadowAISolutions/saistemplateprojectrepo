@@ -1,4 +1,4 @@
-var VERSION = "v02.14g";
+var VERSION = "v02.15g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3752,16 +3752,42 @@ function doGet(e) {
           }
 
           // GAS-internal data poll — calls google.script.run directly (no postMessage/fetch)
+          var _dataPollInFlight = false;
+          var _lastDataPollTick = 0;
+          var DATA_POLL_INTERVAL = 15000;
+
+          function _notifyPollState() {
+            try {
+              window.top.postMessage({
+                type: 'gas-datapoll-state',
+                inFlight: _dataPollInFlight,
+                lastTick: _lastDataPollTick,
+                interval: DATA_POLL_INTERVAL
+              }, '${PARENT_ORIGIN}');
+            } catch(e) { /* cross-origin — ignore */ }
+          }
+
           function _startGasDataPoll() {
             if (_gasDataPollInterval) return;
             _gasDataPollInterval = setInterval(function() {
+              if (_dataPollInFlight) return;
+              _dataPollInFlight = true;
+              _lastDataPollTick = Date.now();
+              _notifyPollState();
               google.script.run
                 .withSuccessHandler(function(data) {
+                  _dataPollInFlight = false;
+                  _lastDataPollTick = Date.now();
+                  _notifyPollState();
                   if (data) { try { _handleLiveData(data); } catch(e) { console.error('Data poll error:', e); } }
                 })
-                .withFailureHandler(function() { /* silently drop — next poll retries */ })
+                .withFailureHandler(function() {
+                  _dataPollInFlight = false;
+                  _lastDataPollTick = Date.now();
+                  _notifyPollState();
+                })
                 .getAuthenticatedData(_sessionToken);
-            }, 15000);
+            }, DATA_POLL_INTERVAL);
           }
           function _stopGasDataPoll() {
             if (_gasDataPollInterval) { clearInterval(_gasDataPollInterval); _gasDataPollInterval = null; }
