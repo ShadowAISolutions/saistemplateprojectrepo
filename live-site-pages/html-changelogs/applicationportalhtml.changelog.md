@@ -3,7 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 49/50`
+
+## [v01.49w] — 2026-03-28 05:37:53 PM EST — v07.51r
+
+### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+## [v01.48w] — 2026-03-28 05:04:13 PM EST — v07.50r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.47w] — 2026-03-28 05:01:25 PM EST — v07.49r
 

@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
+
+## [v07.51r] — 2026-03-28 05:37:53 PM EST
+
+> **Prompt:** "instead of using miliseconds for these, make them use decimals of seconds"
+
+### Changed
+- Stage timers now always display as decimal seconds (e.g. "0.0s" instead of "0ms") — removed the millisecond branch from `_formatStageTime` across testauth1, applicationportal, and globalacl
+
+#### `testauth1.html` — v03.57w
+
+##### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+#### `applicationportal.html` — v01.49w
+
+##### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+#### `globalacl.html` — v01.43w
+
+##### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
 
 ## [v07.50r] — 2026-03-28 05:04:13 PM EST
 
