@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.41w">
+  <meta name="build-version" content="v03.42w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -4641,12 +4641,19 @@
       window.addEventListener('message', function(e) {
         if (!e.data) return;
         if (e.data.type === 'gas-write-ok' && e.data.liveData) {
-          // Server response replaces optimistic data with authoritative data
-          window._handleLiveData(e.data.liveData);
-          // Restore add-row button — re-evaluate based on current input state
-          if (window._addRowPending) {
+          // Clear optimistic state BEFORE _handleLiveData — if the server data matches
+          // the optimistic data, _handleLiveData skips the re-render (no data change).
+          // We need the overlay cleared and a re-render forced regardless.
+          var wasAddPending = window._addRowPending;
+          if (wasAddPending) {
             window._addRowPending = false;
             window._addRowPendingIndex = undefined;
+          }
+          // Server response replaces optimistic data with authoritative data
+          window._handleLiveData(e.data.liveData);
+          // If _handleLiveData skipped re-render (data matched), force one to clear overlay
+          if (wasAddPending) {
+            ldRenderTableView({});
             if (window._updateAddRowBtnState) window._updateAddRowBtnState();
           }
           // Clear delete-row pending state on success — _handleLiveData already re-rendered

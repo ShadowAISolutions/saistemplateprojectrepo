@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
+
+## [v07.29r] — 2026-03-27 11:48:48 PM EST
+
+> **Prompt:** "the sending... splash is going away after the data poll 15 seconds, but it should be going away as soon as it has written it to the spreadsheet, i know it was already doing its own refresh upon sending the data"
+
+### Fixed
+- "Sending..." overlay on optimistic add-row now clears immediately when GAS confirms the write, instead of waiting for the next 15-second data poll. Root cause: `_handleLiveData` skipped re-render when the server data matched the optimistic data (no JSON diff), leaving the overlay stuck
+
+#### `testauth1.html` — v03.42w
+
+##### Fixed
+- "Sending..." overlay clears instantly when the new row is confirmed by the server
 
 ## [v07.28r] — 2026-03-27 11:44:05 PM EST
 
