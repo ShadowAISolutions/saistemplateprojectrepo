@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
+
+## [v01.46w] — 2026-03-28 06:19:20 PM EST — v07.54r
+
+### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
 
 ## [v01.45w] — 2026-03-28 06:19:20 PM EST — v07.53r
 
