@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
+
+## [v07.54r] — 2026-03-28 06:19:20 PM EST
+
+> **Prompt:** "it seems to be remembering the totals from the previous sign ins and sign outs"
+
+### Fixed
+- Checklist reset now removes ALL `.stage-time` spans via `querySelectorAll` before resetting LI classes — previously `querySelector` per LI only removed the first `.stage-time` match, leaving parent stage total time spans orphaned across sign-in/sign-out cycles
+
+#### `testauth1.html` — v03.60w
+
+##### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+#### `applicationportal.html` — v01.52w
+
+##### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+#### `globalacl.html` — v01.46w
+
+##### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
 
 ## [v07.53r] — 2026-03-28 06:19:20 PM EST
 
