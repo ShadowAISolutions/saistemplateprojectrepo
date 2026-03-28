@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.44w">
+  <meta name="build-version" content="v03.45w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -669,6 +669,8 @@
     <div id="security-test-summary" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:6px;"></div>
     <div id="security-test-output"></div>
   </div>
+  <!-- HTML layer visibility toggle -->
+  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:8px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -4002,6 +4004,26 @@
     // ── Live Data Viewer ──
     // Displays spreadsheet data in a sortable table with cell editing.
     // Live Data UI IIFE migrated to GAS layer (testauth1.gs doGet output)
+
+    // HTML layer visibility toggle — hides/shows all HTML-layer visual elements
+    (function() {
+      var _htmlLayerVisible = true;
+      var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
+        'ld-test-bar', 'sso-indicator', 'security-test-results', 'admin-sessions-panel',
+        'changelog-overlay', 'gcl-overlay', 'session-warning-banner', 'absolute-warning-banner'];
+      window._toggleHtmlLayer = function() {
+        _htmlLayerVisible = !_htmlLayerVisible;
+        var btn = document.getElementById('html-layer-toggle');
+        _htmlLayerEls.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.style.visibility = _htmlLayerVisible ? '' : 'hidden';
+        });
+        if (btn) {
+          btn.textContent = _htmlLayerVisible ? 'HTML' : 'HTML \u25CB';
+          btn.style.borderColor = _htmlLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+        }
+      };
+    })();
 
     // Security test registry — each test has a name and a run function
     var _securityTests = [];

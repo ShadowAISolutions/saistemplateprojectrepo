@@ -1,4 +1,4 @@
-var VERSION = "v02.15g";
+var VERSION = "v02.16g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3277,6 +3277,7 @@ function doGet(e) {
     <body>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
+      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:50px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
       <!-- PROJECT: Live Data App (activated via ld-init postMessage from parent) -->
       <div id="live-data-app">
@@ -3903,6 +3904,24 @@ function doGet(e) {
           if (_initialData) {
             _handleLiveData(_initialData);
           }
+        })();
+
+        // GAS layer visibility toggle — hides/shows all GAS-layer visual elements
+        (function() {
+          var _gasLayerVisible = true;
+          var _gasLayerEls = ['live-data-app', 'version', 'user-email'];
+          window._toggleGasLayer = function() {
+            _gasLayerVisible = !_gasLayerVisible;
+            var btn = document.getElementById('gas-layer-toggle');
+            _gasLayerEls.forEach(function(id) {
+              var el = document.getElementById(id);
+              if (el) el.style.visibility = _gasLayerVisible ? '' : 'hidden';
+            });
+            if (btn) {
+              btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';
+              btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+            }
+          };
         })();
       </script>
     </body>

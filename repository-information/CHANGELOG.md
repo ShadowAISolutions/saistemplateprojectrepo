@@ -3,7 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
+
+## [v07.32r] — 2026-03-28 12:35:52 AM EST
+
+> **Prompt:** "add a toggle on the html layer to hide/show the visual html elements other than that toggle itself. also make the same type of toggle on the gas layer for gas layer elements"
+
+### Added
+- HTML layer visibility toggle — small "HTML" button (fixed bottom-left) hides/shows all HTML-layer visual elements (nav bar, version indicator, GAS pill, timers, test buttons, etc.)
+- GAS layer visibility toggle — small "GAS" button (fixed bottom-left inside GAS iframe) hides/shows all GAS-layer visual elements (Live Data app, version, email)
+
+#### `testauth1.html` — v03.45w
+
+##### Added
+- "HTML" toggle button to hide/show the page controls overlay
+
+#### `testauth1.gs` — v02.16g
+
+##### Added
+- "GAS" toggle button to hide/show the data interface overlay
 
 ## [v07.31r] — 2026-03-28 12:28:26 AM EST
 

@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
+
+## [v03.45w] — 2026-03-28 12:35:52 AM EST — v07.32r
+
+### Added
+- "HTML" toggle button to hide/show page controls
 
 ## [v03.44w] — 2026-03-28 12:28:26 AM EST — v07.31r
 
