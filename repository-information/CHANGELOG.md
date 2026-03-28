@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
+
+## [v07.26r] — 2026-03-27 11:21:05 PM EST
+
+> **Prompt:** "as you can see in the screenshot, in the instance where i send information, it says sending.. but while its sending if i put information into the fields, its not recognizing that there is already data in the fields"
+
+### Fixed
+- Add Row button now correctly detects text in input fields while "Sending..." is active — typing new values during a send makes the button immediately ready when the send completes, instead of staying disabled
+
+#### `testauth1.html` — v03.39w
+
+##### Fixed
+- Add Row button recognizes new input typed while a previous row is still sending
 
 ## [v07.25r] — 2026-03-27 11:13:56 PM EST
 
