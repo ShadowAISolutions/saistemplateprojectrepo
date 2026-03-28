@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
+
+## [v03.50w] — 2026-03-28 02:24:26 PM EST — v07.42r
+
+### Changed
+- Removed unused external font source from security policy
 
 ## [v03.49w] — 2026-03-28 01:55:28 PM EST — v07.38r
 

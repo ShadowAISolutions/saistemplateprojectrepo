@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v07.42r] — 2026-03-28 02:24:26 PM EST
+
+> **Prompt:** "yes clean that up, but explain why this in the screenshot is using a google font"
+
+### Changed
+- Removed unused `https://www.slant.co` from CSP `font-src` directive — no fonts were loaded from this domain. Kept `https://fonts.gstatic.com` which is required by the Google Sign-In (GIS) library for Material Icons
+
+#### `testauth1.html` — v03.50w
+
+##### Changed
+- Cleaned up Content Security Policy to remove unused external font source
 
 ## [v07.41r] — 2026-03-28 02:16:42 PM EST
 
