@@ -1,4 +1,4 @@
-var VERSION = "v02.18g";
+var VERSION = "v02.19g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3184,6 +3184,7 @@ function doGet(e) {
       <style>
         html, body { height: 100%; margin: 0; overflow: auto; }
         body { font-family: Arial; }
+        .gas-layer-hidden { display: none !important; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
         /* PROJECT: Live Data App styles */
@@ -3921,10 +3922,11 @@ function doGet(e) {
         })();
 
         // GAS layer visibility toggle — hides/shows all GAS-layer visual elements
+        // Uses a CSS class with !important to avoid race conditions with other code
+        // paths that modify element display values independently via inline styles.
         (function() {
           var _gasLayerVisible = true;
           var _gasLayerEls = ['live-data-app', 'version', 'user-email'];
-          var _gasOrigDisplay = {};
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');
@@ -3932,10 +3934,9 @@ function doGet(e) {
               var el = document.getElementById(id);
               if (!el) return;
               if (!_gasLayerVisible) {
-                _gasOrigDisplay[id] = el.style.display;
-                el.style.display = 'none';
+                el.classList.add('gas-layer-hidden');
               } else {
-                el.style.display = _gasOrigDisplay[id] || '';
+                el.classList.remove('gas-layer-hidden');
               }
             });
             if (btn) {

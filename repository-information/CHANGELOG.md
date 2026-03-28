@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [v07.36r] — 2026-03-28 01:39:47 PM EST
+
+> **Prompt:** "yes"
+
+### Fixed
+- GAS layer toggle now uses CSS class (`gas-layer-hidden` with `!important`) instead of save/restore pattern — same fix as the HTML layer toggle in v07.35r, preventing stale display values from causing elements to disappear or overlap
+
+#### `testauth1.gs` — v02.19g
+
+##### Fixed
+- Toggle button no longer causes elements to overlap or disappear when used repeatedly
 
 ## [v07.35r] — 2026-03-28 01:34:55 PM EST
 
