@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
+
+## [v07.27r] — 2026-03-27 11:32:41 PM EST
+
+> **Prompt:** "not sure how to reproduce it, but the version before this one, the data poll somehow got stuck. see if you can figure out why"
+
+### Fixed
+- Data poll now has a 15-second safety timeout that auto-clears the in-flight flag if a fetch hangs — prevents permanent poll stall (same pattern as the heartbeat safety timer)
+- Wrapped `_handleLiveData` in try-catch within the data poll's Promise `.then()` — if the table render throws, the error is logged but the poll keeps running instead of silently dying
+
+#### `testauth1.html` — v03.40w
+
+##### Fixed
+- Data updates no longer get stuck if a network request hangs or table rendering encounters an error
 
 ## [v07.26r] — 2026-03-27 11:21:05 PM EST
 
