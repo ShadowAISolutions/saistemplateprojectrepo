@@ -1,4 +1,4 @@
-var VERSION = "v02.24g";
+var VERSION = "v02.25g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3824,6 +3824,8 @@ function doGet(e) {
             _ldCanEdit = permissions && permissions.indexOf('write') !== -1;
             var addRowBar = document.getElementById('ld-add-row-bar');
             if (addRowBar && _ldCanEdit) addRowBar.style.display = 'flex';
+            // Re-render table if initial data was already loaded before permissions arrived
+            if (_ldHeaders.length > 0) ldRenderTableView({});
             ldSetConnectionStatus('updating');
             ldStartStaleCheck();
           }

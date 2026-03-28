@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
+
+## [v02.25g] — 2026-03-28 02:51:47 PM EST — v07.45r
+
+### Fixed
+- Delete buttons now appear immediately when data loads instead of after the first refresh
 
 ## [v02.24g] — 2026-03-28 02:16:42 PM EST — v07.41r
 

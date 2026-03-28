@@ -3,7 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
+
+## [v07.45r] — 2026-03-28 02:51:47 PM EST
+
+> **Prompt:** "i dont want it to close the ones that were open i just want the menu to be over those. also the delete row buttons are not showing up until after the first poll happens, fix that"
+
+### Fixed
+- Admin dropdown now renders above open panels by raising `#user-pill` z-index from 9999 to 10012 — no longer closes panels when opening the dropdown
+- Delete row buttons now appear on initial data load — `_showLiveDataApp` re-renders the table after setting `_ldCanEdit`, so buttons show immediately instead of waiting for the first poll
+
+#### `testauth1.html` — v03.53w
+
+##### Fixed
+- Admin dropdown menu now appears above open panels instead of closing them
+
+#### `testauth1.gs` — v02.25g
+
+##### Fixed
+- Delete buttons now appear immediately when data loads instead of after the first refresh
 
 ## [v07.44r] — 2026-03-28 02:43:50 PM EST
 
