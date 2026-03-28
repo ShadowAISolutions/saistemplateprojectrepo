@@ -1,4 +1,4 @@
-var VERSION = "v02.11g";
+var VERSION = "v02.12g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -896,56 +896,6 @@ function doPost(e) {
     var hbToken = (e && e.parameter && e.parameter.token) || "";
     var hbResult = processHeartbeat(hbToken);
     return ContentService.createTextOutput(JSON.stringify(hbResult))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // Token exchange via fetch() — eliminates iframe navigation churn during sign-in.
-  // The HTML page POSTs the Google access token, GAS validates it and returns
-  // session data as JSON (same data that was previously sent via postMessage).
-  if (action === "exchangeToken") {
-    var exToken = (e && e.parameter && e.parameter.token) || "";
-    var exResult;
-    try {
-      exResult = exchangeTokenForSession(exToken);
-    } catch (err) {
-      var exErrMsg = err.message || String(err);
-      Logger.log("Token exchange error: " + exErrMsg);
-      var exErrorCode = "server_error";
-      if (exErrMsg.indexOf('HMAC_SECRET') !== -1) exErrorCode = "hmac_secret_missing";
-      exResult = { success: false, error: exErrorCode };
-    }
-    return ContentService.createTextOutput(JSON.stringify({
-      type: "gas-session-created",
-      success: exResult.success || false,
-      sessionToken: exResult.sessionToken || "",
-      email: exResult.email || "",
-      displayName: exResult.displayName || "",
-      error: exResult.error || "",
-      absoluteTimeout: exResult.absoluteTimeout || 0,
-      messageKey: exResult.messageKey || "",
-      role: exResult.role || "",
-      permissions: exResult.permissions || []
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // Sign-out via fetch() — eliminates iframe navigation that caused
-  // "message channel closed" errors when the sign-out page was destroyed.
-  if (action === "signout") {
-    var soToken = (e && e.parameter && e.parameter.token) || "";
-    var soResult = processSignOut(soToken);
-    return ContentService.createTextOutput(JSON.stringify(soResult))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // Security event via fetch() — eliminates hidden iframe creation/destruction
-  // that caused "message channel closed" errors.
-  if (action === "securityEvent") {
-    var seEventType = (e && e.parameter && e.parameter.eventType) || "";
-    var seDetails = (e && e.parameter && e.parameter.details) || "{}";
-    var seParsedDetails;
-    try { seParsedDetails = JSON.parse(seDetails); } catch(ex) { seParsedDetails = {}; }
-    processSecurityEvent(seEventType, seParsedDetails);
-    return ContentService.createTextOutput(JSON.stringify({success: true}))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
