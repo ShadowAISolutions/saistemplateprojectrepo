@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
+
+## [v01.40w] — 2026-03-28 05:01:25 PM EST — v07.49r
+
+### Added
+- Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
+- Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
 
 ## [v01.39w] — 2026-03-27 07:18:05 PM EST — v07.13r
 

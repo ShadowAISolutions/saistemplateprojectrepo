@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.55w">
+  <meta name="build-version" content="v03.56w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -213,6 +213,13 @@
     .signin-checklist .sub-steps.visible { display: block; }
     .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signin-checklist .sub-steps .stage-time { font-size: 10px; }
+    /* PROJECT: Sign-out sub-steps */
+    .signout-checklist .sub-steps {
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none;
+    }
+    .signout-checklist .sub-steps.visible { display: block; }
+    .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
+    .signout-checklist .sub-steps .stage-time { font-size: 10px; }
     /* PROJECT: Sign-out stage checklist */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
@@ -517,7 +524,12 @@
       <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
       <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
       <li id="so-stage-apps" class="stage-pending"><span class="chk-icon"></span>Signing out connected apps</li>
-      <li id="so-stage-server" class="stage-pending"><span class="chk-icon"></span>Invalidating server session</li>
+      <li id="so-stage-server" class="stage-pending"><span class="chk-icon"></span>Invalidating server session
+          <ul class="sub-steps" id="sub-steps-so-server">
+            <li id="sub-so-connecting" class="stage-pending"><span class="chk-icon"></span>Connecting to server</li>
+            <li id="sub-so-sending" class="stage-pending"><span class="chk-icon"></span>Sending sign-out request</li>
+          </ul>
+        </li>
       <li id="so-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Waiting for server confirmation</li>
     </ul>
   </div>
@@ -2802,7 +2814,8 @@
     // PROJECT: Sign-in sub-step tracking
     var _subStepGroups = {
       'sub-steps-verifying': ['sub-connecting', 'sub-sending', 'sub-processing'],
-      'sub-steps-loading': ['sub-downloading', 'sub-starting']
+      'sub-steps-loading': ['sub-downloading', 'sub-starting'],
+      'sub-steps-so-server': ['sub-so-connecting', 'sub-so-sending']
     };
     var _subStepStartTimes = {};
     var _subStepTickTimer = null;
@@ -2926,10 +2939,14 @@
           el.className = 'stage-done';
         }
       }
+      _completeAllSubSteps();
     }
 
     function _resetSignOutChecklist() {
       _soStageStartTimes = {};
+      _subStepStartTimes = {};
+      _activeSubStepId = null;
+      if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
       var checklist = document.getElementById('signout-checklist');
       if (checklist) {
         var items = checklist.getElementsByTagName('li');
@@ -2937,6 +2954,10 @@
           items[i].className = 'stage-pending';
           var oldTime = items[i].querySelector('.stage-time');
           if (oldTime) oldTime.remove();
+        }
+        var subStepUls = checklist.querySelectorAll('.sub-steps');
+        for (var j = 0; j < subStepUls.length; j++) {
+          subStepUls[j].classList.remove('visible');
         }
       }
     }
@@ -3573,6 +3594,7 @@
           var _soComplete = false;
           // PROJECT: Advance to server invalidation stage
           _updateSignOutStage('so-stage-server');
+          _updateSubStep('sub-so-connecting');
           gasApp.src = baseUrl + '?action=signout';
 
           // Listen for GAS sign-out confirmation (gas-signed-out)
@@ -3593,6 +3615,7 @@
             _soHandled = true;
             window.removeEventListener('message', _soHandler);
             // PROJECT: Advance to waiting for confirmation stage
+            _updateSubStep('sub-so-sending');
             _updateSignOutStage('so-stage-confirm');
             event.source.postMessage({
               type: 'signout-token',

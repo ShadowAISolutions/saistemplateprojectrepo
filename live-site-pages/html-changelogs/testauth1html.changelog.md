@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
+
+## [v03.56w] — 2026-03-28 05:01:25 PM EST — v07.49r
+
+### Added
+- Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
 
 ## [v03.55w] — 2026-03-28 04:41:33 PM EST — v07.48r
 
