@@ -236,4 +236,69 @@ User clicks link → app-page.html reads master token from localStorage
 2. Update the Status field as work progresses (`Planned` → `In Progress` → `Implemented`)
 3. The architecture number (1, 2, 3, ...) is permanent — do not renumber
 
+---
+
+## Constraint G — GIS COOP Console Errors (Not Fixable)
+
+**Rule:** The "Cross-Origin-Opener-Policy policy would block the window.closed call" and related "A listener indicated an asynchronous response" console errors that appear when the Google Sign-In popup opens are **not fixable from our code**. Do NOT attempt to fix them — they are a known Google infrastructure issue.
+
+**What causes them:**
+- Google's GIS client library (`accounts.google.com/gsi/client`) opens a popup to `accounts.google.com` for OAuth sign-in
+- Google sends `cross-origin-opener-policy-report-only: same-origin` on its responses
+- The GIS library internally polls `window.closed` on the popup (at `client:132` in minified code)
+- The browser logs a COOP violation report — but because it's **report-only**, it does **not block** anything
+- The sign-in flow works correctly despite the errors
+
+**Why it's not fixable:**
+
+| Attempted fix | Why it doesn't work |
+|--------------|-------------------|
+| `ux_mode: 'redirect'` on `initTokenClient` | Does not exist — Google docs: "only popup UX is supported" for the token model |
+| Switch to `initCodeClient` (code model) | Supports redirect but requires a server backend — not feasible on static GitHub Pages |
+| FedCM (Federated Credential Management) | Only applies to `google.accounts.id.initialize` (One Tap), not `initTokenClient` (OAuth) |
+| Add COOP meta tag to our page | Not possible — COOP cannot be set via `<meta http-equiv>`, only HTTP headers. GitHub Pages doesn't allow custom headers |
+| Suppress via JavaScript | Not possible — COOP violations are browser-internal reports, not JS errors |
+
+**Verified across 15+ sources** (2026-03-27) including Google's official docs, MDN, Chrome blog, and GitHub issues: Next.js (#51135), Firebase JS SDK (#8295), react-oauth (#295, #326), Auth0 community. Every framework community reached the same conclusion: ignore them, the flow works fine.
+
+**What WE do control:** When the user has an **active session** (data poll + heartbeat running via `fetch()`) and clicks "Sign In with Google" to re-authenticate, our own `fetch()` calls to `script.google.com` can collide with the popup. The `_fetchPausedForGIS` guard (added in v07.18r / v03.31w) pauses data poll and heartbeat while the GIS popup is open, preventing this specific scenario. The guard is set before every `requestAccessToken()` call and cleared in `handleTokenResponse()` and `_onGisPopupDismissed()`.
+
+**Times someone tried to "fix" the COOP errors:** This document exists to prevent future attempts. The errors are cosmetic. The popup works. Do not break working sign-in code trying to suppress console noise.
+
+---
+
+## Constraint H — GAS Double-Iframe Architecture (postMessage Targeting)
+
+**Rule:** When the HTML page needs to send a `postMessage` to the GAS app's sandbox frame (for data writes, version checks, etc.), use the stored `_gasSandboxSource` reference (captured from `event.source` on `gas-auth-ok`), **not** `gasApp.contentWindow`.
+
+**Why:** Google Apps Script uses a double-iframe architecture:
+1. The `<iframe id="gas-app">` element's `contentWindow` is the outer `script.google.com` shell
+2. The actual JavaScript listener runs in an inner `googleusercontent.com` sandbox frame
+3. `gasApp.contentWindow.postMessage()` sends to the **shell** — the sandbox **never receives it**
+4. `event.source` from messages sent by the sandbox (like `gas-auth-ok`) IS the sandbox's `WindowProxy`
+
+**The fix (v07.12r / v03.25w):** `_gasSandboxSource` is captured from `event.source` when `gas-auth-ok` is received, and is used for `write-cell` and `add-row` postMessage calls. It is reset to `null` in `clearSession()` and on iframe reload to prevent stale references.
+
+**Times this was the root cause of bugs:** v07.12r — `add-row` and `write-cell` messages silently failed because they were sent to the outer shell frame. No error was visible — the messages just never arrived at the listener.
+
+---
+
+## Constraint I — Data Poll and Heartbeat Must Use `fetch()`, Not Iframe Navigation
+
+**Rule:** The data poll (`_sendDataPoll`) and heartbeat (`sendHeartbeat`) must use `fetch()` via `doPost` — **not** iframe navigation. Do NOT revert them to iframe-based approaches.
+
+**Why iframe navigation caused problems:**
+- Each iframe navigation (setting `dpFrame.src` or `hbFrame.src`) destroys the previous GAS sandbox, killing any extension content scripts and in-flight `google.script.run` callbacks
+- The data poll fired every 15 seconds, producing "A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received" errors on every cycle
+- The heartbeat (every 60s test / 5min production) caused the same errors
+
+**The fix (v07.14r–v07.17r):**
+- Added `doPost(action=getData)` and `doPost(action=heartbeat)` to the GAS script, returning JSON via `ContentService` (which sets CORS headers on ANYONE_ANONYMOUS deployments)
+- Client-side `_sendDataPoll()` and `sendHeartbeat()` use `fetch()` with `method: 'POST'` and `mode: 'cors'`
+- CSP `connect-src` includes `https://script.google.com https://script.googleusercontent.com` (both required — GAS redirects from `script.google.com` to `script.googleusercontent.com` for the response payload)
+
+**Affected code:**
+- `testauth1.html` — `_sendDataPoll()`, `sendHeartbeat()`, CSP `connect-src`
+- `testauth1.gs` — `doPost()` function (getData and heartbeat actions)
+
 Developed by: ShadowAISolutions

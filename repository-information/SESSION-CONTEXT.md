@@ -4,30 +4,35 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-27 07:03:38 PM EST
-**Repo version:** v07.11r
+**Date:** 2026-03-27 08:43:12 PM EST
+**Repo version:** v07.18r
 
 ### What was done
-- **v07.04r–v07.07r** — Adjusted testauth1 live data table layout: changed from full-page fixed overlay to a contained panel (`top: 36px; bottom: 120px`) that sits below the user-pill sign-out bar and above the version indicators. Moved Force Heartbeat and Security Tests buttons to fixed bottom-left (`bottom: 34px; left: 8px`) to avoid overlapping the GAS version indicator
-- **v07.08r** — Added `addRow()` function to testauth1 GAS script and input fields to the HTML page for testing multi-user writes to the live data spreadsheet. Input bar appears below tabs for users with write permission, with placeholders that dynamically match spreadsheet column headers
-- **v07.09r** — Fixed addRow silently failing — `google.script.run` was mangling the array parameter. Changed to pass values as JSON string (serialize in GAS iframe, parse on server)
-- **v07.10r** — Added `font-src` to CSP on all auth pages (testauth1, globalacl, applicationportal) and auth template to fix 47 font loading errors from Google Identity Services
-- **v07.11r** — Removed external font CDN domains (`fonts.gstatic.com`, `slant.co`) from CSP `font-src` per developer preference for no external dependencies — now `'self' data:` only. GIS falls back to system fonts
+- **v07.12r** — Fixed testauth1 spreadsheet writes (add-row + write-cell) — `gasApp.contentWindow.postMessage()` was sending to the outer GAS shell frame, not the inner sandbox. Added `_gasSandboxSource` captured from `event.source` on `gas-auth-ok` to target the correct frame
+- **v07.13r** — Added GSI font domains (`fonts.gstatic.com`, `www.slant.co`) to CSP `font-src` on all auth pages + auth template — these are fonts loaded by the Google Sign-In library for its button rendering
+- **v07.14r** — Replaced iframe-based data poll with `fetch()` via `doPost(action=getData)` — eliminated "A listener indicated an asynchronous response" console errors caused by iframe navigation destroying GAS sandbox every 15s
+- **v07.15r–v07.16r** — Added `script.google.com` and `script.googleusercontent.com` to CSP `connect-src` — required by the new fetch-based data poll (GAS redirects between the two domains)
+- **v07.17r** — Converted heartbeat from iframe navigation to `fetch()` via `doPost(action=heartbeat)` — same pattern as data poll, eliminated the last source of recurring iframe churn errors
+- **v07.18r** — Added `_fetchPausedForGIS` guard to pause data poll + heartbeat fetch while GIS sign-in popup is open — prevents COOP conflict during re-authentication with active session
+- **Research** — Deep investigation + online research into COOP errors during fresh GIS sign-in. Confirmed across 15+ sources (Next.js, Firebase, React-OAuth, Auth0, Google docs, MDN) that these are a known Google infrastructure issue — `cross-origin-opener-policy-report-only: same-origin` on `accounts.google.com` + GIS library polling `window.closed` on its popup. Not fixable from our code
+- **Knowledge documented** — Added Constraints G, H, I to `KNOWN-CONSTRAINTS-AND-FIXES.md` covering: GIS COOP errors (not fixable), GAS double-iframe architecture (use `_gasSandboxSource`), and data poll/heartbeat must use `fetch()` (not iframe navigation)
 
 ### Where we left off
-- All changes committed and pushed (v07.11r) — workflow will auto-merge to main
-- The add-row feature on testauth1 was deployed but **not yet confirmed working** by the developer — the addRow fix (JSON string serialization) was pushed but the developer hasn't tested it yet
-- The 47 CSP font errors will still appear as console warnings (GIS tries to load external fonts that CSP blocks) but they're harmless — sign-in renders fine with system fonts
+- All changes committed and pushed (v07.18r) — workflow will auto-merge to main
+- Spreadsheet writes confirmed working by developer
+- Console errors significantly reduced — only Google's own COOP report-only warnings remain during sign-in (non-blocking, cosmetic)
+- All three new constraints (G, H, I) documented in KNOWN-CONSTRAINTS-AND-FIXES.md
 
 ### Key decisions made
-- **No external font dependencies** — developer explicitly wants no external CDN dependencies in CSP. GIS font loading errors are acceptable as harmless warnings
-- **Live data table is a contained panel, not full-page** — sits between the user-pill bar and version indicators, leaving both visible
-- **Testing buttons are fixed bottom-left** — separate from the live data table, positioned above the GAS version indicator
-- **addRow uses JSON string serialization** — `google.script.run` mangles array parameters, so values are serialized to JSON on the client and parsed on the server
+- **GIS font domains ARE allowed in CSP** — reversed the "no external dependencies" decision for fonts specifically because these are required by the Google Sign-In library (a required dependency), not optional fonts we chose
+- **Data poll + heartbeat use `fetch()` via `doPost`** — architectural shift from iframe navigation to direct HTTP calls. GAS `ContentService` responses include CORS headers on ANYONE_ANONYMOUS deployments
+- **`_gasSandboxSource` pattern** — the correct way to send postMessages to the GAS app's inner sandbox frame. Captured from `event.source` on `gas-auth-ok`, reset on `clearSession()` and iframe reload
+- **GIS COOP errors are not fixable** — confirmed via thorough online research. `initTokenClient` only supports popup mode (no redirect). COOP cannot be set via meta tags. FedCM doesn't apply to `initTokenClient`. Every framework community says ignore them
+- **`_fetchPausedForGIS` guard** — pauses fetch-based polling while GIS popup is open. Set before all 5 `requestAccessToken()` calls, cleared in all callbacks
 
 ### Active context
-- Branch: `claude/adjust-testauth1-layout-8PyEB`
-- Repo version: v07.11r
+- Branch: `claude/fix-testauth1-spreadsheet-48V82`
+- Repo version: v07.18r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -35,16 +40,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-27 08:10:18 AM EST
-**Repo version:** v07.03r
+**Date:** 2026-03-27 07:03:38 PM EST
+**Repo version:** v07.11r
 
 ### What was done
-- **Research-only session** — brainstormed approaches for synchronizing data poll timing across all users and applications connected through the Application Portal
-- Explored 8 approaches, deep-dived into Epoch-Aligned Intervals, analyzed thundering herd risk
-- **Final conclusion: leaving the current design as-is is actually optimal** — random page-load times naturally distribute requests, epoch alignment would concentrate load
+- **v07.04r–v07.11r** — Adjusted testauth1 live data table layout, added addRow feature, fixed JSON serialization for google.script.run, added/removed font-src CSP entries
 
 ### Where we left off
-- No code changes — pure research session
-- Current independent-random-poll architecture scales to ~150 users × 5 apps
+- All changes committed and pushed (v07.11r)
 
 Developed by: ShadowAISolutions
