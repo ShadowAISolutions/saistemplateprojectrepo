@@ -4,29 +4,34 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-27 09:35:11 PM EST
-**Repo version:** v07.21r
+**Date:** 2026-03-28 01:10:20 AM EST
+**Repo version:** v07.34r
 
 ### What was done
-- **v07.19r** — Attempted to convert token exchange, sign-out, and security event reporter from iframe-based to `fetch()` via `doPost` — intended to eliminate "A listener indicated an asynchronous response" console errors
-- **v07.20r** — Attempted to fix DOM clearing by replacing `gasFrame.src = 'about:blank'` with iframe `replaceChild` — intended to avoid navigation-triggered errors
-- **v07.21r** — **Reverted both v07.19r and v07.20r** — the fetch-based token exchange broke sign-in (GAS `doPost` redirect handling differs for operations calling external APIs), and the iframe replacement broke DOM clearing (sandbox attributes not preserved, caused "Blocked script execution" errors)
-- **Research** — Investigated the "message channel closed" errors thoroughly. Confirmed they are from Google's internal GAS infrastructure code (MessageChannel between outer shell and inner sandbox). The `return true` that triggers the error is in Google's code, not ours — it happens when we navigate the GAS iframe and Google's internal async message handlers are destroyed mid-flight
+- **v07.22r–v07.29r** — Added add-row "Sending..." button feedback, optimistic rendering for add/delete rows, empty-field gate for Add Row button, "Deleting..." row overlay, data poll safety timeout, fixed "Sending..." overlay not clearing on GAS write confirmation, fixed Add Row button not detecting input during Sending state
+- **v07.30r** — **Major architecture migration**: moved entire Live Data UI (table, add-row, delete-row, cell editing, dashboard, sorting, overlays, connection status) from HTML layer to GAS layer for HIPAA compliance. Data operations now use `google.script.run` directly instead of postMessage relay. Added `getAuthenticatedData()` server function. HTML layer sends `ld-init` postMessage with auth context to activate GAS UI
+- **v07.31r** — Restored data poll countdown timer across GAS/HTML boundary via `gas-datapoll-state` postMessage
+- **v07.32r** — Added HTML and GAS layer visibility toggles (small buttons that hide/show all elements on their respective layers)
+- **v07.33r** — Moved data poll countdown from HTML session timers to GAS layer header (inline next to connection status), removed the cross-layer postMessage bridge
+- **v07.34r** — Fixed layer toggles staggering issue — switched from `visibility:hidden` to `display:none` with stored original display values
 
 ### Where we left off
-- All changes committed and pushed (v07.21r) — reverted to working state matching v07.18r code
-- **Console errors are cosmetic and unfixable from our side** — they come from Google's GAS double-iframe architecture. The recurring errors (every 15s from data poll/heartbeat) were already fixed in v07.14r/v07.17r. What remains are one-time bursts during sign-in/sign-out iframe navigations
-- Developer confirmed understanding that these are Google infrastructure noise, not functional issues
-- The "dropping postMessage.. was from unexpected window" messages are from a Google first-party extension (Apps Script Editor / MAE) — they disappear in incognito mode
+- All changes committed and pushed (v07.34r)
+- The **Live Data UI now lives entirely on the GAS layer** — the HTML layer only handles auth, session management, GAS iframe lifecycle, version polling, and splash screens
+- Data poll countdown is in the GAS Live Data header next to connection status
+- HTML and GAS layer toggles work with simultaneous hide/show
+- The GAS script needs to be deployed (webhook) for changes to take effect — the auto-merge workflow handles this
 
 ### Key decisions made
-- **Don't convert token exchange to fetch()** — GAS `doPost` handles redirects differently for operations that call external APIs (like Google OAuth token validation). The heartbeat/getData `doPost` actions work because they only do CacheService lookups
-- **Don't replace iframes with `replaceChild`** — sandbox/allow attributes from the HTML source aren't properly carried over to dynamically created iframes, breaking script execution
-- **Accept the console errors** — they are cosmetic, from Google's code, and don't affect functionality. Attempting to fix them risks breaking working features (as demonstrated by the failed v07.19r/v07.20r attempts)
+- **All data UI belongs on the GAS layer** — this is a blueprint for production clinic/healthcare pages. For HIPAA compliance, everything that renders or interacts with data runs inside the GAS sandbox iframe. The HTML layer is auth-only
+- **`google.script.run` instead of postMessage** — data operations (write-cell, add-row, delete-row, data poll) call GAS server functions directly from the GAS UI. No more postMessage relay through the HTML layer
+- **`display:none` for toggles, not `visibility:hidden`** — avoids staggered hide/show caused by different CSS transition speeds on different elements
+- **Data poll countdown renders on GAS layer** — no need for cross-layer state messaging; the GAS UI tracks its own poll state and renders the countdown directly
 
 ### Active context
-- Branch: `claude/fix-testauth1-console-error-DjYzs`
-- Repo version: v07.21r
+- Branch: `claude/fix-add-row-delay-FbSo6`
+- Repo version: v07.34r
+- testauth1.html: v03.47w, testauth1.gs: v02.18g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -34,13 +39,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-27 08:43:12 PM EST
-**Repo version:** v07.18r
+**Date:** 2026-03-27 09:35:11 PM EST
+**Repo version:** v07.21r
 
 ### What was done
-- **v07.12r–v07.18r** — Fixed testauth1 spreadsheet writes, added GSI font CSP, replaced iframe-based data poll and heartbeat with `fetch()`, added `_fetchPausedForGIS` guard
+- **v07.19r–v07.21r** — Attempted fetch-based token exchange (broke sign-in), attempted iframe replacement DOM clearing (broke sandbox), reverted both. Confirmed console errors are Google infrastructure noise
 
 ### Where we left off
-- All changes committed and pushed (v07.18r)
+- All changes committed and pushed (v07.21r) — reverted to working state
 
 Developed by: ShadowAISolutions
