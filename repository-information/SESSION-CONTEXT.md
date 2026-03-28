@@ -4,35 +4,29 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-27 08:43:12 PM EST
-**Repo version:** v07.18r
+**Date:** 2026-03-27 09:35:11 PM EST
+**Repo version:** v07.21r
 
 ### What was done
-- **v07.12r** — Fixed testauth1 spreadsheet writes (add-row + write-cell) — `gasApp.contentWindow.postMessage()` was sending to the outer GAS shell frame, not the inner sandbox. Added `_gasSandboxSource` captured from `event.source` on `gas-auth-ok` to target the correct frame
-- **v07.13r** — Added GSI font domains (`fonts.gstatic.com`, `www.slant.co`) to CSP `font-src` on all auth pages + auth template — these are fonts loaded by the Google Sign-In library for its button rendering
-- **v07.14r** — Replaced iframe-based data poll with `fetch()` via `doPost(action=getData)` — eliminated "A listener indicated an asynchronous response" console errors caused by iframe navigation destroying GAS sandbox every 15s
-- **v07.15r–v07.16r** — Added `script.google.com` and `script.googleusercontent.com` to CSP `connect-src` — required by the new fetch-based data poll (GAS redirects between the two domains)
-- **v07.17r** — Converted heartbeat from iframe navigation to `fetch()` via `doPost(action=heartbeat)` — same pattern as data poll, eliminated the last source of recurring iframe churn errors
-- **v07.18r** — Added `_fetchPausedForGIS` guard to pause data poll + heartbeat fetch while GIS sign-in popup is open — prevents COOP conflict during re-authentication with active session
-- **Research** — Deep investigation + online research into COOP errors during fresh GIS sign-in. Confirmed across 15+ sources (Next.js, Firebase, React-OAuth, Auth0, Google docs, MDN) that these are a known Google infrastructure issue — `cross-origin-opener-policy-report-only: same-origin` on `accounts.google.com` + GIS library polling `window.closed` on its popup. Not fixable from our code
-- **Knowledge documented** — Added Constraints G, H, I to `KNOWN-CONSTRAINTS-AND-FIXES.md` covering: GIS COOP errors (not fixable), GAS double-iframe architecture (use `_gasSandboxSource`), and data poll/heartbeat must use `fetch()` (not iframe navigation)
+- **v07.19r** — Attempted to convert token exchange, sign-out, and security event reporter from iframe-based to `fetch()` via `doPost` — intended to eliminate "A listener indicated an asynchronous response" console errors
+- **v07.20r** — Attempted to fix DOM clearing by replacing `gasFrame.src = 'about:blank'` with iframe `replaceChild` — intended to avoid navigation-triggered errors
+- **v07.21r** — **Reverted both v07.19r and v07.20r** — the fetch-based token exchange broke sign-in (GAS `doPost` redirect handling differs for operations calling external APIs), and the iframe replacement broke DOM clearing (sandbox attributes not preserved, caused "Blocked script execution" errors)
+- **Research** — Investigated the "message channel closed" errors thoroughly. Confirmed they are from Google's internal GAS infrastructure code (MessageChannel between outer shell and inner sandbox). The `return true` that triggers the error is in Google's code, not ours — it happens when we navigate the GAS iframe and Google's internal async message handlers are destroyed mid-flight
 
 ### Where we left off
-- All changes committed and pushed (v07.18r) — workflow will auto-merge to main
-- Spreadsheet writes confirmed working by developer
-- Console errors significantly reduced — only Google's own COOP report-only warnings remain during sign-in (non-blocking, cosmetic)
-- All three new constraints (G, H, I) documented in KNOWN-CONSTRAINTS-AND-FIXES.md
+- All changes committed and pushed (v07.21r) — reverted to working state matching v07.18r code
+- **Console errors are cosmetic and unfixable from our side** — they come from Google's GAS double-iframe architecture. The recurring errors (every 15s from data poll/heartbeat) were already fixed in v07.14r/v07.17r. What remains are one-time bursts during sign-in/sign-out iframe navigations
+- Developer confirmed understanding that these are Google infrastructure noise, not functional issues
+- The "dropping postMessage.. was from unexpected window" messages are from a Google first-party extension (Apps Script Editor / MAE) — they disappear in incognito mode
 
 ### Key decisions made
-- **GIS font domains ARE allowed in CSP** — reversed the "no external dependencies" decision for fonts specifically because these are required by the Google Sign-In library (a required dependency), not optional fonts we chose
-- **Data poll + heartbeat use `fetch()` via `doPost`** — architectural shift from iframe navigation to direct HTTP calls. GAS `ContentService` responses include CORS headers on ANYONE_ANONYMOUS deployments
-- **`_gasSandboxSource` pattern** — the correct way to send postMessages to the GAS app's inner sandbox frame. Captured from `event.source` on `gas-auth-ok`, reset on `clearSession()` and iframe reload
-- **GIS COOP errors are not fixable** — confirmed via thorough online research. `initTokenClient` only supports popup mode (no redirect). COOP cannot be set via meta tags. FedCM doesn't apply to `initTokenClient`. Every framework community says ignore them
-- **`_fetchPausedForGIS` guard** — pauses fetch-based polling while GIS popup is open. Set before all 5 `requestAccessToken()` calls, cleared in all callbacks
+- **Don't convert token exchange to fetch()** — GAS `doPost` handles redirects differently for operations that call external APIs (like Google OAuth token validation). The heartbeat/getData `doPost` actions work because they only do CacheService lookups
+- **Don't replace iframes with `replaceChild`** — sandbox/allow attributes from the HTML source aren't properly carried over to dynamically created iframes, breaking script execution
+- **Accept the console errors** — they are cosmetic, from Google's code, and don't affect functionality. Attempting to fix them risks breaking working features (as demonstrated by the failed v07.19r/v07.20r attempts)
 
 ### Active context
-- Branch: `claude/fix-testauth1-spreadsheet-48V82`
-- Repo version: v07.18r
+- Branch: `claude/fix-testauth1-console-error-DjYzs`
+- Repo version: v07.21r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -40,13 +34,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-03-27 07:03:38 PM EST
-**Repo version:** v07.11r
+**Date:** 2026-03-27 08:43:12 PM EST
+**Repo version:** v07.18r
 
 ### What was done
-- **v07.04r–v07.11r** — Adjusted testauth1 live data table layout, added addRow feature, fixed JSON serialization for google.script.run, added/removed font-src CSP entries
+- **v07.12r–v07.18r** — Fixed testauth1 spreadsheet writes, added GSI font CSP, replaced iframe-based data poll and heartbeat with `fetch()`, added `_fetchPausedForGIS` guard
 
 ### Where we left off
-- All changes committed and pushed (v07.11r)
+- All changes committed and pushed (v07.18r)
 
 Developed by: ShadowAISolutions
