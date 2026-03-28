@@ -3,7 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
+
+## [v07.33r] — 2026-03-28 12:43:27 AM EST
+
+> **Prompt:** "going back to the data poll countdown that was in the session menu, it should be removed from there and there should be one on the gas layer replacing how it worked before the transition. make sure its somewhere thats not overlapped by an html element"
+
+### Changed
+- Moved data poll countdown from HTML-layer session timers panel to GAS-layer Live Data header — now displays inline next to the connection status ("Live 4s ago | ▷ 12s")
+- Removed `gas-datapoll-state` postMessage bridge — the GAS layer now renders the countdown directly with a 1-second update interval
+- Removed the "Data Poll:" row from the HTML auth-timers panel
+
+#### `testauth1.html` — v03.46w
+
+##### Removed
+- Data Poll row from session timer panel — moved to the secure application layer
+
+#### `testauth1.gs` — v02.17g
+
+##### Changed
+- Data refresh countdown now displays directly in the Live Data header next to connection status
 
 ## [v07.32r] — 2026-03-28 12:35:52 AM EST
 

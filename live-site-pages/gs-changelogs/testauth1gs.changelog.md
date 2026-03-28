@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
+
+## [v02.17g] — 2026-03-28 12:43:27 AM EST — v07.33r
+
+### Changed
+- Data refresh countdown now shows in the header next to the connection status
 
 ## [v02.16g] — 2026-03-28 12:35:52 AM EST — v07.32r
 

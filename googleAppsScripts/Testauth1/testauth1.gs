@@ -1,4 +1,4 @@
-var VERSION = "v02.16g";
+var VERSION = "v02.17g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3288,6 +3288,8 @@ function doGet(e) {
               <div id="ld-conn-dot"></div>
               <span id="ld-conn-label">Connecting...</span>
               <span id="ld-countdown"></span>
+              <span style="color:#444;margin:0 2px;">|</span>
+              <span id="ld-poll-countdown" style="font-size:11px;color:#6e7681;">--</span>
             </div>
           </div>
           <div class="right">
@@ -3757,16 +3759,28 @@ function doGet(e) {
           var _lastDataPollTick = 0;
           var DATA_POLL_INTERVAL = 15000;
 
-          function _notifyPollState() {
-            try {
-              window.top.postMessage({
-                type: 'gas-datapoll-state',
-                inFlight: _dataPollInFlight,
-                lastTick: _lastDataPollTick,
-                interval: DATA_POLL_INTERVAL
-              }, '${PARENT_ORIGIN}');
-            } catch(e) { /* cross-origin — ignore */ }
+          var _pollCountdownEl = document.getElementById('ld-poll-countdown');
+
+          function _updatePollDisplay() {
+            if (!_pollCountdownEl) return;
+            if (_dataPollInFlight || (_lastDataPollTick && (Date.now() - _lastDataPollTick) < 2000)) {
+              _pollCountdownEl.textContent = 'polling...';
+              _pollCountdownEl.style.color = '#d29922';
+            } else if (_lastDataPollTick) {
+              var since = (Date.now() - _lastDataPollTick) / 1000;
+              var nextIn = Math.max(0, (DATA_POLL_INTERVAL / 1000) - since);
+              var m = Math.floor(nextIn / 60);
+              var s = Math.floor(nextIn % 60);
+              _pollCountdownEl.textContent = '\\u25B7 ' + (m > 0 ? m + ':' + (s < 10 ? '0' : '') + s : s + 's');
+              _pollCountdownEl.style.color = '#6e7681';
+            } else {
+              _pollCountdownEl.textContent = '--';
+              _pollCountdownEl.style.color = '#6e7681';
+            }
           }
+
+          // Update the poll countdown display every second
+          setInterval(_updatePollDisplay, 1000);
 
           function _startGasDataPoll() {
             if (_gasDataPollInterval) return;
@@ -3774,18 +3788,18 @@ function doGet(e) {
               if (_dataPollInFlight) return;
               _dataPollInFlight = true;
               _lastDataPollTick = Date.now();
-              _notifyPollState();
+              _updatePollDisplay();
               google.script.run
                 .withSuccessHandler(function(data) {
                   _dataPollInFlight = false;
                   _lastDataPollTick = Date.now();
-                  _notifyPollState();
+                  _updatePollDisplay();
                   if (data) { try { _handleLiveData(data); } catch(e) { console.error('Data poll error:', e); } }
                 })
                 .withFailureHandler(function() {
                   _dataPollInFlight = false;
                   _lastDataPollTick = Date.now();
-                  _notifyPollState();
+                  _updatePollDisplay();
                 })
                 .getAuthenticatedData(_sessionToken);
             }, DATA_POLL_INTERVAL);

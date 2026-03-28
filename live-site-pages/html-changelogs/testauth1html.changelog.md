@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
+
+## [v03.46w] — 2026-03-28 12:43:27 AM EST — v07.33r
+
+### Changed
+- Data refresh countdown moved from the session panel into the data interface header
 
 ## [v03.45w] — 2026-03-28 12:35:52 AM EST — v07.32r
 

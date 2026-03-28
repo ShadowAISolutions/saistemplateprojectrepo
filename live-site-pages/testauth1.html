@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.45w">
+  <meta name="build-version" content="v03.46w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -638,7 +638,7 @@
       <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
-      <div class="timer-row" id="timer-datapoll-row"><span class="timer-label">Data Poll:</span><span class="timer-value" id="timer-datapoll">--</span></div>
+      <!-- Data Poll timer removed — now rendered on the GAS layer -->
     </div>
   </div>
 <!-- ══════════════ -->
@@ -1898,7 +1898,7 @@
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
         'gas-admin-signout-error': true, 'gas-nonce-ready': true, 'gas-nonce-result': true,
-        'gas-datapoll-state': true,
+        // gas-datapoll-state removed — data poll timer now renders on GAS layer
         'phase-a-ready': true, 'phase-a-disclosures-result': true,
         'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
         'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
@@ -2352,15 +2352,6 @@
         // heartbeat will use this to decide when to send.
         _lastHeartbeatActivity = Date.now();
         _heartbeatIdle = false;
-      }
-
-      // GAS data poll state — update timer display
-      if (data.type === 'gas-datapoll-state') {
-        window._gasPollState = {
-          inFlight: data.inFlight,
-          lastTick: data.lastTick,
-          interval: data.interval || 15000
-        };
       }
 
       // GAS sign-out confirmation
@@ -3223,27 +3214,7 @@
             heartbeatEl.className = 'timer-value';
           }
 
-          // Data Poll row — state received from GAS layer via postMessage
-          var dpEl = document.getElementById('timer-datapoll');
-          if (dpEl && window._gasPollState) {
-            var gps = window._gasPollState;
-            if (gps.inFlight || (gps.lastTick && (Date.now() - gps.lastTick) / 1000 < 2)) {
-              dpEl.textContent = '\u25B7 polling...';
-              dpEl.className = 'timer-value warn';
-            } else if (gps.lastTick) {
-              var sincePoll = (Date.now() - gps.lastTick) / 1000;
-              var nextIn = (gps.interval / 1000) - sincePoll;
-              if (nextIn < 0) nextIn = 0;
-              dpEl.textContent = '\u25B7 ' + formatCountdown(nextIn);
-              dpEl.className = 'timer-value';
-            } else {
-              dpEl.textContent = '\u25B7 waiting...';
-              dpEl.className = 'timer-value';
-            }
-          } else if (dpEl) {
-            dpEl.textContent = '\u25B7 --';
-            dpEl.className = 'timer-value';
-          }
+          // Data Poll timer removed — now rendered on the GAS layer
         } else if (remaining <= 0 && heartbeatEl) {
           heartbeatEl.textContent = 'expired';
           heartbeatEl.className = 'timer-value critical';
