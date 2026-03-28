@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
+
+## [v01.48w] — 2026-03-28 06:58:25 PM EST — v07.57r
+
+### Fixed
+- Parent stage total times restored, sub-steps now complete when parent stage transitions
 
 ## [v01.47w] — 2026-03-28 06:33:14 PM EST — v07.55r
 

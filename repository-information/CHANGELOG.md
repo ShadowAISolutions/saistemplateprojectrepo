@@ -3,7 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
+
+## [v07.57r] — 2026-03-28 06:58:25 PM EST
+
+> **Prompt:** "you removed the totals for signing in, fix it so its shown, i can see that the server authenticating wasnt turned green when it finished."
+
+### Fixed
+- Restored parent stage total time display — removed the overly aggressive `:scope > .sub-steps` guard that was blocking all parent stage times. The `:scope > .stage-time` selector already prevents overwriting sub-step times
+- Sub-steps now complete (turn green with frozen time) when their parent stage transitions to done — added `_completeSubStepsForStage(el)` call in both `_updateSignInStage` and `_updateSignOutStage` so "Server authenticating" properly turns green when "Setting up your secure session" begins
+
+#### `testauth1.html` — v03.62w
+
+##### Fixed
+- "Exchanging credentials with server" now shows its total time again
+- "Server authenticating" sub-step now turns green when sign-in moves to the next stage
+
+#### `applicationportal.html` — v01.54w
+
+##### Fixed
+- Parent stage total times restored, sub-steps now complete when parent stage transitions
+
+#### `globalacl.html` — v01.48w
+
+##### Fixed
+- Parent stage total times restored, sub-steps now complete when parent stage transitions
 
 ## [v07.55r] — 2026-03-28 06:33:14 PM EST
 
