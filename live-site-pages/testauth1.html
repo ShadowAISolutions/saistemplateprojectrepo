@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.47w">
+  <meta name="build-version" content="v03.48w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -652,6 +652,7 @@
   <!-- Live Data CSS/HTML migrated to GAS layer (testauth1.gs doGet output) -->
   <style>
     /* Live Data styles removed — now in GAS doGet() HTML output */
+    .html-layer-hidden { display: none !important; }
   </style>
 
   <div id="ld-test-bar" style="position:fixed;bottom:34px;left:8px;z-index:9999;display:flex;align-items:center;gap:8px;">
@@ -3977,12 +3978,14 @@
     // Live Data UI IIFE migrated to GAS layer (testauth1.gs doGet output)
 
     // HTML layer visibility toggle — hides/shows all HTML-layer visual elements
+    // Uses a CSS class with !important to avoid race conditions with other code
+    // paths (showApp, showAuthWall, startCountdownTimers) that modify element
+    // display values independently via inline styles.
     (function() {
       var _htmlLayerVisible = true;
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
         'ld-test-bar', 'sso-indicator', 'security-test-results', 'admin-sessions-panel',
         'changelog-overlay', 'gcl-overlay', 'session-warning-banner', 'absolute-warning-banner'];
-      var _htmlOrigDisplay = {};
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
         var btn = document.getElementById('html-layer-toggle');
@@ -3990,10 +3993,9 @@
           var el = document.getElementById(id);
           if (!el) return;
           if (!_htmlLayerVisible) {
-            _htmlOrigDisplay[id] = el.style.display;
-            el.style.display = 'none';
+            el.classList.add('html-layer-hidden');
           } else {
-            el.style.display = _htmlOrigDisplay[id] || '';
+            el.classList.remove('html-layer-hidden');
           }
         });
         if (btn) {

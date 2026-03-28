@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
+
+## [v07.35r] — 2026-03-28 01:34:55 PM EST
+
+> **Prompt:** "in testauth1, there are lots of elements overlapping and i dont see the sign out and other buttons at the top. i refreshed the page and they came back but see why that could have happened."
+
+### Fixed
+- HTML layer toggle now uses CSS class (`html-layer-hidden` with `!important`) instead of save/restore pattern for element display values — prevents race condition where other code paths (`showApp`, `showAuthWall`, `startCountdownTimers`) modifying inline display styles would cause stale values to be restored, making elements disappear or overlap
+
+#### `testauth1.html` — v03.48w
+
+##### Fixed
+- Toggle button no longer causes elements to overlap or disappear when used repeatedly
 
 ## [v07.34r] — 2026-03-28 12:53:44 AM EST
 

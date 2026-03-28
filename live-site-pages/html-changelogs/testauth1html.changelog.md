@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
+
+## [v03.48w] — 2026-03-28 01:34:55 PM EST — v07.35r
+
+### Fixed
+- Toggle button no longer causes controls to overlap or disappear when used repeatedly
 
 ## [v03.47w] — 2026-03-28 12:53:44 AM EST — v07.34r
 
