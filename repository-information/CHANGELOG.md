@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [v07.43r] — 2026-03-28 02:39:19 PM EST
+
+> **Prompt:** "instead of sessions, disclosures, my data, correction, ammendments, and disagree all being shown priminently, have them be in a submenu under the admin label, of course this should only happen for admin users"
+
+### Changed
+- Moved Sessions, Disclosures, My Data, Correction, Amendments, and Disagree buttons into a dropdown submenu under the ADMIN badge — only visible to admin users. Sign Out buttons remain directly in the user pill
+
+#### `testauth1.html` — v03.51w
+
+##### Changed
+- Admin navigation buttons now appear in a dropdown menu instead of inline in the top bar
 
 ## [v07.42r] — 2026-03-28 02:24:26 PM EST
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.50w">
+  <meta name="build-version" content="v03.51w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -313,10 +313,19 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
-    #admin-sessions-btn {
-      background: none; border: none; color: #90caf9; cursor: pointer;
-      font: 11px/1 monospace; padding: 0 4px; display: none;
+    #admin-menu { position: relative; }
+    #admin-dropdown {
+      display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+      background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px; padding: 4px 0; min-width: 140px; z-index: 10011;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
+    #admin-dropdown button {
+      display: block; width: 100%; text-align: left; padding: 6px 12px;
+      background: none; border: none; color: #90caf9; cursor: pointer;
+      font: 11px/1.4 monospace; white-space: nowrap;
+    }
+    #admin-dropdown button:hover { background: rgba(144,202,249,0.1); color: #fff; }
     #admin-sessions-btn:hover { color: #42a5f5; }
     #admin-sessions-panel {
       display: none; position: fixed; top: 40px; right: 8px; z-index: 10010;
@@ -512,13 +521,17 @@
 
   <div id="user-pill">
     <span id="user-email-display"></span>
-    <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
-    <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
-    <button id="disclosure-accounting-btn" class="phase-a-btn" title="View disclosure history" data-requires-permission="read">Disclosures</button>
-    <button id="data-export-btn" class="phase-a-btn" title="Download your data" data-requires-permission="export">My Data</button>
-    <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
-    <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-role="admin">Amendments</button>
-    <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend" style="display:none;">Disagree</button>
+    <div id="admin-menu" data-requires-role="admin" style="position:relative;display:none;">
+      <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;cursor:pointer;">ADMIN &#x25BE;</span>
+      <div id="admin-dropdown">
+        <button id="admin-sessions-btn" title="Manage active sessions">Sessions</button>
+        <button id="disclosure-accounting-btn" class="phase-a-btn" title="View disclosure history" data-requires-permission="read">Disclosures</button>
+        <button id="data-export-btn" class="phase-a-btn" title="Download your data" data-requires-permission="export">My Data</button>
+        <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
+        <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments">Amendments</button>
+        <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend">Disagree</button>
+      </div>
+    </div>
     <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
     <span class="sign-out-sep">|</span>
     <button id="sign-out-all-btn" title="Sign out of all connected pages">Sign Out All</button>
@@ -2618,6 +2631,8 @@
       if (phaseAFrame) phaseAFrame.src = 'about:blank';
       var gclOverlay = document.getElementById('gcl-overlay');
       if (gclOverlay) gclOverlay.style.display = 'none';
+      var adminDropdown = document.getElementById('admin-dropdown');
+      if (adminDropdown) adminDropdown.style.display = 'none';
       var tabWall = document.getElementById('tab-takeover-wall');
       if (tabWall) { tabWall.style.display = 'none'; _tabSurrendered = false; }
       if (typeof stopCountdownTimers === 'function') stopCountdownTimers();
@@ -3705,7 +3720,18 @@
     }
     _registerPanel('admin-sessions-panel', _closeAdminSessionsPanel);
 
+    // Admin dropdown toggle — open/close submenu on badge click
+    document.getElementById('user-role-badge').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var dd = document.getElementById('admin-dropdown');
+      dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function() {
+      var dd = document.getElementById('admin-dropdown');
+      if (dd) dd.style.display = 'none';
+    });
     document.getElementById('admin-sessions-btn').addEventListener('click', function() {
+      document.getElementById('admin-dropdown').style.display = 'none';
       if (_adminPanelOpen) return;
       if (_isPanelCooldownActive()) return;
       _closeAllPanelsExcept('admin-sessions-panel');
