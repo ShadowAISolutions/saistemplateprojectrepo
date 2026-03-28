@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
+
+## [v07.55r] — 2026-03-28 06:33:14 PM EST
+
+> **Prompt:** "in the sign out its showing the total time for invalidating server session as 2.2s for example mathcing the connecting to server even though we havent even finished the invalidating server session portion, still on sending sign out request"
+
+### Fixed
+- Parent stages with sub-steps no longer show a redundant total time — `_setStageTime` now skips any stage element that contains a `.sub-steps` child UL, since the sub-steps already provide the timing breakdown
+
+#### `testauth1.html` — v03.61w
+
+##### Fixed
+- "Invalidating server session" and "Exchanging credentials with server" no longer show a confusing total time that duplicates sub-step values
+
+#### `applicationportal.html` — v01.53w
+
+##### Fixed
+- Parent stages with sub-steps no longer show redundant total time
+
+#### `globalacl.html` — v01.47w
+
+##### Fixed
+- Parent stages with sub-steps no longer show redundant total time
 
 ## [v07.54r] — 2026-03-28 06:19:20 PM EST
 
