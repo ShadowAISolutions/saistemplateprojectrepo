@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.30w">
+  <meta name="build-version" content="v03.31w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -1605,10 +1605,12 @@
       });
       // Attempt silent sign-in on load
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      _fetchPausedForGIS = true;
       signInClient.requestAccessToken();
     }
 
     function handleTokenResponse(response) {
+      _fetchPausedForGIS = false; // GIS popup closed — resume fetch operations
       // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated.
       // GIS may fire the callback for automatic token renewal or when detecting a returning
       // user — these are legitimate but unsolicited, so silently ignore them.
@@ -1669,6 +1671,7 @@
     // Updates SSO indicator to "dismissed" (retry state) and shows auth wall
     // if the session has expired while the popup was open.
     function _onGisPopupDismissed() {
+      _fetchPausedForGIS = false; // GIS popup closed — resume fetch operations
       _ssoRefreshDismissed = true;
       _updateSsoIndicator('dismissed');
       var session = loadSession();
@@ -3409,6 +3412,7 @@
     var _dataPollInterval = null;  // continuous lightweight data-only poll
     var _dataPollInFlight = false;     // prevents overlapping data poll requests
     var _lastDataPollTick = 0;         // timestamp of last data poll fire
+    var _fetchPausedForGIS = false;    // true while GIS popup is open — suppresses fetch to Google domains (COOP conflict)
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
@@ -3463,6 +3467,7 @@
 
     function _sendDataPoll() {
       if (_dataPollInFlight) return;  // don't stack
+      if (_fetchPausedForGIS) return; // don't fetch while GIS popup is open — COOP conflict
       var session = loadSession();
       if (!session.token) return;  // no session — skip (auth required for data access)
       var gasApp = document.getElementById('gas-app');
@@ -3501,6 +3506,7 @@
     // approach which also passed the token to the server).
     function sendHeartbeat() {
       if (_heartbeatInFlight) return;  // don't stack requests
+      if (_fetchPausedForGIS) return;  // don't fetch while GIS popup is open — COOP conflict
       var session = loadSession();
       if (!session.token) return;
 
@@ -3717,6 +3723,7 @@
         error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      _fetchPausedForGIS = true;
       signInClient.requestAccessToken();
     }
 
@@ -3734,6 +3741,7 @@
         error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      _fetchPausedForGIS = true;
       signInClient.requestAccessToken();
     });
 
@@ -4093,6 +4101,7 @@
                 prompt: '',  // silent — no user interaction
                 login_hint: session.email || '',
                 callback: function(response) {
+                  _fetchPausedForGIS = false;
                   if (!response.error && response.access_token) {
                     _validateSSOTokenEmail(response.access_token, function() {
                       _ssoAccessToken = response.access_token;
@@ -4110,6 +4119,7 @@
                 },
                 error_callback: _onGisPopupDismissed
               });
+              _fetchPausedForGIS = true;
               ssoRefreshClient.requestAccessToken();
             } else if (ssoRetries >= 25) { // 25 × 200ms = 5s
               clearInterval(ssoGisCheck);
@@ -4146,6 +4156,7 @@
         prompt: '',
         login_hint: retrySession.email || '',
         callback: function(response) {
+          _fetchPausedForGIS = false;
           if (!response.error && response.access_token) {
             _validateSSOTokenEmail(response.access_token, function() {
               _ssoAccessToken = response.access_token;
@@ -4161,6 +4172,7 @@
         },
         error_callback: _onGisPopupDismissed
       });
+      _fetchPausedForGIS = true;
       retryClient.requestAccessToken();
     });
 
