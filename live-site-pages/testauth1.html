@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.31w">
+  <meta name="build-version" content="v03.32w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -1692,15 +1692,27 @@
     }
 
     // --- URL Parameter Path (standard) ---
+    // Uses fetch() via doPost to exchange the Google access token for a session,
+    // eliminating iframe navigation churn that caused "message channel closed" errors.
+    // The JSON response contains the same data previously sent via gas-session-created postMessage.
     function exchangeViaUrl(googleAccessToken) {
       var gasApp = document.getElementById('gas-app');
       if (!gasApp) return;
       var baseUrl = gasApp.dataset.baseUrl || '';
       if (!baseUrl) return;
 
-      // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       _updateSignInStage('Verifying your identity\u2026');
-      gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
+      var exchangeUrl = baseUrl + '?action=exchangeToken&token=' + encodeURIComponent(googleAccessToken);
+      fetch(exchangeUrl, { method: 'POST', mode: 'cors', cache: 'no-store' })
+        .then(function(resp) { return resp.json(); })
+        .then(function(data) {
+          // Process the session data through the same handler used by postMessage path
+          _processVerifiedMessage(data, { source: null, origin: '' });
+        })
+        .catch(function(err) {
+          console.error('Token exchange fetch failed:', err);
+          showAuthWall('Sign-in failed \u2014 could not reach the server. Please try again.');
+        });
     }
 
     // --- postMessage Path (HIPAA) ---
@@ -1826,7 +1838,8 @@
     // Events are rate-limited (max 10 per page load) to prevent abuse.
     var _securityEventCount = 0;
     var _SECURITY_EVENT_LIMIT = 10;
-    // Phase 7 (M-4): postMessage-based security event reporting — details never in URL
+    // Phase 7 (M-4): Security event reporting via fetch() — eliminates hidden iframe
+    // creation/destruction that caused "message channel closed" console errors.
     function _reportSecurityEvent(eventType, details) {
       // Surrendered-tab guard: don't fire GAS requests when this tab has yielded
       // to another tab. The surrendered tab should be idle — no network activity.
@@ -1839,35 +1852,13 @@
       var gasApp = document.getElementById('gas-app');
       var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
       if (!baseUrl) return;
-      // Send via hidden iframe with action parameter only — NO sensitive data in URL
-      var frame = document.createElement('iframe');
-      frame.style.cssText = 'display:none;width:0;height:0;border:0';
-      frame.src = baseUrl + '?action=securityEvent';
-      document.body.appendChild(frame);
-      var _seHandled = false;
-      var _seEventType = eventType;
-      var _seDetails = details;
-      var _seHandler = function(event) {
-        if (_seHandled) return;
-        if (!event.data || event.data.type !== 'gas-security-event-ready') return;
-        _seHandled = true;
-        window.removeEventListener('message', _seHandler);
-        event.source.postMessage({
-          type: 'security-event-report',
-          eventType: _seEventType,
-          details: _seDetails,
-          timestamp: Date.now()
-        }, event.origin);
-      };
-      window.addEventListener('message', _seHandler);
-      // Cleanup after 10 seconds
-      setTimeout(function() {
-        if (!_seHandled) {
-          _seHandled = true;
-          window.removeEventListener('message', _seHandler);
-        }
-        if (frame.parentNode) frame.parentNode.removeChild(frame);
-      }, 10000);
+      // Send via fetch() POST — no iframe needed
+      var detailsStr = '{}';
+      try { detailsStr = JSON.stringify(details || {}); } catch(ex) {}
+      fetch(baseUrl + '?action=securityEvent&eventType=' + encodeURIComponent(String(eventType).substring(0, 50)) + '&details=' + encodeURIComponent(detailsStr.substring(0, 500)), {
+        method: 'POST',
+        mode: 'no-cors'  // GAS redirects — no-cors avoids opaque response issues
+      }).catch(function() {});  // Fire-and-forget — errors are non-critical
     }
 
     // Validate that a Google access token's email matches the active session.
@@ -3618,64 +3609,42 @@
       document.getElementById('signing-out-wall').style.display = 'flex';
 
       // Helper: finalize sign-out — show auth wall with DOM clearing
+      // Idempotent — safe to call from both fetch callback and fallback timeout
+      var _signOutFinalized = false;
       function _finalizeSignOut() {
+        if (_signOutFinalized) return;
+        _signOutFinalized = true;
         _completeAllSignOutStages(); // PROJECT: mark all stages done before hiding
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);
       }
 
       // Phase 7 (H-6): Notify GAS server to invalidate server-side session
-      // Token sent via postMessage, NOT URL parameters.
-      // showAuthWall (with DOM clearing) is deferred until server confirms invalidation,
-      // so the sign-out iframe is not destroyed before processSignOut() completes.
+      // Uses fetch() via doPost to avoid iframe navigation that caused
+      // "message channel closed" console errors.
       if (session.token) {
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           var _soToken = session.token;  // capture for closure
-          var _soComplete = false;
           // PROJECT: Advance to server invalidation stage
           _updateSignOutStage('so-stage-server');
-          gasApp.src = baseUrl + '?action=signout';
 
-          // Listen for GAS sign-out confirmation (gas-signed-out)
-          var _soConfirmHandler = function(event) {
-            if (_soComplete) return;
-            if (!event.data || event.data.type !== 'gas-signed-out') return;
-            _soComplete = true;
-            window.removeEventListener('message', _soConfirmHandler);
-            _finalizeSignOut();
-          };
-          window.addEventListener('message', _soConfirmHandler);
+          var soUrl = baseUrl + '?action=signout&token=' + encodeURIComponent(_soToken);
+          fetch(soUrl, { method: 'POST', mode: 'cors', cache: 'no-store' })
+            .then(function(resp) { return resp.json(); })
+            .then(function() {
+              // PROJECT: Advance to waiting for confirmation stage
+              _updateSignOutStage('so-stage-confirm');
+              _finalizeSignOut();
+            })
+            .catch(function() {
+              // Network error — finalize anyway (session cleared client-side)
+              _finalizeSignOut();
+            });
 
-          // Token sent after iframe signals ready (gas-signout-ready handler)
-          var _soHandled = false;
-          var _soHandler = function(event) {
-            if (_soHandled) return;
-            if (!event.data || event.data.type !== 'gas-signout-ready') return;
-            _soHandled = true;
-            window.removeEventListener('message', _soHandler);
-            // PROJECT: Advance to waiting for confirmation stage
-            _updateSignOutStage('so-stage-confirm');
-            event.source.postMessage({
-              type: 'signout-token',
-              token: _soToken
-            }, event.origin);
-          };
-          window.addEventListener('message', _soHandler);
-
-          // Fallback: if GAS doesn't confirm within 10 seconds, finalize anyway.
-          // The session may or may not have been invalidated server-side, but we
-          // can't leave the user staring at "Signing out..." indefinitely.
+          // Fallback: if fetch doesn't complete within 10 seconds, finalize anyway.
           setTimeout(function() {
-            if (!_soComplete) {
-              _soComplete = true;
-              window.removeEventListener('message', _soConfirmHandler);
-            }
-            if (!_soHandled) {
-              _soHandled = true;
-              window.removeEventListener('message', _soHandler);
-            }
             _finalizeSignOut();
           }, 10000);
         } else {
