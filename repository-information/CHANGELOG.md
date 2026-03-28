@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
+
+## [v07.37r] — 2026-03-28 01:47:24 PM EST
+
+> **Prompt:** "alright, now address the overlapping of elements, these overlaps mainly occur because the html and gas layers are not aware of eachother, so move them around based on what you see in the screenshot"
+
+### Fixed
+- Repositioned GAS `#version` element from `left: 8px` to `left: 100px` to avoid overlapping with HTML layer toggle buttons at bottom-left corner
+- Hidden GAS `#user-email` element (redundant — email already shown in HTML user-pill and GAS Live Data header)
+
+#### `testauth1.gs` — v02.20g
+
+##### Fixed
+- Version indicator no longer overlaps with page controls at the bottom-left corner
+- Removed redundant email display that overlapped with the main header
 
 ## [v07.36r] — 2026-03-28 01:39:47 PM EST
 

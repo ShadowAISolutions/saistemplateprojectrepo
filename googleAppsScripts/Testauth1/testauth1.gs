@@ -1,4 +1,4 @@
-var VERSION = "v02.19g";
+var VERSION = "v02.20g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3185,8 +3185,8 @@ function doGet(e) {
         html, body { height: 100%; margin: 0; overflow: auto; }
         body { font-family: Arial; }
         .gas-layer-hidden { display: none !important; }
-        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        #version { position: fixed; bottom: 8px; left: 100px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
+        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; display: none; }
         /* PROJECT: Live Data App styles */
         #live-data-app {
           position: fixed; top: 0; left: 0; right: 0; bottom: 30px; z-index: 2;
