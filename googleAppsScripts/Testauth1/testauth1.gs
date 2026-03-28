@@ -1,4 +1,4 @@
-var VERSION = "v02.22g";
+var VERSION = "v02.23g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3757,19 +3757,21 @@ function doGet(e) {
           var _dataPollInFlight = false;
           var _lastDataPollTick = 0;
           var DATA_POLL_INTERVAL = 15000;
+          var _gasDataPollTimer = null;
 
           var _pollCountdownEl = document.getElementById('ld-poll-countdown');
 
           function _updatePollDisplay() {
             if (!_pollCountdownEl) return;
-            if (_dataPollInFlight || (_lastDataPollTick && (Date.now() - _lastDataPollTick) < 2000)) {
+            if (_dataPollInFlight) {
               _pollCountdownEl.textContent = 'polling...';
               _pollCountdownEl.style.color = '#d29922';
             } else if (_lastDataPollTick) {
               var since = (Date.now() - _lastDataPollTick) / 1000;
               var nextIn = Math.max(0, (DATA_POLL_INTERVAL / 1000) - since);
-              var m = Math.floor(nextIn / 60);
-              var s = Math.floor(nextIn % 60);
+              var s = Math.ceil(nextIn);
+              var m = Math.floor(s / 60);
+              s = s % 60;
               _pollCountdownEl.textContent = '\\u25B7 ' + (m > 0 ? m + ':' + (s < 10 ? '0' : '') + s : s + 's');
               _pollCountdownEl.style.color = '#6e7681';
             } else {
@@ -3781,32 +3783,38 @@ function doGet(e) {
           // Update the poll countdown display every second
           setInterval(_updatePollDisplay, 1000);
 
+          function _doDataPoll() {
+            if (_dataPollInFlight) return;
+            _dataPollInFlight = true;
+            _updatePollDisplay();
+            google.script.run
+              .withSuccessHandler(function(data) {
+                _dataPollInFlight = false;
+                _lastDataPollTick = Date.now();
+                _updatePollDisplay();
+                if (data) { try { _handleLiveData(data); } catch(e) { console.error('Data poll error:', e); } }
+                // Schedule next poll after completion — countdown matches actual timing
+                _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
+              })
+              .withFailureHandler(function() {
+                _dataPollInFlight = false;
+                _lastDataPollTick = Date.now();
+                _updatePollDisplay();
+                _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
+              })
+              .getAuthenticatedData(_sessionToken);
+          }
+
           function _startGasDataPoll() {
-            if (_gasDataPollInterval) return;
+            if (_gasDataPollTimer || _gasDataPollInterval) return;
             // Set initial tick so the countdown display starts immediately
-            // instead of showing '--' until the first poll fires.
-            if (!_lastDataPollTick) { _lastDataPollTick = Date.now(); _updatePollDisplay(); }
-            _gasDataPollInterval = setInterval(function() {
-              if (_dataPollInFlight) return;
-              _dataPollInFlight = true;
-              _lastDataPollTick = Date.now();
-              _updatePollDisplay();
-              google.script.run
-                .withSuccessHandler(function(data) {
-                  _dataPollInFlight = false;
-                  _lastDataPollTick = Date.now();
-                  _updatePollDisplay();
-                  if (data) { try { _handleLiveData(data); } catch(e) { console.error('Data poll error:', e); } }
-                })
-                .withFailureHandler(function() {
-                  _dataPollInFlight = false;
-                  _lastDataPollTick = Date.now();
-                  _updatePollDisplay();
-                })
-                .getAuthenticatedData(_sessionToken);
-            }, DATA_POLL_INTERVAL);
+            _lastDataPollTick = Date.now();
+            _updatePollDisplay();
+            // First poll fires after DATA_POLL_INTERVAL, then chains via setTimeout
+            _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
           }
           function _stopGasDataPoll() {
+            if (_gasDataPollTimer) { clearTimeout(_gasDataPollTimer); _gasDataPollTimer = null; }
             if (_gasDataPollInterval) { clearInterval(_gasDataPollInterval); _gasDataPollInterval = null; }
           }
 

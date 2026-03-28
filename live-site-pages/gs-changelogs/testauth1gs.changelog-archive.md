@@ -8,6 +8,40 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.78g] — 2026-03-20 11:02:26 PM EST — v05.56r — [merged]
+
+### Added
+- Security keys now auto-generate on first deploy — no manual setup needed
+
+### Changed
+- Updated setup error message to reflect auto-generation
+
+## [v01.77g] — 2026-03-20 10:38:42 PM EST — v05.55r — [merged]
+
+### Changed
+- Cross-project admin secret now stored in secure per-project storage instead of a shared spreadsheet cell
+- Secret updates from the central admin system are now accepted automatically
+
+## [v01.76g] — 2026-03-20 08:34:24 PM EST — v05.47r — [merged]
+
+### Changed
+- Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
+
+## [v01.75g] — 2026-03-20 08:10:13 PM EST — v05.46r — [merged]
+
+### Added
+- New projects now automatically get their own access control column when they register for the first time
+
+## [v01.74g] — 2026-03-20 06:56:29 PM EST — v05.43r — [merged]
+
+### Added
+- Project now auto-registers itself for the Global Sessions feature on first page load
+
+## [v01.73g] — 2026-03-20 06:13:55 PM EST — v05.41r — [merged]
+
+### Added
+- Cross-project session endpoints enabling the Global ACL admin to view and manage sessions on this project remotely
+
 ## [v01.72g] — 2026-03-19 02:57:40 PM EST — v05.13r — [merged]
 
 ### Added

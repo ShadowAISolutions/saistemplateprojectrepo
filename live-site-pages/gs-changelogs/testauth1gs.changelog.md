@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 45/50`
+
+## [v02.23g] — 2026-03-28 02:07:55 PM EST — v07.40r
+
+### Fixed
+- Data poll countdown now reaches 0 before polling instead of jumping from 2-3 seconds
 
 ## [v02.22g] — 2026-03-28 01:59:03 PM EST — v07.39r
 
@@ -247,38 +252,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ### Fixed
 - Direct navigation to session URLs no longer renders the app — shows "Access denied" message instead
 
-## [v01.78g] — 2026-03-20 11:02:26 PM EST — v05.56r
-
-### Added
-- Security keys now auto-generate on first deploy — no manual setup needed
-
-### Changed
-- Updated setup error message to reflect auto-generation
-
-## [v01.77g] — 2026-03-20 10:38:42 PM EST — v05.55r
-
-### Changed
-- Cross-project admin secret now stored in secure per-project storage instead of a shared spreadsheet cell
-- Secret updates from the central admin system are now accepted automatically
-
-## [v01.76g] — 2026-03-20 08:34:24 PM EST — v05.47r
-
-### Changed
-- Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
-
-## [v01.75g] — 2026-03-20 08:10:13 PM EST — v05.46r
-
-### Added
-- New projects now automatically get their own access control column when they register for the first time
-
-## [v01.74g] — 2026-03-20 06:56:29 PM EST — v05.43r
-
-### Added
-- Project now auto-registers itself for the Global Sessions feature on first page load
-
-## [v01.73g] — 2026-03-20 06:13:55 PM EST — v05.41r
-
-### Added
-- Cross-project session endpoints enabling the Global ACL admin to view and manage sessions on this project remotely
 
 
