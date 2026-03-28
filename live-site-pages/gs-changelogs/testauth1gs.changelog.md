@@ -3,7 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
+
+## [v02.14g] — 2026-03-28 12:12:58 AM EST — v07.30r
+
+### Added
+- Data table, add row, delete row, cell editing, and dashboard now run directly in the secure application layer
+- Real-time data updates via direct server polling
+
+### Changed
+- All data operations now communicate directly with the server instead of relaying through the embedding page
 
 ## [v02.13g] — 2026-03-27 09:52:43 PM EST — v07.24r
 

@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 36/50`
+`Sections: 37/50`
+
+## [v03.43w] — 2026-03-28 12:12:58 AM EST — v07.30r
+
+### Changed
+- Data table and controls now load inside the secure application layer for improved security
 
 ## [v03.42w] — 2026-03-27 11:48:48 PM EST — v07.29r
 

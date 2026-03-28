@@ -3,7 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v07.30r] — 2026-03-28 12:12:58 AM EST
+
+> **Prompt:** "this is a blueprint for production, so everything regarding UI and interacting with google should be on the gas layer, other than things relating to authentication. only things that have to be on the html layer should be there"
+
+### Changed
+- **Major architecture migration**: moved entire Live Data UI (table, add-row, delete-row, cell editing, dashboard, sorting, overlays, connection status) from HTML layer to GAS layer. The GAS `doGet()` HTML output now contains all data UI CSS, HTML, and JavaScript
+- Data operations (write-cell, add-row, delete-row) now use `google.script.run` directly from the GAS UI instead of postMessage relay through the HTML layer
+- Data poll migrated from HTML-side `fetch()` to GAS-internal `google.script.run.getAuthenticatedData()` — eliminates token-in-URL exposure on the data poll path
+- HTML layer now sends `ld-init` postMessage with auth context to activate the GAS UI after authentication
+- HTML layer retains only: authentication, session management, GAS iframe lifecycle, version polling, splash screens, auth wall
+
+### Added
+- `getAuthenticatedData(token)` server-side function — validates session before returning cached data (used by the GAS-internal data poll)
+
+#### `testauth1.html` — v03.43w
+
+##### Removed
+- Live Data UI (CSS, HTML, JavaScript) — migrated to GAS layer
+- HTML-side data poll (`_startDataPoll`, `_stopDataPoll`, `_sendDataPoll`) — replaced by GAS-internal poll
+
+##### Changed
+- `_showLiveDataApp` call converted to `ld-init` postMessage to GAS sandbox
+
+#### `testauth1.gs` — v02.14g
+
+##### Added
+- Full Live Data UI (table, add-row, delete-row, cell editing, dashboard, sorting, connection status, optimistic rendering overlays) in `doGet()` HTML output
+- `getAuthenticatedData(token)` function for session-validated data polling
+- `ld-init` message listener for auth context delivery from HTML layer
+- GAS-internal 15-second data poll via `google.script.run`
+- Direct `google.script.run` calls for all data operations (no postMessage relay)
 
 ## [v07.29r] — 2026-03-27 11:48:48 PM EST
 

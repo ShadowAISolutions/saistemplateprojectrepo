@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.42w">
+  <meta name="build-version" content="v03.43w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -648,156 +648,11 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
+  <!-- Live Data UI has been migrated to the GAS layer (doGet HTML output in testauth1.gs) -->
+  <!-- Live Data CSS/HTML migrated to GAS layer (testauth1.gs doGet output) -->
   <style>
-    /* ── Live Data Viewer Layout ── */
-    #live-data-app {
-      position: fixed; top: 36px; left: 0; right: 0; bottom: 120px; z-index: 2;
-      display: none; flex-direction: column;
-      background: #0f1117; color: #e1e4e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      border-radius: 0 0 12px 12px; overflow: hidden;
-    }
-    #live-data-app.active { display: flex; }
-    /* ── Header ── */
-    #ld-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 16px; background: #1a1b26; border-bottom: 1px solid #2a2b3d;
-      flex-shrink: 0; flex-wrap: wrap; gap: 8px;
-    }
-    #ld-header .left { display: flex; align-items: center; gap: 10px; }
-    #ld-header h2 { margin: 0; font-size: 16px; color: #fff; white-space: nowrap; }
-    #ld-header .right { display: flex; align-items: center; gap: 8px; }
-    /* ── Connection Status ── */
-    #ld-conn-status {
-      display: flex; align-items: center; gap: 6px; padding: 4px 12px;
-      background: rgba(0,0,0,0.3); border-radius: 20px; font-size: 12px; color: #8b949e;
-    }
-    #ld-conn-dot {
-      width: 8px; height: 8px; border-radius: 50%; background: #888;
-      transition: background 0.3s;
-    }
-    #ld-conn-dot.live { background: #3fb950; }
-    #ld-conn-dot.updating { background: #d29922; animation: ld-pulse 0.6s infinite alternate; }
-    #ld-conn-dot.disconnected { background: #f85149; }
-    #ld-conn-label { white-space: nowrap; }
-    #ld-countdown { font-size: 11px; color: #6e7681; min-width: 20px; text-align: right; }
-    @keyframes ld-pulse { from { opacity: 1; } to { opacity: 0.4; } }
-    /* ── Tabs ── */
-    #ld-view-tabs {
-      display: flex; background: #1a1b26; border-bottom: 1px solid #2a2b3d; flex-shrink: 0;
-    }
-    .ld-view-tab {
-      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #8b949e;
-      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
-      background: none; border-top: none; border-left: none; border-right: none;
-    }
-    .ld-view-tab:hover { color: #e1e4e8; }
-    .ld-view-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
-    /* ── Table View ── */
-    #ld-table-view { flex: 1; overflow: auto; padding: 16px; }
-    #ld-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    #ld-data-table th {
-      position: sticky; top: 0; background: #1a1b26; color: #8b949e;
-      padding: 10px 12px; text-align: left; border-bottom: 2px solid #2a2b3d;
-      cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600;
-    }
-    #ld-data-table th:hover { color: #e1e4e8; }
-    #ld-data-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
-    #ld-data-table td {
-      padding: 8px 12px; border-bottom: 1px solid #1e2030; color: #c9d1d9;
-      transition: background 0.3s; cursor: default;
-    }
-    #ld-data-table tr:hover td { background: rgba(88,166,255,0.05); }
-    @keyframes ld-cell-flash {
-      0% { background: rgba(46,160,67,0.45); }
-      100% { background: transparent; }
-    }
-    .ld-cell-changed { animation: ld-cell-flash 1.5s ease-out; }
-    /* ── Cell editing ── */
-    #ld-data-table td.editing {
-      padding: 2px 4px; background: rgba(88,166,255,0.1);
-    }
-    #ld-data-table td.editing input {
-      width: 100%; padding: 6px 8px; font-size: 13px; font-family: inherit;
-      background: #161b22; color: #c9d1d9; border: 1px solid #58a6ff;
-      border-radius: 4px; outline: none; box-sizing: border-box;
-    }
-    #ld-data-table td.editing input:focus {
-      box-shadow: 0 0 0 2px rgba(88,166,255,0.3);
-    }
-    /* ── Dashboard View ── */
-    #ld-dashboard-view { flex: 1; overflow: auto; padding: 16px; display: none; }
-    #ld-dashboard-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
-    }
-    .ld-dash-card {
-      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
-      padding: 20px; transition: border-color 0.2s;
-    }
-    .ld-dash-card:hover { border-color: #58a6ff; }
-    .ld-dash-card .card-label {
-      font-size: 12px; color: #8b949e; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 8px;
-    }
-    .ld-dash-card .card-value {
-      font-size: 28px; font-weight: 700; color: #fff; word-break: break-word;
-      transition: color 0.3s;
-    }
-    .ld-dash-card .card-meta { font-size: 11px; color: #6e7681; margin-top: 8px; }
-    .ld-dash-card.stats { background: #161b22; border-color: #30363d; }
-    .ld-dash-card .card-value.changed { color: #3fb950; }
-    @keyframes ld-card-flash {
-      0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); }
-      100% { border-color: #2a2b3d; box-shadow: none; }
-    }
-    .ld-card-changed { animation: ld-card-flash 1.5s ease-out; }
-    /* ── Empty State ── */
-    #ld-empty-state {
-      display: none; flex: 1; align-items: center; justify-content: center;
-      color: #6e7681; font-size: 14px; text-align: center; padding: 40px;
-    }
-    /* ── Responsive ── */
-    @media (max-width: 600px) {
-      #ld-header { padding: 10px 12px; }
-      #ld-dashboard-grid { grid-template-columns: 1fr; }
-      .ld-dash-card .card-value { font-size: 22px; }
-      #ld-data-table { font-size: 12px; }
-    }
+    /* Live Data styles removed — now in GAS doGet() HTML output */
   </style>
-
-  <!-- Live Data App (shown after auth) -->
-  <div id="live-data-app">
-    <div id="ld-header">
-      <div class="left">
-        <h2>Live Data</h2>
-        <div id="ld-conn-status">
-          <div id="ld-conn-dot"></div>
-          <span id="ld-conn-label">Connecting...</span>
-          <span id="ld-countdown"></span>
-        </div>
-      </div>
-      <div class="right">
-        <span id="ld-user-email" style="font-size:12px;color:#8b949e;"></span>
-      </div>
-    </div>
-    <div id="ld-view-tabs">
-      <button class="ld-view-tab active" data-view="table">Table</button>
-      <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
-    </div>
-    <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
-      <input id="ld-add-col1" type="text" placeholder="Column 1" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col2" type="text" placeholder="Column 2" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col3" type="text" placeholder="Column 3" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col4" type="text" placeholder="Column 4" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <button id="ld-add-row-btn" style="padding:6px 14px;background:#238636;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">Add Row</button>
-    </div>
-    <div id="ld-table-view">
-      <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
-    </div>
-    <div id="ld-dashboard-view">
-      <div id="ld-dashboard-grid"></div>
-    </div>
-    <div id="ld-empty-state">Waiting for data...</div>
-  </div>
 
   <div id="ld-test-bar" style="position:fixed;bottom:34px;left:8px;z-index:9999;display:flex;align-items:center;gap:8px;">
     <button id="force-heartbeat-btn" style="background:#1a1a2e;color:#ff8c42;border:1px solid #ff8c42;padding:8px 14px;border-radius:8px;font:12px/1 monospace;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Force Heartbeat</button>
@@ -2375,7 +2230,7 @@
           showApp(session.email, null, session.role);
           startCountdownTimers();
           startHeartbeat();
-          _startDataPoll();
+          // Data poll migrated to GAS layer (ld-init triggers it)
           // The server may report needsReauth because the server-side
           // session was close to expiring, but the client just reset its
           // rolling timer and the heartbeat will extend the server session
@@ -2395,7 +2250,7 @@
           showApp(_pendingSessionShow.email, _pendingSessionShow.displayName, _pendingSessionShow.role);
           startCountdownTimers();
           startHeartbeat();
-          _startDataPoll();
+          // Data poll migrated to GAS layer (ld-init triggers it)
           broadcastTabClaim();
           _pendingSessionShow = null;
           _gasAuthOkHandled = true;
@@ -3026,10 +2881,15 @@
       // Admin sessions button uses data-requires-role="admin" in HTML.
       applyUIGating();
 
-      // Show the live data app with user context
-      if (typeof window._showLiveDataApp === 'function') {
+      // Send auth context to GAS UI so it can activate the Live Data app
+      if (_gasSandboxSource) {
         var session = loadSession();
-        window._showLiveDataApp(email, session.permissions || []);
+        _gasSandboxSource.postMessage({
+          type: 'ld-init',
+          email: email,
+          permissions: session.permissions || [],
+          token: session.token
+        }, '*');
       }
     }
 
@@ -3351,29 +3211,11 @@
             heartbeatEl.className = 'timer-value';
           }
 
-          // Data Poll row — always visible
+          // Data Poll row — migrated to GAS layer
           var dpEl = document.getElementById('timer-datapoll');
           if (dpEl) {
-            if (_dataPollInterval || _dataPollInFlight) {
-              var sinceDataPoll = _lastDataPollTick ? (Date.now() - _lastDataPollTick) / 1000 : 0;
-              // Show "polling..." if in-flight OR within 2s of firing (guarantees visibility
-              // even when the GAS response arrives faster than the 1s timer tick)
-              if (_dataPollInFlight || (_lastDataPollTick && sinceDataPoll < 2)) {
-                dpEl.textContent = '\u25B7 polling...';
-                dpEl.className = 'timer-value warn';
-              } else if (_lastDataPollTick) {
-                var nextDataPollIn = (HTML_CONFIG.DATA_POLL_INTERVAL / 1000) - sinceDataPoll;
-                if (nextDataPollIn < 0) nextDataPollIn = 0;
-                dpEl.textContent = '\u25B7 ' + formatCountdown(nextDataPollIn);
-                dpEl.className = 'timer-value';
-              } else {
-                dpEl.textContent = '\u25B7 starting...';
-                dpEl.className = 'timer-value';
-              }
-            } else {
-              dpEl.textContent = '--';
-              dpEl.className = 'timer-value';
-            }
+            dpEl.textContent = '\u25B7 GAS layer';
+            dpEl.className = 'timer-value';
           }
         } else if (remaining <= 0 && heartbeatEl) {
           heartbeatEl.textContent = 'expired';
@@ -3409,10 +3251,7 @@
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatInFlightTimer = null;  // timeout to auto-clear _heartbeatInFlight if response never arrives
     var _heartbeatIdle = false;      // true when last tick found no activity
-    var _dataPollInterval = null;  // continuous lightweight data-only poll
-    var _dataPollInFlight = false;     // prevents overlapping data poll requests
-    var _dataPollInFlightTimer = null;  // timeout to auto-clear _dataPollInFlight if response never arrives
-    var _lastDataPollTick = 0;         // timestamp of last data poll fire
+    // Data poll migrated to GAS layer — variables removed
     var _fetchPausedForGIS = false;    // true while GIS popup is open — suppresses fetch to Google domains (COOP conflict)
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
@@ -3448,67 +3287,8 @@
       }
     }
 
-    // Continuous lightweight data-only poll — runs independently of heartbeat.
-    // Uses google.script.run.getCachedData() via the GAS iframe (no session
-    // validation, no HMAC, no session write — ~10x lighter than a heartbeat).
-    function _startDataPoll() {
-      if (_dataPollInterval) return;  // already running
-      _sendDataPoll();  // fire immediately on start
-      _dataPollInterval = setInterval(_sendDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL);
-    }
-
-    function _stopDataPoll() {
-      if (_dataPollInterval) {
-        clearInterval(_dataPollInterval);
-        _dataPollInterval = null;
-      }
-      _dataPollInFlight = false;
-      if (_dataPollInFlightTimer) { clearTimeout(_dataPollInFlightTimer); _dataPollInFlightTimer = null; }
-      _lastDataPollTick = 0;
-    }
-
-    function _sendDataPoll() {
-      if (_dataPollInFlight) return;  // don't stack
-      if (_fetchPausedForGIS) return; // don't fetch while GIS popup is open — COOP conflict
-      var session = loadSession();
-      if (!session.token) return;  // no session — skip (auth required for data access)
-      var gasApp = document.getElementById('gas-app');
-      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-      if (!baseUrl) return;
-      _dataPollInFlight = true;
-      _lastDataPollTick = Date.now();
-      // Safety timeout — auto-clear in-flight flag if fetch hangs (same pattern as heartbeat)
-      if (_dataPollInFlightTimer) clearTimeout(_dataPollInFlightTimer);
-      _dataPollInFlightTimer = setTimeout(function() {
-        _dataPollInFlight = false;
-        _dataPollInFlightTimer = null;
-      }, 15000);
-      // Use fetch() via doPost instead of iframe navigation. GAS ContentService
-      // sets CORS headers on ANYONE_ANONYMOUS deployments, so fetch() works
-      // cross-origin. This eliminates the iframe churn that caused "A listener
-      // indicated an asynchronous response" errors in the console — each iframe
-      // navigation destroyed the previous sandbox and its extension content scripts.
-      var pollUrl = baseUrl + '?action=getData&token=' + encodeURIComponent(session.token);
-      fetch(pollUrl, {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-store'
-      })
-      .then(function(resp) { return resp.json(); })
-      .then(function(result) {
-        _dataPollInFlight = false;
-        if (_dataPollInFlightTimer) { clearTimeout(_dataPollInFlightTimer); _dataPollInFlightTimer = null; }
-        _lastDataPollTick = Date.now();
-        if (result && result.type === 'live-data' && result.data) {
-          try { window._handleLiveData(result.data); } catch (e) { console.error('Data poll handleLiveData error:', e); }
-        }
-      })
-      .catch(function() {
-        _dataPollInFlight = false;
-        if (_dataPollInFlightTimer) { clearTimeout(_dataPollInFlightTimer); _dataPollInFlightTimer = null; }
-        _lastDataPollTick = Date.now();
-      });
-    }
+    // Data poll migrated to GAS layer — _startDataPoll, _stopDataPoll, _sendDataPoll removed.
+    // The GAS UI handles its own data polling via google.script.run.getAuthenticatedData().
 
     // Heartbeat via fetch() — uses doPost(action=heartbeat) to avoid iframe
     // navigation churn that caused "A listener indicated an asynchronous response"
@@ -3553,7 +3333,7 @@
     function stopHeartbeat() {
       if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
       if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
-      _stopDataPoll();
+      // _stopDataPoll() removed — data poll is now in GAS layer (destroyed with iframe on auth wall)
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
@@ -4196,496 +3976,7 @@
 
     // ── Live Data Viewer ──
     // Displays spreadsheet data in a sortable table with cell editing.
-    // Data arrives piggybacked on the auth heartbeat (zero extra quota).
-    (function() {
-      var LD_STALE_THRESHOLD = 60000; // 60s without data → disconnected
-      var _ldPrevDataJSON = null;
-      var _ldPrevCells = {};
-      var _ldCurrentView = 'table';
-      var _ldSortCol = -1;
-      var _ldSortAsc = true;
-      var _ldHeaders = [];
-      var _ldRows = [];
-      var _ldLastDataTs = 0;
-      var _ldStaleTimer = null;
-      var _ldCanEdit = false; // set true when user has 'write' permission
-
-      var ldConnDot = document.getElementById('ld-conn-dot');
-      var ldConnLabel = document.getElementById('ld-conn-label');
-      var ldCountdown = document.getElementById('ld-countdown');
-      var ldTableView = document.getElementById('ld-table-view');
-      var ldDashView = document.getElementById('ld-dashboard-view');
-      var ldDataTable = document.getElementById('ld-data-table');
-      var ldDashGrid = document.getElementById('ld-dashboard-grid');
-      var ldEmptyState = document.getElementById('ld-empty-state');
-      var ldApp = document.getElementById('live-data-app');
-      var ldUserEmail = document.getElementById('ld-user-email');
-
-      function ldSetConnectionStatus(state) {
-        if (!ldConnDot) return;
-        ldConnDot.className = state;
-        if (state === 'live') {
-          var age = Math.round((Date.now() - _ldLastDataTs) / 1000);
-          ldConnLabel.textContent = 'Live';
-          ldCountdown.textContent = age > 0 ? age + 's ago' : '';
-        } else if (state === 'updating') {
-          ldConnLabel.textContent = 'Updating...';
-        } else {
-          ldConnLabel.textContent = 'Disconnected';
-        }
-      }
-
-      function ldStartStaleCheck() {
-        if (_ldStaleTimer) clearInterval(_ldStaleTimer);
-        _ldStaleTimer = setInterval(function() {
-          if (_ldLastDataTs === 0) return;
-          var age = Date.now() - _ldLastDataTs;
-          if (age > LD_STALE_THRESHOLD) {
-            ldSetConnectionStatus('disconnected');
-          } else {
-            ldSetConnectionStatus('live');
-          }
-        }, 1000);
-      }
-
-      // Tab switching
-      var ldTabs = document.querySelectorAll('.ld-view-tab');
-      for (var ti = 0; ti < ldTabs.length; ti++) {
-        ldTabs[ti].addEventListener('click', function() {
-          for (var j = 0; j < ldTabs.length; j++) ldTabs[j].classList.remove('active');
-          this.classList.add('active');
-          _ldCurrentView = this.getAttribute('data-view');
-          ldTableView.style.display = _ldCurrentView === 'table' ? 'block' : 'none';
-          ldDashView.style.display = _ldCurrentView === 'dashboard' ? 'block' : 'none';
-        });
-      }
-
-      function ldDetectChanges(headers, rows) {
-        var changed = {};
-        var newCells = {};
-        for (var r = 0; r < rows.length; r++) {
-          for (var c = 0; c < rows[r].length; c++) {
-            var key = r + ':' + c;
-            var val = (rows[r][c] !== undefined && rows[r][c] !== null) ? String(rows[r][c]) : '';
-            newCells[key] = val;
-            if (_ldPrevCells.hasOwnProperty(key) && _ldPrevCells[key] !== val) {
-              changed[key] = true;
-            }
-          }
-        }
-        _ldPrevCells = newCells;
-        return changed;
-      }
-
-      function ldRenderTableView(changedCells) {
-        if (!ldDataTable) return;
-        var thead = ldDataTable.querySelector('thead tr');
-        var tbody = ldDataTable.querySelector('tbody');
-
-        thead.innerHTML = '';
-        _ldHeaders.forEach(function(h, ci) {
-          var th = document.createElement('th');
-          th.textContent = h;
-          var arrow = document.createElement('span');
-          arrow.className = 'sort-arrow';
-          if (_ldSortCol === ci) arrow.textContent = _ldSortAsc ? ' \u25B2' : ' \u25BC';
-          th.appendChild(arrow);
-          th.addEventListener('click', function() {
-            if (_ldSortCol === ci) { _ldSortAsc = !_ldSortAsc; }
-            else { _ldSortCol = ci; _ldSortAsc = true; }
-            ldRenderTableView({});
-          });
-          thead.appendChild(th);
-        });
-        // Add delete column header for users with write permission
-        if (_ldCanEdit) {
-          var thDel = document.createElement('th');
-          thDel.style.width = '40px';
-          thead.appendChild(thDel);
-        }
-
-        // Build index-preserving rows array so sorting doesn't lose original row indices
-        var indexedRows = _ldRows.map(function(row, i) { return { data: row, origIndex: i }; });
-        if (_ldSortCol >= 0 && _ldSortCol < _ldHeaders.length) {
-          indexedRows.sort(function(a, b) {
-            var va = a.data[_ldSortCol] || '', vb = b.data[_ldSortCol] || '';
-            var na = parseFloat(va), nb = parseFloat(vb);
-            if (!isNaN(na) && !isNaN(nb)) return _ldSortAsc ? na - nb : nb - na;
-            return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-          });
-        }
-
-        tbody.innerHTML = '';
-        indexedRows.forEach(function(entry, ri) {
-          var row = entry.data;
-          var origIdx = entry.origIndex;
-          var isOptimisticAdd = (window._addRowPendingIndex !== undefined && origIdx === window._addRowPendingIndex);
-          var tr = document.createElement('tr');
-          if (isOptimisticAdd) {
-            tr.style.opacity = '0.35';
-            tr.style.pointerEvents = 'none';
-            tr.style.position = 'relative';
-          }
-          row.forEach(function(val, ci) {
-            var td = document.createElement('td');
-            td.textContent = val;
-            td.setAttribute('data-row', origIdx);
-            td.setAttribute('data-col', ci);
-            var key = origIdx + ':' + ci;
-            if (changedCells[key]) td.classList.add('ld-cell-changed');
-            // Double-click to edit (if user has write permission, not optimistic row)
-            if (_ldCanEdit && !isOptimisticAdd) {
-              td.style.cursor = 'pointer';
-              td.addEventListener('dblclick', function() {
-                ldStartCellEdit(this, origIdx, ci, val);
-              });
-            }
-            tr.appendChild(td);
-          });
-          // Add delete button for users with write permission (skip for optimistic row)
-          if (_ldCanEdit) {
-            var tdDel = document.createElement('td');
-            tdDel.style.textAlign = 'center';
-            tdDel.style.padding = '4px';
-            if (!isOptimisticAdd) {
-              var delBtn = document.createElement('button');
-              delBtn.textContent = '\uD83D\uDDD1\uFE0F';
-              delBtn.title = 'Delete row';
-              delBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;';
-              delBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(248,81,73,0.15)'; });
-              delBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
-              delBtn.addEventListener('click', (function(idx) {
-                return function() { ldDeleteRow(idx); };
-              })(origIdx));
-              tdDel.appendChild(delBtn);
-            }
-            tr.appendChild(tdDel);
-          }
-          // Add "Sending..." overlay on optimistic add-row
-          if (isOptimisticAdd) {
-            var overlay = document.createElement('div');
-            overlay.textContent = 'Sending\u2026';
-            overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#58a6ff;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
-            tr.appendChild(overlay);
-          }
-          tbody.appendChild(tr);
-        });
-      }
-
-      // Delete a row by its original index in _ldRows — shows "Deleting..." state on the row
-      function ldDeleteRow(rowIndex) {
-        if (!_gasSandboxSource || window._deleteRowPending) return;
-        var session = loadSession();
-        if (!session || !session.token) return;
-
-        // Save the row for rollback on error
-        var deletedRow = _ldRows[rowIndex];
-        if (!deletedRow) return;
-
-        // Show "Deleting..." state on the row — dim it and show overlay
-        var tbody = ldDataTable ? ldDataTable.querySelector('tbody') : null;
-        if (tbody) {
-          var rows = tbody.querySelectorAll('tr');
-          for (var i = 0; i < rows.length; i++) {
-            var firstTd = rows[i].querySelector('td[data-row]');
-            if (firstTd && parseInt(firstTd.getAttribute('data-row'), 10) === rowIndex) {
-              rows[i].style.opacity = '0.35';
-              rows[i].style.pointerEvents = 'none';
-              rows[i].style.position = 'relative';
-              // Add "Deleting..." overlay
-              var overlay = document.createElement('div');
-              overlay.className = 'ld-deleting-overlay';
-              overlay.textContent = 'Deleting\u2026';
-              overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#f85149;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
-              rows[i].style.position = 'relative';
-              rows[i].appendChild(overlay);
-              break;
-            }
-          }
-        }
-
-        window._deleteRowPending = { index: rowIndex, row: deletedRow };
-
-        _gasSandboxSource.postMessage({
-          type: 'delete-row',
-          token: session.token,
-          rowIndex: rowIndex
-        }, '*');
-      }
-
-      function ldStartCellEdit(td, row, col, currentVal) {
-        if (td.classList.contains('editing')) return;
-        td.classList.add('editing');
-        var input = document.createElement('input');
-        input.type = 'text';
-        input.value = currentVal;
-        td.textContent = '';
-        td.appendChild(input);
-        input.focus();
-        input.select();
-
-        function commitEdit() {
-          var newVal = input.value;
-          td.classList.remove('editing');
-          td.textContent = newVal; // Optimistic UI
-          if (newVal !== currentVal) {
-            // Send to GAS via the sandbox frame (not gasApp.contentWindow — that's the
-            // outer shell, the sandbox never receives it). See gas-auth-ok handler.
-            if (_gasSandboxSource) {
-              var session = loadSession();
-              _gasSandboxSource.postMessage({
-                type: 'write-cell',
-                token: session.token,
-                row: row,
-                col: col,
-                value: newVal
-              }, '*');
-            }
-          }
-        }
-
-        input.addEventListener('blur', commitEdit);
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') { input.blur(); }
-          if (e.key === 'Escape') {
-            td.classList.remove('editing');
-            td.textContent = currentVal;
-          }
-        });
-      }
-
-      function ldRenderDashboardView(changedCells) {
-        if (!ldDashGrid) return;
-        ldDashGrid.innerHTML = '';
-        if (_ldRows.length === 0) return;
-
-        var firstRow = _ldRows[0];
-        _ldHeaders.forEach(function(h, ci) {
-          var card = document.createElement('div');
-          card.className = 'ld-dash-card';
-          if (changedCells['0:' + ci]) card.classList.add('ld-card-changed');
-          var label = document.createElement('div');
-          label.className = 'card-label';
-          label.textContent = h;
-          var value = document.createElement('div');
-          value.className = 'card-value';
-          value.textContent = firstRow[ci] || '\u2014';
-          if (changedCells['0:' + ci]) value.classList.add('changed');
-          var meta = document.createElement('div');
-          meta.className = 'card-meta';
-          meta.textContent = _ldRows.length > 1 ? (_ldRows.length - 1) + ' more rows' : 'Only row';
-          card.appendChild(label);
-          card.appendChild(value);
-          card.appendChild(meta);
-          ldDashGrid.appendChild(card);
-        });
-
-        var stats = document.createElement('div');
-        stats.className = 'ld-dash-card stats';
-        var sl = document.createElement('div');
-        sl.className = 'card-label';
-        sl.textContent = 'Stats';
-        var sv = document.createElement('div');
-        sv.className = 'card-value';
-        sv.style.fontSize = '20px';
-        sv.textContent = _ldRows.length + ' rows \u00D7 ' + _ldHeaders.length + ' cols';
-        var sm = document.createElement('div');
-        sm.className = 'card-meta';
-        sm.textContent = 'Data via GAS CacheService (private spreadsheet)';
-        stats.appendChild(sl);
-        stats.appendChild(sv);
-        stats.appendChild(sm);
-        ldDashGrid.appendChild(stats);
-      }
-
-      // Main data handler — called when live data arrives
-      window._handleLiveData = function(data) {
-        if (!data || !data.headers) return;
-        _ldLastDataTs = Date.now();
-        ldSetConnectionStatus('live');
-
-        var currentJSON = JSON.stringify(data);
-        if (currentJSON !== _ldPrevDataJSON) {
-          var changedCells = ldDetectChanges(data.headers, data.rows);
-          _ldPrevDataJSON = currentJSON;
-
-          _ldHeaders = data.headers.map(function(h, i) {
-            var val = (h !== undefined && h !== null) ? String(h) : '';
-            return val || String.fromCharCode(65 + i);
-          });
-          if (typeof window._updateAddRowPlaceholders === 'function') window._updateAddRowPlaceholders(_ldHeaders);
-          _ldRows = (data.rows || []).map(function(row) {
-            return row.map(function(v) {
-              return (v !== undefined && v !== null) ? String(v) : '';
-            });
-          });
-
-          if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
-          ldRenderTableView(changedCells);
-          ldRenderDashboardView(changedCells);
-        }
-      };
-
-      // Show the live data app after auth completes
-      window._showLiveDataApp = function(email, permissions) {
-        if (ldApp) ldApp.classList.add('active');
-        if (ldUserEmail) ldUserEmail.textContent = email || '';
-        // Check if user has write permission for cell editing
-        _ldCanEdit = permissions && permissions.indexOf('write') !== -1;
-        // Show add-row bar for users with write permission
-        var addRowBar = document.getElementById('ld-add-row-bar');
-        if (addRowBar && _ldCanEdit) addRowBar.style.display = 'flex';
-        ldSetConnectionStatus('updating');
-        ldStartStaleCheck();
-      };
-
-      // Add-row input bar — update placeholders when headers arrive, send to GAS on submit
-      (function() {
-        var addRowBar = document.getElementById('ld-add-row-bar');
-        var addRowBtn = document.getElementById('ld-add-row-btn');
-        var inputs = [
-          document.getElementById('ld-add-col1'),
-          document.getElementById('ld-add-col2'),
-          document.getElementById('ld-add-col3'),
-          document.getElementById('ld-add-col4')
-        ];
-
-        // Update input placeholders to match actual spreadsheet headers
-        window._updateAddRowPlaceholders = function(headers) {
-          if (!headers) return;
-          inputs.forEach(function(inp, i) {
-            if (inp && headers[i]) inp.placeholder = String(headers[i]);
-          });
-          // Hide/show extra inputs based on actual column count
-          inputs.forEach(function(inp, i) {
-            if (inp) inp.style.display = i < headers.length ? '' : 'none';
-          });
-        };
-
-        // Enable/disable Add Row button based on whether any visible input has text
-        function updateAddRowBtnState() {
-          if (!addRowBtn) return;
-          // Don't change button state while a send is in progress — the response
-          // handler will call this again after clearing _addRowPending
-          if (window._addRowPending) return;
-          var visibleCount = _ldHeaders.length || inputs.length;
-          var hasText = inputs.slice(0, visibleCount).some(function(inp) {
-            return inp && inp.value.trim() !== '';
-          });
-          addRowBtn.disabled = !hasText;
-          addRowBtn.textContent = 'Add Row';
-          addRowBtn.style.opacity = hasText ? '' : '0.5';
-          addRowBtn.style.cursor = hasText ? 'pointer' : 'default';
-        }
-        // Exposed on window so the response handler (outside this IIFE) can call it
-        window._updateAddRowBtnState = updateAddRowBtnState;
-
-        // Start disabled (no text yet)
-        if (addRowBtn) { addRowBtn.disabled = true; addRowBtn.style.opacity = '0.5'; addRowBtn.style.cursor = 'default'; }
-
-        // Listen for input changes to toggle button state
-        inputs.forEach(function(inp) {
-          if (inp) inp.addEventListener('input', updateAddRowBtnState);
-        });
-
-        if (addRowBtn) {
-          addRowBtn.addEventListener('click', function() {
-            if (!_gasSandboxSource) return;  // sandbox not ready yet
-            if (addRowBtn.disabled) return;  // already sending or empty
-            var session = loadSession();
-            if (!session || !session.token) return;
-
-            var visibleCount = _ldHeaders.length || inputs.length;
-            var values = inputs.slice(0, visibleCount).map(function(inp) { return inp ? inp.value : ''; });
-
-            // Optimistic rendering — insert the row immediately so it appears instant
-            var optimisticIndex = _ldRows.length;
-            _ldRows.push(values.map(function(v) { return String(v); }));
-            if (ldEmptyState) ldEmptyState.style.display = 'none';
-            // Track the optimistic row index so ldRenderTableView can style it
-            window._addRowPendingIndex = optimisticIndex;
-            ldRenderTableView({});
-            ldRenderDashboardView({});
-
-            // Show "Sending..." state on button while waiting for GAS response
-            addRowBtn.disabled = true;
-            addRowBtn.textContent = 'Sending...';
-            addRowBtn.style.opacity = '0.7';
-            addRowBtn.style.cursor = 'wait';
-            window._addRowPending = true;
-
-            // Send to GAS via the sandbox frame (not gasApp.contentWindow — that's the
-            // outer shell, the sandbox never receives it). See gas-auth-ok handler.
-            _gasSandboxSource.postMessage({
-              type: 'add-row',
-              token: session.token,
-              values: values
-            }, '*');
-
-            // Clear inputs after submit
-            inputs.forEach(function(inp) { if (inp) inp.value = ''; });
-            inputs[0].focus();
-            updateAddRowBtnState();
-          });
-        }
-
-        // Submit on Enter key in any input
-        inputs.forEach(function(inp) {
-          if (inp) inp.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && addRowBtn && !addRowBtn.disabled) addRowBtn.click();
-          });
-        });
-      })();
-
-      // Handle write-cell responses
-      window.addEventListener('message', function(e) {
-        if (!e.data) return;
-        if (e.data.type === 'gas-write-ok' && e.data.liveData) {
-          // Clear optimistic state BEFORE _handleLiveData — if the server data matches
-          // the optimistic data, _handleLiveData skips the re-render (no data change).
-          // We need the overlay cleared and a re-render forced regardless.
-          var wasAddPending = window._addRowPending;
-          if (wasAddPending) {
-            window._addRowPending = false;
-            window._addRowPendingIndex = undefined;
-          }
-          // Server response replaces optimistic data with authoritative data
-          window._handleLiveData(e.data.liveData);
-          // If _handleLiveData skipped re-render (data matched), force one to clear overlay
-          if (wasAddPending) {
-            ldRenderTableView({});
-            if (window._updateAddRowBtnState) window._updateAddRowBtnState();
-          }
-          // Clear delete-row pending state on success — _handleLiveData already re-rendered
-          if (window._deleteRowPending) window._deleteRowPending = null;
-        }
-        if (e.data.type === 'gas-write-error') {
-          console.error('Cell write failed:', e.data.error);
-          // Remove the optimistic row on add-row error and re-render
-          if (window._addRowPending) {
-            window._addRowPending = false;
-            window._addRowPendingIndex = undefined;
-            _ldRows.pop();
-            ldRenderTableView({});
-            ldRenderDashboardView({});
-            if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
-            if (window._updateAddRowBtnState) window._updateAddRowBtnState();
-          }
-          // Restore row visual state on delete-row error (row was never removed from _ldRows)
-          if (window._deleteRowPending) {
-            window._deleteRowPending = null;
-            ldRenderTableView({});
-            ldRenderDashboardView({});
-          }
-        }
-        if (e.data.type === 'live-data') {
-          // Initial data from GAS iframe load (not from data poll — poll uses fetch now)
-          if (e.data.data) {
-            window._handleLiveData(e.data.data);
-          }
-        }
-      });
-    })();
+    // Live Data UI IIFE migrated to GAS layer (testauth1.gs doGet output)
 
     // Security test registry — each test has a name and a run function
     var _securityTests = [];

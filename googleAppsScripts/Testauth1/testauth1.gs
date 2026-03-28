@@ -1,4 +1,4 @@
-var VERSION = "v02.13g";
+var VERSION = "v02.14g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -691,6 +691,17 @@ function addRow(token, valuesJSON) {
   var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   addResult.liveData = getCachedData();
   return addResult;
+}
+
+/**
+ * getAuthenticatedData(token) — validates session then returns cached data.
+ * Used by the GAS-internal data poll (google.script.run from the GAS UI).
+ * Requires 'read' permission via RBAC.
+ */
+function getAuthenticatedData(token) {
+  var user = validateSessionForData(token, 'getAuthenticatedData');
+  checkPermission(user, 'read', 'getAuthenticatedData');
+  return getCachedData();
 }
 
 /**
@@ -3175,11 +3186,132 @@ function doGet(e) {
         body { font-family: Arial; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        /* PROJECT: Live Data App styles */
+        #live-data-app {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 30px; z-index: 2;
+          display: none; flex-direction: column;
+          background: #0f1117; color: #e1e4e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          overflow: hidden;
+        }
+        #live-data-app.active { display: flex; }
+        #ld-header {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 12px 16px; background: #1a1b26; border-bottom: 1px solid #2a2b3d;
+          flex-shrink: 0; flex-wrap: wrap; gap: 8px;
+        }
+        #ld-header .left { display: flex; align-items: center; gap: 10px; }
+        #ld-header h2 { margin: 0; font-size: 16px; color: #fff; white-space: nowrap; }
+        #ld-header .right { display: flex; align-items: center; gap: 8px; }
+        #ld-conn-status {
+          display: flex; align-items: center; gap: 6px; padding: 4px 12px;
+          background: rgba(0,0,0,0.3); border-radius: 20px; font-size: 12px; color: #8b949e;
+        }
+        #ld-conn-dot {
+          width: 8px; height: 8px; border-radius: 50%; background: #888;
+          transition: background 0.3s;
+        }
+        #ld-conn-dot.live { background: #3fb950; }
+        #ld-conn-dot.updating { background: #d29922; animation: ld-pulse 0.6s infinite alternate; }
+        #ld-conn-dot.disconnected { background: #f85149; }
+        #ld-conn-label { white-space: nowrap; }
+        #ld-countdown { font-size: 11px; color: #6e7681; min-width: 20px; text-align: right; }
+        @keyframes ld-pulse { from { opacity: 1; } to { opacity: 0.4; } }
+        #ld-view-tabs {
+          display: flex; background: #1a1b26; border-bottom: 1px solid #2a2b3d; flex-shrink: 0;
+        }
+        .ld-view-tab {
+          padding: 10px 20px; font-size: 13px; font-weight: 600; color: #8b949e;
+          cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+          background: none; border-top: none; border-left: none; border-right: none;
+        }
+        .ld-view-tab:hover { color: #e1e4e8; }
+        .ld-view-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+        #ld-table-view { flex: 1; overflow: auto; padding: 16px; }
+        #ld-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        #ld-data-table th {
+          position: sticky; top: 0; background: #1a1b26; color: #8b949e;
+          padding: 10px 12px; text-align: left; border-bottom: 2px solid #2a2b3d;
+          cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600;
+        }
+        #ld-data-table th:hover { color: #e1e4e8; }
+        #ld-data-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+        #ld-data-table td {
+          padding: 8px 12px; border-bottom: 1px solid #1e2030; color: #c9d1d9;
+          transition: background 0.3s; cursor: default;
+        }
+        #ld-data-table tr:hover td { background: rgba(88,166,255,0.05); }
+        @keyframes ld-cell-flash { 0% { background: rgba(46,160,67,0.45); } 100% { background: transparent; } }
+        .ld-cell-changed { animation: ld-cell-flash 1.5s ease-out; }
+        #ld-data-table td.editing { padding: 2px 4px; background: rgba(88,166,255,0.1); }
+        #ld-data-table td.editing input {
+          width: 100%; padding: 6px 8px; font-size: 13px; font-family: inherit;
+          background: #161b22; color: #c9d1d9; border: 1px solid #58a6ff;
+          border-radius: 4px; outline: none; box-sizing: border-box;
+        }
+        #ld-data-table td.editing input:focus { box-shadow: 0 0 0 2px rgba(88,166,255,0.3); }
+        #ld-dashboard-view { flex: 1; overflow: auto; padding: 16px; display: none; }
+        #ld-dashboard-grid {
+          display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+        }
+        .ld-dash-card {
+          background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+          padding: 20px; transition: border-color 0.2s;
+        }
+        .ld-dash-card:hover { border-color: #58a6ff; }
+        .ld-dash-card .card-label { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .ld-dash-card .card-value { font-size: 28px; font-weight: 700; color: #fff; word-break: break-word; transition: color 0.3s; }
+        .ld-dash-card .card-meta { font-size: 11px; color: #6e7681; margin-top: 8px; }
+        .ld-dash-card.stats { background: #161b22; border-color: #30363d; }
+        .ld-dash-card .card-value.changed { color: #3fb950; }
+        @keyframes ld-card-flash { 0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); } 100% { border-color: #2a2b3d; box-shadow: none; } }
+        .ld-card-changed { animation: ld-card-flash 1.5s ease-out; }
+        #ld-empty-state { display: none; flex: 1; align-items: center; justify-content: center; color: #6e7681; font-size: 14px; text-align: center; padding: 40px; }
+        @media (max-width: 600px) {
+          #ld-header { padding: 10px 12px; }
+          #ld-dashboard-grid { grid-template-columns: 1fr; }
+          .ld-dash-card .card-value { font-size: 22px; }
+          #ld-data-table { font-size: 12px; }
+        }
       </style>
     </head>
     <body>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
+
+      <!-- PROJECT: Live Data App (activated via ld-init postMessage from parent) -->
+      <div id="live-data-app">
+        <div id="ld-header">
+          <div class="left">
+            <h2>Live Data</h2>
+            <div id="ld-conn-status">
+              <div id="ld-conn-dot"></div>
+              <span id="ld-conn-label">Connecting...</span>
+              <span id="ld-countdown"></span>
+            </div>
+          </div>
+          <div class="right">
+            <span id="ld-user-email" style="font-size:12px;color:#8b949e;"></span>
+          </div>
+        </div>
+        <div id="ld-view-tabs">
+          <button class="ld-view-tab active" data-view="table">Table</button>
+          <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
+        </div>
+        <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input id="ld-add-col1" type="text" placeholder="Column 1" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+          <input id="ld-add-col2" type="text" placeholder="Column 2" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+          <input id="ld-add-col3" type="text" placeholder="Column 3" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+          <input id="ld-add-col4" type="text" placeholder="Column 4" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+          <button id="ld-add-row-btn" style="padding:6px 14px;background:#238636;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">Add Row</button>
+        </div>
+        <div id="ld-table-view">
+          <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
+        </div>
+        <div id="ld-dashboard-view">
+          <div id="ld-dashboard-grid"></div>
+        </div>
+        <div id="ld-empty-state">Waiting for data...</div>
+      </div>
 
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.
@@ -3309,48 +3441,443 @@ function doGet(e) {
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // Initial data embedded at iframe load time — zero extra calls
-        var _initialData = ${initialDataJSON};
-        if (_initialData) {
-          top.postMessage({type: 'live-data', data: _initialData}, '${PARENT_ORIGIN}');
-        }
+        // PROJECT: Live Data App — full UI runs inside GAS sandbox
+        (function() {
+          var LD_STALE_THRESHOLD = 60000;
+          var _ldPrevDataJSON = null;
+          var _ldPrevCells = {};
+          var _ldCurrentView = 'table';
+          var _ldSortCol = -1;
+          var _ldSortAsc = true;
+          var _ldHeaders = [];
+          var _ldRows = [];
+          var _ldLastDataTs = 0;
+          var _ldStaleTimer = null;
+          var _ldCanEdit = false;
+          var _addRowPending = false;
+          var _addRowPendingIndex = undefined;
+          var _deleteRowPending = null;
+          var _gasDataPollInterval = null;
 
-        // Listen for write-cell requests from parent
-        window.addEventListener('message', function(evt) {
-          if (evt.origin !== '${PARENT_ORIGIN}') return;
-          if (evt.data && evt.data.type === 'write-cell') {
+          var ldConnDot = document.getElementById('ld-conn-dot');
+          var ldConnLabel = document.getElementById('ld-conn-label');
+          var ldCountdown = document.getElementById('ld-countdown');
+          var ldTableView = document.getElementById('ld-table-view');
+          var ldDashView = document.getElementById('ld-dashboard-view');
+          var ldDataTable = document.getElementById('ld-data-table');
+          var ldDashGrid = document.getElementById('ld-dashboard-grid');
+          var ldEmptyState = document.getElementById('ld-empty-state');
+          var ldApp = document.getElementById('live-data-app');
+          var ldUserEmail = document.getElementById('ld-user-email');
+
+          function ldSetConnectionStatus(state) {
+            if (!ldConnDot) return;
+            ldConnDot.className = state;
+            if (state === 'live') {
+              var age = Math.round((Date.now() - _ldLastDataTs) / 1000);
+              ldConnLabel.textContent = 'Live';
+              ldCountdown.textContent = age > 0 ? age + 's ago' : '';
+            } else if (state === 'updating') {
+              ldConnLabel.textContent = 'Updating...';
+            } else {
+              ldConnLabel.textContent = 'Disconnected';
+            }
+          }
+
+          function ldStartStaleCheck() {
+            if (_ldStaleTimer) clearInterval(_ldStaleTimer);
+            _ldStaleTimer = setInterval(function() {
+              if (_ldLastDataTs === 0) return;
+              var age = Date.now() - _ldLastDataTs;
+              if (age > LD_STALE_THRESHOLD) {
+                ldSetConnectionStatus('disconnected');
+              } else {
+                ldSetConnectionStatus('live');
+              }
+            }, 1000);
+          }
+
+          // Tab switching
+          var ldTabs = document.querySelectorAll('.ld-view-tab');
+          for (var ti = 0; ti < ldTabs.length; ti++) {
+            ldTabs[ti].addEventListener('click', function() {
+              for (var j = 0; j < ldTabs.length; j++) ldTabs[j].classList.remove('active');
+              this.classList.add('active');
+              _ldCurrentView = this.getAttribute('data-view');
+              ldTableView.style.display = _ldCurrentView === 'table' ? 'block' : 'none';
+              ldDashView.style.display = _ldCurrentView === 'dashboard' ? 'block' : 'none';
+            });
+          }
+
+          function ldDetectChanges(headers, rows) {
+            var changed = {};
+            var newCells = {};
+            for (var r = 0; r < rows.length; r++) {
+              for (var c = 0; c < rows[r].length; c++) {
+                var key = r + ':' + c;
+                var val = (rows[r][c] !== undefined && rows[r][c] !== null) ? String(rows[r][c]) : '';
+                newCells[key] = val;
+                if (_ldPrevCells.hasOwnProperty(key) && _ldPrevCells[key] !== val) {
+                  changed[key] = true;
+                }
+              }
+            }
+            _ldPrevCells = newCells;
+            return changed;
+          }
+
+          function ldRenderTableView(changedCells) {
+            if (!ldDataTable) return;
+            var thead = ldDataTable.querySelector('thead tr');
+            var tbody = ldDataTable.querySelector('tbody');
+            thead.innerHTML = '';
+            _ldHeaders.forEach(function(h, ci) {
+              var th = document.createElement('th');
+              th.textContent = h;
+              var arrow = document.createElement('span');
+              arrow.className = 'sort-arrow';
+              if (_ldSortCol === ci) arrow.textContent = _ldSortAsc ? ' \\u25B2' : ' \\u25BC';
+              th.appendChild(arrow);
+              th.addEventListener('click', function() {
+                if (_ldSortCol === ci) { _ldSortAsc = !_ldSortAsc; }
+                else { _ldSortCol = ci; _ldSortAsc = true; }
+                ldRenderTableView({});
+              });
+              thead.appendChild(th);
+            });
+            if (_ldCanEdit) {
+              var thDel = document.createElement('th');
+              thDel.style.width = '40px';
+              thead.appendChild(thDel);
+            }
+            var indexedRows = _ldRows.map(function(row, i) { return { data: row, origIndex: i }; });
+            if (_ldSortCol >= 0 && _ldSortCol < _ldHeaders.length) {
+              indexedRows.sort(function(a, b) {
+                var va = a.data[_ldSortCol] || '', vb = b.data[_ldSortCol] || '';
+                var na = parseFloat(va), nb = parseFloat(vb);
+                if (!isNaN(na) && !isNaN(nb)) return _ldSortAsc ? na - nb : nb - na;
+                return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+              });
+            }
+            tbody.innerHTML = '';
+            indexedRows.forEach(function(entry) {
+              var row = entry.data;
+              var origIdx = entry.origIndex;
+              var isOptimisticAdd = (_addRowPendingIndex !== undefined && origIdx === _addRowPendingIndex);
+              var tr = document.createElement('tr');
+              if (isOptimisticAdd) {
+                tr.style.opacity = '0.35';
+                tr.style.pointerEvents = 'none';
+                tr.style.position = 'relative';
+              }
+              row.forEach(function(val, ci) {
+                var td = document.createElement('td');
+                td.textContent = val;
+                td.setAttribute('data-row', origIdx);
+                td.setAttribute('data-col', ci);
+                var key = origIdx + ':' + ci;
+                if (changedCells[key]) td.classList.add('ld-cell-changed');
+                if (_ldCanEdit && !isOptimisticAdd) {
+                  td.style.cursor = 'pointer';
+                  td.addEventListener('dblclick', function() {
+                    ldStartCellEdit(this, origIdx, ci, val);
+                  });
+                }
+                tr.appendChild(td);
+              });
+              if (_ldCanEdit) {
+                var tdDel = document.createElement('td');
+                tdDel.style.textAlign = 'center';
+                tdDel.style.padding = '4px';
+                if (!isOptimisticAdd) {
+                  var delBtn = document.createElement('button');
+                  delBtn.textContent = '\\uD83D\\uDDD1\\uFE0F';
+                  delBtn.title = 'Delete row';
+                  delBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;';
+                  delBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(248,81,73,0.15)'; });
+                  delBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
+                  delBtn.addEventListener('click', (function(idx) {
+                    return function() { ldDeleteRow(idx); };
+                  })(origIdx));
+                  tdDel.appendChild(delBtn);
+                }
+                tr.appendChild(tdDel);
+              }
+              if (isOptimisticAdd) {
+                var overlay = document.createElement('div');
+                overlay.textContent = 'Sending\\u2026';
+                overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#58a6ff;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
+                tr.appendChild(overlay);
+              }
+              tbody.appendChild(tr);
+            });
+          }
+
+          function ldDeleteRow(rowIndex) {
+            if (_deleteRowPending) return;
+            var deletedRow = _ldRows[rowIndex];
+            if (!deletedRow) return;
+            var tbody = ldDataTable ? ldDataTable.querySelector('tbody') : null;
+            if (tbody) {
+              var rows = tbody.querySelectorAll('tr');
+              for (var i = 0; i < rows.length; i++) {
+                var firstTd = rows[i].querySelector('td[data-row]');
+                if (firstTd && parseInt(firstTd.getAttribute('data-row'), 10) === rowIndex) {
+                  rows[i].style.opacity = '0.35';
+                  rows[i].style.pointerEvents = 'none';
+                  rows[i].style.position = 'relative';
+                  var overlay = document.createElement('div');
+                  overlay.textContent = 'Deleting\\u2026';
+                  overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#f85149;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
+                  rows[i].appendChild(overlay);
+                  break;
+                }
+              }
+            }
+            _deleteRowPending = { index: rowIndex, row: deletedRow };
             google.script.run
               .withSuccessHandler(function(result) {
-                top.postMessage(result, '${PARENT_ORIGIN}');
+                _deleteRowPending = null;
+                if (result && result.liveData) _handleLiveData(result.liveData);
               })
               .withFailureHandler(function(err) {
-                top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
+                console.error('Delete row failed:', err);
+                _deleteRowPending = null;
+                ldRenderTableView({});
+                ldRenderDashboardView({});
               })
-              .writeCell(evt.data.token, evt.data.row, evt.data.col, evt.data.value);
+              .deleteRow(_sessionToken, rowIndex);
           }
-          // PROJECT: add-row support for testing multi-user writes
-          if (evt.data && evt.data.type === 'add-row') {
-            google.script.run
-              .withSuccessHandler(function(result) {
-                top.postMessage(result, '${PARENT_ORIGIN}');
-              })
-              .withFailureHandler(function(err) {
-                top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
-              })
-              .addRow(evt.data.token, JSON.stringify(evt.data.values));
+
+          function ldStartCellEdit(td, row, col, currentVal) {
+            if (td.classList.contains('editing')) return;
+            td.classList.add('editing');
+            var input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentVal;
+            td.textContent = '';
+            td.appendChild(input);
+            input.focus();
+            input.select();
+            function commitEdit() {
+              var newVal = input.value;
+              td.classList.remove('editing');
+              td.textContent = newVal;
+              if (newVal !== currentVal) {
+                google.script.run
+                  .withSuccessHandler(function(result) {
+                    if (result && result.liveData) _handleLiveData(result.liveData);
+                  })
+                  .withFailureHandler(function(err) {
+                    td.textContent = currentVal;
+                    console.error('Cell write failed:', err);
+                  })
+                  .writeCell(_sessionToken, row, col, newVal);
+              }
+            }
+            input.addEventListener('blur', commitEdit);
+            input.addEventListener('keydown', function(e) {
+              if (e.key === 'Enter') { input.blur(); }
+              if (e.key === 'Escape') {
+                td.classList.remove('editing');
+                td.textContent = currentVal;
+              }
+            });
           }
-          // PROJECT: delete-row support
-          if (evt.data && evt.data.type === 'delete-row') {
-            google.script.run
-              .withSuccessHandler(function(result) {
-                top.postMessage(result, '${PARENT_ORIGIN}');
-              })
-              .withFailureHandler(function(err) {
-                top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
-              })
-              .deleteRow(evt.data.token, evt.data.rowIndex);
+
+          function ldRenderDashboardView(changedCells) {
+            if (!ldDashGrid) return;
+            ldDashGrid.innerHTML = '';
+            if (_ldRows.length === 0) return;
+            var firstRow = _ldRows[0];
+            _ldHeaders.forEach(function(h, ci) {
+              var card = document.createElement('div');
+              card.className = 'ld-dash-card';
+              if (changedCells['0:' + ci]) card.classList.add('ld-card-changed');
+              var label = document.createElement('div');
+              label.className = 'card-label';
+              label.textContent = h;
+              var value = document.createElement('div');
+              value.className = 'card-value';
+              value.textContent = firstRow[ci] || '\\u2014';
+              if (changedCells['0:' + ci]) value.classList.add('changed');
+              var meta = document.createElement('div');
+              meta.className = 'card-meta';
+              meta.textContent = _ldRows.length > 1 ? (_ldRows.length - 1) + ' more rows' : 'Only row';
+              card.appendChild(label);
+              card.appendChild(value);
+              card.appendChild(meta);
+              ldDashGrid.appendChild(card);
+            });
+            var stats = document.createElement('div');
+            stats.className = 'ld-dash-card stats';
+            var sl = document.createElement('div');
+            sl.className = 'card-label';
+            sl.textContent = 'Stats';
+            var sv = document.createElement('div');
+            sv.className = 'card-value';
+            sv.style.fontSize = '20px';
+            sv.textContent = _ldRows.length + ' rows \\u00D7 ' + _ldHeaders.length + ' cols';
+            var sm = document.createElement('div');
+            sm.className = 'card-meta';
+            sm.textContent = 'Data via GAS CacheService (private spreadsheet)';
+            stats.appendChild(sl);
+            stats.appendChild(sv);
+            stats.appendChild(sm);
+            ldDashGrid.appendChild(stats);
           }
-        });
+
+          function _handleLiveData(data) {
+            if (!data || !data.headers) return;
+            _ldLastDataTs = Date.now();
+            ldSetConnectionStatus('live');
+            var currentJSON = JSON.stringify(data);
+            if (currentJSON !== _ldPrevDataJSON) {
+              var changedCells = ldDetectChanges(data.headers, data.rows);
+              _ldPrevDataJSON = currentJSON;
+              _ldHeaders = data.headers.map(function(h, i) {
+                var val = (h !== undefined && h !== null) ? String(h) : '';
+                return val || String.fromCharCode(65 + i);
+              });
+              if (typeof _updateAddRowPlaceholders === 'function') _updateAddRowPlaceholders(_ldHeaders);
+              _ldRows = (data.rows || []).map(function(row) {
+                return row.map(function(v) {
+                  return (v !== undefined && v !== null) ? String(v) : '';
+                });
+              });
+              if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+              ldRenderTableView(changedCells);
+              ldRenderDashboardView(changedCells);
+            }
+          }
+
+          // GAS-internal data poll — calls google.script.run directly (no postMessage/fetch)
+          function _startGasDataPoll() {
+            if (_gasDataPollInterval) return;
+            _gasDataPollInterval = setInterval(function() {
+              google.script.run
+                .withSuccessHandler(function(data) {
+                  if (data) { try { _handleLiveData(data); } catch(e) { console.error('Data poll error:', e); } }
+                })
+                .withFailureHandler(function() { /* silently drop — next poll retries */ })
+                .getAuthenticatedData(_sessionToken);
+            }, 15000);
+          }
+          function _stopGasDataPoll() {
+            if (_gasDataPollInterval) { clearInterval(_gasDataPollInterval); _gasDataPollInterval = null; }
+          }
+
+          function _showLiveDataApp(email, permissions) {
+            if (ldApp) ldApp.classList.add('active');
+            if (ldUserEmail) ldUserEmail.textContent = email || '';
+            _ldCanEdit = permissions && permissions.indexOf('write') !== -1;
+            var addRowBar = document.getElementById('ld-add-row-bar');
+            if (addRowBar && _ldCanEdit) addRowBar.style.display = 'flex';
+            ldSetConnectionStatus('updating');
+            ldStartStaleCheck();
+          }
+
+          // Add-row input bar
+          (function() {
+            var addRowBtn = document.getElementById('ld-add-row-btn');
+            var inputs = [
+              document.getElementById('ld-add-col1'),
+              document.getElementById('ld-add-col2'),
+              document.getElementById('ld-add-col3'),
+              document.getElementById('ld-add-col4')
+            ];
+            var _updateAddRowPlaceholders_fn = function(headers) {
+              if (!headers) return;
+              inputs.forEach(function(inp, i) {
+                if (inp && headers[i]) inp.placeholder = String(headers[i]);
+              });
+              inputs.forEach(function(inp, i) {
+                if (inp) inp.style.display = i < headers.length ? '' : 'none';
+              });
+            };
+            _updateAddRowPlaceholders = _updateAddRowPlaceholders_fn;
+            function updateAddRowBtnState() {
+              if (!addRowBtn) return;
+              if (_addRowPending) return;
+              var visibleCount = _ldHeaders.length || inputs.length;
+              var hasText = inputs.slice(0, visibleCount).some(function(inp) {
+                return inp && inp.value.trim() !== '';
+              });
+              addRowBtn.disabled = !hasText;
+              addRowBtn.textContent = 'Add Row';
+              addRowBtn.style.opacity = hasText ? '' : '0.5';
+              addRowBtn.style.cursor = hasText ? 'pointer' : 'default';
+            }
+            if (addRowBtn) { addRowBtn.disabled = true; addRowBtn.style.opacity = '0.5'; addRowBtn.style.cursor = 'default'; }
+            inputs.forEach(function(inp) {
+              if (inp) inp.addEventListener('input', updateAddRowBtnState);
+            });
+            if (addRowBtn) {
+              addRowBtn.addEventListener('click', function() {
+                if (addRowBtn.disabled) return;
+                var visibleCount = _ldHeaders.length || inputs.length;
+                var values = inputs.slice(0, visibleCount).map(function(inp) { return inp ? inp.value : ''; });
+                var optimisticIndex = _ldRows.length;
+                _ldRows.push(values.map(function(v) { return String(v); }));
+                if (ldEmptyState) ldEmptyState.style.display = 'none';
+                _addRowPendingIndex = optimisticIndex;
+                ldRenderTableView({});
+                ldRenderDashboardView({});
+                addRowBtn.disabled = true;
+                addRowBtn.textContent = 'Sending...';
+                addRowBtn.style.opacity = '0.7';
+                addRowBtn.style.cursor = 'wait';
+                _addRowPending = true;
+                google.script.run
+                  .withSuccessHandler(function(result) {
+                    var wasAdd = _addRowPending;
+                    _addRowPending = false;
+                    _addRowPendingIndex = undefined;
+                    if (result && result.liveData) _handleLiveData(result.liveData);
+                    if (wasAdd) {
+                      ldRenderTableView({});
+                      updateAddRowBtnState();
+                    }
+                  })
+                  .withFailureHandler(function(err) {
+                    console.error('Add row failed:', err);
+                    _addRowPending = false;
+                    _addRowPendingIndex = undefined;
+                    _ldRows.pop();
+                    ldRenderTableView({});
+                    ldRenderDashboardView({});
+                    if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+                    updateAddRowBtnState();
+                  })
+                  .addRow(_sessionToken, JSON.stringify(values));
+                inputs.forEach(function(inp) { if (inp) inp.value = ''; });
+                if (inputs[0]) inputs[0].focus();
+                updateAddRowBtnState();
+              });
+            }
+            inputs.forEach(function(inp) {
+              if (inp) inp.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && addRowBtn && !addRowBtn.disabled) addRowBtn.click();
+              });
+            });
+          })();
+
+          // Listen for ld-init from parent (auth context delivery)
+          window.addEventListener('message', function(evt) {
+            if (evt.origin !== '${PARENT_ORIGIN}') return;
+            if (evt.data && evt.data.type === 'ld-init') {
+              _sessionToken = evt.data.token || _sessionToken;
+              _showLiveDataApp(evt.data.email, evt.data.permissions);
+              _startGasDataPoll();
+            }
+          });
+
+          // Process initial data embedded at iframe load time
+          var _initialData = ${initialDataJSON};
+          if (_initialData) {
+            _handleLiveData(_initialData);
+          }
+        })();
       </script>
     </body>
     </html>
