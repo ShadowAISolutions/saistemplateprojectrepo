@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
+
+## [v03.52w] — 2026-03-28 02:43:50 PM EST — v07.44r
+
+### Fixed
+- Admin dropdown no longer hides behind open panels
 
 ## [v03.51w] — 2026-03-28 02:39:19 PM EST — v07.43r
 

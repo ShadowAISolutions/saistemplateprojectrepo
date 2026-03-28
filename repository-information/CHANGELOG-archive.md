@@ -77,6 +77,568 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v06.78r] — 2026-03-25 11:54:00 PM EST — [b2bb294](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b2bb294)
+
+> **Prompt:** "nope. in the data poll, its doing the yellow pulling... once, but then moving forward always going from 0 to 14 . the data is still properly being pulled, its just the data poll countdown and polling indication that we are having issues with."
+
+### Fixed
+- Data poll timer now shows "polling..." for at least 2 seconds after each poll fires — the GAS inline-JS response arrives faster than the 1s timer tick, so `_dataPollInFlight` was clearing before the timer could display the polling state. Added a 2-second minimum display window based on `_lastDataPollTick` timestamp
+
+#### `testauth1.html` — v03.06w
+##### Fixed
+- Data poll countdown now shows "polling..." indicator on every poll cycle, not just the first
+
+## [v06.77r] — 2026-03-25 11:47:57 PM EST — [8ba51d7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8ba51d7)
+
+> **Prompt:** "nope. to recap the state we are in, it seems like things are being polled at differennt intervals. the most accurate indicator i have to the real timing is the live indicator top left which seems to be resetting between 15-17 seconds, the dapa poll however is refreshing at random times like 4 seconds remaining going straight to 15, without saying polling or anything"
+
+### Fixed
+- Fixed data poll countdown jumping randomly mid-countdown — removed duplicate `_lastDataPollTick = Date.now()` from the `live-data` response handler that was overwriting the request-time timestamp, causing the countdown to reset to 15 at a random point during the cycle
+
+#### `testauth1.html` — v03.05w
+##### Fixed
+- Data poll countdown now counts down smoothly from 15 to 0 without random jumps
+
+## [v06.76r] — 2026-03-25 11:42:42 PM EST — [767d71c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/767d71c)
+
+> **Prompt:** "no its still not working, and it seems like the iframe is being loaded way too many times in the console i see it quickly reloading over and over"
+
+### Fixed
+- Restored `_lastDataPollTick = Date.now()` in `_sendDataPoll()` — removing it in the previous fix left the timer without a baseline, causing display issues. The timestamp is now set in both places: when the request fires (for timer baseline) and when the response arrives (for accurate countdown start)
+
+#### `testauth1.html` — v03.04w
+##### Fixed
+- Minor internal improvements
+
+## [v06.75r] — 2026-03-25 11:36:58 PM EST — [c955b40](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c955b40)
+
+> **Prompt:** "nice its pulling fresh data now. though the data poll countdown istelf after the first pull is no longer properly showing when its pulling, its going straight from 0 to 15 on a loop, but its not affecting the fresh data pulling so dont break that"
+
+### Fixed
+- Data poll timer now shows "polling..." during the request round-trip — moved `_lastDataPollTick` assignment from `_sendDataPoll()` (request sent) to the `live-data` handler (response received), so the timer stays in "polling..." state until the response arrives instead of immediately starting the countdown
+
+#### `testauth1.html` — v03.03w
+##### Fixed
+- Data refresh countdown now briefly shows "polling..." before resetting, instead of jumping from 0 to 15
+
+## [v06.74r] — 2026-03-25 11:30:27 PM EST — [cdfbe9c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cdfbe9c)
+
+> **Prompt:** "nope unfortunately the data poll is not pulling the fresh data from the spreadsheet still. think deeply"
+
+### Fixed
+- Fixed data poll session validation always failing — `processDataPoll()` used `CacheService.getScriptCache()` directly instead of `getEpochCache()`, causing cache key mismatch (sessions stored with epoch prefix `e0_session_...` but lookup searched for `session_...` without prefix)
+- Fixed `live-data` HTML handler not clearing `_dataPollInFlight` on error responses — flag now clears on any `live-data` message (success or failure), preventing 15s timeout delays between retries
+
+#### `testauth1.gs` — v02.06g
+##### Fixed
+- Data refresh now correctly validates your session before delivering updates
+
+#### `testauth1.html` — v03.02w
+##### Fixed
+- Data refresh recovers faster when the server reports an error
+
+## [v06.73r] — 2026-03-25 11:21:12 PM EST — [a6d770d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a6d770d)
+
+> **Prompt:** "i see, i just tested to see if the data poll is even updating and its not working anymore. i think the last time i tried it was before i separated it from the heartbeat"
+
+### Fixed
+- Data poll now uses inline token-in-URL pattern instead of postMessage handshake — parent→child postMessage doesn't work through Google's nested GAS iframe wrapper, causing `processDataPoll` to never receive the token
+- GAS `?action=getData` handler now reads token from URL parameter and calls `processDataPoll()` server-side, returning result as inline JavaScript (same pattern as the original working unauthenticated version, but with session validation)
+- Removed `gas-data-poll-ready` message type, `_dataPollIframeReady`, and `_dataPollIframeOrigin` — no longer needed without the postMessage handshake
+- Reverted data poll iframe to simple reload-per-poll (persistent iframe approach was also incompatible with GAS sandbox)
+
+#### `testauth1.gs` — v02.05g
+##### Fixed
+- Data refresh now works correctly with session authentication
+
+#### `testauth1.html` — v03.01w
+##### Fixed
+- Data refresh now updates reliably on every poll cycle
+
+## [v06.72r] — 2026-03-25 11:11:53 PM EST — [c220871](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c220871)
+
+> **Prompt:** "make the heartbeat every minute for now while we test"
+
+### Changed
+- Increased heartbeat test interval from 30s to 60s for testing
+
+#### `testauth1.html` — v03.00w
+##### Changed
+- Minor internal improvements
+
+## [v06.71r] — 2026-03-25 11:04:58 PM EST — [94e616d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/94e616d)
+
+> **Prompt:** "the data poll lolling seems to be resetting its timer, but its only happening after the heartbeat is going off"
+
+### Fixed
+- Data poll iframe now persists across polls instead of being reloaded every 15s — reloading the iframe aborted pending `google.script.run` calls, causing responses to never arrive unless a heartbeat warmed up the GAS context first
+- Added `_dataPollIframeReady` flag and `_dataPollIframeOrigin` to track iframe state — subsequent polls send token via `postMessage` to the existing iframe instead of reloading it
+- `_stopDataPoll()` now resets `_dataPollIframeReady` and `_dataPollIframeOrigin` for clean teardown
+
+#### `testauth1.html` — v02.99w
+##### Fixed
+- Data refresh now works reliably — no longer requires a heartbeat to trigger
+
+## [v06.70r] — 2026-03-25 10:57:30 PM EST — [18ad439](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/18ad439)
+
+> **Prompt:** "the data poll is out of wack, it says polling but then the timer goes to 0 the whole time. for some reason it also says disconnected, not sure what that means"
+
+### Fixed
+- Data poll safety timeout now resets `_lastDataPollTick` when clearing the in-flight flag — prevents the countdown timer from showing 0:00 after a failed/slow response
+- "Disconnected" indicator was a symptom of data poll responses not arriving — the safety timeout fix ensures the timer recovers gracefully between retries
+
+#### `testauth1.html` — v02.98w
+##### Fixed
+- Data refresh countdown timer no longer gets stuck at 0:00 after a slow server response
+
+## [v06.69r] — 2026-03-25 10:41:59 PM EST — [07ddad4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/07ddad4)
+
+> **Prompt:** "put these useage charts and explanations into a document for my reference"
+
+### Added
+- Added `DATA-POLL-ARCHITECTURE.md` reference document — architecture overview, per-call cost comparison, quota usage by activity state, scaling tables, HIPAA compliance summary, and configuration tuning guidance
+
+## [v06.68r] — 2026-03-25 10:23:52 PM EST — [e3f0ac2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e3f0ac2)
+
+> **Prompt:** "yes implement this fix"
+
+### Security
+- Data poll endpoint now requires session authentication — `processDataPoll(token)` validates session in CacheService before returning data (HIPAA §164.312(a)(1) Access Control, §164.312(d) Person/Entity Authentication)
+- Data poll uses Phase 7 postMessage pattern — token never appears in URL parameters
+- Data poll client-side now checks `loadSession().token` before sending requests
+
+### Changed
+- `?action=getData` GAS handler now returns a postMessage listener page (same pattern as heartbeat/signout) instead of directly calling `getCachedData()`
+- Added `processDataPoll(token)` server-side function — lightweight session validation (CacheService lookup only, no HMAC regen, no session extension)
+- Added `gas-data-poll-ready` message type to allowed messages and HMAC exemption list
+- Added `gas-data-poll-ready` handler in `_processVerifiedMessage` to send token via postMessage
+
+#### `testauth1.gs` — v02.04g
+##### Security
+- Data poll endpoint now validates session token before returning spreadsheet data
+
+#### `testauth1.html` — v02.97w
+##### Security
+- Data requests now include session authentication — unauthenticated data access is no longer possible
+
+## [v06.67r] — 2026-03-25 10:05:15 PM EST — [9a464f3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9a464f3)
+
+> **Prompt:** "im noticing that when the heartbeat is idle, its not showing a countdown timer anymore until we make it ready"
+
+### Fixed
+- Heartbeat timer now shows countdown even when idle — previously displayed static "◇ idle" text with no countdown until activity resumed
+
+#### `testauth1.html` — v02.96w
+##### Fixed
+- Heartbeat timer countdown now remains visible during idle state — shows time until next tick with "◇ idle" indicator
+
+## [v06.66r] — 2026-03-25 09:47:45 PM EST — [c8a789b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8a789b)
+
+> **Prompt:** "in the testauth1, it seems like the data poll is happening both in the heartbeat or in the data poll, i think it should always be done with the data poll rather than flipping back and forth between the pipelines. what do you think?"
+
+### Changed
+- Decoupled data polling from heartbeat pipeline in testauth1 — data poll now runs continuously and independently, heartbeat only handles session extension
+- Removed `liveData` piggybacking from `processHeartbeat()` in testauth1.gs — heartbeat response no longer carries spreadsheet data
+- Removed `data.liveData` extraction from heartbeat OK handler in testauth1.html
+- Data poll starts at session establishment and runs on its own interval regardless of user activity state
+- Renamed all `_idle*` variables/functions to `_data*` (e.g. `_idleDataPollInterval` → `_dataPollInterval`, `IDLE_DATA_POLL_INTERVAL` → `DATA_POLL_INTERVAL`) since the poll is no longer idle-only
+- Data poll timer display no longer depends on `_heartbeatIdle` — shows countdown whenever poll is active
+
+#### `testauth1.gs` — v02.03g
+##### Changed
+- Heartbeat response no longer carries spreadsheet data — removed `liveData` piggybacking from `processHeartbeat()`
+
+#### `testauth1.html` — v02.95w
+##### Changed
+- Data polling now runs continuously via dedicated pipeline, independent of heartbeat activity state
+- Data poll timer always shows countdown when active, not just when idle
+
+## [v06.65r] — 2026-03-25 09:17:26 PM EST — [78752f3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/78752f3)
+
+> **Prompt:** "i want each row always visible dont hide any"
+
+### Changed
+- All timer rows (Absolute, Session, Heartbeat, Data Poll) are now always visible in the auth-timers panel — Data Poll shows `--` when idle polling is not active instead of being hidden
+
+#### `testauth1.html` — v02.94w
+##### Changed
+- All timer rows are now always visible — the Data Poll row shows `--` when inactive instead of disappearing
+
+## [v06.64r] — 2026-03-25 09:11:17 PM EST — [merged]
+
+> **Prompt:** "i meant as a separate row, right now i still only see the heartbeat."
+
+### Changed
+- Data poll countdown now shows as its own dedicated row (`Data Poll:`) in the auth-timers panel, separate from the heartbeat row — appears only when idle polling is active and disappears when regular heartbeat resumes
+
+#### `testauth1.html` — v02.93w
+##### Changed
+- When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
+
+## [v06.63r] — 2026-03-25 09:05:04 PM EST — [merged]
+
+> **Prompt:** "just like how the heartbeat has a visible countdown, make the idle one also have its own visible countdown so its easy to distinguish whats happening at any one time"
+
+### Changed
+- Idle data poll now shows its own countdown timer (`◇ Xs idle`) based on `IDLE_DATA_POLL_INTERVAL` (15s), distinct from the heartbeat countdown (30s) — makes it easy to see which pipe is active and when the next poll fires
+
+#### `testauth1.html` — v02.92w
+##### Changed
+- When idle, the heartbeat timer shows a countdown to the next data poll (`◇ 12s idle`) instead of the heartbeat interval, so you can see exactly when the next background data fetch will fire
+
+## [v06.62r] — 2026-03-25 09:00:26 PM EST — [merged]
+
+> **Prompt:** "yes decouple it to its own config variable and make the idle poll every 15 seconds"
+
+### Changed
+- Decoupled idle data poll interval from heartbeat interval — new `IDLE_DATA_POLL_INTERVAL` config variable set to 15s (heartbeat remains at 30s), giving 2x data freshness while idle at negligible additional cost
+
+#### `testauth1.html` — v02.91w
+##### Changed
+- Idle data poll now runs every 15 seconds (was 30s tied to heartbeat) — data stays fresher when you step away, with its own independent config variable
+
+## [v06.61r] — 2026-03-25 08:47:57 PM EST — [merged]
+
+> **Prompt:** "i just tried it, but when its polling data on idle, its not updating the table data. only when doing the traditional heartbeat is it updating the table data properly. in case it helps the console information when idle polling is what is in the screenshot"
+
+### Fixed
+- Fixed idle data poll not updating the table — `gasApp.contentWindow.postMessage()` was being dropped by Google's GAS sandbox origin validation; replaced with a dedicated `?action=getData` iframe (same proven pattern as the heartbeat iframe) that calls `getCachedData()` server-side and postMessages the result back to the parent
+- Removed unused `get-live-data` postMessage handler from GAS main iframe — the getData action iframe handles data fetching entirely server-side
+
+#### `testauth1.gs` — v02.02g
+##### Fixed
+- Added `?action=getData` handler to `doGet()` — returns lightweight HTML page that calls `getCachedData()` and sends data back via `top.postMessage()`
+- Removed `get-live-data` message handler from main iframe HTML — no longer needed since idle data poll uses its own iframe
+
+#### `testauth1.html` — v02.90w
+##### Fixed
+- Idle data poll now uses a dedicated hidden iframe (`#gas-data-poll`) instead of `gasApp.contentWindow.postMessage()` — bypasses GAS sandbox origin mismatch that was silently dropping messages
+
+## [v06.60r] — 2026-03-25 07:14:40 PM EST — [merged]
+
+> **Prompt:** "go ahead and implement it. make some sort of visual indication on the heartbeat so we can tell the difference between the two pipes firing (also to make sure that both arent happening at the same time)"
+
+### Changed
+- Decoupled live data polling from auth heartbeat (Option C) — when idle, a lightweight `getCachedData()` call replaces the full heartbeat, reducing server cost ~10x per idle viewer while keeping data live
+- Added visual heartbeat indicator to distinguish active heartbeat (`▶ sending...`) from idle data poll (`◇ polling data...`) and idle countdown (`◇ idle`)
+
+#### `testauth1.html` — v02.89w
+##### Changed
+- Data stays live even when idle — lightweight background poll replaces the activity-gated heartbeat for data updates
+- Heartbeat timer now shows `▶` for active heartbeats and `◇` for idle data polling, so you can tell which pipe is firing
+
+## [v06.59r] — 2026-03-25 05:56:05 PM EST — [merged]
+
+> **Prompt:** "2 things, 1 , the heartbeat is taking 15 seconds to send instead of 2 or 3 before this change. 2 , its not updating the changes on edit. i already have the trigger installed and the auth scope is there"
+
+### Fixed
+- Fixed heartbeat taking ~15s instead of ~2-3s — removed unnecessary CacheService TTL re-up write on every read and moved liveData outside the HMAC-signed payload to reduce serialization overhead
+- Fixed live data not updating after spreadsheet edits — liveData nested objects caused JSON.stringify mismatches between GAS V8 and browser engines, breaking HMAC signature verification and silently dropping heartbeat messages
+
+#### `testauth1.html` — v02.88w
+##### Fixed
+- Data now updates correctly when the spreadsheet is edited — fixed a signature verification issue that was silently blocking data updates
+
+#### `testauth1.gs` — v02.01g
+##### Fixed
+- Heartbeat response time restored to normal — live data is no longer included in the security signature computation, reducing processing time
+
+## [v06.58r] — 2026-03-25 05:41:07 PM EST — [merged]
+
+> **Prompt:** "alright, write up this idea of live data editing with the intention of applying it for the testauth1 environment in a prompt format to use with you in a new session, including all context to begin coding. you can show the same type of data table we made in the rnd live data in the testauth1 instead of the giant 1 in the center."
+
+### Added
+- Live data table with cell editing in testauth1 — private spreadsheet data served via CacheService, piggybacked on the existing auth heartbeat at zero additional GAS quota
+- Cell editing with RBAC enforcement — double-click to edit, writes gated by 'write' permission via `checkPermission()`
+- Dashboard card view with change detection (green flash animation on updated cells/cards)
+- Sortable table columns (click header to toggle ascending/descending)
+- Connection status indicator with staleness detection (live/updating/disconnected states)
+
+#### `testauth1.html` — v02.87w
+##### Added
+- Live data table replacing the placeholder content area — sortable columns, cell change detection with green flash animation
+- Dashboard card view with automatic change highlighting
+- Connection status indicator showing data freshness
+- Double-click cell editing for users with write permission
+- View toggle between Table and Dashboard layouts
+
+#### `testauth1.gs` — v02.00g
+##### Added
+- CacheService-based live data serving — `refreshDataCache()`, `getCachedData()` with self-healing cache pattern
+- Installable onEdit trigger support — `onEditInstallable()` and `installEditTrigger()` for instant cache refresh on spreadsheet edits
+- `writeCell()` function with session validation, RBAC permission check, and audit logging
+- Live data piggybacked on heartbeat response — `processHeartbeat()` now includes `liveData: getCachedData()` in its signed payload
+
+## [v06.57r] — 2026-03-25 05:01:08 PM EST — [merged]
+
+> **Prompt:** "update the __gas-project-creator to include this change for all scripts moving forward__"
+
+### Changed
+- Added `script.scriptapp` OAuth scope to the GAS project creator's `appsscript.json` manifest template so all new projects include the permission needed for installable triggers
+
+#### `gas-project-creator.html` — v01.28w
+##### Changed
+- Manifest template now includes the `script.scriptapp` scope for installable trigger support
+
+## [v06.56r] — 2026-03-25 04:52:58 PM EST — [merged]
+
+> **Prompt:** "yes implement it"
+
+### Fixed
+- Fixed onEdit trigger not firing — simple triggers don't work on standalone GAS scripts; switched to installable trigger with one-time `installEditTrigger()` setup function
+
+#### `rndlivedata.gs` — v01.06g
+##### Fixed
+- Data now refreshes instantly on spreadsheet edits (installable trigger replaces non-functional simple trigger)
+##### Added
+- One-time setup function to connect the edit trigger to the spreadsheet
+
+#### `rndlivedata.html` — v01.07w
+##### Changed
+- Setup instructions updated with trigger installation step
+
+## [v06.55r] — 2026-03-25 04:36:47 PM EST — [merged]
+
+> **Prompt:** "yes implement this"
+
+### Changed
+- Replaced time-driven trigger with edit-triggered + self-healing cache for rndlivedata
+- Cache TTL extended to 6 hours with heartbeat-based TTL re-up (testauth1 pattern)
+- Zero GAS quota when nobody is viewing or editing — no time-driven trigger needed
+
+#### `rndlivedata.gs` — v01.05g
+##### Added
+- `onEdit(e)` simple trigger — refreshes cache instantly when the data sheet is edited
+##### Changed
+- `getCachedData()` now re-ups cache TTL on every read (self-healing heartbeat pattern)
+- `getCachedData()` self-repairs on cache miss by calling `refreshDataCache()` as fallback
+- Cache TTL increased from 90 seconds to 6 hours (21,600s)
+
+#### `rndlivedata.html` — v01.06w (no change)
+##### Changed
+- Setup instructions updated — time-driven trigger no longer needed
+
+## [v06.54r] — 2026-03-25 02:58:00 PM EST — [merged]
+
+> **Prompt:** "for rndlivedata , see if you can come up with a way for it to work without sharing the spreadsheet publicly, that defeats the whole purpose. the users might as well be looking at the spreadsheet"
+
+### Changed
+- Redesigned rndlivedata to serve data from a private spreadsheet via GAS CacheService instead of requiring public Google Sheets access
+- Data piggybacks on existing presence heartbeats (zero additional GAS quota per viewer)
+- Time-driven trigger refreshes CacheService every minute (~1,440 calls/day regardless of viewer count)
+- Removed Google Visualization API / Charts dependency from the page
+
+#### `rndlivedata.html` — v01.06w
+##### Changed
+- Data now arrives via the GAS script instead of requiring a publicly shared spreadsheet
+- Removed dependency on Google Charts library for faster page loading
+- Connection status shows "Last updated Xs ago" instead of polling countdown
+- Setup instructions updated — no longer asks to share spreadsheet publicly
+
+#### `rndlivedata.gs` — v01.04g
+##### Changed
+- Added CacheService-based data serving — spreadsheet data cached server-side
+- Presence heartbeats now also deliver live data to viewers (zero extra calls)
+- Active user queries include live data alongside the user list
+
+## [v06.53r] — 2026-03-25 02:18:30 PM EST — [merged]
+
+> **Prompt:** (screenshot showing CSP `connect-src` blocking `accounts.google.com` during Google Visualization API query, causing `XhrHttpError: Request Failed, status=0`)
+
+### Fixed
+- Fixed CSP `connect-src` blocking Google Visualization API auth redirects to `accounts.google.com` — the gviz query redirects through Google's auth service even for published sheets
+
+#### `rndlivedata.html` — v01.05w
+##### Fixed
+- Added `https://accounts.google.com` and `https://www.google.com` to CSP `connect-src` — the Visualization Query's XHR redirects through Google's auth endpoint
+
+## [v06.52r] — 2026-03-25 02:13:00 PM EST — [merged]
+
+> **Prompt:** "still says connecting, showing console in case it helps"
+
+### Fixed
+- Fixed live data page still stuck on "Connecting..." — CSP `style-src` was blocking Google Charts CSS from `www.gstatic.com`, causing `google.charts.load()` initialization to fail entirely
+- Fixed CSP `img-src` blocking developer logo from `www.shadowaisolutions.com`
+
+#### `rndlivedata.html` — v01.04w
+##### Fixed
+- Added `https://www.gstatic.com` to CSP `style-src` — Google Charts loads CSS (tooltip.css, etc.) from this domain during initialization
+- Added `https://fonts.googleapis.com` to CSP `style-src` and `https://fonts.gstatic.com` to CSP `font-src` — preemptive for Google Charts font loading
+- Added `https://www.shadowaisolutions.com` to CSP `img-src` — developer logo was blocked
+
+## [v06.51r] — 2026-03-25 02:07:29 PM EST — [merged]
+
+> **Prompt:** "so how do i use this? it says connecting... and doesnt move from there"
+
+### Fixed
+- Fixed live data page stuck on "Connecting..." — CSP was blocking Google Charts from loading visualization library from `www.google.com`
+
+#### `rndlivedata.html` — v01.03w
+##### Fixed
+- Added `https://www.google.com` to Content Security Policy `script-src` directive — Google Charts dynamically loads the visualization library from this domain after the initial loader.js
+
+## [v06.50r] — 2026-03-25 01:57:21 PM EST — [merged]
+
+> **Prompt:** "for the rndlivedata, what do you think of the following plan, research online and think deeply about it. Set up the GAS project called "rndlivedata" and implement a live real-time spreadsheet data viewer using the Google Visualization API — zero GAS execution for data reads. ## What to build Add a PROJECT OVERRIDE comment explaining live data is served via Google Visualization API. Add these PROJECT section functions: 1. **writePresence(userName)** — writes a heartbeat to a hidden `_Presence` sheet. Creates the sheet with "User"/"Last Seen" headers if it doesn't exist. Updates existing user rows or appends new ones. Called from the HTML page via GAS iframe every 30 seconds. 2. **getActiveUsers()** — returns array of users active within the last 60 seconds by reading the `_Presence` sheet. In the doGet() HTML: - Replace the B1 display with "Live data via Google Visualization API" text - Replace pollB1FromCache and pollQuotaAndLimits with presence heartbeat logic: - Generate a random viewer name (Viewer_XXXX), store in sessionStorage - Call google.script.run.writePresence(name) every 30 seconds - Add message listener for 'get-active-users' that calls getActiveUsers() and posts results back ### rndlivedata.html — Live Data Page with Google Visualization API Dark theme (#0f1117 background) with these features: **Data Engine:** - Load Google Charts API from `https://www.gstatic.com/charts/loader.js` - Query `https://docs.google.com/spreadsheets/d/SHEET_ID/gviz/tq?sheet=SHEET_NAME&tqx=out:json` every 2.5 seconds - Parse the JSONP-style response (strip `google.visualization.Query.setResponse(` wrapper) - Only re-render when data actually changes (hash comparison) - Cell-level change detection comparing previous vs current data **Dual View Modes (tabbed UI):** 1. **Table View** — full spreadsheet data as styled HTML table - Sortable columns (click header to sort, toggle asc/desc) - Cell-level change animation: green flash on changed cells (`@keyframes cell-flash`) - Responsive layout with overflow-x scroll 2. **Dashboard View** — first row displayed as large cards/tiles - Each card shows: column header as label, cell value as large text, "N more rows" as meta - Stats card showing rows × cols and poll interval - Value change animation on cards **Connection Status Indicator:** - Top-right pill showing: Live (green dot) / Updating... (orange dot) / Disconnected (red dot) - Countdown timer showing seconds until next refresh **User Presence Tracking:** - Read the `_Presence` sheet via Viz API (zero GAS calls for reading) - Display colored avatar bubbles with initials in the header - Show viewer count - Active = seen within last 120 seconds **Config Hint:** - When SHEET_ID is empty, show a centered config hint with instructions to set the ID and publish the spreadsheet to the web **Keep all TEMPLATE sections intact** — splash screens, version polling, GAS pill, changelog popups, wake lock, audio system. Only customize within PROJECT START/END markers. ## Architecture: Zero-GAS Reads"
+
+### Changed
+- Converted RND Live Data from REST API chat/messaging app to live real-time spreadsheet data viewer using Google Visualization API
+- GAS PROJECT SECTION: replaced REST API handlers with presence-only functions (writePresence, getActiveUsers)
+- GAS doGet: replaced REST API routing with presence heartbeat logic and active-users message listener
+- Removed doPost PROJECT OVERRIDE (no more REST API routing needed)
+- CSP extended to allow Google Charts loader and gviz JSONP queries
+
+### Added
+- Live spreadsheet data polling via `google.visualization.Query` every 2.5 seconds (zero GAS execution for reads)
+- Dual view modes: Table View (sortable columns, cell-level change flash animation) and Dashboard View (first-row cards/tiles with stats)
+- Connection status indicator (Live/Updating/Disconnected) with countdown timer
+- User presence tracking: writes via GAS iframe heartbeat, reads via Visualization API
+- Config hint overlay when SPREADSHEET_ID is empty
+- Cell-level change detection with green flash animation on changed values
+
+### Removed
+- REST API chat/messaging functionality (handleGetAction_, handlePostAction_, CacheService, LockService, entry submission)
+- Name entry modal and message feed UI
+
+#### `rndlivedata.html` — v01.02w
+##### Changed
+- Redesigned as live spreadsheet data viewer with dark theme
+- Data now loads directly from Google Sheets via Visualization API
+##### Added
+- Real-time data table with sortable columns and change highlighting
+- Dashboard view with metric cards for first-row values
+- Connection status pill with live/updating/disconnected states
+- User presence avatars showing active viewers
+- Configuration hint when spreadsheet not connected
+
+#### `rndlivedata.gs` — v01.03g
+##### Changed
+- Replaced data entry backend with lightweight presence tracking
+- GAS iframe now handles heartbeat writes and active user queries only
+##### Removed
+- REST API endpoints for data fetch and submission
+
+## [v06.49r] — 2026-03-25 12:04:52 PM EST — [merged]
+
+> **Prompt:** "the copy Code.gs for GAS using the gas-project-creator did not include the spreadsheet ID, fix that and make sure everything in the gas-project-creator is accounted for in the code copying and copy config."
+
+### Fixed
+- Copy Code.gs button now includes SPREADSHEET_ID for noauth projects (was gated on auth-only)
+- Copy Config button now always includes SPREADSHEET_ID in output (was gated on auth-only)
+- Setup script (`setup-gas-project.sh`) now replaces SPREADSHEET_ID in .gs files for all project types (was auth-only)
+- Added SPREADSHEET_ID, SHEET_NAME, and SOUND_FILE_ID variables to minimal noauth GAS template so Copy Code.gs replacements have targets to match
+
+#### `gas-project-creator.html` — v01.27w
+##### Fixed
+- Copy Code.gs now includes spreadsheet ID for all project types, not just authenticated ones
+- Copy Config now always includes spreadsheet ID in the generated setup command
+
+## [v06.48r] — 2026-03-25 11:55:30 AM EST — [merged]
+
+> **Prompt:** "the spreadsheet id wasnt swapped for the placeholder, go ahead and swap it now : 1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU"
+
+### Changed
+- Connected RND Live Data backend to its Google Sheet by replacing the placeholder Spreadsheet ID with the actual ID
+
+#### `rndlivedata.gs` — v01.02g
+##### Changed
+- Connected to actual Google Sheet for data storage
+
+## [v06.47r] — 2026-03-25 11:43:03 AM EST — [merged]
+
+> **Prompt:** "The following plan is for the rndlivedata project. PROJECT BRIEF: Multi-User Data Entry Web App For handoff to Claude Code (GitHub Pages + Google Apps Script) WHAT WE'RE BUILDING A multi-user data entry web app — think a custom Google Sheet frontend as a web app. Multiple users (20+) open the same URL, enter data, and eventually see each other's entries. The frontend is hosted on GitHub Pages (already set up). The backend is Google Apps Script deployed as a web app, with Google Sheets as the database. Everything must stay within the Google ecosystem for the backend — no Firebase, no external databases, no third-party services. This will be used across ~50 projects on the same Google account, meaning potentially hundreds of browser tabs could be open simultaneously across all projects. THE CORE CONSTRAINT WE SOLVED The original question was: can we use webhooks or real-time push to sync data between users via Google Apps Script? The answer is no. After deep research, here's what we confirmed: What doesn't work and why: WebSockets / Server-Sent Events (SSE) — Apps Script web apps are simple request/response HTTP. They buffer the entire response before sending. You cannot hold a connection open or stream data. Not possible. Google Drive API changes.watch() webhooks — This IS a real push system where Google POSTs to a URL when a file changes. BUT the receiving endpoint must read HTTP headers (X-Goog-Channel-ID, X-Goog-Resource-State, etc.) to process the notification. Google officially confirmed in 2023 they will NOT support HTTP headers in doPost() due to security concerns (see: https://issuetracker.google.com/issues/67764685). So an Apps Script web app cannot be the webhook receiver. onEdit triggers — These fire server-side when someone manually edits a Sheet in the browser, but script executions and API requests (like appendRow() from your web app) do NOT trigger onEdit. And even if they did, there's no mechanism to push from a server-side trigger to connected browser clients. Long polling (server holds connection open) — We considered having google.script.run call a function that loops with Utilities.sleep() checking CacheService for changes. The problem: Google Apps Script has a hard limit of 30 simultaneous executions per user account. With hundreds of tabs, each holding a connection = instant exhaustion. Plus 6-minute execution time limit per call. Unworkable at this scale. Client-side polling — We built this initially. Every tab calls the server every 3-5 seconds to check for changes. Works functionally but at 50 projects × multiple tabs = thousands of server calls per minute. Even with smart optimizations (visibility API to pause hidden tabs, version-based short-circuiting, exponential backoff), it's wasteful for what is fundamentally a data entry tool where real-time isn't required. What we landed on — EVENT-DRIVEN SYNC (zero polling): Since this is a data entry app (not a chat app), the interaction pattern is fundamentally different. Users are entering data, not watching a live feed. They don't need instant updates — they need current data when they interact. The architecture: sync only on user actions. No timers. No intervals. No background calls. EventWhat happensServer callsPage loadsfetchData() once1User submits datasubmitEntry() returns full fresh dataset1Quick tab switch back (< 2 min)Auto-syncs silently1Long tab switch back (> 2 min)Shows "stale data" banner, user taps to sync0 until tappedQuick tab switch back (< 10 sec)Nothing — data is fresh enough0User clicks Sync buttonfetchData() once1Tab sitting idle in backgroundNothing0 forever Result: 200 open tabs across 50 projects = ZERO background server calls. The only calls come from tabs the user is actively interacting with. ARCHITECTURE: GITHUB PAGES + APPS SCRIPT Frontend (GitHub Pages) Static HTML/CSS/JS hosted on GitHub Pages Calls the Apps Script web app URL via fetch() as a REST API Handles all UI, state management, optimistic updates Uses Page Visibility API to detect tab focus/blur for sync logic Backend (Google Apps Script) Deployed as a web app (doGet for reads, doPost for writes) Returns JSON via ContentService.createTextOutput().setMimeType(ContentService.MimeType.JSON) Google Sheets as the database (permanent record) CacheService as a fast read layer (avoids hitting Sheet on every request) LockService to prevent race conditions on concurrent writes Version string in CacheService to track data freshness CORS handling (critical) Apps Script web apps can only handle GET and POST — they CANNOT respond to OPTIONS preflight requests. This means: For POST requests: The Content-Type MUST be text/plain;charset=utf-8 (NOT application/json). This avoids triggering the browser's CORS preflight. The body should be a stringified JSON string sent as plain text. For GET requests: Use query parameters on the /exec URL. These work cross-origin without issues. Apps Script URLs redirect (302) before executing. Use redirect: 'follow' in fetch options. doGet and doPost must return ContentService.createTextOutput() — not HtmlService — when used as an API. Example fetch from GitHub Pages: javascript// READ (GET) const response = await fetch(GAS_URL + '?action=fetch', { redirect: 'follow' }); const data = await response.json(); // WRITE (POST) — must use text/plain to avoid CORS preflight const response = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'submit', user: 'Alice', message: 'some data' }), redirect: 'follow' }); const result = await response.json(); GOOGLE APPS SCRIPT BACKEND DESIGN Configuration javascriptconst SHEET_ID = '1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU'; const SHEET_NAME = 'LiveFeed'; const CACHE_KEY = 'liveFeedData'; const VERSION_KEY = 'liveFeedVersion'; const CACHE_TTL = 600; // 10 minutes const MAX_ENTRIES = 200; API Design (doGet / doPost) Since this is now a REST API (not serving HTML), the Apps Script needs to route based on an action parameter: doGet(e) — handles read operations ?action=fetch → returns all entries from CacheService (falls back to Sheet on cache miss) Returns: { success: true, data: [...entries], version: "timestamp" } doPost(e) — handles write operations Body (parsed from e.postData.contents): { action: "submit", user: "name", message: "data" } Writes to Sheet, updates CacheService, returns full fresh dataset Uses LockService to prevent concurrent write collisions Returns: { success: true, data: [...entries], version: "timestamp" } CacheService strategy Every write updates both the Sheet (permanent) AND CacheService (fast reads) Reads hit CacheService first (~5ms). Only fall back to Sheet on cache miss. A version string (timestamp) in CacheService lets clients know if data has changed CacheService is shared across all script executions and all users — one user's write is immediately visible to another user's read from cache Cache entries expire after 10 minutes (CACHE_TTL = 600). On expiry, next read rebuilds from Sheet. Max 100KB per cache value, 1000 items total. Keep entry count capped at ~200 to stay well under. LockService for concurrent writes LockService.getScriptLock() prevents any user from concurrently running the write section lock.waitLock(15000) — wait up to 15 seconds for the lock (handles 20+ concurrent writers) Always release in a finally block Always call SpreadsheetApp.flush() before releasing the lock Sheet structure TimestampUserMessageEntryIDDate objectString (max 50 chars)String (max 1000 chars)UUID from Utilities.getUuid() Key quotas to be aware of 30 simultaneous executions per user account (across ALL scripts) 6-minute max execution time per single invocation 6 hours total execution time per day (Workspace) / 90 min for triggers 100KB max per CacheService value 1000 items max in CacheService (FIFO eviction at capacity) 20,000 URL fetch calls/day (consumer) / 100,000 (Workspace) — not relevant here since clients call us, we don't fetch FRONTEND DESIGN (GITHUB PAGES) Sync logic — the key innovation (NO POLLING) javascript// These are the ONLY moments the frontend contacts the server: // 1. Page load — fetch once initialLoad(); // 2. User submits data — write returns fresh data submitData(); // calls POST, gets back full dataset // 3. Tab becomes visible again (user switches back) document.addEventListener('visibilitychange', function() { if (!document.hidden && tabWasHidden) { var awayFor = Date.now() - lastSyncTime; if (awayFor > 10000 && awayFor < 120000) { // Quick switch (10s-2min away) — auto sync silently sync(); } else if (awayFor >= 120000) { // Long absence — show "stale" banner, let user decide showStaleBanner(); } // < 10 seconds — do nothing, data is fresh enough } }); // 4. User clicks Sync button — manual refresh manualSync(); // That's it. No setInterval. No setTimeout for polling. No background calls. Optimistic UI When a user submits data, immediately add it to the local list and render. Then send to server. On success, replace local data with server's authoritative response. On failure, roll back the optimistic entry and restore the input. User identification Users pick a display name on entry (stored in sessionStorage) Display name persists across page refreshes within the same tab session Colored avatars are deterministic based on name hash UI features Entry feed with avatars, timestamps, messages Sync button with spinner animation Status indicator: Ready (green) / Syncing (yellow) / Error (red) / Stale (gray) "Stale data" banner when returning to a tab that's been backgrounded > 2 minutes "Last synced" timestamp in the header Responsive design, dark theme WHAT TO BUILD GitHub Pages side (index.html or similar): The full frontend UI (HTML/CSS/JS) Fetch-based API client that talks to the Apps Script /exec URL Event-driven sync logic (visibility API, submit-triggered refresh, manual sync button) Optimistic UI updates on submit No polling, no timers, no intervals Google Apps Script side (Code.gs): doGet(e) — routes GET requests, returns JSON for fetch/read operations doPost(e) — routes POST requests, handles data submission setupSheet() — run once to initialize the Sheet with headers CacheService read/write layer with version tracking LockService for safe concurrent writes Auto-creates Sheet tab if missing (defensive coding) The GAS URL will need to be configured in the frontend as a constant: javascriptconst GAS_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec'; IMPORTANT NOTES The GAS web app must be deployed with "Execute as: Me" and "Who has access: Anyone" After ANY change to the GAS code, you must create a NEW deployment (or update the existing one). The old URL runs the old code. doPost receives the body in e.postData.contents as a string. Parse it with JSON.parse(). doGet receives query params in e.parameter (e.g., e.parameter.action). Always return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON) from both doGet and doPost — never HtmlService when used as an API. The Content-Type for POST from the browser MUST be text/plain;charset=utf-8 to avoid CORS preflight failures. CacheService getScriptCache() is shared across all users and executions — this is what makes the cache-first read pattern work for multi-user scenarios. Wrap all server functions in try/catch. Return error objects rather than throwing, so the frontend always gets a parseable response."
+
+### Added
+- Multi-user data entry web app frontend for RND Live Data — dark theme UI with name entry, message feed, optimistic submit, and event-driven sync (zero polling)
+- GAS REST API backend with doGet/doPost routing, CacheService read layer, LockService for concurrent writes, and Google Sheets as persistent storage
+- Event-driven sync via Page Visibility API — auto-syncs on quick tab switch, shows stale banner on long absence, zero background server calls
+- CSP updated to allow fetch() connections to `script.google.com`
+
+#### `rndlivedata.html` — v01.01w
+##### Added
+- Full data entry interface with dark theme — name entry modal, message feed with colored avatars, and input area
+- Event-driven sync: auto-syncs on tab focus, stale data banner after 2+ minutes away, manual sync button
+- Optimistic UI updates on message submit with automatic rollback on failure
+- Status indicators: Ready (green), Syncing (yellow), Error (red), Stale (gray)
+
+#### `rndlivedata.gs` — v01.01g
+##### Added
+- REST API routing via PROJECT OVERRIDE on doGet/doPost — returns JSON for `?action=fetch` and `action=submit`
+- Data read layer with CacheService (10-min TTL) falling back to Google Sheets
+- Concurrent write protection with LockService (15s wait lock)
+- Auto-creates Sheet tab with headers if missing
+
+## [v06.46r] — 2026-03-25 11:32:41 AM EST — [merged]
+
+> **Prompt:** "Set up a new GAS project. Run the script, then commit and push.
+bash scripts/setup-gas-project.sh <<'CONFIG'
+{
+  "PROJECT_ENVIRONMENT_NAME": "rndlivedata",
+  "TITLE": "RND Live Data",
+  "DEPLOYMENT_ID": "AKfycbxnhplqv-s116CtveTF-8Efdpd_MWA9RZwdJ0th4-4QK_1cRpngS0CBJemY4Znb6ND7",
+  "SHEET_NAME": "Live_Sheet",
+  "SOUND_FILE_ID": "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN",
+  "SPLASH_LOGO_URL": "https://www.shadowaisolutions.com/SAIS_Logo.png",
+  "INCLUDE_TEST": false,
+  "INCLUDE_AUTH": false
+}
+CONFIG"
+
+### Added
+- New GAS project: RND Live Data (`rndlivedata`) — noauth page with GAS backend, deployed via auto-merge workflow webhook
+- 10 new files: HTML page, GAS script, config, version files, changelogs, archives, per-environment diagram
+- Workflow deploy step for Rndlivedata GAS self-update webhook
+
+## [v06.45r] — 2026-03-25 09:24:15 AM EST — [merged]
+
+> **Prompt:** "every feature that is in the templates should be available in the live projects, and vice versa, make sure that both the projects and the templates match exactly other than the project specific features"
+
+### Added
+- Secure nonce endpoint (`getNonce` action + `generatePageNonce()`) to globalacl.gs and applicationportal.gs — completes the secure page-load flow that replaces insecure `?session=TOKEN` URL pattern
+- `setAdminSecret` handler to globalacl.gs — enables the Global ACL hub to distribute shared admin secrets to its own GAS backend (was already present in other projects)
+
+### Fixed
+- Page nonce TTL in globalacl.gs increased from 30s to 60s, matching template and other projects — prevents timeout during the two-step nonce handshake on slower connections
+
+#### `globalacl.gs` — v01.25g
+##### Added
+- Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
+- Admin secret distribution endpoint — allows the Global ACL hub to push shared secrets to this project
+##### Fixed
+- Nonce expiry window extended from 30 seconds to 60 seconds, preventing timeouts during slower connections
+
+#### `applicationportal.gs` — v01.10g
+##### Added
+- Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
+
+## [v06.44r] — 2026-03-25 09:07:53 AM EST — [merged]
+
+> **Prompt:** "check to see if the templates are matching the testauth1 improvements, if not go ahead and update them"
+
+### Fixed
+- Panel overlay persistence during sign-out — overlays (admin sessions, changelog, GAS changelog) now close before the signing-out wall appears, preventing UI glitches
+- GAS `adminSignOut` error handling — auth failures now return `{error: "unauthorized"}` instead of `{success: false, error: reason}`, matching testauth1's cleaner pattern
+- GAS cache variable naming — renamed `_cpSecretCache` → `_crossProjectSecret` for clarity and consistency across all projects
+
+### Added
+- Panel registry infrastructure (`_registerPanel`, `_closeAllPanelsExcept`) to auth template and all auth pages for mutual exclusion and cleanup
+- `generatePageNonce()` / `validatePageNonce()` and `action='getNonce'` endpoint to GAS minimal-auth template — secure one-time-use nonce replacing insecure `?session=TOKEN` URL pattern
+
+#### `globalacl.html` — v01.26w
+##### Fixed
+- Panels and overlays now close properly during sign-out
+
+#### `applicationportal.html` — v01.30w
+##### Fixed
+- Panels and overlays now close properly during sign-out
+
+#### `applicationportal.gs` — v01.09g
+##### Fixed
+- Renamed cache variable for clarity
+- Improved cross-project sign-out error handling
+
+
+
 <!-- Rotated 2026-03-26: 21 sections from 2026-03-22 (SHAs unavailable — commits not in shallow history) -->
 
 ## [v06.43r] — 2026-03-23 08:34:55 PM EST — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
