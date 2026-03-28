@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
+
+## [v01.50w] — 2026-03-28 07:40:23 PM EST — v07.59r
+
+### Fixed
+- Step timers now appear next to each step's text instead of being displaced by sub-steps
 
 ## [v01.49w] — 2026-03-28 07:32:09 PM EST — v07.58r
 

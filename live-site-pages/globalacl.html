@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.49w">
+  <meta name="build-version" content="v01.50w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -198,38 +198,38 @@
     @keyframes auth-spin { to { transform: rotate(360deg); } }
     /* PROJECT: Sign-in stage checklist */
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
-    .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
     .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
     .signin-checklist li.stage-active { color: #4285f4; font-weight: 500; }
     .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
     .signin-checklist li.stage-done { color: #34a853; }
     .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
-    .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     /* PROJECT: Sign-in sub-steps */
     .signin-checklist .sub-steps {
-      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none;
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none; order: 2; flex-basis: 100%;
     }
     .signin-checklist .sub-steps.visible { display: block; }
     .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signin-checklist .sub-steps .stage-time { font-size: 10px; }
     /* PROJECT: Sign-out sub-steps */
     .signout-checklist .sub-steps {
-      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none;
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none; order: 2; flex-basis: 100%;
     }
     .signout-checklist .sub-steps.visible { display: block; }
     .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signout-checklist .sub-steps .stage-time { font-size: 10px; }
     /* PROJECT: Sign-out stage checklist */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
-    .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
     .signout-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
     .signout-checklist li.stage-active { color: #4285f4; font-weight: 500; }
     .signout-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
     .signout-checklist li.stage-done { color: #34a853; }
     .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
-    .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     /* PROJECT: Reconnecting stage checklist */
     .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }

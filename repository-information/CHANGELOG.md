@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
+
+## [v07.59r] — 2026-03-28 07:40:23 PM EST
+
+> **Prompt:** "then can you make the main stage timers be to the right of the cooresponding main stages instead of to the right of the substeps, so it should be left to right, main stage, main stage timer, sub stages , sub stages timers"
+
+### Fixed
+- Fixed checklist layout so stage timer appears on the same line as the stage text, with sub-steps wrapping to a new row below. Previously, sub-steps (as flex items) pushed the parent stage timer to the far right after the sub-step block, breaking the visual hierarchy. Used CSS `flex-wrap`, `order`, and `flex-basis: 100%` to enforce: line 1 = icon + stage text + timer, line 2 = indented sub-steps
+
+#### `testauth1.html` — v03.64w
+
+##### Fixed
+- Stage timer now appears next to its stage text, not displaced by sub-steps
+
+#### `applicationportal.html` — v01.56w
+
+##### Fixed
+- Stage timer now appears next to its stage text, not displaced by sub-steps
+
+#### `globalacl.html` — v01.50w
+
+##### Fixed
+- Stage timer now appears next to its stage text, not displaced by sub-steps
 
 ## [v07.58r] — 2026-03-28 07:32:09 PM EST
 

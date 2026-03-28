@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 57/50`
+`Sections: 58/50`
+
+## [v03.64w] — 2026-03-28 07:40:23 PM EST — v07.59r
+
+### Fixed
+- Step timers now appear next to each step's text instead of being displaced by sub-steps
 
 ## [v03.63w] — 2026-03-28 07:32:09 PM EST — v07.58r
 
