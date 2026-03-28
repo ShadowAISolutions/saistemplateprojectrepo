@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
+
+## [v07.52r] — 2026-03-28 05:55:55 PM EST
+
+> **Prompt:** "these two screenshots are actually from the same login attempt, do you see how the connecting to server total time went up to 5.1 when it was 2.8 while server authenticating was happening. i think its adding up the connecting to server number and the server authenticating number, summing them up and putting it into the connecting to server number. we can have a total time for the exchanging credentials with server section but it should be something separate not replace the connecting to server duration"
+
+### Fixed
+- Sub-step timers now freeze when completed — added `_subStepFrozenTimes` map that captures elapsed time at the moment a sub-step transitions to done, preventing `_setSubStepTime` from recalculating with `Date.now() - startTime` on already-completed sub-steps
+
+#### `testauth1.html` — v03.58w
+
+##### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+#### `applicationportal.html` — v01.50w
+
+##### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+#### `globalacl.html` — v01.44w
+
+##### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
 
 ## [v07.51r] — 2026-03-28 05:37:53 PM EST
 

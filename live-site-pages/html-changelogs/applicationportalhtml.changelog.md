@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
+
+## [v01.50w] — 2026-03-28 05:55:55 PM EST — v07.52r
+
+### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
 
 ## [v01.49w] — 2026-03-28 05:37:53 PM EST — v07.51r
 

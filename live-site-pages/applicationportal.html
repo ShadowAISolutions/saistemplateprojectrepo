@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.49w">
+  <meta name="build-version" content="v01.50w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -2468,6 +2468,7 @@
       // PROJECT: Reset checklist — show checklist, hide SSO subtitle, clear timers
       _stageStartTimes = {};
       _subStepStartTimes = {};
+      _subStepFrozenTimes = {};
       _activeSubStepId = null;
       if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
       var checklist = document.getElementById('signin-checklist');
@@ -2562,6 +2563,7 @@
       'sub-steps-so-server': ['sub-so-connecting', 'sub-so-sending']
     };
     var _subStepStartTimes = {};
+    var _subStepFrozenTimes = {};
     var _subStepTickTimer = null;
     var _activeSubStepId = null;
 
@@ -2585,6 +2587,7 @@
         if (!el) continue;
         if (i < targetIdx) {
           if (el.className !== 'stage-done') {
+            _freezeSubStepTime(order[i]);
             _setSubStepTime(el, order[i]);
             el.className = 'stage-done';
           }
@@ -2601,10 +2604,19 @@
       }
     }
 
-    function _setSubStepTime(el, subStepId) {
+    function _freezeSubStepTime(subStepId) {
+      if (_subStepFrozenTimes[subStepId] !== undefined) return;
       var start = _subStepStartTimes[subStepId];
-      if (!start) return;
-      var elapsed = Date.now() - start;
+      if (start) _subStepFrozenTimes[subStepId] = Date.now() - start;
+    }
+
+    function _setSubStepTime(el, subStepId) {
+      var elapsed = _subStepFrozenTimes[subStepId];
+      if (elapsed === undefined) {
+        var start = _subStepStartTimes[subStepId];
+        if (!start) return;
+        elapsed = Date.now() - start;
+      }
       var timeSpan = el.querySelector('.stage-time');
       if (!timeSpan) {
         timeSpan = document.createElement('span');
@@ -2633,6 +2645,7 @@
           var el = document.getElementById(arr[i]);
           if (!el) continue;
           if (el.className !== 'stage-done') {
+            _freezeSubStepTime(arr[i]);
             _setSubStepTime(el, arr[i]);
             el.className = 'stage-done';
           }
@@ -2688,6 +2701,7 @@
     function _resetSignOutChecklist() {
       _soStageStartTimes = {};
       _subStepStartTimes = {};
+      _subStepFrozenTimes = {};
       _activeSubStepId = null;
       if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
       var checklist = document.getElementById('signout-checklist');
