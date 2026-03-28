@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
+
+## [v07.23r] — 2026-03-27 09:46:47 PM EST
+
+> **Prompt:** "make it so that if there is no text in field, add row button is disabled. also, is it possible to have it show the expected result in the table while waiting just for the current user so it gives the illusion that it was instantaneous"
+
+### Changed
+- Add-row button is now disabled when all input fields are empty — enables as soon as any field has text
+- Add-row now uses optimistic rendering — the new row appears in the table instantly on click, before the GAS server response arrives. If the server returns an error, the optimistic row is removed
+
+#### `testauth1.html` — v03.36w
+
+##### Changed
+- Add Row button disabled when inputs are empty
+- New rows appear in the table instantly via optimistic rendering
 
 ## [v07.22r] — 2026-03-27 09:40:42 PM EST
 

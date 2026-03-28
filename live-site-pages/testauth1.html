@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.35w">
+  <meta name="build-version" content="v03.36w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -4470,16 +4470,41 @@
           });
         };
 
+        // Enable/disable Add Row button based on whether any visible input has text
+        function updateAddRowBtnState() {
+          if (!addRowBtn || window._addRowPending) return;
+          var visibleCount = _ldHeaders.length || inputs.length;
+          var hasText = inputs.slice(0, visibleCount).some(function(inp) {
+            return inp && inp.value.trim() !== '';
+          });
+          addRowBtn.disabled = !hasText;
+          addRowBtn.style.opacity = hasText ? '' : '0.5';
+          addRowBtn.style.cursor = hasText ? 'pointer' : 'default';
+        }
+
+        // Start disabled (no text yet)
+        if (addRowBtn) { addRowBtn.disabled = true; addRowBtn.style.opacity = '0.5'; addRowBtn.style.cursor = 'default'; }
+
+        // Listen for input changes to toggle button state
+        inputs.forEach(function(inp) {
+          if (inp) inp.addEventListener('input', updateAddRowBtnState);
+        });
+
         if (addRowBtn) {
           addRowBtn.addEventListener('click', function() {
             if (!_gasSandboxSource) return;  // sandbox not ready yet
-            if (addRowBtn.disabled) return;  // already sending
+            if (addRowBtn.disabled) return;  // already sending or empty
             var session = loadSession();
             if (!session || !session.token) return;
 
-            var values = inputs.map(function(inp) { return inp ? inp.value : ''; });
-            // Trim to actual header count
-            if (_ldHeaders.length) values = values.slice(0, _ldHeaders.length);
+            var visibleCount = _ldHeaders.length || inputs.length;
+            var values = inputs.slice(0, visibleCount).map(function(inp) { return inp ? inp.value : ''; });
+
+            // Optimistic rendering — insert the row immediately so it appears instant
+            _ldRows.push(values.map(function(v) { return String(v); }));
+            if (ldEmptyState) ldEmptyState.style.display = 'none';
+            ldRenderTableView({});
+            ldRenderDashboardView({});
 
             // Show "Sending..." state while waiting for GAS response
             addRowBtn.disabled = true;
@@ -4499,13 +4524,14 @@
             // Clear inputs after submit
             inputs.forEach(function(inp) { if (inp) inp.value = ''; });
             inputs[0].focus();
+            updateAddRowBtnState();
           });
         }
 
         // Submit on Enter key in any input
         inputs.forEach(function(inp) {
           if (inp) inp.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && addRowBtn) addRowBtn.click();
+            if (e.key === 'Enter' && addRowBtn && !addRowBtn.disabled) addRowBtn.click();
           });
         });
       })();
@@ -4514,21 +4540,26 @@
       window.addEventListener('message', function(e) {
         if (!e.data) return;
         if (e.data.type === 'gas-write-ok' && e.data.liveData) {
+          // Server response replaces optimistic data with authoritative data
           window._handleLiveData(e.data.liveData);
           // Restore add-row button after successful write
           if (window._addRowPending) {
             window._addRowPending = false;
             var btn = document.getElementById('ld-add-row-btn');
-            if (btn) { btn.disabled = false; btn.textContent = 'Add Row'; btn.style.opacity = ''; btn.style.cursor = 'pointer'; }
+            if (btn) { btn.textContent = 'Add Row'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
           }
         }
         if (e.data.type === 'gas-write-error') {
           console.error('Cell write failed:', e.data.error);
-          // Restore add-row button after error
+          // Remove the optimistic row on error and re-render
           if (window._addRowPending) {
             window._addRowPending = false;
+            _ldRows.pop();
+            ldRenderTableView({});
+            ldRenderDashboardView({});
+            if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
             var btn = document.getElementById('ld-add-row-btn');
-            if (btn) { btn.disabled = false; btn.textContent = 'Add Row'; btn.style.opacity = ''; btn.style.cursor = 'pointer'; }
+            if (btn) { btn.textContent = 'Add Row'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
           }
         }
         if (e.data.type === 'live-data') {
