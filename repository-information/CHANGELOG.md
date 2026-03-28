@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
+
+## [v07.22r] — 2026-03-27 09:40:42 PM EST
+
+> **Prompt:** "in testauth1, when using the add row button, i see that theres a delay from when i click the add row button to when it shows up as visible on the table. this has nothing to do with the 15 second data poll, i think its auto updating after i add the row. first of all is this true, and if so can you have a "sending" splash message while the user waits for the result"
+
+### Changed
+- Add-row button now shows "Sending..." state (disabled + dimmed) while waiting for GAS server response, restoring to "Add Row" on success or error
+
+#### `testauth1.html` — v03.35w
+
+##### Changed
+- Add-row button shows "Sending..." feedback during server round-trip
 
 ## [v07.21r] — 2026-03-27 09:14:05 PM EST
 
