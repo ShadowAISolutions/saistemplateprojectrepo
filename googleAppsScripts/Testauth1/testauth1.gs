@@ -1,4 +1,4 @@
-var VERSION = "v02.17g";
+var VERSION = "v02.18g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3924,12 +3924,19 @@ function doGet(e) {
         (function() {
           var _gasLayerVisible = true;
           var _gasLayerEls = ['live-data-app', 'version', 'user-email'];
+          var _gasOrigDisplay = {};
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');
             _gasLayerEls.forEach(function(id) {
               var el = document.getElementById(id);
-              if (el) el.style.visibility = _gasLayerVisible ? '' : 'hidden';
+              if (!el) return;
+              if (!_gasLayerVisible) {
+                _gasOrigDisplay[id] = el.style.display;
+                el.style.display = 'none';
+              } else {
+                el.style.display = _gasOrigDisplay[id] || '';
+              }
             });
             if (btn) {
               btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';
