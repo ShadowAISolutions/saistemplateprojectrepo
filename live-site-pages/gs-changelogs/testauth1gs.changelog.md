@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
+
+## [v02.24g] — 2026-03-28 02:16:42 PM EST — v07.41r
+
+### Changed
+- Data freshness indicator now shows "0s" at zero seconds and removed "ago" suffix for cleaner display
 
 ## [v02.23g] — 2026-03-28 02:07:55 PM EST — v07.40r
 

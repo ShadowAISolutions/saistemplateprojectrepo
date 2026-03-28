@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v07.41r] — 2026-03-28 02:16:42 PM EST
+
+> **Prompt:** "the live Xs ago, remove the ago, and instead of it being blank when at 0 , make it say 0s"
+
+### Changed
+- Connection status display changed from "Live Xs ago" to "Live Xs" and now shows "0s" instead of blank at zero seconds
+
+#### `testauth1.gs` — v02.24g
+
+##### Changed
+- Data freshness indicator now shows "0s" at zero seconds instead of blank, and removed "ago" suffix
 
 ## [v07.40r] — 2026-03-28 02:07:55 PM EST
 

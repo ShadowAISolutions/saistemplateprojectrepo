@@ -1,4 +1,4 @@
-var VERSION = "v02.23g";
+var VERSION = "v02.24g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3478,7 +3478,7 @@ function doGet(e) {
             if (state === 'live') {
               var age = Math.round((Date.now() - _ldLastDataTs) / 1000);
               ldConnLabel.textContent = 'Live';
-              ldCountdown.textContent = age > 0 ? age + 's ago' : '';
+              ldCountdown.textContent = age + 's';
             } else if (state === 'updating') {
               ldConnLabel.textContent = 'Updating...';
             } else {
