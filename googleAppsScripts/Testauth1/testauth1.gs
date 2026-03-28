@@ -1,4 +1,4 @@
-var VERSION = "v02.20g";
+var VERSION = "v02.21g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3185,8 +3185,8 @@ function doGet(e) {
         html, body { height: 100%; margin: 0; overflow: auto; }
         body { font-family: Arial; }
         .gas-layer-hidden { display: none !important; }
-        #version { position: fixed; bottom: 8px; left: 100px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; display: none; }
+        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
+        #user-email { position: fixed; top: 35px; right: 8px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; }
         /* PROJECT: Live Data App styles */
         #live-data-app {
           position: fixed; top: 0; left: 0; right: 0; bottom: 30px; z-index: 2;
@@ -3278,7 +3278,7 @@ function doGet(e) {
     <body>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
-      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:50px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:110px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
       <!-- PROJECT: Live Data App (activated via ld-init postMessage from parent) -->
       <div id="live-data-app">
@@ -3293,9 +3293,7 @@ function doGet(e) {
               <span id="ld-poll-countdown" style="font-size:11px;color:#6e7681;">--</span>
             </div>
           </div>
-          <div class="right">
-            <span id="ld-user-email" style="font-size:12px;color:#8b949e;"></span>
-          </div>
+          <div class="right"></div>
         </div>
         <div id="ld-view-tabs">
           <button class="ld-view-tab active" data-view="table">Table</button>
@@ -3785,6 +3783,9 @@ function doGet(e) {
 
           function _startGasDataPoll() {
             if (_gasDataPollInterval) return;
+            // Set initial tick so the countdown display starts immediately
+            // instead of showing '--' until the first poll fires.
+            if (!_lastDataPollTick) { _lastDataPollTick = Date.now(); _updatePollDisplay(); }
             _gasDataPollInterval = setInterval(function() {
               if (_dataPollInFlight) return;
               _dataPollInFlight = true;

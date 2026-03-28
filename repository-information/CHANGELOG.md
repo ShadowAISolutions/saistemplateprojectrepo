@@ -3,7 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v07.38r] — 2026-03-28 01:55:28 PM EST
+
+> **Prompt:** "3 things. 1 - on first load its not showing a countdown for the data poll, after the first one it is showing it. 2- the version bottom left, should be left to the html and gas toggles. 3 - the username on gas layer top right corner is overlapped by the html pill, so move the gas username down below it"
+
+### Fixed
+- Data poll countdown now shows immediately on first load instead of displaying "--" until the first poll completes — `_lastDataPollTick` is initialized when the poll starts
+- Repositioned GAS `#version` to `left: 8px` (leftmost), HTML toggle to `left: 70px`, GAS toggle to `left: 110px` — version now appears to the left of both toggle buttons
+- Moved GAS `#user-email` from inside the Live Data header to a fixed position at `top: 35px, right: 8px` — sits below the HTML user-pill instead of behind it
+
+#### `testauth1.html` — v03.49w
+
+##### Changed
+- HTML toggle button repositioned to `left: 70px` to make room for GAS version indicator at bottom-left
+
+#### `testauth1.gs` — v02.21g
+
+##### Fixed
+- Data poll countdown now starts immediately instead of showing "--" until the first poll
+- Version indicator moved to leftmost position at bottom-left
+- Username moved below the navigation bar to avoid overlap
 
 ## [v07.37r] — 2026-03-28 01:47:24 PM EST
 
