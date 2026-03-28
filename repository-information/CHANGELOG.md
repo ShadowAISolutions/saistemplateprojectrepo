@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
+
+## [v07.53r] — 2026-03-28 06:19:20 PM EST
+
+> **Prompt:** "nope, again the number is being added to the connecting to server instead of there being a separate total timer for the exchanging credentials with server"
+
+### Fixed
+- Parent stage total time no longer overwrites first sub-step time — `_setStageTime` now uses `:scope > .stage-time` selector to only find direct child time spans, preventing it from matching time spans inside nested sub-step ULs
+
+#### `testauth1.html` — v03.59w
+
+##### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+#### `applicationportal.html` — v01.51w
+
+##### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+#### `globalacl.html` — v01.45w
+
+##### Fixed
+- Parent stage total time now displays separately from sub-step times
 
 ## [v07.52r] — 2026-03-28 05:55:55 PM EST
 
