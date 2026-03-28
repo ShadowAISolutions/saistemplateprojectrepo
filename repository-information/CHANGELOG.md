@@ -3,7 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
+
+## [v07.60r] — 2026-03-28 07:48:08 PM EST
+
+> **Prompt:** "you made them a separate row instead of how i asked for it. we could do it that way but as is it looks like its an additional step not a total, so make it more obvious. also the reconnecting isnt showing timers properly as per the screenshot"
+
+### Fixed
+- Parent stage timers on stages with sub-steps now show "X.Xs total" suffix in italic styling (`stage-time-total` class) to distinguish them from sub-step timers — makes it clear the value is a total, not another step
+- Added live-ticking timer to reconnecting checklist stages — `_updateReconnectStage()` now activates `_startStageTick()`, and `_completeAllReconnectStages()`/`_resetReconnectChecklist()` properly clean up the timer
+
+#### `testauth1.html` — v03.65w
+
+##### Fixed
+- Stage timers on steps with sub-steps now show "total" suffix in italic
+- Reconnecting checklist stages now show live timers while active
+
+#### `applicationportal.html` — v01.57w
+
+##### Fixed
+- Stage timers on steps with sub-steps now show "total" suffix in italic
+- Reconnecting checklist stages now show live timers while active
+
+#### `globalacl.html` — v01.51w
+
+##### Fixed
+- Stage timers on steps with sub-steps now show "total" suffix in italic
+- Reconnecting checklist stages now show live timers while active
 
 ## [v07.59r] — 2026-03-28 07:40:23 PM EST
 

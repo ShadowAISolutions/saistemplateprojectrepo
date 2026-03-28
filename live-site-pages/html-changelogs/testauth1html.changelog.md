@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 58/50`
+`Sections: 59/50`
+
+## [v03.65w] — 2026-03-28 07:48:08 PM EST — v07.60r
+
+### Fixed
+- Steps with sub-steps now show "total" next to their timer to distinguish from individual sub-step timers
+- Reconnecting checklist steps now show live timers while in progress
 
 ## [v03.64w] — 2026-03-28 07:40:23 PM EST — v07.59r
 

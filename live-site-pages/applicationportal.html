@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.56w">
+  <meta name="build-version" content="v01.57w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -206,6 +206,7 @@
     .signin-checklist li.stage-done { color: #34a853; }
     .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; /* ✓ */ }
     .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
+    .signin-checklist .stage-time-total { font-style: italic; color: #aaa; }
     /* PROJECT: Sign-in sub-steps */
     .signin-checklist .sub-steps {
       list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none; order: 2; flex-basis: 100%;
@@ -230,6 +231,7 @@
     .signout-checklist li.stage-done { color: #34a853; }
     .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
+    .signout-checklist .stage-time-total { font-style: italic; color: #aaa; }
     /* PROJECT: Reconnecting stage checklist (applicationportal only) */
     .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
@@ -2516,9 +2518,11 @@
       if (!timeSpan) {
         timeSpan = document.createElement('span');
         timeSpan.className = 'stage-time';
+        if (el.querySelector(':scope > .sub-steps')) timeSpan.classList.add('stage-time-total');
         el.appendChild(timeSpan);
       }
-      timeSpan.textContent = _formatStageTime(elapsed);
+      var hasSubSteps = el.querySelector(':scope > .sub-steps');
+      timeSpan.textContent = _formatStageTime(elapsed) + (hasSubSteps ? ' total' : '');
     }
 
     function _updateSignInStage(text) {
@@ -2779,6 +2783,8 @@
           if (!_rcStageStartTimes[_rcStageOrder[i]]) {
             _rcStageStartTimes[_rcStageOrder[i]] = now;
           }
+          _activeStageId = _rcStageOrder[i];
+          _startStageTick();
         } else {
           el.className = 'stage-pending';
         }
@@ -2786,6 +2792,8 @@
     }
 
     function _completeAllReconnectStages() {
+      _activeStageId = null;
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       for (var i = 0; i < _rcStageOrder.length; i++) {
         var el = document.getElementById(_rcStageOrder[i]);
         if (!el) continue;
@@ -2798,6 +2806,8 @@
 
     function _resetReconnectChecklist() {
       _rcStageStartTimes = {};
+      _activeStageId = null;
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       var checklist = document.getElementById('reconnect-checklist');
       if (checklist) {
         var items = checklist.getElementsByTagName('li');
