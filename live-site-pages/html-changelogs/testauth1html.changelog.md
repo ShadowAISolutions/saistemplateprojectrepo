@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
+
+## [v03.41w] — 2026-03-27 11:44:05 PM EST — v07.28r
+
+### Changed
+- New rows now show a "Sending..." overlay while being saved — no delete button until confirmed
 
 ## [v03.40w] — 2026-03-27 11:32:41 PM EST — v07.27r
 

@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
+
+## [v07.28r] — 2026-03-27 11:44:05 PM EST
+
+> **Prompt:** "in the optimistic rendered pattern, can you make it have a splash similar to how it is when we are deleting, but for adding the row. also for the optimistic row, make it not have the delete button until the legit row is there"
+
+### Changed
+- Optimistic add-row now shows a "Sending..." overlay on the new row (dimmed to 35% opacity with blue text, mirroring the "Deleting..." red overlay pattern)
+- Optimistic add-row no longer shows the delete button — it only appears after the server confirms the row
+
+#### `testauth1.html` — v03.41w
+
+##### Changed
+- New rows appear dimmed with a "Sending..." overlay until the server confirms them
+- Delete button hidden on unconfirmed rows
 
 ## [v07.27r] — 2026-03-27 11:32:41 PM EST
 

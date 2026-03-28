@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.40w">
+  <meta name="build-version" content="v03.41w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -4319,7 +4319,13 @@
         indexedRows.forEach(function(entry, ri) {
           var row = entry.data;
           var origIdx = entry.origIndex;
+          var isOptimisticAdd = (window._addRowPendingIndex !== undefined && origIdx === window._addRowPendingIndex);
           var tr = document.createElement('tr');
+          if (isOptimisticAdd) {
+            tr.style.opacity = '0.35';
+            tr.style.pointerEvents = 'none';
+            tr.style.position = 'relative';
+          }
           row.forEach(function(val, ci) {
             var td = document.createElement('td');
             td.textContent = val;
@@ -4327,8 +4333,8 @@
             td.setAttribute('data-col', ci);
             var key = origIdx + ':' + ci;
             if (changedCells[key]) td.classList.add('ld-cell-changed');
-            // Double-click to edit (if user has write permission)
-            if (_ldCanEdit) {
+            // Double-click to edit (if user has write permission, not optimistic row)
+            if (_ldCanEdit && !isOptimisticAdd) {
               td.style.cursor = 'pointer';
               td.addEventListener('dblclick', function() {
                 ldStartCellEdit(this, origIdx, ci, val);
@@ -4336,22 +4342,31 @@
             }
             tr.appendChild(td);
           });
-          // Add delete button for users with write permission
+          // Add delete button for users with write permission (skip for optimistic row)
           if (_ldCanEdit) {
             var tdDel = document.createElement('td');
             tdDel.style.textAlign = 'center';
             tdDel.style.padding = '4px';
-            var delBtn = document.createElement('button');
-            delBtn.textContent = '\uD83D\uDDD1\uFE0F';
-            delBtn.title = 'Delete row';
-            delBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;';
-            delBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(248,81,73,0.15)'; });
-            delBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
-            delBtn.addEventListener('click', (function(idx) {
-              return function() { ldDeleteRow(idx); };
-            })(origIdx));
-            tdDel.appendChild(delBtn);
+            if (!isOptimisticAdd) {
+              var delBtn = document.createElement('button');
+              delBtn.textContent = '\uD83D\uDDD1\uFE0F';
+              delBtn.title = 'Delete row';
+              delBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;';
+              delBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(248,81,73,0.15)'; });
+              delBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
+              delBtn.addEventListener('click', (function(idx) {
+                return function() { ldDeleteRow(idx); };
+              })(origIdx));
+              tdDel.appendChild(delBtn);
+            }
             tr.appendChild(tdDel);
+          }
+          // Add "Sending..." overlay on optimistic add-row
+          if (isOptimisticAdd) {
+            var overlay = document.createElement('div');
+            overlay.textContent = 'Sending\u2026';
+            overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#58a6ff;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
+            tr.appendChild(overlay);
           }
           tbody.appendChild(tr);
         });
@@ -4584,12 +4599,15 @@
             var values = inputs.slice(0, visibleCount).map(function(inp) { return inp ? inp.value : ''; });
 
             // Optimistic rendering — insert the row immediately so it appears instant
+            var optimisticIndex = _ldRows.length;
             _ldRows.push(values.map(function(v) { return String(v); }));
             if (ldEmptyState) ldEmptyState.style.display = 'none';
+            // Track the optimistic row index so ldRenderTableView can style it
+            window._addRowPendingIndex = optimisticIndex;
             ldRenderTableView({});
             ldRenderDashboardView({});
 
-            // Show "Sending..." state while waiting for GAS response
+            // Show "Sending..." state on button while waiting for GAS response
             addRowBtn.disabled = true;
             addRowBtn.textContent = 'Sending...';
             addRowBtn.style.opacity = '0.7';
@@ -4628,6 +4646,7 @@
           // Restore add-row button — re-evaluate based on current input state
           if (window._addRowPending) {
             window._addRowPending = false;
+            window._addRowPendingIndex = undefined;
             if (window._updateAddRowBtnState) window._updateAddRowBtnState();
           }
           // Clear delete-row pending state on success — _handleLiveData already re-rendered
@@ -4638,6 +4657,7 @@
           // Remove the optimistic row on add-row error and re-render
           if (window._addRowPending) {
             window._addRowPending = false;
+            window._addRowPendingIndex = undefined;
             _ldRows.pop();
             ldRenderTableView({});
             ldRenderDashboardView({});
