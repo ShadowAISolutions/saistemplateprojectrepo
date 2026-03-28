@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.54w">
+  <meta name="build-version" content="v01.55w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Application Portal</title>
 <!-- ══════════════ -->
@@ -2470,7 +2470,9 @@
       _subStepStartTimes = {};
       _subStepFrozenTimes = {};
       _activeSubStepId = null;
+      _activeStageId = null;
       if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       var checklist = document.getElementById('signin-checklist');
       var subtitle = document.getElementById('signing-in-subtitle');
       if (checklist) {
@@ -2539,6 +2541,8 @@
           if (!_stageStartTimes[_stageOrder[i]]) {
             _stageStartTimes[_stageOrder[i]] = now;
           }
+          _activeStageId = _stageOrder[i];
+          _startStageTick();
         } else {
           el.className = 'stage-pending';
         }
@@ -2567,6 +2571,8 @@
     var _subStepFrozenTimes = {};
     var _subStepTickTimer = null;
     var _activeSubStepId = null;
+    var _stageTickTimer = null;
+    var _activeStageId = null;
 
     function _updateSubStep(subStepId) {
       var parentUl = null;
@@ -2637,6 +2643,16 @@
       }, 100);
     }
 
+    function _startStageTick() {
+      if (_stageTickTimer) clearInterval(_stageTickTimer);
+      _stageTickTimer = setInterval(function() {
+        if (!_activeStageId) { clearInterval(_stageTickTimer); _stageTickTimer = null; return; }
+        var el = document.getElementById(_activeStageId);
+        if (!el || el.className !== 'stage-active') { clearInterval(_stageTickTimer); _stageTickTimer = null; return; }
+        _setStageTime(el, _activeStageId);
+      }, 100);
+    }
+
     function _completeSubStepsForStage(stageEl) {
       var subUl = stageEl.querySelector(':scope > .sub-steps');
       if (!subUl) return;
@@ -2697,6 +2713,8 @@
           if (!_soStageStartTimes[_soStageOrder[i]]) {
             _soStageStartTimes[_soStageOrder[i]] = now;
           }
+          _activeStageId = _soStageOrder[i];
+          _startStageTick();
         } else {
           el.className = 'stage-pending';
         }
@@ -2704,6 +2722,8 @@
     }
 
     function _completeAllSignOutStages() {
+      _activeStageId = null;
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       for (var i = 0; i < _soStageOrder.length; i++) {
         var el = document.getElementById(_soStageOrder[i]);
         if (!el) continue;
@@ -2720,7 +2740,9 @@
       _subStepStartTimes = {};
       _subStepFrozenTimes = {};
       _activeSubStepId = null;
+      _activeStageId = null;
       if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       var checklist = document.getElementById('signout-checklist');
       if (checklist) {
         var allTimes = checklist.querySelectorAll('.stage-time');

@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
+
+## [v01.49w] — 2026-03-28 07:32:09 PM EST — v07.58r
+
+### Fixed
+- Sign-out "Waiting for server confirmation" now shows a live-updating timer while active
+- All sign-in and sign-out checklist steps now show live timers while in progress
 
 ## [v01.48w] — 2026-03-28 06:58:25 PM EST — v07.57r
 

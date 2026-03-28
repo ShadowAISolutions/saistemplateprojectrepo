@@ -3,7 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
+
+## [v07.58r] — 2026-03-28 07:32:09 PM EST
+
+> **Prompt:** "on sign out, waiting for server confirmation is not showing a timer, any reason for this?"
+
+### Fixed
+- Added live-ticking timer for active main stages (sign-in and sign-out) — previously only sub-steps had a 100ms ticker (`_startSubStepTick`), while main stages only showed elapsed time on completion. Added `_startStageTick()` function that updates the active stage's timer every 100ms, matching the sub-step behavior. "Waiting for server confirmation" now shows a running timer while active
+
+#### `testauth1.html` — v03.63w
+
+##### Fixed
+- "Waiting for server confirmation" now shows a live-ticking timer during sign-out
+- All sign-in and sign-out stages now show live timers while active
+
+#### `applicationportal.html` — v01.55w
+
+##### Fixed
+- "Waiting for server confirmation" now shows a live-ticking timer during sign-out
+- All sign-in and sign-out stages now show live timers while active
+
+#### `globalacl.html` — v01.49w
+
+##### Fixed
+- "Waiting for server confirmation" now shows a live-ticking timer during sign-out
+- All sign-in and sign-out stages now show live timers while active
 
 ## [v07.57r] — 2026-03-28 06:58:25 PM EST
 
