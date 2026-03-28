@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v07.39r] — 2026-03-28 01:59:03 PM EST
+
+> **Prompt:** "move the toggles further apart so that they dont overlap when both opened"
+
+### Fixed
+- Increased spacing between HTML and GAS toggle buttons at bottom-left — GAS toggle moved from `left: 110px` to `left: 135px` so the expanded states ("HTML ○" and "GAS ○") no longer overlap
+
+#### `testauth1.gs` — v02.22g
+
+##### Fixed
+- Toggle buttons no longer overlap when both are in their toggled-off state
 
 ## [v07.38r] — 2026-03-28 01:55:28 PM EST
 

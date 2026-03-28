@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
+
+## [v02.22g] — 2026-03-28 01:59:03 PM EST — v07.39r
+
+### Fixed
+- Toggle buttons no longer overlap when both are in their toggled-off state
 
 ## [v02.21g] — 2026-03-28 01:55:28 PM EST — v07.38r
 
