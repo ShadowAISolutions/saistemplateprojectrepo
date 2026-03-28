@@ -1,4 +1,4 @@
-var VERSION = "v02.12g";
+var VERSION = "v02.13g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -691,6 +691,48 @@ function addRow(token, valuesJSON) {
   var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   addResult.liveData = getCachedData();
   return addResult;
+}
+
+/**
+ * deleteRow(token, rowIndex) — deletes a data row from the spreadsheet by its 0-based index.
+ * rowIndex 0 = first data row (spreadsheet row 2, after header).
+ * Validates the session first (requires 'write' permission via RBAC).
+ * After deleting, refreshes the cache immediately for instant feedback.
+ * Returns signed response with updated live data.
+ */
+function deleteRow(token, rowIndex) {
+  var user = validateSessionForData(token, 'deleteRow');
+  checkPermission(user, 'write', 'deleteRow');
+
+  rowIndex = parseInt(rowIndex, 10);
+  if (isNaN(rowIndex) || rowIndex < 0) {
+    return signMessage({ type: 'gas-write-error', error: 'invalid_row_index' }, user.messageKey || '');
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2)
+  var sheetRow = rowIndex + 2;
+  if (sheetRow > sheet.getLastRow()) {
+    return signMessage({ type: 'gas-write-error', error: 'row_out_of_range' }, user.messageKey || '');
+  }
+
+  sheet.deleteRow(sheetRow);
+
+  // Refresh cache immediately for instant feedback
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'delete_row', {
+    row: rowIndex, sheet: SHEET_NAME
+  });
+
+  var deleteResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  deleteResult.liveData = getCachedData();
+  return deleteResult;
 }
 
 // ══════════════
@@ -3296,6 +3338,17 @@ function doGet(e) {
                 top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
               })
               .addRow(evt.data.token, JSON.stringify(evt.data.values));
+          }
+          // PROJECT: delete-row support
+          if (evt.data && evt.data.type === 'delete-row') {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                top.postMessage(result, '${PARENT_ORIGIN}');
+              })
+              .withFailureHandler(function(err) {
+                top.postMessage({type: 'gas-write-error', error: String(err)}, '${PARENT_ORIGIN}');
+              })
+              .deleteRow(evt.data.token, evt.data.rowIndex);
           }
         });
       </script>

@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 31/50`
+
+## [v03.37w] — 2026-03-27 09:52:43 PM EST — v07.24r
+
+### Added
+- Delete button on each row — removes the row instantly with one click
 
 ## [v03.36w] — 2026-03-27 09:46:47 PM EST — v07.23r
 
@@ -158,110 +163,4 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ### Added
 - Sign-in now shows real-time progress messages ("Contacting Google…", "Verifying your identity…", "Creating your session…", "Almost ready…") so you can see exactly what stage of authentication you're at
 
-## [v03.06w] — 2026-03-25 11:54:00 PM EST — v06.78r
-
-### Fixed
-- Data poll countdown now shows "polling..." indicator on every poll cycle, not just the first
-
-## [v03.05w] — 2026-03-25 11:47:57 PM EST — v06.77r
-
-### Fixed
-- Data poll countdown now counts down smoothly from 15 to 0 without random jumps
-
-## [v03.04w] — 2026-03-25 11:42:42 PM EST — v06.76r
-
-### Fixed
-- Minor internal improvements
-
-## [v03.03w] — 2026-03-25 11:36:58 PM EST — v06.75r
-
-### Fixed
-- Data refresh countdown now briefly shows "polling..." before resetting, instead of jumping from 0 to 15
-
-## [v03.02w] — 2026-03-25 11:30:27 PM EST — v06.74r
-
-### Fixed
-- Data refresh recovers faster when the server reports an error
-
-## [v03.01w] — 2026-03-25 11:21:12 PM EST — v06.73r
-
-### Fixed
-- Data refresh now updates reliably on every poll cycle
-
-## [v03.00w] — 2026-03-25 11:11:53 PM EST — v06.72r
-
-### Changed
-- Minor internal improvements
-
-## [v02.99w] — 2026-03-25 11:04:58 PM EST — v06.71r
-
-### Fixed
-- Data refresh now works reliably — no longer requires a heartbeat to trigger
-
-## [v02.98w] — 2026-03-25 10:57:30 PM EST — v06.70r
-
-### Fixed
-- Data refresh countdown timer no longer gets stuck at 0:00 after a slow server response
-
-## [v02.97w] — 2026-03-25 10:23:52 PM EST — v06.68r
-
-### Security
-- Data requests now include session authentication — unauthenticated data access is no longer possible
-
-## [v02.96w] — 2026-03-25 10:05:15 PM EST — v06.67r
-
-### Fixed
-- Heartbeat timer countdown now remains visible during idle state — shows time until next tick with idle indicator
-
-## [v02.95w] — 2026-03-25 09:47:45 PM EST — v06.66r
-
-### Changed
-- Data polling now runs continuously via dedicated pipeline, independent of user activity state
-- Data poll timer always shows countdown when active, not just when idle
-
-## [v02.94w] — 2026-03-25 09:17:26 PM EST — v06.65r
-
-### Changed
-- All timer rows are now always visible — the Data Poll row shows `--` when inactive instead of disappearing
-
-## [v02.93w] — 2026-03-25 09:11:17 PM EST — v06.64r
-
-### Changed
-- Idle data poll now has its own separate countdown row in the timers panel, making it easy to distinguish from the heartbeat countdown
-
-## [v02.92w] — 2026-03-25 09:05:04 PM EST — v06.63r
-
-### Changed
-- When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
-
-## [v02.91w] — 2026-03-25 09:00:26 PM EST — v06.62r
-
-### Changed
-- Data updates twice as fast when you step away — background polling now runs every 15 seconds instead of 30
-
-## [v02.90w] — 2026-03-25 08:47:57 PM EST — v06.61r
-
-### Fixed
-- Background data polling now works correctly when idle — the table updates with the latest spreadsheet data even when you step away
-
-## [v02.89w] — 2026-03-25 07:14:40 PM EST — v06.60r
-
-### Changed
-- Data stays live even when you step away — a lightweight background poll keeps the table updated without extending your session
-- Heartbeat timer now shows different icons: `▶` when actively extending your session, `◇` when just polling for data in the background
-
-## [v02.88w] — 2026-03-25 05:56:05 PM EST — v06.59r
-
-### Fixed
-- Data now updates correctly when the spreadsheet is edited — changes appear on the next heartbeat cycle
-
-## [v02.87w] — 2026-03-25 05:41:07 PM EST — v06.58r
-
-### Added
-- Live data table replacing the placeholder content area — view your spreadsheet data in real-time with sortable columns
-- Cell change detection with green flash animation when data updates
-- Dashboard card view as an alternative to the table layout
-- Connection status indicator showing how fresh the data is
-- Double-click any cell to edit it directly (requires write permission)
-- View toggle to switch between Table and Dashboard layouts
-
+Developed by: ShadowAISolutions

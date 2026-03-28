@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.36w">
+  <meta name="build-version" content="v03.37w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -4287,11 +4287,18 @@
           });
           thead.appendChild(th);
         });
+        // Add delete column header for users with write permission
+        if (_ldCanEdit) {
+          var thDel = document.createElement('th');
+          thDel.style.width = '40px';
+          thead.appendChild(thDel);
+        }
 
-        var rows = _ldRows.slice();
+        // Build index-preserving rows array so sorting doesn't lose original row indices
+        var indexedRows = _ldRows.map(function(row, i) { return { data: row, origIndex: i }; });
         if (_ldSortCol >= 0 && _ldSortCol < _ldHeaders.length) {
-          rows.sort(function(a, b) {
-            var va = a[_ldSortCol] || '', vb = b[_ldSortCol] || '';
+          indexedRows.sort(function(a, b) {
+            var va = a.data[_ldSortCol] || '', vb = b.data[_ldSortCol] || '';
             var na = parseFloat(va), nb = parseFloat(vb);
             if (!isNaN(na) && !isNaN(nb)) return _ldSortAsc ? na - nb : nb - na;
             return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
@@ -4299,26 +4306,70 @@
         }
 
         tbody.innerHTML = '';
-        rows.forEach(function(row, ri) {
+        indexedRows.forEach(function(entry, ri) {
+          var row = entry.data;
+          var origIdx = entry.origIndex;
           var tr = document.createElement('tr');
           row.forEach(function(val, ci) {
             var td = document.createElement('td');
             td.textContent = val;
-            td.setAttribute('data-row', ri);
+            td.setAttribute('data-row', origIdx);
             td.setAttribute('data-col', ci);
-            var key = ri + ':' + ci;
+            var key = origIdx + ':' + ci;
             if (changedCells[key]) td.classList.add('ld-cell-changed');
             // Double-click to edit (if user has write permission)
             if (_ldCanEdit) {
               td.style.cursor = 'pointer';
               td.addEventListener('dblclick', function() {
-                ldStartCellEdit(this, ri, ci, val);
+                ldStartCellEdit(this, origIdx, ci, val);
               });
             }
             tr.appendChild(td);
           });
+          // Add delete button for users with write permission
+          if (_ldCanEdit) {
+            var tdDel = document.createElement('td');
+            tdDel.style.textAlign = 'center';
+            tdDel.style.padding = '4px';
+            var delBtn = document.createElement('button');
+            delBtn.textContent = '\uD83D\uDDD1\uFE0F';
+            delBtn.title = 'Delete row';
+            delBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;';
+            delBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(248,81,73,0.15)'; });
+            delBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
+            delBtn.addEventListener('click', (function(idx) {
+              return function() { ldDeleteRow(idx); };
+            })(origIdx));
+            tdDel.appendChild(delBtn);
+            tr.appendChild(tdDel);
+          }
           tbody.appendChild(tr);
         });
+      }
+
+      // Delete a row by its original index in _ldRows — optimistic rendering
+      function ldDeleteRow(rowIndex) {
+        if (!_gasSandboxSource || window._deleteRowPending) return;
+        var session = loadSession();
+        if (!session || !session.token) return;
+
+        // Save the row for rollback on error
+        var deletedRow = _ldRows[rowIndex];
+        if (!deletedRow) return;
+
+        // Optimistic rendering — remove row immediately
+        _ldRows.splice(rowIndex, 1);
+        if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+        ldRenderTableView({});
+        ldRenderDashboardView({});
+
+        window._deleteRowPending = { index: rowIndex, row: deletedRow };
+
+        _gasSandboxSource.postMessage({
+          type: 'delete-row',
+          token: session.token,
+          rowIndex: rowIndex
+        }, '*');
       }
 
       function ldStartCellEdit(td, row, col, currentVal) {
@@ -4548,10 +4599,12 @@
             var btn = document.getElementById('ld-add-row-btn');
             if (btn) { btn.textContent = 'Add Row'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
           }
+          // Clear delete-row pending state on success
+          if (window._deleteRowPending) window._deleteRowPending = null;
         }
         if (e.data.type === 'gas-write-error') {
           console.error('Cell write failed:', e.data.error);
-          // Remove the optimistic row on error and re-render
+          // Remove the optimistic row on add-row error and re-render
           if (window._addRowPending) {
             window._addRowPending = false;
             _ldRows.pop();
@@ -4560,6 +4613,15 @@
             if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
             var btn = document.getElementById('ld-add-row-btn');
             if (btn) { btn.textContent = 'Add Row'; btn.style.opacity = '0.5'; btn.style.cursor = 'default'; }
+          }
+          // Restore deleted row on delete-row error
+          if (window._deleteRowPending) {
+            var pending = window._deleteRowPending;
+            window._deleteRowPending = null;
+            _ldRows.splice(pending.index, 0, pending.row);
+            if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+            ldRenderTableView({});
+            ldRenderDashboardView({});
           }
         }
         if (e.data.type === 'live-data') {

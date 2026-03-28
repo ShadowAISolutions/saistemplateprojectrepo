@@ -8,6 +8,116 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+<!-- Rotated 2026-03-27: 20 sections from 2026-03-25 -->
+
+## [v03.06w] — 2026-03-25 11:54:00 PM EST — [v06.78r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b2bb294)
+
+### Fixed
+- Data poll countdown now shows "polling..." indicator on every poll cycle, not just the first
+
+## [v03.05w] — 2026-03-25 11:47:57 PM EST — [v06.77r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8ba51d7)
+
+### Fixed
+- Data poll countdown now counts down smoothly from 15 to 0 without random jumps
+
+## [v03.04w] — 2026-03-25 11:42:42 PM EST — [v06.76r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/767d71c)
+
+### Fixed
+- Minor internal improvements
+
+## [v03.03w] — 2026-03-25 11:36:58 PM EST — [v06.75r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c955b40)
+
+### Fixed
+- Data refresh countdown now briefly shows "polling..." before resetting, instead of jumping from 0 to 15
+
+## [v03.02w] — 2026-03-25 11:30:27 PM EST — [v06.74r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cdfbe9c)
+
+### Fixed
+- Data refresh recovers faster when the server reports an error
+
+## [v03.01w] — 2026-03-25 11:21:12 PM EST — [v06.73r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a6d770d)
+
+### Fixed
+- Data refresh now updates reliably on every poll cycle
+
+## [v03.00w] — 2026-03-25 11:11:53 PM EST — [v06.72r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c220871)
+
+### Changed
+- Minor internal improvements
+
+## [v02.99w] — 2026-03-25 11:04:58 PM EST — [v06.71r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/94e616d)
+
+### Fixed
+- Data refresh now works reliably — no longer requires a heartbeat to trigger
+
+## [v02.98w] — 2026-03-25 10:57:30 PM EST — [v06.70r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/18ad439)
+
+### Fixed
+- Data refresh countdown timer no longer gets stuck at 0:00 after a slow server response
+
+## [v02.97w] — 2026-03-25 10:23:52 PM EST — [v06.68r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e3f0ac2)
+
+### Security
+- Data requests now include session authentication — unauthenticated data access is no longer possible
+
+## [v02.96w] — 2026-03-25 10:05:15 PM EST — [v06.67r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9a464f3)
+
+### Fixed
+- Heartbeat timer countdown now remains visible during idle state — shows time until next tick with idle indicator
+
+## [v02.95w] — 2026-03-25 09:47:45 PM EST — [v06.66r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8a789b)
+
+### Changed
+- Data polling now runs continuously via dedicated pipeline, independent of user activity state
+- Data poll timer always shows countdown when active, not just when idle
+
+## [v02.94w] — 2026-03-25 09:17:26 PM EST — [v06.65r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/78752f3)
+
+### Changed
+- All timer rows are now always visible — the Data Poll row shows `--` when inactive instead of disappearing
+
+## [v02.93w] — 2026-03-25 09:11:17 PM EST — v06.64r — [merged]
+
+### Changed
+- Idle data poll now has its own separate countdown row in the timers panel, making it easy to distinguish from the heartbeat countdown
+
+## [v02.92w] — 2026-03-25 09:05:04 PM EST — v06.63r — [merged]
+
+### Changed
+- When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
+
+## [v02.91w] — 2026-03-25 09:00:26 PM EST — v06.62r — [merged]
+
+### Changed
+- Data updates twice as fast when you step away — background polling now runs every 15 seconds instead of 30
+
+## [v02.90w] — 2026-03-25 08:47:57 PM EST — v06.61r — [merged]
+
+### Fixed
+- Background data polling now works correctly when idle — the table updates with the latest spreadsheet data even when you step away
+
+## [v02.89w] — 2026-03-25 07:14:40 PM EST — v06.60r — [merged]
+
+### Changed
+- Data stays live even when you step away — a lightweight background poll keeps the table updated without extending your session
+- Heartbeat timer now shows different icons: `▶` when actively extending your session, `◇` when just polling for data in the background
+
+## [v02.88w] — 2026-03-25 05:56:05 PM EST — v06.59r — [merged]
+
+### Fixed
+- Data now updates correctly when the spreadsheet is edited — changes appear on the next heartbeat cycle
+
+## [v02.87w] — 2026-03-25 05:41:07 PM EST — v06.58r — [merged]
+
+### Added
+- Live data table replacing the placeholder content area — view your spreadsheet data in real-time with sortable columns
+- Cell change detection with green flash animation when data updates
+- Dashboard card view as an alternative to the table layout
+- Connection status indicator showing how fresh the data is
+- Double-click any cell to edit it directly (requires write permission)
+- View toggle to switch between Table and Dashboard layouts
+
+
 <!-- Rotated 2026-03-27: 14 sections from 2026-03-23 (SHAs unavailable — commits not in history) -->
 
 ## [v02.86w] — 2026-03-23 08:34:55 PM EST — v06.43r — [merged]

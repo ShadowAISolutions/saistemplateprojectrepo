@@ -3,7 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
+
+## [v07.24r] — 2026-03-27 09:52:43 PM EST
+
+> **Prompt:** "great. make it so i can delete rows"
+
+### Added
+- Delete row functionality — GAS `deleteRow()` function removes a row by index from the spreadsheet, with session validation and write permission check
+- Delete button (🗑️) column in the live data table for users with write permission
+- Optimistic rendering for row deletion — row disappears instantly, restored on error
+
+#### `testauth1.html` — v03.37w
+
+##### Added
+- Delete button column in table with optimistic row removal
+
+#### `testauth1.gs` — v02.13g
+
+##### Added
+- `deleteRow()` function for removing rows by index
+- `delete-row` message handler in GAS sandbox iframe
 
 ## [v07.23r] — 2026-03-27 09:46:47 PM EST
 
