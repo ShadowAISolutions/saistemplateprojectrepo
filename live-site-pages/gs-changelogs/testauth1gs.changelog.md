@@ -3,7 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
+
+## [v02.26g] — 2026-03-28 03:49:09 PM EST — v07.46r
+
+### Added
+- Delete row now asks for confirmation before deleting — shows a styled dialog with row data preview
+- Double-tap on table cells now opens the editor on mobile devices
+- Mobile-friendly layout improvements for smaller screens
 
 ## [v02.25g] — 2026-03-28 02:51:47 PM EST — v07.45r
 

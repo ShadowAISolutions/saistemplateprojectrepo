@@ -3,7 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
+
+## [v07.46r] — 2026-03-28 03:49:09 PM EST
+
+> **Prompt:** "in testauth1, when deleting a row, ask for confirmation, it should be a gas confirmation not a browser confirmation. also when i try to double click on a cell on mobile/android its zooming in rather than clicking the cell. make it mobile friendly"
+
+### Added
+- Custom styled delete confirmation modal in GAS iframe — shows row data preview with Cancel/Delete buttons, replacing direct deletion without confirmation
+- Touch-based double-tap detection for cell editing on mobile — `touchend` event with 400ms threshold triggers cell editor since `dblclick` does not fire reliably on touch devices
+- Viewport meta tag (`maximum-scale=1.0, user-scalable=no`) in GAS srcdoc to prevent mobile zoom
+- `touch-action: manipulation` CSS on interactive elements to disable double-tap-to-zoom browser behavior
+
+### Changed
+- Mobile responsive improvements: add-row bar stacks vertically on narrow screens, table cells get tighter padding
+
+#### `testauth1.gs` — v02.26g
+
+##### Added
+- Custom HTML/CSS delete confirmation modal with row data preview
+- Mobile touch double-tap handler for cell editing
+- Viewport meta tag for proper mobile rendering
+- `touch-action: manipulation` on table cells and buttons
+
+##### Changed
+- Mobile layout: add-row bar wraps vertically, table cells use compact padding on small screens
 
 ## [v07.45r] — 2026-03-28 02:51:47 PM EST
 

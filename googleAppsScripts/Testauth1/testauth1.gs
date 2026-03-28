@@ -1,4 +1,4 @@
-var VERSION = "v02.25g";
+var VERSION = "v02.26g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3178,6 +3178,7 @@ function doGet(e) {
   var html = `
     <html>
     <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
       <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
@@ -3267,11 +3268,55 @@ function doGet(e) {
         @keyframes ld-card-flash { 0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); } 100% { border-color: #2a2b3d; box-shadow: none; } }
         .ld-card-changed { animation: ld-card-flash 1.5s ease-out; }
         #ld-empty-state { display: none; flex: 1; align-items: center; justify-content: center; color: #6e7681; font-size: 14px; text-align: center; padding: 40px; }
+        /* Mobile: prevent double-tap zoom on interactive elements */
+        #ld-data-table td, #ld-data-table th, button, .ld-view-tab {
+          touch-action: manipulation;
+        }
+        /* Delete confirmation modal */
+        #ld-delete-modal {
+          display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          z-index: 10000; background: rgba(0,0,0,0.6);
+          align-items: center; justify-content: center;
+        }
+        #ld-delete-modal.active { display: flex; }
+        #ld-delete-modal .modal-box {
+          background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+          padding: 24px; max-width: 360px; width: 90%; text-align: center;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        #ld-delete-modal .modal-title {
+          font-size: 16px; font-weight: 700; color: #f85149; margin-bottom: 8px;
+        }
+        #ld-delete-modal .modal-msg {
+          font-size: 13px; color: #c9d1d9; margin-bottom: 8px; line-height: 1.5;
+        }
+        #ld-delete-modal .modal-preview {
+          font-size: 12px; color: #8b949e; background: #0f1117; border-radius: 6px;
+          padding: 8px 12px; margin-bottom: 16px; word-break: break-word; max-height: 80px; overflow: auto;
+        }
+        #ld-delete-modal .modal-btns {
+          display: flex; gap: 12px; justify-content: center;
+        }
+        #ld-delete-modal .modal-btns button {
+          padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600;
+          cursor: pointer; border: none; min-width: 90px;
+        }
+        #ld-delete-modal .btn-cancel {
+          background: #30363d; color: #c9d1d9;
+        }
+        #ld-delete-modal .btn-cancel:hover { background: #3d444d; }
+        #ld-delete-modal .btn-delete {
+          background: #da3633; color: #fff;
+        }
+        #ld-delete-modal .btn-delete:hover { background: #f85149; }
         @media (max-width: 600px) {
           #ld-header { padding: 10px 12px; }
           #ld-dashboard-grid { grid-template-columns: 1fr; }
           .ld-dash-card .card-value { font-size: 22px; }
           #ld-data-table { font-size: 12px; }
+          #ld-data-table td { padding: 8px 8px; }
+          #ld-add-row-bar { flex-direction: column; }
+          #ld-add-row-bar input { min-width: 0 !important; width: 100%; }
         }
       </style>
     </head>
@@ -3313,6 +3358,19 @@ function doGet(e) {
           <div id="ld-dashboard-grid"></div>
         </div>
         <div id="ld-empty-state">Waiting for data...</div>
+      </div>
+
+      <!-- PROJECT: Delete confirmation modal -->
+      <div id="ld-delete-modal">
+        <div class="modal-box">
+          <div class="modal-title">Delete Row</div>
+          <div class="modal-msg">Are you sure you want to delete this row?</div>
+          <div class="modal-preview" id="ld-delete-preview"></div>
+          <div class="modal-btns">
+            <button class="btn-cancel" id="ld-delete-cancel">Cancel</button>
+            <button class="btn-delete" id="ld-delete-confirm">Delete</button>
+          </div>
+        </div>
       </div>
 
       <script>
@@ -3584,6 +3642,20 @@ function doGet(e) {
                   td.addEventListener('dblclick', function() {
                     ldStartCellEdit(this, origIdx, ci, val);
                   });
+                  // Mobile: detect double-tap since dblclick does not fire reliably on touch
+                  (function(tdEl, ri, colI, v) {
+                    var lastTap = 0;
+                    tdEl.addEventListener('touchend', function(e) {
+                      var now = Date.now();
+                      if (now - lastTap < 400) {
+                        e.preventDefault();
+                        ldStartCellEdit(tdEl, ri, colI, v);
+                        lastTap = 0;
+                      } else {
+                        lastTap = now;
+                      }
+                    });
+                  })(td, origIdx, ci, val);
                 }
                 tr.appendChild(td);
               });
@@ -3619,6 +3691,32 @@ function doGet(e) {
             if (_deleteRowPending) return;
             var deletedRow = _ldRows[rowIndex];
             if (!deletedRow) return;
+            // Show custom confirmation modal with row preview
+            var modal = document.getElementById('ld-delete-modal');
+            var preview = document.getElementById('ld-delete-preview');
+            var cancelBtn = document.getElementById('ld-delete-cancel');
+            var confirmBtn = document.getElementById('ld-delete-confirm');
+            // Build preview: show header:value pairs
+            var previewParts = [];
+            _ldHeaders.forEach(function(h, ci) {
+              previewParts.push(h + ': ' + (deletedRow[ci] || '\\u2014'));
+            });
+            preview.textContent = previewParts.join(' \\u2022 ');
+            modal.classList.add('active');
+            // Clean up old listeners by cloning buttons
+            var newCancel = cancelBtn.cloneNode(true);
+            var newConfirm = confirmBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+            function closeModal() { modal.classList.remove('active'); }
+            newCancel.addEventListener('click', closeModal);
+            newConfirm.addEventListener('click', function() {
+              closeModal();
+              _executeDeleteRow(rowIndex, deletedRow);
+            });
+          }
+
+          function _executeDeleteRow(rowIndex, deletedRow) {
             var tbody = ldDataTable ? ldDataTable.querySelector('tbody') : null;
             if (tbody) {
               var rows = tbody.querySelectorAll('tr');
