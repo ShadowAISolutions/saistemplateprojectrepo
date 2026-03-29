@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 70/50`
+`Sections: 71/50`
+
+## [v03.77w] — 2026-03-29 02:39:56 AM EST — v07.75r
+
+### Changed
+- Parent stage timers now show "group" instead of "total" to distinguish from the grand total
 
 ## [v03.76w] — 2026-03-29 02:29:20 AM EST — v07.74r
 

@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 62/50`
+`Sections: 63/50`
+
+## [v01.63w] — 2026-03-29 02:39:56 AM EST — v07.75r
+
+### Changed
+- Parent stage timers now show "group" instead of "total" to distinguish from the grand total
 
 ## [v01.62w] — 2026-03-29 02:29:20 AM EST — v07.74r
 

@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v07.75r] — 2026-03-29 02:39:56 AM EST
+
+> **Prompt:** "i like group, use that for those"
+
+### Changed
+- Parent stage timer suffix changed from "total" to "group" (e.g. "6.5s group" instead of "6.5s total") to distinguish from the grand total on the final "Sign-in complete" / "Sign-out complete" row which keeps "total"
+
+#### `testauth1.html` — v03.77w
+
+##### Changed
+- Parent stage timers now show "group" suffix instead of "total"
+
+#### `applicationportal.html` — v01.69w
+
+##### Changed
+- Parent stage timers now show "group" suffix instead of "total"
+
+#### `globalacl.html` — v01.63w
+
+##### Changed
+- Parent stage timers now show "group" suffix instead of "total"
 
 ## [v07.74r] — 2026-03-29 02:29:20 AM EST
 
