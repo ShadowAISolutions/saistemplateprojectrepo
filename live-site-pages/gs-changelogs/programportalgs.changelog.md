@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20g] — 2026-03-29 06:37:30 PM EST — v07.90r
+
+### Fixed
+- Announcements now display in spreadsheet row order instead of being auto-sorted by date
 
 ## [v01.19g] — 2026-03-29 06:35:05 PM EST — v07.89r
 

@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
+
+## [v07.90r] — 2026-03-29 06:37:30 PM EST
+
+> **Prompt:** "check the sorting, because no matter what i do, even refreshing the page doesnt show it in the same order as on the spreadsheet"
+
+### Fixed
+- Removed automatic date-descending sort from `refreshAnnouncementsCache()` — announcements now display in spreadsheet row order, which admins control via the up/down reorder buttons
+
+#### `programportal.gs` — v01.20g
+
+##### Fixed
+- Removed `items.sort()` by date in cache refresh — preserves spreadsheet row order for reorder buttons to work correctly
 
 ## [v07.89r] — 2026-03-29 06:35:05 PM EST
 

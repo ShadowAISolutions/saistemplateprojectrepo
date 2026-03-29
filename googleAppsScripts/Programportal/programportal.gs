@@ -1,4 +1,4 @@
-var VERSION = "v01.19g";
+var VERSION = "v01.20g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -342,10 +342,7 @@ function refreshAnnouncementsCache() {
         active: active
       });
     }
-    // Sort by date descending (newest first)
-    items.sort(function(a, b) {
-      return new Date(b.date) - new Date(a.date);
-    });
+    // Preserve spreadsheet row order — admin controls reordering via up/down buttons
     var result = JSON.stringify({ items: items, ts: Date.now() });
     getEpochCache().put('announcements_' + ANNOUNCEMENTS_SHEET_NAME, result, 21600);
   } catch (e) {
