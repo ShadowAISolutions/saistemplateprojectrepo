@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.64w">
+  <meta name="build-version" content="v01.65w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -3707,6 +3707,7 @@
         _adminPanelOpen = false;
         return;
       }
+      _closeAllPanelsExcept('admin-sessions-panel');
       panel.style.display = 'block';
       _adminPanelOpen = true;
       document.getElementById('asp-session-list').innerHTML =
@@ -3719,6 +3720,10 @@
     });
 
     document.getElementById('asp-close-btn').addEventListener('click', function() {
+      document.getElementById('admin-sessions-panel').style.display = 'none';
+      _adminPanelOpen = false;
+    });
+    _registerPanel('admin-sessions-panel', function() {
       document.getElementById('admin-sessions-panel').style.display = 'none';
       _adminPanelOpen = false;
     });
@@ -3871,9 +3876,7 @@
         _globalPanelOpen = false;
         return;
       }
-      // Close the local sessions panel if open
-      document.getElementById('admin-sessions-panel').style.display = 'none';
-      _adminPanelOpen = false;
+      _closeAllPanelsExcept('admin-global-sessions-panel');
       panel.style.display = 'block';
       _globalPanelOpen = true;
       document.getElementById('gsp-session-list').innerHTML =
@@ -3886,6 +3889,11 @@
     });
 
     document.getElementById('gsp-close-btn').addEventListener('click', function() {
+      document.getElementById('admin-global-sessions-panel').style.display = 'none';
+      _globalPanelOpen = false;
+    });
+    // PROJECT: Register global sessions panel so _closeAllPanelsExcept closes it during sign-out
+    _registerPanel('admin-global-sessions-panel', function() {
       document.getElementById('admin-global-sessions-panel').style.display = 'none';
       _globalPanelOpen = false;
     });

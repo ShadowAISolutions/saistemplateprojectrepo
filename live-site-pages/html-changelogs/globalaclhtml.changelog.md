@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 64/50`
+`Sections: 65/50`
+
+## [v01.65w] — 2026-03-29 02:08:47 PM EST — v07.78r
+
+### Fixed
+- Global Sessions panel no longer stays visible during sign-out
+- Sessions and Global Sessions panels now close each other when toggling between them
 
 ## [v01.64w] — 2026-03-29 01:58:46 PM EST — v07.77r
 

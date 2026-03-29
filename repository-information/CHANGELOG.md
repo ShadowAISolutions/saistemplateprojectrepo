@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v07.78r] — 2026-03-29 02:08:47 PM EST
+
+> **Prompt:** "the global sessions menu is showing when signing out."
+
+### Fixed
+- Global Sessions panel now closes automatically when sign-out begins — registered both session panels in the panel registry so `_closeAllPanelsExcept(null)` includes them
+
+#### `globalacl.html` — v01.65w
+
+##### Fixed
+- Global Sessions panel no longer stays visible during sign-out
+- Sessions and Global Sessions panels are now mutually exclusive — opening one closes the other
 
 ## [v07.77r] — 2026-03-29 01:58:46 PM EST
 
