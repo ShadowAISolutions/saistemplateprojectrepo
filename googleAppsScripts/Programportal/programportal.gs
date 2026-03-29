@@ -1,4 +1,4 @@
-var VERSION = "v01.27g";
+var VERSION = "v01.28g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2621,6 +2621,11 @@ function doGet(e) {
           margin-bottom: 10px; transition: all 0.2s;
         }
         .ann-cancel-order-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .announcement-card[draggable="true"] { cursor: grab; }
+        .announcement-card[draggable="true"]:active { cursor: grabbing; }
+        .announcement-card.dragging { opacity: 0.4; }
+        .announcement-card.drag-over { border-top: 2px solid #42a5f5; margin-top: -2px; }
+        .ann-drag-handle { cursor: grab; color: rgba(255,255,255,0.3); font-size: 14px; margin-right: 8px; user-select: none; }
         .ann-status-bar {
           display: flex; align-items: center; gap: 12px; padding: 6px 0; margin-bottom: 8px;
           font-size: 11px; color: rgba(255,255,255,0.5);
@@ -3034,6 +3039,10 @@ function doGet(e) {
             var card = document.createElement('div');
             card.className = 'announcement-card priority-' + priority;
             if (item.active === false) card.style.opacity = '0.45';
+            if (_isAdmin) {
+              card.draggable = true;
+              card.dataset.dragIdx = i; // array position for drag reorder
+            }
 
             // Flash animation for new announcements (not on initial render)
             var itemKey = item.title + item.date;
@@ -3065,8 +3074,10 @@ function doGet(e) {
 
             var inactiveTag = (item.active === false) ? ' <span style="color:#ef5350;font-size:11px;">(inactive)</span>' : '';
 
+            var dragHandle = _isAdmin ? '<span class="ann-drag-handle" title="Drag to reorder">⠿</span>' : '';
+
             card.innerHTML = adminHtml
-              + '<div class="announcement-title">' + _escapeHtml(item.title) + inactiveTag + '</div>'
+              + '<div class="announcement-title">' + dragHandle + _escapeHtml(item.title) + inactiveTag + '</div>'
               + (item.body ? '<div class="announcement-body">' + _escapeHtml(item.body) + '</div>' : '')
               + (dateStr ? '<div class="announcement-date">' + _escapeHtml(dateStr) + '</div>' : '');
 
@@ -3097,6 +3108,43 @@ function doGet(e) {
               btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 _reorderAnnouncement(parseInt(this.dataset.idx), this.dataset.dir);
+              });
+            });
+
+            // Drag-and-drop reorder
+            var _dragFromIdx = null;
+            _annContainer.querySelectorAll('.announcement-card[draggable]').forEach(function(card) {
+              card.addEventListener('dragstart', function(e) {
+                _dragFromIdx = parseInt(this.dataset.dragIdx);
+                this.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+              });
+              card.addEventListener('dragend', function() {
+                this.classList.remove('dragging');
+                _annContainer.querySelectorAll('.drag-over').forEach(function(el) { el.classList.remove('drag-over'); });
+              });
+              card.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                // Clear all drag-over, add to current
+                _annContainer.querySelectorAll('.drag-over').forEach(function(el) { el.classList.remove('drag-over'); });
+                if (parseInt(this.dataset.dragIdx) !== _dragFromIdx) {
+                  this.classList.add('drag-over');
+                }
+              });
+              card.addEventListener('dragleave', function() {
+                this.classList.remove('drag-over');
+              });
+              card.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('drag-over');
+                var toIdx = parseInt(this.dataset.dragIdx);
+                if (_dragFromIdx === null || _dragFromIdx === toIdx) return;
+                // Move item from _dragFromIdx to toIdx in the local array
+                var moved = _annLocalItems.splice(_dragFromIdx, 1)[0];
+                _annLocalItems.splice(toIdx, 0, moved);
+                _optimisticRender();
+                _checkOrderDirty();
               });
             });
           }

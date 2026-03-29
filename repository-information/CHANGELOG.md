@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
+
+## [v07.98r] — 2026-03-29 07:06:43 PM EST
+
+> **Prompt:** "can you make it so that the user can drag the announcements to reorder them?"
+
+### Added
+- HTML5 drag-and-drop reordering for announcement cards (admin only) — drag any card to a new position, local-only until Save Order is clicked
+- Drag handle icon (⠿) on each card title, grab cursor on hover, reduced opacity during drag, blue top-border indicator on drop target
+- Cards get `draggable="true"` and `data-drag-idx` attributes; `dragstart`/`dragover`/`drop`/`dragend` event listeners handle the reorder logic
+- Drag reorder integrates with existing Save Order / Cancel Changes workflow
+
+#### `programportal.gs` — v01.28g
+
+##### Added
+- Drag-and-drop event handlers on announcement cards (dragstart, dragover, drop, dragend)
+- `.dragging`, `.drag-over`, `.ann-drag-handle` CSS classes
+- Drag handle (⠿) prepended to announcement titles for admin users
 
 ## [v07.97r] — 2026-03-29 07:03:58 PM EST
 

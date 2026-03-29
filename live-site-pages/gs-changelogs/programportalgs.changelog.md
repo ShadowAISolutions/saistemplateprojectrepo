@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 27/50`
+`Sections: 28/50`
 
 ## [Unreleased]
+
+## [v01.28g] — 2026-03-29 07:06:43 PM EST — v07.98r
+
+### Added
+- Drag and drop reordering for announcements — grab any card and drag it to a new position
+- Drag handle icon (⠿) on each announcement card for admins
+- Blue highlight indicator shows where the card will be dropped
 
 ## [v01.27g] — 2026-03-29 07:03:58 PM EST — v07.97r
 
