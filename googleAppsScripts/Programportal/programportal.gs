@@ -1,4 +1,4 @@
-var VERSION = "v01.17g";
+var VERSION = "v01.18g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2587,11 +2587,7 @@ function doGet(e) {
         .ann-poll-dot { width: 6px; height: 6px; border-radius: 50%; background: #3fb950; }
         .ann-poll-dot.polling { background: #d29922; animation: ann-pulse 1s infinite; }
         @keyframes ann-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .ann-version-toggles { display: flex; gap: 4px; margin-left: auto; }
-        .ann-version-pill {
-          background: rgba(255,255,255,0.1); border-radius: 4px; padding: 2px 8px;
-          font-size: 10px; color: rgba(255,255,255,0.5); cursor: default;
-        }
+        .ann-poll-status { margin-left: auto; }
       </style>
     </head>
     <body>
@@ -2633,10 +2629,6 @@ function doGet(e) {
             <div class="ann-poll-dot" id="ann-poll-dot"></div>
             <span id="ann-poll-label">Live</span>
             <span id="ann-poll-countdown">--</span>
-          </div>
-          <div class="ann-version-toggles">
-            <span class="ann-version-pill" id="ann-html-version">HTML</span>
-            <span class="ann-version-pill" id="ann-gas-version">GAS</span>
           </div>
         </div>
         <div id="announcements-container"></div>
@@ -3134,13 +3126,6 @@ function doGet(e) {
         var _annPollDot = document.getElementById('ann-poll-dot');
         var _annPollLabel = document.getElementById('ann-poll-label');
         var _annPollCountdown = document.getElementById('ann-poll-countdown');
-        var _annHtmlPill = document.getElementById('ann-html-version');
-        var _annGasPill = document.getElementById('ann-gas-version');
-
-        // Set version pill text
-        _annHtmlPill.textContent = 'HTML';
-        _annGasPill.textContent = 'GAS';
-
         var _annCountdownTimer = setInterval(function() {
           if (_annPollInFlight) {
             _annPollDot.classList.add('polling');

@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
+
+## [v07.86r] — 2026-03-29 06:24:12 PM EST
+
+> **Prompt:** "the html and gas buttons arent letting me click them, put them in the same spot and work the same way as the testauth1"
+
+### Removed
+- Non-functional HTML/GAS version pills from the GAS iframe announcements section — these were duplicates of the working version pills on the embedding page (`programportal.html`) which already provide changelog popups at fixed bottom-right position, matching TestAuth1's layout
+
+#### `programportal.gs` — v01.18g
+
+##### Removed
+- Removed `ann-version-toggles`, `ann-version-pill` CSS, HTML elements, and JS references from the announcements section — the embedding page's template-level version pills (with changelog popup support) are the correct implementation
 
 ## [v07.85r] — 2026-03-29 06:20:23 PM EST
 
