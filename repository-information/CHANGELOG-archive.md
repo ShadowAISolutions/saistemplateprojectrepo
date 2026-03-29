@@ -77,21 +77,21 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
-## [v07.03r] — 2026-03-26 03:14:18 PM EST
+## [v07.03r] — 2026-03-26 03:14:18 PM EST — [0bccef1f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0bccef1fc2e480ddff8afc9ce6c35f102f474bb5)
 
 > **Prompt:** "i think the emoji legend should be before the repository root"
 
 ### Changed
 - Moved emoji legend to appear before the Repository Root line in the README project structure, so readers see the key before scanning the tree
 
-## [v07.02r] — 2026-03-26 03:11:20 PM EST
+## [v07.02r] — 2026-03-26 03:11:20 PM EST — [f934e9d8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f934e9d86c48b10fb1f4492641fa3799b711342b)
 
 > **Prompt:** "have the page status's on the same row as the 🌐  Webpage"
 
 ### Changed
 - Merged page status indicators (🟢 Active · 🟡 Maintenance · 🔴 Inactive) into the 🌐 Webpage row in the README emoji legend, removing the separate Page Status section
 
-## [v07.01r] — 2026-03-26 03:08:32 PM EST
+## [v07.01r] — 2026-03-26 03:08:32 PM EST — [34aedbda](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/34aedbda6b09e4abfc5dcc9ee16f937dc1315f21)
 
 > **Prompt:** "the following is an example. for each row have both the active and inactive ones, so instead of 📊  Google Spreadsheet    — links to the page's data spreadsheet , have it be something like 📊  Google Spreadsheet         — 🔸  No spreadsheet . dont need to include the end of links to the page's data spreadsheet . do the same for all of them"
 
@@ -99,14 +99,14 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Restructured README emoji legend to pair each active icon with its inactive/placeholder counterpart on the same row (e.g. `📊 Google Spreadsheet — 🔸 No spreadsheet`), removing verbose link descriptions
 - Consolidated Page Status into a single row (`🟢 Active — 🟡 Maintenance — 🔴 Inactive`)
 
-## [v07.00r] — 2026-03-26 03:03:45 PM EST
+## [v07.00r] — 2026-03-26 03:03:45 PM EST — [d6309cff](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d6309cff4aa6271d70273ff6295e5958349317ab)
 
 > **Prompt:** "in the readme project structure, make a legend to identify what each emoji means. i.e. 🌐 is webpage, 📊google sheet, etc.. both the included and not included icons like 🔸◽🔻"
 
 ### Added
 - Added emoji legend to README project structure — documents all page action icons (🌐 📊 ⛽ 🧜‍♀️ 📁), placeholder icons (🔸 ◽ 🔻), and page status indicators (🟢 🟡 🔴) so readers can interpret the tree at a glance
 
-## [v06.99r] — 2026-03-26 02:29:03 PM EST
+## [v06.99r] — 2026-03-26 02:29:03 PM EST — [0f3d15dd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0f3d15ddcc460ca0be73f355d9d9ea5c83524f14)
 
 > **Prompt:** "i see that there are some project specific things such as the SSO indicator, but i want things like that to also be applied to the templates as they will be used with the gas-project-creator. do the same for anything else you can find like that"
 
@@ -132,7 +132,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [Unreleased]
 
-## [v06.98r] — 2026-03-26 01:58:55 PM EST
+## [v06.98r] — 2026-03-26 01:58:55 PM EST — [a34eb0c1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
 
 > **Prompt:** "for some reason its allowing the SSO to show in the application portal even if signed out"
 
@@ -144,7 +144,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - SSO status badge no longer appears when signed out or on the sign-in screen
 
-## [v06.97r] — 2026-03-26 01:17:37 PM EST
+## [v06.97r] — 2026-03-26 01:17:37 PM EST — [c72027f4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c72027f4dd8764903eccec9c4fc4a1bd31128e56)
 
 > **Prompt:** "nope its still poping up"
 
@@ -169,7 +169,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
 
-## [v06.96r] — 2026-03-26 12:58:10 PM EST
+## [v06.96r] — 2026-03-26 12:58:10 PM EST — [c645e17b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c645e17b9f76243413c739080c6755fb20bae35c)
 
 > **Prompt:** "idk what you did since its still not working as i want it to, but what i meant was that with the application portal we made it so that it automatically detects which google account to sign into if using the sign in button when absolute is about to time out, so that the user cant try to sign in under another account, so apply the same here, auto sign in the same way we have it when refreshing the page in the application portal"
 
@@ -193,7 +193,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
 
-## [v06.95r] — 2026-03-26 12:03:38 PM EST
+## [v06.95r] — 2026-03-26 12:03:38 PM EST — [1122d29e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1122d29ea161e104c74e4afcaa83b55ba2d59e47)
 
 > **Prompt:** "when the absolute timer is low (for example in testauth1), and i click sign in again, it shows the popup to select a google account, but it stops the countdown from happening, and disconnects the data sync, which is fine but to should still be showing an indicator, unless this has timed out everything. however when i close the GIS, its not doing anything, not signing out or anything. i think it should be handled how we handled the SSO GIS reconnecting in the application portal, but do your own analysis. fix this everywhere it applies to"
 
@@ -213,7 +213,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Added `_onGisPopupDismissed()` function and `error_callback` to all GIS `initTokenClient` calls
 
-## [v06.94r] — 2026-03-26 11:14:47 AM EST
+## [v06.94r] — 2026-03-26 11:14:47 AM EST — [c6a03246](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c6a03246844bf8a3a12da221c96dd6bd6bd3a02d)
 
 > **Prompt:** "make sure everything we have fixed is applied to the templates also"
 
@@ -236,7 +236,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Added SSO token email validation to reconnect flow — mismatched Google accounts are rejected
 - Added `login_hint` to pre-select the correct Google account during SSO token refresh
 
-## [v06.93r] — 2026-03-26 11:06:12 AM EST
+## [v06.93r] — 2026-03-26 11:06:12 AM EST — [89c77faf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89c77faf423700d5160ba3305dd37bacceabacce)
 
 > **Prompt:** "go ahead and change the title of testauth1 from "CHANGE THIS PROJECT TITLE TEMPLATE" to "Testauth1 Title""
 
@@ -247,7 +247,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Page title updated from placeholder to "Testauth1 Title"
 
-## [v06.92r] — 2026-03-26 10:49:30 AM EST
+## [v06.92r] — 2026-03-26 10:49:30 AM EST — [a88695ff](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a88695ff34bf183bcbd91a857616128403e4a86c)
 
 > **Prompt:** "using the Use Here button anywhere is resulting in getting permanently stuck on reconnecting verifying your session"
 
@@ -266,7 +266,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - "Use Here" session reclaim no longer hangs on reconnecting
 
-## [v06.91r] — 2026-03-26 09:47:33 AM EST
+## [v06.91r] — 2026-03-26 09:47:33 AM EST — [dfdd4304](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dfdd4304afbffdacd2bd6f5f7d14398d30b17f44)
 
 > **Prompt:** "ive noticed something. when i refresh the application portal, the google sign in pops up to enable SSO, however, its letting me select another account and still counting for SSO active. can you make it make sure that the account selected is the same as the one signed in to the application portal or else block it"
 
@@ -279,7 +279,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - SSO re-acquisition now validates the Google token's email against the active session — selecting a different Google account no longer falsely enables SSO
 - Added `login_hint` to pre-select the correct Google account during SSO token refresh
 
-## [v06.90r] — 2026-03-26 09:32:01 AM EST
+## [v06.90r] — 2026-03-26 09:32:01 AM EST — [78fa23f2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/78fa23f26467ce081686a712d33d549e34799032)
 
 > **Prompt:** "add the checklists for when we are on the sign in via application portal parge for all applications, including the templates"
 
@@ -298,7 +298,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - SSO sign-in now shows the progress checklist with "Signing in via Program Portal" subtitle above it
 
-## [v06.89r] — 2026-03-26 09:25:30 AM EST
+## [v06.89r] — 2026-03-26 09:25:30 AM EST — [31dbf546](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/31dbf546fea96a23a979512b9f29699ede770ce4)
 
 > **Prompt:** "we are sometimes getting stuck on the exchanging credentials with the server part indefinitely, the screenshot shows what it says in the console, address cleanly, no silent fallbacks"
 
@@ -317,7 +317,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
 
-## [v06.88r] — 2026-03-26 09:13:59 AM EST
+## [v06.88r] — 2026-03-26 09:13:59 AM EST — [535dbf9d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/535dbf9df798e18e7f4ec779ca055845c81c7037)
 
 > **Prompt:** "add these checklists to the templates, so that it can be used dynamically for whatever type of project it is, i.e. the application portal or any other application"
 
@@ -642,7 +642,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - All timer rows are now always visible — the Data Poll row shows `--` when inactive instead of disappearing
 
-## [v06.64r] — 2026-03-25 09:11:17 PM EST — [merged]
+## [v06.64r] — 2026-03-25 09:11:17 PM EST — [90b76057](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/90b76057a2293521f8e5582a04f0e9326796dc05)
 
 > **Prompt:** "i meant as a separate row, right now i still only see the heartbeat."
 
@@ -653,7 +653,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
 
-## [v06.63r] — 2026-03-25 09:05:04 PM EST — [merged]
+## [v06.63r] — 2026-03-25 09:05:04 PM EST — [af549c38](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/af549c3830b91af246749009ca64b0f8fbc83e31)
 
 > **Prompt:** "just like how the heartbeat has a visible countdown, make the idle one also have its own visible countdown so its easy to distinguish whats happening at any one time"
 
@@ -664,7 +664,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - When idle, the heartbeat timer shows a countdown to the next data poll (`◇ 12s idle`) instead of the heartbeat interval, so you can see exactly when the next background data fetch will fire
 
-## [v06.62r] — 2026-03-25 09:00:26 PM EST — [merged]
+## [v06.62r] — 2026-03-25 09:00:26 PM EST — [4fa41d5c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4fa41d5c111e52059efef4f65e38d26ee0f3f589)
 
 > **Prompt:** "yes decouple it to its own config variable and make the idle poll every 15 seconds"
 
@@ -675,7 +675,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Idle data poll now runs every 15 seconds (was 30s tied to heartbeat) — data stays fresher when you step away, with its own independent config variable
 
-## [v06.61r] — 2026-03-25 08:47:57 PM EST — [merged]
+## [v06.61r] — 2026-03-25 08:47:57 PM EST — [487e6160](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/487e61607443b2c0bb1bbc7bd84fb1928be8423e)
 
 > **Prompt:** "i just tried it, but when its polling data on idle, its not updating the table data. only when doing the traditional heartbeat is it updating the table data properly. in case it helps the console information when idle polling is what is in the screenshot"
 
@@ -692,7 +692,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Idle data poll now uses a dedicated hidden iframe (`#gas-data-poll`) instead of `gasApp.contentWindow.postMessage()` — bypasses GAS sandbox origin mismatch that was silently dropping messages
 
-## [v06.60r] — 2026-03-25 07:14:40 PM EST — [merged]
+## [v06.60r] — 2026-03-25 07:14:40 PM EST — [1f3b662d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1f3b662d183c831bd419d93211e1e000ffa882a7)
 
 > **Prompt:** "go ahead and implement it. make some sort of visual indication on the heartbeat so we can tell the difference between the two pipes firing (also to make sure that both arent happening at the same time)"
 
@@ -705,7 +705,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Data stays live even when idle — lightweight background poll replaces the activity-gated heartbeat for data updates
 - Heartbeat timer now shows `▶` for active heartbeats and `◇` for idle data polling, so you can tell which pipe is firing
 
-## [v06.59r] — 2026-03-25 05:56:05 PM EST — [merged]
+## [v06.59r] — 2026-03-25 05:56:05 PM EST — [e4cf2f71](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e4cf2f7134bb83bd598b343a4050a53c9b20ac22)
 
 > **Prompt:** "2 things, 1 , the heartbeat is taking 15 seconds to send instead of 2 or 3 before this change. 2 , its not updating the changes on edit. i already have the trigger installed and the auth scope is there"
 
@@ -721,7 +721,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Heartbeat response time restored to normal — live data is no longer included in the security signature computation, reducing processing time
 
-## [v06.58r] — 2026-03-25 05:41:07 PM EST — [merged]
+## [v06.58r] — 2026-03-25 05:41:07 PM EST — [0764aa8d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0764aa8d2046cb83721b95fbd2a9335f75fad9fb)
 
 > **Prompt:** "alright, write up this idea of live data editing with the intention of applying it for the testauth1 environment in a prompt format to use with you in a new session, including all context to begin coding. you can show the same type of data table we made in the rnd live data in the testauth1 instead of the giant 1 in the center."
 
@@ -747,7 +747,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - `writeCell()` function with session validation, RBAC permission check, and audit logging
 - Live data piggybacked on heartbeat response — `processHeartbeat()` now includes `liveData: getCachedData()` in its signed payload
 
-## [v06.57r] — 2026-03-25 05:01:08 PM EST — [merged]
+## [v06.57r] — 2026-03-25 05:01:08 PM EST — [bc91241c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bc91241c3b9d9904fa9abf4e3f58fe8735f8ad7f)
 
 > **Prompt:** "update the __gas-project-creator to include this change for all scripts moving forward__"
 
@@ -758,7 +758,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Manifest template now includes the `script.scriptapp` scope for installable trigger support
 
-## [v06.56r] — 2026-03-25 04:52:58 PM EST — [merged]
+## [v06.56r] — 2026-03-25 04:52:58 PM EST — [ab85fabb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ab85fabb054a50ba7cd37e544675edcc4f24094d)
 
 > **Prompt:** "yes implement it"
 
@@ -775,7 +775,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Setup instructions updated with trigger installation step
 
-## [v06.55r] — 2026-03-25 04:36:47 PM EST — [merged]
+## [v06.55r] — 2026-03-25 04:36:47 PM EST — [a3653571](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a3653571d82a797b3864de2be4eae47e0361bba5)
 
 > **Prompt:** "yes implement this"
 
@@ -796,7 +796,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Setup instructions updated — time-driven trigger no longer needed
 
-## [v06.54r] — 2026-03-25 02:58:00 PM EST — [merged]
+## [v06.54r] — 2026-03-25 02:58:00 PM EST — [81598b99](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/81598b994d5dc2ea4272b75db3e3a0c9581210c0)
 
 > **Prompt:** "for rndlivedata , see if you can come up with a way for it to work without sharing the spreadsheet publicly, that defeats the whole purpose. the users might as well be looking at the spreadsheet"
 
@@ -819,7 +819,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Presence heartbeats now also deliver live data to viewers (zero extra calls)
 - Active user queries include live data alongside the user list
 
-## [v06.53r] — 2026-03-25 02:18:30 PM EST — [merged]
+## [v06.53r] — 2026-03-25 02:18:30 PM EST — [6c519597](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6c519597f8ea3b6b0ac4f8b8d2d1bc20df995828)
 
 > **Prompt:** (screenshot showing CSP `connect-src` blocking `accounts.google.com` during Google Visualization API query, causing `XhrHttpError: Request Failed, status=0`)
 
@@ -830,7 +830,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Added `https://accounts.google.com` and `https://www.google.com` to CSP `connect-src` — the Visualization Query's XHR redirects through Google's auth endpoint
 
-## [v06.52r] — 2026-03-25 02:13:00 PM EST — [merged]
+## [v06.52r] — 2026-03-25 02:13:00 PM EST — [5c1e40e8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5c1e40e8435a13cd971ca7045703bd4279d2d5d6)
 
 > **Prompt:** "still says connecting, showing console in case it helps"
 
@@ -844,7 +844,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Added `https://fonts.googleapis.com` to CSP `style-src` and `https://fonts.gstatic.com` to CSP `font-src` — preemptive for Google Charts font loading
 - Added `https://www.shadowaisolutions.com` to CSP `img-src` — developer logo was blocked
 
-## [v06.51r] — 2026-03-25 02:07:29 PM EST — [merged]
+## [v06.51r] — 2026-03-25 02:07:29 PM EST — [cb0a9dab](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cb0a9daba93cda9f9999e26c343a4b645cb4646c)
 
 > **Prompt:** "so how do i use this? it says connecting... and doesnt move from there"
 
@@ -855,7 +855,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Added `https://www.google.com` to Content Security Policy `script-src` directive — Google Charts dynamically loads the visualization library from this domain after the initial loader.js
 
-## [v06.50r] — 2026-03-25 01:57:21 PM EST — [merged]
+## [v06.50r] — 2026-03-25 01:57:21 PM EST — [fb9c34e4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fb9c34e4a4e43ddc417cce703c8132e736251b16)
 
 > **Prompt:** "for the rndlivedata, what do you think of the following plan, research online and think deeply about it. Set up the GAS project called "rndlivedata" and implement a live real-time spreadsheet data viewer using the Google Visualization API — zero GAS execution for data reads. ## What to build Add a PROJECT OVERRIDE comment explaining live data is served via Google Visualization API. Add these PROJECT section functions: 1. **writePresence(userName)** — writes a heartbeat to a hidden `_Presence` sheet. Creates the sheet with "User"/"Last Seen" headers if it doesn't exist. Updates existing user rows or appends new ones. Called from the HTML page via GAS iframe every 30 seconds. 2. **getActiveUsers()** — returns array of users active within the last 60 seconds by reading the `_Presence` sheet. In the doGet() HTML: - Replace the B1 display with "Live data via Google Visualization API" text - Replace pollB1FromCache and pollQuotaAndLimits with presence heartbeat logic: - Generate a random viewer name (Viewer_XXXX), store in sessionStorage - Call google.script.run.writePresence(name) every 30 seconds - Add message listener for 'get-active-users' that calls getActiveUsers() and posts results back ### rndlivedata.html — Live Data Page with Google Visualization API Dark theme (#0f1117 background) with these features: **Data Engine:** - Load Google Charts API from `https://www.gstatic.com/charts/loader.js` - Query `https://docs.google.com/spreadsheets/d/SHEET_ID/gviz/tq?sheet=SHEET_NAME&tqx=out:json` every 2.5 seconds - Parse the JSONP-style response (strip `google.visualization.Query.setResponse(` wrapper) - Only re-render when data actually changes (hash comparison) - Cell-level change detection comparing previous vs current data **Dual View Modes (tabbed UI):** 1. **Table View** — full spreadsheet data as styled HTML table - Sortable columns (click header to sort, toggle asc/desc) - Cell-level change animation: green flash on changed cells (`@keyframes cell-flash`) - Responsive layout with overflow-x scroll 2. **Dashboard View** — first row displayed as large cards/tiles - Each card shows: column header as label, cell value as large text, "N more rows" as meta - Stats card showing rows × cols and poll interval - Value change animation on cards **Connection Status Indicator:** - Top-right pill showing: Live (green dot) / Updating... (orange dot) / Disconnected (red dot) - Countdown timer showing seconds until next refresh **User Presence Tracking:** - Read the `_Presence` sheet via Viz API (zero GAS calls for reading) - Display colored avatar bubbles with initials in the header - Show viewer count - Active = seen within last 120 seconds **Config Hint:** - When SHEET_ID is empty, show a centered config hint with instructions to set the ID and publish the spreadsheet to the web **Keep all TEMPLATE sections intact** — splash screens, version polling, GAS pill, changelog popups, wake lock, audio system. Only customize within PROJECT START/END markers. ## Architecture: Zero-GAS Reads"
 
@@ -896,7 +896,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Removed
 - REST API endpoints for data fetch and submission
 
-## [v06.49r] — 2026-03-25 12:04:52 PM EST — [merged]
+## [v06.49r] — 2026-03-25 12:04:52 PM EST — [109a380c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/109a380c38b5aa816ee710403418b5af867070d7)
 
 > **Prompt:** "the copy Code.gs for GAS using the gas-project-creator did not include the spreadsheet ID, fix that and make sure everything in the gas-project-creator is accounted for in the code copying and copy config."
 
@@ -911,7 +911,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Copy Code.gs now includes spreadsheet ID for all project types, not just authenticated ones
 - Copy Config now always includes spreadsheet ID in the generated setup command
 
-## [v06.48r] — 2026-03-25 11:55:30 AM EST — [merged]
+## [v06.48r] — 2026-03-25 11:55:30 AM EST — [486c1a9e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/486c1a9e2d89ceb7bf80cd3e51626a22a3d6df70)
 
 > **Prompt:** "the spreadsheet id wasnt swapped for the placeholder, go ahead and swap it now : 1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU"
 
@@ -922,7 +922,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Connected to actual Google Sheet for data storage
 
-## [v06.47r] — 2026-03-25 11:43:03 AM EST — [merged]
+## [v06.47r] — 2026-03-25 11:43:03 AM EST — [43390daf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/43390daffcebfa4c08b4a6d89a349be0a7e96d8b)
 
 > **Prompt:** "The following plan is for the rndlivedata project. PROJECT BRIEF: Multi-User Data Entry Web App For handoff to Claude Code (GitHub Pages + Google Apps Script) WHAT WE'RE BUILDING A multi-user data entry web app — think a custom Google Sheet frontend as a web app. Multiple users (20+) open the same URL, enter data, and eventually see each other's entries. The frontend is hosted on GitHub Pages (already set up). The backend is Google Apps Script deployed as a web app, with Google Sheets as the database. Everything must stay within the Google ecosystem for the backend — no Firebase, no external databases, no third-party services. This will be used across ~50 projects on the same Google account, meaning potentially hundreds of browser tabs could be open simultaneously across all projects. THE CORE CONSTRAINT WE SOLVED The original question was: can we use webhooks or real-time push to sync data between users via Google Apps Script? The answer is no. After deep research, here's what we confirmed: What doesn't work and why: WebSockets / Server-Sent Events (SSE) — Apps Script web apps are simple request/response HTTP. They buffer the entire response before sending. You cannot hold a connection open or stream data. Not possible. Google Drive API changes.watch() webhooks — This IS a real push system where Google POSTs to a URL when a file changes. BUT the receiving endpoint must read HTTP headers (X-Goog-Channel-ID, X-Goog-Resource-State, etc.) to process the notification. Google officially confirmed in 2023 they will NOT support HTTP headers in doPost() due to security concerns (see: https://issuetracker.google.com/issues/67764685). So an Apps Script web app cannot be the webhook receiver. onEdit triggers — These fire server-side when someone manually edits a Sheet in the browser, but script executions and API requests (like appendRow() from your web app) do NOT trigger onEdit. And even if they did, there's no mechanism to push from a server-side trigger to connected browser clients. Long polling (server holds connection open) — We considered having google.script.run call a function that loops with Utilities.sleep() checking CacheService for changes. The problem: Google Apps Script has a hard limit of 30 simultaneous executions per user account. With hundreds of tabs, each holding a connection = instant exhaustion. Plus 6-minute execution time limit per call. Unworkable at this scale. Client-side polling — We built this initially. Every tab calls the server every 3-5 seconds to check for changes. Works functionally but at 50 projects × multiple tabs = thousands of server calls per minute. Even with smart optimizations (visibility API to pause hidden tabs, version-based short-circuiting, exponential backoff), it's wasteful for what is fundamentally a data entry tool where real-time isn't required. What we landed on — EVENT-DRIVEN SYNC (zero polling): Since this is a data entry app (not a chat app), the interaction pattern is fundamentally different. Users are entering data, not watching a live feed. They don't need instant updates — they need current data when they interact. The architecture: sync only on user actions. No timers. No intervals. No background calls. EventWhat happensServer callsPage loadsfetchData() once1User submits datasubmitEntry() returns full fresh dataset1Quick tab switch back (< 2 min)Auto-syncs silently1Long tab switch back (> 2 min)Shows "stale data" banner, user taps to sync0 until tappedQuick tab switch back (< 10 sec)Nothing — data is fresh enough0User clicks Sync buttonfetchData() once1Tab sitting idle in backgroundNothing0 forever Result: 200 open tabs across 50 projects = ZERO background server calls. The only calls come from tabs the user is actively interacting with. ARCHITECTURE: GITHUB PAGES + APPS SCRIPT Frontend (GitHub Pages) Static HTML/CSS/JS hosted on GitHub Pages Calls the Apps Script web app URL via fetch() as a REST API Handles all UI, state management, optimistic updates Uses Page Visibility API to detect tab focus/blur for sync logic Backend (Google Apps Script) Deployed as a web app (doGet for reads, doPost for writes) Returns JSON via ContentService.createTextOutput().setMimeType(ContentService.MimeType.JSON) Google Sheets as the database (permanent record) CacheService as a fast read layer (avoids hitting Sheet on every request) LockService to prevent race conditions on concurrent writes Version string in CacheService to track data freshness CORS handling (critical) Apps Script web apps can only handle GET and POST — they CANNOT respond to OPTIONS preflight requests. This means: For POST requests: The Content-Type MUST be text/plain;charset=utf-8 (NOT application/json). This avoids triggering the browser's CORS preflight. The body should be a stringified JSON string sent as plain text. For GET requests: Use query parameters on the /exec URL. These work cross-origin without issues. Apps Script URLs redirect (302) before executing. Use redirect: 'follow' in fetch options. doGet and doPost must return ContentService.createTextOutput() — not HtmlService — when used as an API. Example fetch from GitHub Pages: javascript// READ (GET) const response = await fetch(GAS_URL + '?action=fetch', { redirect: 'follow' }); const data = await response.json(); // WRITE (POST) — must use text/plain to avoid CORS preflight const response = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'submit', user: 'Alice', message: 'some data' }), redirect: 'follow' }); const result = await response.json(); GOOGLE APPS SCRIPT BACKEND DESIGN Configuration javascriptconst SHEET_ID = '1b50Le6G6ocKtx2nMUnCKPjhujSQlabcqUBBAGwlIsaU'; const SHEET_NAME = 'LiveFeed'; const CACHE_KEY = 'liveFeedData'; const VERSION_KEY = 'liveFeedVersion'; const CACHE_TTL = 600; // 10 minutes const MAX_ENTRIES = 200; API Design (doGet / doPost) Since this is now a REST API (not serving HTML), the Apps Script needs to route based on an action parameter: doGet(e) — handles read operations ?action=fetch → returns all entries from CacheService (falls back to Sheet on cache miss) Returns: { success: true, data: [...entries], version: "timestamp" } doPost(e) — handles write operations Body (parsed from e.postData.contents): { action: "submit", user: "name", message: "data" } Writes to Sheet, updates CacheService, returns full fresh dataset Uses LockService to prevent concurrent write collisions Returns: { success: true, data: [...entries], version: "timestamp" } CacheService strategy Every write updates both the Sheet (permanent) AND CacheService (fast reads) Reads hit CacheService first (~5ms). Only fall back to Sheet on cache miss. A version string (timestamp) in CacheService lets clients know if data has changed CacheService is shared across all script executions and all users — one user's write is immediately visible to another user's read from cache Cache entries expire after 10 minutes (CACHE_TTL = 600). On expiry, next read rebuilds from Sheet. Max 100KB per cache value, 1000 items total. Keep entry count capped at ~200 to stay well under. LockService for concurrent writes LockService.getScriptLock() prevents any user from concurrently running the write section lock.waitLock(15000) — wait up to 15 seconds for the lock (handles 20+ concurrent writers) Always release in a finally block Always call SpreadsheetApp.flush() before releasing the lock Sheet structure TimestampUserMessageEntryIDDate objectString (max 50 chars)String (max 1000 chars)UUID from Utilities.getUuid() Key quotas to be aware of 30 simultaneous executions per user account (across ALL scripts) 6-minute max execution time per single invocation 6 hours total execution time per day (Workspace) / 90 min for triggers 100KB max per CacheService value 1000 items max in CacheService (FIFO eviction at capacity) 20,000 URL fetch calls/day (consumer) / 100,000 (Workspace) — not relevant here since clients call us, we don't fetch FRONTEND DESIGN (GITHUB PAGES) Sync logic — the key innovation (NO POLLING) javascript// These are the ONLY moments the frontend contacts the server: // 1. Page load — fetch once initialLoad(); // 2. User submits data — write returns fresh data submitData(); // calls POST, gets back full dataset // 3. Tab becomes visible again (user switches back) document.addEventListener('visibilitychange', function() { if (!document.hidden && tabWasHidden) { var awayFor = Date.now() - lastSyncTime; if (awayFor > 10000 && awayFor < 120000) { // Quick switch (10s-2min away) — auto sync silently sync(); } else if (awayFor >= 120000) { // Long absence — show "stale" banner, let user decide showStaleBanner(); } // < 10 seconds — do nothing, data is fresh enough } }); // 4. User clicks Sync button — manual refresh manualSync(); // That's it. No setInterval. No setTimeout for polling. No background calls. Optimistic UI When a user submits data, immediately add it to the local list and render. Then send to server. On success, replace local data with server's authoritative response. On failure, roll back the optimistic entry and restore the input. User identification Users pick a display name on entry (stored in sessionStorage) Display name persists across page refreshes within the same tab session Colored avatars are deterministic based on name hash UI features Entry feed with avatars, timestamps, messages Sync button with spinner animation Status indicator: Ready (green) / Syncing (yellow) / Error (red) / Stale (gray) "Stale data" banner when returning to a tab that's been backgrounded > 2 minutes "Last synced" timestamp in the header Responsive design, dark theme WHAT TO BUILD GitHub Pages side (index.html or similar): The full frontend UI (HTML/CSS/JS) Fetch-based API client that talks to the Apps Script /exec URL Event-driven sync logic (visibility API, submit-triggered refresh, manual sync button) Optimistic UI updates on submit No polling, no timers, no intervals Google Apps Script side (Code.gs): doGet(e) — routes GET requests, returns JSON for fetch/read operations doPost(e) — routes POST requests, handles data submission setupSheet() — run once to initialize the Sheet with headers CacheService read/write layer with version tracking LockService for safe concurrent writes Auto-creates Sheet tab if missing (defensive coding) The GAS URL will need to be configured in the frontend as a constant: javascriptconst GAS_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec'; IMPORTANT NOTES The GAS web app must be deployed with "Execute as: Me" and "Who has access: Anyone" After ANY change to the GAS code, you must create a NEW deployment (or update the existing one). The old URL runs the old code. doPost receives the body in e.postData.contents as a string. Parse it with JSON.parse(). doGet receives query params in e.parameter (e.g., e.parameter.action). Always return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON) from both doGet and doPost — never HtmlService when used as an API. The Content-Type for POST from the browser MUST be text/plain;charset=utf-8 to avoid CORS preflight failures. CacheService getScriptCache() is shared across all users and executions — this is what makes the cache-first read pattern work for multi-user scenarios. Wrap all server functions in try/catch. Return error objects rather than throwing, so the frontend always gets a parseable response."
 
@@ -946,7 +946,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Concurrent write protection with LockService (15s wait lock)
 - Auto-creates Sheet tab with headers if missing
 
-## [v06.46r] — 2026-03-25 11:32:41 AM EST — [merged]
+## [v06.46r] — 2026-03-25 11:32:41 AM EST — [a7bbe302](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a7bbe3025f254689ffb7fe8a6601bfda63416fa1)
 
 > **Prompt:** "Set up a new GAS project. Run the script, then commit and push.
 bash scripts/setup-gas-project.sh <<'CONFIG'
@@ -967,7 +967,7 @@ CONFIG"
 - 10 new files: HTML page, GAS script, config, version files, changelogs, archives, per-environment diagram
 - Workflow deploy step for Rndlivedata GAS self-update webhook
 
-## [v06.45r] — 2026-03-25 09:24:15 AM EST — [merged]
+## [v06.45r] — 2026-03-25 09:24:15 AM EST — [8e76a687](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8e76a6879109b1a473d81a31ed39cb30f3af9562)
 
 > **Prompt:** "every feature that is in the templates should be available in the live projects, and vice versa, make sure that both the projects and the templates match exactly other than the project specific features"
 
@@ -989,7 +989,7 @@ CONFIG"
 ##### Added
 - Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
 
-## [v06.44r] — 2026-03-25 09:07:53 AM EST — [merged]
+## [v06.44r] — 2026-03-25 09:07:53 AM EST — [8845bc44](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8845bc44ad5e064bcb51b07edbab0b25ca6f2f20)
 
 > **Prompt:** "check to see if the templates are matching the testauth1 improvements, if not go ahead and update them"
 
@@ -3189,7 +3189,7 @@ CONFIG"
 
 <!-- Rotated 2026-03-22: 23 sections from 2026-03-19 (SHAs unavailable — commits squashed by auto-merge) -->
 
-## [v05.16r] — 2026-03-19 08:28:19 PM EST — [merged]
+## [v05.16r] — 2026-03-19 08:28:19 PM EST — [16d53136](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/16d53136fa159415871159055b501e301963935e)
 
 > **Prompt:** "start with the TEMPLATE-UPDATE-PLAN.md"
 
@@ -3235,14 +3235,14 @@ CONFIG"
 ##### Changed
 - Audio initialization deferred until first user interaction
 
-## [v05.15r] — 2026-03-19 07:17:21 PM EST — [merged]
+## [v05.15r] — 2026-03-19 07:17:21 PM EST — [36dea381](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/36dea38154dc4b80a2657c66c2a2dc179666607b)
 
 > **Prompt:** "update the gas and html templates to match what we have in the testauth1 environment. make sure you therefore fix the scripts to work on the new template code"
 
 ### Added
 - `TEMPLATE-UPDATE-PLAN.md` — phased implementation plan for syncing auth templates with testauth1's evolved feature set (RBAC, HMAC-SHA256, admin panel, cache epoch, cross-device enforcement, tab takeover, CSP, and 10+ new config toggles)
 
-## [v05.14r] — 2026-03-19 05:46:46 PM EST — [merged]
+## [v05.14r] — 2026-03-19 05:46:46 PM EST — [769c4358](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/769c4358f9264f6c1de087cc72686d30361ce673)
 
 > **Prompt:** "in the testauth1, for an admin user, i am no longer able to click on the button to see who is logged in to log them out anymore, think deep"
 
@@ -3254,7 +3254,7 @@ CONFIG"
 ##### Fixed
 - Admin Sessions button now properly visible and clickable for admin users
 
-## [v05.13r] — 2026-03-19 02:57:40 PM EST — [merged]
+## [v05.13r] — 2026-03-19 02:57:40 PM EST — [751fca6e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/751fca6ee90624f1a3444ab4fd0e71dadf774dd2)
 
 > **Prompt:** "ok then is there a function that can do get and do it for each key name"
 
@@ -3266,7 +3266,7 @@ CONFIG"
 ##### Added
 - New diagnostic tool to view cache contents from the GAS editor
 
-## [v05.12r] — 2026-03-19 02:53:47 PM EST — [merged]
+## [v05.12r] — 2026-03-19 02:53:47 PM EST — [c5ea75f8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c5ea75f8d958749f6712c7a4df5a80876119296e)
 
 > **Prompt:** "still not working, are you able to clear entire cache instead of just specific cache"
 
@@ -3280,7 +3280,7 @@ CONFIG"
 ##### Changed
 - Cache clearing now invalidates everything at once — no more stale entries from any source
 
-## [v05.11r] — 2026-03-19 02:46:22 PM EST — [merged]
+## [v05.11r] — 2026-03-19 02:46:22 PM EST — [dfeb8179](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dfeb8179af3e0ef1fc7bee691e3c88ddd4a02cd5)
 
 > **Prompt:** "i think its something to do with the cache because after moving the ACL to its own spreadsheet, the clearallaccesscache is not working, its still holding on to old values"
 
@@ -3292,7 +3292,7 @@ CONFIG"
 ##### Fixed
 - Cache clearing now covers all users regardless of which access method originally cached them
 
-## [v05.10r] — 2026-03-19 02:36:10 PM EST — [merged]
+## [v05.10r] — 2026-03-19 02:36:10 PM EST — [61281ced](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/61281cedac33d9df82792569670051c111b8bb30)
 
 > **Prompt:** "this is what i currently see, it wont let me click on the top to see who is logged in like it used to"
 
@@ -3309,7 +3309,7 @@ CONFIG"
 ##### Changed
 - Minor internal improvements
 
-## [v05.09r] — 2026-03-19 02:30:31 PM EST — [merged]
+## [v05.09r] — 2026-03-19 02:30:31 PM EST — [298328a2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/298328a217bf42a8429b6214305d357d2d8f8c90)
 
 > **Prompt:** "if i run the clearaccesscacheforuser function, how exactly am i supposed to specify which user"
 
@@ -3321,7 +3321,7 @@ CONFIG"
 ##### Changed
 - Cache clearing for individual users now reads the target email from a Script Properties setting instead of requiring a code edit
 
-## [v05.08r] — 2026-03-19 02:25:25 PM EST — [merged]
+## [v05.08r] — 2026-03-19 02:25:25 PM EST — [dd51a7d1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dd51a7d1b7047af8530ac2786899c22b742d3aa0)
 
 > **Prompt:** "the clearallaccesscache is not reseting the permissions, i changed a user to editor and when logging in still says viewer"
 
@@ -3334,7 +3334,7 @@ CONFIG"
 ##### Fixed
 - Clearing the access cache now forces all users to sign in again so role changes take effect immediately
 
-## [v05.07r] — 2026-03-19 02:15:50 PM EST — [merged]
+## [v05.07r] — 2026-03-19 02:15:50 PM EST — [7213f8f0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7213f8f0feb5ad1cef990778135eae4ce51aae6d)
 
 > **Prompt:** "yes go ahead"
 
@@ -3357,7 +3357,7 @@ CONFIG"
 - Removed `UI_ELEMENTS_KEY` session storage — no longer needed
 - Admin sessions button uses `data-requires-permission="admin"` attribute instead of hardcoded JavaScript role check
 
-## [v05.06r] — 2026-03-19 02:07:08 PM EST — [merged]
+## [v05.06r] — 2026-03-19 02:07:08 PM EST — [062f5111](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/062f5111eeeb9f216d2be75940b764eb960bce2f)
 
 > **Prompt:** "ok ive made them, proceed with implementing these into testauth1"
 
@@ -3387,7 +3387,7 @@ CONFIG"
 - `showApp()` now calls `applyUIGating()` on every app display (login, resume, reclaim)
 - `gas-auth-ok` handler now stores `uiElements` from server response
 
-## [v05.05r] — 2026-03-19 01:24:26 PM EST — [merged]
+## [v05.05r] — 2026-03-19 01:24:26 PM EST — [f4020df6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f4020df6dba3ef9e758bcf48982429d969baf5b0)
 
 > **Prompt:** "lets start first by using a new dedicated spreadsheet, its spreadsheet ID is 1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI"
 
@@ -3399,7 +3399,7 @@ CONFIG"
 ##### Changed
 - Updated MASTER_ACL_SPREADSHEET_ID to point to new dedicated ACL spreadsheet
 
-## [v05.04r] — 2026-03-19 12:45:41 PM EST — [merged]
+## [v05.04r] — 2026-03-19 12:45:41 PM EST — [5b90e268](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5b90e268ad7e7a799e43fd673a2cb4c8eca004fb)
 
 > **Prompt:** "for the admin signed out  user, if i refresh the page it tries to reconnect and then says session expired, but without manually refreshing, its getting stuck on Heartbeat: sending... . also when it expires this way can you have it mention signed out by admin"
 
@@ -3418,7 +3418,7 @@ CONFIG"
 ##### Fixed
 - Eviction tombstones are no longer consumed on first read, allowing multiple consumers (heartbeat, page refresh) to detect the sign-out reason
 
-## [v05.03r] — 2026-03-19 12:37:20 PM EST — [merged]
+## [v05.03r] — 2026-03-19 12:37:20 PM EST — [c79c638a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c79c638a012b8381c682aa9aa47c656d5a80b4d7)
 
 > **Prompt:** "ok it is properly detecting sessions, but when i sign out another user it seems to invalidate their session, but its not actually signing them out so on their end it looks like they are still in, and refreshing their page has them stuck on the reconnecting page. what do you think we should do to handle this?"
 
@@ -3439,7 +3439,7 @@ CONFIG"
 ##### Fixed
 - Admin sign-out now properly notifies the signed-out user's browser via distinct eviction reason
 
-## [v05.02r] — 2026-03-19 12:24:13 PM EST — [merged]
+## [v05.02r] — 2026-03-19 12:24:13 PM EST — [593f3073](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/593f30730ae6e60effaa75a1ffcbe75a4b418dcd)
 
 > **Prompt:** "right now its just saying loading sessions. where is it pulling the list of active sessions?"
 
@@ -3451,7 +3451,7 @@ CONFIG"
 ##### Fixed
 - Session management panel now loads and displays active sessions correctly
 
-## [v05.01r] — 2026-03-19 12:16:19 PM EST — [merged]
+## [v05.01r] — 2026-03-19 12:16:19 PM EST — [72dfce51](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/72dfce514c293cf530240ce38ed36f68d5043101)
 
 > **Prompt:** "yes build that"
 
@@ -3477,7 +3477,7 @@ CONFIG"
 - Auto-refresh and manual refresh for session list
 - Panel auto-closes on sign-out or auth wall display
 
-## [v05.00r] — 2026-03-19 11:43:05 AM EST — [merged]
+## [v05.00r] — 2026-03-19 11:43:05 AM EST — [c70b3234](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c70b32343a4c5fe9a0a6f0e577091bcdfd8c336d)
 
 > **Prompt:** "you can add these things to the gas for me"
 
@@ -3489,7 +3489,7 @@ CONFIG"
 ##### Added
 - Admin utility to clear access cache for a specific user or all users, so ACL changes take effect immediately without waiting 10 minutes
 
-## [v04.99r] — 2026-03-19 11:34:59 AM EST — [merged]
+## [v04.99r] — 2026-03-19 11:34:59 AM EST — [be61e925](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/be61e92556bc2849d4f71ff51d4863d32a1f6c53)
 
 > **Prompt:** "im testing on another user and they are showing up as admin, even if they are not on the ACL list"
 
@@ -3501,7 +3501,7 @@ CONFIG"
 ##### Fixed
 - Users not listed in the ACL tab are now properly denied access instead of being admitted through the spreadsheet sharing list
 
-## [v04.98r] — 2026-03-19 11:23:01 AM EST — [merged]
+## [v04.98r] — 2026-03-19 11:23:01 AM EST — [97ffe1d6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/97ffe1d60e516cee5aeeec286aaad07dedc6f7b2)
 
 > **Prompt:** "ok i did it, can you have it show the role i am when i log in to confirm"
 
@@ -3513,7 +3513,7 @@ CONFIG"
 ##### Changed
 - Show user's role badge in the top-right corner after sign-in
 
-## [v04.97r] — 2026-03-19 10:55:31 AM EST — [merged]
+## [v04.97r] — 2026-03-19 10:55:31 AM EST — [a26ea88c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a26ea88ce094f78828008309d6a2be4ff3986851)
 
 > **Prompt:** "for now use the testauth1 spreadsheet as the ACL while we are testing, set up the tab for it"
 
@@ -3525,7 +3525,7 @@ CONFIG"
 ##### Changed
 - ACL spreadsheet ID set to testauth1 data spreadsheet — RBAC now reads roles from the ACL tab in the same spreadsheet
 
-## [v04.96r] — 2026-03-19 10:46:42 AM EST — [merged]
+## [v04.96r] — 2026-03-19 10:46:42 AM EST — [215a045b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/215a045bf21c0b30c70a8b0e6b8197c8bbca7374)
 
 > **Prompt:** "ok how do you suggest we get started with RBAC"
 
@@ -3568,14 +3568,14 @@ CONFIG"
 - `loadSession()` returns role and permissions from storage
 - `clearSession()` clears role and permissions storage
 
-## [v04.95r] — 2026-03-19 09:15:01 AM EST — [merged]
+## [v04.95r] — 2026-03-19 09:15:01 AM EST — [0ab475c7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0ab475c777379a255262058a378c5b7a2f4a4479)
 
 > **Prompt:** "review the repository-information/HIPAA-CODING-REQUIREMENTS.md , and analyze which parts are missing/completed in our testauth1 environment. think deeply and create a report document with your findings"
 
 ### Added
 - Created `HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` — comprehensive compliance assessment evaluating all 40 HIPAA coding checklist items against the testauth1 environment. Reports 14 fully implemented, 5 partial, 4 not implemented, 3 N/A, 5 policy/process, and 9 NPRM items. Identifies 7 priority gaps (disclosure accounting, right of access, right to amendment, RBAC, retention enforcement, breach alerting, breach logging) and 5 strengths exceeding requirements (dual timeouts, HMAC integrity, dual audit logs, escalating lockout, fail-closed design). Includes test-value warnings for production deployment
 
-## [v04.94r] — 2026-03-19 08:48:12 AM EST — [merged]
+## [v04.94r] — 2026-03-19 08:48:12 AM EST — [638d68b7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/638d68b76a4bbe67f3fbd4cbaa1da4cfdc6fac7c)
 
 > **Prompt:** "make a complete document which lists every single unabridged HIPAA requirement for coding to be used as our source of truth for HIPAA compliance moving forward. This is very important to get right, think deeply, research online. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
@@ -3584,14 +3584,14 @@ CONFIG"
 
 <!-- Rotated 2026-03-21: 27 sections from 2026-03-18 (SHAs unavailable — commits not in shallow history) -->
 
-## [v04.93r] — 2026-03-18 11:55:09 PM EST
+## [v04.93r] — 2026-03-18 11:55:09 PM EST — [36fb461c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/36fb461c11944e406cc01a40db041b045901531e)
 
 > **Prompt:** "are you able to make a testauth2 html so that we can test a much earlier version, for now just make it identical to the testauth1 html. use the same gas"
 
 ### Added
 - Created `testauth2.html` — identical copy of `testauth1.html` sharing the same GAS backend (`testauth1.gs`), for testing earlier auth versions independently without affecting the primary test page
 
-## [v04.92r] — 2026-03-18 11:42:52 PM EST
+## [v04.92r] — 2026-03-18 11:42:52 PM EST — [6155863e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6155863eab77be23faf5bf531ae7f9ede8c85bae)
 
 > **Prompt:** "its still doing the blink. can you write up your current findings in a document, and then revert the testauth1 environment completely to its pre-10.4.1 state"
 
@@ -3603,7 +3603,7 @@ CONFIG"
 - Reverted `testauth1.html` to v02.35w (pre-10.4.1 state) — removed `appLoaded` guard in `gas-session-created` handler
 - Reverted GAS/HTML version files and changelog entries to pre-10.4.1 values
 
-## [v04.91r] — 2026-03-18 11:36:01 PM EST
+## [v04.91r] — 2026-03-18 11:36:01 PM EST — [4351e501](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4351e5015051855dde2ae8dc9b10c6c33f763713)
 
 > **Prompt:** "can you think deeply and research to make sure that the 10.4.1 update is in fact using less quota per login compared to before the update despite the console showing 6 state change idle/busy. why is the gas blinking and then reloading after the 4th net state change"
 
@@ -3614,7 +3614,7 @@ CONFIG"
 ##### Fixed
 - Eliminated extra server call during sign-in that was causing a brief visual flash
 
-## [v04.90r] — 2026-03-18 11:16:43 PM EST
+## [v04.90r] — 2026-03-18 11:16:43 PM EST — [e167397d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e167397ddc5e22ab626291a4827f537fa0c74aa3)
 
 > **Prompt:** "the backend is showing login success, but we are stuck on the signing in screen"
 
@@ -3625,7 +3625,7 @@ CONFIG"
 ##### Fixed
 - Sign-in now completes properly — the app interface loads and becomes interactive after authentication
 
-## [v04.89r] — 2026-03-18 11:09:45 PM EST
+## [v04.89r] — 2026-03-18 11:09:45 PM EST — [cf3247d0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cf3247d04b8df6d18484afca0bc7ce23192f79fc)
 
 > **Prompt:** "implement 10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md"
 
@@ -3644,49 +3644,49 @@ CONFIG"
 ##### Changed
 - `gas-session-created` handler now checks `appLoaded` flag — skips iframe reload when app HTML was already injected by the single-load optimization
 
-## [v04.88r] — 2026-03-18 10:51:38 PM EST
+## [v04.88r] — 2026-03-18 10:51:38 PM EST — [04781841](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/047818418b97319787471ccc7bfa256a44bcf9d9)
 
 > **Prompt:** "do the same hipaa verdict/rejection for the full 10.4.1 document, you can research it to double check it, and think deeply about if something in the plan will make it not hipaa compliant then reject that idea"
 
 ### Changed
 - Added comprehensive element-by-element HIPAA evaluation to `10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` section 8 — evaluated all 9 techniques individually against HIPAA requirements (innerHTML injection, createElement script execution, token-in-URL removal, combined server function, etc.). All 9 passed with 2 caveats documented (escape guards must be maintained, Phase 8 CSP must accommodate dynamic scripts). Added 7 new sources (OWASP, Feroot, HHS OCR 2026 guidance) to references
 
-## [v04.87r] — 2026-03-18 10:44:40 PM EST
+## [v04.87r] — 2026-03-18 10:44:40 PM EST — [d8069c9d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d8069c9d38400959c337c101774b91388cd5e8a9)
 
 > **Prompt:** "yes, add that to the 10.4.1 plan, but do thorough research and think deeply before doing so, make sure we are still being hipaa compliant with the whole plan, being hipaa compliant is mandatory, if something will make it not hipaa compliant then reject the idea"
 
 ### Changed
 - Added section 10 to `10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` — "Audit Log Consolidation: Evaluated and Rejected". Researched HIPAA §164.312(b) audit trail requirements and determined that the two separate audit entries (`all_sessions_invalidated` + `session_created`) must remain separate: they are distinct security events (forced logout vs. new login), originate from different functions called in different contexts, and fire conditionally. Consolidating would reduce audit trail clarity and violate HIPAA granularity expectations. Added 6 HIPAA audit log sources to references section
 
-## [v04.86r] — 2026-03-18 10:29:07 PM EST
+## [v04.86r] — 2026-03-18 10:29:07 PM EST — [78bc1414](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/78bc141415a45ecdf5d6b73befc1f4c7641a2ce4)
 
 > **Prompt:** "write it up in a clean, ready to implement fully researched document 10.4.1- , remember our goal is to Reduce the GAS login flow 2 quota consumptions to 1 per sign-in while maintaining full HIPAA compliance and all existing security guarantees. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
 ### Added
 - Created `10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` — HIPAA-specific single-load optimization plan using innerHTML SPA technique to reduce HIPAA postMessage login from 2 `doGet()` to 1, with deep research into `google.script.run` DOM survival, HIPAA compliance analysis, 4-step implementation guide, 23-point verification checklist, and proof-of-concept requirement
 
-## [v04.85r] — 2026-03-18 10:09:24 PM EST
+## [v04.85r] — 2026-03-18 10:09:24 PM EST — [b2319d33](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b2319d338aad2a3a4ae87a1cd38a6c7901e049f8)
 
 > **Prompt:** "can you clean up the plan so that you write it out as a ready to implement format, but redo the deep thinking, and online research, make sure to break large document writes into chunks"
 
 ### Changed
 - Rewrote `10.4-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` as clean ready-to-implement document — removed abandoned HIPAA path optimization (Step 5), eliminated contradictory summary tables, removed back-and-forth reasoning, updated sources with fresh 2026 web research. Reduced from 752 lines to 528 lines while preserving all actionable content
 
-## [v04.84r] — 2026-03-18 03:45:28 PM EST
+## [v04.84r] — 2026-03-18 03:45:28 PM EST — [54018b2f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/54018b2fb70e53ab942b3046a8f388d179834ed9)
 
 > **Prompt:** "write up an implementation plan with all the context, deeply thought, online research, and ready to implement. make sure that this would not break hipaa compliance. make the implementation plan a single document. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
 ### Added
 - Created `10.4-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` — comprehensive implementation plan to reduce GAS login from 2 `doGet()` executions to 1, with HIPAA compliance analysis, quota impact assessment, 6-step implementation guide, security invariants checklist, verification tests, and rollback plan. Includes web-researched GAS quota data and HIPAA security rule cross-reference
 
-## [v04.83r] — 2026-03-18 03:22:20 PM EST
+## [v04.83r] — 2026-03-18 03:22:20 PM EST — [e2f5f67d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e2f5f67d421c91d47de1796b9d5ddedf061c46d4)
 
 > **Prompt:** "everything seems to be passing, except for the " new BroadcastChannel('signout-channel').onmessage = e => console.log('BC:', JSON.stringify(e.data)); " this one doesnt seem to be outputting anything no matter where i sign in"
 
 ### Fixed
 - Fixed incorrect BroadcastChannel name in Phase 10 verification guide — `'signout-channel'` → `'auth-sign-out'` (3 occurrences across Phase 4 checklist, console commands, and Phase 10 integration test)
 
-## [v04.82r] — 2026-03-18 03:08:21 PM EST
+## [v04.82r] — 2026-03-18 03:08:21 PM EST — [50a0ecf1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/50a0ecf1a064a0311c852620a911c355a6310fb9)
 
 > **Prompt:** "yes"
 
@@ -3695,7 +3695,7 @@ CONFIG"
 - Added note to Phase 10 section header clarifying it should run after Phases 1-7/9 but before Phase 8
 - Added recommended verification order paragraph to the critical ordering rule section
 
-## [v04.81r] — 2026-03-18 02:50:29 PM EST
+## [v04.81r] — 2026-03-18 02:50:29 PM EST — [3b44344e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3b44344eed6531db0a15b96169038c15a6d29d5e)
 
 > **Prompt:** "implement the repository-information/10.3-DJB2-TO-HMAC-MIGRATION-PLAN.md"
 
@@ -3731,7 +3731,7 @@ CONFIG"
 - `_messageKey` raw string variable — all references removed from `clearSession()`, "Use Here" handler, `gas-session-created` handler, `gas-auth-ok` handler
 - DJB2-specific assertions from self-test panel Test 13 and Test 43
 
-## [v04.80r] — 2026-03-18 02:02:28 PM EST
+## [v04.80r] — 2026-03-18 02:02:28 PM EST — [4da70c5d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4da70c5d555a30f36632b946d45357f99100b6b8)
 
 > **Prompt:** "yes proceed that way, make the implementation plan a single document. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
@@ -3748,7 +3748,7 @@ CONFIG"
 - Removed legacy URL-parameter heartbeat and sign-out routes from `doGet()` — dead code after Phase 7 migration
 - Removed `signOutToken`, `heartbeatToken`, and `msgKey` URL parameter variables from `doGet()`
 
-## [v04.79r] — 2026-03-18 01:19:03 PM EST
+## [v04.79r] — 2026-03-18 01:19:03 PM EST — [b8144e86](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b8144e8639ea294f8057e49db0c2c32fd232a86c)
 
 > **Prompt:** "ok you fixed it, add it to the documentation what happened, why it happened, and what you did to fix it"
 
@@ -3758,7 +3758,7 @@ CONFIG"
 - Updated Phase 5 console test #4 to use `setTimeout` for async key import after "Use Here"
 - Corrected Phase 5 Step 5.2 "Use Here" handler documentation — keys ARE cleared (not preserved) because the iframe reload generates a new GAS-side context
 
-## [v04.78r] — 2026-03-18 01:12:40 PM EST
+## [v04.78r] — 2026-03-18 01:12:40 PM EST — [dc54c33e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dc54c33eded0dd9840363ca81024884793762f44)
 
 > **Prompt:** "hmm, the thing is now with your last update is that when i duplicate the tab, its now fighting to stay open in the original tab by spamming refreshes, and is not gracefully transfering to the other tab"
 
@@ -3776,7 +3776,7 @@ CONFIG"
 ##### Changed
 - `gas-auth-ok` message now includes `messageKey` from the session, replacing the reverted `gas-session-created` injection approach
 
-## [v04.77r] — 2026-03-18 01:02:43 PM EST
+## [v04.77r] — 2026-03-18 01:02:43 PM EST — [ec195e70](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ec195e70e79548cbcb97cebe5d89181341845e28)
 
 > **Prompt:** "[screenshot showing Tab A with active session but _hmacKeySet false and _hmacKey null after Use Here reclaim]"
 
@@ -3795,7 +3795,7 @@ CONFIG"
 ##### Fixed
 - Session reclaim via `?session=TOKEN` now delivers the HMAC signing key to the host page
 
-## [v04.76r] — 2026-03-18 11:49:04 AM EST
+## [v04.76r] — 2026-03-18 11:49:04 AM EST — [998dac7b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/998dac7b0e603a5ec581a14f78d43298c4054113)
 
 > **Prompt:** "added screenshots of results. running {postMessage({type:'gas-heartbeat-ok', expiresIn:9999}, '*');} in a session active elsewhere is triggering net state change from idle to busy, but the gas should not be loaded on that page"
 
@@ -3810,7 +3810,7 @@ CONFIG"
 ##### Fixed
 - Security event reports no longer fire from tabs that have been taken over by another tab
 
-## [v04.75r] — 2026-03-18 11:31:50 AM EST
+## [v04.75r] — 2026-03-18 11:31:50 AM EST — [83ed3987](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/83ed3987a8f7bdad2ed7686c4ad73cf4ff0eba63)
 
 > **Prompt:** "yes, but make sure its properly testing not cosmetically going to make it pass"
 
@@ -3819,14 +3819,14 @@ CONFIG"
 - Fixed wrong sessionStorage key name in sign-out test — was `'sessionToken'`, corrected to `getStorage().getItem(SESSION_KEY)` to use the actual storage abstraction and key constant
 - Added `_hmacKeySet` check and clearer tab-context instructions to the "Key survives takeover" test (item 15) — clarified that this must run from Tab A while the takeover wall is showing
 
-## [v04.74r] — 2026-03-18 11:15:40 AM EST
+## [v04.74r] — 2026-03-18 11:15:40 AM EST — [3c81ba0d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3c81ba0de993fe42bbea1c266d0bae29832af2f5)
 
 > **Prompt:** "then mark it off in checklist in the guide document"
 
 ### Changed
 - Marked Phase 9 (GAS URL Exposure / M-3) as complete in `10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md` — updated status table, progress counter (8/10), and final checklist
 
-## [v04.73r] — 2026-03-18 11:06:43 AM EST
+## [v04.73r] — 2026-03-18 11:06:43 AM EST — [727b0193](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/727b01938df9922d81332d33b193702f840492d4)
 
 > **Prompt:** "go ahead and implement phase 9, make sure to clean up any dead code with it"
 
@@ -3867,14 +3867,14 @@ CONFIG"
 - Removed global GAS URL exposure — srcdoc trampoline replaced with direct iframe navigation
 - Minor internal improvements
 
-## [v04.72r] — 2026-03-18 10:47:49 AM EST
+## [v04.72r] — 2026-03-18 10:47:49 AM EST — [bf487cc6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bf487cc6bca88db99b4273f79b090fd0619e4f1f)
 
 > **Prompt:** "write up something at the top of the document which are instructions for you do use the prepped section for actual hash etc."
 
 ### Added
 - Added Phase 8 activation instructions section at the top of `10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md` — step-by-step guide for Claude to activate hash-based CSP when all other phases are complete
 
-## [v04.71r] — 2026-03-18 10:41:45 AM EST
+## [v04.71r] — 2026-03-18 10:41:45 AM EST — [6901f409](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6901f40924f5d4bd3f6e4c10e7ada0eec8034259)
 
 > **Prompt:** "actually do both options"
 
@@ -3887,7 +3887,7 @@ CONFIG"
 ##### Added
 - Prepared hash-based Content Security Policy — ready to activate when all security phases are complete
 
-## [v04.70r] — 2026-03-18 09:51:48 AM EST
+## [v04.70r] — 2026-03-18 09:51:48 AM EST — [1a46ce5a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1a46ce5a80c7303724ac5fc4c6bd08aefe680de2)
 
 > **Prompt:** "i want this dead code detection to apply to all code (i.e. gas) not just html"
 
@@ -3895,7 +3895,7 @@ CONFIG"
 - Moved "Dead Code Detection Methodology" from `.claude/rules/html-pages.md` (HTML-scoped) to `.claude/rules/behavioral-rules.md` (always-loaded) — now applies to all code including GAS scripts, workflows, and server-side code
 - Generalized methodology language to cover GAS-specific patterns (`UrlFetchApp.fetch()`, `SpreadsheetApp` writes, trigger scheduling) and added new indicators (unreachable parameters, vestigial error handlers)
 
-## [v04.69r] — 2026-03-18 09:45:42 AM EST
+## [v04.69r] — 2026-03-18 09:45:42 AM EST — [4e231478](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4e231478da5e78a24cb0d965ad619627d94c6566)
 
 > **Prompt:** "before you remove it, add something as a rule/reference so that you can use the logic you just used so we can clean up dead code anywhere we designate later"
 
@@ -3910,7 +3910,7 @@ CONFIG"
 ##### Removed
 - Removed unnecessary iframe startup code that was already being cancelled on every page load — cleaner initialization flow
 
-## [v04.68r] — 2026-03-18 09:24:34 AM EST
+## [v04.68r] — 2026-03-18 09:24:34 AM EST — [6ecaf20a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ecaf20a99db8ea1faa3a9edb4001c9f5f13450e)
 
 > **Prompt:** "yes implement it, and see if theres anything else that might have a similar vulnerability for me to review to make their own implementation"
 
@@ -3922,7 +3922,7 @@ CONFIG"
 ##### Fixed
 - Security event reporting now requires an active session — unauthenticated visitors can no longer trigger GAS quota consumption via postMessage spam
 
-## [v04.67r] — 2026-03-18 08:38:59 AM EST
+## [v04.67r] — 2026-03-18 08:38:59 AM EST — [caaa3793](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/caaa37933e9a7cb9ce6fe72d997bfca4dc45aad6)
 
 > **Prompt:** "continue to implement the next step in repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -3949,14 +3949,14 @@ CONFIG"
 - Signature exemption for Phase 7 ready signals (listener pages don't have signing keys)
 - `gas-heartbeat-ready` handler in `_processVerifiedMessage` — sends token via postMessage to heartbeat iframe
 
-## [v04.66r] — 2026-03-17 11:05:06 PM EST
+## [v04.66r] — 2026-03-17 11:05:06 PM EST — [fc1f2e4b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc1f2e4b6f31b57f85bc29971db79ce058476184)
 
 > **Prompt:** "nice all working as expected, update those tests in the guide document"
 
 ### Changed
 - Updated Phase 6 console test commands in security implementation guide — numbered steps, closure internals test, session resume note, corrected expected behavior descriptions
 
-## [v04.65r] — 2026-03-17 10:56:34 PM EST
+## [v04.65r] — 2026-03-17 10:56:34 PM EST — [b72bd691](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b72bd69151f0fabb6bb5dcd0608c4393bb63bdef)
 
 > **Prompt:** "screenshots attached for several of these tests which dont match whats expected"
 
@@ -3968,7 +3968,7 @@ CONFIG"
 ##### Fixed
 - Session timer protection now works on all sign-in paths including session resume from stored tokens
 
-## [v04.64r] — 2026-03-17 10:43:37 PM EST
+## [v04.64r] — 2026-03-17 10:43:37 PM EST — [e4c165d5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e4c165d5cbbd7a427dc365801a9c6835bd2828f9)
 
 > **Prompt:** "screenshots attached for several of these tests which dont match whats expected. also, number 4 after running it auto expires the session"
 
@@ -3985,14 +3985,14 @@ CONFIG"
 - Session timer protection now properly prevents modification via browser console
 - Security test panel signature verification now works correctly when signed in
 
-## [v04.63r] — 2026-03-17 10:23:01 PM EST
+## [v04.63r] — 2026-03-17 10:23:01 PM EST — [3f0ec8bc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3f0ec8bce758217ecfc45993d5deba6dd54dc726)
 
 > **Prompt:** "sure add that"
 
 ### Added
 - "Document-Prescribed Workflows" behavioral rule — enforces pause-and-confirm workflow when implementation guides prescribe developer testing between steps
 
-## [v04.62r] — 2026-03-17 10:14:46 PM EST
+## [v04.62r] — 2026-03-17 10:14:46 PM EST — [cb7d311d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cb7d311d418156221d193c6577dd844e2e144aaa)
 
 > **Prompt:** "continue to implement the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -4005,14 +4005,14 @@ CONFIG"
 ##### Changed
 - Session timeout values are now tamper-proof — cannot be modified via browser DevTools to prevent automatic logoff
 
-## [v04.61r] — 2026-03-17 09:58:32 PM EST
+## [v04.61r] — 2026-03-17 09:58:32 PM EST — [0f533306](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0f533306a187ab3bf8334f7ae0a26bf318b80eb6)
 
 > **Prompt:** "these console tests you have had me do and will have me do, add those into the 10.2 guide near the progress checklist"
 
 ### Changed
 - Added "Console Test Commands" sections to all 10 phases in the security implementation guide — each phase now includes copy-paste DevTools commands for verifying the implementation
 
-## [v04.60r] — 2026-03-17 09:38:24 PM EST
+## [v04.60r] — 2026-03-17 09:38:24 PM EST — [bb79a05e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bb79a05e197c3ce969133a7f9c0a134af662ed16)
 
 > **Prompt:** "proceed to implement the next step"
 
@@ -4024,7 +4024,7 @@ CONFIG"
 ##### Changed
 - Improved authentication key management — keys can no longer be overwritten by forged messages mid-session
 
-## [v04.59r] — 2026-03-17 09:21:24 PM EST
+## [v04.59r] — 2026-03-17 09:21:24 PM EST — [40144275](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4014427575c5ac1e6c8321a014276d51d8f9f1dc)
 
 > **Prompt:** "continue to implement the next step of repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -4036,14 +4036,14 @@ CONFIG"
 ##### Changed
 - Improved session security by removing sensitive data from cross-tab communication
 
-## [v04.58r] — 2026-03-17 09:12:37 PM EST
+## [v04.58r] — 2026-03-17 09:12:37 PM EST — [f42a7907](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f42a79071ef9f9c1098239cfee3c089548020e56)
 
 > **Prompt:** "in the implementation workflow also have it mention something to the effect of "if writing a large document/file, Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section.""
 
 ### Added
 - Added large file writing guidance to implementation workflow in security guide
 
-## [v04.57r] — 2026-03-17 09:01:20 PM EST
+## [v04.57r] — 2026-03-17 09:01:20 PM EST — [5056ca43](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5056ca43944414c4a97be32e880367be6183c687)
 
 > **Prompt:** "also document it in the guide so that it would be easy for you to know what to do to re-add it. also start making a checklist in the guide to know which ones we have already implemented"
 
@@ -4051,7 +4051,7 @@ CONFIG"
 - Added implementation progress checklist to security guide showing 3/10 phases complete
 - Added detailed IP collection re-enablement procedure (6 steps for HTML, 7 steps for GAS) with prerequisites and verification steps
 
-## [v04.56r] — 2026-03-17 08:55:55 PM EST
+## [v04.56r] — 2026-03-17 08:55:55 PM EST — [75004501](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/750045010eafc714b400a05653faedd44166606d)
 
 > **Prompt:** "can you have all the code for getting the IP that you just removed commented out as you had it in case i want to re-add it later please"
 
@@ -4069,7 +4069,7 @@ CONFIG"
 ##### Changed
 - Added commented-out IP extraction, storage, iframe IP collection, and message handler code with re-enablement instructions
 
-## [v04.55r] — 2026-03-17 08:48:57 PM EST
+## [v04.55r] — 2026-03-17 08:48:57 PM EST — [f01d4fa6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f01d4fa602327e6c60c32d879b88622b3d7bd0bf)
 
 > **Prompt:** "proceed with implementing the next step of 10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -4104,7 +4104,7 @@ CONFIG"
 - `ENABLE_IP_LOGGING` set to `false` in HIPAA config profile
 - All audit log IP fields default to `'not-collected'`
 
-## [v04.54r] — 2026-03-17 07:33:33 PM EST
+## [v04.54r] — 2026-03-17 07:33:33 PM EST — [7a16fc57](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a16fc5747ced75ca70fcf507755743202d9b5aa)
 
 > **Prompt:** "in console showing this [Violation] Avoid using document.write(). https://developers.google.com/web/updates/2016/08/removing-document-wr..." ... "really but why havent i seen them before" ... "what about this one then, i dont remember this being in the console a while ago" (dropping postMessage from host) ... "for hipaa and security its ok that its shown in the console?" ... "yes please"
 
@@ -4119,7 +4119,7 @@ CONFIG"
 - Eliminated console warning from Google's warden about unexpected postMessage origin — IP forwarding now waits until GAS iframe is ready
 - Tightened outgoing postMessage security — IP messages now use the verified GAS origin instead of wildcard
 
-## [v04.53r] — 2026-03-17 07:18:47 PM EST
+## [v04.53r] — 2026-03-17 07:18:47 PM EST — [e3212492](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e32124923b249be9c67826d74d57d87e8dcc59f3)
 
 > **Prompt:** "before signing in, the console is saying this. Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://script.google.com') does not match the recipient window's origin ('https://shadowaisolutions.github.io')."
 
@@ -4131,7 +4131,7 @@ CONFIG"
 ##### Fixed
 - Console error on page load resolved — IP forwarding messages no longer fail due to origin mismatch
 
-## [v04.52r] — 2026-03-17 07:14:06 PM EST
+## [v04.52r] — 2026-03-17 07:14:06 PM EST — [a930738c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a930738c38cd6f0fa3cd8a510c62c1cbc47f8273)
 
 > **Prompt:** "proceed with implementing the next step of 10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -4153,14 +4153,14 @@ CONFIG"
 ##### Changed
 - Token exchange listener echoes nonce back in session creation response for verification
 
-## [v04.51r] — 2026-03-17 07:07:53 PM EST
+## [v04.51r] — 2026-03-17 07:07:53 PM EST — [70660dc3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/70660dc30a7121879489240a9184f14dc513fced)
 
 > **Prompt:** "ok that is fixed, but i need you to track all the things that we were unable to do so that we dont keep trying the same thing over and over when we review the code upon fully updating. you can add a note to the implementation guide itself"
 
 ### Added
 - "Implementation Notes & Deviations" section in `10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md` — tracks what was changed from the guide's recommendations during live implementation (regex fixes, workarounds, deviations) so future sessions don't repeat known issues
 
-## [v04.50r] — 2026-03-17 07:03:24 PM EST
+## [v04.50r] — 2026-03-17 07:03:24 PM EST — [6dc69f6e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6dc69f6e259ac754561ad340e5d1ffe367ce14cd)
 
 > **Prompt:** "first hiccup. we are stuck in the signing in page, figure out whats going on and fix it"
 
@@ -4173,7 +4173,7 @@ CONFIG"
 ##### Fixed
 - Sign-in now completes successfully — origin validation no longer blocks legitimate server messages with hyphenated subdomain origins
 
-## [v04.49r] — 2026-03-17 06:56:06 PM EST
+## [v04.49r] — 2026-03-17 06:56:06 PM EST — [03fa9c52](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/03fa9c52f41e4b055ef09ba8bf2c0190537e540b)
 
 > **Prompt:** "continue with implementing the next step in the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -4188,7 +4188,7 @@ CONFIG"
 - Origin validation gate on all incoming postMessages — blocks cross-origin message injection (Category 3 finding H-2)
 - New security test validates the origin allowlist against legitimate GAS origins and common spoofing patterns
 
-## [v04.48r] — 2026-03-17 06:20:58 PM EST
+## [v04.48r] — 2026-03-17 06:20:58 PM EST — [5aed8665](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5aed866559fad50f5a68359264fabdf69a985bb9)
 
 > **Prompt:** "sig passthrough is stuck on pending waiting to run"
 
@@ -4200,14 +4200,14 @@ CONFIG"
 ##### Fixed
 - Security tests no longer get stuck on "Waiting to run" for tests that verify cryptographic signatures
 
-## [v04.47r] — 2026-03-17 06:15:17 PM EST
+## [v04.47r] — 2026-03-17 06:15:17 PM EST — [bb600c98](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bb600c98196ad3f961c469a390cd229be11289ca)
 
 > **Prompt:** "add to the top of repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md, something to the effect of the following directive: "after each step is implemented, tell the user what specifically to test for in functionality relating to what you modified, then wait for the user to tell you to proceed and you will continue step by step""
 
 ### Changed
 - Added implementation workflow directive to Category 3 implementation guide — Claude must describe what to test after each step and wait for developer confirmation before proceeding
 
-## [v04.46r] — 2026-03-17 06:09:12 PM EST
+## [v04.46r] — 2026-03-17 06:09:12 PM EST — [14221024](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/14221024a65405fddd413496c715b8739909b0f3)
 
 > **Prompt:** "continue with implementing the next step 1.3 of the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
@@ -4235,7 +4235,7 @@ CONFIG"
 ##### Changed
 - Security tests updated to validate the new cryptographic verification
 
-## [v04.45r] — 2026-03-17 05:52:48 PM EST
+## [v04.45r] — 2026-03-17 05:52:48 PM EST — [eda50c29](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eda50c29e2596a7aaf7d2e1aad1df4d215028aad)
 
 > **Prompt:** "make it so that the full unabridged prompt that was used is put in the changelog every time, do not shorten it with ..."
 
@@ -4244,7 +4244,7 @@ CONFIG"
 - Updated CODING PLAN first bullet prompt quote rule to require full verbatim prompt (no truncation)
 - Updated PROMPT end-of-response section to require full verbatim prompt (no truncation)
 
-## [v04.44r] — 2026-03-17 05:34:24 PM EST
+## [v04.44r] — 2026-03-17 05:34:24 PM EST — [72cf883b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/72cf883bdc9973a459ef4284f9fe1580253bb5c7)
 
 > **Prompt:** "proceed with next step"
 
@@ -4259,7 +4259,7 @@ CONFIG"
 ##### Changed
 - Messages are now signed on the server before being sent, replacing the previous client-side signing approach
 
-## [v04.43r] — 2026-03-17 05:27:44 PM EST
+## [v04.43r] — 2026-03-17 05:27:44 PM EST — [7d471cba](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7d471cba14954c596c52bf4e7ecfa35e2d4547ec)
 
 > **Prompt:** "start implementing step 1.1 of repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md, afterwards tell me what specifically to test for in functionality relating to what you modified, then wait for me to tell you to proceed and you will continue step by step"
 
@@ -4274,7 +4274,7 @@ CONFIG"
 ##### Added
 - Server-side HMAC-SHA256 message signing function for postMessage integrity
 
-## [v04.42r] — 2026-03-17 02:37:43 PM EST
+## [v04.42r] — 2026-03-17 02:37:43 PM EST — [feb249a9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/feb249a94f6c02a902ca7fc7766cd633646203b6)
 
 > **Prompt:** "Research online deeply and think carefully about the findings in repository-information/10.1-SECURITY-REMEDIATION-GUIDE.md. Make a specialized document for the findings in 10.1-SECURITY-REMEDIATION-GUIDE.md with the same goal but focusing on the 'Category 3: Must Implement in Code — Cannot Justify Under Risk Assessment'..."
 
@@ -4290,7 +4290,7 @@ CONFIG"
   - Research sources with direct links to standards and references
 - Added README tree entry for the new document
 
-## [v04.41r] — 2026-03-17 11:39:21 AM EST
+## [v04.41r] — 2026-03-17 11:39:21 AM EST — [b5a7d772](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b5a7d7724e290e65cb0abebe4369e187191573b7)
 
 > **Prompt:** "the tests/offensive-security/SECURITY-REMEDIATION-GUIDE.md , move that where the 10.1 was, and also give it the prefix 10.1-"
 
@@ -4299,35 +4299,35 @@ CONFIG"
 - Updated cross-reference link in GAS-HIPAA-COMPLIANCE-ANALYSIS.md to point to new location
 - Updated README tree — removed old entry from tests/offensive-security, added new entry in repository-information
 
-## [v04.40r] — 2026-03-17 11:08:18 AM EST
+## [v04.40r] — 2026-03-17 11:08:18 AM EST — [1c3c8cda](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1c3c8cda206cd60f428a0787b12978f3ed2876bf)
 
 > **Prompt:** "remove the 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md file"
 
 ### Removed
 - 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md — comprehensive auth implementation document for testauth1 environment (removed from repo and README tree)
 
-## [v04.39r] — 2026-03-17 10:31:40 AM EST
+## [v04.39r] — 2026-03-17 10:31:40 AM EST — [4b1afb2b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b1afb2b6f75f1bd83424374be3a2172641315cc)
 
 > **Prompt:** "can you add a clarification at the top of SECURITY-REMEDIATION-GUIDE.md for the parts that we can handle on the organization level as well as things that we can justify as part of the 'risk assessment' so we dont have to give up functionality. those that we must include and cannot justify under risk assessment must be included in production. do not modify existing text in that file, just add a section at the top"
 
 ### Added
 - Implementation Classification section at top of SECURITY-REMEDIATION-GUIDE.md — classifies all 24 audit findings into three categories: org policy (3 findings — handled by Workspace admin), risk-assessment justifiable (9 findings — document & accept with compensating controls), and must-implement in code (12 findings — required before production). Includes justification language for each risk-assessed finding and explanation of why must-implement findings cannot be deferred
 
-## [v04.38r] — 2026-03-17 09:44:48 AM EST
+## [v04.38r] — 2026-03-17 09:44:48 AM EST — [0fdc1603](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0fdc16035576ee2ee1807b37bf35ee63a5a95837)
 
 > **Prompt:** "can you put this information in its own file in our repo"
 
 ### Added
 - GAS-HIPAA-COMPLIANCE-ANALYSIS.md — analysis of Google Apps Script HIPAA compliance under Workspace BAA, covering BAA coverage status, platform vs application responsibility breakdown, GAS web app deployment concerns, Google's own GAS-specific guidance, impact on testauth1 architecture (all 24 audit findings mapped), and 10+ authoritative sources
 
-## [v04.37r] — 2026-03-17 09:07:45 AM EST
+## [v04.37r] — 2026-03-17 09:07:45 AM EST — [9ffc3e31](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9ffc3e3105143fd19767fd049245a18a9d0b6923)
 
 > **Prompt:** "Research online deeply and think carefully about the findings in tests/offensive-security/HTML-AUTH-SECURITY-AUDIT.md. Use current OWASP guidance, HIPAA 2025/2026 NPRM requirements, NIST 800-63B, and Google Cloud security best practices — don't rely on internal docs or assumptions. Be brutally honest about what works and what doesn't. Using HTML-AUTH-SECURITY-AUDIT.md as your guide, create a comprehensive implementation-ready reference document that addresses its findings."
 
 ### Added
 - SECURITY-REMEDIATION-GUIDE.md — comprehensive 1900-line implementation-ready reference document addressing all findings from the HTML auth layer security audit. Covers 5 critical, 7 high, 8 medium, and 4 low-severity findings with working code blocks, architecture diagrams, comparison tables, migration strategies, and a phased implementation checklist. Built from extensive online research across OWASP 2025/2026, HIPAA NPRM 2025, NIST SP 800-63B, Google Cloud security best practices, Web Crypto API, WebAuthn/FIDO2, and 40+ authoritative sources
 
-## [v04.36r] — 2026-03-17 08:08:41 AM EST
+## [v04.36r] — 2026-03-17 08:08:41 AM EST — [8aa4d4fb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8aa4d4fbc7f7189773db6f5e5b94ee9855957bc2)
 
 > **Prompt:** "when you output the coding plan bookend, have the first item on the list be a quoted copy of my prompt to you. have this same quote be shown after the COMMIT LOG, before the SUMMARY in the END OF RESPONSE BLOCK. i also want you to include the quote of the prompt in the repo change log from now on"
 
@@ -4337,29 +4337,29 @@ CONFIG"
 - Prompt quote in CHANGELOG version sections — each versioned release now includes a blockquoted copy of the user's prompt that triggered the changes, preserving intent alongside the change entries
 
 
-## [v04.35r] — 2026-03-16 08:04:14 PM EST
+## [v04.35r] — 2026-03-16 08:04:14 PM EST — [5e6a8c55](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5e6a8c556ea65b26eceecf33a6d3c833323a662d)
 
 ### Added
 - 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md — comprehensive 1200-line authentication implementation document covering complete auth flow walkthrough, session management, HMAC integrity, CSP analysis, postMessage security model, cross-device enforcement, preset system, security audit remediation status, HIPAA 2026 readiness assessment, implementation roadmap with dependency graph, attack surface analysis, defense-in-depth matrix, and testing procedures. Synthesized from 11 existing plans, independent security audit, known constraints, and extensive web research (OWASP, NIST, IETF, Google, Microsoft 2025–2026 guidance)
 
-## [v04.34r] — 2026-03-16 06:32:53 PM EST
+## [v04.34r] — 2026-03-16 06:32:53 PM EST — [2e791e05](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2e791e05c88f52488a95d08e3a6df84deadde8fb)
 
 ### Added
 - Architectural clarification section in HTML-AUTH-SECURITY-AUDIT.md — explains HTML-auth-only vs GAS-PHI-layer separation, tables showing which findings are reduced vs remain critical under this architecture
 
-## [v04.33r] — 2026-03-16 06:22:11 PM EST
+## [v04.33r] — 2026-03-16 06:22:11 PM EST — [17765e1a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/17765e1a2480cd7c9d40d0c827ad6aeb485eb2a0)
 
 ### Added
 - HTML-AUTH-SECURITY-AUDIT.md — independent security audit of HTML auth layer with HIPAA 2026 readiness assessment, 22 findings across critical/high/medium/low, red team attack scenarios, blue team credit, and prioritized remediation roadmap
 - README tree entry for HTML-AUTH-SECURITY-AUDIT.md
 
-## [v04.32r] — 2026-03-16 03:24:43 PM EST
+## [v04.32r] — 2026-03-16 03:24:43 PM EST — [9cbe4149](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9cbe4149a9c4d30d971d972af8ec8ceda41181c1)
 
 ### Added
 - XSS-EXPLAINER.md — comprehensive explanation of XSS in context of our security tests, Playwright god mode vs real attackers, whether XSS is catastrophic, and why tests mention it as a prerequisite
 - README tree updated with all missing test files (tests 05–09, SECURITY-FINDINGS.md, XSS-EXPLAINER.md)
 
-## [v04.31r] — 2026-03-16 03:19:06 PM EST
+## [v04.31r] — 2026-03-16 03:19:06 PM EST — [fc30a0e7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc30a0e794d012b86256b4b38f03d3bfd49a2d2b)
 
 ### Added
 - IP format validation on client-reported IP addresses — validates IPv4/IPv6 format and truncates to 45 characters at three layers: host page, GAS inner iframe, and GAS server-side. Prevents log injection via arbitrary strings in the IP field
@@ -4375,17 +4375,17 @@ CONFIG"
 - Server-side IP format validation on URL parameter — rejects non-IP strings before audit logging
 - Inner iframe IP validation on both XHR response and host postMessage fallback
 
-## [v04.30r] — 2026-03-16 03:14:55 PM EST
+## [v04.30r] — 2026-03-16 03:14:55 PM EST — [6942d85f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6942d85f70c753810a9dd097271c410b3ff7df86)
 
 ### Changed
 - Updated SECURITY-FINDINGS.md with comprehensive test 09 results — detailed per-attack breakdown (8/11 blocked, 3 partial), mitigation analysis for monkey-patching, OAuth intercept, and IP spoofing, updated summary table and defense-in-depth weakest links
 
-## [v04.29r] — 2026-03-16 03:07:49 PM EST
+## [v04.29r] — 2026-03-16 03:07:49 PM EST — [510ae18f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/510ae18f107f04a52066107c20c18e0484da6364)
 
 ### Fixed
 - Fixed crash in offensive test 09 (Attack 5) — arrow function used `arguments[0]` which is not available in arrow functions; replaced with named parameter `(gasUrl)`
 
-## [v04.28r] — 2026-03-16 02:54:36 PM EST
+## [v04.28r] — 2026-03-16 02:54:36 PM EST — [b8b29c6c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b8b29c6ca334482cb89486424809b78cfdfed8e0)
 
 ### Changed
 - "Signing in…" and "Reconnecting…" screens now have distinct animations — spinning ring for sign-in, pulsing dots for reconnection
@@ -4396,7 +4396,7 @@ CONFIG"
 - "Signing in…" uses a spinning ring animation (new session)
 - "Reconnecting…" uses pulsing dots animation (session verification)
 
-## [v04.27r] — 2026-03-16 02:50:53 PM EST
+## [v04.27r] — 2026-03-16 02:50:53 PM EST — [73e755fd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/73e755fdc3aa74ccf395a8a046fd487b9f160ba5)
 
 ### Added
 - Spinner animation on "Signing in…" and "Reconnecting…" screens — provides visual feedback while waiting for session setup or verification
@@ -4406,7 +4406,7 @@ CONFIG"
 ##### Added
 - Spinning loading indicator on the "Signing in…" and "Reconnecting…" screens
 
-## [v04.26r] — 2026-03-16 02:40:38 PM EST
+## [v04.26r] — 2026-03-16 02:40:38 PM EST — [de643abb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/de643abbbf2a88643b43c358b2d2d57b21f9a7f6)
 
 ### Changed
 - Refactored tab counting from continuous heartbeat (every 3s) to on-demand roll call — zero background overhead, count is only collected when the tab-takeover overlay appears
@@ -4416,7 +4416,7 @@ CONFIG"
 ##### Changed
 - Tab count now uses on-demand roll call instead of continuous heartbeat — other tabs respond instantly when asked, and the count updates in real time as responses arrive
 
-## [v04.25r] — 2026-03-16 02:33:18 PM EST
+## [v04.25r] — 2026-03-16 02:33:18 PM EST — [3908d884](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3908d88418d86865699bc120d5efbc2738269a4a)
 
 ### Added
 - Tab-takeover overlay now shows how many other tabs have the page open (e.g. "2 other tabs have this page open") — uses zero-cost browser-local BroadcastChannel heartbeat with no server calls
@@ -4426,7 +4426,7 @@ CONFIG"
 ##### Added
 - Tab count displayed in the "Session Active in Another Tab" overlay when multiple tabs are detected
 
-## [v04.24r] — 2026-03-16 02:22:46 PM EST
+## [v04.24r] — 2026-03-16 02:22:46 PM EST — [94463a4d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/94463a4da550441f871edee46f889b6e7aec48e2)
 
 ### Fixed
 - Fixed sign-in page centering after adding reconnecting UI state
@@ -4442,7 +4442,7 @@ CONFIG"
 ##### Added
 - Added "Signing in…" intermediate screen during Google authentication
 
-## [v04.23r] — 2026-03-16 02:16:05 PM EST
+## [v04.23r] — 2026-03-16 02:16:05 PM EST — [96525cd1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/96525cd1a1980c981121ff23ba0a92bdf5afb566)
 
 ### Changed
 - Sign-in page now shows "Reconnecting… Verifying your session" instead of "Sign In Required" when resuming a valid session on page reload or tab reclaim — reduces confusion about what's happening during session verification
@@ -4452,7 +4452,7 @@ CONFIG"
 ##### Changed
 - Added "Reconnecting…" visual state during session verification on page reload and tab reclaim
 
-## [v04.22r] — 2026-03-16 02:08:13 PM EST
+## [v04.22r] — 2026-03-16 02:08:13 PM EST — [5b1b9cf6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5b1b9cf69d9727639a885ba659dc5030276277ae)
 
 ### Fixed
 - Fixed logo not displaying on login page — `img-src` was restricted to `*.googleusercontent.com` only but logos load from `www.shadowaisolutions.com` and `logoipsum.com`
@@ -4464,7 +4464,7 @@ CONFIG"
 - Added logo and placeholder logo domains to `img-src` CSP whitelist
 - Added `media-src 'self'` for splash screen sound playback
 
-## [v04.21r] — 2026-03-16 02:02:55 PM EST
+## [v04.21r] — 2026-03-16 02:02:55 PM EST — [cda7ad3a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cda7ad3a3db6a83ada945aeacf8cf3568aceb267)
 
 ### Security
 - Hardened CSP with 5 new directives: `default-src 'none'` (deny-all fallback), `worker-src 'none'` (blocks web workers), `manifest-src 'none'` (blocks manifest injection), `upgrade-insecure-requests` (auto-upgrades mixed content), and restricted `img-src` from blanket `https:` to `https://*.googleusercontent.com` (closes image-based exfiltration vector)
@@ -4484,7 +4484,7 @@ CONFIG"
 - Added `upgrade-insecure-requests` — auto-upgrades mixed content
 - Restricted `img-src` from blanket `https:` to `https://*.googleusercontent.com` only
 
-## [v04.20r] — 2026-03-16 01:47:48 PM EST
+## [v04.20r] — 2026-03-16 01:47:48 PM EST — [e6ed4e46](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e6ed4e467e1f4eef60a0415129bc1e5f567b29de)
 
 ### Security
 - Added `form-action 'self'` to CSP meta tag on testauth1 — prevents form submissions to attacker-controlled URLs
@@ -4498,19 +4498,19 @@ CONFIG"
 ##### Security
 - Added `form-action 'self'` to Content Security Policy — closes the last missing directive identified during offensive security testing
 
-## [v04.19r] — 2026-03-16 01:32:02 PM EST
+## [v04.19r] — 2026-03-16 01:32:02 PM EST — [49298b2d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/49298b2d9d57cce893a3b7534016f01e721f64a5)
 
 ### Added
 - Created `SECURITY-FINDINGS.md` — comprehensive security findings document covering all 9 offensive security tests, known GAS platform limitations, defense-in-depth summary, and DDoS incident response procedure with deployment ID rotation as the primary kill switch
 - Added reference to SECURITY-FINDINGS.md in the offensive security test README
 
-## [v04.18r] — 2026-03-16 01:15:13 PM EST
+## [v04.18r] — 2026-03-16 01:15:13 PM EST — [c0365b21](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c0365b213f2b09af8443283acf5cb11f3f817639)
 
 ### Fixed
 - Fixed test_06 Attack 4 (security event flood): test now correctly recognizes that the global rate limit works by design — GAS returns HTTP 200 even when rate-limited (doesn't leak rate limit status to attackers), and the audit log is capped at 50 events + 1 flood meta-event
 - Fixed test_06 Attack 5 (/dev endpoint): now distinguishes between the HTML shell loading (not a vulnerability) and the GAS backend actually responding (would be a vulnerability). The /dev page serves HTML to anyone but the GAS iframe requires editor-level Google auth to execute
 
-## [v04.17r] — 2026-03-16 12:57:47 PM EST
+## [v04.17r] — 2026-03-16 12:57:47 PM EST — [a0ef0116](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a0ef01162658f1e64f5b1d02efe5fc72304b1eba)
 
 ### Security
 - Hardened security event endpoint: replaced per-IP rate limit (bypassable via IP rotation) with global rate limit (50 events/5min, IP-independent)
@@ -4532,7 +4532,7 @@ CONFIG"
 - Removed false positive sensitive pattern detection (no longer flags "secret"/"hmac_secret" as leaked data)
 - Rewrote security event flood test: Phase A tests single-IP flooding, Phase B tests IP rotation bypass
 
-## [v04.16r] — 2026-03-16 12:37:32 PM EST
+## [v04.16r] — 2026-03-16 12:37:32 PM EST — [90f2e8f2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/90f2e8f2c39d348aec753a07e1e257888616ebcc)
 
 ### Added
 - 5 new offensive security tests for testauth1 (tests 05–09):
@@ -4543,7 +4543,7 @@ CONFIG"
   - `test_09_auth_state_manipulation.py` — DOM auth bypass, fake gas-auth-ok, timer manipulation, function monkey-patching, OAuth interception, version spoofing
 - Updated offensive security README with all 9 tests documented
 
-## [v04.15r] — 2026-03-16 12:03:55 PM EST
+## [v04.15r] — 2026-03-16 12:03:55 PM EST — [3b1c7b69](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3b1c7b69589c79856ba9c48c7b37c0eb3b600dec)
 
 ### Added
 - Created `FUTURE-CONSIDERATIONS.md` for deferred architectural ideas (security & quota management at scale) — separate from TODO.md which holds the developer's personal actionable items
@@ -4551,17 +4551,17 @@ CONFIG"
 ### Fixed
 - Moved 5 future-scale items out of TODO.md back to their own file — TODO.md is the developer's personal to-do list, not a backlog for architectural considerations
 
-## [v04.14r] — 2026-03-16 11:54:15 AM EST
+## [v04.14r] — 2026-03-16 11:54:15 AM EST — [642dd821](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/642dd8214f830dbe151b3f42e447e79ba950c6f0)
 
 ### Added
 - Added 5 future-scale items to TODO.md: IP blocklist, quota usage tracking, email alerting for security events, heartbeat interval tuning, client-side session expiry estimation
 
-## [v04.13r] — 2026-03-16 11:22:57 AM EST
+## [v04.13r] — 2026-03-16 11:22:57 AM EST — [db9ee733](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/db9ee7333c2e7a37c3ee560b40349d073292b909)
 
 ### Changed
 - Added mandatory web search verification rule for platform quota/limit/pricing claims to "Validate Before Asserting" in behavioral rules — prevents presenting unverified quota structures as fact (triggered by incorrect assertion that GAS quotas are per-script when they are per-account)
 
-## [v04.12r] — 2026-03-16 10:52:13 AM EST
+## [v04.12r] — 2026-03-16 10:52:13 AM EST — [a00ca2ce](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a00ca2cee0742a6dfb7e964c680c8c23f65395b9)
 
 ### Changed
 - Security event rate limiter now logs a `security_event_throttled` entry when an IP hits the 20-event limit, giving the defender visibility that further events were suppressed
@@ -4576,7 +4576,7 @@ CONFIG"
 ##### Changed
 - Attack report rate limiting now tells you when an attacker was cut off
 
-## [v04.11r] — 2026-03-16 10:29:43 AM EST
+## [v04.11r] — 2026-03-16 10:29:43 AM EST — [e660c55a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e660c55aed251fcc45fafb2c069012110d582912)
 
 ### Added
 - Added Security Event Reporter system — client-side defense layers now report blocked attacks (unknown message types, replay attempts, invalid signatures, duplicate session hijacking) to the GAS backend for audit logging
@@ -4606,12 +4606,12 @@ CONFIG"
 ##### Added
 - Server now receives and logs blocked attack reports from the page
 
-## [v04.10r] — 2026-03-16 10:07:13 AM EST
+## [v04.10r] — 2026-03-16 10:07:13 AM EST — [f9d1776a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f9d1776af724b9020c70f6050f200bbda16f2ae5)
 
 ### Fixed
 - Fixed false positive in offensive test_04 Attack 3 (GAS endpoint probing) — test was matching the word `sessionToken` in GAS app's JavaScript source code, not actual token issuance. Now checks for JSON-structured real token responses instead
 
-## [v04.09r] — 2026-03-16 09:57:31 AM EST
+## [v04.09r] — 2026-03-16 09:57:31 AM EST — [c55570db](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c55570db91d54a22f23c042eebe2232ee4a99941)
 
 ### Security
 - Fixed session fixation attack via storage injection — page-load resume now defers `showApp()` until `gas-auth-ok` confirms the stored token is valid server-side, preventing an attacker who injects a forged token into storage from bypassing the auth wall on reload
@@ -4630,7 +4630,7 @@ CONFIG"
 - Sign-in screen now stays visible during page reload until the server re-confirms your session is valid
 - A second sign-in attempt from an untrusted source is now rejected entirely instead of overwriting your session
 
-## [v04.08r] — 2026-03-16 09:43:13 AM EST
+## [v04.08r] — 2026-03-16 09:43:13 AM EST — [63ad09ca](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/63ad09ca2e49560bd605bcf680f2d41167459c8d)
 
 ### Security
 - Fixed client-side auth wall bypass via forged `gas-session-created` postMessage — auth wall now stays visible until `gas-auth-ok` confirms the session is valid server-side. Previously, a forged `gas-session-created` message could hide the auth wall before the GAS backend validated the token
@@ -4648,34 +4648,34 @@ CONFIG"
 ##### Security
 - Same `showApp()` deferral fix as testauth1 — auth wall stays up until `gas-auth-ok` confirms
 
-## [v04.07r] — 2026-03-16 09:31:35 AM EST
+## [v04.07r] — 2026-03-16 09:31:35 AM EST — [6da68481](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6da684818517511ec473b6e71e254f1f517adb46)
 
 ### Changed
 - Added full diagnostic output to all attack types in test 02 (session forgery) — Attack 1 (storage injection) now shows auth wall state, display, app visibility, stored session/email; Attack 2 (forged gas-session-created) now shows full auth wall diagnostics, iframe src, and notes GAS-side validation as real defense; Attack 3 (messageKey overwrite) now shows auth wall state and key ownership evidence
 - Added full diagnostic output to all attack types in test 03 (message type injection) — Attack 1 (prototype pollution) now shows proto properties, auth wall state; Attack 2 (DoS sign-out) now shows auth wall state, session/email, messageKey status; Attack 3 (state machine confusion) now shows full auth wall and session diagnostics for both sub-tests; Attack 4 (type coercion) now shows auth wall and session state instead of assuming silent drop
 - Added full diagnostic output to all attack types in test 04 (CSRF/token replay) — Attack 1 (fake OAuth) now shows full auth wall diagnostics; Attack 2 (nonce bypass) now shows auth wall and session state; Attack 3 (GAS probing) now shows response body preview and detection flags; Attack 4 (URL leakage) now shows location, session state, and cookies
 
-## [v04.06r] — 2026-03-16 09:23:01 AM EST
+## [v04.06r] — 2026-03-16 09:23:01 AM EST — [692b833f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/692b833f19ae5e9bbb15200cc45267b2166843f7)
 
 ### Changed
 - Added full diagnostic output to all 4 attack types in offensive security test 01 — Attack 3 (raw XSS strings) now checks for XSS execution, session storage, and navigation hijack; Attack 4 (signature bypass) now shows auth wall state, session storage, and email diagnostics. All attacks now prove their BLOCKED results with visible evidence instead of assuming success
 
-## [v04.05r] — 2026-03-16 09:15:52 AM EST
+## [v04.05r] — 2026-03-16 09:15:52 AM EST — [c7d94365](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c7d94365865313b0c9a928c334705038ad3e41b8)
 
 ### Changed
 - Added full diagnostic output to test 01 Attack 2 instead of silencing failures — each bypassed attack now prints `location.href`, auth wall state, stored session/email, and all check results so the actual behavior is visible and can be evaluated honestly
 
-## [v04.04r] — 2026-03-16 09:11:26 AM EST
+## [v04.04r] — 2026-03-16 09:11:26 AM EST — [0a838cb7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0a838cb71fbf607fef7346169292c29dba7046b2)
 
 ### Fixed
 - Fixed second false positive in test 01 Attack 2 — redirect hijack detection was using `page.url` (Playwright) which reflects iframe navigations, not just top-level. Replaced with `window.location.href` (JavaScript) to check only the main page origin. The `gas-session-created` handler legitimately reloads the GAS iframe (`gasApp.src = ...`), which is normal behavior, not an attack
 
-## [v04.03r] — 2026-03-16 09:05:59 AM EST
+## [v04.03r] — 2026-03-16 09:05:59 AM EST — [f9f458a2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f9f458a2e744abf78f9f8678e5fe2c68ce466033)
 
 ### Fixed
 - Fixed false positives in offensive security test 01 (Attack 2: XSS in known message fields) — test was detecting the page's own pre-existing inline scripts as "injected" because it searched all `<script>` elements for "alert". Replaced with precise detection: baseline script count comparison, alert/prompt/confirm override traps, innerHTML inspection of rendered elements, and navigation hijack check. Tests now correctly report BLOCKED when values land in safe sinks (`.textContent`, `setItem()`)
 
-## [v04.02r] — 2026-03-16 08:47:20 AM EST
+## [v04.02r] — 2026-03-16 08:47:20 AM EST — [fc63dbca](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc63dbcaa433388b57925e333008d151c5a82d1f)
 
 ### Added
 - Offensive security test suite (`tests/offensive-security/`) with 4 standalone Playwright-based attack scripts targeting testauth1 auth system
@@ -4684,7 +4684,7 @@ CONFIG"
   - Test 03: Message type spoofing & protocol confusion (prototype pollution, DoS via forced sign-out, state machine confusion, type coercion)
   - Test 04: OAuth token replay & CSRF (fabricated tokens, nonce bypass, direct GAS endpoint probing, token leakage check)
 
-## [v04.01r] — 2026-03-15 10:29:39 PM EST — [SHA unavailable]
+## [v04.01r] — 2026-03-15 10:29:39 PM EST — [SHA unavailable] — [8d1c50ef](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8d1c50ef8d86cb975689a846d8d1e0fb7158e847)
 
 ### Security
 - SessionAuditLog sheet now gets the same tamper-resistant protection as DataAuditLog when auto-created
@@ -4694,7 +4694,7 @@ CONFIG"
 ##### Security
 - Added `sheet.protect()` with warning-only mode to `_writeAuditLogEntry()` for parity with DataAuditLog sheet protection
 
-## [v04.00r] — 2026-03-15 10:24:53 PM EST — [SHA unavailable]
+## [v04.00r] — 2026-03-15 10:24:53 PM EST — [SHA unavailable] — [a8f6039b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a8f6039b555d4b407ef4b73a8ec0625ca2af1878)
 
 ### Changed
 - Renamed session audit log spreadsheet tab from `AuditLog` to `SessionAuditLog` for clarity alongside the existing `DataAuditLog` tab
@@ -4704,7 +4704,7 @@ CONFIG"
 ##### Changed
 - `AUDIT_LOG_SHEET_NAME` renamed from `AuditLog` to `SessionAuditLog` in both standard and hipaa presets
 
-## [v03.99r] — 2026-03-15 10:21:09 PM EST — [SHA unavailable]
+## [v03.99r] — 2026-03-15 10:21:09 PM EST — [SHA unavailable] — [94b23f21](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/94b23f213244be317113b8a8b8b823f953de8b90)
 
 ### Added
 - Each saved patient note now receives a unique resource ID (UUID) in the Data Audit Log, enabling individual record tracing
@@ -4714,7 +4714,7 @@ CONFIG"
 ##### Added
 - `saveNote()` generates a UUID via `Utilities.getUuid()` and passes it as `resourceId` to the data audit log
 
-## [v03.98r] — 2026-03-15 10:15:14 PM EST — [SHA unavailable]
+## [v03.98r] — 2026-03-15 10:15:14 PM EST — [SHA unavailable] — [b4dc45b4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b4dc45b4d4cebcc709d42487caea6f9106fd8612)
 
 ### Security
 - Session token in Data Audit Log Details JSON column is now truncated to 8 characters (was previously full token) to prevent token theft from audit spreadsheets
@@ -4724,7 +4724,7 @@ CONFIG"
 ##### Security
 - Session ID truncated in Details JSON to match SessionId column truncation, with undo comment for easy reversal
 
-## [v03.97r] — 2026-03-15 10:07:11 PM EST — [SHA unavailable]
+## [v03.97r] — 2026-03-15 10:07:11 PM EST — [SHA unavailable] — [930e24bc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/930e24bc45977403d5641ea11db5f2f9498de168)
 
 ### Fixed
 - Fixed client IP still blank — added direct XHR fetch (`XMLHttpRequest` to `api.ipify.org`) inside GAS iframe as primary method, with host-page postMessage as fallback. Previous approach relied solely on cross-frame postMessage which may not reach nested Google wrapper iframes
@@ -4734,7 +4734,7 @@ CONFIG"
 ##### Fixed
 - Client IP now fetched directly via `XMLHttpRequest` in GAS iframe (dual-path: XHR primary, host postMessage fallback)
 
-## [v03.96r] — 2026-03-15 09:59:28 PM EST — [SHA unavailable]
+## [v03.96r] — 2026-03-15 09:59:28 PM EST — [SHA unavailable] — [854c5485](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/854c5485578a1bcb5b731a04e4470af2866bf857)
 
 ### Fixed
 - Fixed client IP always blank in audit logs — moved IP fetch from GAS iframe (blocked by sandbox CSP) to host page, then forwarded to GAS iframe via `host-client-ip` postMessage
@@ -4753,7 +4753,7 @@ CONFIG"
 - Client IP fetch moved to host page level where CSP allows it
 - IP forwarded to GAS iframe via `host-client-ip` postMessage on `gas-auth-ok`
 
-## [v03.95r] — 2026-03-15 09:38:50 PM EST — [SHA unavailable]
+## [v03.95r] — 2026-03-15 09:38:50 PM EST — [SHA unavailable] — [2c9f1893](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2c9f1893941bc4d822af6686cfa1ecb85f47d7ee)
 
 ### Added
 - EMR Security Hardening Phase 7: IP logging — client IP fetched via `api.ipify.org` in GAS iframe, passed through heartbeat URL, stored in session data, and included in audit log entries for post-incident investigation (HIPAA § 164.312(d))
@@ -4780,12 +4780,12 @@ CONFIG"
 - `_clientIp` variable captures client IP from GAS iframe `gas-user-activity` messages
 - Client IP forwarded in heartbeat URL as `clientIp` parameter
 
-## [v03.94r] — 2026-03-15 09:27:39 PM EST — [SHA unavailable]
+## [v03.94r] — 2026-03-15 09:27:39 PM EST — [SHA unavailable] — [5687c3b2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5687c3b2596b25e89e183bc556e5205cbbd6ae81)
 
 ### Added
 - Plan 11: EMR GAS Application Layer Plan — HIPAA data access and business logic covering RBAC, minimum necessary access, input validation, PHI segmentation, data retention, consent tracking, and disclosure logging
 
-## [v03.93r] — 2026-03-15 08:44:53 PM EST — [SHA unavailable]
+## [v03.93r] — 2026-03-15 08:44:53 PM EST — [SHA unavailable] — [6ae77449](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ae77449fe04f9bf93a71f251345d0ce1b8a4653)
 
 ### Added
 - EMR Security Hardening Phase 4: DOM clearing on session expiry — GAS iframe destroyed (`about:blank`) when session expires to prevent PHI exposure via DevTools (HIPAA § 164.312(a)(2)(iii), § 164.312(c)(1))
@@ -4809,7 +4809,7 @@ CONFIG"
 - Escalating lockout: Tier 1 (5 failures/5min), Tier 2 (10 failures/30min), Tier 3 (20 failures/6hr)
 - Dynamic lockout TTL computation for rate limit counter persistence
 
-## [v03.92r] — 2026-03-15 08:28:17 PM EST — [SHA unavailable]
+## [v03.92r] — 2026-03-15 08:28:17 PM EST — [SHA unavailable] — [eded8814](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eded8814e0825bfbc3addfa550dfd31331a08dc9)
 
 ### Fixed
 - Fixed false "Session expiring soon" warning after "Use Here" tab reclaim — the `gas-auth-ok` handler's `needsReauth` check now correctly skips when `_directSessionLoad` was active (server-side session may be near expiry, but the client just reset its rolling timer and the next heartbeat will extend it)
@@ -4819,7 +4819,7 @@ CONFIG"
 ##### Fixed
 - "Session expiring soon" warning no longer appears incorrectly after reclaiming a session with "Use Here"
 
-## [v03.91r] — 2026-03-15 08:12:32 PM EST — [SHA unavailable]
+## [v03.91r] — 2026-03-15 08:12:32 PM EST — [SHA unavailable] — [035908e2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/035908e2e6f38ce072aef8019393f1045ebffea1)
 
 ### Fixed
 - Fixed absolute session timer resetting on "Use Here" — `stopCountdownTimers()` in the `tab-claim` handler was clearing `ABSOLUTE_START_KEY` from sessionStorage; the key is now preserved across the stop/start cycle so the absolute timer continues from the original sign-in
@@ -4829,7 +4829,7 @@ CONFIG"
 ##### Fixed
 - Reclaiming a session with "Use Here" now correctly preserves the absolute session timer countdown
 
-## [v03.90r] — 2026-03-15 08:07:39 PM EST — [SHA unavailable]
+## [v03.90r] — 2026-03-15 08:07:39 PM EST — [SHA unavailable] — [89adbc5f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89adbc5f62326e26474dc1cc7d5488273e73b9cd)
 
 ### Fixed
 - Fixed GAS iframe not reappearing after "Use Here" — the visibility restore was in the `gas-session-created` handler but GAS sends `gas-auth-ok` for valid session reloads; moved the `_directSessionLoad` visibility restore and deferred `showApp()`/timer start to the `gas-auth-ok` handler
@@ -4839,7 +4839,7 @@ CONFIG"
 ##### Fixed
 - GAS app now properly reappears after clicking "Use Here" — the app UI and timers are activated once the GAS server confirms the session is valid
 
-## [v03.89r] — 2026-03-15 08:03:31 PM EST — [SHA unavailable]
+## [v03.89r] — 2026-03-15 08:03:31 PM EST — [SHA unavailable] — [36b977b9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/36b977b939dcb10585e47cdbc5058383bb3b3fa6)
 
 ### Fixed
 - "Use Here" tab reclaim no longer resets the absolute session timer — the absolute timer now continues from the original sign-in time instead of restarting, preventing indefinite session extension via tab switching
@@ -4849,7 +4849,7 @@ CONFIG"
 ##### Fixed
 - Reclaiming a session with "Use Here" no longer resets the absolute session timer — the timer continues from when you originally signed in
 
-## [v03.88r] — 2026-03-15 07:59:08 PM EST — [SHA unavailable]
+## [v03.88r] — 2026-03-15 07:59:08 PM EST — [SHA unavailable] — [9938d24c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9938d24cd1ebc320337ee53451438e22a269cba5)
 
 ### Fixed
 - Eliminated GAS iframe flicker when clicking "Use Here" — the iframe is now hidden during reload and revealed only after `gas-session-created` confirms the GAS app is ready, and the unnecessary double-reload (from the OAuth token-exchange path) is skipped when the iframe was loaded directly with a session token
@@ -4859,7 +4859,7 @@ CONFIG"
 ##### Fixed
 - Clicking "Use Here" no longer causes a brief GAS iframe flicker — the app appears smoothly after the session is confirmed
 
-## [v03.87r] — 2026-03-15 07:51:52 PM EST — [SHA unavailable]
+## [v03.87r] — 2026-03-15 07:51:52 PM EST — [SHA unavailable] — [73bb7653](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/73bb7653784e20dd2f69cc28c9f55ca2e9c661ce)
 
 ### Fixed
 - Same-browser "Use Here" button now transfers the valid session token from the claiming tab to the surrendering tab via BroadcastChannel — previously the surrendering tab's sessionStorage had a stale token, causing a brief app flash followed by "Session expired" when reclaiming
@@ -4869,7 +4869,7 @@ CONFIG"
 ##### Fixed
 - Clicking "Use Here" on a tab that was displaced by another tab's sign-in now seamlessly reclaims the session instead of briefly showing the app then signing you out
 
-## [v03.86r] — 2026-03-15 07:40:16 PM EST — [SHA unavailable]
+## [v03.86r] — 2026-03-15 07:40:16 PM EST — [SHA unavailable] — [a52e0f38](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a52e0f3879aa76432de43e6dbeb17afdbd131b71)
 
 ### Changed
 - GAS iframe user activity now updates the heartbeat activity timestamp instead of forcing an immediate heartbeat — the regular interval tick and urgent <30s heartbeat handle session extension, eliminating unnecessary server requests during normal interaction
@@ -4879,7 +4879,7 @@ CONFIG"
 ##### Changed
 - Interacting with the app (typing, clicking) no longer forces an immediate heartbeat — activity is tracked and the regular heartbeat cycle handles session extension naturally
 
-## [v03.85r] — 2026-03-15 07:29:52 PM EST — [SHA unavailable]
+## [v03.85r] — 2026-03-15 07:29:52 PM EST — [SHA unavailable] — [0abcb1e0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0abcb1e0ff3440fdb02a381f8f9a52f2c9f01180)
 
 ### Fixed
 - Activity-triggered heartbeats now respect a cooldown (half the heartbeat interval) to prevent flooding the server with requests on every user interaction — previously every GAS iframe action triggered an immediate heartbeat every 5 seconds
@@ -4891,7 +4891,7 @@ CONFIG"
 - Interacting with the app no longer causes constant "sending..." in the heartbeat display — heartbeats are now rate-limited to once per 15 seconds during active use
 - Heartbeat can no longer get permanently stuck on "sending..." if a server response is lost
 
-## [v03.84r] — 2026-03-15 06:58:02 PM EST — [SHA unavailable]
+## [v03.84r] — 2026-03-15 06:58:02 PM EST — [SHA unavailable] — [03b5a422](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/03b5a422c010be5567f68159207bbc464ff7f4d1)
 
 ### Fixed
 - Fixed blank GAS iframe when clicking "Use Here" on a non-original tab — the `_expectingSession` guard was incorrectly suppressing the `gas-needs-auth` response from an invalidated session token, leaving the app visible with no GAS content and eventually re-triggering the "Session Active Elsewhere" overlay
@@ -4901,7 +4901,7 @@ CONFIG"
 ##### Fixed
 - Clicking "Use Here" on a tab whose server session was invalidated (by signing in on another tab) now properly shows the sign-in screen instead of a blank GAS iframe
 
-## [v03.83r] — 2026-03-15 06:46:09 PM EST — [SHA unavailable]
+## [v03.83r] — 2026-03-15 06:46:09 PM EST — [SHA unavailable] — [ffcb004e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ffcb004e02e3033089a12cd2496d8401247a4bf4)
 
 ### Added
 - EMR Security Hardening Phase 3: Server-side data operation validation — every `google.script.run` data function now validates the session before executing
@@ -4926,7 +4926,7 @@ CONFIG"
 ##### Added
 - `gas-session-invalid` message type in whitelist and handler — triggers auth wall with specific reason when a data operation detects an invalid session
 
-## [v03.82r] — 2026-03-15 06:35:54 PM EST — [SHA unavailable]
+## [v03.82r] — 2026-03-15 06:35:54 PM EST — [SHA unavailable] — [2e4953b8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2e4953b8365c934583c746611f6c53485b140651)
 
 ### Changed
 - Sign-in error messages now surface specific misconfiguration details instead of generic "Access denied" — HMAC secret missing, domain restriction misconfigured, and domain not allowed each show distinct setup instructions
@@ -4941,7 +4941,7 @@ CONFIG"
 ##### Changed
 - Auth wall now shows specific setup instructions for `hmac_secret_missing`, `domain_not_configured`, and `domain_not_allowed` errors instead of generic "Access denied"
 
-## [v03.81r] — 2026-03-15 06:26:01 PM EST — [SHA unavailable]
+## [v03.81r] — 2026-03-15 06:26:01 PM EST — [SHA unavailable] — [2a5d76cf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2a5d76cf2587867be6d804f6db4f147133fbf26a)
 
 ### Changed
 - Implemented EMR Security Hardening Phase 1: HMAC secret enforcement — `generateSessionHmac()` now throws when HMAC is enabled but secret is missing (fail-closed), `verifySessionHmac()` returns false instead of passing through
@@ -4954,12 +4954,12 @@ CONFIG"
 - HMAC verification now fails closed when secret is missing — rejects sessions instead of passing through
 - Domain restriction check now explicitly validates non-empty allowlist before iterating — distinguishes misconfiguration from domain rejection
 
-## [v03.80r] — 2026-03-15 06:17:29 PM EST — [SHA unavailable]
+## [v03.80r] — 2026-03-15 06:17:29 PM EST — [SHA unavailable] — [5ef60596](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5ef6059638b841b6438f2284b1fd36569aa7df94)
 
 ### Changed
 - Added "Implementation Risk Areas (Toggle Architecture)" section to EMR security hardening plan — documents three specific integration risks (Phase 3 stub return value, Phase 4 server/client config boundary, Phase 6 branching flow control) with concrete mitigations for each
 
-## [v03.79r] — 2026-03-15 06:04:51 PM EST — [SHA unavailable]
+## [v03.79r] — 2026-03-15 06:04:51 PM EST — [SHA unavailable] — [912fefc1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/912fefc1b233507f099ff0fec8edaa26172b97a4)
 
 ### Changed
 - Updated EMR security hardening plan (`10-EMR-SECURITY-HARDENING-PLAN.md`) to be fully preset-aware — all 8 phases now explicitly document behavior under both `standard` and `hipaa` presets
@@ -4969,19 +4969,19 @@ CONFIG"
 - Updated "What Changed Since Plan 9.2" table with Standard Preset column
 - Added toggle guards to code examples: `validateSessionForData()`, `showAuthWall()` DOM clearing, escalating lockout, IP fetch, data audit log
 
-## [v03.78r] — 2026-03-15 05:47:26 PM EST — [SHA unavailable]
+## [v03.78r] — 2026-03-15 05:47:26 PM EST — [SHA unavailable] — [22bacf07](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/22bacf078b9ea780db7228be9b2392618e70b379)
 
 ### Changed
 - Rotated 86 CHANGELOG sections (v03.64r–v02.69r, dates 2026-03-14 and 2026-03-13) to CHANGELOG-archive.md — keeping only today's 13 sections in the main file
 - SHA-enriched 18 section headers with commit links (v03.47r–v03.64r); 68 older sections moved as-is due to shallow git history
 
-## [v03.77r] — 2026-03-15 05:40:03 PM EST — [SHA unavailable]
+## [v03.77r] — 2026-03-15 05:40:03 PM EST — [SHA unavailable] — [53df435b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/53df435b2d4d6007ed4529f9304d65a8b24f25f6)
 
 ### Changed
 - Renamed all plan files from single-digit prefixes (1- through 9.2-) to zero-padded prefixes (01- through 09.2-) for correct alphabetical sorting on GitHub — 10-EMR plan now appears last as intended
 - Updated all cross-references across 20+ files (plan files, README tree, CHANGELOG, CHANGELOG-archive, SESSION-CONTEXT, MICROSOFT-AUTH-PLAN)
 
-## [v03.76r] — 2026-03-15 05:33:32 PM EST — [SHA unavailable]
+## [v03.76r] — 2026-03-15 05:33:32 PM EST — [SHA unavailable] — [9996b073](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9996b073301a0a832dbc582b69faaa54933a7d50)
 
 ### Added
 - Comprehensive EMR security hardening plan (`10-EMR-SECURITY-HARDENING-PLAN.md`) covering 8 implementation phases across P0–P3 priorities for HIPAA Technical Safeguards compliance
@@ -4989,7 +4989,7 @@ CONFIG"
 - Architecture principle documented: patient data (PHI) exclusively on GAS/Google Sheets side (BAA-covered), never in browser storage or CacheService
 - CacheService usage guide, quota impact analysis, edge cases, and EMR deployment configuration checklist
 
-## [v03.75r] — 2026-03-15 03:36:50 PM EST — [SHA unavailable]
+## [v03.75r] — 2026-03-15 03:36:50 PM EST — [SHA unavailable] — [0814eb7f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0814eb7ff184e33c81c71cc8cd10d5cadfb281ea)
 
 ### Added
 - GAS iframe activity detection: user interactions (typing, clicking) now trigger an immediate heartbeat on the host page, catching expired sessions before data loss
@@ -5006,7 +5006,7 @@ CONFIG"
 - Activity detection listeners (keydown, click, input) that post `gas-user-activity` to the host page with 5-second debounce
 - "Save Note" test button simulating EMR data entry — triggers session check before confirming save
 
-## [v03.74r] — 2026-03-15 01:22:15 PM EST — [SHA unavailable]
+## [v03.74r] — 2026-03-15 01:22:15 PM EST — [SHA unavailable] — [39712064](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/39712064ac01fd20aaf1b1326ec1ec9aa9b6a21b)
 
 ### Added
 - Added "Force Heartbeat" button for on-demand session validity testing without waiting for the automatic heartbeat interval
@@ -5016,7 +5016,7 @@ CONFIG"
 ##### Added
 - "Force Heartbeat" button for testing session validity on demand without waiting for the automatic heartbeat interval
 
-## [v03.73r] — 2026-03-15 12:44:45 PM EST — [SHA unavailable]
+## [v03.73r] — 2026-03-15 12:44:45 PM EST — [SHA unavailable] — [3dc4834f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3dc4834f6599e5bdceb967279bc19f410d3b75ff)
 
 ### Added
 - Implemented Phase 9 of cross-device session enforcement (Plan 9.2): 4 security tests validating cross-device config toggle, eviction state variable, heartbeat reason code processing, and overlay text reset behavior
@@ -5026,7 +5026,7 @@ CONFIG"
 ##### Added
 - 4 security tests for cross-device enforcement: config toggle validation, state variable check, heartbeat reason code processing, and overlay text reset verification (tests 39–42, total now 42)
 
-## [v03.72r] — 2026-03-15 12:39:33 PM EST — [SHA unavailable]
+## [v03.72r] — 2026-03-15 12:39:33 PM EST — [SHA unavailable] — [9dd1b008](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9dd1b0089ff97da4cdda68eb1e7108413c4b5e8e)
 
 ### Added
 - Implemented Phases 4–7 of cross-device session enforcement (Plan 9.2): client-side handling of eviction reason codes in `testauth1.html` — cross-device eviction shows "Session Active Elsewhere" overlay with "Sign In Here" button, same-browser tab claims show original overlay text, and "Use Here" button correctly routes to auth wall for cross-device eviction vs session reclaim for same-browser
@@ -5038,7 +5038,7 @@ CONFIG"
 - `CROSS_DEVICE_ENFORCEMENT` toggle in page configuration
 - Overlay text automatically resets when switching between cross-device and same-browser session conflicts
 
-## [v03.71r] — 2026-03-15 12:35:33 PM EST — [SHA unavailable]
+## [v03.71r] — 2026-03-15 12:35:33 PM EST — [SHA unavailable] — [355d4722](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/355d4722c6a7f648a5b39ffc17a3fe5da434ecee)
 
 ### Added
 - Implemented Phase 3 of cross-device session enforcement (Plan 9.2): `ENABLE_CROSS_DEVICE_ENFORCEMENT` toggle added to both `standard` and `hipaa` AUTH_CONFIG presets, gating tombstone writes in `invalidateAllSessions()`
@@ -5048,7 +5048,7 @@ CONFIG"
 ##### Added
 - `ENABLE_CROSS_DEVICE_ENFORCEMENT` configuration toggle in both auth presets — controls whether eviction tombstones are written during session invalidation
 
-## [v03.70r] — 2026-03-15 12:31:39 PM EST — [SHA unavailable]
+## [v03.70r] — 2026-03-15 12:31:39 PM EST — [SHA unavailable] — [12ddc1e1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/12ddc1e152334878be7bbdbe9179799a32a463ee)
 
 ### Added
 - Implemented Phase 2 of cross-device session enforcement (Plan 9.2): heartbeat handler now checks for eviction tombstone when session is missing and includes a `reason` field in `gas-heartbeat-expired` responses (`new_sign_in`, `timeout`, `corrupt_session`, `integrity_violation`, `absolute_timeout`)
@@ -5065,7 +5065,7 @@ CONFIG"
 ##### Security
 - All session expiration notifications are now cryptographically signed to prevent message injection
 
-## [v03.69r] — 2026-03-15 12:23:04 PM EST — [SHA unavailable]
+## [v03.69r] — 2026-03-15 12:23:04 PM EST — [SHA unavailable] — [b34286db](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b34286db9dda0229c9adfc7a88ae723be96e6149)
 
 ### Added
 - Implemented Phase 1 of cross-device session enforcement (Plan 9.2): eviction tombstone in `invalidateAllSessions()` — when a new device signs in, a short-lived `evicted_TOKEN` cache entry is written for each invalidated session so the heartbeat handler can distinguish cross-device eviction from natural timeout
@@ -5075,22 +5075,22 @@ CONFIG"
 ##### Added
 - Eviction tombstone mechanism: `cache.put("evicted_" + token, "new_sign_in", 300)` writes a 5-minute tombstone for each invalidated session during sign-in, enabling future heartbeat reason code differentiation
 
-## [v03.68r] — 2026-03-15 01:50:59 AM EST — [SHA unavailable]
+## [v03.68r] — 2026-03-15 01:50:59 AM EST — [SHA unavailable] — [aa34ca6c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/aa34ca6c0df822edb630cd4d81e9548f1bad3d92)
 
 ### Added
 - Added heartbeat piggyback plan (`09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md`) — cross-device session enforcement by enhancing the existing heartbeat with eviction tombstones and reason codes, requiring zero new polling loops, zero new server functions, and ~60 lines of code vs ~200-300 in previous plans
 
-## [v03.67r] — 2026-03-15 01:12:08 AM EST — [SHA unavailable]
+## [v03.67r] — 2026-03-15 01:12:08 AM EST — [SHA unavailable] — [0fb9a6d0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0fb9a6d04ef52bfcb5d8ac4c74c0f4be138bc915)
 
 ### Added
 - Added Drive file approach plan (`09.1.1-CROSS-DEVICE-SESSION-ENFORCEMENT-DRIVE-PLAN.md`) — alternative cross-device enforcement using public Google Drive beacon file polled via `<script>` tag injection, achieving zero server polling cost with documented tradeoffs (CDN caching unpredictability, XSS attack surface)
 
-## [v03.66r] — 2026-03-15 12:41:10 AM EST — [SHA unavailable]
+## [v03.66r] — 2026-03-15 12:41:10 AM EST — [SHA unavailable] — [83c7a452](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/83c7a4520506aae181a1caddc1b24b4536fde6b1)
 
 ### Added
 - Added revised cross-device session enforcement plan (`09.1-CROSS-DEVICE-SESSION-ENFORCEMENT-REVISED-PLAN.md`) — replaces `doGet(?check=)` polling with `google.script.run` internal RPC channel, eliminating 30x `doGet` overhead while maintaining the same detection speed and improving eviction message security (signed vs unsigned)
 
-## [v03.65r] — 2026-03-15 12:06:26 AM EST — [SHA unavailable]
+## [v03.65r] — 2026-03-15 12:06:26 AM EST — [SHA unavailable] — [f5c39809](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f5c398091e6111796b9560f38ae9fb73b8337f3e)
 
 ### Added
 - Added cross-device single-session enforcement plan (`09-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md`) — 6-phase implementation covering GAS session check endpoint, client-side short polling, lifecycle wiring, and security considerations
@@ -5313,7 +5313,7 @@ CONFIG"
 ##### Changed
 - "Run Security Tests" button now shows all 66 tests as pending first, then a "Run All" button runs them one-by-one with live pass/fail transitions
 
-## [v03.46r] — 2026-03-14 07:47:04 PM EST
+## [v03.46r] — 2026-03-14 07:47:04 PM EST — [35377a29](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/35377a29ac4577492b2d4c3fa4e45c26fe75d9b6)
 
 ### Fixed
 - Fixed security tests destroying active sessions when run — tests for performSignOut, showAuthWall, exchangeToken, and handleTokenResponse now use safe code inspection instead of calling the functions directly (which stopped timers, reloaded the iframe, and showed the sign-in wall)
@@ -5323,7 +5323,7 @@ CONFIG"
 ##### Fixed
 - Fixed security tests causing sign-out and "Access denied" when clicking "Run Security Tests" — destructive function calls replaced with safe code inspection
 
-## [v03.45r] — 2026-03-14 07:24:28 PM EST
+## [v03.45r] — 2026-03-14 07:24:28 PM EST — [c987b76d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c987b76dc981dbc4a9ec1f7fe429de43ae13fc8f)
 
 ### Changed
 - Upgraded ~25 security tests from existence-only checks to behavioral verification — tests now call functions, verify side effects, and confirm state transitions (e.g. CSRF nonce consumption, session cleanup, storage round-trips, heartbeat state machine)
@@ -5333,7 +5333,7 @@ CONFIG"
 ##### Changed
 - Upgraded security tests from existence-only checks to behavioral verification — tests now actively call functions, verify side effects, and confirm state transitions instead of just checking if code exists
 
-## [v03.44r] — 2026-03-14 07:12:06 PM EST
+## [v03.44r] — 2026-03-14 07:12:06 PM EST — [cee9a27b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cee9a27b912b83dddceb08e944a4ddbbd0c1d4db)
 
 ### Fixed
 - Fixed three false-positive security test warnings: tests 52/53 (document.write/eval) now skip the test runner script itself to avoid self-detection, and test 65 (clickjacking) correctly reports frame-ancestors as an HTTP-header-only directive that doesn't belong in meta CSP tags
@@ -5343,7 +5343,7 @@ CONFIG"
 ##### Fixed
 - Fixed three security test false positives: "document.write" and "eval()" tests no longer flag themselves, and clickjacking test correctly reports that frame-ancestors is an HTTP-header-only directive
 
-## [v03.43r] — 2026-03-14 06:52:15 PM EST
+## [v03.43r] — 2026-03-14 06:52:15 PM EST — [02ec70ec](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/02ec70ece22e88fd3ee3350aaaab69fb3534076a)
 
 ### Added
 - Expanded testauth1 security test panel from 23 to 65 tests — added CSP connect/style/img-src audits, OAuth client ID validation, session duration configuration checks, all sanitizer deep tests (event handlers, nested XSS, form injection, CSS injection), auth function existence checks, UI state exclusivity verification, code safety scans (no eval, no document.write), storage key naming audit, open redirect check, clickjacking protection, and more
@@ -5353,7 +5353,7 @@ CONFIG"
 ##### Added
 - Expanded security tests from 23 to 65 — added CSP directive audits, OAuth configuration checks, sanitizer deep tests, session lifecycle verification, UI state checks, code safety scans, and storage security audits
 
-## [v03.42r] — 2026-03-14 06:43:09 PM EST
+## [v03.42r] — 2026-03-14 06:43:09 PM EST — [13e8360a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/13e8360ab8b31a95da023fa8995c7b152fc11dcb)
 
 ### Fixed
 - Session expiry warning banner now triggers automatically when ≤60 seconds remain, instead of only appearing on page refresh — banner also auto-hides when a heartbeat extends the session
@@ -5363,7 +5363,7 @@ CONFIG"
 ##### Fixed
 - "Session expiring soon" warning now appears automatically when less than 60 seconds remain, instead of only showing on page refresh
 
-## [v03.41r] — 2026-03-14 06:35:29 PM EST
+## [v03.41r] — 2026-03-14 06:35:29 PM EST — [f2502960](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f250296097b19fe3ef131219dfa5fcdf5587b5fc)
 
 ### Fixed
 - Fixed console 404 error in security test panel caused by XSS test payload triggering a network request — replaced with data URI
@@ -5373,7 +5373,7 @@ CONFIG"
 ##### Fixed
 - Fixed a console error (404) that appeared when running security tests
 
-## [v03.40r] — 2026-03-14 06:29:20 PM EST
+## [v03.40r] — 2026-03-14 06:29:20 PM EST — [6f012875](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6f0128755bbc1ccc2ab9694ffd5c8150442ef756)
 
 ### Added
 - Expanded security test panel from 12 to 23 tests in testauth1 — added signature verification logic test, GAS iframe presence, postMessage exchange check, CSP script/frame source audit, plugin injection prevention, GAS origin constant, SVG/MathML XSS vector test, session flag isolation, activity event tracking, and session cleanup verification
@@ -5383,7 +5383,7 @@ CONFIG"
 ##### Added
 - Added 11 new security tests: signature hash verification with known values, GAS iframe check, postMessage exchange mode, CSP script-src/frame-src domain audit, object-src plugin blocking, GAS_ORIGIN validation, SVG/Math XSS sanitization, sessionStorage flag isolation, activity event completeness, and clearSession key reset verification
 
-## [v03.39r] — 2026-03-14 06:25:11 PM EST
+## [v03.39r] — 2026-03-14 06:25:11 PM EST — [3819d08f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3819d08fcb7c409c7d3e7371c618d8f5b261018b)
 
 ### Fixed
 - Fixed security test panel's changelog sanitization test failing because `sanitizeChangelogHtml` was scoped inside a closure — moved to top-level scope so both changelog rendering and the security test can access it
@@ -5393,7 +5393,7 @@ CONFIG"
 ##### Fixed
 - Moved `sanitizeChangelogHtml` from IIFE-scoped to top-level scope to fix the security test "Changelog Sanitization" check
 
-## [v03.38r] — 2026-03-14 06:21:23 PM EST
+## [v03.38r] — 2026-03-14 06:21:23 PM EST — [06987a4c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/06987a4cdb0b231aff0120d79097a10b9b190c77)
 
 ### Added
 - Added security test panel to testauth1 — a "Run Security Tests" button that validates all implemented security features (CSP, sanitization, CSRF nonce, message allowlist, bootstrap replay protection, key protection, HMAC verification, cross-tab signout, session config, error sanitization, heartbeat, referrer policy)
@@ -5403,7 +5403,7 @@ CONFIG"
 ##### Added
 - Added "Run Security Tests" button in the bottom-left corner that runs 12 client-side security checks and displays pass/fail/warning results in a dark overlay panel
 
-## [v03.37r] — 2026-03-14 06:10:46 PM EST
+## [v03.37r] — 2026-03-14 06:10:46 PM EST — [1153b121](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1153b1211b859371149651ad5d06f333dc7a11ce)
 
 ### Security
 - Added client-side CSRF nonce protection for the OAuth sign-in flow in testauth1 — ensures token callbacks only process tokens from sign-in flows initiated by the current page (VULN-14)
@@ -5415,7 +5415,7 @@ CONFIG"
 - Added `_authNonce` CSRF protection: a nonce is generated before each `requestAccessToken()` call and verified in `handleTokenResponse()` — rejects unsolicited token callbacks
 - Nonce is consumed (nulled) after use to prevent replay
 
-## [v03.36r] — 2026-03-14 06:03:06 PM EST
+## [v03.36r] — 2026-03-14 06:03:06 PM EST — [a9a2db60](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a9a2db60d39d1b8ede31181e25b79bc338a16665)
 
 ### Security
 - Enabled HMAC-SHA256 session integrity verification for standard preset in testauth1 — both presets now verify session data has not been tampered with (VULN-9)
@@ -5435,7 +5435,7 @@ CONFIG"
 ##### Security
 - Enabled ENABLE_HMAC_INTEGRITY for standard preset (was already enabled for hipaa preset)
 
-## [v03.35r] — 2026-03-14 05:58:39 PM EST
+## [v03.35r] — 2026-03-14 05:58:39 PM EST — [ff0161f9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ff0161f9f5fdd0afb7ececaa2dc3a7d97d642c10)
 
 ### Security
 - Added deploy audit logging to testauth1 — every deploy trigger is now recorded in a rolling 20-entry cache log with timestamps and version info for security monitoring (VULN-3 detection)
@@ -5447,7 +5447,7 @@ CONFIG"
 ##### Security
 - Added rolling deploy audit log (20 entries, 6hr TTL) at the start of pullAndDeployFromGitHub() — records timestamp, trigger source, and current version for each deploy event
 
-## [v03.34r] — 2026-03-14 05:54:36 PM EST
+## [v03.34r] — 2026-03-14 05:54:36 PM EST — [897e9e58](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/897e9e58eaf3c56790bfc317c7b5b4f4054cc2bc)
 
 ### Security
 - Removed email addresses from authentication error responses to prevent email enumeration (VULN-7)
@@ -5468,7 +5468,7 @@ CONFIG"
 - Added heartbeat rate limiting: max 20 requests per session per 5-minute window
 - Reduced ABSOLUTE_SESSION_TIMEOUT production value from 57600s (16hr) to 28800s (8hr) in both standard and hipaa presets
 
-## [v03.33r] — 2026-03-14 05:46:37 PM EST
+## [v03.33r] — 2026-03-14 05:46:37 PM EST — [2388e2a2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2388e2a22d8f1045eab4d523f52a4efb693a01cb)
 
 ### Security
 - Added Content Security Policy (CSP) meta tag to testauth1 — blocks unauthorized script sources, object/embed injection, and base-URI hijacking while whitelisting Google Identity Services and GAS iframe origins
@@ -5481,7 +5481,7 @@ CONFIG"
 - Added sanitizeChangelogHtml() function that strips dangerous HTML elements and event handler attributes
 - Applied changelog sanitization to both GAS changelog and HTML changelog innerHTML assignments
 
-## [v03.32r] — 2026-03-14 05:29:45 PM EST
+## [v03.32r] — 2026-03-14 05:29:45 PM EST — [5e67bbd1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5e67bbd177af6534b3a2ea982b815f56dbcc09df)
 
 ### Fixed
 - Fixed "Session expired" false alarm on fresh portal page load — the GAS iframe was navigating to the bare deployment URL before auth could initialize, triggering a premature `gas-needs-auth` postMessage
@@ -5492,7 +5492,7 @@ CONFIG"
 - Fixed iframe race condition: cancel GAS iframe navigation on page load when no session exists, preventing false "Session expired" message
 - Fixed iframe srcdoc cleanup on session resume to prevent bare-URL race with session-URL navigation
 
-## [v03.31r] — 2026-03-14 05:16:28 PM EST
+## [v03.31r] — 2026-03-14 05:16:28 PM EST — [a245041a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a245041ab4bebebccff1af9688d5db683ed409a8)
 
 ### Changed
 - Portal page architecture: moved dashboard UI (app cards, toggle, gradient theme) from HTML layer to GAS layer — portal.html is now a standard template page with GAS iframe integration
@@ -5515,7 +5515,7 @@ CONFIG"
 ##### Changed
 - Portal dashboard UI now rendered by GAS: gradient background, app cards grid, open-in-tab/window toggle, user info display
 
-## [v03.30r] — 2026-03-14 04:56:37 PM EST
+## [v03.30r] — 2026-03-14 04:56:37 PM EST — [4d951306](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4d95130621fb22ba5e062d87948b59ca212a50e5)
 
 ### Added
 - Set up Portal GAS project with auth support — `portal.gs`, `portal.config.json`, version files, changelogs, per-environment diagram, workflow deploy step, and GAS Projects table registration
@@ -5525,7 +5525,7 @@ CONFIG"
 ##### Changed
 - Updated title to "Portal Title" and CLIENT_ID to new GAS project credentials
 
-## [v03.29r] — 2026-03-14 03:19:37 PM EST
+## [v03.29r] — 2026-03-14 03:19:37 PM EST — [b28556ab](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b28556ab78514076adc9d1d35a0e1c7e8646669b)
 
 ### Added
 - Toggle switch on portal dashboard to choose between opening apps in a new tab or new window
@@ -5535,7 +5535,7 @@ CONFIG"
 ##### Added
 - "Open in new tab / New window" toggle with preference saved across sessions
 
-## [v03.28r] — 2026-03-14 03:15:42 PM EST
+## [v03.28r] — 2026-03-14 03:15:42 PM EST — [ecdb721a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ecdb721ae8fbfdf1d0b47abe02fdc9fcd303fb1d)
 
 ### Changed
 - Portal app cards now open in a new browser window instead of a new tab
@@ -5545,7 +5545,7 @@ CONFIG"
 ##### Changed
 - App cards open in a new popup window (80% screen size, centered) instead of a new tab
 
-## [v03.27r] — 2026-03-14 03:12:36 PM EST
+## [v03.27r] — 2026-03-14 03:12:36 PM EST — [88f7fd42](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/88f7fd423d26ff1d102bdfc5dd900d5039537eea)
 
 ### Changed
 - Application portal now opens projects in new windows instead of redirecting the current page
@@ -5555,7 +5555,7 @@ CONFIG"
 ##### Changed
 - App cards now open in a new browser tab/window
 
-## [v03.26r] — 2026-03-14 03:06:27 PM EST
+## [v03.26r] — 2026-03-14 03:06:27 PM EST — [3358da65](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3358da6520c7ba5f94033902d6ea9610c3cd19d6)
 
 ### Changed
 - Added all site pages to the portal dashboard — GAS Project Creator was missing from the navigation cards
@@ -5565,7 +5565,7 @@ CONFIG"
 ##### Changed
 - Portal now lists all site pages: Test Auth 1, Test Environment, Homepage, and GAS Project Creator
 
-## [v03.25r] — 2026-03-14 02:55:57 PM EST
+## [v03.25r] — 2026-03-14 02:55:57 PM EST — [79c80b97](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/79c80b977a132e82670ec8d4bdbfbb3311373e8a)
 
 ### Added
 - Created `portal.html` — central authentication gateway for cross-page SSO (Architecture 1). Standalone mode with Google Sign-In, master token storage (localStorage for standard, sessionStorage for HIPAA), cross-tab session sync, app navigation cards, and token expiry management. No GAS backend yet — `auth.gs` will be configured separately
@@ -5577,12 +5577,12 @@ CONFIG"
 - Application portal dashboard with navigation cards to app pages
 - Cross-tab session synchronization (storage event + BroadcastChannel)
 
-## [v03.24r] — 2026-03-14 02:42:56 PM EST
+## [v03.24r] — 2026-03-14 02:42:56 PM EST — [0938305b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0938305b9f16dd180fb47ec303aa13043207323b)
 
 ### Added
 - Documented future portal/SSO architecture (Architecture 1) in `KNOWN-CONSTRAINTS-AND-FIXES.md` — central `auth.gs` service for cross-page authentication, token relay patterns for both standard and hipaa presets
 
-## [v03.23r] — 2026-03-14 02:11:03 PM EST
+## [v03.23r] — 2026-03-14 02:11:03 PM EST — [3b06d46f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3b06d46fb4dde788b2d97ec3aeaf457da305f980)
 
 ### Added
 - Added `BroadcastChannel` cross-tab sign-out for hipaa preset (`sessionStorage`) — duplicated tabs now sign out when any tab signs out
@@ -5593,7 +5593,7 @@ CONFIG"
 ##### Added
 - Cross-tab sign-out now works with the hipaa security preset
 
-## [v03.22r] — 2026-03-14 01:52:33 PM EST
+## [v03.22r] — 2026-03-14 01:52:33 PM EST — [9fb142f1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9fb142f1ee3860275989570fe86707d6f41ac3c3)
 
 ### Changed
 - Renamed `KNOWN-CONSTRAINTS.md` → `KNOWN-CONSTRAINTS-AND-FIXES.md` to reflect both architectural constraints and resolved bug documentation
@@ -5605,12 +5605,12 @@ CONFIG"
 ##### Changed
 - Minor internal improvements
 
-## [v03.21r] — 2026-03-14 01:52:33 PM EST
+## [v03.21r] — 2026-03-14 01:52:33 PM EST — [b86175fc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b86175fcf06503564a3fbd22505fd6d7e34786f4)
 
 ### Added
 - Added reminder noting hipaa preset sign-in flow is confirmed working (all 3 bugs fixed) and ready to proceed with security update phases 2-7
 
-## [v03.20r] — 2026-03-14 01:25:57 PM EST
+## [v03.20r] — 2026-03-14 01:25:57 PM EST — [626b93f3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/626b93f39a7e33449caaec7149f7cdbb874ab875)
 
 ### Fixed
 - Fixed re-sign-in after sign-out getting stuck on "Sign In Required" — the HMAC message signing key (`_messageKey`) from the previous session persisted after sign-out, causing unsigned bootstrap messages (`gas-ready-for-token`) from the new sign-in attempt to be silently dropped by HMAC verification
@@ -5620,7 +5620,7 @@ CONFIG"
 ##### Fixed
 - Signing out and signing back in no longer gets stuck on the sign-in page
 
-## [v03.19r] — 2026-03-14 01:18:46 PM EST
+## [v03.19r] — 2026-03-14 01:18:46 PM EST — [b8c8fcdd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b8c8fcddf00383473c2c0df345fd12f8a213c8e6)
 
 ### Fixed
 - Fixed HMAC verification failing when `HMAC_SECRET` script property is not configured — `verifySessionHmac()` now checks for the secret and passes through (returns true) when it's missing, matching the behavior of `generateSessionHmac()` which also returns empty when the secret is absent
@@ -5630,7 +5630,7 @@ CONFIG"
 ##### Fixed
 - Fixed blank page after sign-in when using hipaa security preset — HMAC verification was rejecting valid sessions because the HMAC secret was not configured
 
-## [v03.18r] — 2026-03-14 01:09:05 PM EST
+## [v03.18r] — 2026-03-14 01:09:05 PM EST — [d18aa2d3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d18aa2d3d4a2d65381bd1443582c63ec5840ed04)
 
 ### Fixed
 - Fixed hipaa postMessage token exchange — sign-in was stuck because `gasApp.contentWindow` targets the outer script.google.com shell frame, not the inner sandbox frame where the listener runs; switched to `event.source` to reply directly to the sandbox
@@ -5643,7 +5643,7 @@ CONFIG"
 ##### Fixed
 - Fixed sign-in getting stuck when using the hipaa security preset
 
-## [v03.17r] — 2026-03-14 12:59:12 PM EST
+## [v03.17r] — 2026-03-14 12:59:12 PM EST — [3fbd4d1e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3fbd4d1e60becd3af15f3ee2c312d84f0a4951ec)
 
 ### Fixed
 - Reverted postMessage targetOrigin from `GAS_ORIGIN` back to `'*'` for the HTML→GAS exchange-token message — GAS double-iframe architecture serves the listener from a sandboxed `googleusercontent.com` subdomain, causing the browser to silently drop messages targeted at `script.google.com` (VULN-2 remains open on this direction; exposure limited to single-use token)
@@ -5653,7 +5653,7 @@ CONFIG"
 ##### Fixed
 - Fixed sign-in getting stuck on "Sign In Required" when using postMessage token exchange — the access token message was being silently dropped by the browser
 
-## [v03.16r] — 2026-03-14 12:53:45 PM EST
+## [v03.16r] — 2026-03-14 12:53:45 PM EST — [916074b5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/916074b539ddb8b995bd0e69da3409a5865363ed)
 
 ### Changed
 - Switched testauth1 from `standard` to `hipaa` auth preset — enables HMAC message integrity, audit logging, emergency access, and postMessage token exchange by default
@@ -5673,7 +5673,7 @@ CONFIG"
 - Switched `TOKEN_EXCHANGE_METHOD` from `'url'` to `'postMessage'` (token never in URL)
 - Updated commented-out production `SERVER_SESSION_DURATION` from 3600 to 900 to match hipaa preset
 
-## [v03.15r] — 2026-03-14 12:46:13 PM EST
+## [v03.15r] — 2026-03-14 12:46:13 PM EST — [e47135dd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e47135dd063839d88b46dc30f1356f0d3c4fbff9)
 
 ### Changed
 - Added commented-out production values above each test value in GAS and HTML config — to revert, uncomment the original lines and delete the ⚡ TEST VALUE lines
@@ -5688,7 +5688,7 @@ CONFIG"
 ##### Changed
 - Added commented-out production values above each ⚡ TEST VALUE line for easy revert
 
-## [v03.14r] — 2026-03-14 12:43:08 PM EST
+## [v03.14r] — 2026-03-14 12:43:08 PM EST — [71977e12](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/71977e12295b23d4a5275225cd4b14c8f68f53f4)
 
 ### Changed
 - Set all timed auth config values to fast-test values for rapid testing (sessions, heartbeats, OAuth lifetime)
@@ -5712,7 +5712,7 @@ CONFIG"
 - Absolute session countdown: 16 hours → 5 minutes (for testing)
 - Added inline comments to all timed values showing production defaults
 
-## [v03.13r] — 2026-03-14 12:39:17 PM EST
+## [v03.13r] — 2026-03-14 12:39:17 PM EST — [7644e29e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7644e29e94cd489cb4d53381f62c6d35bbc120d7)
 
 ### Changed
 
@@ -5721,7 +5721,7 @@ CONFIG"
 ##### Changed
 - Reduced OAuth token refresh buffer from 15 minutes to 5 minutes — the "session is expiring soon" reauth banner now only appears in the last 5 minutes of OAuth token lifetime instead of the last 15
 
-## [v03.12r] — 2026-03-14 12:32:39 PM EST
+## [v03.12r] — 2026-03-14 12:32:39 PM EST — [1e772928](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1e7729288a11a20240e2147d74dc0e217309a546)
 
 ### Security
 
@@ -5731,18 +5731,18 @@ CONFIG"
 - Added `Referrer-Policy: no-referrer` meta tag to prevent OAuth and session tokens from leaking via HTTP referrer headers (VULN-1, VULN-6)
 - Replaced wildcard `'*'` postMessage target origin with `GAS_ORIGIN` (`https://script.google.com`) when sending access tokens to the GAS iframe, preventing token broadcast to unintended recipients (VULN-2)
 
-## [v03.11r] — 2026-03-14 12:13:26 PM EST
+## [v03.11r] — 2026-03-14 12:13:26 PM EST — [d60016c4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d60016c4a1405d24e8af7c1ad4f45209364b7c04)
 
 ### Added
 - Comprehensive security update plan II for testauth1 (`repository-information/08-SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — adversarial audit covering 19 vulnerabilities across 7 implementation phases: referrer policy + postMessage origin fix, token exposure reduction (postMessage exchange, sessionStorage, key namespacing), Content Security Policy + innerHTML sanitization, error sanitization + rate limiting + session timeout reduction, deploy audit logging + information exposure documentation, HMAC enablement + bootstrap hardening + cross-tab session revocation via BroadcastChannel, and OAuth flow hardening. Includes complete attack chain analysis, hard constraints inherited from the first plan, CSP directives validated against Google Identity Services documentation, and full regression testing protocol
 
-## [v03.10r] — 2026-03-14 11:26:51 AM EST
+## [v03.10r] — 2026-03-14 11:26:51 AM EST — [61cf1fb9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/61cf1fb934a89f38c720d53de93844387f309e1f)
 
 ### Changed
 - Renamed `SECURITY-UPDATE-PLAN-TESTAUTH1.md` → `07-SECURITY-UPDATE-PLAN-TESTAUTH1.md` and updated status to "Implemented" — the 6-phase security hardening was fully implemented in v02.90r–v02.91r
 - Updated all cross-references (README tree, CHANGELOG entries, SESSION-CONTEXT.md)
 
-## [v03.09r] — 2026-03-13 11:38:31 PM EST
+## [v03.09r] — 2026-03-13 11:38:31 PM EST — [b90be1e9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b90be1e9fc0d69f9dfc3df4acf58a11f7bf6a8a0)
 
 ### Changed
 - Stacked the session timer, GAS version, and HTML version pins vertically in the bottom-right corner instead of spreading them horizontally
@@ -5753,7 +5753,7 @@ CONFIG"
 ##### Changed
 - Status pins now stack vertically in the bottom-right corner — session timer on top, GAS version in the middle, HTML version on the bottom
 
-## [v03.08r] — 2026-03-13 11:23:52 PM EST
+## [v03.08r] — 2026-03-13 11:23:52 PM EST — [cd1e2fc6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cd1e2fc655d07f4fa054662587a5730746966d5e)
 
 ### Added
 - Session pin now shows ▶ indicator in minimized state when heartbeat is active
@@ -5764,7 +5764,7 @@ CONFIG"
 ##### Added
 - Session countdown pill now shows ▶ when your activity is being tracked
 
-## [v03.07r] — 2026-03-13 11:17:21 PM EST
+## [v03.07r] — 2026-03-13 11:17:21 PM EST — [89eb7954](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89eb795456c1133bcb38c4b0bff98f3c420daea8)
 
 ### Changed
 - Changed testauth1 session countdown to 1 hour and heartbeat interval to 5 minutes
@@ -5782,7 +5782,7 @@ CONFIG"
 - Session expiration changed to 1 hour
 - Heartbeat interval changed to 5 minutes
 
-## [v03.06r] — 2026-03-13 11:12:06 PM EST
+## [v03.06r] — 2026-03-13 11:12:06 PM EST — [b2af24cc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b2af24ccf8ed9fe1bd555475e71b8ec318056274)
 
 ### Changed
 - Increased testauth1 session countdown from 3 minutes to 2 hours and heartbeat interval from 30 seconds to 10 minutes
@@ -5799,7 +5799,7 @@ CONFIG"
 - Session expiration extended from 3 minutes to 2 hours
 - Heartbeat interval increased from 30 seconds to 10 minutes
 
-## [v03.05r] — 2026-03-13 11:00:25 PM EST
+## [v03.05r] — 2026-03-13 11:00:25 PM EST — [c39f3c06](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c39f3c065e7f2798245a802097a8308e1c24aa16)
 
 ### Removed
 - Removed 15-second grace period for in-flight heartbeats — the urgent heartbeat (instant send in the last 30s) makes this unnecessary
@@ -5812,7 +5812,7 @@ CONFIG"
 ##### Removed
 - Removed grace period delay before session expiry — sessions now expire immediately when the timer runs out
 
-## [v03.04r] — 2026-03-13 10:46:46 PM EST
+## [v03.04r] — 2026-03-13 10:46:46 PM EST — [03511e43](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/03511e43a9a67e42b3d3033095352180a5bc8610)
 
 ### Removed
 - Removed iframe focus polling for heartbeat activity — it falsely reported activity whenever focus was inside the iframe, even when the user was idle. Keyboard-only interaction inside the GAS iframe is a narrow edge case; mouse movement on the host page already covers most real usage
@@ -5822,7 +5822,7 @@ CONFIG"
 ##### Removed
 - Removed false activity detection that kept the session active even when you weren't interacting
 
-## [v03.03r] — 2026-03-13 10:39:53 PM EST
+## [v03.03r] — 2026-03-13 10:39:53 PM EST — [412fbdfe](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/412fbdfef9a9725e9e3d06f0ec5e9034ac127def)
 
 ### Fixed
 - Iframe focus detection now requires `document.hasFocus()` — prevents false activity when the browser tab is not focused
@@ -5832,7 +5832,7 @@ CONFIG"
 ##### Fixed
 - Session no longer falsely shows activity when you switch to another tab or window
 
-## [v03.02r] — 2026-03-13 10:34:59 PM EST
+## [v03.02r] — 2026-03-13 10:34:59 PM EST — [1d5a8e1c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1d5a8e1c431108f4d94bbeb02ba4a6da923ed2b1)
 
 ### Fixed
 - Typing inside the GAS iframe now counts as activity for heartbeat — added iframe focus detection since cross-origin iframes swallow keyboard events
@@ -5842,7 +5842,7 @@ CONFIG"
 ##### Fixed
 - Typing in text boxes inside the app now keeps your session active
 
-## [v03.01r] — 2026-03-13 10:24:41 PM EST
+## [v03.01r] — 2026-03-13 10:24:41 PM EST — [851b0679](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/851b06799205e6d08b348803e9c8f37b9d4a9ce7)
 
 ### Fixed
 - Heartbeat display no longer shows "▶ ready" immediately after extending — resets to idle so the next tick decides the state, removing the confusing "extended ✓" → "active" flash
@@ -5852,7 +5852,7 @@ CONFIG"
 ##### Fixed
 - Heartbeat indicator resets to idle after session extension instead of immediately showing "ready"
 
-## [v03.00r] — 2026-03-13 10:08:56 PM EST
+## [v03.00r] — 2026-03-13 10:08:56 PM EST — [3416ef2b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3416ef2ba8eaec470141d2983208c8e826886288)
 
 ### Fixed
 - Fixed heartbeat ready indicator not appearing on activity — `_heartbeatIdle` was not cleared when user became active, so display stayed stuck on `(idle)` until the next 30s tick
@@ -5862,7 +5862,7 @@ CONFIG"
 ##### Fixed
 - Heartbeat "ready" indicator now appears immediately when you interact with the page, instead of staying on "idle" until the next heartbeat cycle
 
-## [v02.99r] — 2026-03-13 10:03:03 PM EST
+## [v02.99r] — 2026-03-13 10:03:03 PM EST — [c5e5f8c4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c5e5f8c4eb21dc5335d1d5bf4ccf660e1d7f4c42)
 
 ### Changed
 - Heartbeat countdown now shows `▶ ready` indicator when it will fire on the next tick, replacing the generic `(active)` label
@@ -5872,7 +5872,7 @@ CONFIG"
 ##### Changed
 - Heartbeat countdown shows a clear "ready" indicator when your session will be extended on the next heartbeat
 
-## [v02.98r] — 2026-03-13 09:43:38 PM EST
+## [v02.98r] — 2026-03-13 09:43:38 PM EST — [3941ee9d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3941ee9dfa871cf7b8b47225f9fca718369a5268)
 
 ### Added
 - Added urgent heartbeat — when session has <30s remaining and user is active, sends heartbeat immediately instead of waiting for the next 30s interval tick
@@ -5882,7 +5882,7 @@ CONFIG"
 ##### Added
 - Session now extends immediately when you're active in the last 30 seconds before expiry
 
-## [v02.97r] — 2026-03-13 09:25:41 PM EST
+## [v02.97r] — 2026-03-13 09:25:41 PM EST — [d2149a3b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d2149a3bf5d6ffb7e267ee34e3126bab34fff1e4)
 
 ### Changed
 - Reverted cursor flicker fix attempts (v02.95r, v02.96r) — restored heartbeat to v01.29w behavior (persistent iframe, direct DOM writes)
@@ -5892,7 +5892,7 @@ CONFIG"
 ##### Changed
 - Reverted heartbeat to original approach — minor cursor flicker during heartbeat is acceptable
 
-## [v02.96r] — 2026-03-13 09:15:09 PM EST
+## [v02.96r] — 2026-03-13 09:15:09 PM EST — [8974bc66](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8974bc666dc28a28c33bacac94b64a198e7d62d5)
 
 ### Fixed
 - Fixed heartbeat cursor flicker by batching DOM updates with requestAnimationFrame and adding CSS containment to the timer pill
@@ -5902,7 +5902,7 @@ CONFIG"
 ##### Fixed
 - Fixed cursor flickering from caret to pointer when heartbeat status updates
 
-## [v02.95r] — 2026-03-13 09:08:32 PM EST
+## [v02.95r] — 2026-03-13 09:08:32 PM EST — [999d446f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/999d446fcca380117aa507905f7f3d3c37a45cea)
 
 ### Fixed
 - Fixed heartbeat iframe cursor flicker — heartbeat now uses a disposable iframe with src pre-set before DOM insertion instead of navigating an existing iframe
@@ -5912,7 +5912,7 @@ CONFIG"
 ##### Fixed
 - Fixed cursor flickering from caret to pointer during heartbeat requests
 
-## [v02.94r] — 2026-03-13 08:58:37 PM EST
+## [v02.94r] — 2026-03-13 08:58:37 PM EST — [b00ed37e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b00ed37e5cdc80a9f74b1b99a77b06f4a5033d29)
 
 ### Added
 - Added text input field to testauth1 GAS app for testing whether heartbeat iframe reloads disrupt user typing
@@ -5922,7 +5922,7 @@ CONFIG"
 ##### Added
 - Added text input field for heartbeat interruption testing
 
-## [v02.93r] — 2026-03-13 08:37:51 PM EST
+## [v02.93r] — 2026-03-13 08:37:51 PM EST — [f5de2e4d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f5de2e4dc06027c6a71429604a76cf8d08a486e1)
 
 ### Fixed
 - Fixed session timeout race condition — when a heartbeat was in-flight and the countdown hit 0, the client would sign the user out before the server response could extend the session. Added a 15-second grace period that shows "extending..." while waiting for the heartbeat response
@@ -5932,7 +5932,7 @@ CONFIG"
 ##### Fixed
 - Session no longer times out while a heartbeat response is in transit — shows "extending..." instead of immediately signing out
 
-## [v02.92r] — 2026-03-13 08:14:29 PM EST
+## [v02.92r] — 2026-03-13 08:14:29 PM EST — [6b7849ab](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6b7849abac75eac0ec981aa0218751459c60aa70)
 
 ### Fixed
 - Fixed GAS changelog popup not showing version headers with timestamps — the `parseGasChangelog` regex was missing the `v` prefix in the version capture group (`[\d.]+g` → `v[\d.]+g`), causing all `## [vXX.XXg]` headers to be silently skipped while entries were shown without grouping
@@ -5957,7 +5957,7 @@ CONFIG"
 ##### Fixed
 - Version headers now appear in the GAS changelog popup with timestamps
 
-## [v02.91r] — 2026-03-13 08:03:00 PM EST
+## [v02.91r] — 2026-03-13 08:03:00 PM EST — [107b9361](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/107b9361aed9b3751eb4d61283da466e115c81e0)
 
 ### Changed
 - Propagated all security hardening from testauth1 to auth templates — both `gas-minimal-auth-template-code.js.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt` now include the full 6-phase security implementation so new GAS projects created via setup-gas-project.sh inherit all defenses by default
@@ -5966,7 +5966,7 @@ CONFIG"
 - **Auth GAS template** — added PARENT_ORIGIN derivation, `escapeHtml()`/`escapeJs()` XSS prevention, expanded HMAC payload, per-session message signing key, `messageKey` in session responses, error sanitization, all `"*"` → `PARENT_ORIGIN` on postMessages, removed `accessToken` from session storage
 - **Auth HTML template** — added message-type allowlist (8 known types), cryptographic message signature verification, `msgKey` parameter on heartbeat iframe URLs, removed debug console.logs, removed broken OAuth revocation, fixed checkmark encoding
 
-## [v02.90r] — 2026-03-13 07:15:58 PM EST
+## [v02.90r] — 2026-03-13 07:15:58 PM EST — [03d6406f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/03d6406f415f5b931302872afbce7246d517633b)
 
 ### Added
 - Defense-in-depth security hardening for testauth1 environment (6-phase implementation from 07-SECURITY-UPDATE-PLAN-TESTAUTH1.md)
@@ -6012,22 +6012,22 @@ CONFIG"
 ##### Removed
 - Debug console.log statement from token exchange response
 
-## [v02.89r] — 2026-03-13 07:00:04 PM EST
+## [v02.89r] — 2026-03-13 07:00:04 PM EST — [76b63d88](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/76b63d88a450807c0c8ca18abfb4f4637902cccd)
 
 ### Changed
 - Corrected security update plan failure analysis (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — identified that GAS was stuck at v01.15g from v02.79r onward because DEPLOY_SECRET broke auto-deploy, meaning all subsequent GAS-side fixes (v02.80r–v02.82r) never deployed to the live environment. Corrected false lessons: PARENT_ORIGIN case mismatch (not `.toLowerCase()`) was the actual root cause of persistent sign-in failure; TOKEN_EXCHANGE_METHOD='postMessage' was never properly tested (revert never deployed). Added `.toLowerCase()` to Phase 6 PARENT_ORIGIN derivation to prevent repeating the v02.79r bug
 
-## [v02.88r] — 2026-03-13 06:46:07 PM EST
+## [v02.88r] — 2026-03-13 06:46:07 PM EST — [d7fb950e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d7fb950e91781c246d1cc53add83d89738d1f466)
 
 ### Added
 - Comprehensive security update plan for testauth1 (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — implementation-ready plan covering 6 phases: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, error sanitization, and postMessage target origin restriction. Includes complete failure analysis of v02.75r–v02.84r (the two previous reverted attempts) with root causes documented for each, and explicit "never touch" constraints for the deploy handler and sign-in flow
 
-## [v02.87r] — 2026-03-13 06:13:23 PM EST
+## [v02.87r] — 2026-03-13 06:13:23 PM EST — [52e3870f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/52e3870f05e80147b202833f30b11328d6dc1bdc)
 
 ### Changed
 - Rotated 92 CHANGELOG sections (v02.68r–v01.77r) to archive — all non-today sections moved to CHANGELOG-archive.md with SHA enrichment for 6 versions (v02.63r–v02.68r); 86 older versions moved as-is (commits pre-date local git history)
 
-## [v02.86r] — 2026-03-13 06:03:16 PM EST
+## [v02.86r] — 2026-03-13 06:03:16 PM EST — [ed906c71](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ed906c71c5a8d3722f8b144c3be43ee786c74fc1)
 
 ### Added
 - Protective `⚠️ CRITICAL` comment block in all GAS deploy handlers (`doPost(action=deploy)`) warning against adding authentication or guards — prevents silent breakage of the auto-update pipeline
@@ -6038,7 +6038,7 @@ CONFIG"
 ##### Added
 - Minor internal improvements
 
-## [v02.85r] — 2026-03-13 05:44:18 PM EST
+## [v02.85r] — 2026-03-13 05:44:18 PM EST — [73eaef93](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/73eaef934df2d86517faaed294cba775d1eef06c)
 
 ### Changed
 - Full repo revert to v02.74r state — undoes all changes from v02.75r through v02.84r (security hardening, postMessage fixes, security action plan, template propagation)
@@ -6054,27 +6054,27 @@ CONFIG"
 ##### Changed
 - Reverted to v01.13g state — undoes server-side security hardening (state parameter validation, origin checks, action allowlists) from v02.79r–v02.84r
 
-## [v02.74r] — 2026-03-13 12:58:17 PM EST
+## [v02.74r] — 2026-03-13 12:58:17 PM EST — [73eaef93](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/73eaef934df2d86517faaed294cba775d1eef06c)
 
 ### Changed
 - Removed "Back to Table of Contents" link from Project Structure section since it's directly adjacent to the TOC
 
-## [v02.73r] — 2026-03-13 12:55:44 PM EST
+## [v02.73r] — 2026-03-13 12:55:44 PM EST — [1b9bb6b7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1b9bb6b709dbcc42bffa3edd610878947813aac3)
 
 ### Added
 - "Back to Table of Contents" shortcut links under each section heading in README.md for quick navigation back to the TOC
 
-## [v02.72r] — 2026-03-13 12:52:19 PM EST
+## [v02.72r] — 2026-03-13 12:52:19 PM EST — [f7586b50](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f7586b5010ea2e11292585259238a3a2c74eeec2)
 
 ### Added
 - Table of contents section in README.md with anchor links to all major sections, placed between the QR code and Project Structure
 
-## [v02.71r] — 2026-03-13 12:32:54 PM EST
+## [v02.71r] — 2026-03-13 12:32:54 PM EST — [6190be30](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6190be30c7de62a5d49cc0717a732f3453238325)
 
 ### Added
 - Comprehensive Microsoft authentication implementation plan (`MICROSOFT-AUTH-PLAN.md`) — covers MSAL.js integration, Azure AD setup, provider toggle architecture, GAS-side token validation via Microsoft Graph, and HTML-side dual sign-in UI
 
-## [v02.70r] — 2026-03-13 11:32:09 AM EST
+## [v02.70r] — 2026-03-13 11:32:09 AM EST — [e70c2d70](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e70c2d70c508ed85cfc82a2f505c168021c51ceb)
 
 ### Fixed
 - Removed automatic silent OAuth sign-in on page load — the Google account picker popup no longer fires when refreshing the auth wall page; sign-in only triggers when the user clicks "Sign In with Google"
@@ -6090,7 +6090,7 @@ CONFIG"
 ##### Fixed
 - Same fix applied to auth HTML template for future pages
 
-## [v02.69r] — 2026-03-13 11:23:50 AM EST
+## [v02.69r] — 2026-03-13 11:23:50 AM EST — [374cbae2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/374cbae2f9554c410dc24ab32b089a984fef5ded)
 
 ### Fixed
 - Fixed auto sign-in after manual sign-out on auth pages — signing out and refreshing no longer silently re-authenticates; the account picker is now shown
@@ -6152,7 +6152,7 @@ CONFIG"
 ##### Fixed
 - Auto-refresh after session timeout no longer skips the account chooser — users can select which Google account to sign in with
 
-## [v02.62r] — 2026-03-12 09:29:51 PM EST
+## [v02.62r] — 2026-03-12 09:29:51 PM EST — [0bfab255](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0bfab2555d9e16543328db91ca02e97668cb7ce9)
 
 ### Changed
 - Auth access check now uses dual OR logic — either master ACL spreadsheet TRUE or editor/viewer sharing-list grants access (both methods work simultaneously)
@@ -6164,7 +6164,7 @@ CONFIG"
 - Access check uses dual OR logic — master ACL TRUE or editor/viewer sharing-list grants access (previously fallback-only)
 - ACL lookup wrapped in try/catch so errors fall through to method 2 instead of blocking access
 
-## [v02.61r] — 2026-03-12 09:18:49 PM EST
+## [v02.61r] — 2026-03-12 09:18:49 PM EST — [6b222480](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6b22248083062eecf8a426ad0097a83aefe04e3a)
 
 ### Added
 - Centralized master ACL spreadsheet for auth — row-based email lookup replaces sharing-list check, keeping the data spreadsheet hidden from users' Google Drive
@@ -6185,7 +6185,7 @@ CONFIG"
 ##### Added
 - Master ACL Spreadsheet ID, ACL Sheet Name, and ACL Page Name form fields in auth settings
 
-## [v02.60r] — 2026-03-12 08:48:00 PM EST
+## [v02.60r] — 2026-03-12 08:48:00 PM EST — [61813c89](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/61813c8962f3c23cbab34111ea4143faf93f9df3)
 
 ### Fixed
 - Session timer pill no longer overlaps the GAS version display in the bottom-left corner
@@ -6195,7 +6195,7 @@ CONFIG"
 ##### Fixed
 - Moved session timer pill to the right to avoid overlapping the GAS layer version text
 
-## [v02.59r] — 2026-03-12 08:36:16 PM EST
+## [v02.59r] — 2026-03-12 08:36:16 PM EST — [3416b35c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3416b35cbd476976bd6255e9f0c6734532925e5d)
 
 ### Changed
 - Session timers redesigned as a compact pill matching the version and GAS pills — shows session countdown while minimized, expands on click to show all timers
@@ -6206,7 +6206,7 @@ CONFIG"
 - Session timers restyled as a bottom-left pill with session countdown visible while collapsed
 - Click to expand shows absolute, session, and heartbeat timers
 
-## [v02.58r] — 2026-03-12 08:30:29 PM EST
+## [v02.58r] — 2026-03-12 08:30:29 PM EST — [7cdc9b98](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7cdc9b981dd27ffcf0b0164f029f721a5acb3c2f)
 
 ### Removed
 - Removed "Test GAS Call" debug button from session timers panel
@@ -6216,7 +6216,7 @@ CONFIG"
 ##### Removed
 - Removed debug button and result display from session timers
 
-## [v02.57r] — 2026-03-12 07:48:34 PM EST
+## [v02.57r] — 2026-03-12 07:48:34 PM EST — [acb6dafe](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/acb6dafea973526372b55ebc5879b177c9623400)
 
 ### Changed
 - Sign-in screen now shows company logo and environment title above the "Sign In Required" heading
@@ -6229,7 +6229,7 @@ CONFIG"
 - Raised version indicator z-index so pills are visible on the login screen
 - Bumped changelog/reauth overlay z-indexes to maintain correct stacking
 
-## [v02.56r] — 2026-03-12 07:41:03 PM EST
+## [v02.56r] — 2026-03-12 07:41:03 PM EST — [e7f1407d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e7f1407dc7fef23a57b6eb5123a69c2912535f56)
 
 ### Changed
 - Google Sign-In now shows account chooser when clicking "Sign In with Google" instead of auto-selecting the last used account
@@ -6240,7 +6240,7 @@ CONFIG"
 - Sign-in button always presents Google account chooser for explicit account selection
 - Re-auth fallback uses account chooser instead of consent-only prompt
 
-## [v02.55r] — 2026-03-12 07:29:04 PM EST
+## [v02.55r] — 2026-03-12 07:29:04 PM EST — [153fb0c3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/153fb0c3ae24b54ce18eb5bbda75a9915598044d)
 
 ### Fixed
 - Heartbeat no longer destroys the GAS app iframe — uses a hidden iframe for server heartbeat requests instead of navigating the main `gas-app` iframe
@@ -6250,7 +6250,7 @@ CONFIG"
 ##### Fixed
 - GAS app content no longer disappears after the first heartbeat extension — heartbeat requests now use a separate hidden iframe instead of navigating the main GAS iframe
 
-## [v02.54r] — 2026-03-12 07:22:08 PM EST
+## [v02.54r] — 2026-03-12 07:22:08 PM EST — [d70fce84](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d70fce847dc7c80e6221db8fba5ec24bb6dfc0ed)
 
 ### Changed
 - Session timers panel now starts minimized — click "Session Timers" header to expand/collapse
@@ -6260,7 +6260,7 @@ CONFIG"
 ##### Changed
 - Session timers default to collapsed state with a clickable header to expand
 
-## [v02.53r] — 2026-03-12 07:14:59 PM EST
+## [v02.53r] — 2026-03-12 07:14:59 PM EST — [bc383609](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bc383609d43f3d8a220544bfdbaf3052efac2ce7)
 
 ### Changed
 - Countdown timer now shows hours format (H:MM:SS) when remaining time is 1 hour or more — applies to absolute session timer
@@ -6270,7 +6270,7 @@ CONFIG"
 ##### Changed
 - Timer display uses H:MM:SS format for durations over 1 hour (e.g. "16:00:00" instead of "960:00")
 
-## [v02.52r] — 2026-03-12 07:12:02 PM EST
+## [v02.52r] — 2026-03-12 07:12:02 PM EST — [c35a58d6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c35a58d6f28063ec17a542360ddae8d7d9565168)
 
 ### Changed
 - Removed client-side inactivity timeout — heartbeat already handles idle session expiry naturally (no activity → no heartbeat → server session expires)
@@ -6292,7 +6292,7 @@ CONFIG"
 - Inactivity timer row and all inactivity timeout logic
 - `ENABLE_INACTIVITY_TIMEOUT`, `CLIENT_INACTIVITY_TIMEOUT`, `ENABLE_AUTO_SIGNOUT` config options
 
-## [v02.51r] — 2026-03-12 07:03:32 PM EST
+## [v02.51r] — 2026-03-12 07:03:32 PM EST — [b5035bef](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b5035bef49e747a96aa71298f1aabf509156dbdd)
 
 ### Changed
 - Set absolute session timeout to 16 hours (57600s) for both standard and HIPAA presets
@@ -6317,12 +6317,12 @@ CONFIG"
 - Standard preset `ABSOLUTE_SESSION_TIMEOUT`: 360s → 57600s (16 hours)
 - HIPAA preset `ABSOLUTE_SESSION_TIMEOUT`: 3600s → 57600s (16 hours)
 
-## [v02.50r] — 2026-03-12 06:40:07 PM EST
+## [v02.50r] — 2026-03-12 06:40:07 PM EST — [2f20a82c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2f20a82c1e8971c0dd80e1eb5c6cb28a081041a5)
 
 ### Added
 - Created `HIPAA-COMPLIANCE-REFERENCE.md` — comprehensive reference document covering all 42 HIPAA Security Rule implementation specifications across all five sections (Administrative, Physical, Technical, Organizational, Documentation), with Required/Addressable status, our project's implementation mapping, and the 2025 proposed rule changes
 
-## [v02.49r] — 2026-03-12 06:16:10 PM EST
+## [v02.49r] — 2026-03-12 06:16:10 PM EST — [00edb41c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/00edb41cc060861fad86909c2b00b9b9a7f8e1bc)
 
 ### Added
 - Implemented absolute session timeout — a hard ceiling that can never be extended by heartbeats, preventing infinite sessions for active users (OWASP recommendation)
@@ -6341,7 +6341,7 @@ CONFIG"
 - Absolute session timeout enforcement — sessions now have a hard ceiling that heartbeats cannot extend past
 - New `ABSOLUTE_SESSION_TIMEOUT` configuration option in presets
 
-## [v02.48r] — 2026-03-12 05:53:24 PM EST
+## [v02.48r] — 2026-03-12 05:53:24 PM EST — [13178a32](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/13178a32032f270a7d520294a98675e3f3292063)
 
 ### Changed
 - Heartbeat timer row now shows a live countdown to the next heartbeat tick with (active) or (idle) status indicator
@@ -6351,7 +6351,7 @@ CONFIG"
 ##### Changed
 - Heartbeat display now counts down to the next heartbeat check, showing whether it will extend the session (active) or skip (idle)
 
-## [v02.47r] — 2026-03-12 05:41:17 PM EST
+## [v02.47r] — 2026-03-12 05:41:17 PM EST — [ae22e010](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ae22e010887bf7d19dfbb02b0817570570b6a572)
 
 ### Added
 - Implemented session heartbeat system — client monitors DOM activity and sends periodic heartbeat to GAS server, which resets `createdAt` to extend active sessions
@@ -6380,7 +6380,7 @@ CONFIG"
 ##### Removed
 - Removed `SESSION_REFRESH_WINDOW` configuration — no longer needed with the heartbeat system
 
-## [v02.46r] — 2026-03-12 05:18:55 PM EST
+## [v02.46r] — 2026-03-12 05:18:55 PM EST — [155c5799](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/155c57992b228b423adae01c92ddfcd6adc7a98c)
 
 ### Changed
 - Reduced testauth1 session expiration from 30 minutes to 3 minutes and refresh window from 5 minutes to 1.5 minutes for testing
@@ -6397,7 +6397,7 @@ CONFIG"
 ##### Changed
 - Reduced session expiration from 1800s to 180s (3 min) and refresh window from 300s to 90s (1.5 min) for testing
 
-## [v02.45r] — 2026-03-12 04:38:41 PM EST
+## [v02.45r] — 2026-03-12 04:38:41 PM EST — [74b972d8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/74b972d87af34ba33b0a555af29e7e50b111dffb)
 
 ### Added
 - Added countdown timer panel to testauth1 showing session expiration, refresh window status, and inactivity timeout in real-time
@@ -6407,7 +6407,7 @@ CONFIG"
 ##### Added
 - Added live countdown timers showing session time remaining, refresh window status, and inactivity timeout
 
-## [v02.44r] — 2026-03-12 02:58:04 PM EST
+## [v02.44r] — 2026-03-12 02:58:04 PM EST — [7a2af78c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a2af78cfbb146b7c80b2ff0ed0a1de04797ff96)
 
 ### Changed
 - Bumped testauth1 GAS script version to test the self-update webhook deployment
@@ -6417,7 +6417,7 @@ CONFIG"
 ##### Changed
 - Version bump to verify automatic code deployment via webhook
 
-## [v02.43r] — 2026-03-12 02:50:25 PM EST
+## [v02.43r] — 2026-03-12 02:50:25 PM EST — [bbbd3efd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bbbd3efd9a2b33860c4e995ceda89048b846572e)
 
 ### Fixed
 - Fixed GAS self-update (auto-deploy webhook) not working for testauth1 — the `GITHUB_OWNER`, `GITHUB_REPO`, `TITLE`, and `FILE_PATH` variables were still set to template placeholders, causing `pullAndDeployFromGitHub()` to fetch from a nonexistent path and fail silently
@@ -6427,7 +6427,7 @@ CONFIG"
 ##### Fixed
 - Replaced placeholder variables (`YOUR_ORG_NAME`, `YOUR_REPO_NAME`, `YOUR_PROJECT_FOLDER/YOUR_PAGE_NAME.gs`, `YOUR_PROJECT_TITLE`) with actual values so the self-update webhook can pull code from the correct GitHub path
 
-## [v02.42r] — 2026-03-12 02:42:21 PM EST
+## [v02.42r] — 2026-03-12 02:42:21 PM EST — [7362ff12](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7362ff1297256f3df689a113da4fe319e22f665c)
 
 ### Fixed
 - Fixed session not persisting across page refreshes — the iframe's `srcdoc` race condition also affected the session-resume path, causing `gas-needs-auth` to fire and wipe the valid session from localStorage before the session-URL navigation could complete
@@ -6443,7 +6443,7 @@ CONFIG"
 ##### Fixed
 - Same session persistence fix propagated to the auth template
 
-## [v02.41r] — 2026-03-12 02:33:17 PM EST
+## [v02.41r] — 2026-03-12 02:33:17 PM EST — [943c7150](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/943c7150426144ef99c53c484e0f7b6ae4555f22)
 
 ### Fixed
 - Strengthened auth race condition fix — removed `srcdoc` attribute and deleted `window._r` before setting iframe to `about:blank`, preventing the queued srcdoc script from navigating to the bare GAS URL (the prior `src`-only fix was ineffective because HTML spec gives `srcdoc` priority over `src`)
@@ -6458,7 +6458,7 @@ CONFIG"
 ##### Fixed
 - Same strengthened auth race condition fix propagated to the auth template
 
-## [v02.40r] — 2026-03-12 02:21:14 PM EST
+## [v02.40r] — 2026-03-12 02:21:14 PM EST — [a5a4e263](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a5a4e2634dde4635414e447d75c3075b051128fd)
 
 ### Fixed
 - Fixed auth race condition causing false "Session expired" error on initial page load — the GAS iframe was navigating to the bare deployment URL before Google Sign-In could obtain a token, triggering a premature `gas-needs-auth` message. The iframe is now held on `about:blank` until a token is available for exchange
@@ -6473,7 +6473,7 @@ CONFIG"
 ##### Fixed
 - Same auth initialization race condition fix propagated to the auth template
 
-## [v02.39r] — 2026-03-12 01:53:19 PM EST
+## [v02.39r] — 2026-03-12 01:53:19 PM EST — [5d4f3c6d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5d4f3c6d0341ba271455cc2674ad589ab571a463)
 
 ### Fixed
 - Fixed auth flow not loading the app after sign-in — the iframe was not reloaded with the session token after URL-path token exchange, leaving the exchange response HTML visible instead of the app UI
@@ -6489,7 +6489,7 @@ CONFIG"
 ##### Fixed
 - Added browser-side debug logging to the token exchange response to diagnose postMessage delivery issues
 
-## [v02.38r] — 2026-03-12 01:43:25 PM EST
+## [v02.38r] — 2026-03-12 01:43:25 PM EST — [339e3896](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/339e3896f19273b4d0e8b5cd6744c7c119910409)
 
 ### Fixed
 - Fixed GAS postMessage not reaching parent page — Apps Script's sandbox iframe wrapper intercepts `window.parent.postMessage`; switched all GAS scripts and templates to use `window.top.postMessage` which bypasses the sandbox and reaches the embedding page directly
@@ -6499,7 +6499,7 @@ CONFIG"
 ##### Fixed
 - Fixed postMessage communication being intercepted by Google's iframe sandbox — messages now reach the embedding page correctly
 
-## [v02.37r] — 2026-03-12 01:30:39 PM EST
+## [v02.37r] — 2026-03-12 01:30:39 PM EST — [cc1cc08a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cc1cc08a55353b20e593b7707550f5c3416bde56)
 
 ### Fixed
 - Fixed Google sign-in completing but auth wall persisting — the decoded GAS deployment URL was being deleted before the auth token exchange could use it
@@ -6520,7 +6520,7 @@ CONFIG"
 ##### Changed
 - Minor internal improvements
 
-## [v02.36r] — 2026-03-12 01:22:58 PM EST
+## [v02.36r] — 2026-03-12 01:22:58 PM EST — [1b3d73dc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1b3d73dc932173d477ff93acbd49f36e727d99d3)
 
 ### Added
 - Added console.log auth flow debugging to testauth1 HTML page to trace sign-in postMessage flow
@@ -6536,7 +6536,7 @@ CONFIG"
 ##### Fixed
 - Wrapped token exchange in try-catch to prevent silent server errors from breaking the sign-in flow
 
-## [v02.35r] — 2026-03-12 01:11:52 PM EST
+## [v02.35r] — 2026-03-12 01:11:52 PM EST — [b4c2905c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b4c2905c65d4457ba620522c156174f70be44d7d)
 
 ### Added
 - Added visible debug marker ("1") to GAS iframe output to diagnose whether iframe loads after auth
@@ -6546,7 +6546,7 @@ CONFIG"
 ##### Added
 - Added centered debug marker to verify iframe loading after authentication
 
-## [v02.34r] — 2026-03-12 01:03:01 PM EST
+## [v02.34r] — 2026-03-12 01:03:01 PM EST — [a4652de9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a4652de93565a90ed00b678fb5e73d0c2d7135cc)
 
 ### Fixed
 - Updated testauth1 OAuth Client ID to a user-created credential with authorized JavaScript origins for GitHub Pages (Apps Script auto-generated client IDs cannot be modified)
@@ -6556,7 +6556,7 @@ CONFIG"
 ##### Fixed
 - Fixed Google OAuth sign-in — replaced locked Apps Script-managed Client ID with user-created OAuth credential that authorizes the GitHub Pages origin
 
-## [v02.33r] — 2026-03-12 12:11:25 PM EST
+## [v02.33r] — 2026-03-12 12:11:25 PM EST — [cfe99439](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cfe99439870acea04b9f093f20fe4dd80453d913)
 
 ### Fixed
 - Fixed `setup-gas-project.sh` Python boolean serialization — `parse_json()` now normalizes `True`/`False` to lowercase `true`/`false` for bash comparison
@@ -6569,7 +6569,7 @@ CONFIG"
 - Added diagram file to Phase 11 verification array and summary output
 - Added `YOUR_CLIENT_ID` and `YOUR_DEPLOYMENT_ID` to template placeholder check
 
-## [v02.32r] — 2026-03-12 11:55:11 AM EST
+## [v02.32r] — 2026-03-12 11:55:11 AM EST — [28c5a5de](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/28c5a5de263c5820059d97b81cc55b7c50263fa0)
 
 ### Added
 - Set up new GAS project `testauth1` with Google OAuth authentication (standard preset)
@@ -6595,7 +6595,7 @@ CONFIG"
 ##### Added
 - New auth-enabled GAS web app with OAuth token exchange and audit logging
 
-## [v02.31r] — 2026-03-12 11:21:23 AM EST
+## [v02.31r] — 2026-03-12 11:21:23 AM EST — [adb47d68](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/adb47d68920a2335d5a85d58c02ed6493451318f)
 
 ### Fixed
 - Fixed `ALLOWED_DOMAINS` replacement in `copyGsCode` to use global regex — previously only injected domains into the `standard` preset, leaving `hipaa` preset with empty `[]` (causing a runtime error when hipaa was selected with domains)
@@ -6609,7 +6609,7 @@ CONFIG"
 - Domain settings now correctly apply to all authentication presets
 - Spreadsheet ID field no longer included in configuration when authentication is disabled
 
-## [v02.30r] — 2026-03-12 10:25:57 AM EST
+## [v02.30r] — 2026-03-12 10:25:57 AM EST — [6bd50e38](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6bd50e3858abdc95bf8d65b6dd0747d01b1a464f)
 
 ### Changed
 - Updated GAS Project Creator page to support new Unified Toggleable Auth Pattern (pattern 6) templates
@@ -6627,7 +6627,7 @@ CONFIG"
 - Copy Code.gs now injects auth preset and domain restriction settings into auth template code
 - Copy Config for Claude now includes auth settings in the JSON output
 
-## [v02.29r] — 2026-03-12 10:10:19 AM EST
+## [v02.29r] — 2026-03-12 10:10:19 AM EST — [5ed2e9c0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5ed2e9c00363f1ded9ff2f6e3785fef453c61631)
 
 ### Changed
 - Rewrote all three auth template files from scratch using the Unified Toggleable Auth Pattern (pattern 6): `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`
@@ -6639,42 +6639,42 @@ CONFIG"
 - Added dedicated `gas-signed-out` message type (replaces old `gas-needs-auth` for sign-out)
 - Moved `doGet()` from TEMPLATE section to AUTH section in GAS templates (requires auth routing logic)
 
-## [v02.28r] — 2026-03-12 09:28:34 AM EST
+## [v02.28r] — 2026-03-12 09:28:34 AM EST — [7c73e45e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7c73e45e6e51ba506f4a646467af466a7c18d1e3)
 
 ### Added
 - Created `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md` — unified config-driven authentication pattern combining patterns 3–5 into a single toggleable codebase (19 sections, ~2100 lines). Features: `AUTH_CONFIG` + `HTML_CONFIG` config objects with `standard` and `hipaa` presets, toggle-gated features (domain restriction, audit logging, HMAC integrity, emergency access, postMessage exchange, sessionStorage, inactivity timeout, auto-signout), config resolution with shallow merge and HIPAA validation, complete GAS backend and HTML shell implementations, postMessage three-phase handshake protocol, CacheService behavioral caveats, security checklist, migration guide from patterns 3/4/5, feature toggle matrix with HIPAA regulation mapping, six-pattern comparison table, and troubleshooting guide
 
-## [v02.27r] — 2026-03-12 08:38:09 AM EST
+## [v02.27r] — 2026-03-12 08:38:09 AM EST — [65199a76](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/65199a760a777f8434727f84ea19b7431a789cd3)
 
 ### Changed
 - Renamed 5 auth pattern files with numeric prefixes for ordered reading: `CUSTOM-AUTH-PATTERN.md` → `01-CUSTOM-AUTH-PATTERN.md`, `GOOGLE-OAUTH-AUTH-PATTERN.md` → `02-GOOGLE-OAUTH-AUTH-PATTERN.md`, `IMPROVED-GOOGLE-OAUTH-PATTERN.md` → `03-IMPROVED-GOOGLE-OAUTH-PATTERN.md`, `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` → `04-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md`, `HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` → `05-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md`
 - Updated all internal cross-references between pattern files to use new prefixed filenames
 - Added missing `05-HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` entry to README.md tree
 
-## [v02.26r] — 2026-03-12 01:19:24 AM EST
+## [v02.26r] — 2026-03-12 01:19:24 AM EST — [77e9fdce](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/77e9fdced40e398a9197c2dc3df89079a0f003de)
 
 ### Added
 - Created `HIPAA-RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — HIPAA-compliant OAuth pattern building on the Researched Improved pattern, addressing all identified regulatory gaps: audit logging to Google Sheet (45 CFR 164.312(b)), Workspace-only domain restriction (BAA coverage), 15-minute session timeout (164.312(a)(2)(iii)), postMessage-based token exchange (RFC 6750 §2.3 compliance), sessionStorage instead of localStorage, HMAC-SHA256 session data integrity (164.312(c)(1)), emergency access procedure via Script Properties (164.312(a)(2)(ii)), mandatory client-side inactivity timeout, MFA enforcement strategy via Workspace Admin Console, and full HIPAA compliance mapping table covering all 45 CFR 164.312 sections
 
-## [v02.25r] — 2026-03-11 11:04:20 PM EST
+## [v02.25r] — 2026-03-11 11:04:20 PM EST — [35582c0f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/35582c0f83d2e4708878d6038e6b53dceb318ae1)
 
 ### Added
 - Created `RESEARCHED-IMPROVED-GOOGLE-OAUTH-PATTERN.md` — research-validated OAuth pattern fixing origin validation vulnerability (`includes()` → strict `endsWith()` hostname suffix match), adding interactive re-auth fallback for `prompt: ''` failures, documenting CacheService behavioral caveats (best-effort TTL, max 21600s, no getTimeToLive), and including a full delta from the Improved pattern
 
-## [v02.24r] — 2026-03-11 09:55:17 PM EST
+## [v02.24r] — 2026-03-11 09:55:17 PM EST — [ec4e1dc1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ec4e1dc1bacad05d1f814e7d258cf29138ee9586)
 
 ### Changed
 - Rewrote all 3 auth template files to implement the IMPROVED-GOOGLE-OAUTH-PATTERN, starting from noauth baselines rather than modifying existing basic auth code
 - Auth HTML template now uses GIS OAuth2 token flow (not credential/JWT), origin-validated postMessage, opaque UUID session tokens in localStorage, auth wall overlay, inactivity timeout, and silent re-auth
 - Auth GAS templates (minimal and test) now use server-side session management via CacheService with opaque UUID tokens, server-side Google token validation via googleapis.com/oauth2/v3/userinfo, configurable session TTL, single-session enforcement, and spreadsheet-based authorization
 
-## [v02.23r] — 2026-03-11 09:13:02 PM EST
+## [v02.23r] — 2026-03-11 09:13:02 PM EST — [97193fe2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/97193fe25fe025072860e39a7a15c451991b3e46)
 
 ### Changed
 - Updated "Imported Skills — Do Not Modify" rule to permit reference name updates (e.g. renamed template filenames) in addition to location pointers — applied without flagging as they are mechanical, not behavioral
 - Updated imported frontend-design skill with new HTML template filenames
 
-## [v02.22r] — 2026-03-11 09:03:31 PM EST
+## [v02.22r] — 2026-03-11 09:03:31 PM EST — [8a1139d8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8a1139d8b340db85fff9822ad9e5e91b32f35332)
 
 ### Added
 - Template variation matrix: 4 GAS templates (minimal/test × auth/noauth) and 2 HTML templates (auth/noauth) covering all gas-project-creator checkbox combinations
@@ -6697,7 +6697,7 @@ CONFIG"
 - Template loading now fetches all 4 GAS template variants based on both test and auth checkbox selections
 - Config JSON output includes `INCLUDE_TEST` and `INCLUDE_AUTH` fields for automated template selection
 
-## [v02.21r] — 2026-03-11 08:06:00 PM EST
+## [v02.21r] — 2026-03-11 08:06:00 PM EST — [e2c9e933](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e2c9e93352bc8e50b429462813049b16ecda2a27)
 
 ### Added
 - Google Authentication checkbox placeholder on GAS project creator page (checked by default, not yet wired up — will control auth gate in both GAS & HTML templates)
@@ -6707,7 +6707,7 @@ CONFIG"
 ##### Added
 - New checkbox option for Google Authentication (placeholder for future template integration)
 
-## [v02.20r] — 2026-03-11 07:46:13 PM EST
+## [v02.20r] — 2026-03-11 07:46:13 PM EST — [4b6d149f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b6d149f208b1a1556261f182ec609a4c858d44f)
 
 ### Changed
 - Clarified GAS template checkbox wording on project creator page — "full-featured UI" → "test/diagnostic features" to indicate the checked option is for verifying Google connections, not production use
@@ -6717,7 +6717,7 @@ CONFIG"
 ##### Changed
 - Template selection checkbox label updated to clarify test/diagnostic purpose
 
-## [v02.19r] — 2026-03-11 07:38:27 PM EST
+## [v02.19r] — 2026-03-11 07:38:27 PM EST — [6cb5e258](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6cb5e25891b9c387dea7e6d6c32f498e13cb3ef8)
 
 ### Added
 - Template selection checkbox on GAS project creator page — defaults to minimal template (version display + auto-update only), checkbox enables full-featured template (sound, quotas, sheet embed, buttons)
@@ -6730,7 +6730,7 @@ CONFIG"
 ##### Added
 - Template selection checkbox — choose between minimal (version + auto-update only) or full-featured (sound, quotas, sheet embed, buttons) GAS template when copying Code.gs
 
-## [v02.18r] — 2026-03-11 07:23:14 PM EST
+## [v02.18r] — 2026-03-11 07:23:14 PM EST — [e96783b1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e96783b162e16332616eb28073be1ce5b4a20b79)
 
 ### Added
 - Created `live-site-pages/templates/gas-minimal-template-code.js.txt` — minimal GAS template that strips all visible features (sound, vibrate, quotas, sheet iframe, B1 polling, buttons) while preserving the version display in the bottom-left corner and the full auto-update mechanism (pullAndDeployFromGitHub, postMessage version-check listener, doPost deploy action)
@@ -6738,28 +6738,28 @@ CONFIG"
 ### Changed
 - Updated README.md tree and REPO-ARCHITECTURE.md diagram to include the new minimal GAS template
 
-## [v02.17r] — 2026-03-11 07:05:44 PM EST
+## [v02.17r] — 2026-03-11 07:05:44 PM EST — [69f30826](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/69f308267bb02d1390966d2ea49220cdc055b88e)
 
 ### Changed
 - Restructured `IMPROVED-GOOGLE-OAUTH-PATTERN.md` with GAS-heavy design philosophy — added "GAS vs HTML Responsibility Split" section (Section 3) showing ~80% of auth logic in GAS backend vs ~20% irreducible browser minimum in HTML, renamed HTML section to "Minimal HTML Shell" with explicit callouts on why each piece must be browser-side, added auth-logic split percentages to Three-Pattern Comparison table, and added security checklist items verifying no auth logic leaks into the wrapper
 
-## [v02.16r] — 2026-03-11 06:55:13 PM EST
+## [v02.16r] — 2026-03-11 06:55:13 PM EST — [a5a9985f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a5a9985f643564d51e82aa7d85cd2f62aa7ece51)
 
 ### Added
 - Created `repository-information/IMPROVED-GOOGLE-OAUTH-PATTERN.md` — improved Google OAuth authentication pattern combining GIS OAuth2 sign-in with server-side session management (CacheService), eliminating client-side token exposure, adding configurable session TTL, automatic token refresh, origin-validated postMessage, and optional single-session enforcement and inactivity timeout
 
-## [v02.15r] — 2026-03-11 06:42:02 PM EST
+## [v02.15r] — 2026-03-11 06:42:02 PM EST — [f9248d30](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f9248d301630de9a92b5eba740cb5587e606a1ee)
 
 ### Added
 - Created `repository-information/GOOGLE-OAUTH-AUTH-PATTERN.md` — comprehensive reference documenting the Google Identity Services (GIS) OAuth2 authentication pattern derived from `testaed.gs` + `testaed.html`, including OAuth2 token flow, server-side validation via Google's userinfo API, spreadsheet-based authorization, postMessage protocol, and comparison with the Custom Auth pattern
 
-## [v02.14r] — 2026-03-11 04:15:02 PM EST
+## [v02.14r] — 2026-03-11 04:15:02 PM EST — [2ea7e589](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2ea7e58954493572fb0d212a02bb3e3d27248662)
 
 ### Changed
 - Renamed `GOOGLE-AUTH-PATTERN.md` to `CUSTOM-AUTH-PATTERN.md` — clarifies that this is a custom username/password auth system, not Google OAuth/SSO
 - Updated file title, description, and README tree entry to reflect the rename
 
-## [v02.13r] — 2026-03-11 03:52:24 PM EST
+## [v02.13r] — 2026-03-11 03:52:24 PM EST — [22871bbc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/22871bbc5f6f30e1fedb16fb8c7bd1afe50a5df9)
 
 ### Added
 - Created `repository-information/GOOGLE-AUTH-PATTERN.md` — comprehensive reference documenting the Google Apps Script authentication pattern (session tokens, custom domain iframe wrapper, login flow, security features) derived from `dchrcalendar.gs` + `dchrcalendar.html` for future implementation reuse
@@ -6767,13 +6767,13 @@ CONFIG"
 ### Changed
 - Rotated 23 sections from 2026-03-08 date group to CHANGELOG-archive.md (archive rotation triggered at 112 sections)
 
-## [v02.12r] — 2026-03-11 02:35:52 PM EST
+## [v02.12r] — 2026-03-11 02:35:52 PM EST — [6b2e2a4d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6b2e2a4dcc8e7a614022267680be1020241244ae)
 
 ### Changed
 - Moved Commands section in README.md from above Project Structure to below it
 - Added Origin column (Custom / Imported / Bundled) to all three command tables indicating the source of each command
 
-## [v02.11r] — 2026-03-11 02:32:16 PM EST
+## [v02.11r] — 2026-03-11 02:32:16 PM EST — [07e8d6fe](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/07e8d6fe5c2c0852da32e8868aa726ec42667378)
 
 ### Fixed
 - Rotated v01.01r (2026-03-07) date group from CHANGELOG.md to CHANGELOG-archive.md — was missed in previous push due to incorrect rotation logic short-circuit
@@ -6783,12 +6783,12 @@ CONFIG"
 - Updated CLAUDE.md Pre-Commit #6 archive rotation quick rule to explicitly state that at least one date group must be rotated when the trigger fires
 - Updated SHA enrichment step reference in CLAUDE.md from step 5 to step 6 (renumbered after new step insertion)
 
-## [v02.10r] — 2026-03-11 02:25:09 PM EST
+## [v02.10r] — 2026-03-11 02:25:09 PM EST — [3b9dc2be](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3b9dc2be4d1de59031bf21517e2d0a7025098f7e)
 
 ### Added
 - Added "Commands" section to README.md above Project Structure — lists all 16 slash commands and conversational commands organized into Repo Workflow, Code Quality, and Design & Tooling categories with descriptions and links to skill files
 
-## [v02.09r] — 2026-03-11 01:59:47 PM EST
+## [v02.09r] — 2026-03-11 01:59:47 PM EST — [0cba0910](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0cba09105cad7f2fa5f4c5a4cdf248128ca9a7cc)
 
 ### Removed
 - Removed `STATUS.md` entirely — was redundant with the README tree which already shows versions, links, and origin labels
@@ -6801,58 +6801,58 @@ CONFIG"
 - Removed STATUS.md entry from README.md structure tree
 - Removed STATUS.md relationship from REPO-ARCHITECTURE.md ER diagram and regenerated mermaid.live URL
 
-## [v02.08r] — 2026-03-11 10:43:20 AM EST
+## [v02.08r] — 2026-03-11 10:43:20 AM EST — [2e6859db](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2e6859db415ae08b7f89383f9ea5ac6f6624ae75)
 
 ### Added
 - Added mermaid.live link to testenvironment per-environment diagram (was missing)
 - Added explicit mermaid.live link reminder to the "Adding new pages" checklist in `repo-docs.md`
 
-## [v02.07r] — 2026-03-11 10:32:21 AM EST
+## [v02.07r] — 2026-03-11 10:32:21 AM EST — [1a5edbfe](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1a5edbfeeaf970e479feca71e6caf190a29f9dc3)
 
 ### Changed
 - Expanded Pre-Commit #6 to trigger on behavioral/functional code changes that affect diagrams — not just structural (file add/move/delete) changes. Diagrams now must be checked and updated whenever code they depict is modified (e.g. polling logic, CI/CD steps, GAS behavior)
 - Updated `repo-docs.md` diagram scope description to match the expanded trigger
 
-## [v02.06r] — 2026-03-11 10:22:38 AM EST
+## [v02.06r] — 2026-03-11 10:22:38 AM EST — [1ee0f247](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1ee0f24762eb47b8beb3bb7c953ef64753f295b5)
 
 ### Changed
 - Replaced template-identity labels in REPO-ARCHITECTURE.md diagrams with generic labels — mindmap root `Template Repo` → `System Architecture`, git graph initial commit `Template repo` → `Initial commit` — so diagrams are accurate on both template and forks without requiring init-time changes
 
-## [v02.05r] — 2026-03-11 10:05:48 AM EST
+## [v02.05r] — 2026-03-11 10:05:48 AM EST — [323ba00a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/323ba00a319c326ddca44ed20d2a460b951aa543)
 
 ### Added
 - Added "Diagram accuracy requirements" rule to `repo-docs.md` — 7 criteria for ensuring all diagrams faithfully represent actual source code: cross-reference against source, no invented interactions, server-side vs client-side distinction, real code path mapping, accurate timing/sequencing, maintenance mode structural accuracy, and mermaid.live URL verification
 
-## [v02.04r] — 2026-03-11 10:02:26 AM EST
+## [v02.04r] — 2026-03-11 10:02:26 AM EST — [8767ceb2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8767ceb20329c78d329b4bca64528093db21abf2)
 
 ### Changed
 - Fixed inaccurate GAS Self-Update Loop in REPO-ARCHITECTURE.md sequence diagram (section 2) — removed false `postMessage({type: gas-reload})` and `Reload GAS iframe` steps; replaced with accurate two-phase flow: server-side GAS self-update (triggered by workflow POST) and client-side GAS version polling (gs.version.txt polling triggers full page reload, not iframe-only reload)
 
-## [v02.03r] — 2026-03-11 09:53:21 AM EST
+## [v02.03r] — 2026-03-11 09:53:21 AM EST — [ded4d716](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ded4d716ccf6384de2e497a30fcad6d01ca5c58d)
 
 ### Changed
 - Rewrote template-level state diagram in REPO-ARCHITECTURE.md section 3 for accuracy — replaced simplified abstraction with faithful state machines showing HTML version polling (with maintenance mode as conditional branch), GAS version polling (with anti-sync mechanism and 15s initial delay), post-reload splash/sound lifecycle, and audio unlock lifecycle
 
-## [v02.02r] — 2026-03-11 09:37:46 AM EST
+## [v02.02r] — 2026-03-11 09:37:46 AM EST — [fa14b8ed](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fa14b8ed20064486e83026b7d48c7cbdba97347c)
 
 ### Changed
 - Replaced combined flowchart in REPO-ARCHITECTURE.md section 3 with a `stateDiagram-v2` showing Auto-Refresh Loop, GAS Iframe interaction, and Maintenance Mode as template-level state machines
 - Updated environment scope rule in `repo-docs.md` to include maintenance mode in the template-level exception
 
-## [v02.01r] — 2026-03-11 09:32:02 AM EST
+## [v02.01r] — 2026-03-11 09:32:02 AM EST — [f5fb607c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f5fb607c989daf1845ecd855395807de5c32fb9e)
 
 ### Changed
 - Combined auto-refresh loop and GAS self-update loop into a single unified template behaviors diagram in REPO-ARCHITECTURE.md section 3, showing the connection between the two loops (GAS postMessage triggers browser reload)
 - Added mermaid.live interactive editor link for the combined template behaviors diagram
 
-## [v02.00r] — 2026-03-11 09:20:23 AM EST
+## [v02.00r] — 2026-03-11 09:20:23 AM EST — [ea8729b0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ea8729b04b88b5a9d2d31749848f8f01a94c19b8)
 
 ### Changed
 - Re-added auto-refresh loop and GAS self-update loop diagrams to REPO-ARCHITECTURE.md section 3 as template-level behaviors — these are inherited by all pages via the HTML/GAS templates and only change when templates change
 - Added auto-refresh polling and GAS self-update sequences back to the sequence diagram (section 2) as template behaviors
 - Updated environment scope rule in `repo-docs.md` to clarify that template-level behaviors (auto-refresh, GAS self-update) belong in REPO-ARCHITECTURE.md while environment-specific internals remain in per-environment diagrams
 
-## [v01.99r] — 2026-03-11 09:10:29 AM EST
+## [v01.99r] — 2026-03-11 09:10:29 AM EST — [c0131023](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c013102314afd528580b021de512d94de3b57fc3)
 
 ### Changed
 - Simplified REPO-ARCHITECTURE.md to show environments as nodes without internal processes — auto-refresh loops, GAS self-update loops, and page lifecycle states moved to per-environment diagrams in `repository-information/diagrams/`
@@ -6862,54 +6862,54 @@ CONFIG"
 - Added `ENV_DIAGRAM` entity to ER diagram and `EnvironmentDiagram` class to class diagram showing the per-environment documentation relationship
 - Added environment scope rule to `repo-docs.md` — REPO-ARCHITECTURE.md must not include environment-internal processes going forward
 
-## [v01.98r] — 2026-03-11 08:55:52 AM EST
+## [v01.98r] — 2026-03-11 08:55:52 AM EST — [67c44f82](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/67c44f824bdcd5789e31521337d81e452799483d)
 
 ### Changed
 - Renamed `ARCHITECTURE.md` to `REPO-ARCHITECTURE.md` — updated all references across 14 files (CLAUDE.md, README.md, SUPPORT.md, TOKEN-BUDGETS.md, SESSION-CONTEXT.md, CHANGELOG.md, repo-docs.md, html-pages.md, init-repo.sh, setup-gas-project.sh, new-page skill, diff-review skill, skill-creator skill, gas-project-creator-diagram.md)
 - Renamed README sub-dividers from "Internal Use" → "Internal Sites" and "External Use" → "External Sites"
 
-## [v01.97r] — 2026-03-11 08:39:01 AM EST
+## [v01.97r] — 2026-03-11 08:39:01 AM EST — [be064c15](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/be064c150ddbefc9e8229b13c41883e321576662)
 
 ### Changed
 - Swapped emoji order from `🟢🌐` to `🌐🟢` (and `🟡🌐` to `🌐🟡`) in end-of-response URL labels across chat-bookends rules
 - Added "Public Website", "Internal Use", and "External Use (Placeholder)" sub-dividers to README project structure under live-site-pages
 
-## [v01.96r] — 2026-03-11 08:17:52 AM EST
+## [v01.96r] — 2026-03-11 08:17:52 AM EST — [1357e654](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1357e6549424d55e7c04527375b1dd4807856faf)
 
 ### Fixed
 - Updated GitHub Actions to Node.js 24-compatible versions: `actions/checkout@v4` → `@v5`, `actions/upload-pages-artifact@v3` → `@v4`
 
-## [v01.95r] — 2026-03-11 08:08:09 AM EST
+## [v01.95r] — 2026-03-11 08:08:09 AM EST — [14e02865](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/14e02865d6bba3ffe615831b557f89c55c3a7c63)
 
 ### Changed
 - Renamed "test" environment to "testenvironment" — all files, directories, and references updated across the repo (HTML page, GAS script, config, changelogs, version files, diagram, workflow, README tree, STATUS.md, REPO-ARCHITECTURE.md, gas-scripts.md)
 
-## [v01.94r] — 2026-03-10 01:53:27 PM EST
+## [v01.94r] — 2026-03-10 01:53:27 PM EST — [56c29566](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/56c2956654a2a8a583c8f78e4502ab47f40b5cc5)
 
 ### Changed
 - Standardized "missing resource" emoji in README project structure tree: 🔸 = no spreadsheet, ◽ = no folder, 🔻 = no GAS
 
-## [v01.93r] — 2026-03-10 01:48:24 PM EST
+## [v01.93r] — 2026-03-10 01:48:24 PM EST — [1677ac76](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1677ac7629641dadd6f6a68b773a43ae15b2ea99)
 
 ### Changed
 - Replaced 🪫 (low battery) with ◽ (white square) for pages with no GAS project in README project structure tree
 
-## [v01.92r] — 2026-03-10 01:42:19 PM EST
+## [v01.92r] — 2026-03-10 01:42:19 PM EST — [6ec48e62](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ec48e6202efb26f58f421cae2df74688522ea7a)
 
 ### Changed
 - Added spacer rows between page entries in README project structure tree for visual separation
 
-## [v01.91r] — 2026-03-10 01:36:10 PM EST
+## [v01.91r] — 2026-03-10 01:36:10 PM EST — [348044cd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/348044cddc716fdeba0f4e569d4e896bcf75e9df)
 
 ### Changed
 - Reordered stoplight emoji in README project structure tree — 🌐 now comes first, status indicator (🟢/🟡/🔴) follows immediately with no space
 
-## [v01.90r] — 2026-03-10 01:13:03 PM EST
+## [v01.90r] — 2026-03-10 01:13:03 PM EST — [59d8729f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/59d8729f2ac3359883e928e98510dd7f79204aa2)
 
 ### Added
 - Added 🟢/🟡/🔴 status emoji indicators to page entries in README.md project structure tree — derived from html.version.txt status field
 
-## [v01.89r] — 2026-03-10 10:24:18 AM EST
+## [v01.89r] — 2026-03-10 10:24:18 AM EST — [9241ef76](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9241ef7647f86db1018b9df3e5097b524863bc7d)
 
 ### Added
 - Added page status emoji indicators to URL sections in chat output — 🟢 Active, 🟡 Maintenance, 🔴 Inactive — derived from html.version.txt first field
@@ -6918,50 +6918,50 @@ CONFIG"
 ### Changed
 - Updated all page label formats in chat-bookends.md and chat-bookends-reference.md to include status emoji before the 🌐 prefix
 
-## [v01.88r] — 2026-03-10 10:05:24 AM EST
+## [v01.88r] — 2026-03-10 10:05:24 AM EST — [74d31d21](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/74d31d21d54bf5f82ea032d4bcc9fbda4d8b8dba)
 
 ### Added
 - Added "Diff Rules Command" to CLAUDE.md — compares fork rules against template to identify added, modified, and removed rules
 - Added backporting workflow instructions (fork → template and template → fork) with user prompts
 
-## [v01.87r] — 2026-03-10 09:37:49 AM EST
+## [v01.87r] — 2026-03-10 09:37:49 AM EST — [d8dd012e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d8dd012e886f424742ab0dcbd07781ec405cbfb1)
 
 ### Added
 - Added 🧜‍♀️ architecture diagram link to the root `saistemplateprojectrepo/` line in README tree
 
-## [v01.86r] — 2026-03-10 09:27:17 AM EST
+## [v01.86r] — 2026-03-10 09:27:17 AM EST — [2195446b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2195446bb9d43b99c1d90165b619edc373230954)
 
 ### Changed
 - Replaced 🔹 with 🪫 as the "no GAS file" placeholder in README tree
 
-## [v01.85r] — 2026-03-10 09:23:16 AM EST
+## [v01.85r] — 2026-03-10 09:23:16 AM EST — [7bde72b2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7bde72b28c2852bb0d815fdf6b8d4a4c8253037c)
 
 ### Added
 - Added ⛽ GAS script link icon to README tree page entries (linked to corresponding .gs file, 🔹 placeholder for pages without GAS)
 
-## [v01.84r] — 2026-03-10 09:04:10 AM EST
+## [v01.84r] — 2026-03-10 09:04:10 AM EST — [fda6b740](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fda6b740be0eb63d3569f163982de9b75755ce91)
 
 ### Added
 - Repo version changelog link on the repository root line in README tree
 
-## [v01.83r] — 2026-03-10 08:50:41 AM EST
+## [v01.83r] — 2026-03-10 08:50:41 AM EST — [51fd9aff](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/51fd9aff067115cef864df8f99ee8fc8a16f9b32)
 
 ### Changed
 - Reordered README tree icon cluster: webpage → spreadsheet → drive folder → diagram (🌐 · 📊 · 🔸 · 🧜‍♀️)
 
-## [v01.82r] — 2026-03-10 08:39:43 AM EST
+## [v01.82r] — 2026-03-10 08:39:43 AM EST — [1fb1a1c4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1fb1a1c4dff74b916a9e6d20b04340a17706a27f)
 
 ### Changed
 - Updated README tree icon cluster: 📊→🧜‍♀️ for diagrams, 📋→📊 for spreadsheets, ✕→🔻 for no spreadsheet, ◇→🔸 for no drive folder
 
-## [v01.81r] — 2026-03-10 12:30:32 AM EST
+## [v01.81r] — 2026-03-10 12:30:32 AM EST — [68ad113e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/68ad113e3771e5f95b6dd6b955d358cf9b3fc021)
 
 ### Changed
 - Replaced `╌` with `✕` (thin x) for missing spreadsheet placeholder in README tree
 - Replaced non-linked `📁` with `◇` (white diamond) for missing folder placeholder in README tree
 - Updated icon cluster rules in `repo-docs.md` with `✕` and `◇` placeholder conventions
 
-## [v01.80r] — 2026-03-10 12:20:43 AM EST
+## [v01.80r] — 2026-03-10 12:20:43 AM EST — [bb8b3ca6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bb8b3ca651961a6aa9b3c616b7e0e20d9a7ef350)
 
 ### Changed
 - Restored `→` arrow before icon cluster in README tree page entries
@@ -6969,20 +6969,20 @@ CONFIG"
 - Added 📁 Google Drive folder icon (placeholder) to all page entries in README tree
 - Updated icon cluster rule in `repo-docs.md` with 📁 and `╌` conventions
 
-## [v01.79r] — 2026-03-10 12:13:41 AM EST
+## [v01.79r] — 2026-03-10 12:13:41 AM EST — [5d31e7ca](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5d31e7ca4ce4a0f581c9d9db086f1c0e22d7ccfb)
 
 ### Changed
 - Reorganized README tree page entries: grouped action icons (🌐 · 📊 · 📋) together with `·` separators between `—` delimiters
 - Replaced `📋✖` two-character placeholder with single 🚫 emoji for pages without a spreadsheet
 - Consolidated icon cluster rules in `repo-docs.md` into a single unified section
 
-## [v01.78r] — 2026-03-10 12:10:30 AM EST
+## [v01.78r] — 2026-03-10 12:10:30 AM EST — [2a18a320](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2a18a320f852c3a3f81bf4b555b84d9bc474db93)
 
 ### Added
 - 📋✖ placeholder for pages without an associated spreadsheet in README tree (gas-project-creator)
 - Documented the 📋✖ no-spreadsheet placeholder convention in `repo-docs.md`
 
-## [v01.77r] — 2026-03-10 12:06:53 AM EST
+## [v01.77r] — 2026-03-10 12:06:53 AM EST — [3e60d7bd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3e60d7bd56cf68dea77105720b3668a56937240d)
 
 ### Added
 - Spreadsheet 📋 emoji links in README tree for pages with associated GAS spreadsheets (index, test)

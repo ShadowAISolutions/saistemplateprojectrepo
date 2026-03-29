@@ -3,7 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
+
+## [v07.81r] — 2026-03-29 03:17:42 PM EST
+
+> **Prompt:** "we havent been able to properly make SHAs for a loooong time, can you make a plan to fix it up to work properly"
+
+### Fixed
+- SHA enrichment during CHANGELOG archive rotation now works reliably — added `git fetch --unshallow` step before SHA lookups to fix shallow clone issue that made older commits invisible
+- Historical backfill: enriched all 343 previously missing SHA links in CHANGELOG-archive.md
+
+### Changed
+- Updated archive rotation rules in CLAUDE.md and changelogs.md to include the shallow clone fix and `[SHA unavailable]` fallback
 
 ## [v07.80r] — 2026-03-29 03:05:28 PM EST
 
