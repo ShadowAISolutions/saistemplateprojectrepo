@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
+
+## [v07.83r] — 2026-03-29 06:07:54 PM EST
+
+> **Prompt:** "im pretty sure you can make it happen in the gas if the tab doesnt exist"
+
+### Added
+- Auto-creation of "Announcements" sheet tab in `refreshAnnouncementsCache()` — if the tab doesn't exist, it creates it with headers (Title, Body, Date, Priority, Active), column widths, and a welcome row
+
+#### `programportal.gs` — v01.15g
+
+##### Added
+- Auto-create Announcements sheet with headers and welcome row when tab doesn't exist
 
 ## [v07.82r] — 2026-03-29 06:03:02 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.14g";
+var VERSION = "v01.15g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -308,7 +308,18 @@ function refreshAnnouncementsCache() {
   try {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
-    if (!sheet) return;
+    if (!sheet) {
+      // Auto-create the Announcements sheet with headers and a welcome row
+      sheet = ss.insertSheet(ANNOUNCEMENTS_SHEET_NAME);
+      sheet.getRange('A1:E1').setValues([['Title', 'Body', 'Date', 'Priority', 'Active']]);
+      sheet.getRange('A1:E1').setFontWeight('bold');
+      sheet.getRange('A2:E2').setValues([['Welcome to Program Portal', 'The announcements system is now active.', new Date(), 'normal', 'TRUE']]);
+      sheet.setColumnWidth(1, 200);
+      sheet.setColumnWidth(2, 400);
+      sheet.setColumnWidth(3, 120);
+      sheet.setColumnWidth(4, 100);
+      sheet.setColumnWidth(5, 80);
+    }
     var data = sheet.getDataRange().getValues();
     if (data.length < 2) {
       // Only header row or empty — cache empty items
