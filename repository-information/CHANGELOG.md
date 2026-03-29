@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
+
+## [v07.70r] — 2026-03-29 01:54:51 AM EST
+
+> **Prompt:** "sure"
+
+### Added
+- Added "Sign-out complete" finish line to sign-out checklist across all 3 auth pages — matches the "Sign-in complete" pattern for visual closure before the auth wall appears
+
+#### `testauth1.html` — v03.73w
+
+##### Added
+- "Sign-out complete" final step in sign-out checklist
+
+#### `applicationportal.html` — v01.65w
+
+##### Added
+- "Sign-out complete" final step in sign-out checklist
+
+#### `globalacl.html` — v01.59w
+
+##### Added
+- "Sign-out complete" final step in sign-out checklist
 
 ## [v07.69r] — 2026-03-29 01:49:03 AM EST
 

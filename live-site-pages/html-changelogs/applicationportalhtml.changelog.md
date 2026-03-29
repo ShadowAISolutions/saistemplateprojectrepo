@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 64/50`
+`Sections: 65/50`
+
+## [v01.65w] — 2026-03-29 01:54:51 AM EST — v07.70r
+
+### Added
+- "Sign-out complete" final step added to sign-out checklist
 
 ## [v01.64w] — 2026-03-29 01:49:03 AM EST — v07.69r
 

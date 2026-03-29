@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 58/50`
+`Sections: 59/50`
+
+## [v01.59w] — 2026-03-29 01:54:51 AM EST — v07.70r
+
+### Added
+- "Sign-out complete" final step added to sign-out checklist
 
 ## [v01.58w] — 2026-03-29 01:49:03 AM EST — v07.69r
 
