@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v07.91r] — 2026-03-29 06:41:17 PM EST
+
+> **Prompt:** "it seems to be working, but use the same method (hopeful i think its called) as the testauth1, so that its instantaneous the effect of what is expected"
+
+### Changed
+- Announcements CRUD now uses optimistic updates (same pattern as TestAuth1's live data): local data array is mutated and re-rendered instantly before the server call, then reconciled with authoritative server data when the response arrives
+- Reorder: swaps items in local array immediately, renders, then sends server call
+- Delete: removes item from local array immediately, renders, then sends server call
+- Add: appends new item to local array immediately, closes modal, renders, then sends server call
+- Edit: updates item in local array immediately, closes modal, renders, then sends server call
+
+#### `programportal.gs` — v01.21g
+
+##### Changed
+- Added `_annLocalItems` array and `_optimisticRender()` helper for optimistic UI updates
+- All CRUD handlers now mutate local state first, render, then fire server call with `_forceRenderAnnouncements` as success handler for authoritative reconciliation
 
 ## [v07.90r] — 2026-03-29 06:37:30 PM EST
 

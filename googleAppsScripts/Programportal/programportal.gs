@@ -1,4 +1,4 @@
-var VERSION = "v01.20g";
+var VERSION = "v01.21g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3086,14 +3086,27 @@ function doGet(e) {
             this.textContent = 'Saving...';
 
             if (isEdit) {
+              // Optimistic: update local item immediately
+              for (var u = 0; u < _annLocalItems.length; u++) {
+                if (_annLocalItems[u].rowIndex === item.rowIndex) {
+                  _annLocalItems[u] = { rowIndex: item.rowIndex, title: title, body: body, date: _annLocalItems[u].date, priority: priority, active: active };
+                  break;
+                }
+              }
+              overlay.remove();
+              _optimisticRender();
               google.script.run
-                .withSuccessHandler(function(data) { overlay.remove(); _forceRenderAnnouncements(data); })
-                .withFailureHandler(function(err) { overlay.remove(); console.error('Update error:', err); })
+                .withSuccessHandler(_forceRenderAnnouncements)
+                .withFailureHandler(function(err) { console.error('Update error:', err); })
                 .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, active);
             } else {
+              // Optimistic: add to local array immediately
+              _annLocalItems.push({ rowIndex: _annLocalItems.length, title: title, body: body, date: new Date().toISOString(), priority: priority, active: true });
+              overlay.remove();
+              _optimisticRender();
               google.script.run
-                .withSuccessHandler(function(data) { overlay.remove(); _forceRenderAnnouncements(data); })
-                .withFailureHandler(function(err) { overlay.remove(); console.error('Add error:', err); })
+                .withSuccessHandler(_forceRenderAnnouncements)
+                .withFailureHandler(function(err) { console.error('Add error:', err); })
                 .addAnnouncement(_sessionToken, title, body, priority);
             }
           });
@@ -3102,23 +3115,51 @@ function doGet(e) {
           setTimeout(function() { overlay.querySelector('#ann-form-title').focus(); }, 50);
         }
 
-        // ── Admin: Delete announcement ──
+        // ── Optimistic update helpers ──
+        // Keep a local copy of the current items for optimistic mutations
+        var _annLocalItems = (_announcementsData && _announcementsData.items) ? _announcementsData.items.slice() : [];
+
+        function _forceRenderAnnouncements(data) {
+          _announcementsPrevJSON = '';
+          if (data) {
+            _annLocalItems = data.items ? data.items.slice() : [];
+            _renderAnnouncements(data);
+          }
+        }
+
+        function _optimisticRender() {
+          _announcementsPrevJSON = '';
+          _renderAnnouncements({ items: _annLocalItems, ts: Date.now() });
+        }
+
+        // ── Admin: Delete announcement (optimistic) ──
         function _deleteAnnouncement(rowIndex) {
           if (!confirm('Delete this announcement?')) return;
+          // Optimistic: remove from local array immediately
+          _annLocalItems = _annLocalItems.filter(function(it) { return it.rowIndex !== rowIndex; });
+          _optimisticRender();
+          // Server: authoritative update
           google.script.run
             .withSuccessHandler(_forceRenderAnnouncements)
             .withFailureHandler(function(err) { console.error('Delete error:', err); })
             .deleteAnnouncement(_sessionToken, rowIndex);
         }
 
-        // ── Admin: Reorder announcement ──
-        // Force re-render helper — resets change detection so the next render always applies
-        function _forceRenderAnnouncements(data) {
-          _announcementsPrevJSON = '';
-          if (data) _renderAnnouncements(data);
-        }
-
+        // ── Admin: Reorder announcement (optimistic) ──
         function _reorderAnnouncement(rowIndex, direction) {
+          // Optimistic: swap in local array immediately
+          var fromIdx = -1;
+          for (var i = 0; i < _annLocalItems.length; i++) {
+            if (_annLocalItems[i].rowIndex === rowIndex) { fromIdx = i; break; }
+          }
+          var toIdx = direction === 'up' ? fromIdx - 1 : fromIdx + 1;
+          if (fromIdx >= 0 && toIdx >= 0 && toIdx < _annLocalItems.length) {
+            var temp = _annLocalItems[fromIdx];
+            _annLocalItems[fromIdx] = _annLocalItems[toIdx];
+            _annLocalItems[toIdx] = temp;
+            _optimisticRender();
+          }
+          // Server: authoritative update
           google.script.run
             .withSuccessHandler(_forceRenderAnnouncements)
             .withFailureHandler(function(err) { console.error('Reorder error:', err); })
@@ -3174,7 +3215,7 @@ function doGet(e) {
               _annPollInFlight = false;
               _annLastPollTick = Date.now();
               if (data) {
-                try { _renderAnnouncements(data); }
+                try { _annLocalItems = data.items ? data.items.slice() : []; _renderAnnouncements(data); }
                 catch(e) { console.error('Announcements poll error:', e); }
               }
               setTimeout(_doAnnouncementsPoll, ANNOUNCEMENTS_POLL_INTERVAL);
