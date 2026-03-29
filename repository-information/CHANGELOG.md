@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v07.74r] — 2026-03-29 02:29:20 AM EST
+
+> **Prompt:** "i dont see it, it should be showing up on the sign in complete row from the beginning, in timer format same like the other rows but counting the total elapsed for all"
+
+### Changed
+- Total elapsed timer now live-ticks from the start on the "Sign-in complete" / "Sign-out complete" rows — starts counting immediately when the checklist begins (same 100ms interval as other stage tickers), freezes on completion with final value. Previously the total only appeared on completion (too late — page transitions away instantly)
+
+#### `testauth1.html` — v03.76w
+
+##### Changed
+- Total elapsed timer now live-ticks on the final checklist row from the beginning
+
+#### `applicationportal.html` — v01.68w
+
+##### Changed
+- Total elapsed timer now live-ticks on the final checklist row from the beginning
+
+#### `globalacl.html` — v01.62w
+
+##### Changed
+- Total elapsed timer now live-ticks on the final checklist row from the beginning
 
 ## [v07.73r] — 2026-03-29 02:23:50 AM EST
 

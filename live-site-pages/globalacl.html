@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.61w">
+  <meta name="build-version" content="v01.62w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -2537,6 +2537,17 @@
       }
       if (subtitle) subtitle.style.display = 'none';
       _updateSignInStage('Contacting Google\u2026');
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
+      var _siLastStage = document.getElementById('stage-ready');
+      if (_siLastStage) {
+        var _siTotalSpan = document.createElement('span');
+        _siTotalSpan.className = 'stage-time stage-time-total';
+        _siTotalSpan.textContent = '0.0s total';
+        _siLastStage.appendChild(_siTotalSpan);
+        _totalTickTimer = setInterval(function() {
+          if (_signInStartTime) _siTotalSpan.textContent = _formatStageTime(Date.now() - _signInStartTime) + ' total';
+        }, 100);
+      }
     }
 
     // PROJECT: Sign-in stage checklist logic
@@ -2608,13 +2619,12 @@
         }
       }
       _completeAllSubSteps();
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       if (_signInStartTime) {
         var lastStage = document.getElementById(_stageOrder[_stageOrder.length - 1]);
         if (lastStage) {
           var totalSpan = lastStage.querySelector('.stage-time');
-          if (!totalSpan) { totalSpan = document.createElement('span'); totalSpan.className = 'stage-time'; lastStage.appendChild(totalSpan); }
-          totalSpan.textContent = _formatStageTime(Date.now() - _signInStartTime) + ' total';
-          totalSpan.classList.add('stage-time-total');
+          if (totalSpan) totalSpan.textContent = _formatStageTime(Date.now() - _signInStartTime) + ' total';
         }
       }
     }
@@ -2633,6 +2643,7 @@
     var _activeStageId = null;
     var _signInStartTime = null;
     var _signOutStartTime = null;
+    var _totalTickTimer = null;
 
     function _updateSubStep(subStepId) {
       var parentUl = null;
@@ -2792,13 +2803,12 @@
         }
       }
       _completeAllSubSteps();
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       if (_signOutStartTime) {
         var lastStage = document.getElementById(_soStageOrder[_soStageOrder.length - 1]);
         if (lastStage) {
           var totalSpan = lastStage.querySelector('.stage-time');
-          if (!totalSpan) { totalSpan = document.createElement('span'); totalSpan.className = 'stage-time'; lastStage.appendChild(totalSpan); }
-          totalSpan.textContent = _formatStageTime(Date.now() - _signOutStartTime) + ' total';
-          totalSpan.classList.add('stage-time-total');
+          if (totalSpan) totalSpan.textContent = _formatStageTime(Date.now() - _signOutStartTime) + ' total';
         }
       }
     }
@@ -2820,6 +2830,17 @@
         for (var i = 0; i < items.length; i++) {
           items[i].className = 'stage-pending';
         }
+      }
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
+      var _soLastStage = document.getElementById('so-stage-complete');
+      if (_soLastStage) {
+        var _soTotalSpan = document.createElement('span');
+        _soTotalSpan.className = 'stage-time stage-time-total';
+        _soTotalSpan.textContent = '0.0s total';
+        _soLastStage.appendChild(_soTotalSpan);
+        _totalTickTimer = setInterval(function() {
+          if (_signOutStartTime) _soTotalSpan.textContent = _formatStageTime(Date.now() - _signOutStartTime) + ' total';
+        }, 100);
       }
     }
 

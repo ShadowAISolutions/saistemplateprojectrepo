@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 61/50`
+`Sections: 62/50`
+
+## [v01.62w] — 2026-03-29 02:29:20 AM EST — v07.74r
+
+### Changed
+- Total elapsed timer now counts live from the start on the final checklist row
 
 ## [v01.61w] — 2026-03-29 02:23:50 AM EST — v07.73r
 

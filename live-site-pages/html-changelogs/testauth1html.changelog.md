@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 69/50`
+`Sections: 70/50`
+
+## [v03.76w] — 2026-03-29 02:29:20 AM EST — v07.74r
+
+### Changed
+- Total elapsed timer now counts live from the start on the final checklist row
 
 ## [v03.75w] — 2026-03-29 02:23:50 AM EST — v07.73r
 
