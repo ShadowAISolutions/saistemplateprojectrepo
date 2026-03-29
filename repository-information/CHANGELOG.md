@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
+
+## [v07.67r] — 2026-03-29 01:36:33 AM EST
+
+> **Prompt:** "i like preparing interface and initializing, use those. also explain what is happening with confirming session with server as it seems instantaneous"
+
+### Changed
+- Renamed sign-in checklist sub-steps: "Downloading app" → "Preparing interface", "Starting up" → "Initializing" across all 3 auth pages for more accurate descriptions
+
+#### `testauth1.html` — v03.70w
+
+##### Changed
+- Renamed loading sub-steps to "Preparing interface" and "Initializing"
+
+#### `applicationportal.html` — v01.62w
+
+##### Changed
+- Renamed loading sub-steps to "Preparing interface" and "Initializing"
+
+#### `globalacl.html` — v01.56w
+
+##### Changed
+- Renamed loading sub-steps to "Preparing interface" and "Initializing"
 
 ## [v07.66r] — 2026-03-29 01:19:57 AM EST
 
