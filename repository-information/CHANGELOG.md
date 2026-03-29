@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
+
+## [v07.62r] — 2026-03-28 08:50:32 PM EST
+
+> **Prompt:** "i tried it in testauth1 (sign out and quickly sign back in), and its saying you have been signed out. but of course the fix should apply to all of them"
+
+### Fixed
+- Guarded `_finalizeSignOut()` with `_authState !== 'signing-out'` check — the previous fix guarded the general `gas-signed-out` handler but missed the closure-scoped `_soConfirmHandler` and 10-second fallback timeout, both of which call `_finalizeSignOut()`. These late callbacks were the actual culprit: they fire after sign-out completes (calling `showAuthWall('You have been signed out.')`) even if the user has already started a new sign-in
+
+#### `testauth1.html` — v03.67w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
+
+#### `applicationportal.html` — v01.59w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
+
+#### `globalacl.html` — v01.53w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
 
 ## [v07.61r] — 2026-03-28 08:23:32 PM EST
 

@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 58/50`
+`Sections: 59/50`
+
+## [v01.59w] — 2026-03-28 08:50:32 PM EST — v07.62r
+
+### Fixed
+- Signing in immediately after signing out no longer gets interrupted by a false "You have been signed out" message
 
 ## [v01.58w] — 2026-03-28 08:23:32 PM EST — v07.61r
 

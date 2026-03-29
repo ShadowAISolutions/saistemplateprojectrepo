@@ -3177,6 +3177,9 @@
 
       // Helper: finalize sign-out — show auth wall with DOM clearing
       function _finalizeSignOut() {
+        // Guard: if auth state moved past 'signing-out' (e.g. user started
+        // a new sign-in), this is a late callback — do not interrupt.
+        if (_authState !== 'signing-out') return;
         _completeAllSignOutStages();
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);
