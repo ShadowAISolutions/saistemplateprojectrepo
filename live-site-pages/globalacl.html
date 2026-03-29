@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.51w">
+  <meta name="build-version" content="v01.52w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -1285,6 +1285,10 @@
     var _tabId = Math.random().toString(36).substring(2) + Date.now().toString(36);
     var _tabSurrendered = false;  // true when another tab claimed the session
     var _evictedByRemote = false;  // true when heartbeat detects cross-device eviction
+    // Auth state machine — tracks the current authentication lifecycle phase.
+    // Used to distinguish stale sign-out signals from legitimate ones (HIPAA-compliant).
+    // Values: 'signed-out' | 'signing-in' | 'authenticated' | 'signing-out' | 'reconnecting'
+    var _authState = 'signed-out';
 
     // Tab roll call — on-demand count of other tabs open in the same browser.
     // Only active when the tab-takeover overlay is shown. No continuous intervals.
@@ -2206,12 +2210,18 @@
         _heartbeatIdle = false;
       }
 
-      // GAS sign-out confirmation
+      // GAS sign-out confirmation — only process when actively signing out.
+      // During 'signing-in' or 'reconnecting', this is a late arrival from
+      // the PREVIOUS sign-out cycle's iframe. HIPAA-safe: gas-signed-out
+      // originates ONLY from a GAS iframe loaded with ?action=signout,
+      // which only happens inside performSignOut().
       if (data.type === 'gas-signed-out') {
-        clearSession();
-        stopCountdownTimers();
-        stopHeartbeat();
-        showAuthWall('You have been signed out.');
+        if (_authState === 'signing-out') {
+          clearSession();
+          stopCountdownTimers();
+          stopHeartbeat();
+          showAuthWall('You have been signed out.');
+        }
       }
     }
 
@@ -2284,7 +2294,7 @@
           _rollCallResponses[e.data.tabId] = true;
           updateTakeoverTabCount();
         }
-        if (e.data.type === 'sign-out') {
+        if (e.data.type === 'sign-out' && e.data.tabId !== _tabId) {
           // Hide tab-takeover overlay if visible (sign-out takes priority)
           document.getElementById('tab-takeover-wall').style.display = 'none';
           _tabSurrendered = false;
@@ -2429,6 +2439,7 @@
     // =============================================
 
     function showAuthWall(message, email) {
+      _authState = 'signed-out';
       var wall = document.getElementById('auth-wall');
       var errorEl = document.getElementById('auth-error');
       var emailEl = document.getElementById('auth-email');
@@ -2487,6 +2498,7 @@
     }
 
     function showReconnecting() {
+      _authState = 'reconnecting';
       var wall = document.getElementById('auth-wall');
       wall.classList.remove('hidden');
       document.getElementById('auth-wall-signin').style.display = 'none';
@@ -2498,6 +2510,7 @@
     }
 
     function showSigningIn() {
+      _authState = 'signing-in';
       var wall = document.getElementById('auth-wall');
       wall.classList.remove('hidden');
       document.getElementById('auth-wall-signin').style.display = 'none';
@@ -2856,6 +2869,7 @@
     }
 
     function showApp(email, displayName, role) {
+      _authState = 'authenticated';
       if (email) _ssoUserEmail = email;  // Hold for SSO sharing
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
@@ -3355,6 +3369,7 @@
     // =============================================
 
     function performSignOut(reason, opts) {
+      _authState = 'signing-out';
       opts = opts || {};
       var broadcastSSO = opts.broadcastSSO !== false; // default true for backwards compat
       // PROJECT: Reset and start sign-out checklist
@@ -3379,7 +3394,7 @@
       // Notify other tabs (sessionStorage/hipaa mode — BroadcastChannel)
       // For localStorage/standard mode, cross-tab sync happens automatically via the storage event.
       if (_signOutChannel) {
-        _signOutChannel.postMessage({ type: 'sign-out' });
+        _signOutChannel.postMessage({ type: 'sign-out', tabId: _tabId });
       }
       // PROJECT: Advance to connected apps stage
       _updateSignOutStage('so-stage-apps');

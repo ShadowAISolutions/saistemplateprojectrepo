@@ -3,7 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
+
+## [v07.61r] — 2026-03-28 08:23:32 PM EST
+
+> **Prompt:** "when i try to sign in fairly quickly after ive been signed out, it triy to sign in and it gets a few seconds into exchanging credentials but then says you have been signed out and goes back to the sign in page. anything you can come up with to address that?"
+
+### Fixed
+- Added auth state machine (`_authState`) to prevent stale sign-out signals from interrupting fresh sign-in attempts. Five states: `signed-out`, `signing-in`, `authenticated`, `signing-out`, `reconnecting`. The `gas-signed-out` handler now only processes during `signing-out` state — HIPAA-safe because that message only originates from a GAS iframe loaded with `?action=signout` (inside `performSignOut()`)
+- Fixed BroadcastChannel sign-out self-reception — added `tabId` to the sign-out broadcast message and a `tabId !== _tabId` guard on the receiver, preventing a tab from processing its own sign-out broadcast
+
+#### `testauth1.html` — v03.66w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
+
+#### `applicationportal.html` — v01.58w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
+
+#### `globalacl.html` — v01.52w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
 
 ## [v07.60r] — 2026-03-28 07:48:08 PM EST
 
