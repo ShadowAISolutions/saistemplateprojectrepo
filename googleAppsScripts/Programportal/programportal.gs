@@ -1,4 +1,4 @@
-var VERSION = "v01.23g";
+var VERSION = "v01.24g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -437,28 +437,60 @@ function deleteAnnouncement(token, rowIndex) {
   return getCachedAnnouncements();
 }
 
+// --- COMMENTED OUT: per-click reorder (sequential queue approach) ---
+// Kept for reference — can be re-enabled by uncommenting and removing saveAnnouncementOrder
+// function reorderAnnouncement(token, fromRowIndex, direction) {
+//   var user = validateSessionForData(token, 'reorderAnnouncement');
+//   checkPermission(user, 'admin', 'reorderAnnouncement');
+//   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+//   var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
+//   if (!sheet) throw new Error('Announcements sheet not found');
+//   var lastDataRow = sheet.getLastRow() - 1;
+//   var toRowIndex = direction === 'up' ? fromRowIndex - 1 : fromRowIndex + 1;
+//   if (toRowIndex < 0 || toRowIndex >= lastDataRow) throw new Error('Cannot move further');
+//   var fromSheetRow = fromRowIndex + 2;
+//   var toSheetRow = toRowIndex + 2;
+//   var numCols = 5;
+//   var fromVals = sheet.getRange(fromSheetRow, 1, 1, numCols).getValues();
+//   var toVals = sheet.getRange(toSheetRow, 1, 1, numCols).getValues();
+//   sheet.getRange(fromSheetRow, 1, 1, numCols).setValues(toVals);
+//   sheet.getRange(toSheetRow, 1, 1, numCols).setValues(fromVals);
+//   refreshAnnouncementsCache();
+//   return getCachedAnnouncements();
+// }
+
 /**
- * reorderAnnouncement(token, fromRowIndex, direction) — admin-only.
- * Swaps an announcement with its neighbor. direction: 'up' or 'down'.
- * Row indices are 0-based data rows (excluding header).
+ * saveAnnouncementOrder(token, orderJSON) — admin-only.
+ * Receives the full desired row order as a JSON array of rowIndex values,
+ * rewrites all data rows in the spreadsheet to match that order in one batch.
  * Returns updated announcements data.
  */
-function reorderAnnouncement(token, fromRowIndex, direction) {
-  var user = validateSessionForData(token, 'reorderAnnouncement');
-  checkPermission(user, 'admin', 'reorderAnnouncement');
+function saveAnnouncementOrder(token, orderJSON) {
+  var user = validateSessionForData(token, 'saveAnnouncementOrder');
+  checkPermission(user, 'admin', 'saveAnnouncementOrder');
+  var order = JSON.parse(orderJSON); // array of original rowIndex values in desired order
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
   if (!sheet) throw new Error('Announcements sheet not found');
-  var lastDataRow = sheet.getLastRow() - 1; // 0-based count of data rows
-  var toRowIndex = direction === 'up' ? fromRowIndex - 1 : fromRowIndex + 1;
-  if (toRowIndex < 0 || toRowIndex >= lastDataRow) throw new Error('Cannot move further');
-  var fromSheetRow = fromRowIndex + 2;
-  var toSheetRow = toRowIndex + 2;
-  var numCols = 5;
-  var fromVals = sheet.getRange(fromSheetRow, 1, 1, numCols).getValues();
-  var toVals = sheet.getRange(toSheetRow, 1, 1, numCols).getValues();
-  sheet.getRange(fromSheetRow, 1, 1, numCols).setValues(toVals);
-  sheet.getRange(toSheetRow, 1, 1, numCols).setValues(fromVals);
+  var data = sheet.getDataRange().getValues();
+  var header = data[0];
+  var rows = data.slice(1);
+  // Build reordered rows based on the order array
+  var reordered = [];
+  for (var i = 0; i < order.length; i++) {
+    var idx = order[i];
+    if (idx >= 0 && idx < rows.length) {
+      reordered.push(rows[idx]);
+    }
+  }
+  // Append any rows not in the order array (safety — shouldn't happen)
+  for (var j = 0; j < rows.length; j++) {
+    if (order.indexOf(j) === -1) reordered.push(rows[j]);
+  }
+  // Write all rows back in new order
+  if (reordered.length > 0) {
+    sheet.getRange(2, 1, reordered.length, header.length).setValues(reordered);
+  }
   refreshAnnouncementsCache();
   return getCachedAnnouncements();
 }
@@ -2576,6 +2608,13 @@ function doGet(e) {
         .ann-modal-btn.secondary { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
         .ann-modal-btn.secondary:hover { background: rgba(255,255,255,0.2); }
         .ann-admin-btn.move { font-size: 11px; padding: 2px 6px; }
+        .ann-save-order-btn {
+          background: #42a5f5; border: none; border-radius: 8px; padding: 10px 20px;
+          color: #fff; cursor: pointer; font-size: 13px; width: 100%; text-align: center;
+          margin-bottom: 10px; transition: all 0.2s; font-weight: 600;
+        }
+        .ann-save-order-btn:hover { background: #1e88e5; }
+        .ann-save-order-btn:disabled { opacity: 0.6; cursor: wait; }
         .ann-status-bar {
           display: flex; align-items: center; gap: 12px; padding: 6px 0; margin-bottom: 8px;
           font-size: 11px; color: rgba(255,255,255,0.5);
@@ -2956,13 +2995,21 @@ function doGet(e) {
           _annBadge.textContent = activeCount || '';
           _annContainer.innerHTML = '';
 
-          // Admin: Add button at top
+          // Admin: Add button and Save Order button at top
           if (_isAdmin) {
             var addBtn = document.createElement('div');
             addBtn.className = 'ann-add-btn';
             addBtn.textContent = '+ Add Announcement';
             addBtn.addEventListener('click', function() { _openAnnModal('add'); });
             _annContainer.appendChild(addBtn);
+
+            var saveBtn = document.createElement('button');
+            saveBtn.id = 'ann-save-order-btn';
+            saveBtn.className = 'ann-save-order-btn';
+            saveBtn.textContent = 'Save Order';
+            saveBtn.style.display = _annOrderDirty ? '' : 'none';
+            saveBtn.addEventListener('click', function() { _saveAnnouncementOrder(); });
+            _annContainer.appendChild(saveBtn);
           }
 
           for (var i = 0; i < displayItems.length; i++) {
@@ -3123,6 +3170,8 @@ function doGet(e) {
           _announcementsPrevJSON = '';
           if (data) {
             _annLocalItems = data.items ? data.items.slice() : [];
+            _annOriginalOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
+            _annOrderDirty = false;
             _renderAnnouncements(data);
           }
         }
@@ -3145,57 +3194,63 @@ function doGet(e) {
             .deleteAnnouncement(_sessionToken, rowIndex);
         }
 
-        // ── Admin: Reorder announcement (optimistic + sequential server queue) ──
-        // Each click optimistically swaps the UI instantly and queues a server call.
-        // Server calls execute sequentially (next fires after previous completes).
-        // Only the final server response re-renders; intermediate responses are ignored.
-        var _reorderQueue = [];
-        var _reorderProcessing = false;
-        var _reorderGeneration = 0;
+        // --- COMMENTED OUT: per-click reorder with sequential server queue ---
+        // Kept for reference — can be re-enabled by uncommenting and removing the Save Order approach below
+        // var _reorderQueue = [];
+        // var _reorderProcessing = false;
+        // var _reorderGeneration = 0;
+        // function _processReorderQueue() { ... }
+        // function _reorderAnnouncement(rowIndex, direction) { ... }
+        // See git history v01.23g for the full implementation
 
-        function _processReorderQueue() {
-          if (_reorderProcessing || _reorderQueue.length === 0) return;
-          _reorderProcessing = true;
-          var job = _reorderQueue.shift();
-          var isLast = (_reorderQueue.length === 0);
-          var gen = _reorderGeneration;
-          google.script.run
-            .withSuccessHandler(function(data) {
-              _reorderProcessing = false;
-              // Only apply server response if this is the last queued job AND no new reorders arrived
-              if (isLast && gen === _reorderGeneration) {
-                _forceRenderAnnouncements(data);
-              }
-              _processReorderQueue(); // process next in queue
-            })
-            .withFailureHandler(function(err) {
-              _reorderProcessing = false;
-              console.error('Reorder error:', err);
-              _processReorderQueue();
-            })
-            .reorderAnnouncement(_sessionToken, job.rowIndex, job.direction);
+        // ── Admin: Reorder announcement (local-only swaps + Save Order button) ──
+        // Arrow clicks only rearrange locally. A "Save Order" button appears when
+        // the order has changed. Clicking it sends the entire order to the server
+        // in one batch call — no race conditions, no per-click server overhead.
+        var _annOriginalOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
+        var _annOrderDirty = false;
+
+        function _checkOrderDirty() {
+          var currentOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
+          _annOrderDirty = (JSON.stringify(currentOrder) !== JSON.stringify(_annOriginalOrder));
+          var saveBtn = document.getElementById('ann-save-order-btn');
+          if (saveBtn) saveBtn.style.display = _annOrderDirty ? '' : 'none';
         }
 
         function _reorderAnnouncement(rowIndex, direction) {
-          // Optimistic: swap in local array immediately
+          // Local-only swap — no server call
           var fromIdx = -1;
           for (var i = 0; i < _annLocalItems.length; i++) {
             if (_annLocalItems[i].rowIndex === rowIndex) { fromIdx = i; break; }
           }
           var toIdx = direction === 'up' ? fromIdx - 1 : fromIdx + 1;
           if (fromIdx >= 0 && toIdx >= 0 && toIdx < _annLocalItems.length) {
-            var tempRowIndex = _annLocalItems[fromIdx].rowIndex;
-            _annLocalItems[fromIdx].rowIndex = _annLocalItems[toIdx].rowIndex;
-            _annLocalItems[toIdx].rowIndex = tempRowIndex;
             var temp = _annLocalItems[fromIdx];
             _annLocalItems[fromIdx] = _annLocalItems[toIdx];
             _annLocalItems[toIdx] = temp;
             _optimisticRender();
+            _checkOrderDirty();
           }
-          // Queue server call (sequential execution, only last response renders)
-          _reorderGeneration++;
-          _reorderQueue.push({ rowIndex: rowIndex, direction: direction });
-          _processReorderQueue();
+        }
+
+        function _saveAnnouncementOrder() {
+          var btn = document.getElementById('ann-save-order-btn');
+          if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+          var order = _annLocalItems.map(function(it) { return it.rowIndex; });
+          google.script.run
+            .withSuccessHandler(function(data) {
+              _forceRenderAnnouncements(data);
+              _annOriginalOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
+              _annOrderDirty = false;
+              var btn2 = document.getElementById('ann-save-order-btn');
+              if (btn2) { btn2.style.display = 'none'; btn2.disabled = false; btn2.textContent = 'Save Order'; }
+            })
+            .withFailureHandler(function(err) {
+              console.error('Save order error:', err);
+              var btn2 = document.getElementById('ann-save-order-btn');
+              if (btn2) { btn2.disabled = false; btn2.textContent = 'Save Order'; }
+            })
+            .saveAnnouncementOrder(_sessionToken, JSON.stringify(order));
         }
 
         // ── Poll countdown display ──

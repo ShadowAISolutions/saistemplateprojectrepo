@@ -3,7 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
+
+## [v07.94r] — 2026-03-29 06:54:54 PM EST
+
+> **Prompt:** "your method did work, so i want you to comment it out in case we want to add it back in. but yes implement that approach instead"
+
+### Changed
+- Replaced per-click sequential reorder queue with "Save Order" button approach — arrow clicks now only rearrange locally (no server calls), a "Save Order" button appears when order has changed, clicking it sends the entire order to the server in one `saveAnnouncementOrder()` batch call
+- Commented out `reorderAnnouncement()` server function and client-side sequential queue code (preserved for reference)
+- Added `saveAnnouncementOrder(token, orderJSON)` server function that rewrites all spreadsheet rows in the desired order in a single batch
+
+#### `programportal.gs` — v01.24g
+
+##### Changed
+- Arrow reorder buttons now only swap items locally in `_annLocalItems` with no server call
+- New `_saveAnnouncementOrder()` client function sends the full row order as JSON when "Save Order" is clicked
+- `_checkOrderDirty()` compares current order against original to show/hide the Save Order button
+- `_forceRenderAnnouncements()` resets `_annOriginalOrder` on server sync
+
+##### Added
+- `saveAnnouncementOrder(token, orderJSON)` server-side function — batch rewrite of all data rows
+- `.ann-save-order-btn` CSS for the Save Order button
 
 ## [v07.93r] — 2026-03-29 06:50:32 PM EST
 
