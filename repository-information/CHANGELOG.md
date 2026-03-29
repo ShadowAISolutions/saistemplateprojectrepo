@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v07.77r] — 2026-03-29 01:58:46 PM EST
+
+> **Prompt:** "in the global sessions, make it so that we can also sign out ourselves. for some reason sometimes it fails to show myself on the list, as shown in one of these examples"
+
+### Changed
+- Global Sessions panel now shows Sign Out and Sign Out All Projects buttons for the current user's own sessions (previously only shown for other users)
+
+#### `globalacl.html` — v01.64w
+
+##### Changed
+- Sign Out and Sign Out All Projects buttons now appear on your own sessions in Global Sessions
 
 ## [v07.76r] — 2026-03-29 12:59:16 PM EST
 

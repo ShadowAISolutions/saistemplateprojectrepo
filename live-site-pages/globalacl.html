@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.63w">
+  <meta name="build-version" content="v01.64w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -3832,12 +3832,10 @@
             + '<div class="gsp-meta">Last activity: ' + lastAct.toLocaleTimeString() + '</div>'
             + '<div class="gsp-meta">Remaining: ' + absMin + 'm ' + absSec + 's abs / '
             + rollMin + 'm ' + rollSec + 's rolling</div>';
-          if (!sess.isSelf) {
-            html += '<button class="gsp-kick" data-email="' + _escHtml(sess.email)
-              + '" data-project="' + _escHtml(grpName) + '">Sign Out</button>';
-            html += '<button class="gsp-kick-all" data-email="' + _escHtml(sess.email)
-              + '">Sign Out All Projects</button>';
-          }
+          html += '<button class="gsp-kick" data-email="' + _escHtml(sess.email)
+            + '" data-project="' + _escHtml(grpName) + '">Sign Out</button>';
+          html += '<button class="gsp-kick-all" data-email="' + _escHtml(sess.email)
+            + '">Sign Out All Projects</button>';
           html += '</div>';
         }
         html += '</div>';
