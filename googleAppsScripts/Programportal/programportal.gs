@@ -1,4 +1,4 @@
-var VERSION = "v01.21g";
+var VERSION = "v01.22g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3154,6 +3154,10 @@ function doGet(e) {
           }
           var toIdx = direction === 'up' ? fromIdx - 1 : fromIdx + 1;
           if (fromIdx >= 0 && toIdx >= 0 && toIdx < _annLocalItems.length) {
+            // Swap items AND their rowIndex values so buttons reference correct spreadsheet rows
+            var tempRowIndex = _annLocalItems[fromIdx].rowIndex;
+            _annLocalItems[fromIdx].rowIndex = _annLocalItems[toIdx].rowIndex;
+            _annLocalItems[toIdx].rowIndex = tempRowIndex;
             var temp = _annLocalItems[fromIdx];
             _annLocalItems[fromIdx] = _annLocalItems[toIdx];
             _annLocalItems[toIdx] = temp;
