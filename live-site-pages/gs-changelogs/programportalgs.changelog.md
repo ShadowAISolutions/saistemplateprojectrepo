@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13g] — 2026-03-29 03:05:28 PM EST — v07.80r
+
+### Changed
+- "Homepage" app card renamed to "Website" in the portal
 
 ## [v01.12g] — 2026-03-29 02:38:38 PM EST — v07.79r
 
