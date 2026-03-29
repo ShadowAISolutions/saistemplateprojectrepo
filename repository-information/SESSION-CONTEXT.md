@@ -4,62 +4,54 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-29 02:48:16 AM EST
-**Repo version:** v07.75r
+**Date:** 2026-03-29 04:20:43 PM EST
+**Repo version:** v07.81r
 
 ### What was done
-- **v07.65r** — Made sign-in/sign-out checklist sub-steps always visible upfront (CSS `display: block` instead of progressive reveal)
-- **v07.66r** — Fixed globalacl.gs slow "Starting up" — added immediate unsigned `gas-auth-ok` postMessage (matching testauth1/programportal pattern)
-- **v07.67r** — Renamed sub-steps: "Downloading app" → "Preparing interface", "Starting up" → "Initializing"
-- **v07.68r** — Renamed sign-in final stage "Confirming session with server" → "Sign-in complete" (was fake — just a visual finish line). Internal key `'Almost ready…'` → `'Sign-in complete'`. Reconnect final stage → "Session restored"
-- **v07.69r** — Renamed sign-out final stage "Waiting for server confirmation" → "Waiting for sign-out confirmation" (this one IS real — server confirms session invalidation)
-- **v07.70r** — Added "Sign-out complete" finish line to sign-out checklist for visual closure
-- **v07.71r** — Embedded ACL data at build time in globalacl.gs `doGet()` — table now loads instantly instead of async `google.script.run.loadACLData()` fetch
-- **v07.72r** — Added total elapsed timer to sign-in and sign-out checklists (separate `<p>` element)
-- **v07.73r** — Moved total timer from separate `<p>` to the "Sign-in/Sign-out complete" row itself
-- **v07.74r** — Made total timer live-tick from the start (100ms interval) instead of only showing on completion
-- **v07.75r** — Changed parent stage timer suffix from "total" → "group" to distinguish from grand total on final row
+- **v07.76r** — Renamed applicationportal to programportal across the entire repo (10 files renamed, 22 files content-updated: HTML, GAS, config, changelogs, diagrams, workflow, documentation)
+- **v07.77r** — Added self-sign-out to Global Sessions panel (removed `!sess.isSelf` guard so Sign Out / Sign Out All Projects buttons show for your own sessions)
+- **v07.78r** — Fixed Global Sessions panel staying visible during sign-out (registered both Sessions and Global Sessions panels in `_panelRegistry` so `_closeAllPanelsExcept(null)` in `performSignOut()` closes them; also made the two panels mutually exclusive)
+- **v07.79r** — Renamed "Global ACL" to "Global Access Control List" in Program Portal's `PORTAL_APPS` array
+- **v07.80r** — Renamed "Homepage" to "Website" in Program Portal's `PORTAL_APPS` array. CHANGELOG archive rotation ran (25 sections from 2026-03-26 moved to archive)
+- **v07.81r** — Fixed SHA enrichment for CHANGELOG archive rotation: root cause was shallow clone (`git rev-parse --is-shallow-repository` = true, only ~50 commits visible). Added `git fetch --unshallow origin main` step to rotation rules. Ran historical backfill enriching all 343 previously missing SHA links in CHANGELOG-archive.md (100% success rate)
 
 ### Where we left off
-- All changes committed and pushed (v07.75r)
+- All changes committed and pushed (v07.81r)
+- programportal.html: v01.70w, programportal.gs: v01.13g
+- globalacl.html: v01.65w, globalacl.gs: v01.27g
 - testauth1.html: v03.77w, testauth1.gs: v02.26g
-- programportal.html: v01.69w, programportal.gs: v01.10g
-- globalacl.html: v01.63w, globalacl.gs: v01.27g
-- All checklist improvements complete across all 3 auth pages
-- Page changelogs significantly over 50-section limit — archive rotation needed
+- GAS code for programportal needs manual update in Apps Script editor (FILE_PATH, ACL_PAGE_NAME, TITLE, PORTAL_APPS changes)
+- Page changelogs still over 50-section limit — archive rotation needed (programportal HTML: 70/50, testauth1 HTML: 71/50, globalacl HTML: 65/50)
 
 ### Key decisions made
-- **Sub-steps always visible** — showing all sub-steps upfront gives users a preview of the full process
-- **"Preparing interface" / "Initializing"** — more accurately describe what's actually happening (server building HTML / browser parsing JS)
-- **"Sign-in complete" kept despite being instant** — serves as visual "finish line" signaling everything passed
-- **"Sign-out complete" added for consistency** — sign-out checklist previously ended abruptly
-- **"Waiting for sign-out confirmation" is accurate** — genuinely waits for server to confirm session invalidation (10s timeout fallback)
-- **Immediate unsigned `gas-auth-ok` is HIPAA compliant** — in `_SIG_EXEMPT` list, carries no PHI, signed version follows as backup
-- **Embedded ACL data at build time** — same pattern as testauth1's `getCachedData()`, eliminates post-load async fetch
-- **Live-ticking total on final row** — separate `<p>` wasn't visible (page transitions away instantly), so total timer ticks on the "Sign-in/Sign-out complete" row from the start
-- **"group" vs "total"** — parent stages show "X.Xs group" (sum of sub-steps), final row shows "X.Xs total" (grand total)
+- **Rename sequence for GAS projects**: push code → rename spreadsheet column header → manually update GAS code in Apps Script editor → run nuclearCacheClear to flush stale access cache
+- **Cache caused access denied after rename**: old deployed GAS code cached "access denied" for 10 minutes because it searched for the old column name. nuclearCacheClear in globalacl fixed it
+- **Global Sessions panel not in _panelRegistry**: was the root cause of it staying visible during sign-out. Both Sessions and Global Sessions panels are now registered
+- **SHA enrichment fix**: shallow clone was the only issue — once `git fetch --unshallow` ran, every single missing SHA was found (343/343). Added the unshallow step to the rotation rules in CLAUDE.md and changelogs.md
+- **PORTAL_APPS is hardcoded**: the app cards in Program Portal come from a static array in programportal.gs `doGet()`, not from the ACL spreadsheet
 
 ### Active context
-- Branch: `claude/show-full-checklists-JVNus`
-- Repo version: v07.75r
-- testauth1.html: v03.77w, testauth1.gs: v02.26g
-- programportal.html: v01.69w, globalacl.html: v01.63w, globalacl.gs: v01.27g
+- Branch: `claude/rename-application-to-program-ykMOg`
+- Repo version: v07.81r
+- programportal.html: v01.70w, programportal.gs: v01.13g
+- globalacl.html: v01.65w, globalacl.gs: v01.27g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- Page changelogs need archive rotation (testauth1: 71/50, programportal: 69/50, globalacl: 63/50)
+- Page changelogs need archive rotation (programportal HTML: 70/50, testauth1 HTML: 71/50, globalacl HTML: 65/50)
+- CHANGELOG at 77/100
 
 ## Previous Sessions
 
-**Date:** 2026-03-29 02:03:47 AM EST
-**Repo version:** v07.70r
+**Date:** 2026-03-29 02:48:16 AM EST
+**Repo version:** v07.75r
 
 ### What was done
-- **v07.65r–v07.70r** — First half of checklist improvements: always-visible sub-steps, globalacl gas-auth-ok fix, label renames, sign-out complete finish line
+- **v07.65r–v07.75r** — Checklist improvements across all 3 auth pages: always-visible sub-steps, globalacl gas-auth-ok fix, label renames, sign-out complete finish line, embedded ACL data, total elapsed timer, live-ticking timer, group vs total suffix
 
 ### Where we left off
-- All changes committed and pushed (v07.70r)
-- testauth1.html: v03.73w, globalacl.gs: v01.26g
+- All changes committed and pushed (v07.75r)
+- testauth1.html: v03.77w, programportal.html: v01.69w, globalacl.html: v01.63w
 
 Developed by: ShadowAISolutions
