@@ -594,7 +594,7 @@ CONFIG"
 > **Prompt:** "every feature that is in the templates should be available in the live projects, and vice versa, make sure that both the projects and the templates match exactly other than the project specific features"
 
 ### Added
-- Secure nonce endpoint (`getNonce` action + `generatePageNonce()`) to globalacl.gs and applicationportal.gs — completes the secure page-load flow that replaces insecure `?session=TOKEN` URL pattern
+- Secure nonce endpoint (`getNonce` action + `generatePageNonce()`) to globalacl.gs and programportal.gs — completes the secure page-load flow that replaces insecure `?session=TOKEN` URL pattern
 - `setAdminSecret` handler to globalacl.gs — enables the Global ACL hub to distribute shared admin secrets to its own GAS backend (was already present in other projects)
 
 ### Fixed
@@ -607,7 +607,7 @@ CONFIG"
 ##### Fixed
 - Nonce expiry window extended from 30 seconds to 60 seconds, preventing timeouts during slower connections
 
-#### `applicationportal.gs` — v01.10g
+#### `programportal.gs` — v01.10g
 ##### Added
 - Secure nonce endpoint for page authentication — replaces insecure session token URLs with one-time-use nonces
 
@@ -628,11 +628,11 @@ CONFIG"
 ##### Fixed
 - Panels and overlays now close properly during sign-out
 
-#### `applicationportal.html` — v01.30w
+#### `programportal.html` — v01.30w
 ##### Fixed
 - Panels and overlays now close properly during sign-out
 
-#### `applicationportal.gs` — v01.09g
+#### `programportal.gs` — v01.09g
 ##### Fixed
 - Renamed cache variable for clarity
 - Improved cross-project sign-out error handling
@@ -918,7 +918,7 @@ CONFIG"
 - SSO indicator pill is now clickable when in "dismissed" state — clicking it retries the GIS token acquisition, showing "pending" then "ready" or "dismissed" based on the result
 - Dismissed state label changed from "dismissed" to "retry" to indicate the action available
 
-#### `applicationportal.html` — v01.29w
+#### `programportal.html` — v01.29w
 
 ##### Added
 - Click-to-retry on the SSO indicator when dismissed — re-attempts Google sign-in for SSO token
@@ -934,7 +934,7 @@ CONFIG"
 ### Fixed
 - SSO indicator now correctly detects popup dismissal using GIS's official `error_callback` mechanism instead of relying on OAuth error callbacks (which don't fire when the popup window itself is closed)
 
-#### `applicationportal.html` — v01.28w
+#### `programportal.html` — v01.28w
 
 ##### Added
 - SSO indicator "dismissed" state — red dot and "dismissed" label when the Google sign-in popup is closed without completing auth
@@ -946,7 +946,7 @@ CONFIG"
 ### Fixed
 - Added `_ssoRefreshDismissed` flag to prevent `startCountdownTimers` from overwriting the SSO indicator back to `pending` after the user dismisses the GIS popup — the race condition was: error callback sets `off`, then `gas-auth-ok` fires `startCountdownTimers` which resets to `pending`
 
-#### `applicationportal.html` — v01.27w
+#### `programportal.html` — v01.27w
 
 ##### Fixed
 - SSO indicator correctly stays on "off" after dismissing the Google sign-in popup, even when the session resumes via the GAS iframe
@@ -958,7 +958,7 @@ CONFIG"
 ### Fixed
 - SSO indicator now resets to `off` when the user closes the Google sign-in popup without completing auth, or when any GIS auth attempt fails
 
-#### `applicationportal.html` — v01.26w
+#### `programportal.html` — v01.26w
 
 ##### Fixed
 - SSO indicator no longer stays stuck on "pending" after the Google sign-in popup is dismissed
@@ -971,7 +971,7 @@ CONFIG"
 - Rewired SSO indicator to follow the auth-timers lifecycle — shown/hidden at `startCountdownTimers`/`stopCountdownTimers` instead of at scattered `requestAccessToken` call sites
 - Indicator now shows `pending` when session starts (timers appear) and transitions to `ready` when SSO token is actually acquired, matching the accuracy of the heartbeat timer
 
-#### `applicationportal.html` — v01.25w
+#### `programportal.html` — v01.25w
 
 ##### Fixed
 - SSO readiness indicator now accurately tracks SSO token acquisition by hooking into the same auth lifecycle as the session timers
@@ -983,7 +983,7 @@ CONFIG"
 ### Fixed
 - Fixed SSO readiness indicator position from `bottom: 8px` to `bottom: 86px` to avoid overlapping the version indicator, GAS pill, and auth timers stack
 
-#### `applicationportal.html` — v01.24w
+#### `programportal.html` — v01.24w
 
 ##### Fixed
 - SSO indicator no longer overlaps other bottom-right UI elements
@@ -995,9 +995,9 @@ CONFIG"
 ### Changed
 - Redesigned GIS indicator as a standalone SSO readiness indicator on the application portal only — shows whether the portal is ready to serve SSO tokens to other auth pages (off/pending/ready states)
 - Moved indicator out of `#auth-timers` into its own fixed-position pill (`#sso-indicator`) at bottom-right
-- Reverted GIS indicator from auth template, testauth1, and globalacl — SSO provider functionality is applicationportal-specific
+- Reverted GIS indicator from auth template, testauth1, and globalacl — SSO provider functionality is programportal-specific
 
-#### `applicationportal.html` — v01.23w
+#### `programportal.html` — v01.23w
 
 ##### Changed
 - Replaced GIS popup state indicator with standalone SSO readiness indicator — shows off (gray), pending (orange pulsing), or ready (green) based on whether the portal can serve SSO tokens
@@ -1009,7 +1009,7 @@ CONFIG"
 ### Added
 - Added GIS popup state indicator to the auth timers panel on all auth pages — a small dot and label in the `#auth-timers` pill shows whether a GIS `requestAccessToken()` call is idle (gray), running silently (orange pulsing), or has an interactive popup open (blue pulsing)
 
-#### `applicationportal.html` — v01.22w
+#### `programportal.html` — v01.22w
 
 ##### Added
 - GIS popup state indicator in auth timers panel (idle/silent/interactive states)
@@ -1032,7 +1032,7 @@ CONFIG"
 - Added dual sign-out buttons to all auth pages: "Sign Out" (signs out of the current page only) and "Sign Out All" (signs out of all connected pages via SSO broadcast)
 - `performSignOut` now accepts an `opts` parameter with `broadcastSSO` flag to control whether the SSO cross-page sign-out is broadcast
 
-#### `applicationportal.html` — v01.21w
+#### `programportal.html` — v01.21w
 
 ##### Added
 - New "Sign Out" button for signing out of this page only, and "Sign Out All" button for signing out of all connected pages
@@ -1049,12 +1049,12 @@ CONFIG"
 
 ## [v06.16r] — 2026-03-23 08:20:05 AM EST — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
 
-> **Prompt:** "i have to think about it but i thought it was only if accessed via the applicationportal"
+> **Prompt:** "i have to think about it but i thought it was only if accessed via the programportal"
 
 ### Fixed
-- Restricted SSO token sharing to SSO provider pages only — previously any signed-in auth page responded to SSO token requests (allowing testauth1 to SSO into Application Portal); now only pages with `SSO_PROVIDER: true` (Application Portal) respond to token requests, enforcing the intended hub-spoke SSO direction
+- Restricted SSO token sharing to SSO provider pages only — previously any signed-in auth page responded to SSO token requests (allowing testauth1 to SSO into Program Portal); now only pages with `SSO_PROVIDER: true` (Program Portal) respond to token requests, enforcing the intended hub-spoke SSO direction
 
-#### `applicationportal.html` — v01.20w
+#### `programportal.html` — v01.20w
 
 ##### Fixed
 - SSO token response now gated by SSO_PROVIDER check — only responds to cross-page auth requests when configured as the SSO hub
@@ -1074,9 +1074,9 @@ CONFIG"
 > **Prompt:** "forget about the portal title, i manually removed it. the others however for the global sessions its not recognizing the global ACL or the application portal even though they are all logged in, the testauth is still working"
 
 ### Fixed
-- Fixed Application Portal `listActiveSessionsInternal` using wrong session storage key (`session_index`) instead of the standard `sessions_EMAIL` pattern — sessions were being stored with one key but read with another, causing Global Sessions to always show 0 sessions for Application Portal
+- Fixed Program Portal `listActiveSessionsInternal` using wrong session storage key (`session_index`) instead of the standard `sessions_EMAIL` pattern — sessions were being stored with one key but read with another, causing Global Sessions to always show 0 sessions for Program Portal
 
-#### `applicationportal.gs` — v01.08g
+#### `programportal.gs` — v01.08g
 
 ##### Fixed
 - Fixed session listing to use the correct storage key pattern, matching Global ACL and Testauth1
@@ -1086,7 +1086,7 @@ CONFIG"
 > **Prompt:** "the global sessions is working for testauth1, but its not working for the application portal. remember that we removed the "portal" and not have "application portal" instead"
 
 ### Fixed
-- Fixed Global Sessions panel not showing Application Portal sessions — remote session `project` names from GAS scripts now get overridden with the master spreadsheet display name, preventing name mismatches when a project is renamed
+- Fixed Global Sessions panel not showing Program Portal sessions — remote session `project` names from GAS scripts now get overridden with the master spreadsheet display name, preventing name mismatches when a project is renamed
 
 #### `globalacl.gs` — v01.24g
 
@@ -1098,9 +1098,9 @@ CONFIG"
 > **Prompt:** "yes"
 
 ### Fixed
-- Removed debug logging from Application Portal auth flow that exposed sensitive data (session tokens, message keys, internal state flags) in the browser console
+- Removed debug logging from Program Portal auth flow that exposed sensitive data (session tokens, message keys, internal state flags) in the browser console
 
-#### `applicationportal.html` — v01.19w
+#### `programportal.html` — v01.19w
 
 ##### Fixed
 - Removed verbose debug logging that exposed session tokens and auth state in the console
@@ -1119,7 +1119,7 @@ CONFIG"
 ##### Fixed
 - Session countdown timer now matches server-side 15-minute HIPAA timeout
 
-#### `applicationportal.html` — v01.18w
+#### `programportal.html` — v01.18w
 
 ##### Fixed
 - Session countdown timer now matches server-side 15-minute HIPAA timeout
@@ -1159,7 +1159,7 @@ CONFIG"
 
 ### Fixed
 - Global Sessions panel now correctly parses cross-project responses — handles both plain array (legacy) and `{success, sessions}` (template) formats
-- Fixed `validateCrossProjectAdmin` TypeError in template/applicationportal — was calling `.indexOf()` on a roles object instead of using `checkSpreadsheetAccess()` for role verification
+- Fixed `validateCrossProjectAdmin` TypeError in template/programportal — was calling `.indexOf()` on a roles object instead of using `checkSpreadsheetAccess()` for role verification
 
 #### `globalacl.gs` — v01.22g
 
@@ -1171,7 +1171,7 @@ CONFIG"
 ##### Changed
 - Minor internal improvements
 
-#### `applicationportal.gs` — v01.07g
+#### `programportal.gs` — v01.07g
 
 ##### Fixed
 - Cross-project admin validation now works correctly
@@ -1200,22 +1200,22 @@ CONFIG"
 ##### Changed
 - Minor internal improvements
 
-#### `applicationportal.html` — v01.17w
+#### `programportal.html` — v01.17w
 
 ##### Changed
 - Minor internal improvements
 
 ## [v06.06r] — 2026-03-22 02:12:54 PM EST — [sha-unavailable]
 
-> **Prompt:** "the global acl is not showing the Signing in via Application Portal like the testauth1 is, make sure the improvements we have made to testauth1 are also done on the global acl"
+> **Prompt:** "the global acl is not showing the Signing in via Program Portal like the testauth1 is, make sure the improvements we have made to testauth1 are also done on the global acl"
 
 ### Fixed
-- Global ACL now shows "Signing in via Application Portal" during SSO authentication — the `signing-in-subtitle` element ID was missing from the HTML and the subtitle reset logic was missing from `showSigningIn()`
+- Global ACL now shows "Signing in via Program Portal" during SSO authentication — the `signing-in-subtitle` element ID was missing from the HTML and the subtitle reset logic was missing from `showSigningIn()`
 
 #### `globalacl.html` — v01.19w
 
 ##### Fixed
-- "Signing in via Application Portal" message now appears during SSO sign-in instead of generic "Setting up your session"
+- "Signing in via Program Portal" message now appears during SSO sign-in instead of generic "Setting up your session"
 
 ## [v06.05r] — 2026-03-22 02:05:02 PM EST — [sha-unavailable]
 
@@ -1224,7 +1224,7 @@ CONFIG"
 ### Fixed
 - False "Session expiring soon" warning caused by duplicate `gas-auth-ok` messages — the GAS backend sends both an immediate unsigned and an async signed version; the second message incorrectly triggered the `needsReauth` warning after the first had already consumed `_pendingSessionShow`
 
-#### `applicationportal.html` — v01.16w
+#### `programportal.html` — v01.16w
 
 ##### Fixed
 - Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
@@ -1241,10 +1241,10 @@ CONFIG"
 
 ## [v06.04r] — 2026-03-22 01:34:18 PM EST — [sha-unavailable]
 
-> **Prompt:** "go ahead and implement the SSO from the applicationportal to all remaining applications (testauth1 already has it, i think we are only missing Global ACL)"
+> **Prompt:** "go ahead and implement the SSO from the programportal to all remaining applications (testauth1 already has it, i think we are only missing Global ACL)"
 
 ### Added
-- SSO consumer support for Global ACL page — BroadcastChannel token sharing, automatic sign-in via applicationportal, and cross-page sign-out propagation
+- SSO consumer support for Global ACL page — BroadcastChannel token sharing, automatic sign-in via programportal, and cross-page sign-out propagation
 
 #### `globalacl.html` — v01.17w
 
@@ -1264,7 +1264,7 @@ CONFIG"
 ### Fixed
 - SSO token re-acquisition now polls for GIS library readiness (up to 5s) instead of checking once — GIS loads async and wasn't available when the reconnect IIFE ran at page load
 
-#### `applicationportal.html` — v01.15w
+#### `programportal.html` — v01.15w
 
 ##### Fixed
 - SSO token re-acquisition waits for GIS library to load during reconnect
@@ -1286,7 +1286,7 @@ CONFIG"
 ### Changed
 - Moved silent GIS token re-acquisition from the `gas-auth-ok` handler (after app is visible) to the reconnect path (while "Reconnecting..." overlay is shown), so it runs in parallel with session verification and completes before the app appears
 
-#### `applicationportal.html` — v01.14w
+#### `programportal.html` — v01.14w
 
 ##### Changed
 - SSO token re-acquisition now happens during reconnect overlay instead of after app is shown
@@ -1306,9 +1306,9 @@ CONFIG"
 > **Prompt:** "the application portal is back to saying \uD83D\uDD10 and \uD83C\uDF10 , fix it so it doesnt"
 
 ### Fixed
-- Application Portal GAS script emoji rendering — replaced double-escaped Unicode surrogate pairs (`\\uD83D\\uDD10`) with actual emoji characters so they display correctly instead of showing raw escape codes
+- Program Portal GAS script emoji rendering — replaced double-escaped Unicode surrogate pairs (`\\uD83D\\uDD10`) with actual emoji characters so they display correctly instead of showing raw escape codes
 
-#### `applicationportal.gs` — v01.06g
+#### `programportal.gs` — v01.06g
 
 ##### Fixed
 - All emoji now render correctly instead of showing as `\uD83D\uDD10` escape codes
@@ -1318,9 +1318,9 @@ CONFIG"
 > **Prompt:** "when the application portal is reconnecting, have it mentions something like GIS re-auth is going to happen, but in more user understandable words"
 
 ### Changed
-- Application Portal reconnecting subtitle now says "Verifying your session and preparing sign-in for linked apps" to inform users that SSO will be refreshed
+- Program Portal reconnecting subtitle now says "Verifying your session and preparing sign-in for linked apps" to inform users that SSO will be refreshed
 
-#### `applicationportal.html` — v01.13w
+#### `programportal.html` — v01.13w
 
 ##### Changed
 - Reconnecting subtitle updated to mention linked app sign-in preparation
@@ -1332,7 +1332,7 @@ CONFIG"
 ### Fixed
 - Silent GIS token re-acquisition now gated behind `HTML_CONFIG.SSO_PROVIDER` flag — only fires on the application portal (the designated SSO hub), not on child apps like testauth1 or globalacl
 
-#### `applicationportal.html` — v01.12w
+#### `programportal.html` — v01.12w
 
 ##### Changed
 - Added `SSO_PROVIDER: true` config flag — portal re-acquires Google token on reconnect for SSO sharing
@@ -1354,7 +1354,7 @@ CONFIG"
 ### Fixed
 - SSO auto-authentication now works after page refresh/reconnect — the Google access token (`_ssoAccessToken`) is silently re-acquired via GIS after a successful reconnect, so the portal can respond to SSO requests from child apps
 
-#### `applicationportal.html` — v01.11w
+#### `programportal.html` — v01.11w
 
 ##### Fixed
 - SSO token re-acquired after reconnect so child apps can auto-authenticate
@@ -1386,14 +1386,14 @@ CONFIG"
 ##### Changed
 - "Session Active Elsewhere" heading and message now include the application name
 
-#### `applicationportal.html` — v01.10w
+#### `programportal.html` — v01.10w
 
 ##### Changed
 - "Session Active Elsewhere" heading and message now include the application name
 
 ## [v05.96r] — 2026-03-22 11:28:22 AM EST — [sha-unavailable]
 
-> **Prompt:** "remove the "portal" environment, be careful and do not mistake if for the "applicationportal" environment which is its replacement"
+> **Prompt:** "remove the "portal" environment, be careful and do not mistake if for the "programportal" environment which is its replacement"
 
 ### Removed
 - Removed the old "portal" environment entirely — all files deleted: `portal.html`, `portal.gs`, `portal.config.json`, version files, changelogs, changelog archives, diagram, and backup
@@ -1412,9 +1412,9 @@ CONFIG"
 > **Prompt:** "its still saying signing in on the setting up your session page, it should be mentioned there if its signing in via the portal or not there"
 
 ### Fixed
-- Fixed SSO sign-in subtitle not showing — the subtitle was being set before `exchangeToken()` which calls `showSigningIn()` and resets it. Now the subtitle is set after `exchangeToken()` so "Signing in via Application Portal" is visible during SSO authentication
+- Fixed SSO sign-in subtitle not showing — the subtitle was being set before `exchangeToken()` which calls `showSigningIn()` and resets it. Now the subtitle is set after `exchangeToken()` so "Signing in via Program Portal" is visible during SSO authentication
 
-#### `applicationportal.html` — v01.09w
+#### `programportal.html` — v01.09w
 
 ##### Fixed
 - "Signing in via [source]" subtitle now correctly displays during SSO authentication
@@ -1429,9 +1429,9 @@ CONFIG"
 > **Prompt:** "can you have the distinguish when signing in via the application portal and when signing in independently"
 
 ### Changed
-- SSO sign-in now shows source page name — "Signing in via Application Portal" instead of generic "Setting up your session" when authenticating through SSO from another page
+- SSO sign-in now shows source page name — "Signing in via Program Portal" instead of generic "Setting up your session" when authenticating through SSO from another page
 
-#### `applicationportal.html` — v01.08w
+#### `programportal.html` — v01.08w
 
 ##### Changed
 - Sign-in screen now shows which page provided your credentials when signing in via SSO
@@ -1448,7 +1448,7 @@ CONFIG"
 ### Fixed
 - Fixed SSO sign-out propagation — session expiry on one page no longer signs out other pages with valid sessions. Only deliberate sign-outs (user clicks "Sign Out") propagate across SSO-connected pages
 
-#### `applicationportal.html` — v01.07w
+#### `programportal.html` — v01.07w
 
 ##### Fixed
 - Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
@@ -1460,18 +1460,18 @@ CONFIG"
 
 ## [v05.92r] — 2026-03-22 12:27:41 AM EST — [sha-unavailable]
 
-> **Prompt:** "for the repository-information/12-HIPAA-SSO-IMPLEMENTATION-PLAN.md i believe we are ready for phase 2, go ahead and start implementing it if we are ready to proceed. remember that the goal of this is so that we can use the applicationportal as the starting point to authenticate into the other projects, you should have what we are trying to accomplish documented somewhere"
+> **Prompt:** "for the repository-information/12-HIPAA-SSO-IMPLEMENTATION-PLAN.md i believe we are ready for phase 2, go ahead and start implementing it if we are ready to proceed. remember that the goal of this is so that we can use the programportal as the starting point to authenticate into the other projects, you should have what we are trying to accomplish documented somewhere"
 
 ### Added
-- Implemented Phase 2 BroadcastChannel SSO — applicationportal.html and testauth1.html now share Google OAuth tokens via ephemeral in-memory BroadcastChannel ('sais-sso-auth'), enabling single sign-on across auth pages
+- Implemented Phase 2 BroadcastChannel SSO — programportal.html and testauth1.html now share Google OAuth tokens via ephemeral in-memory BroadcastChannel ('sais-sso-auth'), enabling single sign-on across auth pages
 - Added `attemptSSOAuth()` function to both pages — on page load (no existing session), broadcasts a token request and auto-authenticates if another auth page responds within 2 seconds
 - Added bidirectional SSO token provision — both pages can act as SSO provider (whichever the user signs into first shares tokens with the other)
 - Added cross-page sign-out propagation via `sso-sign-out` broadcast — signing out from one page signs out all SSO-connected pages
 
 ### Changed
-- Changed testauth1.html CLIENT_ID to match applicationportal's shared CLIENT_ID (`216764502068-7j0j6svmparsrfgdf784dneltlirpac2`) — required for cross-page Google token sharing
+- Changed testauth1.html CLIENT_ID to match programportal's shared CLIENT_ID (`216764502068-7j0j6svmparsrfgdf784dneltlirpac2`) — required for cross-page Google token sharing
 
-#### `applicationportal.html` — v01.06w
+#### `programportal.html` — v01.06w
 
 ##### Added
 - Single sign-on support — sign in once, other auth pages auto-authenticate without a sign-in prompt
@@ -1480,7 +1480,7 @@ CONFIG"
 #### `testauth1.html` — v02.62w
 
 ##### Added
-- Single sign-on support — auto-authenticates when another auth page (like Application Portal) is already signed in
+- Single sign-on support — auto-authenticates when another auth page (like Program Portal) is already signed in
 - Cross-page sign-out — signing out from any connected page signs out all pages
 
 ##### Changed
@@ -1496,13 +1496,13 @@ Developed by: ShadowAISolutions
 
 ## [v05.91r] — 2026-03-21 11:48:05 PM EST — [sha-unavailable]
 
-> **Prompt:** "we are in!, but now add all of the gas features that we had in the "portal" to the "applicationportal""
+> **Prompt:** "we are in!, but now add all of the gas features that we had in the "portal" to the "programportal""
 
 ### Added
-- Added full portal dashboard UI to applicationportal.gs — replaces the debug "1" placeholder with the complete application portal: app cards grid, access filter toggle, open mode toggle, per-user ACL access display
-- Added `getUserAppAccess()` function to applicationportal.gs — reads per-page access from the master ACL spreadsheet
+- Added full portal dashboard UI to programportal.gs — replaces the debug "1" placeholder with the complete application portal: app cards grid, access filter toggle, open mode toggle, per-user ACL access display
+- Added `getUserAppAccess()` function to programportal.gs — reads per-page access from the master ACL spreadsheet
 
-#### `applicationportal.gs` — v01.05g
+#### `programportal.gs` — v01.05g
 
 ##### Added
 - Full portal dashboard with app cards, access toggles, and styled UI — replaces debug placeholder
@@ -1513,58 +1513,58 @@ Developed by: ShadowAISolutions
 > **Prompt:** "Mar 21, 2026, 11:38:07 PM  Error  ReferenceError: pageNonce is not defined at doGet(Code:2146:33)"
 
 ### Fixed
-- Added missing `pageNonce` variable extraction and `validatePageNonce()` function to applicationportal.gs — `doGet()` was crashing with ReferenceError because `pageNonce` was used in the template literal but never defined
+- Added missing `pageNonce` variable extraction and `validatePageNonce()` function to programportal.gs — `doGet()` was crashing with ReferenceError because `pageNonce` was used in the template literal but never defined
 
-#### `applicationportal.gs` — v01.04g
+#### `programportal.gs` — v01.04g
 
 ##### Fixed
-- Sign-in no longer crashes — added missing page nonce validation that was present in testauth1 but missing from applicationportal
+- Sign-in no longer crashes — added missing page nonce validation that was present in testauth1 but missing from programportal
 
 ## [v05.89r] — 2026-03-21 11:34:54 PM EST — [sha-unavailable]
 
 > **Prompt:** "we are getting login success again, but still stuck on the signing in setting up your session page"
 
 ### Added
-- Debug logging in applicationportal.html postMessage handler to trace auth flow — logs every GAS message type, pending token state, and session state to browser console
+- Debug logging in programportal.html postMessage handler to trace auth flow — logs every GAS message type, pending token state, and session state to browser console
 
-#### `applicationportal.html` — v01.05w
+#### `programportal.html` — v01.05w
 
 ##### Added
 - Console debug logging for auth flow troubleshooting — shows all postMessage traffic and auth state
 
 ## [v05.88r] — 2026-03-21 11:25:17 PM EST — [sha-unavailable]
 
-> **Prompt:** "we are still stuck on the signing in page but we are not getting login success.  i want you to use the same exact deployment variables that were used in the "portal" in the "applicationportal", but there might be extra that didnt exist for it so you might have to add those. assume that the "portal" doesnt exist anymore, just the "applicationportal" i have alreadyreplaced the gas with the applicationportal gas"
+> **Prompt:** "we are still stuck on the signing in page but we are not getting login success.  i want you to use the same exact deployment variables that were used in the "portal" in the "programportal", but there might be extra that didnt exist for it so you might have to add those. assume that the "portal" doesnt exist anymore, just the "programportal" i have alreadyreplaced the gas with the programportal gas"
 
 ### Fixed
-- Set applicationportal's deployment ID and encoded URL (`_e`) to portal's working deployment ID — user has already replaced the GAS code in that deployment with applicationportal.gs
+- Set programportal's deployment ID and encoded URL (`_e`) to portal's working deployment ID — user has already replaced the GAS code in that deployment with programportal.gs
 
-#### `applicationportal.html` — v01.04w
+#### `programportal.html` — v01.04w
 
 ##### Fixed
 - Connected to working GAS deployment — sign-in flow should now complete
 
-#### `applicationportal.gs` — v01.03g
+#### `programportal.gs` — v01.03g
 
 ##### Changed
 - Set deployment ID to match the live GAS project
 
 ## [v05.87r] — 2026-03-21 11:14:52 PM EST — [sha-unavailable]
 
-> **Prompt:** "no it is not working. keep in mind that i dont want to use the "portal" anymore, the code should be for the "applicationportal" only"
+> **Prompt:** "no it is not working. keep in mind that i dont want to use the "portal" anymore, the code should be for the "programportal" only"
 
 ### Changed
-- Decoupled applicationportal from portal's GAS deployment — applicationportal is now a standalone project that needs its own GAS deployment
-- Restored `TOKEN_EXCHANGE_METHOD: 'postMessage'` to match the hipaa preset in applicationportal.gs
+- Decoupled programportal from portal's GAS deployment — programportal is now a standalone project that needs its own GAS deployment
+- Restored `TOKEN_EXCHANGE_METHOD: 'postMessage'` to match the hipaa preset in programportal.gs
 - Reset deployment ID to placeholder pending own GAS project deployment
 
-#### `applicationportal.html` — v01.03w
+#### `programportal.html` — v01.03w
 
 ##### Changed
 - Restored postMessage token exchange (HIPAA) — requires own GAS deployment with hipaa preset
 - Cleared deployment URL pending own GAS project setup
 
-#### `applicationportal.gs` — v01.02g
+#### `programportal.gs` — v01.02g
 
 ##### Changed
 - Reset deployment ID to placeholder pending own GAS project deployment
@@ -1574,9 +1574,9 @@ Developed by: ShadowAISolutions
 > **Prompt:** "the application portal, im stuck in signing in page even though we are getting login success in the session log"
 
 ### Fixed
-- Fixed applicationportal sign-in getting stuck on "Signing in..." — changed TOKEN_EXCHANGE_METHOD from 'postMessage' to 'url' to match the deployed GAS backend's standard preset configuration
+- Fixed programportal sign-in getting stuck on "Signing in..." — changed TOKEN_EXCHANGE_METHOD from 'postMessage' to 'url' to match the deployed GAS backend's standard preset configuration
 
-#### `applicationportal.html` — v01.02w
+#### `programportal.html` — v01.02w
 
 ##### Fixed
 - Sign-in no longer gets stuck on "Signing in..." screen
@@ -1586,25 +1586,25 @@ Developed by: ShadowAISolutions
 > **Prompt:** "oh yes i forgot to tell you to continue, go ahead and make it use the variables that we have in the "portal""
 
 ### Changed
-- Configured applicationportal with portal's production values — OAuth Client ID, HIPAA config preset (sessionStorage, postMessage, DOM clearing, 30s test heartbeat), deployment URL encoding, and deployment ID
+- Configured programportal with portal's production values — OAuth Client ID, HIPAA config preset (sessionStorage, postMessage, DOM clearing, 30s test heartbeat), deployment URL encoding, and deployment ID
 
-#### `applicationportal.html` — v01.01w
+#### `programportal.html` — v01.01w
 
 ##### Changed
 - Configured with portal's OAuth Client ID and HIPAA security settings
 - Sessions now clear on tab close and tokens are exchanged securely
 
-#### `applicationportal.gs` — v01.01g
+#### `programportal.gs` — v01.01g
 
 ##### Changed
 - Set production deployment ID
 
 ## [v05.84r] — 2026-03-21 10:34:56 PM EST — [sha-unavailable]
 
-> **Prompt:** "then use the template to make an environment with the same variables as the "portal", but call it "applicationportal", then when you are done, ask me to tell you to continue, and you will then add the code used for the pre-recreated portal"
+> **Prompt:** "then use the template to make an environment with the same variables as the "portal", but call it "programportal", then when you are done, ask me to tell you to continue, and you will then add the code used for the pre-recreated portal"
 
 ### Added
-- New GAS project "applicationportal" — Application Portal page created from auth template with HIPAA preset, using portal's same spreadsheet, ACL, and sound file config values
+- New GAS project "programportal" — Program Portal page created from auth template with HIPAA preset, using portal's same spreadsheet, ACL, and sound file config values
 
 ## [v05.83r] — 2026-03-21 10:18:19 PM EST — [sha-unavailable]
 

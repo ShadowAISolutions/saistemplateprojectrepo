@@ -10,9 +10,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.69w">
+  <meta name="build-version" content="v01.70w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <title>Application Portal</title>
+  <title>Program Portal</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
 <!-- ══════════════ -->
@@ -196,7 +196,7 @@
       animation: auth-spin 0.8s linear infinite;
     }
     @keyframes auth-spin { to { transform: rotate(360deg); } }
-    /* PROJECT: Sign-in stage checklist (applicationportal only) */
+    /* PROJECT: Sign-in stage checklist (programportal only) */
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -219,7 +219,7 @@
     }
     .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signout-checklist .sub-steps .stage-time { font-size: 10px; }
-    /* PROJECT: Sign-out stage checklist (applicationportal only) */
+    /* PROJECT: Sign-out stage checklist (programportal only) */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -230,7 +230,7 @@
     .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     .signout-checklist .stage-time-total { font-style: italic; color: #aaa; }
-    /* PROJECT: Reconnecting stage checklist (applicationportal only) */
+    /* PROJECT: Reconnecting stage checklist (programportal only) */
     .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
     .reconnect-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -414,7 +414,7 @@
     <div id="auth-wall-reconnecting" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Reconnecting&hellip;</h2>
       <div class="auth-pulse-dots"><span></span><span></span><span></span></div>
-      <!-- PROJECT: Reconnecting stage checklist (applicationportal only) -->
+      <!-- PROJECT: Reconnecting stage checklist (programportal only) -->
       <ul id="reconnect-checklist" class="reconnect-checklist">
         <li id="rc-stage-verify" class="stage-pending"><span class="chk-icon"></span>Verifying your session</li>
         <li id="rc-stage-sso" class="stage-pending"><span class="chk-icon"></span>Preparing sign-in for linked apps</li>
@@ -424,7 +424,7 @@
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Signing in…</h2>
       <div class="auth-spinner"></div>
-      <!-- PROJECT: Sign-in stage checklist (applicationportal only) -->
+      <!-- PROJECT: Sign-in stage checklist (programportal only) -->
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
         <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server
@@ -450,7 +450,7 @@
   <div id="signing-out-wall">
     <h2>Signing out&hellip;</h2>
     <div class="auth-spinner"></div>
-    <!-- PROJECT: Sign-out stage checklist (applicationportal only) -->
+    <!-- PROJECT: Sign-out stage checklist (programportal only) -->
     <ul id="signout-checklist" class="signout-checklist">
       <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
       <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
@@ -2384,7 +2384,7 @@
                 email: _ssoUserEmail,
                 sourceTabId: _tabId,
                 sourcePage: _pageName,
-                sourceDisplayName: 'Application Portal'
+                sourceDisplayName: 'Program Portal'
               });
             }
           }
@@ -2514,7 +2514,7 @@
       }
     }
 
-    // PROJECT: Sign-in stage checklist logic (applicationportal only)
+    // PROJECT: Sign-in stage checklist logic (programportal only)
     var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
     var _stageStartTimes = {};  // tracks when each stage became active
     var _stageMap = {
@@ -2725,7 +2725,7 @@
       if (subSending) subSending.style.display = 'none';
     }
 
-    // PROJECT: Sign-out stage checklist logic (applicationportal only)
+    // PROJECT: Sign-out stage checklist logic (programportal only)
     var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
     var _soStageStartTimes = {};
 
@@ -2808,7 +2808,7 @@
       }
     }
 
-    // PROJECT: Reconnecting stage checklist logic (applicationportal only)
+    // PROJECT: Reconnecting stage checklist logic (programportal only)
     var _rcStageOrder = ['rc-stage-verify', 'rc-stage-sso', 'rc-stage-confirm'];
     var _rcStageStartTimes = {};
 

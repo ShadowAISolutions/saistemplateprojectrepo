@@ -1,9 +1,14 @@
-# Changelog — Application Portal
+# Changelog — Program Portal
 
 All notable user-facing changes to this page are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 69/50`
+`Sections: 70/50`
+
+## [v01.70w] — 2026-03-29 12:59:16 PM EST — v07.76r
+
+### Changed
+- Page renamed from Application Portal to Program Portal
 
 ## [v01.69w] — 2026-03-29 02:39:56 AM EST — v07.75r
 

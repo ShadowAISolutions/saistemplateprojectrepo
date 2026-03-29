@@ -234,7 +234,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ## [v01.19w] — 2026-03-22 02:12:54 PM EST — v06.06r
 
 ### Fixed
-- "Signing in via Application Portal" message now appears during SSO sign-in instead of generic "Setting up your session"
+- "Signing in via Program Portal" message now appears during SSO sign-in instead of generic "Setting up your session"
 
 ## [v01.18w] — 2026-03-22 02:05:02 PM EST — v06.05r
 
@@ -244,7 +244,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 ## [v01.17w] — 2026-03-22 01:34:18 PM EST — v06.04r
 
 ### Added
-- Automatic sign-in via SSO when the Application Portal is open — no manual sign-in needed
+- Automatic sign-in via SSO when the Program Portal is open — no manual sign-in needed
 - Cross-page sign-out — signing out of one app signs out all connected apps
 - "Signing in via SSO..." status message during automatic authentication
 

@@ -1,6 +1,6 @@
-# Changelog Archive — Application Portal
+# Changelog Archive — Program Portal
 
-Older version sections rotated from [applicationportalhtml.changelog.md](applicationportalhtml.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [programportalhtml.changelog.md](programportalhtml.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

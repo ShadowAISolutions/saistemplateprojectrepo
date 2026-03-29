@@ -1,11 +1,16 @@
-# Changelog — Application Portal (Google Apps Script)
+# Changelog — Program Portal (Google Apps Script)
 
 All notable user-facing changes to this script are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalgs.changelog-archive.md](applicationportalgs.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11g] — 2026-03-29 12:59:16 PM EST — v07.76r
+
+### Changed
+- Script renamed from Application Portal to Program Portal
 
 ## [v01.10g] — 2026-03-25 09:24:15 AM EST — v06.45r
 

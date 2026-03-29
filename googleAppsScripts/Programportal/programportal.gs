@@ -1,11 +1,11 @@
-var VERSION = "v01.10g";
-var TITLE = "Application Portal";
+var VERSION = "v01.11g";
+var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
-var FILE_PATH     = "googleAppsScripts/Applicationportal/applicationportal.gs";
+var FILE_PATH     = "googleAppsScripts/Programportal/programportal.gs";
 var DEPLOYMENT_ID = "AKfycbzKwEfBKj5mOy4aBtg-nWycCRO8R21s405WoJHR3dLBtPxc3SA4qfzNaQ6OGVlQE7Xm";
-var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/applicationportal.html";
+var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/programportal.html";
 
 // Derive the parent page's origin from EMBED_PAGE_URL for postMessage targeting.
 // postMessage calls from the GAS iframe to the parent page use this as the targetOrigin
@@ -34,7 +34,7 @@ var SPREADSHEET_ID = "13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428";
 // Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
 var ACL_SHEET_NAME = "Access";
-var ACL_PAGE_NAME  = "applicationportal";
+var ACL_PAGE_NAME  = "programportal";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
@@ -2330,7 +2330,7 @@ function doGet(e) {
       <div class="portal-header">
         <img src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt=""
              onerror="this.style.display='none'">
-        <h1>Application Portal</h1>
+        <h1>Program Portal</h1>
         <div class="portal-subtitle">Central authentication gateway</div>
         <div class="portal-user-info">${escapeHtml(session.displayName || session.email)} &mdash; ${escapeHtml(session.email)}</div>
       </div>

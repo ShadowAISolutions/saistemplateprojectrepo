@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
+
+## [v07.76r] — 2026-03-29 12:59:16 PM EST
+
+> **Prompt:** "rename everything in repo from applicationportal to programportal, includes Application Portal to Program Portal"
+
+### Changed
+- Renamed "Application Portal" to "Program Portal" across the entire repo — all file names, directory names, content references, changelogs, diagrams, workflow steps, and documentation updated
+
+#### `programportal.html` — v01.70w
+
+##### Changed
+- Page renamed from applicationportal to programportal
+
+#### `programportal.gs` — v01.11g
+
+##### Changed
+- Script renamed from applicationportal to programportal — all internal references updated
 
 ## [v07.75r] — 2026-03-29 02:39:56 AM EST
 
@@ -17,7 +34,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Parent stage timers now show "group" suffix instead of "total"
 
-#### `applicationportal.html` — v01.69w
+#### `programportal.html` — v01.69w
 
 ##### Changed
 - Parent stage timers now show "group" suffix instead of "total"
@@ -39,7 +56,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Total elapsed timer now live-ticks on the final checklist row from the beginning
 
-#### `applicationportal.html` — v01.68w
+#### `programportal.html` — v01.68w
 
 ##### Changed
 - Total elapsed timer now live-ticks on the final checklist row from the beginning
@@ -61,7 +78,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Total elapsed time now shows on the "Sign-in complete" and "Sign-out complete" rows instead of below the checklist
 
-#### `applicationportal.html` — v01.67w
+#### `programportal.html` — v01.67w
 
 ##### Changed
 - Total elapsed time now shows on the "Sign-in complete" and "Sign-out complete" rows instead of below the checklist
@@ -83,7 +100,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Added
 - Total elapsed time shown at bottom of sign-in and sign-out checklists on completion
 
-#### `applicationportal.html` — v01.66w
+#### `programportal.html` — v01.66w
 
 ##### Added
 - Total elapsed time shown at bottom of sign-in and sign-out checklists on completion
@@ -117,7 +134,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Added
 - "Sign-out complete" final step in sign-out checklist
 
-#### `applicationportal.html` — v01.65w
+#### `programportal.html` — v01.65w
 
 ##### Added
 - "Sign-out complete" final step in sign-out checklist
@@ -139,7 +156,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Sign-out checklist final step now reads "Waiting for sign-out confirmation"
 
-#### `applicationportal.html` — v01.64w
+#### `programportal.html` — v01.64w
 
 ##### Changed
 - Sign-out checklist final step now reads "Waiting for sign-out confirmation"
@@ -163,7 +180,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Final sign-in checklist step now reads "Sign-in complete" instead of "Confirming session with server"
 - Final reconnect checklist step now reads "Session restored"
 
-#### `applicationportal.html` — v01.63w
+#### `programportal.html` — v01.63w
 
 ##### Changed
 - Final sign-in checklist step now reads "Sign-in complete" instead of "Confirming session with server"
@@ -187,7 +204,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Renamed loading sub-steps to "Preparing interface" and "Initializing"
 
-#### `applicationportal.html` — v01.62w
+#### `programportal.html` — v01.62w
 
 ##### Changed
 - Renamed loading sub-steps to "Preparing interface" and "Initializing"
@@ -202,7 +219,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "why is it that the globalacl spends a few secpmds with "starting up" while the application portal and testauth1 instantly complete that part?"
 
 ### Fixed
-- Fixed globalacl "Starting up" sub-step taking 2-5 seconds during sign-in — added immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call, matching the pattern already used by testauth1 and applicationportal
+- Fixed globalacl "Starting up" sub-step taking 2-5 seconds during sign-in — added immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call, matching the pattern already used by testauth1 and programportal
 
 #### `globalacl.gs` — v01.26g
 
@@ -221,7 +238,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - All checklist sub-steps are now visible from the start during sign-in and sign-out
 
-#### `applicationportal.html` — v01.61w
+#### `programportal.html` — v01.61w
 
 ##### Changed
 - All checklist sub-steps are now visible from the start during sign-in and sign-out
@@ -250,7 +267,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Sign-out no longer gets stuck on "Waiting for server confirmation"
 
-#### `applicationportal.html` — v01.60w
+#### `programportal.html` — v01.60w
 
 ##### Fixed
 - Sign-out no longer gets stuck on "Waiting for server confirmation"
@@ -272,7 +289,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
 
-#### `applicationportal.html` — v01.59w
+#### `programportal.html` — v01.59w
 
 ##### Fixed
 - Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
@@ -295,7 +312,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
 
-#### `applicationportal.html` — v01.58w
+#### `programportal.html` — v01.58w
 
 ##### Fixed
 - Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
@@ -319,7 +336,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Stage timers on steps with sub-steps now show "total" suffix in italic
 - Reconnecting checklist stages now show live timers while active
 
-#### `applicationportal.html` — v01.57w
+#### `programportal.html` — v01.57w
 
 ##### Fixed
 - Stage timers on steps with sub-steps now show "total" suffix in italic
@@ -343,7 +360,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Stage timer now appears next to its stage text, not displaced by sub-steps
 
-#### `applicationportal.html` — v01.56w
+#### `programportal.html` — v01.56w
 
 ##### Fixed
 - Stage timer now appears next to its stage text, not displaced by sub-steps
@@ -366,7 +383,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - "Waiting for server confirmation" now shows a live-ticking timer during sign-out
 - All sign-in and sign-out stages now show live timers while active
 
-#### `applicationportal.html` — v01.55w
+#### `programportal.html` — v01.55w
 
 ##### Fixed
 - "Waiting for server confirmation" now shows a live-ticking timer during sign-out
@@ -392,7 +409,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - "Exchanging credentials with server" now shows its total time again
 - "Server authenticating" sub-step now turns green when sign-in moves to the next stage
 
-#### `applicationportal.html` — v01.54w
+#### `programportal.html` — v01.54w
 
 ##### Fixed
 - Parent stage total times restored, sub-steps now complete when parent stage transitions
@@ -414,7 +431,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - "Invalidating server session" and "Exchanging credentials with server" no longer show a confusing total time that duplicates sub-step values
 
-#### `applicationportal.html` — v01.53w
+#### `programportal.html` — v01.53w
 
 ##### Fixed
 - Parent stages with sub-steps no longer show redundant total time
@@ -436,7 +453,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Checklist timer values no longer carry over between sign-in and sign-out cycles
 
-#### `applicationportal.html` — v01.52w
+#### `programportal.html` — v01.52w
 
 ##### Fixed
 - Checklist timer values no longer carry over between sign-in and sign-out cycles
@@ -458,7 +475,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Parent stage total time now displays separately from sub-step times
 
-#### `applicationportal.html` — v01.51w
+#### `programportal.html` — v01.51w
 
 ##### Fixed
 - Parent stage total time now displays separately from sub-step times
@@ -480,7 +497,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Sub-step timers now freeze when completed — no longer show inflated times that keep growing
 
-#### `applicationportal.html` — v01.50w
+#### `programportal.html` — v01.50w
 
 ##### Fixed
 - Sub-step timers now freeze when completed — no longer show inflated times that keep growing
@@ -495,14 +512,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "instead of using miliseconds for these, make them use decimals of seconds"
 
 ### Changed
-- Stage timers now always display as decimal seconds (e.g. "0.0s" instead of "0ms") — removed the millisecond branch from `_formatStageTime` across testauth1, applicationportal, and globalacl
+- Stage timers now always display as decimal seconds (e.g. "0.0s" instead of "0ms") — removed the millisecond branch from `_formatStageTime` across testauth1, programportal, and globalacl
 
 #### `testauth1.html` — v03.57w
 
 ##### Changed
 - Checklist timers now display seconds with one decimal place instead of milliseconds
 
-#### `applicationportal.html` — v01.49w
+#### `programportal.html` — v01.49w
 
 ##### Changed
 - Checklist timers now display seconds with one decimal place instead of milliseconds
@@ -529,15 +546,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "ok great. make these changes including intermediary steps now apply to signing out and also for the application portal and global acl"
 
 ### Added
-- Sign-out sub-steps with live timing for "Invalidating server session" — tracks Connecting to server and Sending sign-out request as separate timed phases (testauth1, applicationportal, globalacl)
-- Sign-in and sign-out sub-steps propagated to applicationportal.html and globalacl.html — both pages now have the same sub-step tracking as testauth1
+- Sign-out sub-steps with live timing for "Invalidating server session" — tracks Connecting to server and Sending sign-out request as separate timed phases (testauth1, programportal, globalacl)
+- Sign-in and sign-out sub-steps propagated to programportal.html and globalacl.html — both pages now have the same sub-step tracking as testauth1
 
 #### `testauth1.html` — v03.56w
 
 ##### Added
 - Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
 
-#### `applicationportal.html` — v01.47w
+#### `programportal.html` — v01.47w
 
 ##### Added
 - Sign-in checklist sub-steps with live timing (Connecting, Sending credentials, Server authenticating, Downloading app, Starting up)
@@ -1102,7 +1119,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Eliminated font loading errors that appeared on every page load
 
-#### `applicationportal.html` — v01.46w
+#### `programportal.html` — v01.46w
 
 ##### Fixed
 - Eliminated font loading errors that appeared on every page load
@@ -1137,7 +1154,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Minor internal improvements
 
-#### `applicationportal.html` — v01.45w
+#### `programportal.html` — v01.45w
 
 ##### Changed
 - Minor internal improvements
@@ -1159,7 +1176,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - Eliminated font loading errors on page load
 
-#### `applicationportal.html` — v01.44w
+#### `programportal.html` — v01.44w
 
 ##### Fixed
 - Eliminated font loading errors on page load
@@ -1278,12 +1295,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "i see that there are some project specific things such as the SSO indicator, but i want things like that to also be applied to the templates as they will be used with the gas-project-creator. do the same for anything else you can find like that"
 
 ### Changed
-- Ported the SSO indicator system (CSS, HTML, JS) from `applicationportal.html` into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) so all new auth pages inherit it automatically via the gas-project-creator
+- Ported the SSO indicator system (CSS, HTML, JS) from `programportal.html` into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) so all new auth pages inherit it automatically via the gas-project-creator
 - Propagated SSO indicator to `testauth1.html` and `globalacl.html` — both pages now have the full SSO indicator system (gated behind `SSO_PROVIDER: false`, so completely inert)
 - Merged `_onGisPopupClosed()` into `_onGisPopupDismissed()` across all auth pages — single handler now manages both SSO indicator state and auth wall display
 - Added `_updateSsoIndicator()` function with auth-wall guard to template — prevents SSO badge from appearing on the sign-in screen
 - Added `_ssoRefreshDismissed` variable, SSO indicator calls to `handleTokenResponse`, `startCountdownTimers`, `stopCountdownTimers`, `attemptReauth`, SSO reconnect callback, and click handler to template
-- Relocated SSO indicator CSS/HTML/JS in `applicationportal.html` from AP-specific AUTH sections to TEMPLATE sections for consistency with the template source
+- Relocated SSO indicator CSS/HTML/JS in `programportal.html` from AP-specific AUTH sections to TEMPLATE sections for consistency with the template source
 
 #### `testauth1.html` — v03.17w
 ##### Changed
@@ -1293,7 +1310,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Minor internal improvements
 
-#### `applicationportal.html` — v01.43w
+#### `programportal.html` — v01.43w
 ##### Changed
 - Minor internal improvements
 
@@ -1304,10 +1321,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "for some reason its allowing the SSO to show in the application portal even if signed out"
 
 ### Fixed
-- Fixed SSO indicator badge remaining visible on the auth wall in Application Portal — the `#sso-indicator` element (z-index 10003) was appearing above the auth wall (z-index ~10002) because async GIS token callbacks called `_updateSsoIndicator('ready'/'pending')` after `showAuthWall()` had already hidden it
+- Fixed SSO indicator badge remaining visible on the auth wall in Program Portal — the `#sso-indicator` element (z-index 10003) was appearing above the auth wall (z-index ~10002) because async GIS token callbacks called `_updateSsoIndicator('ready'/'pending')` after `showAuthWall()` had already hidden it
 - Added auth-wall visibility guard to `_updateSsoIndicator()` — when the auth wall is visible and the requested state is not 'off', the function now returns early without showing the badge, preventing all race conditions at the single control point
 
-#### `applicationportal.html` — v01.42w
+#### `programportal.html` — v01.42w
 ##### Fixed
 - SSO status badge no longer appears when signed out or on the sign-in screen
 
@@ -1332,7 +1349,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Fixed
 - `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
 
-#### `applicationportal.html` — v01.41w
+#### `programportal.html` — v01.41w
 ##### Fixed
 - `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
 
@@ -1356,7 +1373,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
 
-#### `applicationportal.html` — v01.40w
+#### `programportal.html` — v01.40w
 ##### Changed
 - Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
 
@@ -1366,7 +1383,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ### Fixed
 - Added GIS popup dismissal handling (`_onGisPopupDismissed`) to the auth template, testauth1.html, and globalacl.html — when the user closes the Google sign-in popup without completing authentication and the session has already expired (e.g. absolute timer ran out while the popup was open), the auth wall is now properly shown with a clear message instead of leaving the page in a limbo state
-- Added `error_callback: _onGisPopupDismissed` to all 5 `initTokenClient` calls in the auth template, testauth1, and globalacl (initGoogleSignIn, attemptReauth outer/inner, sign-in button handler, SSO refresh) — mirrors the Application Portal's existing `error_callback: _onGisPopupClosed` pattern
+- Added `error_callback: _onGisPopupDismissed` to all 5 `initTokenClient` calls in the auth template, testauth1, and globalacl (initGoogleSignIn, attemptReauth outer/inner, sign-in button handler, SSO refresh) — mirrors the Program Portal's existing `error_callback: _onGisPopupClosed` pattern
 
 #### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
 ##### Fixed
@@ -1385,7 +1402,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "make sure everything we have fixed is applied to the templates also"
 
 ### Security
-- Propagated SSO email validation (`_validateSSOTokenEmail`) from applicationportal.html to the auth template, testauth1.html, and globalacl.html — ensures SSO token re-acquisition on reconnect validates the Google account matches the active session across all auth pages, not just the Application Portal
+- Propagated SSO email validation (`_validateSSOTokenEmail`) from programportal.html to the auth template, testauth1.html, and globalacl.html — ensures SSO token re-acquisition on reconnect validates the Google account matches the active session across all auth pages, not just the Program Portal
 - Added `login_hint` parameter to reconnect SSO GIS `initTokenClient` calls in the auth template, testauth1.html, and globalacl.html — pre-selects the correct Google account during silent token refresh
 
 #### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
@@ -1421,7 +1438,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Fixed
 - "Use Here" button (single-tab enforcement reclaim) no longer gets permanently stuck on "Reconnecting… Verifying your session" — the `_gasAuthOkHandled` deduplication flag is now reset before reloading the iframe, so the subsequent `gas-auth-ok` message is processed instead of silently dropped
 
-#### `applicationportal.html` — v01.39w
+#### `programportal.html` — v01.39w
 ##### Fixed
 - "Use Here" session reclaim no longer hangs on reconnecting
 
@@ -1438,10 +1455,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "ive noticed something. when i refresh the application portal, the google sign in pops up to enable SSO, however, its letting me select another account and still counting for SSO active. can you make it make sure that the account selected is the same as the one signed in to the application portal or else block it"
 
 ### Security
-- SSO token re-acquisition on the Application Portal now validates that the Google account selected in the GIS popup matches the active session's email — mismatched accounts are rejected and the SSO indicator shows "retry" instead of falsely showing "ready"
+- SSO token re-acquisition on the Program Portal now validates that the Google account selected in the GIS popup matches the active session's email — mismatched accounts are rejected and the SSO indicator shows "retry" instead of falsely showing "ready"
 - Added `login_hint` to SSO re-acquisition GIS clients so the correct account is pre-selected in the popup
 
-#### `applicationportal.html` — v01.38w
+#### `programportal.html` — v01.38w
 ##### Security
 - SSO re-acquisition now validates the Google token's email against the active session — selecting a different Google account no longer falsely enables SSO
 - Added `login_hint` to pre-select the correct Google account during SSO token refresh
@@ -1453,17 +1470,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Changed
 - SSO sign-in flow now shows the sign-in progress checklist alongside the "Signing in via [Source]" subtitle instead of hiding the checklist — users can track authentication progress during SSO sign-in just like during direct sign-in
 
-#### `applicationportal.html` — v01.37w
+#### `programportal.html` — v01.37w
 ##### Changed
-- SSO sign-in now shows the progress checklist with "Signing in via Application Portal" subtitle above it
+- SSO sign-in now shows the progress checklist with "Signing in via Program Portal" subtitle above it
 
 #### `globalacl.html` — v01.30w
 ##### Changed
-- SSO sign-in now shows the progress checklist with "Signing in via Application Portal" subtitle above it
+- SSO sign-in now shows the progress checklist with "Signing in via Program Portal" subtitle above it
 
 #### `testauth1.html` — v03.10w
 ##### Changed
-- SSO sign-in now shows the progress checklist with "Signing in via Application Portal" subtitle above it
+- SSO sign-in now shows the progress checklist with "Signing in via Program Portal" subtitle above it
 
 ## [v06.89r] — 2026-03-26 09:25:30 AM EST
 
@@ -1472,7 +1489,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ### Fixed
 - Fixed credential exchange hanging indefinitely when GAS server responds after >30s — the replay guard now shows an explicit "Sign-in timed out" error via `showAuthWall()` instead of silently dropping the `gas-session-created` message with no user feedback
 
-#### `applicationportal.html` — v01.36w
+#### `programportal.html` — v01.36w
 ##### Fixed
 - Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
 
@@ -1501,7 +1518,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "alright, now make the equivalent checklists for all the other applications"
 
 ### Added
-- Added sign-in, sign-out, and reconnecting stage checklists with timing to testauth1.html — replaces old single-line subtitle and static text with interactive checklists matching the Application Portal pattern
+- Added sign-in, sign-out, and reconnecting stage checklists with timing to testauth1.html — replaces old single-line subtitle and static text with interactive checklists matching the Program Portal pattern
 - Added sign-in, sign-out, and reconnecting stage checklists with timing to globalacl.html — same pattern as testauth1
 - Both pages use 2-stage reconnecting checklist (no SSO stage) since `SSO_PROVIDER: false`
 - SSO sign-in override hides checklist and shows "Signing in via [Source]" subtitle on both pages
@@ -1525,13 +1542,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "good. again just for the application portal, make the equivalent checklist for whatever is happening with the signing out...clearing your session, and also for reconnecting..."
 
 ### Added
-- Added sign-out stage checklist to Application Portal — replaces static "Clearing your session" with a 5-stage checklist (clearing local session data, notifying other tabs, signing out connected apps, invalidating server session, waiting for server confirmation) using the same visual pattern as the sign-in checklist with timing for each stage
-- Added reconnecting stage checklist to Application Portal — replaces static "Verifying your session" text with a 3-stage checklist (verifying session, preparing sign-in for linked apps, confirming session with server) with timing for each stage
+- Added sign-out stage checklist to Program Portal — replaces static "Clearing your session" with a 5-stage checklist (clearing local session data, notifying other tabs, signing out connected apps, invalidating server session, waiting for server confirmation) using the same visual pattern as the sign-in checklist with timing for each stage
+- Added reconnecting stage checklist to Program Portal — replaces static "Verifying your session" text with a 3-stage checklist (verifying session, preparing sign-in for linked apps, confirming session with server) with timing for each stage
 - Added `_updateSignOutStage()`, `_completeAllSignOutStages()`, `_resetSignOutChecklist()` functions for sign-out checklist management
 - Added `_updateReconnectStage()`, `_completeAllReconnectStages()`, `_resetReconnectChecklist()` functions for reconnecting checklist management
 - Extended `_setStageTime()` to check all three stage time maps (sign-in, sign-out, reconnect)
 
-#### `applicationportal.html` — v01.35w
+#### `programportal.html` — v01.35w
 
 ##### Added
 - Sign-out now shows a real-time checklist with timing for each step
@@ -1542,10 +1559,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "can you have it show how long it took to do each stage next to it"
 
 ### Added
-- Added elapsed time display to each sign-in checklist stage on Application Portal — each completed stage shows how long it took (e.g. "0.3s", "1.2s") right-aligned next to the label
+- Added elapsed time display to each sign-in checklist stage on Program Portal — each completed stage shows how long it took (e.g. "0.3s", "1.2s") right-aligned next to the label
 - Added `_completeAllStages()` function to mark all stages as done with their times just before the app becomes visible
 
-#### `applicationportal.html` — v01.34w
+#### `programportal.html` — v01.34w
 
 ##### Added
 - Each sign-in stage now shows how long it took to complete, displayed next to the checkmark
@@ -1555,9 +1572,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "can you make the desriptions more descriptive. the contacting google seems instantaneous and i dont even get a chance to ever see it at almost ready, whatever that means"
 
 ### Changed
-- Rewrote sign-in checklist stage labels on Application Portal to be more descriptive: "Requesting sign-in from Google", "Exchanging credentials with server", "Setting up your secure session", "Loading the application", "Confirming session with server"
+- Rewrote sign-in checklist stage labels on Program Portal to be more descriptive: "Requesting sign-in from Google", "Exchanging credentials with server", "Setting up your secure session", "Loading the application", "Confirming session with server"
 
-#### `applicationportal.html` — v01.33w
+#### `programportal.html` — v01.33w
 
 ##### Changed
 - Sign-in checklist stages now have more descriptive labels explaining what each step does
@@ -1567,10 +1584,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "make it show underneath the spinner instead and have it be a checklist format instead of showing one by one. while we are making this, just do it for the application portal, not the others"
 
 ### Changed
-- Converted sign-in stage indicator from single-line subtitle to a checklist format on the Application Portal — all stages are displayed as a list below the spinner with visual state progression (○ pending → ● active → ✓ done)
+- Converted sign-in stage indicator from single-line subtitle to a checklist format on the Program Portal — all stages are displayed as a list below the spinner with visual state progression (○ pending → ● active → ✓ done)
 - SSO sign-in path hides the checklist and shows a simple "Signing in via [Source]" message instead
 
-#### `applicationportal.html` — v01.32w
+#### `programportal.html` — v01.32w
 
 ##### Changed
 - Sign-in progress now shows as a visual checklist under the spinner instead of one line at a time
@@ -1583,7 +1600,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Added dynamic sign-in stage indicator messages to the auth sign-in flow — users now see real-time subtitle updates under the "Signing in…" spinner showing what stage of authentication they're at: "Contacting Google…" → "Verifying your identity…" → "Sending credentials…" → "Creating your session…" → "Loading application…" → "Almost ready…"
 - Added `_updateSignInStage()` helper function to the auth HTML template for centralized subtitle text updates
 
-#### `applicationportal.html` — v01.31w
+#### `programportal.html` — v01.31w
 
 ##### Added
 - Sign-in stage indicator messages showing authentication progress under the session spinner

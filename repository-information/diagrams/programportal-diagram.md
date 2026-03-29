@@ -1,19 +1,19 @@
-# applicationportal.html — GAS Integration Sequence Diagram (Auth)
+# programportal.html — GAS Integration Sequence Diagram (Auth)
 
 Sequence diagram showing the dual polling systems (HTML + GAS) and the iframe injection flow.
 
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant HTML as applicationportal.html
-    participant HV as applicationportalhtml.version.txt
-    participant GV as applicationportalgs.version.txt
+    participant HTML as programportal.html
+    participant HV as programportalhtml.version.txt
+    participant GV as programportalgs.version.txt
     participant GAS as GAS Web App<br>(Apps Script)
     participant Google as Google OAuth
     participant CL as Changelogs
 
     Note over Browser,HTML: Page Load
-    Browser->>HTML: Load applicationportal.html
+    Browser->>HTML: Load programportal.html
     HTML->>HTML: Decode _e → reverse(atob()) → GAS deployment URL
     HTML->>HTML: Create iframe with srcdoc bootstrap
     HTML->>GAS: iframe navigates to deployment URL
@@ -33,7 +33,7 @@ sequenceDiagram
 
     Note over Browser,HV: HTML Auto-Refresh (every 10s)
     loop Every 10 seconds
-        HTML->>HV: GET applicationportalhtml.version.txt?_cb=timestamp
+        HTML->>HV: GET programportalhtml.version.txt?_cb=timestamp
         HV-->>HTML: |v01.XXw| or maintenance|v01.XXw|timestamp
         alt Version changed
             HTML->>HTML: Show "Updating..." + set pending-sound
@@ -47,10 +47,10 @@ sequenceDiagram
     end
 
     Note over Browser,GV: GAS Auto-Refresh (15s delay, then every 10s)
-    HTML->>GV: Initial check: does applicationportalgs.version.txt exist?
+    HTML->>GV: Initial check: does programportalgs.version.txt exist?
     GV-->>HTML: v01.XXg (exists → show GAS pill)
     loop Every 10 seconds (after 15s initial delay)
-        HTML->>GV: GET applicationportalgs.version.txt?_cb=timestamp
+        HTML->>GV: GET programportalgs.version.txt?_cb=timestamp
         GV-->>HTML: v01.XXg
         alt GAS version changed
             HTML->>HTML: "GAS updated — reloading..."
@@ -66,11 +66,11 @@ sequenceDiagram
 
     Note over Browser,CL: Changelog Popups
     Browser->>HTML: Click HTML version pill
-    HTML->>CL: Fetch applicationportalhtml.changelog.md
+    HTML->>CL: Fetch programportalhtml.changelog.md
     CL-->>HTML: Markdown → parsed to HTML popup
 
     Browser->>HTML: Click GAS version pill
-    HTML->>CL: Fetch applicationportalgs.changelog.md
+    HTML->>CL: Fetch programportalgs.changelog.md
     CL-->>HTML: Markdown → parsed to HTML popup
 ```
 

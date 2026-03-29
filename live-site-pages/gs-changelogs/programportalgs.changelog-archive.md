@@ -1,6 +1,6 @@
-# Changelog Archive — Application Portal (Google Apps Script)
+# Changelog Archive — Program Portal (Google Apps Script)
 
-Older version sections rotated from [applicationportalgs.changelog.md](applicationportalgs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [programportalgs.changelog.md](programportalgs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

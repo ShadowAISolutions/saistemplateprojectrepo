@@ -9,7 +9,7 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ### What was done
 - **v07.65r** — Made sign-in/sign-out checklist sub-steps always visible upfront (CSS `display: block` instead of progressive reveal)
-- **v07.66r** — Fixed globalacl.gs slow "Starting up" — added immediate unsigned `gas-auth-ok` postMessage (matching testauth1/applicationportal pattern)
+- **v07.66r** — Fixed globalacl.gs slow "Starting up" — added immediate unsigned `gas-auth-ok` postMessage (matching testauth1/programportal pattern)
 - **v07.67r** — Renamed sub-steps: "Downloading app" → "Preparing interface", "Starting up" → "Initializing"
 - **v07.68r** — Renamed sign-in final stage "Confirming session with server" → "Sign-in complete" (was fake — just a visual finish line). Internal key `'Almost ready…'` → `'Sign-in complete'`. Reconnect final stage → "Session restored"
 - **v07.69r** — Renamed sign-out final stage "Waiting for server confirmation" → "Waiting for sign-out confirmation" (this one IS real — server confirms session invalidation)
@@ -23,7 +23,7 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 ### Where we left off
 - All changes committed and pushed (v07.75r)
 - testauth1.html: v03.77w, testauth1.gs: v02.26g
-- applicationportal.html: v01.69w, applicationportal.gs: v01.10g
+- programportal.html: v01.69w, programportal.gs: v01.10g
 - globalacl.html: v01.63w, globalacl.gs: v01.27g
 - All checklist improvements complete across all 3 auth pages
 - Page changelogs significantly over 50-section limit — archive rotation needed
@@ -43,12 +43,12 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 - Branch: `claude/show-full-checklists-JVNus`
 - Repo version: v07.75r
 - testauth1.html: v03.77w, testauth1.gs: v02.26g
-- applicationportal.html: v01.69w, globalacl.html: v01.63w, globalacl.gs: v01.27g
+- programportal.html: v01.69w, globalacl.html: v01.63w, globalacl.gs: v01.27g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- Page changelogs need archive rotation (testauth1: 71/50, applicationportal: 69/50, globalacl: 63/50)
+- Page changelogs need archive rotation (testauth1: 71/50, programportal: 69/50, globalacl: 63/50)
 
 ## Previous Sessions
 

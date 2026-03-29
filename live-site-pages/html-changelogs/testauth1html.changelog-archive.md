@@ -251,7 +251,7 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 ## [v02.62w] — 2026-03-22 12:27:41 AM EST — v05.92r — [sha-unavailable]
 
 ### Added
-- Single sign-on support — auto-authenticates when another auth page (like Application Portal) is already signed in
+- Single sign-on support — auto-authenticates when another auth page (like Program Portal) is already signed in
 - Cross-page sign-out — signing out from any connected page signs out all pages
 
 ### Changed

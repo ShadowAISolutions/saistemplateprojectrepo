@@ -2,7 +2,7 @@
 
 **Status:** Deferred — not implemented yet
 **Date:** 2026-03-29
-**Context:** HIPAA-compliant auth pages (testauth1, applicationportal, globalacl)
+**Context:** HIPAA-compliant auth pages (testauth1, programportal, globalacl)
 
 ## Problem
 
@@ -65,13 +65,13 @@ window.addEventListener('pagehide', function() {
 
 **GAS files (add `pendingClose` to `doPost`):**
 - `googleAppsScripts/Testauth1/testauth1.gs`
-- `googleAppsScripts/Applicationportal/applicationportal.gs`
+- `googleAppsScripts/Programportal/programportal.gs`
 - `googleAppsScripts/Globalacl/globalacl.gs`
 - GAS auth template (if applicable)
 
 **HTML files (add `pagehide` listener):**
 - `live-site-pages/testauth1.html`
-- `live-site-pages/applicationportal.html`
+- `live-site-pages/programportal.html`
 - `live-site-pages/globalacl.html`
 - `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`
 
