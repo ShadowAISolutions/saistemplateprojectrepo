@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [v07.79r] — 2026-03-29 02:38:38 PM EST
+
+> **Prompt:** "ok then edit that array to instead of saying Global ACL, have it say Global Access Control List"
+
+### Changed
+- Renamed "Global ACL" to "Global Access Control List" in the Program Portal app card display
+
+#### `programportal.gs` — v01.12g
+
+##### Changed
+- Renamed Global ACL app card to "Global Access Control List"
 
 ## [v07.78r] — 2026-03-29 02:08:47 PM EST
 

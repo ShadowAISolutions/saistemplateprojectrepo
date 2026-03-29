@@ -1,4 +1,4 @@
-var VERSION = "v01.11g";
+var VERSION = "v01.12g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2398,7 +2398,7 @@ function doGet(e) {
         var ACL_CONFIGURED = ${Object.keys(userAppAccess).length > 0 ? 'true' : 'false'};
 
         var PORTAL_APPS = [
-          { name: 'Global ACL', url: 'globalacl.html', icon: '🛡', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
+          { name: 'Global Access Control List', url: 'globalacl.html', icon: '🛡', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
           { name: 'Test Auth 1', url: 'testauth1.html', icon: '🔐', description: 'Authentication testing environment with full security features.', requiresAuth: true },
           { name: 'Test Environment', url: 'testenvironment.html', icon: '🧪', description: 'General testing environment for development.', requiresAuth: false },
           { name: 'Homepage', url: 'index.html', icon: '🏠', description: 'Main landing page.', requiresAuth: false },
