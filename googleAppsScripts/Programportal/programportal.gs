@@ -1,4 +1,4 @@
-var VERSION = "v01.22g";
+var VERSION = "v01.23g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3145,7 +3145,37 @@ function doGet(e) {
             .deleteAnnouncement(_sessionToken, rowIndex);
         }
 
-        // ── Admin: Reorder announcement (optimistic) ──
+        // ── Admin: Reorder announcement (optimistic + sequential server queue) ──
+        // Each click optimistically swaps the UI instantly and queues a server call.
+        // Server calls execute sequentially (next fires after previous completes).
+        // Only the final server response re-renders; intermediate responses are ignored.
+        var _reorderQueue = [];
+        var _reorderProcessing = false;
+        var _reorderGeneration = 0;
+
+        function _processReorderQueue() {
+          if (_reorderProcessing || _reorderQueue.length === 0) return;
+          _reorderProcessing = true;
+          var job = _reorderQueue.shift();
+          var isLast = (_reorderQueue.length === 0);
+          var gen = _reorderGeneration;
+          google.script.run
+            .withSuccessHandler(function(data) {
+              _reorderProcessing = false;
+              // Only apply server response if this is the last queued job AND no new reorders arrived
+              if (isLast && gen === _reorderGeneration) {
+                _forceRenderAnnouncements(data);
+              }
+              _processReorderQueue(); // process next in queue
+            })
+            .withFailureHandler(function(err) {
+              _reorderProcessing = false;
+              console.error('Reorder error:', err);
+              _processReorderQueue();
+            })
+            .reorderAnnouncement(_sessionToken, job.rowIndex, job.direction);
+        }
+
         function _reorderAnnouncement(rowIndex, direction) {
           // Optimistic: swap in local array immediately
           var fromIdx = -1;
@@ -3154,7 +3184,6 @@ function doGet(e) {
           }
           var toIdx = direction === 'up' ? fromIdx - 1 : fromIdx + 1;
           if (fromIdx >= 0 && toIdx >= 0 && toIdx < _annLocalItems.length) {
-            // Swap items AND their rowIndex values so buttons reference correct spreadsheet rows
             var tempRowIndex = _annLocalItems[fromIdx].rowIndex;
             _annLocalItems[fromIdx].rowIndex = _annLocalItems[toIdx].rowIndex;
             _annLocalItems[toIdx].rowIndex = tempRowIndex;
@@ -3163,11 +3192,10 @@ function doGet(e) {
             _annLocalItems[toIdx] = temp;
             _optimisticRender();
           }
-          // Server: authoritative update
-          google.script.run
-            .withSuccessHandler(_forceRenderAnnouncements)
-            .withFailureHandler(function(err) { console.error('Reorder error:', err); })
-            .reorderAnnouncement(_sessionToken, rowIndex, direction);
+          // Queue server call (sequential execution, only last response renders)
+          _reorderGeneration++;
+          _reorderQueue.push({ rowIndex: rowIndex, direction: direction });
+          _processReorderQueue();
         }
 
         // ── Poll countdown display ──

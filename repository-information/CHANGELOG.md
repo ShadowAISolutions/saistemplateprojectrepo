@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
+
+## [v07.93r] — 2026-03-29 06:50:32 PM EST
+
+> **Prompt:** "kinda working, lets keep using the same example of row 1, i move it down 2 optimistically. after we wait for the sync, it moves it down from 1 to 2, then after a delay it then moves it from 2 to 3. any way you can think to prevent this?"
+
+### Fixed
+- Replaced parallel reorder server calls with a sequential queue — rapid clicks now queue individual swap calls that execute one at a time, and only the final response re-renders the UI. Intermediate server responses are ignored (tracked via generation counter) so the UI doesn't jump back to stale positions between calls
+
+#### `programportal.gs` — v01.23g
+
+##### Fixed
+- Replaced direct `google.script.run` reorder calls with `_reorderQueue` + `_processReorderQueue()` pattern — sequential execution prevents the race condition where parallel server calls each move the row one extra position
 
 ## [v07.92r] — 2026-03-29 06:45:58 PM EST
 
