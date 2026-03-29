@@ -1,4 +1,4 @@
-var VERSION = "v01.26g";
+var VERSION = "v01.27g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2615,6 +2615,12 @@ function doGet(e) {
         }
         .ann-save-order-btn:hover { background: #1e88e5; }
         .ann-save-order-btn:disabled { opacity: 0.6; cursor: wait; }
+        .ann-cancel-order-btn {
+          background: rgba(255,255,255,0.1); border: none; border-radius: 8px; padding: 10px 20px;
+          color: rgba(255,255,255,0.7); cursor: pointer; font-size: 13px; width: 100%; text-align: center;
+          margin-bottom: 10px; transition: all 0.2s;
+        }
+        .ann-cancel-order-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .ann-status-bar {
           display: flex; align-items: center; gap: 12px; padding: 6px 0; margin-bottom: 8px;
           font-size: 11px; color: rgba(255,255,255,0.5);
@@ -3010,6 +3016,14 @@ function doGet(e) {
             saveBtn.style.display = _annOrderDirty ? '' : 'none';
             saveBtn.addEventListener('click', function() { _saveAnnouncementOrder(); });
             _annContainer.appendChild(saveBtn);
+
+            var cancelBtn = document.createElement('button');
+            cancelBtn.id = 'ann-cancel-order-btn';
+            cancelBtn.className = 'ann-cancel-order-btn';
+            cancelBtn.textContent = 'Cancel Changes';
+            cancelBtn.style.display = _annOrderDirty ? '' : 'none';
+            cancelBtn.addEventListener('click', function() { _cancelOrderChanges(); });
+            _annContainer.appendChild(cancelBtn);
           }
 
           for (var i = 0; i < displayItems.length; i++) {
@@ -3169,6 +3183,7 @@ function doGet(e) {
           if (data) {
             _annLocalItems = data.items ? data.items.slice() : [];
             _annOriginalOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
+            _annOriginalItems = _annLocalItems.map(function(it) { return JSON.parse(JSON.stringify(it)); });
             _annOrderDirty = false;
             _renderAnnouncements(data);
           }
@@ -3221,13 +3236,23 @@ function doGet(e) {
         // the order has changed. Clicking it sends the entire order to the server
         // in one batch call — no race conditions, no per-click server overhead.
         var _annOriginalOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
+        var _annOriginalItems = _annLocalItems.map(function(it) { return JSON.parse(JSON.stringify(it)); });
         var _annOrderDirty = false;
 
         function _checkOrderDirty() {
           var currentOrder = _annLocalItems.map(function(it) { return it.rowIndex; });
           _annOrderDirty = (JSON.stringify(currentOrder) !== JSON.stringify(_annOriginalOrder));
           var saveBtn = document.getElementById('ann-save-order-btn');
+          var cancelBtn = document.getElementById('ann-cancel-order-btn');
           if (saveBtn) saveBtn.style.display = _annOrderDirty ? '' : 'none';
+          if (cancelBtn) cancelBtn.style.display = _annOrderDirty ? '' : 'none';
+        }
+
+        function _cancelOrderChanges() {
+          _annLocalItems = _annOriginalItems.map(function(it) { return JSON.parse(JSON.stringify(it)); });
+          _annOrderDirty = false;
+          _optimisticRender();
+          _checkOrderDirty();
         }
 
         function _reorderAnnouncement(rowIndex, direction) {

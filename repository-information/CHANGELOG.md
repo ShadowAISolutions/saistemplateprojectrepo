@@ -3,7 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [v07.97r] — 2026-03-29 07:03:58 PM EST
+
+> **Prompt:** "add a cancel changes button for the save order that will revert to what it was before changes to order, right now the only way to have it revert is by manually doing it"
+
+### Added
+- "Cancel Changes" button next to "Save Order" that reverts announcement order to the last saved/synced state
+- `_annOriginalItems` deep copy for full item state restoration on cancel
+- `_cancelOrderChanges()` function restores items from snapshot and re-renders
+
+#### `programportal.gs` — v01.27g
+
+##### Added
+- Cancel Changes button in render, `_cancelOrderChanges()`, `_annOriginalItems` snapshot
+- `_checkOrderDirty()` now toggles both Save Order and Cancel Changes buttons
+- `_forceRenderAnnouncements()` resets `_annOriginalItems` on server sync
 
 ## [v07.96r] — 2026-03-29 07:01:13 PM EST
 

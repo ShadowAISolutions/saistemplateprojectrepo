@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
 
 ## [Unreleased]
+
+## [v01.27g] — 2026-03-29 07:03:58 PM EST — v07.97r
+
+### Added
+- "Cancel Changes" button appears alongside "Save Order" when announcement order has been modified — reverts to original order without saving
 
 ## [v01.26g] — 2026-03-29 07:01:13 PM EST — v07.96r
 
