@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
+
+## [v07.87r] — 2026-03-29 06:28:19 PM EST
+
+> **Prompt:** "i dont see the html/gas toggles"
+
+### Added
+- HTML/GAS layer visibility toggle buttons on the Program Portal embedding page (`programportal.html`), matching TestAuth1's implementation
+- HTML toggle hides/shows version pills, GAS pill, auth timers, changelogs, SSO indicator
+- GAS toggle hides/shows the GAS iframe
+- `.html-layer-hidden` CSS class with `!important` to avoid race conditions with other display logic
+
+#### `programportal.html` — v01.71w
+
+##### Added
+- HTML and GAS layer toggle buttons (fixed bottom-left, matching TestAuth1's position and styling)
+- `_toggleHtmlLayer()` and `_toggleGasLayer()` functions in PROJECT JS block
+- `.html-layer-hidden` CSS class
 
 ## [v07.86r] — 2026-03-29 06:24:12 PM EST
 

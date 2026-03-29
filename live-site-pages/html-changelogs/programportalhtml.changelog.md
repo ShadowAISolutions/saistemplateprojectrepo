@@ -3,7 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 70/50`
+`Sections: 71/50`
+
+## [Unreleased]
+
+## [v01.71w] — 2026-03-29 06:28:19 PM EST — v07.87r
+
+### Added
+- HTML layer visibility toggle button — hides/shows version pills, auth timers, and other overlay elements
+- GAS layer visibility toggle button — hides/shows the GAS application iframe
 
 ## [v01.70w] — 2026-03-29 12:59:16 PM EST — v07.76r
 
