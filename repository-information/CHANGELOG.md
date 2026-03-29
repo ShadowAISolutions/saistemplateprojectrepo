@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [v07.72r] — 2026-03-29 02:18:23 AM EST
+
+> **Prompt:** "for the sign in and sign out, add an additional total timer for all sections combined"
+
+### Added
+- Added overall total elapsed time display at the bottom of sign-in and sign-out checklists across all 3 auth pages. Shows "Total: X.Xs" after all stages complete, giving the user a single number for the entire sign-in/sign-out duration
+
+#### `testauth1.html` — v03.74w
+
+##### Added
+- Total elapsed time shown at bottom of sign-in and sign-out checklists on completion
+
+#### `applicationportal.html` — v01.66w
+
+##### Added
+- Total elapsed time shown at bottom of sign-in and sign-out checklists on completion
+
+#### `globalacl.html` — v01.60w
+
+##### Added
+- Total elapsed time shown at bottom of sign-in and sign-out checklists on completion
 
 ## [v07.71r] — 2026-03-29 02:09:05 AM EST
 
