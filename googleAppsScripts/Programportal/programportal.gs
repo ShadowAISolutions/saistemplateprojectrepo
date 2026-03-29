@@ -1,4 +1,4 @@
-var VERSION = "v01.24g";
+var VERSION = "v01.25g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3183,15 +3183,30 @@ function doGet(e) {
 
         // ── Admin: Delete announcement (optimistic) ──
         function _deleteAnnouncement(rowIndex) {
-          if (!confirm('Delete this announcement?')) return;
-          // Optimistic: remove from local array immediately
-          _annLocalItems = _annLocalItems.filter(function(it) { return it.rowIndex !== rowIndex; });
-          _optimisticRender();
-          // Server: authoritative update
-          google.script.run
-            .withSuccessHandler(_forceRenderAnnouncements)
-            .withFailureHandler(function(err) { console.error('Delete error:', err); })
-            .deleteAnnouncement(_sessionToken, rowIndex);
+          // Custom confirmation modal (no browser confirm())
+          var overlay = document.createElement('div');
+          overlay.className = 'ann-modal-overlay';
+          overlay.innerHTML = '<div class="ann-modal">'
+            + '<h3>Delete Announcement</h3>'
+            + '<p style="color:rgba(255,255,255,0.6);font-size:13px;margin:0 0 20px;">Are you sure you want to delete this announcement? This cannot be undone.</p>'
+            + '<div class="ann-modal-actions">'
+            + '<button class="ann-modal-btn secondary" id="ann-del-cancel">Cancel</button>'
+            + '<button class="ann-modal-btn primary" id="ann-del-confirm" style="background:#ef5350;">Delete</button>'
+            + '</div></div>';
+          document.body.appendChild(overlay);
+          overlay.querySelector('#ann-del-cancel').addEventListener('click', function() { overlay.remove(); });
+          overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+          overlay.querySelector('#ann-del-confirm').addEventListener('click', function() {
+            overlay.remove();
+            // Optimistic: remove from local array immediately
+            _annLocalItems = _annLocalItems.filter(function(it) { return it.rowIndex !== rowIndex; });
+            _optimisticRender();
+            // Server: authoritative update
+            google.script.run
+              .withSuccessHandler(_forceRenderAnnouncements)
+              .withFailureHandler(function(err) { console.error('Delete error:', err); })
+              .deleteAnnouncement(_sessionToken, rowIndex);
+          });
         }
 
         // --- COMMENTED OUT: per-click reorder with sequential server queue ---

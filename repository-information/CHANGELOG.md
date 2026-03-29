@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
+
+## [v07.95r] — 2026-03-29 06:57:52 PM EST
+
+> **Prompt:** "the delete button should have its confirmation handled by the gas not the browser"
+
+### Changed
+- Replaced browser `confirm()` dialog with a custom themed modal for delete confirmation — dark background, "Cancel" and red "Delete" buttons, click-outside-to-dismiss, consistent with the add/edit modal styling
+
+#### `programportal.gs` — v01.25g
+
+##### Changed
+- `_deleteAnnouncement()` now creates a custom `ann-modal-overlay` confirmation dialog instead of calling `confirm()`
 
 ## [v07.94r] — 2026-03-29 06:54:54 PM EST
 
