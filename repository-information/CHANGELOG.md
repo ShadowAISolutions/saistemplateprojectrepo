@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
+
+## [v07.65r] — 2026-03-29 01:09:43 AM EST
+
+> **Prompt:** "the checklists for signing in/sign out/ ect, right now you are not showing the sub lists until you reach them, make it always show the full lists for all of them"
+
+### Changed
+- Sign-in, sign-out, and reconnecting checklists now show all sub-steps upfront (always visible) instead of progressively revealing them as each parent stage is reached. Sub-steps start in pending state and transition to active/done as before — the only change is visibility
+
+#### `testauth1.html` — v03.69w
+
+##### Changed
+- All checklist sub-steps are now visible from the start during sign-in and sign-out
+
+#### `applicationportal.html` — v01.61w
+
+##### Changed
+- All checklist sub-steps are now visible from the start during sign-in and sign-out
+
+#### `globalacl.html` — v01.55w
+
+##### Changed
+- All checklist sub-steps are now visible from the start during sign-in and sign-out
 
 ## [v07.64r] — 2026-03-29 12:57:08 AM EST
 

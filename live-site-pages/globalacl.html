@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.54w">
+  <meta name="build-version" content="v01.55w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -209,16 +209,14 @@
     .signin-checklist .stage-time-total { font-style: italic; color: #aaa; }
     /* PROJECT: Sign-in sub-steps */
     .signin-checklist .sub-steps {
-      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none; order: 2; flex-basis: 100%;
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
     }
-    .signin-checklist .sub-steps.visible { display: block; }
     .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signin-checklist .sub-steps .stage-time { font-size: 10px; }
     /* PROJECT: Sign-out sub-steps */
     .signout-checklist .sub-steps {
-      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: none; order: 2; flex-basis: 100%;
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
     }
-    .signout-checklist .sub-steps.visible { display: block; }
     .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signout-checklist .sub-steps .stage-time { font-size: 10px; }
     /* PROJECT: Sign-out stage checklist */
@@ -2534,10 +2532,6 @@
         for (var i = 0; i < items.length; i++) {
           items[i].className = 'stage-pending';
         }
-        var subStepUls = checklist.querySelectorAll('.sub-steps');
-        for (var j = 0; j < subStepUls.length; j++) {
-          subStepUls[j].classList.remove('visible');
-        }
       }
       if (subtitle) subtitle.style.display = 'none';
       _updateSignInStage('Contacting Google\u2026');
@@ -2639,7 +2633,6 @@
         }
       }
       if (!parentUl || !order) return;
-      parentUl.classList.add('visible');
       var targetIdx = order.indexOf(subStepId);
       var now = Date.now();
       for (var i = 0; i < order.length; i++) {
@@ -2803,10 +2796,6 @@
         var items = checklist.getElementsByTagName('li');
         for (var i = 0; i < items.length; i++) {
           items[i].className = 'stage-pending';
-        }
-        var subStepUls = checklist.querySelectorAll('.sub-steps');
-        for (var j = 0; j < subStepUls.length; j++) {
-          subStepUls[j].classList.remove('visible');
         }
       }
     }
