@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
+
+## [v07.73r] — 2026-03-29 02:23:50 AM EST
+
+> **Prompt:** "im never going to see that total because it instantly moves to the application/auth page when done. so instead of that, have the total counter be on the final row which is sign out/sign in complete so that the timer is visible."
+
+### Changed
+- Moved total elapsed timer from a separate `<p>` below the checklist to the "Sign-in complete" / "Sign-out complete" row itself — displays as "X.Xs total" in italic, matching the parent-stage timer style. Removed the separate `.checklist-total-time` CSS and HTML elements since they were never visible (page transitions away instantly on completion)
+
+#### `testauth1.html` — v03.75w
+
+##### Changed
+- Total elapsed time now shows on the "Sign-in complete" and "Sign-out complete" rows instead of below the checklist
+
+#### `applicationportal.html` — v01.67w
+
+##### Changed
+- Total elapsed time now shows on the "Sign-in complete" and "Sign-out complete" rows instead of below the checklist
+
+#### `globalacl.html` — v01.61w
+
+##### Changed
+- Total elapsed time now shows on the "Sign-in complete" and "Sign-out complete" rows instead of below the checklist
 
 ## [v07.72r] — 2026-03-29 02:18:23 AM EST
 

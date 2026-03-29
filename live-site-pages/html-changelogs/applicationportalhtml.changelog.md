@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 66/50`
+`Sections: 67/50`
+
+## [v01.67w] — 2026-03-29 02:23:50 AM EST — v07.73r
+
+### Changed
+- Total elapsed time now shows on the final checklist row instead of below the checklist
 
 ## [v01.66w] — 2026-03-29 02:18:23 AM EST — v07.72r
 
