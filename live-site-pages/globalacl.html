@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.56w">
+  <meta name="build-version" content="v01.57w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -485,7 +485,7 @@
       <!-- PROJECT: Reconnecting stage checklist (no SSO stage — SSO_PROVIDER: false) -->
       <ul id="reconnect-checklist" class="reconnect-checklist">
         <li id="rc-stage-verify" class="stage-pending"><span class="chk-icon"></span>Verifying your session</li>
-        <li id="rc-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
+        <li id="rc-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Session restored</li>
       </ul>
     </div>
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
@@ -508,7 +508,7 @@
             <li id="sub-starting" class="stage-pending"><span class="chk-icon"></span>Initializing</li>
           </ul>
         </li>
-        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
+        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Sign-in complete</li>
       </ul>
       <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
     </div>
@@ -2076,7 +2076,7 @@
         // the GAS app confirmed the session is valid.
         if (_directSessionLoad) {
           _directSessionLoad = false;
-          _updateSignInStage('Almost ready\u2026');
+          _updateSignInStage('Sign-in complete');
           _completeAllStages();
           // PROJECT: Complete reconnecting checklist (Use Here reclaim confirmed)
           _updateReconnectStage('rc-stage-confirm');
@@ -2097,7 +2097,7 @@
           hideAllWarningBanners();
           _gasAuthOkHandled = true;
         } else if (_pendingSessionShow) {
-          _updateSignInStage('Almost ready\u2026');
+          _updateSignInStage('Sign-in complete');
           _completeAllStages();
           // PROJECT: Complete reconnecting checklist (gas-auth-ok confirms session)
           _updateReconnectStage('rc-stage-confirm');
@@ -2546,7 +2546,7 @@
       'Sending credentials\u2026': 'stage-verifying',
       'Creating your session\u2026': 'stage-creating',
       'Loading application\u2026': 'stage-loading',
-      'Almost ready\u2026': 'stage-ready'
+      'Sign-in complete': 'stage-ready'
     };
 
     function _formatStageTime(ms) {

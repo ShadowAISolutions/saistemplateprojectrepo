@@ -3,7 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
+
+## [v07.68r] — 2026-03-29 01:43:18 AM EST
+
+> **Prompt:** "then make it not misleading"
+
+### Changed
+- Renamed sign-in checklist final stage from "Confirming session with server" → "Sign-in complete" and internal key from "Almost ready…" → "Sign-in complete" — the stage was not actually confirming anything, it just signals completion
+- Renamed reconnect checklist final stage from "Confirming session with server" → "Session restored"
+
+#### `testauth1.html` — v03.71w
+
+##### Changed
+- Final sign-in checklist step now reads "Sign-in complete" instead of "Confirming session with server"
+- Final reconnect checklist step now reads "Session restored"
+
+#### `applicationportal.html` — v01.63w
+
+##### Changed
+- Final sign-in checklist step now reads "Sign-in complete" instead of "Confirming session with server"
+- Final reconnect checklist step now reads "Session restored"
+
+#### `globalacl.html` — v01.57w
+
+##### Changed
+- Final sign-in checklist step now reads "Sign-in complete" instead of "Confirming session with server"
+- Final reconnect checklist step now reads "Session restored"
 
 ## [v07.67r] — 2026-03-29 01:36:33 AM EST
 

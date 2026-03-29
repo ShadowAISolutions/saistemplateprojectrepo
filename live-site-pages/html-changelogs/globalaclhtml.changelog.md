@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 56/50`
+`Sections: 57/50`
+
+## [v01.57w] — 2026-03-29 01:43:18 AM EST — v07.68r
+
+### Changed
+- Final sign-in step now reads "Sign-in complete" instead of "Confirming session with server"
+- Reconnecting final step now reads "Session restored"
 
 ## [v01.56w] — 2026-03-29 01:36:33 AM EST — v07.67r
 
