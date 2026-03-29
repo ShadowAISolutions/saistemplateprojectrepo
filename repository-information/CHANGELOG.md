@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
+
+## [v07.88r] — 2026-03-29 06:31:20 PM EST
+
+> **Prompt:** "when both toggled they overlap"
+
+### Fixed
+- Increased spacing between HTML and GAS toggle buttons (`left: 112px` → `126px`) to prevent overlap when toggled text includes the circle indicator
+
+#### `programportal.html` — v01.72w
+
+##### Fixed
+- GAS toggle button position adjusted to prevent overlap with HTML toggle when both show "○" indicator
 
 ## [v07.87r] — 2026-03-29 06:28:19 PM EST
 

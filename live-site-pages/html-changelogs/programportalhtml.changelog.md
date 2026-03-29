@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 71/50`
+`Sections: 72/50`
 
 ## [Unreleased]
+
+## [v01.72w] — 2026-03-29 06:31:20 PM EST — v07.88r
+
+### Fixed
+- HTML and GAS toggle buttons no longer overlap when both are toggled off
 
 ## [v01.71w] — 2026-03-29 06:28:19 PM EST — v07.87r
 
