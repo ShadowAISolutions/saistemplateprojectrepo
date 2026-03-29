@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
+
+## [v07.89r] — 2026-03-29 06:35:05 PM EST
+
+> **Prompt:** "the up and down order arrows are affecting the spreadsheet, but there is no immediate feedback in this page. use the same method we are using in testauth1 for immediate feedback"
+
+### Fixed
+- All announcements CRUD operations (reorder, add, edit, delete) now force an immediate re-render by resetting the change-detection JSON before applying server response data, ensuring the UI updates instantly without waiting for the next 60-second poll
+
+#### `programportal.gs` — v01.19g
+
+##### Fixed
+- Added `_forceRenderAnnouncements()` helper that resets `_announcementsPrevJSON` before rendering, bypassing the JSON comparison skip. All CRUD success handlers now use this instead of `_renderAnnouncements` directly
 
 ## [v07.88r] — 2026-03-29 06:31:20 PM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.18g";
+var VERSION = "v01.19g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3090,12 +3090,12 @@ function doGet(e) {
 
             if (isEdit) {
               google.script.run
-                .withSuccessHandler(function(data) { overlay.remove(); if (data) _renderAnnouncements(data); })
+                .withSuccessHandler(function(data) { overlay.remove(); _forceRenderAnnouncements(data); })
                 .withFailureHandler(function(err) { overlay.remove(); console.error('Update error:', err); })
                 .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, active);
             } else {
               google.script.run
-                .withSuccessHandler(function(data) { overlay.remove(); if (data) _renderAnnouncements(data); })
+                .withSuccessHandler(function(data) { overlay.remove(); _forceRenderAnnouncements(data); })
                 .withFailureHandler(function(err) { overlay.remove(); console.error('Add error:', err); })
                 .addAnnouncement(_sessionToken, title, body, priority);
             }
@@ -3109,15 +3109,21 @@ function doGet(e) {
         function _deleteAnnouncement(rowIndex) {
           if (!confirm('Delete this announcement?')) return;
           google.script.run
-            .withSuccessHandler(function(data) { if (data) _renderAnnouncements(data); })
+            .withSuccessHandler(_forceRenderAnnouncements)
             .withFailureHandler(function(err) { console.error('Delete error:', err); })
             .deleteAnnouncement(_sessionToken, rowIndex);
         }
 
         // ── Admin: Reorder announcement ──
+        // Force re-render helper — resets change detection so the next render always applies
+        function _forceRenderAnnouncements(data) {
+          _announcementsPrevJSON = '';
+          if (data) _renderAnnouncements(data);
+        }
+
         function _reorderAnnouncement(rowIndex, direction) {
           google.script.run
-            .withSuccessHandler(function(data) { if (data) _renderAnnouncements(data); })
+            .withSuccessHandler(_forceRenderAnnouncements)
             .withFailureHandler(function(err) { console.error('Reorder error:', err); })
             .reorderAnnouncement(_sessionToken, rowIndex, direction);
         }
