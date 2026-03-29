@@ -3,7 +3,14 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
+
+## [v07.64r] — 2026-03-29 12:57:08 AM EST
+
+> **Prompt:** "with everything we have discussed, pros, cons, desires, observations etc, make a separate document with all relevant information in case we want to implement this in the future"
+
+### Added
+- Created `repository-information/pending-close-design-doc.md` — comprehensive design document for server-side session invalidation on browser tab close. Documents the `sendBeacon` + `pendingClose` pattern (60-second TTL shortening), pros/cons, `pagehide` trigger scenarios, multi-tab concerns, and testing plan. Deferred for now — existing single-session enforcement + TTL expiry provides adequate coverage
 
 ## [v07.63r] — 2026-03-28 09:11:25 PM EST
 

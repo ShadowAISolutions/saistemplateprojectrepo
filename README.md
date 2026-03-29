@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-28 09:11:25 PM EST` · Repo version: `v07.63r`
+Last updated: `2026-03-29 12:57:08 AM EST` · Repo version: `v07.64r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -194,6 +194,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/KNOWN-CONSTRAINTS-AND-FIXES.md">KNOWN-CONSTRAINTS-AND-FIXES.md</a>    — Architectural constraints &amp; resolved bug fixes (GAS double-iframe, postMessage, HMAC, deploy webhook)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/MICROSOFT-AUTH-PLAN.md">MICROSOFT-AUTH-PLAN.md</a>  — [template] Microsoft auth implementation plan (MSAL.js + Azure AD)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/pending-close-design-doc.md">pending-close-design-doc.md</a>  — [Deferred] Server-side session invalidation on tab close (sendBeacon + pendingClose pattern)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/07-SECURITY-UPDATE-PLAN-TESTAUTH1.md">07-SECURITY-UPDATE-PLAN-TESTAUTH1.md</a> — [template] Security hardening plan for testauth1 (6 phases, implemented)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/08-SECURITY-UPDATE-PLAN-TESTAUTH1.md">08-SECURITY-UPDATE-PLAN-TESTAUTH1.md</a> — [template] Security update plan II for testauth1 (7 phases, 19 vulnerabilities — ready for implementation)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/09-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md">09-CROSS-DEVICE-SESSION-ENFORCEMENT-PLAN.md</a> — [template] Cross-device single-session enforcement plan (6 phases — ready for implementation)
