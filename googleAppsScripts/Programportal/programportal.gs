@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -335,6 +335,7 @@ function refreshAnnouncementsCache() {
       var active = String(row[4]).toUpperCase();
       if (active !== 'TRUE') continue;
       items.push({
+        rowIndex: i, // 0-based index into data rows (for edit/delete operations)
         title: String(row[0] || ''),
         body: String(row[1] || ''),
         date: row[2] instanceof Date ? row[2].toISOString() : String(row[2] || ''),
@@ -380,6 +381,62 @@ function getCachedAnnouncements() {
 function getAuthenticatedAnnouncements(token) {
   var user = validateSessionForData(token, 'getAuthenticatedAnnouncements');
   checkPermission(user, 'read', 'getAuthenticatedAnnouncements');
+  return getCachedAnnouncements();
+}
+
+/**
+ * addAnnouncement(token, title, body, priority) — admin-only. Adds a new announcement row.
+ * Returns updated announcements data for immediate re-render.
+ */
+function addAnnouncement(token, title, body, priority) {
+  var user = validateSessionForData(token, 'addAnnouncement');
+  checkPermission(user, 'admin', 'addAnnouncement');
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
+  if (!sheet) throw new Error('Announcements sheet not found');
+  var p = (priority || 'normal').toLowerCase();
+  if (p !== 'high' && p !== 'normal' && p !== 'low') p = 'normal';
+  sheet.appendRow([title || 'Untitled', body || '', new Date(), p, 'TRUE']);
+  refreshAnnouncementsCache();
+  return getCachedAnnouncements();
+}
+
+/**
+ * updateAnnouncement(token, rowIndex, title, body, priority, active) — admin-only.
+ * Updates an existing announcement. rowIndex is 0-based (data rows, excluding header).
+ * Returns updated announcements data.
+ */
+function updateAnnouncement(token, rowIndex, title, body, priority, active) {
+  var user = validateSessionForData(token, 'updateAnnouncement');
+  checkPermission(user, 'admin', 'updateAnnouncement');
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
+  if (!sheet) throw new Error('Announcements sheet not found');
+  var sheetRow = rowIndex + 2; // +1 for header, +1 for 1-based
+  if (sheetRow < 2 || sheetRow > sheet.getLastRow()) throw new Error('Invalid row index');
+  var p = (priority || 'normal').toLowerCase();
+  if (p !== 'high' && p !== 'normal' && p !== 'low') p = 'normal';
+  var activeVal = (active === false || String(active).toUpperCase() === 'FALSE') ? 'FALSE' : 'TRUE';
+  sheet.getRange(sheetRow, 1, 1, 5).setValues([[title || '', body || '', sheet.getRange(sheetRow, 3).getValue(), p, activeVal]]);
+  refreshAnnouncementsCache();
+  return getCachedAnnouncements();
+}
+
+/**
+ * deleteAnnouncement(token, rowIndex) — admin-only.
+ * Deletes an announcement row. rowIndex is 0-based (data rows, excluding header).
+ * Returns updated announcements data.
+ */
+function deleteAnnouncement(token, rowIndex) {
+  var user = validateSessionForData(token, 'deleteAnnouncement');
+  checkPermission(user, 'admin', 'deleteAnnouncement');
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
+  if (!sheet) throw new Error('Announcements sheet not found');
+  var sheetRow = rowIndex + 2;
+  if (sheetRow < 2 || sheetRow > sheet.getLastRow()) throw new Error('Invalid row index');
+  sheet.deleteRow(sheetRow);
+  refreshAnnouncementsCache();
   return getCachedAnnouncements();
 }
 
@@ -2436,6 +2493,49 @@ function doGet(e) {
         .announcement-date { color: rgba(255,255,255,0.35); font-size: 11px; margin-top: 8px; }
         .announcement-card.new-announcement { animation: announcement-flash 1.5s ease-out; }
         @keyframes announcement-flash { 0% { background: rgba(66,165,245,0.25); } 100% { background: rgba(255,255,255,0.06); } }
+        /* PROJECT: Admin controls for announcements */
+        .ann-admin-controls { display: flex; gap: 6px; position: absolute; top: 12px; right: 12px; }
+        .ann-admin-btn {
+          background: rgba(255,255,255,0.1); border: none; border-radius: 6px;
+          color: rgba(255,255,255,0.6); cursor: pointer; padding: 4px 8px; font-size: 12px;
+          transition: all 0.2s;
+        }
+        .ann-admin-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .ann-admin-btn.delete:hover { background: rgba(239,83,80,0.3); color: #ef5350; }
+        .announcement-card { position: relative; }
+        .ann-add-btn {
+          background: rgba(255,255,255,0.08); border: 1px dashed rgba(255,255,255,0.2);
+          border-radius: 8px; padding: 12px 20px; color: rgba(255,255,255,0.5);
+          cursor: pointer; font-size: 13px; width: 100%; text-align: center;
+          transition: all 0.2s; margin-bottom: 10px;
+        }
+        .ann-add-btn:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.3); }
+        .ann-modal-overlay {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.6); z-index: 10000;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .ann-modal {
+          background: #1e1e3a; border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 12px; padding: 24px; width: 420px; max-width: 90vw;
+        }
+        .ann-modal h3 { color: #fff; margin: 0 0 16px; font-size: 16px; }
+        .ann-modal label { display: block; color: rgba(255,255,255,0.6); font-size: 12px; margin-bottom: 4px; margin-top: 12px; }
+        .ann-modal input, .ann-modal textarea, .ann-modal select {
+          width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px;
+          font-family: inherit; box-sizing: border-box;
+        }
+        .ann-modal textarea { min-height: 80px; resize: vertical; }
+        .ann-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .ann-modal-btn {
+          padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;
+          font-size: 13px; transition: all 0.2s;
+        }
+        .ann-modal-btn.primary { background: #42a5f5; color: #fff; }
+        .ann-modal-btn.primary:hover { background: #1e88e5; }
+        .ann-modal-btn.secondary { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+        .ann-modal-btn.secondary:hover { background: rgba(255,255,255,0.2); }
       </style>
     </head>
     <body>
@@ -2650,6 +2750,8 @@ function doGet(e) {
 
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';
+        // PROJECT: User role for admin-only announcements editing
+        var _userRole = '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}';
         // DJB2→HMAC migration complete: _s() and _mk removed.
         // All message signing now happens server-side via signAppMessage()
         // (called through google.script.run — same pattern as Phase 7 heartbeat/signout).
@@ -2759,9 +2861,21 @@ function doGet(e) {
         var _annHeader = document.getElementById('announcements-header');
         var _annChevron = document.getElementById('announcements-chevron');
 
+        var _isAdmin = (_userRole === 'admin');
+
+        // Simple HTML escape for announcement content
+        function _escapeHtml(str) {
+          var div = document.createElement('div');
+          div.appendChild(document.createTextNode(str));
+          return div.innerHTML;
+        }
+
         // ── Render announcements ──
         function _renderAnnouncements(data) {
-          if (!data || !data.items || data.items.length === 0) {
+          if (!data || !data.items) data = { items: [] };
+
+          // Show section for admins even when empty (so they can add), hide for non-admins when empty
+          if (data.items.length === 0 && !_isAdmin) {
             _annSection.style.display = 'none';
             return;
           }
@@ -2779,8 +2893,17 @@ function doGet(e) {
           }
           _announcementsPrevJSON = currentJSON;
 
-          _annBadge.textContent = data.items.length;
+          _annBadge.textContent = data.items.length || '';
           _annContainer.innerHTML = '';
+
+          // Admin: Add button at top
+          if (_isAdmin) {
+            var addBtn = document.createElement('div');
+            addBtn.className = 'ann-add-btn';
+            addBtn.textContent = '+ Add Announcement';
+            addBtn.addEventListener('click', function() { _openAnnModal('add'); });
+            _annContainer.appendChild(addBtn);
+          }
 
           for (var i = 0; i < data.items.length; i++) {
             var item = data.items[i];
@@ -2808,19 +2931,106 @@ function doGet(e) {
               } catch(e) { dateStr = item.date; }
             }
 
-            card.innerHTML = '<div class="announcement-title">' + _escapeHtml(item.title) + '</div>'
+            var adminHtml = '';
+            if (_isAdmin) {
+              adminHtml = '<div class="ann-admin-controls">'
+                + '<button class="ann-admin-btn edit" data-idx="' + item.rowIndex + '" data-title="' + _escapeHtml(item.title) + '" data-body="' + _escapeHtml(item.body) + '" data-priority="' + priority + '">Edit</button>'
+                + '<button class="ann-admin-btn delete" data-idx="' + item.rowIndex + '">Delete</button>'
+                + '</div>';
+            }
+
+            card.innerHTML = adminHtml
+              + '<div class="announcement-title">' + _escapeHtml(item.title) + '</div>'
               + (item.body ? '<div class="announcement-body">' + _escapeHtml(item.body) + '</div>' : '')
               + (dateStr ? '<div class="announcement-date">' + _escapeHtml(dateStr) + '</div>' : '');
 
             _annContainer.appendChild(card);
           }
+
+          // Attach admin event listeners
+          if (_isAdmin) {
+            _annContainer.querySelectorAll('.ann-admin-btn.edit').forEach(function(btn) {
+              btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                _openAnnModal('edit', {
+                  rowIndex: parseInt(this.dataset.idx),
+                  title: this.dataset.title,
+                  body: this.dataset.body,
+                  priority: this.dataset.priority
+                });
+              });
+            });
+            _annContainer.querySelectorAll('.ann-admin-btn.delete').forEach(function(btn) {
+              btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                _deleteAnnouncement(parseInt(this.dataset.idx));
+              });
+            });
+          }
         }
 
-        // Simple HTML escape for announcement content
-        function _escapeHtml(str) {
-          var div = document.createElement('div');
-          div.appendChild(document.createTextNode(str));
-          return div.innerHTML;
+        // ── Admin: Modal form for add/edit ──
+        function _openAnnModal(mode, item) {
+          var overlay = document.createElement('div');
+          overlay.className = 'ann-modal-overlay';
+          var isEdit = (mode === 'edit' && item);
+          overlay.innerHTML = '<div class="ann-modal">'
+            + '<h3>' + (isEdit ? 'Edit Announcement' : 'New Announcement') + '</h3>'
+            + '<label>Title</label>'
+            + '<input type="text" id="ann-form-title" value="' + (isEdit ? _escapeHtml(item.title) : '') + '" placeholder="Announcement title">'
+            + '<label>Body</label>'
+            + '<textarea id="ann-form-body" placeholder="Announcement details (optional)">' + (isEdit ? _escapeHtml(item.body) : '') + '</textarea>'
+            + '<label>Priority</label>'
+            + '<select id="ann-form-priority">'
+            + '<option value="normal"' + (isEdit && item.priority === 'normal' ? ' selected' : '') + '>Normal</option>'
+            + '<option value="high"' + (isEdit && item.priority === 'high' ? ' selected' : '') + '>High</option>'
+            + '<option value="low"' + (isEdit && item.priority === 'low' ? ' selected' : '') + '>Low</option>'
+            + '</select>'
+            + '<div class="ann-modal-actions">'
+            + '<button class="ann-modal-btn secondary" id="ann-form-cancel">Cancel</button>'
+            + '<button class="ann-modal-btn primary" id="ann-form-save">' + (isEdit ? 'Save' : 'Add') + '</button>'
+            + '</div></div>';
+          document.body.appendChild(overlay);
+
+          overlay.querySelector('#ann-form-cancel').addEventListener('click', function() {
+            overlay.remove();
+          });
+          overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) overlay.remove();
+          });
+
+          overlay.querySelector('#ann-form-save').addEventListener('click', function() {
+            var title = overlay.querySelector('#ann-form-title').value.trim();
+            var body = overlay.querySelector('#ann-form-body').value.trim();
+            var priority = overlay.querySelector('#ann-form-priority').value;
+            if (!title) { overlay.querySelector('#ann-form-title').style.borderColor = '#ef5350'; return; }
+            this.disabled = true;
+            this.textContent = 'Saving...';
+
+            if (isEdit) {
+              google.script.run
+                .withSuccessHandler(function(data) { overlay.remove(); if (data) _renderAnnouncements(data); })
+                .withFailureHandler(function(err) { overlay.remove(); console.error('Update error:', err); })
+                .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, true);
+            } else {
+              google.script.run
+                .withSuccessHandler(function(data) { overlay.remove(); if (data) _renderAnnouncements(data); })
+                .withFailureHandler(function(err) { overlay.remove(); console.error('Add error:', err); })
+                .addAnnouncement(_sessionToken, title, body, priority);
+            }
+          });
+
+          // Focus title input
+          setTimeout(function() { overlay.querySelector('#ann-form-title').focus(); }, 50);
+        }
+
+        // ── Admin: Delete announcement ──
+        function _deleteAnnouncement(rowIndex) {
+          if (!confirm('Delete this announcement?')) return;
+          google.script.run
+            .withSuccessHandler(function(data) { if (data) _renderAnnouncements(data); })
+            .withFailureHandler(function(err) { console.error('Delete error:', err); })
+            .deleteAnnouncement(_sessionToken, rowIndex);
         }
 
         // ── Collapse toggle ──

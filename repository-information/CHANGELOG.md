@@ -3,7 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
+
+## [v07.84r] — 2026-03-29 06:13:00 PM EST
+
+> **Prompt:** "i see it now. make it editable from here, only admins for now"
+
+### Added
+- Admin CRUD for announcements in Program Portal — add, edit, and delete announcements directly from the portal UI
+- Server-side functions: `addAnnouncement()`, `updateAnnouncement()`, `deleteAnnouncement()` with admin-only permission checks via `checkPermission(user, 'admin', ...)`
+- Modal form UI for adding/editing announcements with title, body, and priority fields
+- Edit/Delete buttons on each announcement card (visible only to admin users)
+- `rowIndex` field in cached announcement data for client-side edit/delete targeting
+- `_userRole` client-side variable injected from session data for admin detection
+
+#### `programportal.gs` — v01.16g
+
+##### Added
+- addAnnouncement(), updateAnnouncement(), deleteAnnouncement() server-side functions in PROJECT block
+- Admin modal form, edit/delete buttons, and CRUD event handlers in client-side JS
+- _userRole variable for role-based UI rendering
 
 ## [v07.83r] — 2026-03-29 06:07:54 PM EST
 
