@@ -4,54 +4,55 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-29 01:02:55 AM EST
-**Repo version:** v07.64r
+**Date:** 2026-03-29 02:03:47 AM EST
+**Repo version:** v07.70r
 
 ### What was done
-- **v07.58r** — Added live-ticking timer (`_startStageTick()`) for active main stages during sign-in/sign-out checklists. Previously only sub-steps had a 100ms ticker; main stages only showed time on completion. "Waiting for server confirmation" now shows a running timer
-- **v07.59r** — Fixed checklist layout — stage timer now appears on the same line as stage text (not displaced by sub-steps). Used CSS `flex-wrap: wrap`, `order`, and `flex-basis: 100%` to enforce: line 1 = icon + text + timer, line 2 = indented sub-steps
-- **v07.60r** — Added "total" suffix (italic styling via `stage-time-total` class) to parent stage timers on stages with sub-steps, to distinguish them from individual sub-step timers. Fixed reconnecting checklist — added `_startStageTick()` integration
-- **v07.61r** — Added auth state machine (`_authState`) to fix sign-out → sign-in race condition. Five states: `signed-out`, `signing-in`, `authenticated`, `signing-out`, `reconnecting`. Guarded `gas-signed-out` handler with `_authState === 'signing-out'`. Added `tabId` to BroadcastChannel sign-out messages with self-tab check. HIPAA-compliant — no legitimate sign-out signals are suppressed
-- **v07.62r** — Guarded `_finalizeSignOut()` with `_authState` check — the closure-scoped `_soConfirmHandler` and 10-second timeout were the actual culprits firing late and interrupting sign-in
-- **v07.63r** — Fixed the `_finalizeSignOut()` guard being too strict — changed from `!== 'signing-out'` to only blocking `signing-in`/`reconnecting`/`authenticated` states. The previous guard blocked normal sign-out completion (general handler sets state to `signed-out` before closure handler fires)
-- **v07.64r** — Created `repository-information/pending-close-design-doc.md` — comprehensive design doc for server-side session invalidation on browser tab close via `sendBeacon` + `pendingClose` pattern. Deferred implementation — existing single-session enforcement (`MAX_SESSIONS_PER_USER: 1`) + TTL expiry provides adequate HIPAA coverage
+- **v07.65r** — Made sign-in/sign-out checklist sub-steps always visible upfront (CSS `display: block` instead of progressive reveal via `display: none` + `.visible` class). Removed JS `classList.add/remove('visible')` logic across all 3 auth pages
+- **v07.66r** — Fixed globalacl.gs slow "Starting up" sub-step during sign-in. Root cause: `globalacl.gs` was missing the immediate unsigned `gas-auth-ok` postMessage that testauth1 and applicationportal already had — it was waiting for the full `google.script.run.signAppMessage()` server round-trip (~2-5s). Added the immediate send + fallback in failure handler
+- **v07.67r** — Renamed sign-in checklist sub-steps: "Downloading app" → "Preparing interface", "Starting up" → "Initializing" for more accurate descriptions of what's actually happening
+- **v07.68r** — Renamed sign-in final stage from "Confirming session with server" → "Sign-in complete" (it wasn't actually confirming anything — just a visual finish line). Internal key changed from `'Almost ready…'` → `'Sign-in complete'`. Reconnect final stage renamed to "Session restored"
+- **v07.69r** — Renamed sign-out final stage from "Waiting for server confirmation" → "Waiting for sign-out confirmation" (more specific about what is being confirmed — this one IS a real server wait unlike the sign-in version)
+- **v07.70r** — Added "Sign-out complete" finish line to sign-out checklist for visual closure, matching the "Sign-in complete" pattern on sign-in
 
 ### Where we left off
-- All changes committed and pushed (v07.64r)
-- testauth1.html: v03.68w, testauth1.gs: v02.26g
-- applicationportal.html: v01.60w, globalacl.html: v01.54w
-- Auth state machine (`_authState`) working across all 3 auth pages + template
-- Sign-out → sign-in race condition fixed (3 code paths guarded)
-- Pending close (sendBeacon on tab close) deferred — design doc created for future reference
+- All changes committed and pushed (v07.70r)
+- testauth1.html: v03.73w, testauth1.gs: v02.26g
+- applicationportal.html: v01.65w, applicationportal.gs: v01.10g
+- globalacl.html: v01.59w, globalacl.gs: v01.26g
+- All checklist label renames complete across all 3 auth pages
+- Page changelogs are significantly over their 50-section limit — archive rotation needed
 
 ### Key decisions made
-- **Auth state machine over boolean flag** — `_authState` with 5 states chosen over simple `_signingIn` flag for HIPAA compliance. The flag approach could silently suppress legitimate sign-out signals; the state machine is more precise
-- **`_finalizeSignOut()` guard uses exclusion list, not inclusion** — `if (_authState === 'signing-in' || 'reconnecting' || 'authenticated') return;` instead of `if (_authState !== 'signing-out') return;` because the general `gas-signed-out` handler sets state to `'signed-out'` before the closure handler fires, and `_finalizeSignOut` still needs to run to hide the overlay
-- **BroadcastChannel `tabId` fix** — sign-out broadcast now includes `tabId` and receiver checks `e.data.tabId !== _tabId`. Same-tab self-reception was redundant (tab already ran `clearSession()` directly)
-- **Pending close deferred** — `sendBeacon` on `pagehide` would shorten server session TTL to 60s on tab close, but multi-tab/multi-page scenarios (multiple HTMLs sharing one GAS backend) create risks. Single-session enforcement (`invalidateAllSessions` on sign-in) already cleans up orphaned sessions when user returns
-- **Stage timer layout** — CSS `flex-wrap: wrap` + `order` properties keep parent timer on same line as stage text. Stages with sub-steps show "X.Xs total" suffix in italic to distinguish from sub-step timers
+- **Sub-steps always visible** — showing all sub-steps upfront (pending state) gives the user a preview of the full process, rather than progressively revealing them which felt like steps were being added on the fly
+- **"Downloading app" → "Preparing interface"** — the old label implied a file download; what's actually happening is the GAS server building and sending the app HTML
+- **"Starting up" → "Initializing"** — more accurately describes the browser parsing/rendering phase
+- **"Sign-in complete" kept despite being instant** — serves as a visual "finish line" that signals everything passed. Without it, the checklist ends on "Loading the application" which feels incomplete
+- **"Sign-out complete" added for consistency** — without it, the sign-out checklist ended abruptly on "Waiting for sign-out confirmation" before the auth wall appeared
+- **"Waiting for sign-out confirmation" is accurate** — unlike the sign-in "Confirming session" which was fake, the sign-out version genuinely waits for the server to confirm session invalidation (with a 10-second timeout fallback)
+- **Immediate unsigned `gas-auth-ok` is HIPAA compliant** — `gas-auth-ok` is in the `_SIG_EXEMPT` list, carries no PHI, the signed version follows as backup, and origin validation still applies
 
 ### Active context
-- Branch: `claude/add-signout-timer-oOaUN`
-- Repo version: v07.64r
-- testauth1.html: v03.68w, testauth1.gs: v02.26g
-- applicationportal.html: v01.60w, globalacl.html: v01.54w
+- Branch: `claude/show-full-checklists-JVNus`
+- Repo version: v07.70r
+- testauth1.html: v03.73w, testauth1.gs: v02.26g
+- applicationportal.html: v01.65w, globalacl.html: v01.59w, globalacl.gs: v01.26g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- Design doc for pending close at `repository-information/pending-close-design-doc.md`
+- Page changelogs need archive rotation (testauth1: 67/50, applicationportal: 65/50, globalacl: 59/50)
 
 ## Previous Sessions
 
-**Date:** 2026-03-28 07:05:28 PM EST
-**Repo version:** v07.57r
+**Date:** 2026-03-29 01:02:55 AM EST
+**Repo version:** v07.64r
 
 ### What was done
-- **v07.46r–v07.57r** — Added sign-in/sign-out checklist sub-steps with live timing across all 3 auth pages. Fixed multiple timer bugs (inflated times, persisting timers, parent overwriting sub-step times). Added mobile-friendly changes to testauth1 (delete confirmation modal, touch double-tap, viewport)
+- **v07.58r–v07.64r** — Added live-ticking stage timers, fixed checklist layout, added auth state machine for sign-out → sign-in race condition, created pending-close design doc (deferred)
 
 ### Where we left off
-- All changes committed and pushed (v07.57r)
-- testauth1.html: v03.62w, testauth1.gs: v02.26g
+- All changes committed and pushed (v07.64r)
+- testauth1.html: v03.68w, testauth1.gs: v02.26g
 
 Developed by: ShadowAISolutions
