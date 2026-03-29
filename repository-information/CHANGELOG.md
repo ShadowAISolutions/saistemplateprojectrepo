@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
+
+## [v07.63r] — 2026-03-28 09:11:25 PM EST
+
+> **Prompt:** "we are now getting stuck on waiting for server confirmation signing out, using the testauth1 to try it out"
+
+### Fixed
+- Fixed `_finalizeSignOut()` guard being too strict — previous guard (`_authState !== 'signing-out'`) blocked even normal sign-out completion because the general `gas-signed-out` handler sets `_authState = 'signed-out'` before `_finalizeSignOut()` runs. Changed to only block when user has actively started a new auth flow (`signing-in`, `reconnecting`, or `authenticated`)
+
+#### `testauth1.html` — v03.68w
+
+##### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+#### `applicationportal.html` — v01.60w
+
+##### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+#### `globalacl.html` — v01.54w
+
+##### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
 
 ## [v07.62r] — 2026-03-28 08:50:32 PM EST
 

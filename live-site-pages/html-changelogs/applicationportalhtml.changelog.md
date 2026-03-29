@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [applicationportalhtml.changelog-archive.md](applicationportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 59/50`
+`Sections: 60/50`
+
+## [v01.60w] — 2026-03-28 09:11:25 PM EST — v07.63r
+
+### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
 
 ## [v01.59w] — 2026-03-28 08:50:32 PM EST — v07.62r
 

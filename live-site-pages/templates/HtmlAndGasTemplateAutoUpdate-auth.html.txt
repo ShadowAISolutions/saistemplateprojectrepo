@@ -3177,9 +3177,10 @@
 
       // Helper: finalize sign-out — show auth wall with DOM clearing
       function _finalizeSignOut() {
-        // Guard: if auth state moved past 'signing-out' (e.g. user started
-        // a new sign-in), this is a late callback — do not interrupt.
-        if (_authState !== 'signing-out') return;
+        // Guard: if user started a new sign-in/reconnect flow, do not interrupt.
+        // Allow when 'signing-out' (still in progress) or 'signed-out' (general
+        // handler already showed auth wall — we still need to hide the overlay).
+        if (_authState === 'signing-in' || _authState === 'reconnecting' || _authState === 'authenticated') return;
         _completeAllSignOutStages();
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);
