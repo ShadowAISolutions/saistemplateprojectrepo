@@ -3,7 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
+
+## [v07.85r] — 2026-03-29 06:20:23 PM EST
+
+> **Prompt:** "few things, the priority dropdown backgrounds makes it so i cant read the text, there is no option for active true/false like on the spreadsheet, make it so i can re-order them, have it show the data polling timers and the html/gas toggles"
+
+### Fixed
+- Priority dropdown option background now uses dark theme color for readable text
+
+### Added
+- Active/Inactive toggle in the announcement edit modal (maps to spreadsheet Active column)
+- Reorder announcements via up/down arrow buttons with server-side row swap (`reorderAnnouncement()`)
+- Data polling status bar showing live/polling dot, elapsed time, and countdown to next poll
+- HTML and GAS version pills in the announcements section status bar
+- Inactive announcements visible to admins at reduced opacity with "(inactive)" tag
+- Cache now includes all items (active + inactive) with `active` field; client-side filters for non-admins
+
+#### `programportal.gs` — v01.17g
+
+##### Fixed
+- Select dropdown option backgrounds now readable with `background: #1e1e3a` on option elements
+
+##### Added
+- `reorderAnnouncement(token, fromRowIndex, direction)` server-side function for row swapping
+- Active toggle, reorder buttons, poll countdown display, version pills in client-side UI
+- `active` field in cached announcement data for client-side filtering
 
 ## [v07.84r] — 2026-03-29 06:13:00 PM EST
 

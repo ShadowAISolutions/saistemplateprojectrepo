@@ -1,4 +1,4 @@
-var VERSION = "v01.16g";
+var VERSION = "v01.17g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -332,14 +332,14 @@ function refreshAnnouncementsCache() {
     var items = [];
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
-      var active = String(row[4]).toUpperCase();
-      if (active !== 'TRUE') continue;
+      var active = String(row[4]).toUpperCase() === 'TRUE';
       items.push({
         rowIndex: i, // 0-based index into data rows (for edit/delete operations)
         title: String(row[0] || ''),
         body: String(row[1] || ''),
         date: row[2] instanceof Date ? row[2].toISOString() : String(row[2] || ''),
-        priority: String(row[3] || 'normal').toLowerCase()
+        priority: String(row[3] || 'normal').toLowerCase(),
+        active: active
       });
     }
     // Sort by date descending (newest first)
@@ -436,6 +436,32 @@ function deleteAnnouncement(token, rowIndex) {
   var sheetRow = rowIndex + 2;
   if (sheetRow < 2 || sheetRow > sheet.getLastRow()) throw new Error('Invalid row index');
   sheet.deleteRow(sheetRow);
+  refreshAnnouncementsCache();
+  return getCachedAnnouncements();
+}
+
+/**
+ * reorderAnnouncement(token, fromRowIndex, direction) — admin-only.
+ * Swaps an announcement with its neighbor. direction: 'up' or 'down'.
+ * Row indices are 0-based data rows (excluding header).
+ * Returns updated announcements data.
+ */
+function reorderAnnouncement(token, fromRowIndex, direction) {
+  var user = validateSessionForData(token, 'reorderAnnouncement');
+  checkPermission(user, 'admin', 'reorderAnnouncement');
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
+  if (!sheet) throw new Error('Announcements sheet not found');
+  var lastDataRow = sheet.getLastRow() - 1; // 0-based count of data rows
+  var toRowIndex = direction === 'up' ? fromRowIndex - 1 : fromRowIndex + 1;
+  if (toRowIndex < 0 || toRowIndex >= lastDataRow) throw new Error('Cannot move further');
+  var fromSheetRow = fromRowIndex + 2;
+  var toSheetRow = toRowIndex + 2;
+  var numCols = 5;
+  var fromVals = sheet.getRange(fromSheetRow, 1, 1, numCols).getValues();
+  var toVals = sheet.getRange(toSheetRow, 1, 1, numCols).getValues();
+  sheet.getRange(fromSheetRow, 1, 1, numCols).setValues(toVals);
+  sheet.getRange(toSheetRow, 1, 1, numCols).setValues(fromVals);
   refreshAnnouncementsCache();
   return getCachedAnnouncements();
 }
@@ -2526,6 +2552,22 @@ function doGet(e) {
           border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px;
           font-family: inherit; box-sizing: border-box;
         }
+        .ann-modal select option { background: #1e1e3a; color: #fff; }
+        .ann-toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .ann-toggle-row label { margin: 0; }
+        .ann-toggle { position: relative; width: 36px; height: 20px; cursor: pointer; }
+        .ann-toggle input { display: none; }
+        .ann-toggle .ann-toggle-track {
+          width: 36px; height: 20px; background: rgba(255,255,255,0.2);
+          border-radius: 10px; position: relative; transition: background 0.2s; display: block;
+        }
+        .ann-toggle .ann-toggle-track::after {
+          content: ''; position: absolute; top: 2px; left: 2px;
+          width: 16px; height: 16px; background: #fff; border-radius: 50%;
+          transition: transform 0.2s;
+        }
+        .ann-toggle input:checked + .ann-toggle-track { background: #66bb6a; }
+        .ann-toggle input:checked + .ann-toggle-track::after { transform: translateX(16px); }
         .ann-modal textarea { min-height: 80px; resize: vertical; }
         .ann-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
         .ann-modal-btn {
@@ -2536,6 +2578,20 @@ function doGet(e) {
         .ann-modal-btn.primary:hover { background: #1e88e5; }
         .ann-modal-btn.secondary { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
         .ann-modal-btn.secondary:hover { background: rgba(255,255,255,0.2); }
+        .ann-admin-btn.move { font-size: 11px; padding: 2px 6px; }
+        .ann-status-bar {
+          display: flex; align-items: center; gap: 12px; padding: 6px 0; margin-bottom: 8px;
+          font-size: 11px; color: rgba(255,255,255,0.5);
+        }
+        .ann-poll-status { display: flex; align-items: center; gap: 6px; }
+        .ann-poll-dot { width: 6px; height: 6px; border-radius: 50%; background: #3fb950; }
+        .ann-poll-dot.polling { background: #d29922; animation: ann-pulse 1s infinite; }
+        @keyframes ann-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .ann-version-toggles { display: flex; gap: 4px; margin-left: auto; }
+        .ann-version-pill {
+          background: rgba(255,255,255,0.1); border-radius: 4px; padding: 2px 8px;
+          font-size: 10px; color: rgba(255,255,255,0.5); cursor: default;
+        }
       </style>
     </head>
     <body>
@@ -2572,6 +2628,17 @@ function doGet(e) {
           <span>📢 Announcements <span class="announcements-badge" id="announcements-badge"></span></span>
           <span class="announcements-chevron" id="announcements-chevron">▾</span>
         </h2>
+        <div class="ann-status-bar" id="ann-status-bar">
+          <div class="ann-poll-status">
+            <div class="ann-poll-dot" id="ann-poll-dot"></div>
+            <span id="ann-poll-label">Live</span>
+            <span id="ann-poll-countdown">--</span>
+          </div>
+          <div class="ann-version-toggles">
+            <span class="ann-version-pill" id="ann-html-version">HTML</span>
+            <span class="ann-version-pill" id="ann-gas-version">GAS</span>
+          </div>
+        </div>
         <div id="announcements-container"></div>
       </div>
 
@@ -2874,14 +2941,17 @@ function doGet(e) {
         function _renderAnnouncements(data) {
           if (!data || !data.items) data = { items: [] };
 
+          // Filter: admins see all (including inactive), non-admins see only active
+          var displayItems = _isAdmin ? data.items : data.items.filter(function(it) { return it.active !== false; });
+
           // Show section for admins even when empty (so they can add), hide for non-admins when empty
-          if (data.items.length === 0 && !_isAdmin) {
+          if (displayItems.length === 0 && !_isAdmin) {
             _annSection.style.display = 'none';
             return;
           }
           _annSection.style.display = '';
 
-          var currentJSON = JSON.stringify(data.items);
+          var currentJSON = JSON.stringify(displayItems);
           if (currentJSON === _announcementsPrevJSON) return; // No change — skip re-render
 
           var oldTitles = {};
@@ -2893,7 +2963,8 @@ function doGet(e) {
           }
           _announcementsPrevJSON = currentJSON;
 
-          _annBadge.textContent = data.items.length || '';
+          var activeCount = data.items.filter(function(it) { return it.active !== false; }).length;
+          _annBadge.textContent = activeCount || '';
           _annContainer.innerHTML = '';
 
           // Admin: Add button at top
@@ -2905,13 +2976,14 @@ function doGet(e) {
             _annContainer.appendChild(addBtn);
           }
 
-          for (var i = 0; i < data.items.length; i++) {
-            var item = data.items[i];
+          for (var i = 0; i < displayItems.length; i++) {
+            var item = displayItems[i];
             var priority = item.priority || 'normal';
             if (priority !== 'high' && priority !== 'normal' && priority !== 'low') priority = 'normal';
 
             var card = document.createElement('div');
             card.className = 'announcement-card priority-' + priority;
+            if (item.active === false) card.style.opacity = '0.45';
 
             // Flash animation for new announcements (not on initial render)
             var itemKey = item.title + item.date;
@@ -2934,13 +3006,17 @@ function doGet(e) {
             var adminHtml = '';
             if (_isAdmin) {
               adminHtml = '<div class="ann-admin-controls">'
-                + '<button class="ann-admin-btn edit" data-idx="' + item.rowIndex + '" data-title="' + _escapeHtml(item.title) + '" data-body="' + _escapeHtml(item.body) + '" data-priority="' + priority + '">Edit</button>'
+                + '<button class="ann-admin-btn move" data-idx="' + item.rowIndex + '" data-dir="up" title="Move up">▲</button>'
+                + '<button class="ann-admin-btn move" data-idx="' + item.rowIndex + '" data-dir="down" title="Move down">▼</button>'
+                + '<button class="ann-admin-btn edit" data-idx="' + item.rowIndex + '" data-title="' + _escapeHtml(item.title) + '" data-body="' + _escapeHtml(item.body) + '" data-priority="' + priority + '" data-active="' + (item.active !== false) + '">Edit</button>'
                 + '<button class="ann-admin-btn delete" data-idx="' + item.rowIndex + '">Delete</button>'
                 + '</div>';
             }
 
+            var inactiveTag = (item.active === false) ? ' <span style="color:#ef5350;font-size:11px;">(inactive)</span>' : '';
+
             card.innerHTML = adminHtml
-              + '<div class="announcement-title">' + _escapeHtml(item.title) + '</div>'
+              + '<div class="announcement-title">' + _escapeHtml(item.title) + inactiveTag + '</div>'
               + (item.body ? '<div class="announcement-body">' + _escapeHtml(item.body) + '</div>' : '')
               + (dateStr ? '<div class="announcement-date">' + _escapeHtml(dateStr) + '</div>' : '');
 
@@ -2956,7 +3032,8 @@ function doGet(e) {
                   rowIndex: parseInt(this.dataset.idx),
                   title: this.dataset.title,
                   body: this.dataset.body,
-                  priority: this.dataset.priority
+                  priority: this.dataset.priority,
+                  active: this.dataset.active === 'true'
                 });
               });
             });
@@ -2964,6 +3041,12 @@ function doGet(e) {
               btn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 _deleteAnnouncement(parseInt(this.dataset.idx));
+              });
+            });
+            _annContainer.querySelectorAll('.ann-admin-btn.move').forEach(function(btn) {
+              btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                _reorderAnnouncement(parseInt(this.dataset.idx), this.dataset.dir);
               });
             });
           }
@@ -2974,6 +3057,7 @@ function doGet(e) {
           var overlay = document.createElement('div');
           overlay.className = 'ann-modal-overlay';
           var isEdit = (mode === 'edit' && item);
+          var activeChecked = isEdit ? (item.active !== false) : true;
           overlay.innerHTML = '<div class="ann-modal">'
             + '<h3>' + (isEdit ? 'Edit Announcement' : 'New Announcement') + '</h3>'
             + '<label>Title</label>'
@@ -2986,6 +3070,10 @@ function doGet(e) {
             + '<option value="high"' + (isEdit && item.priority === 'high' ? ' selected' : '') + '>High</option>'
             + '<option value="low"' + (isEdit && item.priority === 'low' ? ' selected' : '') + '>Low</option>'
             + '</select>'
+            + '<div class="ann-toggle-row">'
+            + '<label>Active</label>'
+            + '<label class="ann-toggle"><input type="checkbox" id="ann-form-active"' + (activeChecked ? ' checked' : '') + '><span class="ann-toggle-track"></span></label>'
+            + '</div>'
             + '<div class="ann-modal-actions">'
             + '<button class="ann-modal-btn secondary" id="ann-form-cancel">Cancel</button>'
             + '<button class="ann-modal-btn primary" id="ann-form-save">' + (isEdit ? 'Save' : 'Add') + '</button>'
@@ -3003,6 +3091,7 @@ function doGet(e) {
             var title = overlay.querySelector('#ann-form-title').value.trim();
             var body = overlay.querySelector('#ann-form-body').value.trim();
             var priority = overlay.querySelector('#ann-form-priority').value;
+            var active = overlay.querySelector('#ann-form-active').checked;
             if (!title) { overlay.querySelector('#ann-form-title').style.borderColor = '#ef5350'; return; }
             this.disabled = true;
             this.textContent = 'Saving...';
@@ -3011,7 +3100,7 @@ function doGet(e) {
               google.script.run
                 .withSuccessHandler(function(data) { overlay.remove(); if (data) _renderAnnouncements(data); })
                 .withFailureHandler(function(err) { overlay.remove(); console.error('Update error:', err); })
-                .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, true);
+                .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, active);
             } else {
               google.script.run
                 .withSuccessHandler(function(data) { overlay.remove(); if (data) _renderAnnouncements(data); })
@@ -3032,6 +3121,39 @@ function doGet(e) {
             .withFailureHandler(function(err) { console.error('Delete error:', err); })
             .deleteAnnouncement(_sessionToken, rowIndex);
         }
+
+        // ── Admin: Reorder announcement ──
+        function _reorderAnnouncement(rowIndex, direction) {
+          google.script.run
+            .withSuccessHandler(function(data) { if (data) _renderAnnouncements(data); })
+            .withFailureHandler(function(err) { console.error('Reorder error:', err); })
+            .reorderAnnouncement(_sessionToken, rowIndex, direction);
+        }
+
+        // ── Poll countdown display ──
+        var _annPollDot = document.getElementById('ann-poll-dot');
+        var _annPollLabel = document.getElementById('ann-poll-label');
+        var _annPollCountdown = document.getElementById('ann-poll-countdown');
+        var _annHtmlPill = document.getElementById('ann-html-version');
+        var _annGasPill = document.getElementById('ann-gas-version');
+
+        // Set version pill text
+        _annHtmlPill.textContent = 'HTML';
+        _annGasPill.textContent = 'GAS';
+
+        var _annCountdownTimer = setInterval(function() {
+          if (_annPollInFlight) {
+            _annPollDot.classList.add('polling');
+            _annPollLabel.textContent = 'Polling';
+            _annPollCountdown.textContent = '';
+          } else if (_annLastPollTick) {
+            _annPollDot.classList.remove('polling');
+            _annPollLabel.textContent = 'Live';
+            var elapsed = Math.floor((Date.now() - _annLastPollTick) / 1000);
+            var remaining = Math.max(0, Math.floor(ANNOUNCEMENTS_POLL_INTERVAL / 1000) - elapsed);
+            _annPollCountdown.textContent = elapsed + 's | ' + remaining + 's';
+          }
+        }, 1000);
 
         // ── Collapse toggle ──
         var _annCollapsedKey = 'portal_announcements_collapsed';

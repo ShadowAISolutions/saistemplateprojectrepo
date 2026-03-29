@@ -3,9 +3,21 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17g] — 2026-03-29 06:20:23 PM EST — v07.85r
+
+### Fixed
+- Priority dropdown text is now readable (dark background on options)
+
+### Added
+- Active/inactive toggle on announcement edit form
+- Reorder announcements with up/down arrow buttons
+- Live data polling timer showing elapsed and countdown time
+- HTML and GAS version pills in the announcements status bar
+- Inactive announcements shown with reduced opacity for admins
 
 ## [v01.16g] — 2026-03-29 06:13:00 PM EST — v07.84r
 
