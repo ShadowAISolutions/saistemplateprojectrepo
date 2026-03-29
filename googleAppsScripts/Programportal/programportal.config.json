@@ -6,5 +6,6 @@
   "SOUND_FILE_ID": "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN",
   "MASTER_ACL_SPREADSHEET_ID": "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI",
   "ACL_SHEET_NAME": "Access",
-  "ACL_PAGE_NAME": "programportal"
+  "ACL_PAGE_NAME": "programportal",
+  "ANNOUNCEMENTS_SHEET_NAME": "Announcements"
 }

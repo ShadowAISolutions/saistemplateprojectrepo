@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -24,6 +24,7 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 // ══════════════
 // Spreadsheet ID for project data (the GAS app reads/writes user data here).
 var SPREADSHEET_ID = "13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428";
+var ANNOUNCEMENTS_SHEET_NAME = "Announcements";
 
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
 // Two tabs:
@@ -297,6 +298,79 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 // PROJECT START — Add your project-specific functions here
 // ══════════════
+
+/**
+ * refreshAnnouncementsCache() — reads the Announcements sheet, filters to Active rows,
+ * sorts by Date descending, and stores in CacheService with 6-hour TTL.
+ * Modeled on TestAuth1's refreshDataCache().
+ */
+function refreshAnnouncementsCache() {
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ANNOUNCEMENTS_SHEET_NAME);
+    if (!sheet) return;
+    var data = sheet.getDataRange().getValues();
+    if (data.length < 2) {
+      // Only header row or empty — cache empty items
+      var emptyResult = JSON.stringify({ items: [], ts: Date.now() });
+      getEpochCache().put('announcements_' + ANNOUNCEMENTS_SHEET_NAME, emptyResult, 21600);
+      return;
+    }
+    // Columns: A=Title, B=Body, C=Date, D=Priority, E=Active
+    var rows = data.slice(1);
+    var items = [];
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var active = String(row[4]).toUpperCase();
+      if (active !== 'TRUE') continue;
+      items.push({
+        title: String(row[0] || ''),
+        body: String(row[1] || ''),
+        date: row[2] instanceof Date ? row[2].toISOString() : String(row[2] || ''),
+        priority: String(row[3] || 'normal').toLowerCase()
+      });
+    }
+    // Sort by date descending (newest first)
+    items.sort(function(a, b) {
+      return new Date(b.date) - new Date(a.date);
+    });
+    var result = JSON.stringify({ items: items, ts: Date.now() });
+    getEpochCache().put('announcements_' + ANNOUNCEMENTS_SHEET_NAME, result, 21600);
+  } catch (e) {
+    Logger.log('refreshAnnouncementsCache error: ' + e.message);
+  }
+}
+
+/**
+ * getCachedAnnouncements() — reads announcements from CacheService with self-healing.
+ * On cache miss: self-repairs by calling refreshAnnouncementsCache().
+ * Returns parsed object { items, ts } or null.
+ * Modeled on TestAuth1's getCachedData().
+ */
+function getCachedAnnouncements() {
+  var cache = getEpochCache();
+  var key = 'announcements_' + ANNOUNCEMENTS_SHEET_NAME;
+  var cached = cache.get(key);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+  // Self-repair: cache miss → read spreadsheet, warm cache
+  refreshAnnouncementsCache();
+  cached = cache.get(key);
+  return cached ? JSON.parse(cached) : null;
+}
+
+/**
+ * getAuthenticatedAnnouncements(token) — validates session then returns cached announcements.
+ * Used by the GAS-internal data poll (google.script.run from the portal UI).
+ * Requires 'read' permission via RBAC.
+ * Modeled on TestAuth1's getAuthenticatedData().
+ */
+function getAuthenticatedAnnouncements(token) {
+  var user = validateSessionForData(token, 'getAuthenticatedAnnouncements');
+  checkPermission(user, 'read', 'getAuthenticatedAnnouncements');
+  return getCachedAnnouncements();
+}
 
 // ══════════════
 // PROJECT END
@@ -2248,6 +2322,10 @@ function doGet(e) {
   var userAppAccess = getUserAppAccess(session.email);
   var userAppAccessJson = JSON.stringify(userAppAccess);
 
+  // PROJECT: Load initial announcements for inline rendering (avoids waiting for first poll)
+  var initialAnnouncements = getCachedAnnouncements();
+  var initialAnnouncementsJSON = initialAnnouncements ? JSON.stringify(initialAnnouncements) : 'null';
+
   // Session valid — build the portal dashboard UI
   var html = `
     <html>
@@ -2324,6 +2402,29 @@ function doGet(e) {
         .portal-open-toggle input:checked + .toggle-track { background: #66bb6a; }
         .portal-open-toggle input:checked + .toggle-track::after { transform: translateX(16px); }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: rgba(255,255,255,0.3); font-size: 11px; margin: 0; font-family: monospace; }
+        /* PROJECT: Announcements section styles */
+        .announcements-header { display: flex; align-items: center; justify-content: space-between; }
+        .announcements-badge {
+          background: rgba(255,255,255,0.15); border-radius: 10px; padding: 2px 8px;
+          font-size: 11px; color: rgba(255,255,255,0.6); margin-left: 8px;
+        }
+        .announcements-chevron { transition: transform 0.2s; }
+        .announcements-collapsed .announcements-chevron { transform: rotate(-90deg); }
+        .announcements-collapsed #announcements-container { display: none; }
+        .announcement-card {
+          background: rgba(255,255,255,0.06); border-left: 3px solid rgba(255,255,255,0.2);
+          border-radius: 8px; padding: 16px 20px; margin-bottom: 10px;
+          transition: background 0.2s;
+        }
+        .announcement-card:hover { background: rgba(255,255,255,0.1); }
+        .announcement-card.priority-high { border-left-color: #ef5350; }
+        .announcement-card.priority-normal { border-left-color: #42a5f5; }
+        .announcement-card.priority-low { border-left-color: rgba(255,255,255,0.2); }
+        .announcement-title { color: #fff; font-size: 15px; font-weight: 600; }
+        .announcement-body { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin-top: 6px; }
+        .announcement-date { color: rgba(255,255,255,0.35); font-size: 11px; margin-top: 8px; }
+        .announcement-card.new-announcement { animation: announcement-flash 1.5s ease-out; }
+        @keyframes announcement-flash { 0% { background: rgba(66,165,245,0.25); } 100% { background: rgba(255,255,255,0.06); } }
       </style>
     </head>
     <body>
@@ -2352,6 +2453,15 @@ function doGet(e) {
             <span>New window</span>
           </label>
         </div>
+      </div>
+
+      <!-- PROJECT: Announcements section -->
+      <div class="portal-section" id="announcements-section" style="display:none">
+        <h2 class="portal-section-title announcements-header" id="announcements-header" style="cursor:pointer;">
+          <span>📢 Announcements <span class="announcements-badge" id="announcements-badge"></span></span>
+          <span class="announcements-chevron" id="announcements-chevron">▾</span>
+        </h2>
+        <div id="announcements-container"></div>
       </div>
 
       <div class="portal-section" id="portal-section-auth">
@@ -2623,8 +2733,134 @@ function doGet(e) {
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // PROJECT START — Add your project-specific UI handlers here
-        // Example: document.getElementById('my-button').addEventListener('click', function() { ... });
+        // PROJECT START — Announcements section: rendering, collapse toggle, and polling
+
+        // ── Initial data (injected server-side to avoid waiting for first poll) ──
+        var _announcementsData = ${initialAnnouncementsJSON};
+        var _announcementsPrevJSON = '';
+        var _annPollInFlight = false;
+        var _annLastPollTick = 0;
+        var ANNOUNCEMENTS_POLL_INTERVAL = 60000; // 60 seconds
+
+        var _annSection = document.getElementById('announcements-section');
+        var _annContainer = document.getElementById('announcements-container');
+        var _annBadge = document.getElementById('announcements-badge');
+        var _annHeader = document.getElementById('announcements-header');
+        var _annChevron = document.getElementById('announcements-chevron');
+
+        // ── Render announcements ──
+        function _renderAnnouncements(data) {
+          if (!data || !data.items || data.items.length === 0) {
+            _annSection.style.display = 'none';
+            return;
+          }
+          _annSection.style.display = '';
+
+          var currentJSON = JSON.stringify(data.items);
+          if (currentJSON === _announcementsPrevJSON) return; // No change — skip re-render
+
+          var oldTitles = {};
+          if (_announcementsPrevJSON) {
+            try {
+              var oldItems = JSON.parse(_announcementsPrevJSON);
+              for (var o = 0; o < oldItems.length; o++) oldTitles[oldItems[o].title + oldItems[o].date] = true;
+            } catch(e) {}
+          }
+          _announcementsPrevJSON = currentJSON;
+
+          _annBadge.textContent = data.items.length;
+          _annContainer.innerHTML = '';
+
+          for (var i = 0; i < data.items.length; i++) {
+            var item = data.items[i];
+            var priority = item.priority || 'normal';
+            if (priority !== 'high' && priority !== 'normal' && priority !== 'low') priority = 'normal';
+
+            var card = document.createElement('div');
+            card.className = 'announcement-card priority-' + priority;
+
+            // Flash animation for new announcements (not on initial render)
+            var itemKey = item.title + item.date;
+            if (Object.keys(oldTitles).length > 0 && !oldTitles[itemKey]) {
+              card.classList.add('new-announcement');
+            }
+
+            var dateStr = '';
+            if (item.date) {
+              try {
+                var d = new Date(item.date);
+                if (!isNaN(d.getTime())) {
+                  dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                } else {
+                  dateStr = item.date;
+                }
+              } catch(e) { dateStr = item.date; }
+            }
+
+            card.innerHTML = '<div class="announcement-title">' + _escapeHtml(item.title) + '</div>'
+              + (item.body ? '<div class="announcement-body">' + _escapeHtml(item.body) + '</div>' : '')
+              + (dateStr ? '<div class="announcement-date">' + _escapeHtml(dateStr) + '</div>' : '');
+
+            _annContainer.appendChild(card);
+          }
+        }
+
+        // Simple HTML escape for announcement content
+        function _escapeHtml(str) {
+          var div = document.createElement('div');
+          div.appendChild(document.createTextNode(str));
+          return div.innerHTML;
+        }
+
+        // ── Collapse toggle ──
+        var _annCollapsedKey = 'portal_announcements_collapsed';
+        var _annCollapsed = localStorage.getItem(_annCollapsedKey) === 'true';
+
+        function _applyCollapseState() {
+          if (_annCollapsed) {
+            _annSection.classList.add('announcements-collapsed');
+            _annChevron.textContent = '▸';
+          } else {
+            _annSection.classList.remove('announcements-collapsed');
+            _annChevron.textContent = '▾';
+          }
+        }
+
+        _annHeader.addEventListener('click', function() {
+          _annCollapsed = !_annCollapsed;
+          localStorage.setItem(_annCollapsedKey, _annCollapsed);
+          _applyCollapseState();
+        });
+
+        _applyCollapseState();
+
+        // ── Polling (setTimeout chaining, same pattern as TestAuth1) ──
+        function _doAnnouncementsPoll() {
+          if (_annPollInFlight) return;
+          _annPollInFlight = true;
+          google.script.run
+            .withSuccessHandler(function(data) {
+              _annPollInFlight = false;
+              _annLastPollTick = Date.now();
+              if (data) {
+                try { _renderAnnouncements(data); }
+                catch(e) { console.error('Announcements poll error:', e); }
+              }
+              setTimeout(_doAnnouncementsPoll, ANNOUNCEMENTS_POLL_INTERVAL);
+            })
+            .withFailureHandler(function() {
+              _annPollInFlight = false;
+              _annLastPollTick = Date.now();
+              setTimeout(_doAnnouncementsPoll, ANNOUNCEMENTS_POLL_INTERVAL);
+            })
+            .getAuthenticatedAnnouncements(_sessionToken);
+        }
+
+        // ── Initialize: render initial data immediately, start poll chain ──
+        if (_announcementsData) _renderAnnouncements(_announcementsData);
+        _annLastPollTick = Date.now();
+        setTimeout(_doAnnouncementsPoll, ANNOUNCEMENTS_POLL_INTERVAL);
+
         // PROJECT END
       </script>
     </body>

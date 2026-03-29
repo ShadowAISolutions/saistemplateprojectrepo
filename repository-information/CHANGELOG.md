@@ -3,7 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
+
+## [v07.82r] — 2026-03-29 06:03:02 PM EST
+
+> **Prompt:** "in the program portal i want there to be an "Announcements" section which i want set up similar to the live data in the testauth1, use the same data polling setup as that."
+
+### Added
+- Announcements section in the Program Portal with live data polling from a Google Sheets "Announcements" tab
+- Server-side cache functions (refreshAnnouncementsCache, getCachedAnnouncements, getAuthenticatedAnnouncements) using CacheService with 6-hour TTL, modeled on TestAuth1's data polling pattern
+- Client-side 60-second setTimeout-chaining poll via google.script.run, with flight guard and change detection
+- Announcements rendered as priority-colored cards (red=high, blue=normal, gray=low) with collapsible section header and badge count
+- Initial announcements data loaded server-side and injected inline for immediate rendering
+- ANNOUNCEMENTS_SHEET_NAME config variable in programportal.config.json and programportal.gs
+- Spreadsheet sheet columns: Title, Body, Date, Priority, Active (filtered server-side, sorted by date descending)
+
+#### `programportal.gs` — v01.14g
+
+##### Added
+- refreshAnnouncementsCache(), getCachedAnnouncements(), getAuthenticatedAnnouncements(token) in PROJECT block
+- Announcements HTML section, CSS styles, and client-side JS polling/rendering in doGet() template
+- ANNOUNCEMENTS_SHEET_NAME config variable
 
 ## [v07.81r] — 2026-03-29 03:17:42 PM EST
 

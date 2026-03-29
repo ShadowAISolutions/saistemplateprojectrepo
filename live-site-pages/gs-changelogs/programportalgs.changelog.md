@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14g] — 2026-03-29 06:03:02 PM EST — v07.82r
+
+### Added
+- New Announcements section showing live announcements from a spreadsheet
+- Announcements automatically refresh every 60 seconds to show new updates
+- Collapsible section header with announcement count badge
+- Visual priority indicators — high-priority announcements highlighted in red, normal in blue
 
 ## [v01.13g] — 2026-03-29 03:05:28 PM EST — v07.80r
 
