@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v07.66r] — 2026-03-29 01:19:57 AM EST
+
+> **Prompt:** "why is it that the globalacl spends a few secpmds with "starting up" while the application portal and testauth1 instantly complete that part?"
+
+### Fixed
+- Fixed globalacl "Starting up" sub-step taking 2-5 seconds during sign-in — added immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call, matching the pattern already used by testauth1 and applicationportal
+
+#### `globalacl.gs` — v01.26g
+
+##### Fixed
+- Sign-in "Starting up" phase now completes instantly instead of waiting for server round-trip
 
 ## [v07.65r] — 2026-03-29 01:09:43 AM EST
 

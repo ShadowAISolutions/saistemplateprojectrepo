@@ -3,9 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
 
-## [Unreleased]
+## [v01.26g] — 2026-03-29 01:19:57 AM EST — v07.66r
+
+### Fixed
+- Sign-in now completes instantly instead of pausing for a few seconds on "Starting up"
 
 ## [v01.25g] — 2026-03-25 09:24:15 AM EST — v06.45r
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.25g";
+var VERSION = "v01.26g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3304,13 +3304,27 @@ function doGet(e) {
           if (_confirmResolve) { _confirmResolve(true); _confirmResolve = null; }
         });
 
-        // Notify wrapper that auth is OK, then load ACL data
+        // Notify wrapper that auth is OK — send immediately so the host page
+        // can show the app without waiting for the async google.script.run call.
+        // Without this immediate send, page refresh and "Use Here" get stuck on
+        // "Reconnecting..." because google.script.run.signAppMessage() may be slow.
+        window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
+          needsReauth: ${session.needsReauth || false},
+          messageKey: '${escapeJs(appMsgKey)}',
+          role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
+          permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
+
+        // Also send a signed version via google.script.run (belt-and-suspenders —
+        // if the unsigned one above is processed first, this signed one is a no-op;
+        // if HMAC verification rejects the unsigned one, this signed one succeeds)
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
             loadData();
           })
           .withFailureHandler(function(err) {
+            // Fallback: send unsigned gas-auth-ok so the host page at least knows
+            // the session is valid (verification will pass because no key is set yet)
             window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
               needsReauth: ${session.needsReauth || false},
               messageKey: '${escapeJs(appMsgKey)}',
