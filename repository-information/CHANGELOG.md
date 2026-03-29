@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
+
+## [v07.96r] — 2026-03-29 07:01:13 PM EST
+
+> **Prompt:** "make it so that you cant close the modals clicking somewhere off of them, for edit and delete and any others"
+
+### Changed
+- Removed click-outside-to-dismiss from both the add/edit modal and the delete confirmation modal — modals can only be closed via their Cancel or action buttons
+
+#### `programportal.gs` — v01.26g
+
+##### Changed
+- Removed overlay click listeners that called `overlay.remove()` on click-outside from both `_openAnnModal()` and `_deleteAnnouncement()`
 
 ## [v07.95r] — 2026-03-29 06:57:52 PM EST
 

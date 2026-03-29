@@ -1,4 +1,4 @@
-var VERSION = "v01.25g";
+var VERSION = "v01.26g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3119,9 +3119,7 @@ function doGet(e) {
           overlay.querySelector('#ann-form-cancel').addEventListener('click', function() {
             overlay.remove();
           });
-          overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) overlay.remove();
-          });
+          // Modal can only be closed via Cancel/Save buttons — no click-outside dismiss
 
           overlay.querySelector('#ann-form-save').addEventListener('click', function() {
             var title = overlay.querySelector('#ann-form-title').value.trim();
@@ -3195,7 +3193,7 @@ function doGet(e) {
             + '</div></div>';
           document.body.appendChild(overlay);
           overlay.querySelector('#ann-del-cancel').addEventListener('click', function() { overlay.remove(); });
-          overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+          // Modal can only be closed via Cancel/Delete buttons — no click-outside dismiss
           overlay.querySelector('#ann-del-confirm').addEventListener('click', function() {
             overlay.remove();
             // Optimistic: remove from local array immediately
