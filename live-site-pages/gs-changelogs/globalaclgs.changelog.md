@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
+
+## [v01.27g] — 2026-03-29 02:09:05 AM EST — v07.71r
+
+### Changed
+- ACL data table now loads instantly instead of requiring a separate server request after sign-in
 
 ## [v01.26g] — 2026-03-29 01:19:57 AM EST — v07.66r
 

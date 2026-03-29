@@ -1,4 +1,4 @@
-var VERSION = "v01.26g";
+var VERSION = "v01.27g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3094,7 +3094,12 @@ function doGet(e) {
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
 
-  // Session valid — build the ACL management UI
+  // Session valid — pre-load ACL data so the table renders instantly (no async fetch needed)
+  var initialAclData = null;
+  try { initialAclData = loadACLData(sessionToken); } catch(e) {}
+  var initialAclDataJSON = initialAclData ? JSON.stringify(initialAclData) : 'null';
+
+  // Build the ACL management UI
   var html = `
     <html>
     <head>
@@ -3320,7 +3325,6 @@ function doGet(e) {
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
-            loadData();
           })
           .withFailureHandler(function(err) {
             // Fallback: send unsigned gas-auth-ok so the host page at least knows
@@ -3330,7 +3334,6 @@ function doGet(e) {
               messageKey: '${escapeJs(appMsgKey)}',
               role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
               permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
-            loadData();
           })
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 
@@ -4036,8 +4039,19 @@ function doGet(e) {
           }
         });
 
-        // Initial load deferred — triggered by signAppMessage callback above
-        // to avoid race condition where loadData fires before session is confirmed
+        // Process initial data embedded at iframe load time (no async fetch needed)
+        var _initialAclData = ${initialAclDataJSON};
+        if (_initialAclData) {
+          _aclData = _initialAclData;
+          _pageHeaders = [];
+          for (var i = 0; i < _initialAclData.headers.length; i++) {
+            var h = _initialAclData.headers[i].toLowerCase();
+            if (h !== 'email' && h !== 'role') {
+              _pageHeaders.push(_initialAclData.headers[i]);
+            }
+          }
+          renderTable();
+        }
       </script>
     </body>
     </html>
