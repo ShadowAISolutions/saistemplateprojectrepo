@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.82w">
+  <meta name="build-version" content="v03.83w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -870,6 +870,16 @@
       </span>
     </div>
     <div class="pa-body">
+      <div style="margin-bottom:8px;">
+        <label style="color:#aaa;font-size:11px;">Filter by Status:
+          <select id="lh-status-filter" style="font-size:11px;background:#1a1a2e;color:#ccc;border:1px solid #555;border-radius:3px;padding:2px 4px;">
+            <option value="">All statuses</option>
+            <option value="Active" selected>Active</option>
+            <option value="Released">Released</option>
+            <option value="Expired">Expired</option>
+          </select>
+        </label>
+      </div>
       <div id="lh-list"></div>
       <div id="lh-empty" class="pa-empty" style="display:none;">No legal holds found.</div>
       <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
@@ -877,13 +887,16 @@
         <label>Sheet Name:
           <select id="lh-sheet-name">
             <option value="">Select sheet...</option>
-            <option value="AuditLog">AuditLog</option>
-            <option value="Sessions">Sessions</option>
-            <option value="UserDirectory">UserDirectory</option>
-            <option value="AmendmentRequests">AmendmentRequests</option>
+            <option value="SessionAuditLog">SessionAuditLog</option>
+            <option value="DataAuditLog">DataAuditLog</option>
             <option value="DisclosureLog">DisclosureLog</option>
+            <option value="AccessRequests">AccessRequests</option>
+            <option value="AmendmentRequests">AmendmentRequests</option>
+            <option value="AmendmentNotifications">AmendmentNotifications</option>
             <option value="BreachLog">BreachLog</option>
             <option value="PersonalRepresentatives">PersonalRepresentatives</option>
+            <option value="LegalHolds">LegalHolds</option>
+            <option value="RetentionIntegrityLog">RetentionIntegrityLog</option>
           </select>
         </label>
         <label>Hold Type:
@@ -904,6 +917,15 @@
         </label>
         <label>Custodian Email (optional):
           <input type="email" id="lh-custodian" placeholder="custodian@example.com" />
+        </label>
+        <label>Start Date (optional):
+          <input type="date" id="lh-start-date" />
+        </label>
+        <label>End Date (optional):
+          <input type="date" id="lh-end-date" />
+        </label>
+        <label>Expiration Date (optional):
+          <input type="date" id="lh-expiration" />
         </label>
         <button id="lh-place-btn" class="pa-action" style="margin-top:8px;">Place Hold</button>
         <div id="lh-place-status" class="pa-status"></div>
@@ -2981,7 +3003,7 @@
         'amend-status', 'amend-review-list', 'amend-record-id', 'amend-current', 'amend-proposed', 'amend-reason',
         'disagree-amendment-id', 'disagree-statement', 'disagree-status',
         'breach-log-list', 'breach-report-output', 'rep-list', 'rep-register-status',
-        'lh-list', 'lh-place-status', 'ca-result', 'ca-export-result',
+        'lh-list', 'lh-place-status', 'lh-start-date', 'lh-end-date', 'lh-expiration', 'ca-result', 'ca-export-result',
         'ai-result', 'rp-result', 'rp-export-result']; // PROJECT: Phase B + C data elements
       // PROJECT: Hide Phase B + Phase C panels
       var _phaseBPanels = ['breach-dashboard-panel', 'representative-panel',
@@ -6632,11 +6654,13 @@
   });
   document.getElementById('lh-close-btn').addEventListener('click', _closeLegalHoldsPanel);
   document.getElementById('lh-refresh-btn').addEventListener('click', _loadLegalHolds);
+  document.getElementById('lh-status-filter').addEventListener('change', _loadLegalHolds);
 
   function _loadLegalHolds() {
     document.getElementById('lh-list').innerHTML = '<div class="pa-status">Loading...</div>';
     document.getElementById('lh-empty').style.display = 'none';
-    _sendPhaseA({ type: 'phase-c-get-legal-holds', token: _getToken(), filters: {} });
+    var statusFilter = document.getElementById('lh-status-filter').value;
+    _sendPhaseA({ type: 'phase-c-get-legal-holds', token: _getToken(), filters: statusFilter ? { status: statusFilter } : {} });
   }
 
   function _renderLegalHolds(result) {
@@ -6657,6 +6681,8 @@
         + '<div class="pa-card-meta">' + _esc(h.holdType) + ' &middot; Sheet: ' + _esc(h.sheetName) + ' &middot; Placed: ' + _esc(h.placedDate || '') + '</div>'
         + '<div class="pa-card-field"><strong>Reason:</strong> ' + _esc(h.reason) + '</div>';
       if (h.caseReference) html += '<div class="pa-card-field"><strong>Case Ref:</strong> ' + _esc(h.caseReference) + '</div>';
+      if (h.startDate || h.endDate) html += '<div class="pa-card-field"><strong>Date Range:</strong> ' + _esc(h.startDate || '—') + ' to ' + _esc(h.endDate || '—') + '</div>';
+      if (h.expirationDate) html += '<div class="pa-card-field"><strong>Expires:</strong> ' + _esc(h.expirationDate) + '</div>';
       if (h.status === 'Active') {
         html += '<div class="pa-card-actions">'
           + '<input type="text" class="lh-release-reason" data-hold-id="' + _esc(h.holdId) + '" placeholder="Release reason..." style="flex:1;font-size:10px;padding:3px 6px;background:#1a1a2e;color:#ccc;border:1px solid #555;border-radius:3px;" />'
@@ -6696,7 +6722,10 @@
         holdType: holdType,
         reason: reason,
         caseReference: document.getElementById('lh-case-ref').value.trim(),
-        custodianEmail: document.getElementById('lh-custodian').value.trim()
+        custodianEmail: document.getElementById('lh-custodian').value.trim(),
+        startDate: document.getElementById('lh-start-date').value || '',
+        endDate: document.getElementById('lh-end-date').value || '',
+        expirationDate: document.getElementById('lh-expiration').value || ''
       }
     });
   });
@@ -6715,6 +6744,9 @@
     document.getElementById('lh-reason').value = '';
     document.getElementById('lh-case-ref').value = '';
     document.getElementById('lh-custodian').value = '';
+    document.getElementById('lh-start-date').value = '';
+    document.getElementById('lh-end-date').value = '';
+    document.getElementById('lh-expiration').value = '';
     _loadLegalHolds();
   }
 

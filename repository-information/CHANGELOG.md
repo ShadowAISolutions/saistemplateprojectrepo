@@ -3,7 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
+
+## [v08.21r] — 2026-03-30 03:30:47 PM EST
+
+> **Prompt:** "go ahead and fix the discrepancies, and also go ahead and implement all of the non implemented future proof items. if you have clarifying questions, ask me. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
+
+### Fixed
+- Fixed legal hold sheet name dropdown — replaced 7 incorrect hardcoded values (AuditLog, Sessions, UserDirectory) with all 10 correct `SHEETS_TO_PROTECT` names (SessionAuditLog, DataAuditLog, etc.)
+- Fixed legal hold form to send `startDate`, `endDate`, `expirationDate` params to GAS `placeLegalHold()` function
+- Fixed `showAuthWall()` to clear new date picker fields on sign-out (HIPAA PHI clearing requirement)
+
+### Added
+- Date picker fields (start date, end date, expiration date) on legal hold placement form — connects to existing GAS backend support for date-range holds and auto-expiration
+- Status filter dropdown (All/Active/Released/Expired) on legal holds list — sends `filters.status` to GAS `getLegalHolds()`, auto-reloads on change
+- Hold card date range and expiration display in `_renderLegalHolds()` — shows date info when present on hold records
+
+### Changed
+- Updated HIPAA Phase C Implementation Guide status back to "✅ Complete" — all functional gaps resolved in v03.83w
+- Updated "Items NOT Implemented" table — marked 3 functional items (date pickers, status filter, sheet names) as ✅ Resolved; kept 4 naming/cosmetic items as Intentional Deviations
+- Updated "Implementation Correctness Assessment" — HTML legal holds form verdict upgraded from ⚠️ Partial to ✅ Correct
+
+#### `testauth1.html` — v03.83w
+
+##### Fixed
+- Legal hold form now correctly lists all protected sheets for hold placement
+- Date fields are properly cleared when signing out
+
+##### Added
+- Optional date pickers for setting hold date ranges and auto-expiration
+- Status filter to quickly find active, released, or expired holds
+- Hold cards now display date range and expiration information
 
 ## [v08.20r] — 2026-03-30 02:10:47 PM EST
 

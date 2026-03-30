@@ -3,7 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
+
+## [v03.83w] — 2026-03-30 03:30:47 PM EST — v08.21r
+
+### Fixed
+- Legal hold form now correctly lists all protected sheets for hold placement
+- Date fields are properly cleared when signing out
+
+### Added
+- Optional date pickers for setting hold date ranges and auto-expiration
+- Status filter to quickly find active, released, or expired holds
+- Hold cards now display date range and expiration information
 
 ## [v03.82w] — 2026-03-30 01:35:41 PM EST — v08.19r
 
