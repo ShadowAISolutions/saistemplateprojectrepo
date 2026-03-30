@@ -8,6 +8,229 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+<!-- Rotated 2026-03-30: 36 sections from 2026-03-26 and 2026-03-27 -->
+
+## [v03.07w] — 2026-03-26 08:02:27 AM EST — v06.82r — [491ff0e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/491ff0e09ed59a03ef1d51e5f1ca7348f9ce395f)
+
+### Added
+- Sign-in now shows real-time progress messages ("Contacting Google…", "Verifying your identity…", "Creating your session…", "Almost ready…") so you can see exactly what stage of authentication you're at
+
+Developed by: ShadowAISolutions
+
+
+## [v03.08w] — 2026-03-26 08:58:20 AM EST — v06.87r — [65d631f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/65d631f3fc95081207f2c082fad2026589ac1ac0)
+
+### Added
+- Sign-in now shows a real-time checklist with timing for each authentication step
+- Sign-out now shows a real-time checklist tracking each step of the sign-out process with timing
+- Reconnecting now shows a real-time checklist tracking session verification with timing
+
+
+## [v03.09w] — 2026-03-26 09:25:30 AM EST — v06.89r — [31dbf54](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/31dbf546fea96a23a979512b9f29699ede770ce4)
+
+### Fixed
+- Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
+
+
+## [v03.10w] — 2026-03-26 09:32:01 AM EST — v06.90r — [78fa23f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/78fa23f26467ce081686a712d33d549e34799032)
+
+### Changed
+- SSO sign-in now shows the authentication progress checklist with timing alongside the source indicator
+
+
+## [v03.11w] — 2026-03-26 10:49:30 AM EST — v06.92r — [a88695f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a88695ff34bf183bcbd91a857616128403e4a86c)
+
+### Fixed
+- "Use Here" session reclaim no longer gets stuck on reconnecting
+
+
+## [v03.12w] — 2026-03-26 11:06:12 AM EST — v06.93r — [89c77fa](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89c77faf423700d5160ba3305dd37bacceabacce)
+
+### Changed
+- Page title updated to "Testauth1 Title"
+
+
+## [v03.13w] — 2026-03-26 11:14:47 AM EST — v06.94r — [c6a0324](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c6a03246844bf8a3a12da221c96dd6bd6bd3a02d)
+
+### Security
+- Improved sign-in security — SSO token refresh now validates the correct Google account is used
+
+
+## [v03.14w] — 2026-03-26 12:03:38 PM EST — v06.95r — [1122d29](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1122d29ea161e104c74e4afcaa83b55ba2d59e47)
+
+### Fixed
+- Closing the Google sign-in popup without completing sign-in now properly returns you to the sign-in screen if your session has expired
+
+
+## [v03.15w] — 2026-03-26 12:58:10 PM EST — v06.96r — [c645e17](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c645e17b9f76243413c739080c6755fb20bae35c)
+
+### Changed
+- Re-authenticating now automatically signs you in with the same Google account instead of showing the account picker
+
+
+## [v03.16w] — 2026-03-26 01:17:37 PM EST — v06.97r — [c72027f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c72027f4dd8764903eccec9c4fc4a1bd31128e56)
+
+### Fixed
+- Fixed re-authentication to properly auto-select the same Google account without showing the account picker
+
+
+## [v03.17w] — 2026-03-26 02:29:03 PM EST — v06.99r — [0f3d15d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0f3d15ddcc460ca0be73f355d9d9ea5c83524f14)
+
+### Changed
+- Minor internal improvements
+
+
+## [v03.18w] — 2026-03-27 04:25:25 PM EST — v07.04r — [db47a26](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/db47a260038950ccc67992f28c400369f1a89cb3)
+
+### Changed
+- Testing buttons now appear in a fixed bottom bar below the data table instead of floating over the content
+
+
+## [v03.19w] — 2026-03-27 04:31:41 PM EST — v07.05r — [27c3d5f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/27c3d5fbcac9e5b08e46faa548708675fc88eb6c)
+
+### Changed
+- Live data table now appears as a contained panel in the center of the page instead of covering the entire screen, keeping navigation and status indicators visible
+
+
+## [v03.20w] — 2026-03-27 05:16:57 PM EST — v07.06r — [d04ee8d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d04ee8dd9657472a9e55c688aad3e44c51e13244)
+
+### Changed
+- Testing buttons moved to bottom-left corner near the version indicators, no longer inside the data table area
+
+
+## [v03.21w] — 2026-03-27 05:23:48 PM EST — v07.07r — [1daa615](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1daa615044c0fde7601c2e1f04c8f106034ea5ec)
+
+### Fixed
+- Testing buttons no longer overlap the version indicator at the bottom of the page
+
+
+## [v03.22w] — 2026-03-27 06:14:47 PM EST — v07.08r — [75de234](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/75de234da1622545ada104db45bc539335d24b03)
+
+### Added
+- New input bar for adding rows directly to the live data table — type values and press Enter or click Add Row
+
+
+## [v03.23w] — 2026-03-27 06:53:06 PM EST — v07.10r — [1147ef4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1147ef4020ac43e2cd87d0eed05b49341352ce61)
+
+### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+
+## [v03.24w] — 2026-03-27 07:00:26 PM EST — v07.11r — [bcef27f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bcef27f2d8cfc5665207f8898dde94b90212a91c)
+
+### Changed
+- Minor internal improvements
+
+
+## [v03.25w] — 2026-03-27 07:12:09 PM EST — v07.12r — [ac6e926](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac6e926344ea2def73b034d981cfd623e42f29f9)
+
+### Fixed
+- Fixed spreadsheet writes not working — input field submissions and cell edits now correctly reach the server
+
+
+## [v03.26w] — 2026-03-27 07:18:05 PM EST — v07.13r — [eac3b54](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eac3b541208808041f0baec4a3961a5941725a15)
+
+### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+
+## [v03.27w] — 2026-03-27 07:35:03 PM EST — v07.14r — [4f6e9ad](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4f6e9ad4ae369e68b8cff4591f833ce82c2a8745)
+
+### Fixed
+- Eliminated console errors caused by data synchronization
+
+
+## [v03.28w] — 2026-03-27 07:39:38 PM EST — v07.15r — [dd0ab39](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dd0ab398e5a27c3268dd71c5aca416675791fc97)
+
+### Fixed
+- Fixed data polling blocked by content security policy after sign-in
+
+
+## [v03.29w] — 2026-03-27 07:42:13 PM EST — v07.16r — [cf532b1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cf532b11cf8a2520ec5f1d07dbb7d7a0323d07f0)
+
+### Fixed
+- Fixed data polling blocked after redirect to response server
+
+
+## [v03.30w] — 2026-03-27 07:51:34 PM EST — v07.17r — [c8862da](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8862da3f73a30619062e480df23573dc5397031)
+
+### Fixed
+- Eliminated remaining console errors from background session checks
+
+
+## [v03.31w] — 2026-03-27 08:32:28 PM EST — v07.18r — [901a4e3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/901a4e36a69755d446f2de43ab055b893c16e554)
+
+### Added
+- Data polling and session checks now pause while the sign-in popup is open
+
+
+## [v03.32w] — 2026-03-27 08:57:54 PM EST — v07.19r — [c1a81ad](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c1a81adb4e99b000f7eae27132dbf9f1870d5c8c)
+
+### Fixed
+- Eliminated console errors that appeared during sign-in and sign-out
+
+
+## [v03.33w] — 2026-03-27 09:09:21 PM EST — v07.20r — [dafe0d9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dafe0d9cad460025d6f003c4a358f8dae7923e24)
+
+### Fixed
+- Eliminated remaining console errors that appeared during sign-out and re-sign-in
+
+
+## [v03.34w] — 2026-03-27 09:14:05 PM EST — v07.21r — [e814c35](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e814c353da4909ab558acb5440cba29b57e16d29)
+
+### Fixed
+- Restored working sign-in flow
+
+
+## [v03.35w] — 2026-03-27 09:40:42 PM EST — v07.22r — [b9faf1c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b9faf1c63aa99de229f718633e6dcff538ebcd3b)
+
+### Changed
+- Add Row button now shows "Sending..." feedback while your new row is being saved
+
+
+## [v03.36w] — 2026-03-27 09:46:47 PM EST — v07.23r — [5b17202](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5b172023ec80c2cd23659356475d18c991f3ee9d)
+
+### Changed
+- Add Row button is now disabled when all fields are empty
+- New rows appear in the table instantly — no more waiting for the server response
+
+
+## [v03.37w] — 2026-03-27 09:52:43 PM EST — v07.24r — [e003944](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e00394425d0002f6938225dd5542c9637f46e038)
+
+### Added
+- Delete button on each row — removes the row instantly with one click
+
+
+## [v03.38w] — 2026-03-27 11:13:56 PM EST — v07.25r — [7b0c246](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7b0c2463a5140a4d8623f8e9d012b3ef8cd1b759)
+
+### Changed
+- Deleting a row now shows a "Deleting..." indicator on the row while it's being removed
+
+
+## [v03.39w] — 2026-03-27 11:21:05 PM EST — v07.26r — [c1e24bd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c1e24bd5dea960a4989cfafb9969812578961b7b)
+
+### Fixed
+- Add Row button now enables immediately if you type new values while a previous row is still being sent
+
+
+## [v03.40w] — 2026-03-27 11:32:41 PM EST — v07.27r — [9e39e36](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9e39e36a8814106736e8a7ec1ab8008d71def501)
+
+### Fixed
+- Data updates are now more resilient — automatic recovery if a network request stalls
+
+
+## [v03.41w] — 2026-03-27 11:44:05 PM EST — v07.28r — [b48a9b6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b48a9b6e696eee0b08e051bc9515f12729cf4d1c)
+
+### Changed
+- New rows now show a "Sending..." overlay while being saved — no delete button until confirmed
+
+
+## [v03.42w] — 2026-03-27 11:48:48 PM EST — v07.29r — [355550e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/355550e1a3fea179b4fe447dabc7dc3fede8166f)
+
+### Fixed
+- "Sending..." indicator on new rows now disappears as soon as the row is saved, not after the next data refresh
+
+
 <!-- Rotated 2026-03-27: 20 sections from 2026-03-25 -->
 
 ## [v03.06w] — 2026-03-25 11:54:00 PM EST — [v06.78r](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b2bb294)

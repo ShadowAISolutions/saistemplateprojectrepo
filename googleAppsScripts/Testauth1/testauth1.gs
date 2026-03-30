@@ -1,4 +1,4 @@
-var VERSION = "v02.26g";
+var VERSION = "v02.27g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2034,6 +2034,7 @@ function convertToCSV(individualData) {
       var values = [];
       for (var h = 0; h < headers.length; h++) {
         var val = String(records[i][headers[h]] || '');
+        if (/^[=+@\-]/.test(val)) val = "'" + val;
         if (val.indexOf(',') > -1 || val.indexOf('"') > -1 || val.indexOf('\n') > -1) {
           val = '"' + val.replace(/"/g, '""') + '"';
         }

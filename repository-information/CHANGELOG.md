@@ -3,7 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
+
+## [v08.07r] — 2026-03-30 07:29:44 AM EST
+
+> **Prompt:** "analyze the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md and determine where we are in the process of implementing it in testauth1. then prepare to continue implementing"
+
+### Security
+- Fixed CSV injection vulnerability in `convertToCSV()` — values starting with `=`, `+`, `@`, or `-` are now prefixed with a single quote to prevent formula injection when CSV files are opened in Excel/Sheets
+
+### Fixed
+- Added missing `data-requires-permission="admin"` attribute to the amendment review button — non-admin users could see the button (though server-side permissions still blocked the action)
+
+#### `testauth1.gs` — v02.27g
+
+##### Security
+- Added CSV injection prevention in `convertToCSV()` — sanitizes formula injection characters (`=`, `+`, `@`, `-`) with single-quote prefix before RFC 4180 escaping
+
+#### `testauth1.html` — v03.78w
+
+##### Fixed
+- Added `data-requires-permission="admin"` to the amendment review button so it's only visible to admins
 
 ## [v08.06r] — 2026-03-29 10:52:39 PM EST
 
