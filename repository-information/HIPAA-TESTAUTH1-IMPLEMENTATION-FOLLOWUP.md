@@ -18,28 +18,28 @@
 
 | Category | ✅ Implemented | ⚠️ Partial | ❌ Not Implemented | 🔄 N/A | 📋 Policy | 🔮 NPRM |
 |----------|---------------|------------|-------------------|--------|-----------|---------|
-| Authentication & Access Control (#1-9) | **6** (+1) | 0 (-1) | 0 | 0 | 1 | 2 |
+| Authentication & Access Control (#1-9) | 6 | 0 | 0 | 0 | 1 | 2 |
 | Encryption & Transmission Security (#10-13) | 2 | 1 | 0 | 0 | 0 | 1 |
-| Audit & Logging (#14-19) | 4 | 1 | 1 | 0 | 0 | 0 |
+| Audit & Logging (#14-19) | **6** (+2) | **0** (-1) | **0** (-1) | 0 | 0 | 0 |
 | Data Integrity (#20-21) | 2 | 0 | 0 | 0 | 0 | 0 |
-| Privacy Rule — Data Handling (#22-27) | **1** (+1) | 0 (-1) | 2 | 3 | 0 | 0 |
-| Breach Preparedness (#28-31) | 1 | 1 | 1 | 0 | 1 | 0 |
+| Privacy Rule — Data Handling (#22-27) | **3** (+2) | 0 | **0** (-2) | 3 | 0 | 0 |
+| Breach Preparedness (#28-31) | **3** (+2) | **0** (-1) | **0** (-1) | 0 | 1 | 0 |
 | Infrastructure & Operations (#32-40) | 0 | 0 | 0 | 0 | 3 | 6 |
-| **TOTAL (40 items)** | **16** (+2) | **3** (-2) | **4** | **3** | **5** | **9** |
+| **TOTAL (40 items)** | **22** (+6) | **1** (-2) | **0** (-4) | **3** | **5** | **9** |
 
 ### Before / After Comparison
 
-| Metric | Original (2026-03-19) | Current (2026-03-23) | Change |
-|--------|----------------------|---------------------|--------|
-| ✅ Implemented | 14 | **16** | +2 |
-| ⚠️ Partial | 5 | **3** | -2 |
-| ❌ Not Implemented | 4 | 4 | — |
-| Current law compliance (Implemented + N/A / 31) | 55% | **61%** | +6% |
-| Partial items (current law) | 16% | **10%** | -6% |
-| GAS version | v01.56g | v01.91g | +35 versions |
-| HTML version | v02.35w | v02.74w | +39 versions |
+| Metric | Original (2026-03-19) | Follow-Up (2026-03-23) | Current (2026-03-30) | Change |
+|--------|----------------------|------------------------|---------------------|--------|
+| ✅ Implemented | 14 | 16 | **22** | +8 |
+| ⚠️ Partial | 5 | 3 | **1** | -4 |
+| ❌ Not Implemented | 4 | 4 | **0** | -4 |
+| Current law compliance (Implemented + N/A / 31) | 55% | 61% | **81%** | +26% |
+| Partial items (current law) | 16% | 10% | **3%** | -13% |
+| GAS version | v01.56g | v01.91g | v02.29g | +73 versions |
+| HTML version | v02.35w | v02.74w | v03.80w | +145 versions |
 
-**Bottom line:** Two previously partial items are now fully implemented (#5 Access Authorization, #22 Minimum Necessary). Multiple existing implementations were significantly hardened (termination procedures, token exchange, session management). Six major new security features were added that go beyond the 40-item checklist.
+**Bottom line:** Since the original report, 8 items moved to fully implemented: #5 Access Authorization, #22 Minimum Necessary, #18 6-Year Retention, #19 Disclosure Accounting, #23 Right of Access, #24 Right to Amendment, #28 Breach Detection, #31 Breach Logging. All current-law ❌ gaps are now closed — the sole remaining ⚠️ is #10 Encryption at Rest (addressable, mitigated by Google's infrastructure AES-256). Phases A through C of the implementation roadmap are complete.
 
 ---
 
@@ -250,95 +250,109 @@ These features don't map directly to a specific HIPAA checklist item but signifi
 
 ### 🔴 Priority 1 — Current Law (Must Fix for Compliance)
 
-#### #19 — Disclosure Accounting ❌ Not Implemented
+#### #19 — Disclosure Accounting ✅ Implemented (Phase A + B)
 
 **CFR:** §164.528 — **Required** (Privacy Rule)
 
-**Gap:** No mechanism to track PHI disclosures to external parties. The audit log tracks internal *access* (who logged in, who read data) but not *disclosures* (instances where PHI was shared with other entities).
+**Status:** ✅ Fully implemented in Phases A and B.
 
-**What's needed:**
-- Disclosure log: who was PHI disclosed to, what PHI, when, why
-- 6-year history retention
-- On-demand reporting endpoint (individual can request their disclosure history)
-- Exemptions for treatment/payment/operations disclosures (§164.528(a)(1))
+**What was implemented:**
+- `DisclosureLog` sheet with structured fields: timestamp, user, recipient, PHI description, purpose, legal basis
+- `logDisclosure()` / `getDisclosureHistory()` GAS endpoints with session authentication
+- Grouped disclosure accounting for repeated disclosures to the same recipient
+- Summary PHI export across all disclosure records
+- 6-year retention via `enforceRetention()` time-driven trigger
+- Individual can request their full disclosure history through the app UI
+
+**Implementation guides:** [HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md), [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md)
 
 **Mitigation:** If the application never discloses PHI to external parties (all data stays within the system), the TPO exemption covers most scenarios. However, the capability must exist for non-exempt disclosures.
 
 ---
 
-#### #23 — Right of Access ❌ Not Implemented
+#### #23 — Right of Access ✅ Implemented (Phase A)
 
 **CFR:** §164.524 — **Required** (Privacy Rule)
 
-**Gap:** No data export functionality. Individuals cannot request and download their ePHI.
+**Status:** ✅ Fully implemented in Phase A.
 
-**What's needed:**
-- Data export endpoint returning all PHI for a given individual
-- Format options (at minimum: electronic format; ideally JSON/CSV)
-- 30-day response window (organizational process)
-- Access request logging
+**What was implemented:**
+- `exportMyData()` GAS endpoint — exports all PHI for the authenticated individual
+- Format options: JSON and CSV
+- Data sourced from `Live_Sheet`, `DisclosureLog`, `AccessRequests`, `AmendmentRequests`
+- Access request logging via audit trail
+- Download delivered as in-browser file download
 
-**Mitigation:** Currently manual export from Google Sheets is possible — does not scale for production.
+**Implementation guide:** [HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md)
 
 ---
 
-#### #24 — Right to Amendment ❌ Not Implemented
+#### #24 — Right to Amendment ✅ Implemented (Phase A)
 
 **CFR:** §164.526 — **Required** (Privacy Rule)
 
-**Gap:** No amendment workflow. `saveNote()` creates records but there is no update, versioning, or amendment capability.
+**Status:** ✅ Fully implemented in Phase A.
 
-**What's needed:**
-- Amendment request submission mechanism
-- Review workflow (approve or deny with documentation)
-- Append-only history (never delete original, only annotate)
-- Denial documentation with right to disagree
-- 60-day response window
+**What was implemented:**
+- `requestAmendment()` — amendment request submission with record ID, current content, proposed change, and reason
+- `reviewAmendment()` — admin review workflow with approve/deny + documentation
+- `getAmendmentHistory()` — append-only amendment trail per record
+- `submitDisagreement()` — formal disagreement statement for denied amendments
+- Third-party amendment notifications (Phase B) — `notifyAmendmentThirdParties()`
+- All operations logged to audit trail
+
+**Implementation guides:** [HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md), [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md)
 
 ---
 
 ### 🟡 Priority 2 — Current Law (Should Fix)
 
-#### #18 — 6-Year Retention ⚠️ Partial
+#### #18 — 6-Year Retention ✅ Implemented (Phase B + C)
 
 **CFR:** §164.316(b)(2)(i) — **Required**
 
-**Gap:** `AUDIT_LOG_RETENTION_YEARS: 6` is declared at `testauth1.gs:259` but the value is never read by any code — it's a configuration declaration, not enforcement.
+**Status:** ✅ Fully implemented across Phase B (core enforcement) and Phase C (legal holds, compliance audit, archive integrity, policy documentation).
 
-**What's needed:**
-- Scheduled archival of audit data older than retention period
-- Protection against premature deletion (lock mechanism)
-- Retention policy enforcement script (time-driven trigger)
+**What was implemented:**
+- Phase B (v02.28g): `enforceRetention()` — daily time-driven trigger archives records older than 6 years to protected `*_Archive` sheets; `HIPAA_RETENTION_CONFIG` configuration; `setupRetentionTrigger()` installer
+- Phase C (v02.29g): Legal hold management (`placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()`); "last in effect" date calculation via `getRetentionRelevantDate()`; archive integrity verification with SHA-256 checksums (`computeArchiveChecksum()`, `verifyArchiveIntegrity()`); retention compliance audit (`auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()`); formal policy documentation (`getRetentionPolicyDocument()`, `exportRetentionPolicy()`)
+- HTML admin UI: 4 admin panels for legal holds, compliance audit, archive integrity, and policy documentation
 
-**Mitigation:** Google Sheets retains data indefinitely unless manually deleted — passively meets the requirement. Document this in risk analysis.
+**Implementation guides:** [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md) (Section 6), [HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md) (all sections)
 
 ---
 
-#### #28 — Breach Detection ⚠️ Partial
+#### #28 — Breach Detection ✅ Implemented (Phase B)
 
 **CFR:** §164.404
 
-**Gap:** Security events are detected and logged (HMAC failures, brute force, tampered messages) but there is no automated alerting. A human must review audit logs to discover a breach.
+**Status:** ✅ Fully implemented in Phase B.
 
-**What's needed:**
-- Email alerts when security events exceed a threshold (e.g., Tier 3 lockout triggers email to security officer)
-- Configurable alert thresholds
-- Dashboard or summary report endpoint
+**What was implemented:**
+- `evaluateBreachAlert()` — automatic evaluation of security events against configurable thresholds
+- Email alerting via `sendHipaaEmail()` when breach thresholds are exceeded
+- `HIPAA_BREACH_CONFIG` with configurable thresholds per event type
+- Escalating lockout (3 tiers) + client-side attack reporting + server-side security event processing with flood prevention
+- Breach dashboard with summary report
 
-**Strengths already in place:** Escalating lockout (3 tiers), client-side attack reporting (`_reportSecurityEvent()`), security event processing with flood prevention (`processSecurityEvent()` at `testauth1.gs:1768`).
+**Implementation guide:** [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md)
 
 ---
 
-#### #31 — Breach Logging ❌ Not Implemented
+#### #31 — Breach Logging ✅ Implemented (Phase B)
 
 **CFR:** §164.408(c)
 
-**Gap:** No dedicated breach log separate from the security audit trail.
+**Status:** ✅ Fully implemented in Phase B.
 
-**What's needed:**
-- Breach tracking sheet/system: confirmed breaches, risk assessments, notification timelines, affected individuals, remediation actions
-- 6-year retention for breach documentation
-- Structured format for HHS reporting (§164.408)
+**What was implemented:**
+- `BreachLog` sheet with structured fields: breach ID, discovery date, event type, event count, scope, affected individuals, risk assessment, notification status, remediation actions, reporter
+- `logBreach()` — admin manual breach logging with full field support
+- `logBreachFromAlert()` — automatic breach logging when `evaluateBreachAlert()` fires
+- `generateBreachReport()` — annual breach report generation for HHS reporting
+- 6-year retention via `enforceRetention()` time-driven trigger
+
+**Implementation guide:** [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md)
 
 ---
 
@@ -413,30 +427,20 @@ The 2025 HIPAA Security Rule NPRM proposes significant changes. Here is testauth
 
 ## Recommended Implementation Roadmap
 
-### Phase A — Privacy Rule Compliance (P1)
+### Phase A — Privacy Rule Compliance (P1) ✅ Complete
 **Items:** #19 Disclosure Accounting, #23 Right of Access, #24 Right to Amendment
-**Impact:** Most critical for patient rights — these are Required specifications under current law
-**Approach:**
-- Build a `DisclosureLog` sheet in the Project Data Spreadsheet
-- Add `exportMyData(sessionToken)` GAS endpoint for individual data export (JSON format)
-- Build amendment request submission and review workflow with append-only history
-- All three share a common pattern: new sheet + new GAS endpoint + audit logging
+**Status:** ✅ All 3 items fully implemented. See [HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md).
+**Implemented:** GAS v01.92g–v01.99g, HTML v02.74w–v03.64w
 
-### Phase B — Breach Infrastructure (P2)
-**Items:** #28 Breach Detection (automated alerting), #31 Breach Logging
-**Impact:** Critical for incident response readiness
-**Approach:**
-- Add email alerting via `MailApp.sendEmail()` when security events exceed configurable thresholds
-- Create `BreachLog` sheet with structured fields: breach ID, discovery date, scope, affected individuals, risk assessment, notification status, remediation
-- Time-driven trigger for periodic breach report generation
+### Phase B — Breach Infrastructure (P2) ✅ Complete
+**Items:** #28 Breach Detection (automated alerting), #31 Breach Logging, plus grouped disclosure accounting, summary PHI export, third-party amendment notifications, retention enforcement, personal representative access management
+**Status:** ✅ All items fully implemented. See [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md).
+**Implemented:** GAS v02.28g, HTML v03.64w
 
-### Phase C — Retention Enforcement (P2)
-**Items:** #18 6-Year Retention
-**Impact:** Ensures long-term audit trail preservation
-**Approach:**
-- Create time-driven trigger that archives audit entries older than retention period to a separate locked spreadsheet
-- Add sheet protection that prevents deletion of audit data
-- Read and enforce `AUDIT_LOG_RETENTION_YEARS` config value
+### Phase C — Retention Enforcement (P2) ✅ Complete
+**Items:** #18 6-Year Retention (legal holds, compliance audit, archive integrity, policy documentation)
+**Status:** ✅ All items fully implemented. See [HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md).
+**Implemented:** GAS v02.29g, HTML v03.80w
 
 ### Phase D — Production Hardening
 **Items:** Test values → production values, domain restriction, risk analysis documentation

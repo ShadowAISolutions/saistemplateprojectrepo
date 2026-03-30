@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
+
+## [v08.14r] — 2026-03-30 11:36:58 AM EST
+
+> **Prompt:** "walk me through the steps to verify that everything is functioning as intended, then write it up as part of the plan C document, also update the list of things that were done/not done"
+
+### Added
+- Added Developer Verification Walkthrough to `HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md` — 34 checks across 6 tiers covering legal holds, compliance audit, archive integrity, retention policy, cross-cutting concerns, and Phase B integration
+- Added Implementation Status section to the Phase C guide with "What Was Implemented" table (14 functions, 4 utilities, 9 routes, 4 panels), post-deployment configuration items, and known limitations with regulatory risk assessments
+
+### Changed
+- Updated `HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` scorecard — 7 items moved to ✅ Implemented: #18 6-Year Retention (Phase B+C), #19 Disclosure Accounting (Phase A+B), #23 Right of Access (Phase A), #24 Right to Amendment (Phase A), #28 Breach Detection (Phase B), #31 Breach Logging (Phase B). All current-law ❌ gaps now closed
+- Updated compliance percentage from 61% to 81% (22/31 current-law items implemented + 3 N/A)
+- Updated Before/After comparison table with three-column history (Original → Follow-Up → Current)
+- Marked Phases A, B, and C as complete in the implementation roadmap
+- Updated Phase C guide Document Information table with implementation status, GAS/HTML versions, and document history
 
 ## [v08.13r] — 2026-03-30 11:13:25 AM EST
 

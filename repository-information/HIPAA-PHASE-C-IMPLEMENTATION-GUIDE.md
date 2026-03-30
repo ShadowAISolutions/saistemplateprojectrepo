@@ -5,6 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Document** | Phase C Implementation Guide |
+| **Implementation Status** | ✅ Complete — all 5 items implemented across GAS + HTML |
 | **Environment** | testauth1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-30 |
 | **GAS Version** | v02.29g (Phase C functions implemented) |
@@ -64,11 +65,11 @@ Phase C items build on each other sequentially. Implement in this order:
 
 | Item | CFR | Requirement | Current Status | Target |
 |------|-----|-------------|---------------|--------|
-| **#18** 6-Year Retention | §164.316(b)(2)(i) | Retain all audit logs and security documentation for at least 6 years | ✅ Core implemented (Phase B) | ✅ Comprehensive |
-| **#18b** Legal Hold Override | §164.316(b)(2)(i) + litigation best practice | Exempt records under legal hold from routine archival | ❌ Not implemented | ✅ Implemented |
-| **Retention Compliance Audit** | §164.308(a)(8) + §164.316(b)(2)(iii) | Periodic review of retention enforcement effectiveness | ❌ Not implemented | ✅ Implemented |
-| **Archive Integrity Verification** | §164.312(c)(1) | Verify archived records are complete, unaltered, and retrievable | ❌ Not implemented | ✅ Implemented |
-| **Retention Policy Documentation** | §164.316(b)(1) | Generate formal retention policy documentation for organizational compliance | ❌ Not implemented | ✅ Implemented |
+| **#18** 6-Year Retention | §164.316(b)(2)(i) | Retain all audit logs and security documentation for at least 6 years | ✅ Comprehensive (Phase C) | ✅ Comprehensive |
+| **#18b** Legal Hold Override | §164.316(b)(2)(i) + litigation best practice | Exempt records under legal hold from routine archival | ✅ Implemented (v02.29g) | ✅ Implemented |
+| **Retention Compliance Audit** | §164.308(a)(8) + §164.316(b)(2)(iii) | Periodic review of retention enforcement effectiveness | ✅ Implemented (v02.29g) | ✅ Implemented |
+| **Archive Integrity Verification** | §164.312(c)(1) | Verify archived records are complete, unaltered, and retrievable | ✅ Implemented (v02.29g) | ✅ Implemented |
+| **Retention Policy Documentation** | §164.316(b)(1) | Generate formal retention policy documentation for organizational compliance | ✅ Implemented (v02.29g) | ✅ Implemented |
 
 ### What "Done" Looks Like
 
@@ -91,6 +92,45 @@ When Phase C is complete:
 | Archive Integrity Verification | 0 | 3 (checksum, verify, repair) | 1 (verification status) | Medium |
 | Retention Policy Documentation | 0 | 2 (generate, export) | 1 (export button) | Low |
 | **Total** | **1 new sheet** | **~14 new functions** | **~5 UI elements** | |
+
+### Implementation Status (Updated 2026-03-30)
+
+**Phase C Status: ✅ Complete** — all 5 items implemented across GAS (v02.29g) + HTML (v03.80w).
+
+#### What Was Implemented
+
+| Component | GAS Functions | HTML UI | doGet Routes | Status |
+|-----------|:---:|:---:|:---:|--------|
+| **Shared Infrastructure** | 4 utilities (`computeRowsChecksum`, `wrapRetentionOperation`, `getHoldNotificationEmail`, `getRetentionRelevantDate`) + 2 config objects (`LEGAL_HOLD_CONFIG`, `INTEGRITY_CONFIG`) | — | — | ✅ Complete |
+| **#18 Core Enhancement** | Modified `enforceRetention()` — added "last in effect" date calculation via `getRetentionRelevantDate()`, legal hold checking via `checkLegalHold()`, and archive integrity logging via `computeArchiveChecksum()` | — | — | ✅ Complete |
+| **#18b Legal Hold Override** | `placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()` | Legal holds panel (place form, hold list, release with inline input) + admin dropdown button | `phase-c-place-legal-hold`, `phase-c-release-legal-hold`, `phase-c-get-legal-holds` | ✅ Complete |
+| **Retention Compliance Audit** | `auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()` | Compliance audit panel (run audit, view results, export JSON/text) + admin dropdown button | `phase-c-audit-retention`, `phase-c-get-audit-report` | ✅ Complete |
+| **Archive Integrity Verification** | `computeArchiveChecksum()`, `verifyArchiveIntegrity()` | Archive integrity panel (verify button, results display) + admin dropdown button | `phase-c-verify-integrity` | ✅ Complete |
+| **Retention Policy Documentation** | `getRetentionPolicyDocument()`, `exportRetentionPolicy()` | Retention policy panel (generate, view sections, export text/JSON) + admin dropdown button | `phase-c-get-retention-policy`, `phase-c-export-retention-policy` | ✅ Complete |
+| **HTML Integration** | — | `showAuthWall()` updated to hide Phase C panels and clear PHI data; Phase C message routing (8 response types); panel state management and registration | — | ✅ Complete |
+
+**Totals implemented:** 14 new GAS functions, 4 shared utilities, 2 config objects, 9 doGet() message routes, 4 admin dropdown buttons, 4 admin panels, 8 postMessage handler cases, ~450 lines of HTML/JavaScript handler functions, 3 integration points in `enforceRetention()`.
+
+#### What Requires Post-Deployment Configuration
+
+These items are implemented in code but require manual setup before they function:
+
+| Item | What To Do | Why |
+|------|-----------|-----|
+| **Legal hold notification email** | Set `BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL` to a valid email address | Legal hold place/release notifications use this address (shared with breach alerting from Phase B). Empty by default — holds will function correctly without notifications |
+| **MailApp authorization** | If not done in Phase B, run any function that calls `MailApp` from the Apps Script editor to trigger the OAuth consent screen | Required for legal hold notification emails |
+| **Compliance audit trigger** | Run `setupComplianceAuditTrigger()` once from the Apps Script editor | Creates a weekly installable time-driven trigger (Sundays at 3 AM EST) for automated compliance audits. Manual audits work without the trigger |
+| **Retention trigger** | If not done in Phase B, run `setupRetentionTrigger()` from the Apps Script editor | Phase C enhancements (legal hold check, integrity logging) activate within the existing trigger. The trigger must be installed first |
+
+#### Known Limitations & Gaps
+
+| Limitation | Impact | Regulatory Risk | Mitigation |
+|-----------|--------|----------------|------------|
+| **Date range holds not implemented** | Legal holds apply to entire sheets, not specific date ranges | Low — sheet-level holds are the most common litigation hold pattern; date-range filtering is a convenience feature | Full sheet holds are more conservative (protect more data than needed), which is the safer approach for compliance |
+| **Checksum baseline requires archival** | `computeArchiveChecksum()` only runs when records are archived — no baseline exists until the first archival | Low — integrity verification returns "NO_RECORDS" for sheets with no checksum entries, clearly indicating no baseline | Run `enforceRetention()` to establish baselines, then `verifyArchiveIntegrity()` to confirm |
+| **Compliance audit doesn't check trigger health** | The audit verifies sheet protection, record counts, and retention periods, but doesn't verify the daily trigger is currently installed and running | Low — trigger installation is a one-time setup; deletion is rare | Add trigger health check to `auditRetentionCompliance()` findings if needed |
+| **Policy document is configuration-reflective only** | `getRetentionPolicyDocument()` generates policy from live technical configuration — it does not include organizational context (responsible persons, approval workflows, etc.) | Low — the technical policy is the most complex part; organizational wrapping is a manual document process | Use the generated document as the technical annex to an organizational retention policy |
+| **Single checksum per archive operation** | Each archival batch gets one checksum entry — if rows are added to the archive between checksum computations, verification will show a mismatch | Low — `enforceRetention()` is the only process that writes to archive sheets. If verification fails, check if a recent archival occurred | Re-run `computeArchiveChecksum()` after any known archival to reset the baseline |
 
 ---
 
@@ -2443,6 +2483,93 @@ This test verifies the full Phase C flow across all 5 items in a single scenario
 - [ ] No records under legal hold were archived during hold period
 - [ ] Records with "last in effect" dates were retained correctly
 
+### Developer Verification Walkthrough
+
+A structured testing guide for the developer to verify Phase C is functioning correctly after deployment. Organized by priority tier — complete Pre-Flight and Tier 1 first, then work through remaining tiers.
+
+#### Pre-Flight: Confirm Deployment
+
+| # | Check | How | Expected Result |
+|---|-------|-----|-----------------|
+| 1 | GAS version deployed | Open Apps Script editor → check `VERSION` at line 1 | `"v02.29g"` |
+| 2 | HTML page loaded | Navigate to testauth1 page → view source or DevTools | `<meta name="build-version" content="v03.80w">` |
+| 3 | Admin dropdown buttons | Sign in as admin → click ADMIN badge | 4 new buttons visible: Legal Holds, Compliance Audit, Archive Integrity, Retention Policy |
+| 4 | No console errors | Open DevTools → Console tab | No errors related to Phase C element IDs (e.g. `lh-list`, `ca-result`, `ai-result`, `rp-result`) |
+| 5 | Non-admin exclusion | Sign in as non-admin user (clinician/viewer) | Phase C buttons NOT visible in dropdown (they require `admin` permission) |
+
+#### Tier 1: Legal Hold Management (Critical Path)
+
+| # | Check | Steps | Expected Result |
+|---|-------|-------|-----------------|
+| 6 | Place a legal hold | Admin dropdown → Legal Holds → fill Sheet: `AuditLog`, Type: `Litigation`, Reason: "Test hold" → Place Hold | Green status: "Hold placed: HOLD-xxxx" |
+| 7 | View hold in list | Hold list refreshes automatically after placement | New hold visible with status "Active", correct sheet name, hold type, and placed date |
+| 8 | Release hold | Enter release reason in text field → click Release | Hold status changes to "Released", release date populated |
+| 9 | Verify hold persistence | Close panel → reopen Legal Holds | Both active and released holds visible in the list |
+| 10 | Missing fields validation | Try to place hold with empty sheet/type/reason | Red status: "Sheet, type, and reason are required" — no GAS call made |
+| 11 | Retention exclusion | Place active hold on `AuditLog`. Run `enforceRetention()` from Apps Script editor | Check AuditLog sheet for `retention_hold_skipped` event — held records excluded from archival |
+| 12 | Hold release enables archival | Release the hold. Run `enforceRetention()` again | Previously held records now eligible for archival (if past retention date) |
+
+#### Tier 2: Compliance Audit
+
+| # | Check | Steps | Expected Result |
+|---|-------|-------|-----------------|
+| 13 | Run compliance audit | Admin dropdown → Compliance Audit → Run Audit | Status display shows overall status (COMPLIANT/AT_RISK/NON_COMPLIANT) with per-sheet breakdowns |
+| 14 | Per-sheet results | Examine audit results | Each sheet shows: name, status, record count, expired count, held count, findings (if any) |
+| 15 | Export JSON | Select JSON → Export Report | Textarea with structured JSON audit report |
+| 16 | Export Text | Select Text → Export Report | Textarea with human-readable text summary |
+
+#### Tier 3: Archive Integrity Verification
+
+| # | Check | Steps | Expected Result |
+|---|-------|-------|-----------------|
+| 17 | Verify integrity | Admin dropdown → Archive Integrity → Verify All | Results show each archive sheet's integrity status (VERIFIED/MISMATCH/NO_RECORDS) |
+| 18 | No archives yet | If no archival has occurred | Results show "NO_RECORDS" or "no checksum entries" for all sheets — this is expected |
+| 19 | Post-archival verification | After `enforceRetention()` archives records → Verify All | Newly archived batch shows VERIFIED with matching checksums |
+
+#### Tier 4: Retention Policy Documentation
+
+| # | Check | Steps | Expected Result |
+|---|-------|-------|-----------------|
+| 20 | Generate policy | Admin dropdown → Retention Policy → Generate | Multi-section policy document with title, version, generated timestamp, and regulatory citations |
+| 21 | Policy sections | Examine generated document | Sections cover: purpose, scope, retention periods, legal holds, archive integrity, compliance audits, roles/responsibilities, enforcement procedures, regulatory authority, review schedule |
+| 22 | Export Text | Select Text → Export | Textarea with full policy text |
+| 23 | Export JSON | Select JSON → Export | Textarea with structured JSON |
+
+#### Tier 5: Cross-Cutting Concerns
+
+| # | Check | Steps | Expected Result |
+|---|-------|-------|-----------------|
+| 24 | Sign-out cleanup | Open any Phase C panel → Sign Out | All panels close, data cleared (no PHI leakage in DOM) |
+| 25 | Panel mutual exclusion | Open Legal Holds → click Compliance Audit | Legal Holds panel closes, Compliance Audit opens (only one panel at a time) |
+| 26 | Audit log entries | After Phase C operations → check AuditLog sheet | Entries for: `legal_hold_placed`, `legal_hold_released`, `retention_audit`, `integrity_verification`, `policy_generated` |
+| 27 | Data audit log | After Phase C operations → check DataAuditLog sheet | Entries for: `legal_hold` (place/release), `compliance_audit` (run), `integrity_check` (verify) |
+| 28 | Error handling | Run audit on a system with no HIPAA sheets configured | Graceful error message in panel — no unhandled exceptions |
+| 29 | Session timeout | Leave panel open → wait for session to expire → try an action | Error displayed in panel, not a JavaScript crash |
+
+#### Tier 6: Integration with Phase B Retention
+
+| # | Check | Steps | Expected Result |
+|---|-------|-------|-----------------|
+| 30 | "Last in effect" date | Create an `AmendmentRequests` entry with creation date 7 years ago but `DecisionDate` 4 years ago. Run `enforceRetention()` | Record NOT archived — decision date is within the 6-year window |
+| 31 | Standard retention | Create a record with creation date 6 years + 1 day ago, no status changes | Record archived normally — creation date is the only date |
+| 32 | Checksum logging | After `enforceRetention()` archives records → check `RetentionIntegrityLog` sheet | New checksum entry with sheet name, row range, SHA-256 hash, and timestamp |
+| 33 | LegalHolds sheet created | After first `placeLegalHold()` call | `LegalHolds` sheet exists with 14-column header row and warning-only protection |
+| 34 | RetentionIntegrityLog sheet created | After first `computeArchiveChecksum()` call | `RetentionIntegrityLog` sheet exists with correct header row |
+
+#### Quick Smoke Test (Minimum Viable Check)
+
+If time is limited, these 5 steps confirm Phase C is operational:
+
+| Step | Action | Pass Criteria |
+|------|--------|--------------|
+| 1 | Sign in as admin | 4 new buttons in admin dropdown |
+| 2 | Place a legal hold on AuditLog (Litigation, "Test hold") | Green confirmation with HOLD-xxxx ID |
+| 3 | Run compliance audit | Status display with COMPLIANT/AT_RISK for each sheet |
+| 4 | Verify archive integrity | Results display (VERIFIED/NO_RECORDS per sheet) |
+| 5 | Generate retention policy | Multi-section document with title and regulatory citations |
+
+> **All 5 pass?** Phase C is operational. Proceed with the full walkthrough above for comprehensive verification.
+
 ---
 
 ## 15. Troubleshooting
@@ -2648,6 +2775,7 @@ Implement Phase C in this order (each item builds on the previous):
 |------|---------|--------|--------|
 | 2026-03-30 | 1.0 | Claude Code | Initial Phase C implementation guide — comprehensive 18-section guide covering 5 items: #18 Core Retention Enhancement (last-in-effect date), #18b Legal Hold Override (litigation preservation), Retention Compliance Audit System, Archive Integrity Verification (SHA-256 checksums), and Retention Policy Documentation Generator. Includes full GAS function specifications, regulatory landscape with 6 OCR enforcement cases, spreadsheet schemas for 2 new sheets (LegalHolds, RetentionIntegrityLog), 40+ test scenarios, troubleshooting guide, forward-looking regulatory preparation, and cross-references with implementation order |
 | 2026-03-30 | 1.1 | Claude Code | Phase C fully implemented — all 14+ GAS functions deployed in testauth1.gs (v02.29g), HTML admin UI with 4 panels deployed in testauth1.html (v03.80w). Fixed `auditRetentionCompliance()` scope attribution (Phase C, not Phase B). Updated key code location line numbers to reflect post-implementation file positions |
+| 2026-03-30 | 1.2 | Claude Code | Post-implementation update: added Implementation Status section (what was done, what requires configuration, known limitations with regulatory risk assessment); added Developer Verification Walkthrough (34-check structured testing guide organized by 6 priority tiers + quick smoke test); updated Phase C at a Glance table from pre-implementation targets (❌) to implemented status (✅ with version numbers) |
 
 ### Version Mapping
 
@@ -2655,6 +2783,7 @@ Implement Phase C in this order (each item builds on the previous):
 |:-------------:|:-----------:|:------------:|-------|
 | 1.0 | v02.28g (Phase B) | v03.79w (Phase B) | Initial guide — pre-implementation |
 | 1.1 | v02.29g (Phase C) | v03.80w (Phase C) | Phase C fully implemented — all GAS functions + HTML admin UI deployed |
+| 1.2 | v02.29g (Phase C) | v03.80w (Phase C) | Post-implementation — added Implementation Status, Developer Verification Walkthrough, updated at-a-glance status |
 
 ### Document Scope Relationship
 
