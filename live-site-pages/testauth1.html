@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.79w">
+  <meta name="build-version" content="v03.80w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -563,6 +563,10 @@
         <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend">Disagree</button>
         <button id="breach-dashboard-btn" class="phase-a-btn" title="Breach detection & logging" data-requires-permission="admin">Breach Log</button>
         <button id="representative-mgmt-btn" class="phase-a-btn" title="Manage personal representatives" data-requires-permission="admin">Representatives</button>
+        <button id="legal-holds-btn" class="phase-a-btn" title="Manage litigation holds" data-requires-permission="admin">Legal Holds</button>
+        <button id="compliance-audit-btn" class="phase-a-btn" title="Retention compliance audit" data-requires-permission="admin">Compliance Audit</button>
+        <button id="archive-integrity-btn" class="phase-a-btn" title="Verify archive integrity" data-requires-permission="admin">Archive Integrity</button>
+        <button id="retention-policy-btn" class="phase-a-btn" title="Retention policy documentation" data-requires-permission="admin">Retention Policy</button>
       </div>
     </div>
     <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
@@ -775,6 +779,120 @@
         </label>
         <button id="rep-register-btn" class="pa-action" style="margin-top:8px;">Register</button>
         <div id="rep-register-status" class="pa-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legal Hold Management Panel (Admin) -->
+  <div id="legal-holds-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Legal Holds</span>
+      <span>
+        <button id="lh-refresh-btn" class="pa-action">Refresh</button>
+        <button id="lh-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div class="pa-body">
+      <div id="lh-list"></div>
+      <div id="lh-empty" class="pa-empty" style="display:none;">No legal holds found.</div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Place New Legal Hold</span>
+        <label>Sheet Name:
+          <select id="lh-sheet-name">
+            <option value="">Select sheet...</option>
+            <option value="AuditLog">AuditLog</option>
+            <option value="Sessions">Sessions</option>
+            <option value="UserDirectory">UserDirectory</option>
+            <option value="AmendmentRequests">AmendmentRequests</option>
+            <option value="DisclosureLog">DisclosureLog</option>
+            <option value="BreachLog">BreachLog</option>
+            <option value="PersonalRepresentatives">PersonalRepresentatives</option>
+          </select>
+        </label>
+        <label>Hold Type:
+          <select id="lh-hold-type">
+            <option value="">Select type...</option>
+            <option value="Litigation">Litigation</option>
+            <option value="Regulatory">Regulatory</option>
+            <option value="InternalInvestigation">Internal Investigation</option>
+            <option value="Audit">Audit</option>
+            <option value="Preservation">Preservation</option>
+          </select>
+        </label>
+        <label>Reason:
+          <textarea id="lh-reason" rows="2" placeholder="Legal basis for this hold..."></textarea>
+        </label>
+        <label>Case Reference (optional):
+          <input type="text" id="lh-case-ref" placeholder="Case or docket number" />
+        </label>
+        <label>Custodian Email (optional):
+          <input type="email" id="lh-custodian" placeholder="custodian@example.com" />
+        </label>
+        <button id="lh-place-btn" class="pa-action" style="margin-top:8px;">Place Hold</button>
+        <div id="lh-place-status" class="pa-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Audit Panel (Admin) -->
+  <div id="compliance-audit-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Retention Compliance Audit</span>
+      <span>
+        <button id="ca-run-btn" class="pa-action">Run Audit</button>
+        <button id="ca-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div class="pa-body">
+      <div id="ca-result"></div>
+      <div id="ca-empty" class="pa-empty">Click "Run Audit" to analyze retention compliance across all sheets.</div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Export Audit Report</span>
+        <div class="pa-format-picker">
+          <label><input type="radio" name="ca-export-format" value="json" checked /> JSON</label>
+          <label><input type="radio" name="ca-export-format" value="text" /> Text</label>
+        </div>
+        <button id="ca-export-btn" class="pa-action">Export Report</button>
+        <div id="ca-export-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archive Integrity Panel (Admin) -->
+  <div id="archive-integrity-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Archive Integrity Verification</span>
+      <span>
+        <button id="ai-verify-btn" class="pa-action">Verify All</button>
+        <button id="ai-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div class="pa-body">
+      <div id="ai-result"></div>
+      <div id="ai-empty" class="pa-empty">Click "Verify All" to recompute and compare archive checksums.</div>
+    </div>
+  </div>
+
+  <!-- Retention Policy Panel (Admin) -->
+  <div id="retention-policy-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Retention Policy Documentation</span>
+      <span>
+        <button id="rp-generate-btn" class="pa-action">Generate</button>
+        <button id="rp-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div class="pa-body">
+      <div id="rp-result"></div>
+      <div id="rp-empty" class="pa-empty">Click "Generate" to create a formal retention policy document.</div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Export Policy</span>
+        <div class="pa-format-picker">
+          <label><input type="radio" name="rp-export-format" value="text" checked /> Text</label>
+          <label><input type="radio" name="rp-export-format" value="json" /> JSON</label>
+        </div>
+        <button id="rp-export-btn" class="pa-action">Export</button>
+        <div id="rp-export-result"></div>
       </div>
     </div>
   </div>
@@ -2783,9 +2901,12 @@
       var _phaseADataEls = ['disclosure-list', 'disclosure-period', 'data-export-status',
         'amend-status', 'amend-review-list', 'amend-record-id', 'amend-current', 'amend-proposed', 'amend-reason',
         'disagree-amendment-id', 'disagree-statement', 'disagree-status',
-        'breach-log-list', 'breach-report-output', 'rep-list', 'rep-register-status']; // PROJECT: Phase B data elements
-      // PROJECT: Hide Phase B panels
-      var _phaseBPanels = ['breach-dashboard-panel', 'representative-panel'];
+        'breach-log-list', 'breach-report-output', 'rep-list', 'rep-register-status',
+        'lh-list', 'lh-place-status', 'ca-result', 'ca-export-result',
+        'ai-result', 'rp-result', 'rp-export-result']; // PROJECT: Phase B + C data elements
+      // PROJECT: Hide Phase B + Phase C panels
+      var _phaseBPanels = ['breach-dashboard-panel', 'representative-panel',
+        'legal-holds-panel', 'compliance-audit-panel', 'archive-integrity-panel', 'retention-policy-panel'];
       for (var _bp = 0; _bp < _phaseBPanels.length; _bp++) {
         var _bpe = document.getElementById(_phaseBPanels[_bp]);
         if (_bpe) _bpe.style.display = 'none';
@@ -5836,6 +5957,31 @@
       case 'phase-b-revoke-rep-result':
         _handleRepRevokeResult(data.result);
         break;
+      // ── Phase C response routing ──
+      case 'phase-c-place-hold-result':
+        _handlePlaceHoldResult(data.result);
+        break;
+      case 'phase-c-release-hold-result':
+        _handleReleaseHoldResult(data.result);
+        break;
+      case 'phase-c-legal-holds-result':
+        _renderLegalHolds(data.result);
+        break;
+      case 'phase-c-audit-result':
+        _renderAuditResult(data.result);
+        break;
+      case 'phase-c-audit-report-result':
+        _handleAuditExportResult(data.result);
+        break;
+      case 'phase-c-integrity-result':
+        _renderIntegrityResult(data.result);
+        break;
+      case 'phase-c-policy-result':
+        _renderPolicyResult(data.result);
+        break;
+      case 'phase-c-export-policy-result':
+        _handlePolicyExportResult(data.result);
+        break;
     }
   });
 
@@ -5857,6 +6003,36 @@
   }
   _registerPanel('breach-dashboard-panel', _closeBreachPanel);
   _registerPanel('representative-panel', _closeRepPanel);
+
+  // ══════════════════════════════════════════════════════
+  // PHASE C — State & Panel Registration
+  // ══════════════════════════════════════════════════════
+
+  var _legalHoldsPanelOpen = false;
+  var _complianceAuditPanelOpen = false;
+  var _archiveIntegrityPanelOpen = false;
+  var _retentionPolicyPanelOpen = false;
+
+  function _closeLegalHoldsPanel() {
+    document.getElementById('legal-holds-panel').style.display = 'none';
+    _legalHoldsPanelOpen = false;
+  }
+  function _closeComplianceAuditPanel() {
+    document.getElementById('compliance-audit-panel').style.display = 'none';
+    _complianceAuditPanelOpen = false;
+  }
+  function _closeArchiveIntegrityPanel() {
+    document.getElementById('archive-integrity-panel').style.display = 'none';
+    _archiveIntegrityPanelOpen = false;
+  }
+  function _closeRetentionPolicyPanel() {
+    document.getElementById('retention-policy-panel').style.display = 'none';
+    _retentionPolicyPanelOpen = false;
+  }
+  _registerPanel('legal-holds-panel', _closeLegalHoldsPanel);
+  _registerPanel('compliance-audit-panel', _closeComplianceAuditPanel);
+  _registerPanel('archive-integrity-panel', _closeArchiveIntegrityPanel);
+  _registerPanel('retention-policy-panel', _closeRetentionPolicyPanel);
 
   // ── Grouped Disclosure Toggle ──
   document.getElementById('disclosure-grouped-toggle').addEventListener('change', function() {
@@ -6142,6 +6318,278 @@
 
   function _handleRepRevokeResult(result) {
     if (result && result.success) _loadRepresentatives();
+  }
+
+  // ══════════════════════════════════════════════════════
+  // PHASE C — UI Handler Functions
+  // ══════════════════════════════════════════════════════
+
+  // ── Legal Holds Panel ──
+  document.getElementById('legal-holds-btn').addEventListener('click', function() {
+    _closeAllPanelsExcept('legal-holds-panel');
+    document.getElementById('legal-holds-panel').style.display = 'flex';
+    _legalHoldsPanelOpen = true;
+    _loadLegalHolds();
+  });
+  document.getElementById('lh-close-btn').addEventListener('click', _closeLegalHoldsPanel);
+  document.getElementById('lh-refresh-btn').addEventListener('click', _loadLegalHolds);
+
+  function _loadLegalHolds() {
+    document.getElementById('lh-list').innerHTML = '<div class="pa-status">Loading...</div>';
+    document.getElementById('lh-empty').style.display = 'none';
+    _sendPhaseA({ type: 'phase-c-get-legal-holds', token: _getToken(), filters: {} });
+  }
+
+  function _renderLegalHolds(result) {
+    var list = document.getElementById('lh-list');
+    var empty = document.getElementById('lh-empty');
+    if (!result || !result.success || !result.holds || result.holds.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < result.holds.length; i++) {
+      var h = result.holds[i];
+      var statusColor = h.status === 'Active' ? '#ffb74d' : '#66bb6a';
+      html += '<div class="pa-card">'
+        + '<div class="pa-card-header">' + _esc(h.holdId) + ' <span style="color:' + statusColor + ';font-size:10px;">(' + _esc(h.status) + ')</span></div>'
+        + '<div class="pa-card-meta">' + _esc(h.holdType) + ' &middot; Sheet: ' + _esc(h.sheetName) + ' &middot; Placed: ' + _esc(h.placedDate || '') + '</div>'
+        + '<div class="pa-card-field"><strong>Reason:</strong> ' + _esc(h.reason) + '</div>';
+      if (h.caseReference) html += '<div class="pa-card-field"><strong>Case Ref:</strong> ' + _esc(h.caseReference) + '</div>';
+      if (h.status === 'Active') {
+        html += '<div class="pa-card-actions">'
+          + '<input type="text" class="lh-release-reason" data-hold-id="' + _esc(h.holdId) + '" placeholder="Release reason..." style="flex:1;font-size:10px;padding:3px 6px;background:#1a1a2e;color:#ccc;border:1px solid #555;border-radius:3px;" />'
+          + '<button class="pa-deny lh-release-btn" data-hold-id="' + _esc(h.holdId) + '">Release</button>'
+          + '</div>';
+      }
+      html += '</div>';
+    }
+    list.innerHTML = html;
+    // Attach release button listeners
+    list.querySelectorAll('.lh-release-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-hold-id');
+        var reasonInput = list.querySelector('.lh-release-reason[data-hold-id="' + id + '"]');
+        var reason = reasonInput ? reasonInput.value.trim() : '';
+        if (!reason) { reasonInput.style.borderColor = '#ef5350'; return; }
+        _sendPhaseA({ type: 'phase-c-release-legal-hold', token: _getToken(), holdId: id, reason: reason });
+      });
+    });
+  }
+
+  // Place new legal hold
+  document.getElementById('lh-place-btn').addEventListener('click', function() {
+    var sheetName = document.getElementById('lh-sheet-name').value;
+    var holdType = document.getElementById('lh-hold-type').value;
+    var reason = document.getElementById('lh-reason').value.trim();
+    if (!sheetName || !holdType || !reason) {
+      document.getElementById('lh-place-status').textContent = 'Sheet, type, and reason are required.';
+      document.getElementById('lh-place-status').style.color = '#ef5350';
+      return;
+    }
+    _sendPhaseA({
+      type: 'phase-c-place-legal-hold',
+      token: _getToken(),
+      params: {
+        sheetName: sheetName,
+        holdType: holdType,
+        reason: reason,
+        caseReference: document.getElementById('lh-case-ref').value.trim(),
+        custodianEmail: document.getElementById('lh-custodian').value.trim()
+      }
+    });
+  });
+
+  function _handlePlaceHoldResult(result) {
+    var status = document.getElementById('lh-place-status');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || 'Failed to place hold.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Hold placed: ' + result.holdId;
+    status.style.color = '#66bb6a';
+    document.getElementById('lh-sheet-name').value = '';
+    document.getElementById('lh-hold-type').value = '';
+    document.getElementById('lh-reason').value = '';
+    document.getElementById('lh-case-ref').value = '';
+    document.getElementById('lh-custodian').value = '';
+    _loadLegalHolds();
+  }
+
+  function _handleReleaseHoldResult(result) {
+    if (result && result.success) _loadLegalHolds();
+    else {
+      var status = document.getElementById('lh-place-status');
+      status.textContent = (result && result.message) || 'Failed to release hold.';
+      status.style.color = '#ef5350';
+    }
+  }
+
+  // ── Compliance Audit Panel ──
+  document.getElementById('compliance-audit-btn').addEventListener('click', function() {
+    _closeAllPanelsExcept('compliance-audit-panel');
+    document.getElementById('compliance-audit-panel').style.display = 'flex';
+    _complianceAuditPanelOpen = true;
+  });
+  document.getElementById('ca-close-btn').addEventListener('click', _closeComplianceAuditPanel);
+
+  document.getElementById('ca-run-btn').addEventListener('click', function() {
+    document.getElementById('ca-result').innerHTML = '<div class="pa-status">Running audit... this may take a moment.</div>';
+    document.getElementById('ca-empty').style.display = 'none';
+    _sendPhaseA({ type: 'phase-c-audit-retention', token: _getToken() });
+  });
+
+  function _renderAuditResult(result) {
+    var container = document.getElementById('ca-result');
+    var empty = document.getElementById('ca-empty');
+    if (!result || !result.success) {
+      container.innerHTML = '<div style="color:#ef5350;font-size:11px;padding:8px;">' + _esc((result && result.message) || 'Audit failed.') + '</div>';
+      return;
+    }
+    empty.style.display = 'none';
+    var s = result.summary || result;
+    var statusColor = s.overallStatus === 'COMPLIANT' ? '#66bb6a' : s.overallStatus === 'AT_RISK' ? '#ffb74d' : '#ef5350';
+    var html = '<div style="padding:8px;">'
+      + '<div style="font-size:13px;font-weight:bold;color:' + statusColor + ';">' + _esc(s.overallStatus || 'Unknown') + '</div>'
+      + '<div style="color:#aaa;font-size:10px;margin:4px 0;">Audit Date: ' + _esc(s.auditDate || '') + '</div>';
+    if (s.sheetResults) {
+      html += '<div style="margin-top:8px;">';
+      for (var i = 0; i < s.sheetResults.length; i++) {
+        var sr = s.sheetResults[i];
+        var srColor = sr.status === 'COMPLIANT' ? '#66bb6a' : sr.status === 'AT_RISK' ? '#ffb74d' : '#ef5350';
+        html += '<div class="pa-card">'
+          + '<div class="pa-card-header">' + _esc(sr.sheetName) + ' <span style="color:' + srColor + ';">(' + _esc(sr.status) + ')</span></div>'
+          + '<div class="pa-card-meta">Records: ' + (sr.totalRecords || 0) + ' &middot; Expired: ' + (sr.expiredRecords || 0) + ' &middot; Held: ' + (sr.heldRecords || 0) + '</div>';
+        if (sr.findings && sr.findings.length > 0) {
+          html += '<div style="margin-top:4px;">';
+          for (var j = 0; j < sr.findings.length; j++) {
+            html += '<div style="color:#ffb74d;font-size:10px;">&#x26A0; ' + _esc(sr.findings[j]) + '</div>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  document.getElementById('ca-export-btn').addEventListener('click', function() {
+    var fmt = document.querySelector('input[name="ca-export-format"]:checked').value;
+    document.getElementById('ca-export-result').innerHTML = '<div class="pa-status">Exporting...</div>';
+    _sendPhaseA({ type: 'phase-c-get-audit-report', token: _getToken(), format: fmt });
+  });
+
+  function _handleAuditExportResult(result) {
+    var container = document.getElementById('ca-export-result');
+    if (!result || !result.success) {
+      container.innerHTML = '<div style="color:#ef5350;font-size:11px;">' + _esc((result && result.message) || 'Export failed.') + '</div>';
+      return;
+    }
+    var content = typeof result.report === 'string' ? result.report : JSON.stringify(result.report, null, 2);
+    container.innerHTML = '<textarea readonly rows="8" style="width:100%;background:#0d0d1a;color:#ccc;border:1px solid #333;border-radius:4px;font:10px/1.4 monospace;padding:6px;resize:vertical;">' + _esc(content) + '</textarea>';
+  }
+
+  // ── Archive Integrity Panel ──
+  document.getElementById('archive-integrity-btn').addEventListener('click', function() {
+    _closeAllPanelsExcept('archive-integrity-panel');
+    document.getElementById('archive-integrity-panel').style.display = 'flex';
+    _archiveIntegrityPanelOpen = true;
+  });
+  document.getElementById('ai-close-btn').addEventListener('click', _closeArchiveIntegrityPanel);
+
+  document.getElementById('ai-verify-btn').addEventListener('click', function() {
+    document.getElementById('ai-result').innerHTML = '<div class="pa-status">Verifying archive integrity... this may take a moment.</div>';
+    document.getElementById('ai-empty').style.display = 'none';
+    _sendPhaseA({ type: 'phase-c-verify-integrity', token: _getToken() });
+  });
+
+  function _renderIntegrityResult(result) {
+    var container = document.getElementById('ai-result');
+    var empty = document.getElementById('ai-empty');
+    if (!result || !result.success) {
+      container.innerHTML = '<div style="color:#ef5350;font-size:11px;padding:8px;">' + _esc((result && result.message) || 'Verification failed.') + '</div>';
+      return;
+    }
+    empty.style.display = 'none';
+    var overallColor = result.overallIntegrity === 'VERIFIED' ? '#66bb6a' : '#ef5350';
+    var html = '<div style="padding:8px;">'
+      + '<div style="font-size:13px;font-weight:bold;color:' + overallColor + ';">' + _esc(result.overallIntegrity || 'Unknown') + '</div>'
+      + '<div style="color:#aaa;font-size:10px;margin:4px 0;">Verified: ' + _esc(result.verifiedAt || '') + ' &middot; Records Checked: ' + (result.totalRecordsChecked || 0) + '</div>';
+    if (result.results && result.results.length > 0) {
+      html += '<div style="margin-top:8px;">';
+      for (var i = 0; i < result.results.length; i++) {
+        var r = result.results[i];
+        var rColor = r.integrityStatus === 'VERIFIED' ? '#66bb6a' : r.integrityStatus === 'MISMATCH' ? '#ef5350' : '#ffb74d';
+        html += '<div class="pa-card">'
+          + '<div class="pa-card-header">' + _esc(r.sheetName) + ' <span style="color:' + rColor + ';">(' + _esc(r.integrityStatus) + ')</span></div>'
+          + '<div class="pa-card-meta">Entries: ' + (r.entriesChecked || 0) + (r.mismatches ? ' &middot; Mismatches: ' + r.mismatches : '') + '</div>';
+        if (r.details) html += '<div style="color:#888;font-size:10px;margin-top:2px;">' + _esc(r.details) + '</div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  // ── Retention Policy Panel ──
+  document.getElementById('retention-policy-btn').addEventListener('click', function() {
+    _closeAllPanelsExcept('retention-policy-panel');
+    document.getElementById('retention-policy-panel').style.display = 'flex';
+    _retentionPolicyPanelOpen = true;
+  });
+  document.getElementById('rp-close-btn').addEventListener('click', _closeRetentionPolicyPanel);
+
+  document.getElementById('rp-generate-btn').addEventListener('click', function() {
+    document.getElementById('rp-result').innerHTML = '<div class="pa-status">Generating policy document...</div>';
+    document.getElementById('rp-empty').style.display = 'none';
+    _sendPhaseA({ type: 'phase-c-get-retention-policy', token: _getToken() });
+  });
+
+  function _renderPolicyResult(result) {
+    var container = document.getElementById('rp-result');
+    var empty = document.getElementById('rp-empty');
+    if (!result || !result.success) {
+      container.innerHTML = '<div style="color:#ef5350;font-size:11px;padding:8px;">' + _esc((result && result.message) || 'Failed to generate policy.') + '</div>';
+      return;
+    }
+    empty.style.display = 'none';
+    var doc = result.document || result;
+    var html = '<div style="padding:8px;">'
+      + '<div style="font-size:13px;font-weight:bold;color:#90caf9;">' + _esc(doc.title || 'Retention Policy') + '</div>'
+      + '<div style="color:#aaa;font-size:10px;margin:4px 0;">Version: ' + _esc(doc.version || '') + ' &middot; Generated: ' + _esc(doc.generatedAt || '') + '</div>';
+    if (doc.sections) {
+      for (var i = 0; i < doc.sections.length; i++) {
+        var sec = doc.sections[i];
+        html += '<div style="margin-top:10px;">'
+          + '<div style="color:#90caf9;font-size:11px;font-weight:bold;border-bottom:1px solid #333;padding-bottom:2px;">' + _esc(sec.title) + '</div>'
+          + '<div style="color:#ccc;font-size:11px;margin-top:4px;white-space:pre-wrap;">' + _esc(sec.content) + '</div>'
+          + '</div>';
+      }
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  document.getElementById('rp-export-btn').addEventListener('click', function() {
+    var fmt = document.querySelector('input[name="rp-export-format"]:checked').value;
+    document.getElementById('rp-export-result').innerHTML = '<div class="pa-status">Exporting...</div>';
+    _sendPhaseA({ type: 'phase-c-export-retention-policy', token: _getToken(), format: fmt });
+  });
+
+  function _handlePolicyExportResult(result) {
+    var container = document.getElementById('rp-export-result');
+    if (!result || !result.success) {
+      container.innerHTML = '<div style="color:#ef5350;font-size:11px;">' + _esc((result && result.message) || 'Export failed.') + '</div>';
+      return;
+    }
+    var content = typeof result.content === 'string' ? result.content : JSON.stringify(result.content, null, 2);
+    container.innerHTML = '<textarea readonly rows="8" style="width:100%;background:#0d0d1a;color:#ccc;border:1px solid #333;border-radius:4px;font:10px/1.4 monospace;padding:6px;resize:vertical;">' + _esc(content) + '</textarea>';
   }
 
   // ── Amendment Notification Handlers ──

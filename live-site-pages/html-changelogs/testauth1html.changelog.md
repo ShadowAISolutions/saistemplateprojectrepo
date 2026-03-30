@@ -3,7 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
+
+## [v03.80w] — 2026-03-30 11:13:25 AM EST — v08.13r
+
+### Added
+- Legal hold management panel for administrators — place, view, and release litigation holds on protected health data
+- Retention compliance audit panel — run comprehensive audits and export reports in JSON or text format
+- Archive integrity verification panel — verify SHA-256 checksums of archived records
+- Retention policy documentation panel — generate and export formal retention policy documents
 
 ## [v03.79w] — 2026-03-30 09:36:36 AM EST — v08.10r
 

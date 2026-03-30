@@ -3,7 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
+
+## [v08.13r] — 2026-03-30 11:13:25 AM EST
+
+> **Prompt:** "as long as its not part of the Phase D — Production Hardening of repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md, then i do want you to implement it, so Phase C should be completely implemented."
+
+### Added
+- Implemented all Phase C HIPAA GAS functions in `testauth1.gs` — 14+ new functions covering legal hold management (`placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()`), retention compliance audit (`auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()`), archive integrity verification (`computeArchiveChecksum()`, `verifyArchiveIntegrity()`), retention policy documentation (`getRetentionPolicyDocument()`, `exportRetentionPolicy()`), and shared utilities (`computeRowsChecksum()`, `wrapRetentionOperation()`, `getHoldNotificationEmail()`, `getRetentionRelevantDate()`)
+- Added `LEGAL_HOLD_CONFIG` and `INTEGRITY_CONFIG` objects to `testauth1.gs` for Phase C feature configuration
+- Modified `enforceRetention()` to integrate legal hold checking, "last in effect" date calculation, and archive integrity checksums
+- Added 9 Phase C doGet message routes in `testauth1.gs` for HTML↔GAS communication
+- Added Phase C admin UI to `testauth1.html` — 4 new admin dropdown buttons (Legal Holds, Compliance Audit, Archive Integrity, Retention Policy) and 4 new admin panels with full CRUD functionality
+- Added Phase C message routing (8 response types) and handler functions in `testauth1.html`
+- Updated `showAuthWall()` in `testauth1.html` to clean up Phase C panels and clear PHI data on sign-out
+
+### Changed
+- Fixed `HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md` — corrected `auditRetentionCompliance()` scope attribution from Phase B to Phase C, updated key code location line numbers to reflect post-implementation positions, added v1.1 version mapping entry
+
+#### `testauth1.gs` — v02.29g
+
+##### Added
+- All Phase C HIPAA retention functions: legal hold management, compliance audit, archive integrity, and policy documentation
+- Integration of legal hold checking and archive checksums into the daily retention enforcement flow
+
+#### `testauth1.html` — v03.80w
+
+##### Added
+- Phase C admin panels: Legal Holds, Compliance Audit, Archive Integrity, Retention Policy
+- Phase C admin dropdown buttons with admin-only permission gating
 
 ## [v08.12r] — 2026-03-30 10:26:30 AM EST
 

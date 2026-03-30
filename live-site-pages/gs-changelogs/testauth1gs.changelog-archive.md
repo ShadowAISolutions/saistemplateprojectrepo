@@ -8,6 +8,70 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.90g] — 2026-03-21 05:14:49 PM EST — v05.73r — [84cc996c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/84cc996c)
+
+### Fixed
+- Page refresh and "Use Here" now reconnect immediately
+
+## [v01.89g] — 2026-03-21 05:08:29 PM EST — v05.72r — [a91ac08f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a91ac08f)
+
+### Fixed
+- Page refresh and "Use Here" no longer get stuck on "Reconnecting" screen
+
+## [v01.88g] — 2026-03-21 04:51:56 PM EST — v05.70r — [f7106b5d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f7106b5d)
+
+### Security
+- Replaced direct-access protection with a more reliable method that works correctly with the application's architecture
+
+## [v01.87g] — 2026-03-21 03:31:22 PM EST — v05.69r — [a529846b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a529846b)
+
+### Fixed
+- Minor internal improvements to authentication flow reliability
+
+## [v01.86g] — 2026-03-21 03:22:38 PM EST — v05.68r — [19079c4e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/19079c4e)
+
+### Fixed
+- App now confirms authentication immediately instead of waiting for a background server call
+
+## [v01.85g] — 2026-03-21 03:06:45 PM EST — v05.66r — [2e44cbe9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2e44cbe9)
+
+### Changed
+- Token exchange now provides a ready-to-use access token, eliminating an extra server round-trip during sign-in
+
+## [v01.84g] — 2026-03-21 02:51:28 PM EST — v05.65r — [1da646b6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1da646b6)
+
+### Changed
+- Direct access to the script URL with a session token is now blocked — only one-time-use tokens are accepted
+- Session token lifetime for URL loading increased from 30 to 60 seconds
+
+### Added
+- Secure token generation endpoint for the embedding page to request one-time-use access tokens
+
+## [v01.83g] — 2026-03-21 01:01:38 PM EST — v05.64r — [c4cfe8f8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c4cfe8f8)
+
+### Fixed
+- Minor internal improvements
+
+## [v01.82g] — 2026-03-21 12:45:23 PM EST — v05.63r — [9140b31d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9140b31d)
+
+### Fixed
+- Session handshake now completes properly — nonce delivery uses the correct channel
+
+## [v01.81g] — 2026-03-21 12:31:09 PM EST — v05.62r — [6799cb81](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6799cb81)
+
+### Added
+- Secure page nonce handshake — session credentials are verified via a private channel instead of being visible in the page address
+
+## [v01.80g] — 2026-03-21 11:31:04 AM EST — v05.60r — [97679944](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/97679944)
+
+### Fixed
+- Iframe guard now correctly blocks direct navigation to session URLs
+
+## [v01.79g] — 2026-03-21 11:09:01 AM EST — v05.59r — [82376d22](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/82376d22)
+
+### Fixed
+- Direct navigation to session URLs no longer renders the app — shows "Access denied" message instead
+
 ## [v01.78g] — 2026-03-20 11:02:26 PM EST — v05.56r — [merged]
 
 ### Added

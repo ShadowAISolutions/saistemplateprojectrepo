@@ -7,8 +7,8 @@
 | **Document** | Phase C Implementation Guide |
 | **Environment** | testauth1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-30 |
-| **GAS Version** | v02.28g (retention core implemented in Phase B) |
-| **HTML Version** | v03.79w |
+| **GAS Version** | v02.29g (Phase C functions implemented) |
+| **HTML Version** | v03.80w (Phase C admin UI implemented) |
 | **Items Covered** | #18 6-Year Retention Enforcement · #18b Legal Hold Override · Retention Compliance Audit · Archive Integrity Verification · Retention Policy Documentation |
 | **Priority** | 🟡 P2 — Required specification under current law, with Phase B core implementation extended |
 | **Authority** | **Required** — §164.316(b)(2)(i) is a Required implementation specification; no risk-analysis alternative exists |
@@ -27,7 +27,7 @@
 
 This guide is for the developer completing HIPAA retention enforcement in testauth1 after Phase B. It assumes:
 - All Phase A and Phase B functions are deployed and operational
-- Familiarity with the retention infrastructure implemented in Phase B: `enforceRetention()`, `setupRetentionTrigger()`, `auditRetentionCompliance()`, `HIPAA_RETENTION_CONFIG`, `getRetentionCutoffDate()`
+- Familiarity with the retention infrastructure implemented in Phase B: `enforceRetention()`, `setupRetentionTrigger()`, `HIPAA_RETENTION_CONFIG`, `getRetentionCutoffDate()` (Note: `auditRetentionCompliance()` was specified as a forward-looking item in Phase B and implemented in Phase C)
 - Understanding of the 5-step data flow pattern, `wrapHipaaOperation()` error wrapper, `getOrCreateSheet()` auto-creation
 - Understanding of the RBAC system (roles: admin, clinician, billing, viewer; permissions: read, write, delete, export, amend, admin)
 - Access to the GAS project, Project Data Spreadsheet, and Master ACL Spreadsheet
@@ -497,9 +497,9 @@ The core retention enforcement was implemented in Phase B (v02.28g). This sectio
 |-----------|----------|----------|--------|
 | Configuration | `HIPAA_RETENTION_CONFIG` | `testauth1.gs:306-317` | ✅ Deployed |
 | Retention cutoff calculator | `getRetentionCutoffDate()` | `testauth1.gs` (Phase B shared utilities) | ✅ Deployed |
-| Daily enforcement trigger | `enforceRetention()` | `testauth1.gs:4460-4600` | ✅ Deployed |
+| Daily enforcement trigger | `enforceRetention()` | `testauth1.gs:4532-4670` | ✅ Deployed |
 | Trigger installer | `setupRetentionTrigger()` | `testauth1.gs` (Phase B) | ✅ Deployed |
-| Retention compliance audit | `auditRetentionCompliance()` | `testauth1.gs` (Phase B) | ✅ Deployed |
+| Retention compliance audit | `auditRetentionCompliance()` | `testauth1.gs` (Phase C) | ✅ Deployed in Phase C |
 
 #### Acceptance Criteria (Phase B — Verified)
 
@@ -2593,19 +2593,19 @@ Recommended monitoring cadence for Phase C-relevant regulations:
 
 | Function | Approximate Line | Purpose | Used By (Phase C) |
 |----------|:----------------:|---------|-------------------|
-| `enforceRetention()` | ~4460 | Daily retention enforcement (modified by Phase C for legal hold integration) | Legal hold check added; integrity logging added |
-| `setupRetentionTrigger()` | ~4600 | Create installable daily trigger | Unchanged — Phase C reuses the existing trigger |
+| `enforceRetention()` | ~4532 | Daily retention enforcement (modified by Phase C for legal hold integration) | Legal hold check added; integrity logging added |
+| `setupRetentionTrigger()` | ~4670 | Create installable daily trigger | Unchanged — Phase C reuses the existing trigger |
 | `HIPAA_RETENTION_CONFIG` | ~306 | Retention configuration object | Extended with legal hold and integrity settings |
-| `getOrCreateSheet()` | ~1697 | Sheet auto-creation with protection | Creates `LegalHolds` and `RetentionIntegrityLog` |
-| `wrapHipaaOperation()` | ~1721 | Error wrapper with session validation | All Phase C functions use this wrapper |
+| `getOrCreateSheet()` | ~1813 | Sheet auto-creation with protection | Creates `LegalHolds` and `RetentionIntegrityLog` |
+| `wrapHipaaOperation()` | ~1838 | Error wrapper with session validation | All Phase C functions use this wrapper |
 | `checkPermission()` | ~193 | RBAC permission check | All Phase C admin-only functions |
-| `auditLog()` | ~902 | Session-level audit logging | All Phase C functions |
-| `dataAuditLog()` | ~937 | HIPAA data-level audit logging | All Phase C functions |
-| `generateRequestId()` | ~1643 | Unique ID generation | `HOLD-`, `INTEG-` prefixes for Phase C records |
-| `formatHipaaTimestamp()` | ~1654 | ISO 8601 timestamp generation | All Phase C functions |
-| `sendHipaaEmail()` | ~5420 | Centralized email with rate limiting | Optional legal hold notifications |
-| `escapeHtml()` | ~860 | XSS prevention utility | All functions returning user-facing content |
-| `getRetentionCutoffDate()` | ~(Phase B shared) | Calculate 6-year retention boundary | Used by `getRetentionRelevantDate()` as baseline |
+| `auditLog()` | ~1220 | Session-level audit logging | All Phase C functions |
+| `dataAuditLog()` | ~1255 | HIPAA data-level audit logging | All Phase C functions |
+| `generateRequestId()` | ~1730 | Unique ID generation | `HOLD-`, `INTEG-` prefixes for Phase C records |
+| `formatHipaaTimestamp()` | ~1741 | ISO 8601 timestamp generation | All Phase C functions |
+| `sendHipaaEmail()` | ~5520 | Centralized email with rate limiting | Optional legal hold notifications |
+| `escapeHtml()` | ~1193 | XSS prevention utility | All functions returning user-facing content |
+| `getRetentionCutoffDate()` | ~5582 | Calculate 6-year retention boundary | Used by `getRetentionRelevantDate()` as baseline |
 
 ### Key Code Locations — Phase C New Functions
 
@@ -2647,12 +2647,14 @@ Implement Phase C in this order (each item builds on the previous):
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
 | 2026-03-30 | 1.0 | Claude Code | Initial Phase C implementation guide — comprehensive 18-section guide covering 5 items: #18 Core Retention Enhancement (last-in-effect date), #18b Legal Hold Override (litigation preservation), Retention Compliance Audit System, Archive Integrity Verification (SHA-256 checksums), and Retention Policy Documentation Generator. Includes full GAS function specifications, regulatory landscape with 6 OCR enforcement cases, spreadsheet schemas for 2 new sheets (LegalHolds, RetentionIntegrityLog), 40+ test scenarios, troubleshooting guide, forward-looking regulatory preparation, and cross-references with implementation order |
+| 2026-03-30 | 1.1 | Claude Code | Phase C fully implemented — all 14+ GAS functions deployed in testauth1.gs (v02.29g), HTML admin UI with 4 panels deployed in testauth1.html (v03.80w). Fixed `auditRetentionCompliance()` scope attribution (Phase C, not Phase B). Updated key code location line numbers to reflect post-implementation file positions |
 
 ### Version Mapping
 
 | Guide Version | GAS Version | HTML Version | Notes |
 |:-------------:|:-----------:|:------------:|-------|
-| 1.0 | v02.28g (Phase B) | v03.79w (Phase B) | Pre-implementation guide — GAS/HTML versions will increment when Phase C code is deployed |
+| 1.0 | v02.28g (Phase B) | v03.79w (Phase B) | Initial guide — pre-implementation |
+| 1.1 | v02.29g (Phase C) | v03.80w (Phase C) | Phase C fully implemented — all GAS functions + HTML admin UI deployed |
 
 ### Document Scope Relationship
 
