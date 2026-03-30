@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v08.03r] — 2026-03-29 10:22:14 PM EST
+
+> **Prompt:** "make the website be the first one on the public applications list."
+
+### Changed
+- Reordered PORTAL_APPS array in `programportal.gs` to place Website before Test Environment and GAS Project Creator in the public applications section
+
+#### `programportal.gs` — v01.33g
+
+##### Changed
+- Moved Website entry from position 4 to position 3 in PORTAL_APPS array (first public app)
 
 ## [v08.02r] — 2026-03-29 10:06:41 PM EST
 
