@@ -77,6 +77,396 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v07.29r] — 2026-03-27 11:48:48 PM EST — [355550e1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/355550e1a3fea179b4fe447dabc7dc3fede8166f)
+
+> **Prompt:** "the sending... splash is going away after the data poll 15 seconds, but it should be going away as soon as it has written it to the spreadsheet, i know it was already doing its own refresh upon sending the data"
+
+### Fixed
+- "Sending..." overlay on optimistic add-row now clears immediately when GAS confirms the write, instead of waiting for the next 15-second data poll. Root cause: `_handleLiveData` skipped re-render when the server data matched the optimistic data (no JSON diff), leaving the overlay stuck
+
+#### `testauth1.html` — v03.42w
+
+##### Fixed
+- "Sending..." overlay clears instantly when the new row is confirmed by the server
+
+## [v07.28r] — 2026-03-27 11:44:05 PM EST — [b48a9b6e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b48a9b6e696eee0b08e051bc9515f12729cf4d1c)
+
+> **Prompt:** "in the optimistic rendered pattern, can you make it have a splash similar to how it is when we are deleting, but for adding the row. also for the optimistic row, make it not have the delete button until the legit row is there"
+
+### Changed
+- Optimistic add-row now shows a "Sending..." overlay on the new row (dimmed to 35% opacity with blue text, mirroring the "Deleting..." red overlay pattern)
+- Optimistic add-row no longer shows the delete button — it only appears after the server confirms the row
+
+#### `testauth1.html` — v03.41w
+
+##### Changed
+- New rows appear dimmed with a "Sending..." overlay until the server confirms them
+- Delete button hidden on unconfirmed rows
+
+## [v07.27r] — 2026-03-27 11:32:41 PM EST — [9e39e36a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9e39e36a8814106736e8a7ec1ab8008d71def501)
+
+> **Prompt:** "not sure how to reproduce it, but the version before this one, the data poll somehow got stuck. see if you can figure out why"
+
+### Fixed
+- Data poll now has a 15-second safety timeout that auto-clears the in-flight flag if a fetch hangs — prevents permanent poll stall (same pattern as the heartbeat safety timer)
+- Wrapped `_handleLiveData` in try-catch within the data poll's Promise `.then()` — if the table render throws, the error is logged but the poll keeps running instead of silently dying
+
+#### `testauth1.html` — v03.40w
+
+##### Fixed
+- Data updates no longer get stuck if a network request hangs or table rendering encounters an error
+
+## [v07.26r] — 2026-03-27 11:21:05 PM EST — [c1e24bd5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c1e24bd5dea960a4989cfafb9969812578961b7b)
+
+> **Prompt:** "as you can see in the screenshot, in the instance where i send information, it says sending.. but while its sending if i put information into the fields, its not recognizing that there is already data in the fields"
+
+### Fixed
+- Add Row button now correctly detects text in input fields while "Sending..." is active — typing new values during a send makes the button immediately ready when the send completes, instead of staying disabled
+
+#### `testauth1.html` — v03.39w
+
+##### Fixed
+- Add Row button recognizes new input typed while a previous row is still sending
+
+## [v07.25r] — 2026-03-27 11:13:56 PM EST — [7b0c2463](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7b0c2463a5140a4d8623f8e9d012b3ef8cd1b759)
+
+> **Prompt:** "delete is working. make it have a splash that says deleting, similar but different from the sending.. after adding row"
+
+### Changed
+- Delete row now shows a "Deleting..." overlay on the row being deleted — row dims to 35% opacity with red "Deleting..." text centered over it, interactions disabled. Row is removed when the server confirms, or restored to normal on error
+
+#### `testauth1.html` — v03.38w
+
+##### Changed
+- Delete row shows "Deleting..." overlay on the row while waiting for server confirmation
+
+## [v07.24r] — 2026-03-27 09:52:43 PM EST — [e0039442](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e00394425d0002f6938225dd5542c9637f46e038)
+
+> **Prompt:** "great. make it so i can delete rows"
+
+### Added
+- Delete row functionality — GAS `deleteRow()` function removes a row by index from the spreadsheet, with session validation and write permission check
+- Delete button (🗑️) column in the live data table for users with write permission
+- Optimistic rendering for row deletion — row disappears instantly, restored on error
+
+#### `testauth1.html` — v03.37w
+
+##### Added
+- Delete button column in table with optimistic row removal
+
+#### `testauth1.gs` — v02.13g
+
+##### Added
+- `deleteRow()` function for removing rows by index
+- `delete-row` message handler in GAS sandbox iframe
+
+## [v07.23r] — 2026-03-27 09:46:47 PM EST — [5b172023](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5b172023ec80c2cd23659356475d18c991f3ee9d)
+
+> **Prompt:** "make it so that if there is no text in field, add row button is disabled. also, is it possible to have it show the expected result in the table while waiting just for the current user so it gives the illusion that it was instantaneous"
+
+### Changed
+- Add-row button is now disabled when all input fields are empty — enables as soon as any field has text
+- Add-row now uses optimistic rendering — the new row appears in the table instantly on click, before the GAS server response arrives. If the server returns an error, the optimistic row is removed
+
+#### `testauth1.html` — v03.36w
+
+##### Changed
+- Add Row button disabled when inputs are empty
+- New rows appear in the table instantly via optimistic rendering
+
+## [v07.22r] — 2026-03-27 09:40:42 PM EST — [b9faf1c6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b9faf1c63aa99de229f718633e6dcff538ebcd3b)
+
+> **Prompt:** "in testauth1, when using the add row button, i see that theres a delay from when i click the add row button to when it shows up as visible on the table. this has nothing to do with the 15 second data poll, i think its auto updating after i add the row. first of all is this true, and if so can you have a "sending" splash message while the user waits for the result"
+
+### Changed
+- Add-row button now shows "Sending..." state (disabled + dimmed) while waiting for GAS server response, restoring to "Add Row" on success or error
+
+#### `testauth1.html` — v03.35w
+
+##### Changed
+- Add-row button shows "Sending..." feedback during server round-trip
+
+## [v07.21r] — 2026-03-27 09:14:05 PM EST — [e814c353](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e814c353da4909ab558acb5440cba29b57e16d29)
+
+> **Prompt:** "no now its even worse, and stuck on exchanging credentials. revert the changes you just did, then suggest what we can do"
+
+### Removed
+- Reverted v07.19r and v07.20r changes — fetch-based token exchange broke sign-in (GAS `doPost` redirect handling differs from `doGet`), and iframe replacement broke DOM clearing (sandbox attributes not preserved). Restored original iframe-based token exchange, sign-out, security event reporter, and `about:blank` DOM clearing
+
+#### `testauth1.html` — v03.34w
+
+##### Fixed
+- Restored working sign-in flow
+
+#### `testauth1.gs` — v02.12g
+
+##### Removed
+- Removed `doPost` handlers for `exchangeToken`, `signout`, and `securityEvent` (reverted to iframe-based approach)
+
+## [v07.20r] — 2026-03-27 09:09:21 PM EST — [dafe0d9c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dafe0d9cad460025d6f003c4a358f8dae7923e24)
+
+> **Prompt:** "not sure if this is specifically when this happens, but on a fresh sign in, then sign out, then sign in again, its showing these errors"
+
+### Fixed
+- Replaced `gasFrame.src = 'about:blank'` DOM clearing with iframe replacement — removes the old iframe entirely and inserts a fresh blank one instead of navigating, which avoids triggering Chrome's "message channel closed" errors from Google's internal GAS listeners when the iframe content is destroyed during sign-out
+- Applied same fix to Phase A iframe clearing in `showAuthWall()`
+
+#### `testauth1.html` — v03.33w
+
+##### Fixed
+- Eliminated remaining console errors during sign-out and re-sign-in by replacing iframe navigation with iframe replacement for DOM clearing
+
+## [v07.19r] — 2026-03-27 08:57:54 PM EST — [c1a81adb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c1a81adb4e99b000f7eae27132dbf9f1870d5c8c)
+
+> **Prompt:** "after signing into testauth1, getting this again in the console."
+
+### Fixed
+- Converted token exchange from iframe navigation to `fetch()` via `doPost(action=exchangeToken)` — eliminates "A listener indicated an asynchronous response" errors during sign-in by avoiding iframe destruction of Google's internal message channels
+- Converted security event reporter from hidden iframe to `fetch()` via `doPost(action=securityEvent)` — eliminates console errors from iframe creation/destruction cycle
+- Converted sign-out from iframe navigation to `fetch()` via `doPost(action=signout)` — eliminates console errors during sign-out flow
+- Made `_finalizeSignOut()` idempotent (safe to call from both fetch callback and fallback timeout)
+
+#### `testauth1.html` — v03.32w
+
+##### Fixed
+- Eliminated "message channel closed" console errors during sign-in and sign-out
+
+#### `testauth1.gs` — v02.11g
+
+##### Added
+- Added `doPost` handlers for `exchangeToken`, `signout`, and `securityEvent` actions — enables fetch-based communication that avoids iframe churn
+
+## [v07.18r] — 2026-03-27 08:32:28 PM EST — [901a4e36](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/901a4e36a69755d446f2de43ab055b893c16e554)
+
+> **Prompt:** "the plan i approved, ask me to approve it again"
+
+### Added
+- Added `_fetchPausedForGIS` guard to pause data poll and heartbeat fetch while GIS sign-in popup is open — prevents COOP conflict during re-authentication with active session
+
+#### `testauth1.html` — v03.31w
+
+##### Added
+- Data polling and session checks now pause while the sign-in popup is open
+
+## [v07.17r] — 2026-03-27 07:51:34 PM EST — [c8862da3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8862da3f73a30619062e480df23573dc5397031)
+
+> **Prompt:** "i waited a while, and then these showed up" (screenshot of heartbeat iframe causing "A listener indicated an asynchronous response" errors)
+
+### Fixed
+- Converted heartbeat from iframe navigation to `fetch()` via `doPost(action=heartbeat)` — same pattern as data poll fix, eliminates the last source of iframe churn console errors
+
+#### `testauth1.html` — v03.30w
+
+##### Fixed
+- Eliminated remaining console errors from heartbeat iframe navigation
+
+#### `testauth1.gs` — v02.10g
+
+##### Changed
+- Minor internal improvements
+
+## [v07.16r] — 2026-03-27 07:42:13 PM EST — [cf532b11](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cf532b11cf8a2520ec5f1d07dbb7d7a0323d07f0)
+
+> **Prompt:** "ok at least now we have 1 less error at a time, but still getting it." (screenshot of CSP blocking script.googleusercontent.com)
+
+### Fixed
+- Added `https://script.googleusercontent.com` to CSP `connect-src` on testauth1 — GAS redirects fetch from `script.google.com` to `script.googleusercontent.com` for the response payload
+
+#### `testauth1.html` — v03.29w
+
+##### Fixed
+- Fixed data polling blocked after redirect to response server
+
+## [v07.15r] — 2026-03-27 07:39:38 PM EST — [dd0ab398](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dd0ab398e5a27c3268dd71c5aca416675791fc97)
+
+> **Prompt:** "now after signing in, getting this" (screenshot of CSP connect-src blocking fetch to script.google.com)
+
+### Fixed
+- Added `https://script.google.com` to CSP `connect-src` on testauth1 — required by the new fetch-based data poll which calls the GAS doPost endpoint directly
+
+#### `testauth1.html` — v03.28w
+
+##### Fixed
+- Fixed data polling blocked by content security policy after sign-in
+
+## [v07.14r] — 2026-03-27 07:35:03 PM EST — [4f6e9ad4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4f6e9ad4ae369e68b8cff4591f833ce82c2a8745)
+
+> **Prompt:** "great. now address this" (screenshot of "A listener indicated an asynchronous response" console errors from data poll iframe navigations)
+
+### Fixed
+- Replaced iframe-based data poll with `fetch()` via `doPost` — eliminates the repeated iframe navigation that caused "A listener indicated an asynchronous response by returning true" errors in the console every 15 seconds
+
+#### `testauth1.html` — v03.27w
+
+##### Fixed
+- Eliminated console errors caused by data poll iframe navigation destroying extension content scripts
+
+#### `testauth1.gs` — v02.09g
+
+##### Changed
+- Minor internal improvements
+
+## [v07.13r] — 2026-03-27 07:18:05 PM EST — [eac3b541](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eac3b541208808041f0baec4a3961a5941725a15)
+
+> **Prompt:** "ok its finally writing. now lets fix the loading font error, its happening when opening the html fresh"
+
+### Fixed
+- Added Google Sign-In font domains (`fonts.gstatic.com`, `www.slant.co`) to CSP `font-src` on all auth pages — the GSI client library loads Mulish and Plus Jakarta Display fonts which were blocked by the `'self' data:` only policy
+
+#### `testauth1.html` — v03.26w
+
+##### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+#### `globalacl.html` — v01.39w
+
+##### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+#### `programportal.html` — v01.46w
+
+##### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+## [v07.12r] — 2026-03-27 07:12:09 PM EST — [ac6e9263](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac6e926344ea2def73b034d981cfd623e42f29f9)
+
+> **Prompt:** "in the testauth1, we are still getting these errors when using the input fields and nothing is being written into the spreadsheet"
+
+### Fixed
+- Fixed write-cell and add-row messages not reaching the GAS sandbox frame — `gasApp.contentWindow.postMessage()` sends to the outer script.google.com shell, not the inner googleusercontent.com sandbox where the listener runs. Now captures `event.source` from `gas-auth-ok` (which comes from the sandbox) and uses that stored `_gasSandboxSource` reference for all data write operations
+- Added `_gasSandboxSource` reset on `clearSession()` and iframe reload to prevent stale references
+
+#### `testauth1.html` — v03.25w
+
+##### Fixed
+- Fixed spreadsheet writes not working — input field submissions and cell edits now correctly reach the server
+
+## [v07.11r] — 2026-03-27 07:00:26 PM EST — [bcef27f2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bcef27f2d8cfc5665207f8898dde94b90212a91c)
+
+> **Prompt:** "wait i dont want any external dependencies at all."
+
+### Changed
+- Removed external font domains from CSP `font-src` on all auth pages — now `'self' data:` only, no external font CDN dependencies
+
+#### `testauth1.html` — v03.24w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.38w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.45w
+
+##### Changed
+- Minor internal improvements
+
+## [v07.10r] — 2026-03-27 06:53:06 PM EST — [1147ef40](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1147ef4020ac43e2cd87d0eed05b49341352ce61)
+
+> **Prompt:** "when the page reloaded, instantly showed 47 errors even before logging in."
+
+### Fixed
+- Added `font-src 'self' data: https://fonts.gstatic.com https://www.slant.co` to CSP on all auth pages and the auth template — Google Identity Services loads fonts from these origins, which were blocked by `default-src 'none'` with no `font-src` directive
+
+#### `testauth1.html` — v03.23w
+
+##### Fixed
+- Eliminated 47 font loading errors that appeared on every page load
+
+#### `globalacl.html` — v01.37w
+
+##### Fixed
+- Eliminated font loading errors on page load
+
+#### `programportal.html` — v01.44w
+
+##### Fixed
+- Eliminated font loading errors on page load
+
+## [v07.09r] — 2026-03-27 06:37:42 PM EST — [e7826e30](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e7826e30291759080c04517e40e1087737728310)
+
+> **Prompt:** "its already updated. assume that its always updated when i test it"
+
+### Fixed
+- Fixed testauth1 add-row failing silently — `google.script.run` was mangling the array parameter. Changed GAS `addRow()` to accept a JSON string instead, with the GAS iframe serializing the values before the server call
+
+#### `testauth1.gs` — v02.08g
+
+##### Fixed
+- Adding rows to the live data table now works correctly
+
+## [v07.08r] — 2026-03-27 06:14:47 PM EST — [75de234d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/75de234da1622545ada104db45bc539335d24b03)
+
+> **Prompt:** "add input fields into the gas so i can test multiple users writing to the live data"
+
+### Added
+- Added input fields and "Add Row" button to testauth1 live data viewer for testing multi-user writes to the spreadsheet
+- Added `addRow()` function to testauth1 GAS script that appends new rows via authenticated postMessage
+- Input placeholders dynamically update to match actual spreadsheet column headers
+
+#### `testauth1.html` — v03.22w
+
+##### Added
+- New input bar below the tabs for adding rows to the live data table
+- Inputs auto-label to match your spreadsheet columns
+
+#### `testauth1.gs` — v02.07g
+
+##### Added
+- Support for adding new rows to the live data spreadsheet from the page
+
+## [v07.07r] — 2026-03-27 05:23:48 PM EST — [1daa6150](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1daa615044c0fde7601c2e1f04c8f106034ea5ec)
+
+> **Prompt:** "ok but it shouldnt overlap the version on the gas layer bottom left"
+
+### Changed
+- Raised testauth1 testing buttons from bottom:8px to bottom:34px so they don't overlap the GAS version indicator at bottom-left
+
+#### `testauth1.html` — v03.21w
+
+##### Changed
+- Repositioned testing buttons higher to avoid overlapping the GAS version indicator
+
+## [v07.06r] — 2026-03-27 05:16:57 PM EST — [d04ee8dd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d04ee8dd9657472a9e55c688aad3e44c51e13244)
+
+> **Prompt:** "the foce heartbeat and security tests shouldnt be in the live data table, should be below near the version number on the left"
+
+### Changed
+- Moved Force Heartbeat and Security Tests buttons out of the live-data-app container to fixed-position bottom-left, near the version indicators — the live data table is no longer affected by the button layout
+
+#### `testauth1.html` — v03.20w
+
+##### Changed
+- Repositioned testing buttons from inside the data table to a fixed bottom-left bar alongside the version indicators
+
+## [v07.05r] — 2026-03-27 04:31:41 PM EST — [27c3d5fb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/27c3d5fbcac9e5b08e46faa548708675fc88eb6c)
+
+> **Prompt:** "I meant that I want the live data table to be underneath the top row where the sign out is and also not be so tall so that the version on the right side are underneath coordinate wise don't actually move them, so the live table is not full page height but is somewhere in the center"
+
+### Changed
+- Changed testauth1 live-data-app from full-screen fixed overlay to a contained panel that starts below the user-pill top bar (top: 36px) and stops above the version indicators (bottom: 120px), so the table sits in the center of the page with the sign-out row above and version pills visible below
+
+#### `testauth1.html` — v03.19w
+
+##### Changed
+- Reduced live data viewer from full-page overlay to a contained panel between the top bar and version indicators
+
+## [v07.04r] — 2026-03-27 04:25:25 PM EST — [db47a260](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/db47a260038950ccc67992f28c400369f1a89cb3)
+
+> **Prompt:** "In testauth1 make it so that the live table part is squished between the top row and the testing buttons"
+
+### Changed
+- Moved testing buttons (Force Heartbeat, Security Tests) from fixed-position overlays into the live-data-app flex layout as a bottom bar, so the live table is constrained between the header row and the button bar instead of extending full-height behind floating buttons
+
+#### `testauth1.html` — v03.18w
+
+##### Changed
+- Restructured live data layout to place testing buttons in a bottom bar within the app container, keeping the table view squished between the top header and the buttons
+
+Developed by: ShadowAISolutions
+
 ## [v07.03r] — 2026-03-26 03:14:18 PM EST — [0bccef1f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0bccef1fc2e480ddff8afc9ce6c35f102f474bb5)
 
 > **Prompt:** "i think the emoji legend should be before the repository root"

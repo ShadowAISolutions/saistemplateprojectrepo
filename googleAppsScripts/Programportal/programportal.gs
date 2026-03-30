@@ -1,4 +1,4 @@
-var VERSION = "v01.34g";
+var VERSION = "v01.35g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2564,11 +2564,14 @@ function doGet(e) {
         .ann-admin-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .ann-admin-btn.delete:hover { background: rgba(239,83,80,0.3); color: #ef5350; }
         .announcement-card { position: relative; }
+        .ann-btn-row {
+          display: flex; gap: 8px; margin-bottom: 10px;
+        }
         .ann-add-btn {
           background: rgba(255,255,255,0.08); border: 1px dashed rgba(255,255,255,0.2);
           border-radius: 8px; padding: 12px 20px; color: rgba(255,255,255,0.5);
-          cursor: pointer; font-size: 13px; width: 100%; text-align: center;
-          transition: all 0.2s; margin-bottom: 10px;
+          cursor: pointer; font-size: 13px; flex: 1; text-align: center;
+          transition: all 0.2s;
         }
         .ann-add-btn:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.3); }
         .ann-modal-overlay {
@@ -2616,15 +2619,15 @@ function doGet(e) {
         .ann-admin-btn.move { font-size: 11px; padding: 2px 6px; }
         .ann-save-order-btn {
           background: #42a5f5; border: none; border-radius: 8px; padding: 10px 20px;
-          color: #fff; cursor: pointer; font-size: 13px; width: 100%; text-align: center;
-          margin-bottom: 10px; transition: all 0.2s; font-weight: 600;
+          color: #fff; cursor: pointer; font-size: 13px; flex: 1; text-align: center;
+          transition: all 0.2s; font-weight: 600;
         }
         .ann-save-order-btn:hover { background: #1e88e5; }
         .ann-save-order-btn:disabled { opacity: 0.6; cursor: wait; }
         .ann-cancel-order-btn {
           background: rgba(255,255,255,0.1); border: none; border-radius: 8px; padding: 10px 20px;
-          color: rgba(255,255,255,0.7); cursor: pointer; font-size: 13px; width: 100%; text-align: center;
-          margin-bottom: 10px; transition: all 0.2s;
+          color: rgba(255,255,255,0.7); cursor: pointer; font-size: 13px; flex: 1; text-align: center;
+          transition: all 0.2s;
         }
         .ann-cancel-order-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
         .announcement-card[draggable="true"] { cursor: grab; }
@@ -3016,13 +3019,16 @@ function doGet(e) {
           _annBadge.textContent = activeCount || '';
           _annContainer.innerHTML = '';
 
-          // Admin: Add button and Save Order button at top
+          // Admin: Add button, Save Order, Cancel Changes in a single row
           if (_isAdmin) {
+            var btnRow = document.createElement('div');
+            btnRow.className = 'ann-btn-row';
+
             var addBtn = document.createElement('div');
             addBtn.className = 'ann-add-btn';
             addBtn.textContent = '+ Add Announcement';
             addBtn.addEventListener('click', function() { _openAnnModal('add'); });
-            _annContainer.appendChild(addBtn);
+            btnRow.appendChild(addBtn);
 
             var saveBtn = document.createElement('button');
             saveBtn.id = 'ann-save-order-btn';
@@ -3030,7 +3036,7 @@ function doGet(e) {
             saveBtn.textContent = 'Save Order';
             saveBtn.style.display = _annOrderDirty ? '' : 'none';
             saveBtn.addEventListener('click', function() { _saveAnnouncementOrder(); });
-            _annContainer.appendChild(saveBtn);
+            btnRow.appendChild(saveBtn);
 
             var cancelBtn = document.createElement('button');
             cancelBtn.id = 'ann-cancel-order-btn';
@@ -3038,7 +3044,9 @@ function doGet(e) {
             cancelBtn.textContent = 'Cancel Changes';
             cancelBtn.style.display = _annOrderDirty ? '' : 'none';
             cancelBtn.addEventListener('click', function() { _cancelOrderChanges(); });
-            _annContainer.appendChild(cancelBtn);
+            btnRow.appendChild(cancelBtn);
+
+            _annContainer.appendChild(btnRow);
           }
 
           for (var i = 0; i < displayItems.length; i++) {
