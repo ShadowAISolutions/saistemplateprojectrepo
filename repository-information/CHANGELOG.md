@@ -3,7 +3,44 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
+
+## [v08.19r] — 2026-03-30 01:35:41 PM EST
+
+> **Prompt:** "go ahead and fix the discrepancies, and also go ahead and implement all of the non implemented future proof items. if you have clarifying questions, ask me. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
+
+### Fixed
+- Fixed #19b grouped disclosure toggle default — added `checked` attribute so toggle defaults to grouped view as spec intended
+- Fixed #28 breach detection function count — extracted `sendBreachAlert()` as standalone function, added `getBreachAlertConfig()` for config introspection (now 3 functions as spec intended)
+- Fixed #31 breach logging function count — implemented `getBreachLog()` with retention-aware filtering, `phase-b-get-breach-log` doGet route, and `_renderBreachLog()` UI renderer (now 5 functions + 4 routes as spec intended)
+- Fixed #24b disclosure recipients UI — replaced `_renderDisclosureRecipients()` stub with full implementation showing checkboxes for each recipient, auto-fetch on amendment approval, and "Send Notifications" button
+
+### Added
+- Breach deduplication in `logBreachFromAlert()` — scans BreachLog for same event type within cooldown window before creating entries, suppresses duplicates with audit trail logging
+- Full breach log viewer — `getBreachLog()` retrieves all breaches within 6-year HIPAA retention window with optional filters (status, year, date range)
+- Amendment notification flow enhancement — approving an amendment auto-fetches disclosure recipients from DisclosureLog for the record, enabling one-click notification to all prior recipients per §164.526(c)(3)
+
+### Changed
+- Updated HIPAA Phase B implementation guide status section — marked 4 discrepancies as resolved, 4 non-implemented items as addressed (3 newly implemented + 1 already done by Phase C), updated function counts and totals
+
+#### `testauth1.html` — v03.82w
+
+##### Fixed
+- Grouped disclosure toggle now defaults to checked (grouped view)
+- Disclosure recipients panel now shows interactive checkboxes instead of empty stub
+
+##### Added
+- Breach log viewer panel with status colors, source indicators, and summary statistics
+- Amendment approval auto-fetches disclosure recipients for notification workflow
+
+#### `testauth1.gs` — v02.32g
+
+##### Added
+- `sendBreachAlert()` — standalone breach alert email function (extracted from `evaluateBreachAlert()`)
+- `getBreachAlertConfig()` — returns current breach alert configuration (redacts email for security)
+- `getBreachLog()` — retrieves all breaches within HIPAA retention window with optional filters
+- Breach deduplication in `logBreachFromAlert()` — prevents duplicate BreachLog entries within cooldown window
+- `phase-b-get-breach-log` doGet route for breach log retrieval
 
 ## [v08.18r] — 2026-03-30 12:56:16 PM EST
 

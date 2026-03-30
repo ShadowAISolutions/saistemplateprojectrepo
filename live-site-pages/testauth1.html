@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.81w">
+  <meta name="build-version" content="v03.82w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -608,7 +608,7 @@
     </div>
     <div style="padding:4px 12px;">
       <label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;">
-        <input type="checkbox" id="disclosure-grouped-toggle" /> Group repeated disclosures
+        <input type="checkbox" id="disclosure-grouped-toggle" checked /> Group repeated disclosures
       </label>
       <span style="color:#666;font-size:10px;margin-left:6px;">§164.528(b)(2)(ii)</span>
     </div>
@@ -5649,6 +5649,7 @@
   var _dataExportPanelOpen = false;
   var _amendmentPanelOpen = false;
   var _amendmentReviewPanelOpen = false;
+  var _lastApprovedAmendment = null; // Tracks { amendmentId, recordId } for notification flow
 
   // Panel close functions (used by mutual exclusion)
   function _closeDisclosurePanel() {
@@ -5899,7 +5900,7 @@
         + '<div class="pa-card-field"><strong>Proposed:</strong> ' + _escHtmlPA(a.proposedChange) + '</div>'
         + '<div class="pa-card-field"><strong>Reason:</strong> ' + _escHtmlPA(a.reason) + '</div>'
         + '<div class="pa-card-actions">'
-        + '<button class="pa-approve" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '">Approve</button>'
+        + '<button class="pa-approve" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '" data-record-id="' + _escHtmlPA(a.recordId) + '">Approve</button>'
         + '<button class="pa-deny" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '">Deny</button>'
         + '<input type="text" class="pa-deny-reason" placeholder="Denial reason (required)" data-amendment-id="' + _escHtmlPA(a.amendmentId) + '" />'
         + '</div></div>';
@@ -5910,6 +5911,8 @@
     list.querySelectorAll('.pa-approve').forEach(function(btn) {
       btn.addEventListener('click', function() {
         var id = this.getAttribute('data-amendment-id');
+        var recordId = this.getAttribute('data-record-id');
+        _lastApprovedAmendment = { amendmentId: id, recordId: recordId };
         _sendPhaseA({ type: 'phase-a-review-amendment', token: _getToken(), amendmentId: id, decision: 'Approved' });
       });
     });
@@ -6158,7 +6161,13 @@
         _handleAmendmentResult(data.result);
         break;
       case 'phase-a-review-result':
-        if (data.result && data.result.success) _loadPendingAmendments();
+        if (data.result && data.result.success) {
+          _loadPendingAmendments();
+          // Auto-fetch disclosure recipients for approved amendments (§164.526(c)(3))
+          if (_lastApprovedAmendment && _lastApprovedAmendment.recordId) {
+            _sendPhaseA({ type: 'phase-b-get-disclosure-recipients', token: _getToken(), recordId: _lastApprovedAmendment.recordId });
+          }
+        }
         break;
       case 'phase-a-pending-amendments-result':
         _renderPendingAmendments(data.amendments || []);
@@ -6202,6 +6211,9 @@
         break;
       case 'phase-b-breach-report-result':
         _renderBreachReport(data.result);
+        break;
+      case 'phase-b-breach-log-result':
+        _renderBreachLog(data.result);
         break;
       case 'phase-b-register-rep-result':
         _handleRepRegisterResult(data.result);
@@ -6371,9 +6383,7 @@
   document.getElementById('breach-refresh-btn').addEventListener('click', _loadBreachLog);
 
   function _loadBreachLog() {
-    // Use the breach report for current year to populate the list
-    var yr = new Date().getFullYear();
-    _sendPhaseA({ type: 'phase-b-get-breach-report', token: _getToken(), year: yr });
+    _sendPhaseA({ type: 'phase-b-get-breach-log', token: _getToken(), options: {} });
   }
 
   function _renderBreachReport(result) {
@@ -6410,6 +6420,40 @@
         + 'Year: ' + result.year + ' &middot; Total: ' + result.totalBreaches + ' &middot; Affected: ' + result.totalAffected
         + '<br>' + _esc(result.note || '') + '</div>';
     }
+  }
+
+  function _renderBreachLog(result) {
+    var list = document.getElementById('breach-log-list');
+    var empty = document.getElementById('breach-empty');
+    if (!result || !result.success) {
+      list.innerHTML = '<div style="color:#ef5350;padding:8px;font-size:11px;">' + _esc((result && result.message) || 'Failed to load breach log.') + '</div>';
+      return;
+    }
+    if (!result.breaches || result.breaches.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '<div style="color:#888;font-size:10px;padding:4px 12px;border-bottom:1px solid #333;">'
+      + 'Showing ' + result.totalBreaches + ' breach(es) &middot; ' + result.totalAffected + ' affected'
+      + (result.dateRange && result.dateRange.from ? ' &middot; From: ' + result.dateRange.from.split('T')[0] : '')
+      + '</div>';
+    for (var i = 0; i < result.breaches.length; i++) {
+      var b = result.breaches[i];
+      var statusColor = b.status === 'Closed' || b.status === 'Not a Breach' ? '#66bb6a' : b.status === 'Confirmed' ? '#ef5350' : '#ffb74d';
+      html += '<div style="padding:6px 12px;border-bottom:1px solid #333;">'
+        + '<div style="display:flex;justify-content:space-between;">'
+        + '<span style="color:#90caf9;font-size:11px;font-weight:bold;">' + _esc(b.breachId) + '</span>'
+        + '<span style="color:' + statusColor + ';font-size:10px;">' + _esc(b.status) + '</span>'
+        + '</div>'
+        + '<div style="color:#aaa;font-size:10px;">' + _esc(b.description || '') + '</div>'
+        + '<div style="color:#888;font-size:10px;">Discovered: ' + (b.discoveryDate || '').split('T')[0]
+        + ' &middot; Source: ' + _esc(b.source || '') + ' &middot; Affected: ' + (b.affectedIndividuals || 0) + '</div>'
+        + (b.relatedEventType ? '<div style="color:#666;font-size:9px;">Event type: ' + _esc(b.relatedEventType) + '</div>' : '')
+        + '</div>';
+    }
+    list.innerHTML = html;
   }
 
   // Log new breach
@@ -6849,15 +6893,28 @@
 
   // ── Amendment Notification Handlers ──
   function _handleNotificationResult(result) {
-    // Show notification status in a simple status area
+    var statusEl = document.getElementById('amendment-notify-status');
+    if (!result || !result.success) {
+      if (statusEl) {
+        statusEl.textContent = (result && result.message) || 'Failed to send notifications.';
+        statusEl.style.color = '#ef5350';
+      }
+      return;
+    }
+    var msg = 'Sent: ' + (result.sentCount || result.notificationsSent || 0) + ', Failed: ' + (result.failedCount || result.notificationsFailed || 0);
+    if (statusEl) {
+      statusEl.textContent = msg;
+      statusEl.style.color = '#66bb6a';
+    }
+    _lastApprovedAmendment = null;
+    // Also show in the review list
     var reviewList = document.getElementById('amend-review-list');
-    if (!reviewList) return;
-    if (!result || !result.success) return;
-    var msg = 'Notifications sent: ' + result.notificationsSent + ', Failed: ' + result.notificationsFailed;
-    var div = document.createElement('div');
-    div.style.cssText = 'color:#66bb6a;font-size:10px;padding:4px 12px;';
-    div.textContent = msg;
-    reviewList.insertBefore(div, reviewList.firstChild);
+    if (reviewList) {
+      var div = document.createElement('div');
+      div.style.cssText = 'color:#66bb6a;font-size:10px;padding:4px 12px;';
+      div.textContent = 'Amendment notifications: ' + msg;
+      reviewList.insertBefore(div, reviewList.firstChild);
+    }
   }
 
   function _renderNotificationStatus(result) {
@@ -6867,8 +6924,63 @@
   }
 
   function _renderDisclosureRecipients(result) {
-    // Could be used to auto-populate notification recipients
     if (!result || !result.success) return;
+    if (!_lastApprovedAmendment) return;
+    var reviewList = document.getElementById('amend-review-list');
+    if (!reviewList) return;
+
+    // Remove any existing notification section
+    var existing = document.getElementById('disclosure-recipients-section');
+    if (existing) existing.remove();
+
+    var section = document.createElement('div');
+    section.id = 'disclosure-recipients-section';
+    section.style.cssText = 'border-top:1px solid #333;padding:8px 12px;margin-top:8px;';
+
+    if (!result.recipients || result.recipients.length === 0) {
+      section.innerHTML = '<div style="color:#888;font-size:10px;">No prior disclosure recipients found for record ' + _esc(result.recordId) + '. Enter recipients manually when sending notifications.</div>';
+      reviewList.parentNode.insertBefore(section, reviewList.nextSibling);
+      return;
+    }
+
+    var html = '<div style="color:#aaa;font-size:11px;font-weight:bold;margin-bottom:6px;">Notify Amendment Recipients &mdash; ' + _esc(_lastApprovedAmendment.amendmentId) + '</div>'
+      + '<div style="color:#666;font-size:9px;margin-bottom:4px;">§164.526(c)(3) &mdash; Select recipients who received the original PHI:</div>';
+
+    for (var i = 0; i < result.recipients.length; i++) {
+      var r = result.recipients[i];
+      html += '<label style="display:block;color:#ccc;font-size:10px;padding:2px 0;cursor:pointer;">'
+        + '<input type="checkbox" class="disclosure-recipient-cb" value="' + _esc(r.name) + '" checked /> '
+        + _esc(r.name) + ' <span style="color:#666;">(' + _esc(r.recipientType || 'Unknown') + ')</span>'
+        + ' <span style="color:#555;font-size:9px;">Last: ' + (r.lastDisclosureDate || '').split('T')[0] + '</span>'
+        + '</label>';
+    }
+
+    html += '<div style="margin-top:6px;">'
+      + '<button id="send-amendment-notifications-btn" class="pa-action" style="font-size:10px;">Send Notifications</button>'
+      + ' <span id="amendment-notify-status" style="font-size:10px;"></span>'
+      + '</div>';
+
+    section.innerHTML = html;
+    reviewList.parentNode.insertBefore(section, reviewList.nextSibling);
+
+    document.getElementById('send-amendment-notifications-btn').addEventListener('click', function() {
+      var checked = section.querySelectorAll('.disclosure-recipient-cb:checked');
+      if (checked.length === 0) {
+        document.getElementById('amendment-notify-status').textContent = 'Select at least one recipient.';
+        document.getElementById('amendment-notify-status').style.color = '#ef5350';
+        return;
+      }
+      var recipients = [];
+      checked.forEach(function(cb) { recipients.push({ name: cb.value }); });
+      document.getElementById('amendment-notify-status').textContent = 'Sending...';
+      document.getElementById('amendment-notify-status').style.color = '#aaa';
+      _sendPhaseA({
+        type: 'phase-b-send-amendment-notifications',
+        token: _getToken(),
+        amendmentId: _lastApprovedAmendment.amendmentId,
+        recipients: recipients
+      });
+    });
   }
 
   // ── Utility: HTML escape ──

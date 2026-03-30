@@ -3,7 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
+
+## [v03.82w] — 2026-03-30 01:35:41 PM EST — v08.19r
+
+### Fixed
+- Grouped disclosure toggle now defaults to the grouped view as intended
+- Disclosure recipients section now shows a functional list of prior recipients instead of being empty
+
+### Added
+- Breach log viewer showing all breaches within the retention period with status indicators and summary statistics
+- Approving an amendment now automatically shows prior disclosure recipients for easy notification
 
 ## [v03.81w] — 2026-03-30 12:36:09 PM EST — v08.17r
 

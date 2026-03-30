@@ -3,7 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
+
+## [v02.32g] — 2026-03-30 01:35:41 PM EST — v08.19r
+
+### Added
+- Standalone breach alert sending function for better code organization
+- Configuration introspection for breach alert settings
+- Full breach log retrieval with retention-aware filtering and optional status/date filters
+- Automatic duplicate prevention when logging breaches from alerts
+
+### Changed
+- Breach alert sending is now a reusable standalone operation instead of embedded in detection logic
 
 ## [v02.31g] — 2026-03-30 12:36:09 PM EST — v08.17r
 

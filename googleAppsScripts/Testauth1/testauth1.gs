@@ -1,4 +1,4 @@
-var VERSION = "v02.31g";
+var VERSION = "v02.32g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3356,6 +3356,11 @@ function doGet(e) {
       + '      .withFailureHandler(function(e) { ok("phase-b-breach-report-result", {result:{success:false,message:String(e)}}); })'
       + '      .getBreachReport(d.token, d.year);'
       + '  }'
+      + '  if (d.type === "phase-b-get-breach-log") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-breach-log-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-breach-log-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getBreachLog(d.token, d.options);'
+      + '  }'
       // Phase B — P3: Personal Representatives
       + '  if (d.type === "phase-b-register-representative") {'
       + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-register-rep-result", {result:r}); })'
@@ -5015,7 +5020,31 @@ function evaluateBreachAlert(eventType, eventDetails) {
     return;
   }
 
-  // Send the alert
+  // Send the alert via extracted function
+  var alertResult = sendBreachAlert(eventType, eventCount, threshold, eventDetails);
+
+  if (alertResult.success) {
+    // Set cooldown to prevent alert storms
+    cache.put(cooldownKey, 'sent', BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES * 60);
+  }
+
+  // Always log to BreachLog for events in the ALWAYS_LOG_EVENTS list
+  if (BREACH_ALERT_CONFIG.ALWAYS_LOG_EVENTS.indexOf(eventType) > -1) {
+    logBreachFromAlert(eventType, eventCount, eventDetails);
+  }
+}
+
+/**
+ * Sends a breach alert email to the configured security officer.
+ * Extracted from evaluateBreachAlert() for reusability and testability.
+ *
+ * @param {string} eventType — The security event type
+ * @param {number} eventCount — Number of events that triggered the alert
+ * @param {number} threshold — The configured threshold for this event type
+ * @param {Object} eventDetails — Details about the event (for the alert email)
+ * @returns {Object} { success, messageId } or { success: false, error }
+ */
+function sendBreachAlert(eventType, eventCount, threshold, eventDetails) {
   var alertSubject = 'HIPAA Security Alert — ' + eventType.replace(/_/g, ' ').toUpperCase();
   var alertBody = 'HIPAA SECURITY ALERT\n'
     + '━━━━━━━━━━━━━━━━━━━━\n\n'
@@ -5034,7 +5063,7 @@ function evaluateBreachAlert(eventType, eventDetails) {
     + 'This alert was generated automatically by the HIPAA breach detection system.\n'
     + 'Alert cooldown: ' + BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES + ' minutes (no duplicate alerts during this period).';
 
-  var emailResult = sendHipaaEmail({
+  return sendHipaaEmail({
     to: BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL,
     subject: alertSubject,
     body: alertBody,
@@ -5046,16 +5075,23 @@ function evaluateBreachAlert(eventType, eventDetails) {
       threshold: threshold
     }
   });
+}
 
-  if (emailResult.success) {
-    // Set cooldown to prevent alert storms
-    cache.put(cooldownKey, 'sent', BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES * 60);
-  }
-
-  // Always log to BreachLog for events in the ALWAYS_LOG_EVENTS list
-  if (BREACH_ALERT_CONFIG.ALWAYS_LOG_EVENTS.indexOf(eventType) > -1) {
-    logBreachFromAlert(eventType, eventCount, eventDetails);
-  }
+/**
+ * Returns the current breach alert configuration.
+ * Security officer email is redacted — shows '***configured***' when set.
+ *
+ * @returns {Object} Breach alert config with redacted email
+ */
+function getBreachAlertConfig() {
+  return {
+    enabled: BREACH_ALERT_CONFIG.ENABLED,
+    securityOfficerEmail: BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL ? '***configured***' : '',
+    alertCooldownMinutes: BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES,
+    windowMinutes: BREACH_ALERT_CONFIG.WINDOW_MINUTES,
+    thresholds: BREACH_ALERT_CONFIG.THRESHOLDS,
+    alwaysLogEvents: BREACH_ALERT_CONFIG.ALWAYS_LOG_EVENTS
+  };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -5161,6 +5197,34 @@ function logBreach(sessionToken, params) {
  * @param {Object} eventDetails — Details from the security event
  */
 function logBreachFromAlert(eventType, eventCount, eventDetails) {
+  // Deduplication: check if a BreachLog entry for this eventType was created recently
+  var headers = [
+    'BreachID', 'CreatedDate', 'DiscoveryDate', 'Description',
+    'Source', 'Status', 'NatureOfPhi', 'UnauthorizedPerson',
+    'AcquiredOrViewed', 'MitigationSteps', 'AffectedIndividuals',
+    'RiskAssessment', 'NotificationDeadline', 'NotificationDate',
+    'HhsReportDate', 'RelatedEventType', 'InvestigatorEmail',
+    'ResolutionDate', 'ResolutionNotes'
+  ];
+  var sheet = getOrCreateSheet('BreachLog', headers);
+  var data = sheet.getDataRange().getValues();
+  var cooldownMs = BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES * 60 * 1000;
+  var now = new Date();
+
+  for (var r = 1; r < data.length; r++) {
+    if (String(data[r][4]) !== 'Auto-Detected') continue;
+    if (String(data[r][15]) !== eventType) continue;
+    var created = data[r][1] instanceof Date ? data[r][1] : new Date(data[r][1]);
+    if (!isNaN(created.getTime()) && (now.getTime() - created.getTime()) < cooldownMs) {
+      auditLog('breach_log_dedup', 'system', 'suppressed', {
+        eventType: eventType,
+        existingBreachId: data[r][0],
+        reason: 'duplicate_within_cooldown_window'
+      });
+      return; // Duplicate suppressed
+    }
+  }
+
   logBreach(null, {
     description: 'Auto-detected: ' + eventType + ' — ' + eventCount + ' events exceeded threshold within '
       + BREACH_ALERT_CONFIG.WINDOW_MINUTES + ' minutes',
@@ -5327,6 +5391,109 @@ function getBreachReport(sessionToken, year) {
       note: breaches.length === 0
         ? 'No breaches discovered during ' + reportYear + '. Annual HHS notification may still be required if prior-year breaches were not yet reported.'
         : 'Report ' + breaches.length + ' breach(es) affecting ' + totalAffected + ' individuals to HHS by ' + new Date(reportYear + 1, 1, 28).toISOString().split('T')[0]
+    };
+  });
+}
+
+/**
+ * Returns all breaches within the HIPAA retention window (default 6 years),
+ * with optional filtering by status, year, or date range.
+ * Unlike getBreachReport() which filters by a single calendar year, this function
+ * provides a comprehensive view of all breaches for the full retention period.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {Object} [options] — Optional filters: { status, year, startDate, endDate }
+ * @returns {Object} { success, breaches: [...], totalBreaches, totalAffected, dateRange }
+ */
+function getBreachLog(sessionToken, options) {
+  return wrapHipaaOperation('getBreachLog', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'getBreachLog');
+
+    var opts = options || {};
+    var cutoff = getRetentionCutoffDate();
+
+    var headers = [
+      'BreachID', 'CreatedDate', 'DiscoveryDate', 'Description',
+      'Source', 'Status', 'NatureOfPhi', 'UnauthorizedPerson',
+      'AcquiredOrViewed', 'MitigationSteps', 'AffectedIndividuals',
+      'RiskAssessment', 'NotificationDeadline', 'NotificationDate',
+      'HhsReportDate', 'RelatedEventType', 'InvestigatorEmail',
+      'ResolutionDate', 'ResolutionNotes'
+    ];
+    var sheet = getOrCreateSheet('BreachLog', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var breaches = [];
+    var totalAffected = 0;
+    var earliestDate = null;
+    var latestDate = null;
+
+    for (var r = 1; r < data.length; r++) {
+      var discoveryDate = data[r][2];
+      var date = discoveryDate instanceof Date ? discoveryDate : new Date(discoveryDate);
+      if (isNaN(date.getTime())) continue;
+
+      // Must be within retention window
+      if (date < cutoff) continue;
+
+      // Optional status filter
+      if (opts.status && String(data[r][5]) !== opts.status) continue;
+
+      // Optional year filter
+      if (opts.year && date.getFullYear() !== parseInt(opts.year, 10)) continue;
+
+      // Optional date range filter
+      if (opts.startDate) {
+        var start = new Date(opts.startDate);
+        if (!isNaN(start.getTime()) && date < start) continue;
+      }
+      if (opts.endDate) {
+        var end = new Date(opts.endDate);
+        if (!isNaN(end.getTime()) && date > end) continue;
+      }
+
+      var affected = parseInt(data[r][10], 10) || 0;
+      totalAffected += affected;
+
+      if (!earliestDate || date < earliestDate) earliestDate = date;
+      if (!latestDate || date > latestDate) latestDate = date;
+
+      breaches.push({
+        breachId: data[r][0],
+        createdDate: data[r][1] instanceof Date ? data[r][1].toISOString() : String(data[r][1]),
+        discoveryDate: date.toISOString(),
+        description: data[r][3],
+        source: data[r][4],
+        status: data[r][5],
+        natureOfPhi: data[r][6],
+        unauthorizedPerson: data[r][7],
+        affectedIndividuals: affected,
+        riskAssessment: data[r][11],
+        notificationDeadline: data[r][12] ? String(data[r][12]) : null,
+        notificationDate: data[r][13] ? String(data[r][13]) : null,
+        hhsReportDate: data[r][14] ? String(data[r][14]) : null,
+        relatedEventType: data[r][15] || null,
+        resolutionDate: data[r][17] ? String(data[r][17]) : null,
+        resolutionNotes: data[r][18] || null
+      });
+    }
+
+    dataAuditLog(user, 'read', 'breach_log', 'full_log', {
+      breachCount: breaches.length,
+      totalAffected: totalAffected,
+      filters: opts
+    });
+
+    return {
+      success: true,
+      breaches: breaches,
+      totalBreaches: breaches.length,
+      totalAffected: totalAffected,
+      dateRange: {
+        from: earliestDate ? earliestDate.toISOString() : null,
+        to: latestDate ? latestDate.toISOString() : null,
+        retentionCutoff: cutoff.toISOString()
+      }
     };
   });
 }
