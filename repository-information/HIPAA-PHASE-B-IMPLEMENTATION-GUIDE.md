@@ -7,8 +7,10 @@
 | **Document** | Phase B Implementation Guide |
 | **Environment** | testauth1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-30 |
-| **GAS Version** | v02.27g |
-| **HTML Version** | v03.78w |
+| **GAS Version** | v02.28g (implemented) |
+| **HTML Version** | v03.79w (implemented) |
+| **Implementation Date** | 2026-03-30 |
+| **Implementation Status** | ✅ Complete — all 7 items implemented across GAS + HTML |
 | **Items Covered** | #19b Grouped Disclosure Accounting · #23b Summary PHI Export · #24b Third-Party Amendment Notifications · #18 Retention Enforcement · #28 Breach Detection Alerting · #31 Breach Logging · #25 Personal Representative Access |
 | **Priority** | 🟡 P1–P3 — Extensions to Phase A Required specifications + breach infrastructure |
 | **Authority** | Mix of Required sub-paragraphs (§164.528(b)(2)(ii), §164.524(c)(3), §164.526(c)(3)), Required enforcement (§164.316(b)(2)(i)), Required breach rules (§164.404, §164.408(c)), and Required privacy provisions (§164.502(g)) |
@@ -57,15 +59,15 @@ Phase B items are organized into three priority tiers. Within each tier, impleme
 
 ### Phase B at a Glance
 
-| Item | CFR | Requirement | Current Status | Target |
-|------|-----|-------------|---------------|--------|
-| **#19b** Grouped Disclosure Accounting | §164.528(b)(2)(ii) | Group repeated disclosures to the same recipient instead of listing each individually | ❌ Not Implemented | ✅ Implemented |
-| **#23b** Summary PHI Export | §164.524(c)(3) | Provide a summary of PHI (rather than full export) when individual agrees | ❌ Not Implemented | ✅ Implemented |
-| **#24b** Third-Party Amendment Notifications | §164.526(c)(3) | Notify third parties of approved amendments to PHI previously disclosed to them | ❌ Not Implemented | ✅ Implemented |
-| **#18** Retention Enforcement | §164.316(b)(2)(i) | Enforce 6-year retention of documentation required by the Security Rule | ⚠️ Partial (declared, not enforced) | ✅ Implemented |
-| **#28** Breach Detection Alerting | §164.404 | Automatically detect and alert on potential breaches of unsecured PHI | ⚠️ Partial (logged, no alerting) | ✅ Implemented |
-| **#31** Breach Logging | §164.408(c) | Maintain a dedicated log of security breaches with structured fields for HHS reporting | ❌ Not Implemented | ✅ Implemented |
-| **#25** Personal Representative Access | §164.502(g) | Allow authorized representatives to exercise individual rights on behalf of others | ❌ Not Implemented | ✅ Implemented |
+| Item | CFR | Requirement | Status | Version |
+|------|-----|-------------|--------|---------|
+| **#19b** Grouped Disclosure Accounting | §164.528(b)(2)(ii) | Group repeated disclosures to the same recipient instead of listing each individually | ✅ Implemented | v02.28g / v03.79w |
+| **#23b** Summary PHI Export | §164.524(c)(3) | Provide a summary of PHI (rather than full export) when individual agrees | ✅ Implemented | v02.28g / v03.79w |
+| **#24b** Third-Party Amendment Notifications | §164.526(c)(3) | Notify third parties of approved amendments to PHI previously disclosed to them | ✅ Implemented | v02.28g / v03.79w |
+| **#18** Retention Enforcement | §164.316(b)(2)(i) | Enforce 6-year retention of documentation required by the Security Rule | ✅ Implemented | v02.28g |
+| **#28** Breach Detection Alerting | §164.404 | Automatically detect and alert on potential breaches of unsecured PHI | ✅ Implemented | v02.28g / v03.79w |
+| **#31** Breach Logging | §164.408(c) | Maintain a dedicated log of security breaches with structured fields for HHS reporting | ✅ Implemented | v02.28g / v03.79w |
+| **#25** Personal Representative Access | §164.502(g) | Allow authorized representatives to exercise individual rights on behalf of others | ✅ Implemented | v02.28g / v03.79w |
 
 ### What "Done" Looks Like
 
@@ -92,6 +94,47 @@ When Phase B is complete:
 | #25 Personal Representatives | 1 (`PersonalRepresentatives`) | 4 (register + validate + query + revoke) | 3 (representative management panel) | Medium |
 | **Shared Infrastructure** | 0 | 4 utilities | 0 | Low |
 | **Total** | **3 new sheets** | **~24 new functions** | **~11 UI elements** | |
+
+### Implementation Status (Updated 2026-03-30)
+
+All 7 Phase B items have been implemented. The table below tracks what was done, what requires post-deployment configuration, and what limitations remain.
+
+#### What Was Implemented
+
+| Component | GAS Functions | HTML UI | doGet Routes | Status |
+|-----------|:---:|:---:|:---:|--------|
+| **Shared Infrastructure** | 4 utilities (`wrapHipaaOperation`, `sendHipaaEmail`, `getRetentionCutoffDate`, `isRepresentativeAuthorized`) + 3 config objects (`BREACH_ALERT_CONFIG`, `HIPAA_RETENTION_CONFIG`, `REPRESENTATIVE_CONFIG`) | — | — | ✅ Complete |
+| **#19b Grouped Disclosures** | `getGroupedDisclosureAccounting()` | Grouped toggle checkbox in disclosure panel | `phase-b-get-grouped-disclosures` | ✅ Complete |
+| **#23b Summary Export** | `generateDataSummary()` | Summary radio button + HIPAA agreement checkbox; download button wired to route summary format to Phase B endpoint | `phase-b-generate-summary` | ✅ Complete |
+| **#24b Amendment Notifications** | `sendAmendmentNotifications()`, `getNotificationStatus()`, `getDisclosureRecipientsForRecord()` | Notification status display in amendment review | `phase-b-send-notifications`, `phase-b-get-notification-status`, `phase-b-get-disclosure-recipients` | ✅ Complete |
+| **#28 Breach Detection** | `evaluateBreachAlert()`, `sendBreachAlert()`, `getBreachAlertConfig()` | — (integrated into existing `processSecurityEvent()` pipeline) | — (system-internal) | ✅ Complete |
+| **#31 Breach Logging** | `logBreach()`, `logBreachFromAlert()`, `getBreachLog()`, `getBreachReport()`, `updateBreachStatus()` | Breach dashboard panel (log form, breach list, annual report) | `phase-b-log-breach`, `phase-b-get-breach-log`, `phase-b-get-breach-report`, `phase-b-update-breach-status` | ✅ Complete |
+| **#18 Retention Enforcement** | `enforceRetention()`, `setupRetentionTrigger()`, `auditRetentionCompliance()` | — (backend only, triggered by time-driven trigger) | — (trigger-driven) | ✅ Complete |
+| **#25 Personal Representatives** | `registerPersonalRepresentative()`, `getPersonalRepresentatives()`, `revokeRepresentative()`, `validateRepresentativeAccess()` | Representative management panel (register form, list, revoke with inline input) | `phase-b-register-representative`, `phase-b-get-representatives`, `phase-b-revoke-representative` | ✅ Complete |
+| **Phase A Modifications** | Extended `validateIndividualAccess()` with representative support; added `evaluateBreachAlert()` call in `processSecurityEvent()` | Updated `showAuthWall()` to hide Phase B panels and clear Phase B data elements; replaced `prompt()` with inline input | — | ✅ Complete |
+
+**Totals implemented:** 18 new GAS functions, 4 shared utilities, 3 config objects, 11 doGet() message routes, 2 admin buttons, 2 admin panels, 1 toggle checkbox, 1 radio option, 11 postMessage handler cases, ~200 lines of JavaScript handler functions.
+
+#### What Requires Post-Deployment Configuration
+
+These items are implemented in code but require manual setup before they function:
+
+| Item | What To Do | Why |
+|------|-----------|-----|
+| **Breach alert email** | Set `BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL` to a valid email address in `testauth1.gs` | Empty by default — breach detection will evaluate thresholds but no alert email will be sent until configured |
+| **MailApp authorization** | Run any function that calls `MailApp` from the Apps Script editor to trigger the OAuth consent screen | Required for breach alerting and amendment notification emails |
+| **Retention trigger** | Run `setupRetentionTrigger()` once from the Apps Script editor | Creates the daily installable time-driven trigger for retention enforcement. Will not run automatically until the trigger is installed |
+
+#### Known Limitations & Gaps
+
+| Limitation | Impact | Regulatory Risk | Mitigation |
+|-----------|--------|----------------|------------|
+| **Individual breach notification** is alert-to-officer only — no automated notification to affected individuals | §164.404(a) requires notifying affected individuals within 60 days of discovery | Medium — organizational process must handle individual notification after officer receives alert | Phase C candidate: add individual notification workflow with templates and tracking |
+| **Substitute notice methods** (website posting, media notice for >500 affected) not implemented | §164.404(d)(2) requires substitute notice when contact information is insufficient | Low — rare scenario; organizational process can handle manually | Phase C candidate |
+| **HHS notification submission** is report-generation only — no automated submission to the HHS breach portal | §164.408 requires notifying HHS; the system generates the data but doesn't submit it | Low — HHS submission is a manual process in most organizations | The `getBreachReport()` output matches HHS portal fields for easy manual entry |
+| **State law determination** for representative authority is organizational | §164.502(g)(2) — state law determines who qualifies as a representative | Low — `RelationshipType` enum captures the relationship; state law compliance is an organizational policy decision | Document organizational policy for each relationship type |
+| **Legal hold override** for retention enforcement not implemented | Records under legal hold should be exempt from the 6-year archival | Low — litigation holds are rare; manually protect relevant sheets | Phase C candidate: add `LegalHold` flag to retention logic |
+| **Breach deduplication window** is basic | Multiple alerts for the same incident may create duplicate `BreachLog` entries | Low — admin can merge/resolve duplicates via `updateBreachStatus()` | Phase C candidate: event signature-based deduplication |
 
 ---
 
@@ -2840,6 +2883,137 @@ This test verifies the full Phase B flow across all 7 items in a single scenario
 - [ ] Security officer received breach alert email from step 8
 - [ ] No PHI appears in any email, error message, or log entry
 
+### Developer Verification Walkthrough
+
+This is a structured walkthrough for verifying all Phase B features after deployment. It covers pre-flight checks, UI verification, functional testing per priority tier, and cross-cutting concerns. Complete each tier in order.
+
+#### Pre-Flight: Confirm Deployment
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 1 | Auto-merge completed | Check the repository Actions tab for a successful workflow run on the `claude/*` branch | Workflow merged to `main` and deployed to GitHub Pages |
+| 2 | HTML version updated | Load testauth1.html — check the version indicator pill (bottom-right) | Shows `v03.79w`. If still showing old version, wait for the auto-refresh poll (up to 10 seconds) |
+| 3 | GAS version updated | After page loads, check the GAS version pill | Shows `v02.28g`. The workflow fires a webhook to `doPost(action=deploy)` — GAS pulls and redeploys itself within ~30 seconds |
+
+#### Tier 1: Verify New UI Elements Exist
+
+Sign in as an **admin** user, then:
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 4 | Admin dropdown buttons | Click the admin dropdown | Two new buttons appear: **"Breach Log"** and **"Representatives"** |
+| 5 | Grouped disclosure toggle | Open disclosure accounting panel | A **"Group repeated disclosures"** checkbox appears above the disclosure list |
+| 6 | Summary export option | Open data export panel | A **"Summary (metadata only)"** radio button appears alongside CSV/JSON. Selecting it reveals a HIPAA agreement section with a checkbox |
+
+#### Tier 2: P1 — Required Sub-Paragraphs
+
+**#19b Grouped Disclosures:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 7 | Create test disclosures | If not already present, create 3+ disclosures to the same recipient (e.g. "Hospital A" for "Treatment") via your existing disclosure workflow | Disclosure records visible in standard view |
+| 8 | Toggle grouped view | Check the "Group repeated disclosures" checkbox | Disclosure list re-renders showing grouped entries with frequency count and date range instead of individual entries |
+| 9 | Uncheck toggle | Uncheck the checkbox | Reverts to the standard individual disclosure list |
+
+**#23b Summary Export:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 10 | Select Summary format | In the export panel, select the "Summary" radio button | Agreement section appears with HIPAA notice and checkbox |
+| 11 | Agreement required | Click Download without checking the agreement checkbox | Error message: "You must agree to receive a summary before downloading" |
+| 12 | Generate summary | Check the agreement, click Download | Status shows "Generating summary export..." then renders: record types, total records, date range, counts per type — **no actual PHI content** |
+
+**#24b Amendment Notifications:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 13 | Create and approve amendment | Submit an amendment request via the existing Phase A workflow, then approve it as admin | Amendment in `Approved` status |
+| 14 | Notification system | After approval, the amendment notification system allows sending notifications to third-party recipients | `AmendmentNotifications` sheet auto-created in spreadsheet with appropriate columns |
+
+#### Tier 3: P2 — Breach Infrastructure
+
+**#28 Breach Detection & Alerting:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 15 | Configure officer email | In the GAS editor, set `BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL` to a valid email | Required — alerting won't work without it |
+| 16 | Trigger threshold | Generate enough failed auth attempts or suspicious activity to exceed `BREACH_ALERT_CONFIG.THRESHOLDS` | Breach alert email sent to security officer with breach ID, severity, and recommended actions (no PHI) |
+| 17 | Verify cooldown | Trigger more events immediately after an alert | No second email sent — cooldown period applies |
+
+**#31 Breach Logging:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 18 | Open Breach Dashboard | Click "Breach Log" in admin dropdown | Panel opens with a log form and empty breach list |
+| 19 | Log breach manually | Fill in: description, nature of PHI, affected count, mitigation steps. Submit | Success message; breach appears in list with `Detected` status |
+| 20 | Status transitions | Update through lifecycle: `Detected` → `Investigating` → `Contained` → `NotificationSent` → `Resolved` | Each transition succeeds; `StatusHistory` tracks all transitions |
+| 21 | Invalid transition | Try backward transition (e.g. `Investigating` → `Detected`) | Error: cannot transition backward |
+| 22 | Annual report | Click report button for current year | Structured report data matching HHS Breach Reporting Tool fields |
+| 23 | High affected count | Log breach with `affectedCount` ≥ 500 | Flagged for immediate (not annual) HHS notification |
+
+**#18 Retention Enforcement:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 24 | Install trigger | In GAS editor, run `setupRetentionTrigger()`. Verify in Project Settings → Triggers | Daily time-driven trigger created |
+| 25 | Run retention | Execute `enforceRetention()` from editor | No records archived (all within 6-year window). Logs confirm "no records exceed retention period" |
+| 26 | Sheet protection | Check HIPAA sheets after retention runs | DisclosureLog, AccessRequests, AmendmentRequests, AmendmentNotifications, BreachLog, PersonalRepresentatives all have warning-only protection |
+| 27 | Test archival (optional) | Manually backdate a `SessionAuditLog` entry to >6 years ago, run `enforceRetention()` | Aged record moved to `SessionAuditLog_Archive` sheet; original row removed |
+
+#### Tier 4: P3 — Personal Representatives
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 28 | Open Representatives panel | Click "Representatives" in admin dropdown | Panel opens with registration form and empty list |
+| 29 | Register representative | Fill in: representative email, individual email, relationship type (e.g. "Parent"), expiration date, document reference. Submit | Success; representative appears in list as "Active" |
+| 30 | Representative access | Sign in as the representative email. Access the individual's data (disclosure accounting, data export) | Access succeeds — `validateIndividualAccess()` transparently authorizes via representative registry |
+| 31 | Non-representative blocked | Sign in as a user NOT registered as representative. Access another user's data | `ACCESS_DENIED` |
+| 32 | Revoke representative | As admin, click "Revoke" next to the representative. Inline input appears (not browser `prompt()`). Enter reason and confirm | Status changes to "Revoked" |
+| 33 | Revoked access blocked | The revoked representative attempts to access the individual's data | `ACCESS_DENIED` |
+| 34 | Expiration (optional) | Register a representative with a past expiration date, then attempt access | `ACCESS_DENIED` — expired representative treated as non-representative |
+
+#### Tier 5: Cross-Cutting Verification
+
+**Auth Wall:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 35 | Sign out cleanup | Sign out or let session expire | Breach dashboard hidden, representative panel hidden, all Phase B data elements cleared (breach log list, report output, representative list, registration status) |
+
+**Audit Trail:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 36 | DataAuditLog entries | Open `DataAuditLog` sheet in spreadsheet | Entries exist for all Phase B operations performed (grouped disclosures, summary export, breach log, representative registration, etc.) |
+| 37 | Verification function (optional) | Run `verifyPhaseBauditTrail()` (section 16 above) in GAS editor | All Phase B audit action types present; all 3 new sheets exist; sheet protection applied |
+
+**New Sheets:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 38 | AmendmentNotifications | Check spreadsheet | Sheet exists (auto-created on first notification send) with correct column headers |
+| 39 | BreachLog | Check spreadsheet | Sheet exists (auto-created on first breach log) with correct column headers |
+| 40 | PersonalRepresentatives | Check spreadsheet | Sheet exists (auto-created on first representative registration) with correct column headers |
+
+**No PHI Leakage:**
+
+| # | Check | How | Expected |
+|---|-------|-----|----------|
+| 41 | Email content | Check any breach alert or amendment notification emails received | No patient identifiers, no medical details — only reference IDs like "Breach ID: BRE-..." or "Amendment ID: AMD-..." |
+| 42 | Error messages | Trigger errors (e.g. invalid input) and inspect responses | Error messages contain no PHI |
+
+#### Quick Smoke Test (Minimum Viable Check)
+
+If you need a fast sanity check before the full walkthrough:
+
+1. ✅ Load the page — confirm `v03.79w` and `v02.28g`
+2. ✅ Open admin dropdown — see "Breach Log" and "Representatives" buttons
+3. ✅ Toggle grouped disclosures checkbox — UI responds
+4. ✅ Select Summary export — agreement section appears
+5. ✅ Open Breach Dashboard — form renders, submit a test breach
+6. ✅ Open Representatives — form renders, register a test representative
+7. ✅ Sign out — both panels disappear, data cleared
+
 ---
 
 ## 17. Troubleshooting
@@ -3060,6 +3234,7 @@ For maximum efficiency, implement Phase B in this order (within each priority ti
 
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
+| 2026-03-30 | 1.1 | Claude Code | Post-implementation update: added Implementation Status section (what was done, what requires configuration, known limitations); added Developer Verification Walkthrough (42-check structured testing guide with quick smoke test); updated Phase B at a Glance table from pre-implementation targets to implemented status with version numbers; updated Document Information with implementation date and GAS/HTML versions |
 | 2026-03-30 | 1.0 | Claude Code | Initial Phase B implementation guide — all 20 sections covering 7 HIPAA items across 3 priority tiers (P1: grouped disclosures, summary export, amendment notifications; P2: retention enforcement, breach detection, breach logging; P3: personal representative access). Includes full GAS function specifications, spreadsheet schemas, security checklist, regulatory compliance matrix, 55+ test scenarios, troubleshooting guide, and forward-looking regulatory preparation |
 
 ---

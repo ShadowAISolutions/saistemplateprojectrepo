@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
+
+## [v08.11r] — 2026-03-30 09:49:15 AM EST
+
+> **Prompt:** "write this up as part of the phase B document, also update the list of things that were done/not done"
+
+### Added
+- Added Implementation Status section to `HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` — comprehensive tracking of what was implemented (18 functions, 11 routes, all UI elements), what requires post-deployment configuration (security officer email, MailApp authorization, retention trigger), and known limitations with regulatory risk assessment
+- Added Developer Verification Walkthrough to `HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` — 42-check structured testing guide organized by priority tier (Pre-Flight, UI Elements, P1/P2/P3 functional tests, Cross-Cutting concerns) plus a 7-step quick smoke test
+
+### Changed
+- Updated Phase B at a Glance status table from pre-implementation targets (❌/⚠️ → ✅) to post-implementation status with version numbers (v02.28g / v03.79w)
+- Updated Document Information with implementation date, implemented GAS/HTML versions, and implementation status
 
 ## [v08.10r] — 2026-03-30 09:36:36 AM EST
 
