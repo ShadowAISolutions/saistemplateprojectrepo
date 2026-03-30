@@ -3,7 +3,13 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
+
+## [v02.30g] — 2026-03-30 12:00:52 PM EST — v08.15r
+
+### Added
+- Configurable compliance deadline settings — response timeframes for access requests, amendments, and breach notifications can now be adjusted without code changes
+- Disclosure records now track data category classification for enhanced regulatory tracking
 
 ## [v02.29g] — 2026-03-30 11:13:25 AM EST — v08.13r
 

@@ -3,7 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
+
+## [v08.15r] — 2026-03-30 12:00:52 PM EST
+
+> **Prompt:** "update the list of things that were done/not done in repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md for testauth1, think deeply to see if everything was implemented and implemented correectly"
+
+### Added
+- Added `HIPAA_DEADLINES` config object to `testauth1.gs` — centralizes all HIPAA regulatory deadlines (access: 30d, amendment: 60d, accounting: 6yr, breach: 60d) with §-reference comments and proposed NPRM/HITECH alternatives
+- Added `DataCategory` column to DisclosureLog schema in `testauth1.gs` — supports 42 CFR Part 2 SUD record segmentation across `recordDisclosure()`, `getDisclosureAccounting()`, and `exportDisclosureAccounting()`
+
+### Changed
+- Replaced all hardcoded deadline values in `testauth1.gs` with `HIPAA_DEADLINES` references (accounting lookback, amendment response, breach notification)
+- Updated `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` with comprehensive implementation status audit — all 17 core functions verified as implemented, 7 beyond-spec features documented, compliance matrix corrected (21/30 ✅), security checklists marked, Section 14 future-proofing items updated, new Section 16 added with full implementation status tables
+
+#### `testauth1.gs` — v02.30g
+
+##### Added
+- `HIPAA_DEADLINES` config object with 7 regulatory deadline constants
+- `DataCategory` column in DisclosureLog (recordDisclosure, getDisclosureAccounting, exportDisclosureAccounting)
+
+##### Changed
+- Replaced hardcoded deadline values with `HIPAA_DEADLINES` references
 
 ## [v08.14r] — 2026-03-30 11:36:58 AM EST
 

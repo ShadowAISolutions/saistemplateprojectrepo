@@ -1,4 +1,4 @@
-var VERSION = "v02.29g";
+var VERSION = "v02.30g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1724,6 +1724,22 @@ function saveNote(sessionToken, noteText) {
 // ═══════════════════════════════════════════════════════
 
 /**
+ * Configurable HIPAA compliance deadlines (in days/years).
+ * Update these when regulations change — e.g. Privacy Rule NPRM
+ * proposes reducing ACCESS_RESPONSE_DAYS from 30 to 15.
+ * See: §164.524(b)(1), §164.526(b)(1), §164.528(c)(1)
+ */
+var HIPAA_DEADLINES = {
+  ACCESS_RESPONSE_DAYS: 30,      // §164.524(b)(1) — proposed NPRM: 15
+  ACCESS_EXTENSION_DAYS: 30,     // §164.524(b)(2)(iii)
+  AMENDMENT_RESPONSE_DAYS: 60,   // §164.526(b)(1)
+  AMENDMENT_EXTENSION_DAYS: 30,  // §164.526(b)(2)(ii)
+  ACCOUNTING_RESPONSE_DAYS: 60,  // §164.528(c)(1)
+  ACCOUNTING_PERIOD_YEARS: 6,    // §164.528(a)(1) — HITECH EHR: 3
+  BREACH_NOTIFICATION_DAYS: 60   // §164.404(b) — individual notification
+};
+
+/**
  * Generates a unique request ID for tracking compliance requests.
  * Format: PREFIX-YYYYMMDD-UUID8 (e.g. REQ-20260323-a1b2c3d4)
  */
@@ -1892,16 +1908,17 @@ function recordDisclosure(params) {
       triggeredBy = 'system_automated';
     }
   }
+  var dataCategory = params.dataCategory || 'General';
   var headers = [
     'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
     'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-    'ExemptionType', 'TriggeredBy'
+    'ExemptionType', 'DataCategory', 'TriggeredBy'
   ];
   var sheet = getOrCreateSheet('DisclosureLog', headers);
   sheet.appendRow([
     timestamp, disclosureId, params.individualEmail, params.recipientName,
     params.recipientType, params.phiDescription, params.purpose, isExempt,
-    exemptionType, triggeredBy
+    exemptionType, dataCategory, triggeredBy
   ]);
   auditLog('disclosure_recorded', triggeredBy, 'success', {
     disclosureId: disclosureId,
@@ -1924,11 +1941,12 @@ function getDisclosureAccounting(sessionToken, targetEmail) {
     validateIndividualAccess(user, lookupEmail, 'getDisclosureAccounting');
     var requestId = generateRequestId('ACCT');
     var now = new Date();
-    var sixYearsAgo = new Date(now.getTime() - (6 * 365.25 * 24 * 60 * 60 * 1000));
+    var lookbackYears = HIPAA_DEADLINES.ACCOUNTING_PERIOD_YEARS;
+    var sixYearsAgo = new Date(now.getTime() - (lookbackYears * 365.25 * 24 * 60 * 60 * 1000));
     var headers = [
       'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
       'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-      'ExemptionType', 'TriggeredBy'
+      'ExemptionType', 'DataCategory', 'TriggeredBy'
     ];
     var sheet = getOrCreateSheet('DisclosureLog', headers);
     var data = sheet.getDataRange().getValues();
@@ -1945,7 +1963,8 @@ function getDisclosureAccounting(sessionToken, targetEmail) {
           recipientName: row[3],
           recipientType: row[4],
           phiDescription: row[5],
-          purpose: row[6]
+          purpose: row[6],
+          dataCategory: row[9] || 'General'
         });
       }
     }
@@ -1977,7 +1996,7 @@ function exportDisclosureAccounting(sessionToken, format) {
     var dateStr = Utilities.formatDate(new Date(), 'America/New_York', 'yyyy-MM-dd');
     var filename = 'disclosure-accounting-' + dateStr;
     if (format === 'csv') {
-      var csvRows = ['Date,DisclosureID,RecipientName,RecipientType,PHIDescription,Purpose'];
+      var csvRows = ['Date,DisclosureID,RecipientName,RecipientType,PHIDescription,Purpose,DataCategory'];
       for (var i = 0; i < accounting.disclosures.length; i++) {
         var d = accounting.disclosures[i];
         csvRows.push([
@@ -1986,7 +2005,8 @@ function exportDisclosureAccounting(sessionToken, format) {
           '"' + (d.recipientName || '').replace(/"/g, '""') + '"',
           '"' + d.recipientType + '"',
           '"' + (d.phiDescription || '').replace(/"/g, '""') + '"',
-          '"' + d.purpose + '"'
+          '"' + d.purpose + '"',
+          '"' + (d.dataCategory || 'General') + '"'
         ].join(','));
       }
       return { success: true, format: 'csv', data: csvRows.join('\n'), filename: filename + '.csv' };
@@ -2179,7 +2199,7 @@ function requestAmendment(sessionToken, recordId, currentContent, proposedChange
     var amendmentId = generateRequestId('AMEND');
     var requestDate = formatHipaaTimestamp();
     var deadline = new Date();
-    deadline.setDate(deadline.getDate() + 60);
+    deadline.setDate(deadline.getDate() + HIPAA_DEADLINES.AMENDMENT_RESPONSE_DAYS);
     var deadlineStr = Utilities.formatDate(deadline, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
     var headers = [
       'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
@@ -2202,7 +2222,7 @@ function requestAmendment(sessionToken, recordId, currentContent, proposedChange
     return {
       success: true, amendmentId: amendmentId, status: 'Pending',
       deadline: deadlineStr,
-      message: 'Your amendment request has been submitted. You will be notified of the decision within 60 days.'
+      message: 'Your amendment request has been submitted. You will be notified of the decision within ' + HIPAA_DEADLINES.AMENDMENT_RESPONSE_DAYS + ' days.'
     };
   });
 }
@@ -4816,9 +4836,9 @@ function logBreach(sessionToken, params) {
     var timestamp = formatHipaaTimestamp();
     var discoveryDate = params.discoveryDate || timestamp;
 
-    // Calculate 60-day notification deadline
+    // Calculate notification deadline per §164.404(b)
     var deadline = new Date(discoveryDate);
-    deadline.setDate(deadline.getDate() + 60);
+    deadline.setDate(deadline.getDate() + HIPAA_DEADLINES.BREACH_NOTIFICATION_DAYS);
 
     var headers = [
       'BreachID', 'CreatedDate', 'DiscoveryDate', 'Description',
