@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
+
+## [v08.20r] — 2026-03-30 02:10:47 PM EST
+
+> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md for testauth1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
+
+### Changed
+- Rewrote HIPAA Phase C implementation status section with accurate assessment based on deep code verification against guide specifications
+- Downgraded Phase C overall status from "✅ Complete" to "⚠️ Substantially Complete" — GAS fully implemented; HTML has UI gaps
+- Corrected doGet route count from 9 to 8
+- Updated #18b Legal Hold status to reflect HTML form gaps (missing date pickers, wrong sheet names)
+
+### Added
+- "Items NOT Implemented (as guide expected)" table documenting 8 discrepancies between guide specification and actual implementation: missing date pickers, missing status filter, sheet name mismatch, CSS/ID/message naming variances, form toggle difference, route count correction
+- "Implementation Correctness Assessment" table with per-area verdicts confirming GAS logic, configs, integration points, RBAC, and HTML panel management are all correct
 
 ## [v08.19r] — 2026-03-30 01:35:41 PM EST
 

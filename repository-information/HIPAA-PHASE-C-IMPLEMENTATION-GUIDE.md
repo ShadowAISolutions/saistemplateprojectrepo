@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Document** | Phase C Implementation Guide |
-| **Implementation Status** | ✅ Complete — all 5 items implemented across GAS + HTML |
+| **Implementation Status** | ⚠️ Substantially Complete — all 5 items implemented in GAS; HTML UI has gaps vs guide spec |
 | **Environment** | testauth1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-30 |
 | **GAS Version** | v02.29g (Phase C functions implemented) |
@@ -65,8 +65,8 @@ Phase C items build on each other sequentially. Implement in this order:
 
 | Item | CFR | Requirement | Current Status | Target |
 |------|-----|-------------|---------------|--------|
-| **#18** 6-Year Retention | §164.316(b)(2)(i) | Retain all audit logs and security documentation for at least 6 years | ✅ Comprehensive (Phase C) | ✅ Comprehensive |
-| **#18b** Legal Hold Override | §164.316(b)(2)(i) + litigation best practice | Exempt records under legal hold from routine archival | ✅ Implemented (v02.29g) | ✅ Implemented |
+| **#18** 6-Year Retention | §164.316(b)(2)(i) | Retain all audit logs and security documentation for at least 6 years | ✅ Comprehensive (Phase C) — "last in effect" date logic, integrity logging | ✅ Comprehensive |
+| **#18b** Legal Hold Override | §164.316(b)(2)(i) + litigation best practice | Exempt records under legal hold from routine archival | ⚠️ GAS complete (v02.29g); HTML form missing date pickers + has wrong sheet names | ✅ Implemented |
 | **Retention Compliance Audit** | §164.308(a)(8) + §164.316(b)(2)(iii) | Periodic review of retention enforcement effectiveness | ✅ Implemented (v02.29g) | ✅ Implemented |
 | **Archive Integrity Verification** | §164.312(c)(1) | Verify archived records are complete, unaltered, and retrievable | ✅ Implemented (v02.29g) | ✅ Implemented |
 | **Retention Policy Documentation** | §164.316(b)(1) | Generate formal retention policy documentation for organizational compliance | ✅ Implemented (v02.29g) | ✅ Implemented |
@@ -95,7 +95,7 @@ When Phase C is complete:
 
 ### Implementation Status (Updated 2026-03-30)
 
-**Phase C Status: ✅ Complete** — all 5 items implemented across GAS (v02.29g) + HTML (v03.80w).
+**Phase C Status: ⚠️ Substantially Complete** — all 5 items implemented in GAS (v02.29g); HTML UI (v03.80w) has implementation gaps vs guide specification. Core server-side functionality is fully operational; UI gaps affect admin convenience features only — no regulatory compliance impact.
 
 #### What Was Implemented
 
@@ -103,13 +103,13 @@ When Phase C is complete:
 |-----------|:---:|:---:|:---:|--------|
 | **Shared Infrastructure** | 4 utilities (`computeRowsChecksum`, `wrapRetentionOperation`, `getHoldNotificationEmail`, `getRetentionRelevantDate`) + 2 config objects (`LEGAL_HOLD_CONFIG`, `INTEGRITY_CONFIG`) | — | — | ✅ Complete |
 | **#18 Core Enhancement** | Modified `enforceRetention()` — added "last in effect" date calculation via `getRetentionRelevantDate()`, legal hold checking via `checkLegalHold()`, and archive integrity logging via `computeArchiveChecksum()` | — | — | ✅ Complete |
-| **#18b Legal Hold Override** | `placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()` | Legal holds panel (place form, hold list, release with inline input) + admin dropdown button | `phase-c-place-legal-hold`, `phase-c-release-legal-hold`, `phase-c-get-legal-holds` | ✅ Complete |
+| **#18b Legal Hold Override** | `placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()` — all fully implemented with date-range support, auto-expiration, audit logging | Legal holds panel (place form, hold list, release with inline input) + admin dropdown button | `phase-c-place-legal-hold`, `phase-c-release-legal-hold`, `phase-c-get-legal-holds` | ⚠️ GAS complete; HTML has gaps (see below) |
 | **Retention Compliance Audit** | `auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()` | Compliance audit panel (run audit, view results, export JSON/text) + admin dropdown button | `phase-c-audit-retention`, `phase-c-get-audit-report` | ✅ Complete |
 | **Archive Integrity Verification** | `computeArchiveChecksum()`, `verifyArchiveIntegrity()` | Archive integrity panel (verify button, results display) + admin dropdown button | `phase-c-verify-integrity` | ✅ Complete |
 | **Retention Policy Documentation** | `getRetentionPolicyDocument()`, `exportRetentionPolicy()` | Retention policy panel (generate, view sections, export text/JSON) + admin dropdown button | `phase-c-get-retention-policy`, `phase-c-export-retention-policy` | ✅ Complete |
 | **HTML Integration** | — | `showAuthWall()` updated to hide Phase C panels and clear PHI data; Phase C message routing (8 response types); panel state management and registration | — | ✅ Complete |
 
-**Totals implemented:** 14 new GAS functions, 4 shared utilities, 2 config objects, 9 doGet() message routes, 4 admin dropdown buttons, 4 admin panels, 8 postMessage handler cases, ~450 lines of HTML/JavaScript handler functions, 3 integration points in `enforceRetention()`.
+**Totals implemented:** 14 new GAS functions, 4 shared utilities, 2 config objects, 8 doGet() message routes, 4 admin dropdown buttons, 4 admin panels, 8 postMessage handler cases, ~450 lines of HTML/JavaScript handler functions, 3 integration points in `enforceRetention()`.
 
 #### What Requires Post-Deployment Configuration
 
@@ -131,6 +131,39 @@ These items are implemented in code but require manual setup before they functio
 | **Compliance audit doesn't check trigger health** | The audit verifies sheet protection, record counts, and retention periods, but doesn't verify the daily trigger is currently installed and running | Low — trigger installation is a one-time setup; deletion is rare | Add trigger health check to `auditRetentionCompliance()` findings if needed |
 | **Policy document is configuration-reflective only** | `getRetentionPolicyDocument()` generates policy from live technical configuration — it does not include organizational context (responsible persons, approval workflows, etc.) | Low — the technical policy is the most complex part; organizational wrapping is a manual document process | Use the generated document as the technical annex to an organizational retention policy |
 | **Single checksum per archive operation** | Each archival batch gets one checksum entry — if rows are added to the archive between checksum computations, verification will show a mismatch | Low — `enforceRetention()` is the only process that writes to archive sheets. If verification fails, check if a recent archival occurred | Re-run `computeArchiveChecksum()` after any known archival to reset the baseline |
+
+#### Items NOT Implemented (as guide expected)
+
+The following items were specified in this guide but were **not implemented** or were **implemented differently** than specified. None affect regulatory compliance — they are UI convenience features and cosmetic variances.
+
+| Item | Guide Specification | Actual Implementation | Impact |
+|------|-------------------|----------------------|--------|
+| **Date picker fields on legal hold form** | Guide §6 HTML UI specifies `hold-start-date`, `hold-end-date`, `hold-expiration` date picker inputs for placing holds with date ranges and auto-expiration | **Not implemented** — the HTML form (`lh-place-btn` handler) collects only: sheet name, hold type, reason, case reference, and custodian email. No date picker fields exist. The GAS `placeLegalHold()` function accepts `startDate`, `endDate`, and `expirationDate` parameters correctly — the backend supports it, but the UI provides no way to set them | Low — holds default to full-sheet scope (more conservative, per Known Limitations). Admins cannot set date ranges or auto-expiration via UI; would need to be added or invoked via script |
+| **Legal hold status filter** | Guide §6 HTML UI specifies `hold-status-filter` select element with options: All statuses, Active (default), Released, Expired | **Not implemented** — the legal holds panel displays all holds with no filter control. `getLegalHolds()` GAS function supports `filters.status` parameter, but the HTML sends no status filter | Low — all holds are shown; admin must visually scan for status. Functional but less convenient for large hold lists |
+| **Sheet name dropdown values** | Guide §6 HTML UI specifies `hold-sheet-select` populated dynamically from `HIPAA_RETENTION_CONFIG.SHEETS_TO_PROTECT` (10 sheets: SessionAuditLog, DataAuditLog, DisclosureLog, AccessRequests, AmendmentRequests, AmendmentNotifications, BreachLog, PersonalRepresentatives, LegalHolds, RetentionIntegrityLog) | **Mismatch** — the HTML `lh-sheet-name` dropdown has hardcoded values: AuditLog, Sessions, UserDirectory, AmendmentRequests, DisclosureLog, BreachLog, PersonalRepresentatives. These names do not match `SHEETS_TO_PROTECT` (e.g. "AuditLog" vs "SessionAuditLog"/"DataAuditLog", "Sessions" is not a protected sheet, "UserDirectory" is not in the list) | **Medium** — placing a hold on "AuditLog" would fail validation in `placeLegalHold()` because it checks against `SHEETS_TO_PROTECT`. Holds can only be placed on sheets whose names happen to match (AmendmentRequests, DisclosureLog, BreachLog, PersonalRepresentatives). DataAuditLog, SessionAuditLog, AmendmentNotifications, LegalHolds, and RetentionIntegrityLog cannot be held via the UI |
+| **Hold form toggle (New Hold button)** | Guide §6 HTML UI specifies a hidden form (`legal-hold-form`, `display:none`) toggled by a `legal-hold-new-btn` "New Hold" button, with a `hold-cancel-btn` to hide it | **Different** — the hold placement form is always visible within the panel (no toggle). There is no "New Hold" or "Cancel" button — the form is part of the panel's permanent layout | None — cosmetic difference; form is accessible |
+| **CSS class naming** | Guide specifies Phase C-specific classes: `phase-c-btn`, `phase-c-panel`, `pc-header`, `pc-title`, `pc-action`, `pc-close`, `pc-list`, `pc-filters` | **Different** — code reuses Phase A class names: `phase-a-btn`, `phase-a-panel`, `pa-header`, `pa-action`, `pa-close` | None — styling works correctly; classes are shared across HIPAA phases |
+| **Element ID naming** | Guide specifies singular form: `legal-hold-btn`, `legal-hold-panel`, `legal-hold-close-btn`, etc. | **Different** — code uses plural form: `legal-holds-btn`, `legal-holds-panel`, `lh-close-btn`, etc. | None — internal naming convention difference; all IDs are consistent within the codebase |
+| **Message type naming** | Guide specifies longer result types: `phase-c-place-legal-hold-result`, `phase-c-release-legal-hold-result`, `phase-c-get-legal-holds-result` | **Different** — code uses shorter types: `phase-c-place-hold-result`, `phase-c-release-hold-result`, `phase-c-legal-holds-result` | None — GAS routes and HTML handlers use matching names; communication works correctly |
+| **doGet route count** | Previous totals line claimed "9 doGet() message routes" | **Corrected to 8** — only 8 Phase C routes exist in doGet(): `phase-c-place-legal-hold`, `phase-c-release-legal-hold`, `phase-c-get-legal-holds`, `phase-c-audit-retention`, `phase-c-get-audit-report`, `phase-c-verify-integrity`, `phase-c-get-retention-policy`, `phase-c-export-retention-policy` | None — count was previously overstated by 1 |
+
+#### Implementation Correctness Assessment
+
+| Area | Verdict | Notes |
+|------|---------|-------|
+| **GAS function logic** | ✅ Correct | All 14 functions implemented with complete business logic, proper error handling, audit logging, and RBAC enforcement |
+| **Config objects** | ✅ Correct | `LEGAL_HOLD_CONFIG` and `INTEGRITY_CONFIG` match guide specification with all required fields |
+| **enforceRetention() integration** | ✅ Correct | All 3 integration points present: `getRetentionRelevantDate()` for "last in effect" dates, `checkLegalHold()` before archival, `computeArchiveChecksum()` after archival |
+| **"Last in effect" date logic** | ✅ Correct | Scans both creation-date and status-change columns, returns the later date per §164.316(b)(2)(i) |
+| **Legal hold auto-expiration** | ✅ Correct | `checkLegalHold()` auto-expires holds past their expiration date, updates status to 'Expired', logs audit entry |
+| **Date-range hold filtering (GAS)** | ✅ Correct | `checkLegalHold()` correctly filters by `recordDate` against hold's `StartDate`/`EndDate` range when both are present |
+| **Integrity checksum (SHA-256)** | ✅ Correct | `computeRowsChecksum()` correctly serializes rows, handles Date/null values, produces hex-encoded SHA-256 digest |
+| **Compliance audit report** | ✅ Correct | Checks existence, protection, record counts, overage records, archive status for all sheets in `SHEETS_TO_PROTECT` |
+| **Policy document generation** | ✅ Correct | Generates 10-section document from live config, incorporates active holds and latest audit |
+| **RBAC enforcement** | ✅ Correct | All user-facing functions require admin role; internal utilities (`checkLegalHold`, `computeArchiveChecksum`, `getRetentionRelevantDate`) have no permission gate as specified |
+| **HTML panel management** | ✅ Correct | All 4 panels registered in global `_panelRegistry`; mutual exclusion via `_closeAllPanelsExcept()`; `showAuthWall()` clears all Phase C data |
+| **HTML legal holds form** | ⚠️ Partial | Form works for basic holds (sheet, type, reason, case ref) but cannot set date ranges or expiration due to missing date pickers; sheet dropdown has wrong names (see "Items NOT Implemented" above) |
+| **HTML message routing** | ✅ Correct | All 8 response types handled; outbound messages match doGet routes; failure handlers wrap errors consistently |
 
 ---
 
