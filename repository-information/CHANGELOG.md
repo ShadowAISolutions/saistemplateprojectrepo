@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
+
+## [v08.12r] — 2026-03-30 10:26:30 AM EST
+
+> **Prompt:** "with the same amount of detail, formatting, research, and deep thought used in the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md and repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md, i want you to apply that into making the HIPAA Phase C Implementation Guide, the next phase in the repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md . Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+
+### Added
+- Created `repository-information/HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md` — comprehensive 2,669-line, 18-section implementation guide for HIPAA Phase C (Retention Enforcement deep dive), covering 5 items: #18 Core Retention Enhancement with "last in effect" date handling (§164.316(b)(2)(i)), #18b Legal Hold Override for litigation preservation (FRCP Rule 37(e)), Retention Compliance Audit System (§164.308(a)(8)), Archive Integrity Verification with SHA-256 checksums (§164.312(c)(1-2)), and Retention Policy Documentation Generator (§164.316(b)(1))
+- Full GAS function specifications for ~14 new functions: `placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()`, `auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()`, `computeArchiveChecksum()`, `verifyArchiveIntegrity()`, `getRetentionPolicyDocument()`, `exportRetentionPolicy()`, `getRetentionRelevantDate()`, `computeRowsChecksum()`, `wrapRetentionOperation()`
+- Regulatory landscape section with 6 OCR enforcement cases totaling $32.7M in penalties (Anthem, Premera, CHSPSC, Excellus, Banner Health, LA Care)
+- Spreadsheet schemas for 2 new sheets: `LegalHolds` (15 columns) and `RetentionIntegrityLog` (9 columns)
+- 40+ test scenarios across 5 test categories with end-to-end integration test
+- CFR paragraph-level regulatory compliance matrix covering §164.316(b), §164.308(a)(8), §164.312(c), §164.530(j), FRCP Rule 37(e), and §160.312
+- Forward-looking regulatory preparation for Security Rule NPRM, Privacy Rule NPRM, 42 CFR Part 2, and state-level privacy laws
 
 ## [v08.11r] — 2026-03-30 09:49:15 AM EST
 

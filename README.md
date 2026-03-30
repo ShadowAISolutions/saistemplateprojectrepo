@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-30 09:49:15 AM EST` · Repo version: `v08.11r`
+Last updated: `2026-03-30 10:26:30 AM EST` · Repo version: `v08.12r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -191,6 +191,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md">HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md</a> — Follow-up compliance progress (v01.56g→v01.91g, v02.35w→v02.74w, updated scorecard &amp; gap analysis)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md">HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md</a> — Phase A implementation guide (Privacy Rule: #19 Disclosure Accounting, #23 Right of Access, #24 Right to Amendment)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md">HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md</a> — Phase B implementation guide (Extensions: #19b Grouped Disclosures, #23b Summary Export, #24b Amendment Notifications, #18 Retention, #28 Breach Detection, #31 Breach Logging, #25 Representatives)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md">HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md</a> — Phase C implementation guide (Retention Deep Dive: #18 Last-in-Effect Date, #18b Legal Hold, Compliance Audit, Archive Integrity, Policy Documentation)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/HIPAA-COMPLIANCE-REFERENCE.md">HIPAA-COMPLIANCE-REFERENCE.md</a> — [Superseded] HIPAA Security Rule compliance reference (all safeguards, implementation status)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/IMPROVEMENTS.md">IMPROVEMENTS.md</a>         — [template] Potential improvements
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/KNOWN-CONSTRAINTS-AND-FIXES.md">KNOWN-CONSTRAINTS-AND-FIXES.md</a>    — Architectural constraints &amp; resolved bug fixes (GAS double-iframe, postMessage, HMAC, deploy webhook)
