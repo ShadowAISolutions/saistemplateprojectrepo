@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
+
+## [v08.06r] — 2026-03-29 10:52:39 PM EST
+
+> **Prompt:** "for the up and down arrows, disable the up button on the top most item, and same for the down button on the bottom most button. if there is only 1 both should be disabled. when i mean disabled i mean unclickable but still visible"
+
+### Changed
+- Disabled move-up arrow on the first announcement and move-down arrow on the last announcement (visually dimmed and unclickable). Both arrows disabled when only one announcement exists
+
+#### `programportal.gs` — v01.36g
+
+##### Changed
+- Added boundary checks on move up/down buttons: first item's up and last item's down get `disabled` attribute and `.disabled` CSS class
+- Added `.ann-admin-btn.move.disabled` CSS with `opacity: 0.3`, `cursor: default`, and `pointer-events: none`
 
 ## [v08.05r] — 2026-03-29 10:45:35 PM EST
 

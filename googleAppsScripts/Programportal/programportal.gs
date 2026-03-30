@@ -1,4 +1,4 @@
-var VERSION = "v01.35g";
+var VERSION = "v01.36g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2617,6 +2617,7 @@ function doGet(e) {
         .ann-modal-btn.secondary { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
         .ann-modal-btn.secondary:hover { background: rgba(255,255,255,0.2); }
         .ann-admin-btn.move { font-size: 11px; padding: 2px 6px; }
+        .ann-admin-btn.move.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
         .ann-save-order-btn {
           background: #42a5f5; border: none; border-radius: 8px; padding: 10px 20px;
           color: #fff; cursor: pointer; font-size: 13px; flex: 1; text-align: center;
@@ -3082,9 +3083,11 @@ function doGet(e) {
 
             var adminHtml = '';
             if (_isAdmin) {
+              var isFirst = (i === 0);
+              var isLast = (i === displayItems.length - 1);
               adminHtml = '<div class="ann-admin-controls">'
-                + '<button class="ann-admin-btn move" data-idx="' + item.rowIndex + '" data-dir="up" title="Move up">▲</button>'
-                + '<button class="ann-admin-btn move" data-idx="' + item.rowIndex + '" data-dir="down" title="Move down">▼</button>'
+                + '<button class="ann-admin-btn move' + (isFirst ? ' disabled' : '') + '" data-idx="' + item.rowIndex + '" data-dir="up" title="Move up"' + (isFirst ? ' disabled' : '') + '>▲</button>'
+                + '<button class="ann-admin-btn move' + (isLast ? ' disabled' : '') + '" data-idx="' + item.rowIndex + '" data-dir="down" title="Move down"' + (isLast ? ' disabled' : '') + '>▼</button>'
                 + '<button class="ann-admin-btn edit" data-idx="' + item.rowIndex + '" data-title="' + _escapeHtml(item.title) + '" data-body="' + _escapeHtml(item.body) + '" data-priority="' + priority + '" data-active="' + (item.active !== false) + '">Edit</button>'
                 + '<button class="ann-admin-btn delete" data-idx="' + item.rowIndex + '">Delete</button>'
                 + '</div>';
