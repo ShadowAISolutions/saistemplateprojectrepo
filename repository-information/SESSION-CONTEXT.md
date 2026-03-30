@@ -4,65 +4,56 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-30 11:42:58 AM EST
-**Repo version:** v08.14r
+**Date:** 2026-03-30 12:05:03 PM EST
+**Repo version:** v08.15r
 
 ### What was done
-- **v08.13r** — Implemented all HIPAA Phase C — retention enforcement, legal holds, compliance audit, archive integrity, policy documentation:
-  - **GAS backend (testauth1.gs v02.29g)**: 14 new functions + 4 shared utilities + 2 config objects + 9 doGet message routes. Functions: `placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()`, `auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()`, `computeArchiveChecksum()`, `verifyArchiveIntegrity()`, `getRetentionPolicyDocument()`, `exportRetentionPolicy()`, `computeRowsChecksum()`, `wrapRetentionOperation()`, `getHoldNotificationEmail()`, `getRetentionRelevantDate()`
-  - **HTML UI (testauth1.html v03.80w)**: 4 admin dropdown buttons, 4 admin panels (Legal Holds, Compliance Audit, Archive Integrity, Retention Policy), 8 postMessage handler cases, ~450 lines of HTML/JS
-  - Modified `enforceRetention()` to integrate legal hold checking, "last in effect" date calculation, and SHA-256 archive integrity checksums
-  - Updated `showAuthWall()` to clean up Phase C panels and clear PHI data on sign-out
-- **v08.14r** — Documentation updates:
-  - Added Developer Verification Walkthrough to Phase C guide — 34 checks across 6 tiers + quick smoke test
-  - Added Implementation Status section to Phase C guide (what was done, post-deployment config, known limitations)
-  - Updated HIPAA follow-up document scorecard — 7 items moved to ✅ Implemented (#18, #19, #23, #24, #28, #31). All current-law ❌ gaps closed. Compliance: 61% → 81%
-  - Marked Phases A, B, C as complete in the implementation roadmap
-  - Updated individual item sections with full implementation details
+- **v08.15r** — HIPAA Phase A implementation review and gap closure:
+  - Deep audit of all 17 Phase A core GAS functions — all verified as correctly implemented with line references
+  - Identified 7 beyond-spec features already implemented (originally Phase B): `getPendingAmendments()`, `sendAmendmentNotifications()`, `generateDataSummary()`, `isRepresentativeAuthorized()`, `getPersonalRepresentatives()`, CSV formula injection prevention, disclosure grouping toggle
+  - **Implemented `HIPAA_DEADLINES` config object** (testauth1.gs) — centralizes all 7 regulatory deadlines with §-references: access 30d, extension 30d, amendment 60d, amendment extension 30d, accounting 60d, accounting period 6yr, breach 60d
+  - **Added `DataCategory` column** to DisclosureLog schema — supports 42 CFR Part 2 SUD record segmentation across `recordDisclosure()`, `getDisclosureAccounting()`, `exportDisclosureAccounting()`
+  - Replaced all hardcoded deadline values with `HIPAA_DEADLINES` references (3 locations)
+  - Comprehensive update to `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md`: executive summary ✅, pre/post checklists marked, compliance matrix corrected (21/30 ✅), Section 14 future-proofing updated, new Section 16 implementation status audit with 5 tables (GAS functions, beyond-spec, HTML UI, security, remaining gaps)
 
 ### Where we left off
-- All changes committed and pushed (v08.14r)
-- **Phase C is fully implemented** — all HIPAA retention features deployed
-- **All current-law gaps are now closed** — 0 ❌ remaining, 1 ⚠️ (#10 Encryption at Rest, addressable)
-- **Next logical step: Phase D — Production Hardening** (test values → production, domain restriction, risk analysis documentation, formal security evaluation)
-- **4 Phase C items require post-deployment configuration** before they function:
-  1. Set `LEGAL_HOLD_CONFIG.NOTIFICATION_EMAIL` to a real email in testauth1.gs
-  2. Authorize MailApp OAuth scope by running any mail-sending function from GAS editor
-  3. Run `setupComplianceAuditTrigger()` from GAS editor to install the monthly audit trigger
-  4. Run `setupRetentionTrigger()` (Phase B) if not already installed
-- testauth1.html: v03.80w, testauth1.gs: v02.29g
+- All changes committed and pushed (v08.15r)
+- **Phases A, B, C all fully implemented** — all current-law gaps closed
+- **Remaining Phase A gaps** (low priority): 30-day extension workflows for access/amendment requests (not needed — testauth1 responds instantly), formal denial notice (partial — error responses exist but not as formal written notice)
+- **Next logical step: Phase D — Production Hardening** (test values → production, domain restriction, risk analysis, formal security evaluation)
+- **Post-deployment config items still pending** (from Phase C):
+  1. Set `LEGAL_HOLD_CONFIG.NOTIFICATION_EMAIL` to a real email
+  2. Authorize MailApp OAuth scope
+  3. Run `setupComplianceAuditTrigger()` for monthly audits
+  4. Run `setupRetentionTrigger()` for daily retention enforcement
 
 ### Key decisions made
-- Updated all 7 items in the follow-up doc scorecard (not just #18 for Phase C) — discovered Phase B had also implemented #19, #23, #24, #28, #31 that were still showing as ❌/⚠️
+- Implemented `HIPAA_DEADLINES` and `DataCategory` as actual code changes (not just documentation updates) per user request
+- Extension workflows (30-day extensions) left as remaining gaps — they're low-risk since testauth1 responds to requests instantly (synchronous)
 - Used incremental Edit calls per developer instruction (no large single Write calls)
-- Phase C follows same patterns as Phase A/B: `phase-a-panel` CSS, `_sendPhaseA()` messaging, `_registerPanel()` for mutual exclusion, `_closeAllPanelsExcept()` for panel management
 
 ### Active context
-- Branch: `claude/hipaa-phase-c-guide-a48Jn`
-- Repo version: v08.14r
-- testauth1.html: v03.80w, testauth1.gs: v02.29g
+- Branch: `claude/review-hipaa-phase-a-m6kqX`
+- Repo version: v08.15r
+- testauth1.html: v03.80w, testauth1.gs: v02.30g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- CHANGELOG at 84/100
-- GAS changelog at 39/50 (12 sections rotated to archive this session)
+- CHANGELOG at 85/100
+- GAS changelog at 40/50
 
 ## Previous Sessions
 
-**Date:** 2026-03-30 09:52:53 AM EST
-**Repo version:** v08.11r
+**Date:** 2026-03-30 11:42:58 AM EST
+**Repo version:** v08.14r
 
 ### What was done
-- **v08.10r** — Implemented full HIPAA Phase B compliance extension for testauth1 (2,027 lines of changes across GAS + HTML):
-  - **GAS backend**: 18 new functions, 4 shared utilities, 3 config objects, 11 doGet() message routes
-  - **P1 Required Sub-Paragraphs**: `getGroupedDisclosureAccounting()`, `generateDataSummary()`, `sendAmendmentNotifications()`, `getNotificationStatus()`, `getDisclosureRecipientsForRecord()`
-  - **P2 Breach Infrastructure**: `evaluateBreachAlert()`, `sendBreachAlert()`, `getBreachAlertConfig()`, `logBreach()`, `logBreachFromAlert()`, `getBreachLog()`, `getBreachReport()`, `updateBreachStatus()`, `enforceRetention()`, `setupRetentionTrigger()`, `auditRetentionCompliance()`
-  - **P3 Personal Representatives**: `registerPersonalRepresentative()`, `getPersonalRepresentatives()`, `revokeRepresentative()`, `validateRepresentativeAccess()`
-- **v08.11r** — Updated `HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` with post-implementation documentation
+- **v08.13r** — Implemented all HIPAA Phase C — retention enforcement, legal holds, compliance audit, archive integrity, policy documentation (14 new functions, 4 utilities, 2 configs, 9 routes, 4 HTML panels)
+- **v08.14r** — Documentation: Developer Verification Walkthrough for Phase C (34 checks), updated follow-up scorecard (61% → 81%), marked Phases A/B/C complete
 
 ### Where we left off
-- All changes committed and pushed (v08.11r)
-- Phase B fully implemented, Phase C was the next step
+- All changes committed and pushed (v08.14r)
+- Phase C fully implemented, all current-law gaps closed
 
 Developed by: ShadowAISolutions
