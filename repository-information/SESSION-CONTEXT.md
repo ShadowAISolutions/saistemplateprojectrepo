@@ -4,23 +4,29 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-03-30 12:05:03 PM EST
-**Repo version:** v08.15r
+**Date:** 2026-03-30 12:41:52 PM EST
+**Repo version:** v08.17r
 
 ### What was done
-- **v08.15r** — HIPAA Phase A implementation review and gap closure:
-  - Deep audit of all 17 Phase A core GAS functions — all verified as correctly implemented with line references
-  - Identified 7 beyond-spec features already implemented (originally Phase B): `getPendingAmendments()`, `sendAmendmentNotifications()`, `generateDataSummary()`, `isRepresentativeAuthorized()`, `getPersonalRepresentatives()`, CSV formula injection prevention, disclosure grouping toggle
-  - **Implemented `HIPAA_DEADLINES` config object** (testauth1.gs) — centralizes all 7 regulatory deadlines with §-references: access 30d, extension 30d, amendment 60d, amendment extension 30d, accounting 60d, accounting period 6yr, breach 60d
-  - **Added `DataCategory` column** to DisclosureLog schema — supports 42 CFR Part 2 SUD record segmentation across `recordDisclosure()`, `getDisclosureAccounting()`, `exportDisclosureAccounting()`
-  - Replaced all hardcoded deadline values with `HIPAA_DEADLINES` references (3 locations)
-  - Comprehensive update to `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md`: executive summary ✅, pre/post checklists marked, compliance matrix corrected (21/30 ✅), Section 14 future-proofing updated, new Section 16 implementation status audit with 5 tables (GAS functions, beyond-spec, HTML UI, security, remaining gaps)
+- **v08.16r** — Fresh independent audit of HIPAA Phase A implementation status:
+  - Rewrote Section 16 of `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` — verified every function against actual source code, ignoring prior status claims
+  - Identified 7 "Items NOT Implemented" with honest status, 1 code discrepancy (DisclosureLog header mismatch)
+  - Updated executive summary to reflect true implementation state
+
+- **v08.17r** — Implemented all non-code future-proof items from the audit:
+  - **Fixed DisclosureLog header mismatch** — all 5 consuming functions now use consistent 12-column headers (`Timestamp`, `DisclosureID`, `IndividualEmail`, `RecipientName`, `RecipientType`, `PHIDescription`, `Purpose`, `IsExempt`, `ExemptionType`, `DataCategory`, `Source`, `TriggeredBy`)
+  - **Added `Source` column** to DisclosureLog for BA disclosure tracking (default: `'CoveredEntity'`)
+  - **Implemented `requestAccessExtension()`** — 30-day extension workflow for access requests per §164.524(b)(2)
+  - **Implemented `requestAmendmentExtension()`** — 30-day extension workflow for amendments per §164.526(b)(2)
+  - **Implemented `generateDenialNotice()`** — formal written denial notice with all 5 §164.524(d)(2) required elements
+  - **Added HITECH EHR dual-mode** to `getDisclosureAccounting()` — `options.includeEhrTpo` includes TPO disclosures with 3-year lookback per §13405(c)
+  - Added 4 route handlers and 3 HTML UI panels (Extensions, Denial Notice, EHR Disclosures) with full postMessage routing
+  - Updated HIPAA guide to v1.4 — 6 of 7 items now marked as implemented
 
 ### Where we left off
-- All changes committed and pushed (v08.15r)
-- **Phases A, B, C all fully implemented** — all current-law gaps closed
-- **Remaining Phase A gaps** (low priority): 30-day extension workflows for access/amendment requests (not needed — testauth1 responds instantly), formal denial notice (partial — error responses exist but not as formal written notice)
-- **Next logical step: Phase D — Production Hardening** (test values → production, domain restriction, risk analysis, formal security evaluation)
+- All changes committed and pushed (v08.17r)
+- **Only 1 item remains not implemented**: Organizational documentation per §164.526(f) — this is an administrative policy document, not code
+- **Next logical step**: Phase D — Production Hardening (test values → production, domain restriction, risk analysis)
 - **Post-deployment config items still pending** (from Phase C):
   1. Set `LEGAL_HOLD_CONFIG.NOTIFICATION_EMAIL` to a real email
   2. Authorize MailApp OAuth scope
@@ -28,32 +34,34 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
   4. Run `setupRetentionTrigger()` for daily retention enforcement
 
 ### Key decisions made
-- Implemented `HIPAA_DEADLINES` and `DataCategory` as actual code changes (not just documentation updates) per user request
-- Extension workflows (30-day extensions) left as remaining gaps — they're low-risk since testauth1 responds to requests instantly (synchronous)
-- Used incremental Edit calls per developer instruction (no large single Write calls)
+- Implemented all future-proof items in one pass: extension workflows, denial notices, HITECH EHR mode, BA disclosure tracking
+- DisclosureLog expanded from 11 to 12 columns with `Source` field between `DataCategory` and `TriggeredBy`
+- HITECH EHR mode uses purpose-based TPO detection (`treatment`, `payment`, `healthcare operations`) — not a separate column
 
 ### Active context
-- Branch: `claude/review-hipaa-phase-a-m6kqX`
-- Repo version: v08.15r
-- testauth1.html: v03.80w, testauth1.gs: v02.30g
+- Branch: `claude/update-hipaa-implementation-status-eV0XW`
+- Repo version: v08.17r
+- testauth1.html: v03.81w, testauth1.gs: v02.31g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- CHANGELOG at 85/100
-- GAS changelog at 40/50
+- CHANGELOG at 87/100
+- GAS changelog at 41/50, HTML changelog at 39/50
 
 ## Previous Sessions
 
-**Date:** 2026-03-30 11:42:58 AM EST
-**Repo version:** v08.14r
+**Date:** 2026-03-30 12:05:03 PM EST
+**Repo version:** v08.15r
 
 ### What was done
-- **v08.13r** — Implemented all HIPAA Phase C — retention enforcement, legal holds, compliance audit, archive integrity, policy documentation (14 new functions, 4 utilities, 2 configs, 9 routes, 4 HTML panels)
-- **v08.14r** — Documentation: Developer Verification Walkthrough for Phase C (34 checks), updated follow-up scorecard (61% → 81%), marked Phases A/B/C complete
+- **v08.15r** — HIPAA Phase A implementation review and gap closure:
+  - Deep audit of all 17 Phase A core GAS functions — all verified as correctly implemented
+  - Implemented `HIPAA_DEADLINES` config object and `DataCategory` column to DisclosureLog
+  - Comprehensive update to `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md`
 
 ### Where we left off
-- All changes committed and pushed (v08.14r)
-- Phase C fully implemented, all current-law gaps closed
+- All changes committed and pushed (v08.15r)
+- Remaining Phase A gaps identified (30-day extensions, denial notices, BA tracking, HITECH EHR) — all implemented in the next session (v08.17r)
 
 Developed by: ShadowAISolutions
