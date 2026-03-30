@@ -1,4 +1,4 @@
-var VERSION = "v01.31g";
+var VERSION = "v01.32g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2547,6 +2547,7 @@ function doGet(e) {
         .announcement-card:hover { background: rgba(255,255,255,0.1); }
         .announcement-card.priority-high { border-left-color: #ef5350; }
         .announcement-card.priority-normal { border-left-color: #42a5f5; }
+        .announcement-card.optimistic { border-left-color: #90caf9; }
         .announcement-card.priority-low { border-left-color: rgba(255,255,255,0.2); }
         .announcement-title { color: #fff; font-size: 15px; font-weight: 600; }
         .announcement-body { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.5; margin-top: 6px; }
@@ -3046,7 +3047,7 @@ function doGet(e) {
             if (priority !== 'high' && priority !== 'normal' && priority !== 'low') priority = 'normal';
 
             var card = document.createElement('div');
-            card.className = 'announcement-card priority-' + priority;
+            card.className = 'announcement-card priority-' + priority + (item._optimistic ? ' optimistic' : '');
             if (item.active === false) card.style.opacity = '0.45';
             if (_isAdmin) {
               card.draggable = true;
@@ -3205,7 +3206,7 @@ function doGet(e) {
               // Optimistic: update local item immediately
               for (var u = 0; u < _annLocalItems.length; u++) {
                 if (_annLocalItems[u].rowIndex === item.rowIndex) {
-                  _annLocalItems[u] = { rowIndex: item.rowIndex, title: title, body: body, date: _annLocalItems[u].date, priority: priority, active: active, author: _annLocalItems[u].author };
+                  _annLocalItems[u] = { rowIndex: item.rowIndex, title: title, body: body, date: _annLocalItems[u].date, priority: priority, active: active, author: _annLocalItems[u].author, _optimistic: true };
                   break;
                 }
               }
@@ -3217,7 +3218,7 @@ function doGet(e) {
                 .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, active);
             } else {
               // Optimistic: add to local array immediately (includes author for instant display)
-              _annLocalItems.push({ rowIndex: _annLocalItems.length, title: title, body: body, date: new Date().toISOString(), priority: priority, active: true, author: _userName });
+              _annLocalItems.push({ rowIndex: _annLocalItems.length, title: title, body: body, date: new Date().toISOString(), priority: priority, active: true, author: _userName, _optimistic: true });
               overlay.remove();
               _optimisticRender();
               google.script.run

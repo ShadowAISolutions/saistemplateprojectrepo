@@ -3,7 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v08.02r] — 2026-03-29 10:06:41 PM EST
+
+> **Prompt:** "while its optimistic have this side thing be a slightly different blue"
+
+### Added
+- Optimistic state visual indicator: announcement cards show a lighter blue left border (`#90caf9`) while pending server confirmation, reverting to normal priority color once the server responds
+- `_optimistic` flag on locally-added/edited items; `.optimistic` CSS class overrides `border-left-color`
+- Flag is automatically cleared when `_forceRenderAnnouncements` replaces local items with server data
+
+#### `programportal.gs` — v01.32g
+
+##### Added
+- `.announcement-card.optimistic { border-left-color: #90caf9; }` CSS
+- `_optimistic: true` flag on optimistic add and edit items
+- `optimistic` class applied conditionally in card rendering
 
 ## [v08.01r] — 2026-03-29 10:03:03 PM EST
 
