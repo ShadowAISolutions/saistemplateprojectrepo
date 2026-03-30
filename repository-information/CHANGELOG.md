@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [v08.04r] — 2026-03-29 10:35:42 PM EST
+
+> **Prompt:** "the top of the gas in the program portal is being cut off, fix it so everything is properly shown"
+
+### Fixed
+- Fixed Program Portal GAS content being cut off at the top by changing body CSS from `justify-content: center` to `justify-content: flex-start` — vertical centering was pushing content above the visible viewport when the page was taller than the screen
+
+#### `programportal.gs` — v01.34g
+
+##### Fixed
+- Fixed page content being cut off at the top when scrolling
 
 ## [v08.03r] — 2026-03-29 10:22:14 PM EST
 

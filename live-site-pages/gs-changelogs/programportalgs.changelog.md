@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.34g] — 2026-03-29 10:35:42 PM EST — v08.04r
+
+### Fixed
+- Fixed page header and content being cut off at the top of the screen
 
 ## [v01.33g] — 2026-03-29 10:22:14 PM EST — v08.03r
 
