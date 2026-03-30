@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 28/50`
+`Sections: 29/50`
 
 ## [Unreleased]
+
+## [v01.29g] — 2026-03-29 09:31:52 PM EST — v07.99r
+
+### Added
+- GAS layer visibility toggle button — hides/shows all portal content (matching TestAuth1's pattern where the GAS toggle lives inside the GAS iframe)
 
 ## [v01.28g] — 2026-03-29 07:06:43 PM EST — v07.98r
 

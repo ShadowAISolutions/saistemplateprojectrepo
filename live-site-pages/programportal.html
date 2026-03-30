@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.72w">
+  <meta name="build-version" content="v01.73w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Program Portal</title>
 <!-- ══════════════ -->
@@ -520,9 +520,8 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- HTML/GAS layer visibility toggles -->
+  <!-- HTML layer visibility toggle -->
   <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
-  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:126px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -3958,23 +3957,6 @@
         if (btn) {
           btn.textContent = _htmlLayerVisible ? 'HTML' : 'HTML \u25CB';
           btn.style.borderColor = _htmlLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
-        }
-      };
-    })();
-
-    // GAS layer visibility toggle — hides/shows the GAS iframe
-    (function() {
-      var _gasLayerVisible = true;
-      window._toggleGasLayer = function() {
-        _gasLayerVisible = !_gasLayerVisible;
-        var btn = document.getElementById('gas-layer-toggle');
-        var iframe = document.getElementById('gas-app');
-        if (iframe) {
-          iframe.style.display = _gasLayerVisible ? '' : 'none';
-        }
-        if (btn) {
-          btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \u25CB';
-          btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
         }
       };
     })();

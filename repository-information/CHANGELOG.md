@@ -3,7 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v07.99r] — 2026-03-29 09:31:52 PM EST
+
+> **Prompt:** "the gas toggle, why is it showing on the sign in page if there not supposed to be any gas visible, if there is gas that is supposedly visible in the sign in page address it" + "it should be like the testauth1" + "the gas toggle is on the gas layer itself"
+
+### Changed
+- Moved GAS layer toggle button from `programportal.html` (embedding page, visible on sign-in) to `programportal.gs` (GAS iframe, only visible after authentication) — matching TestAuth1's pattern where the GAS toggle lives inside the GAS layer
+
+### Removed
+- GAS toggle button and `_toggleGasLayer` JS from `programportal.html` — replaced by the GAS-layer version
+
+### Added
+- GAS toggle button inside `programportal.gs` doGet HTML template (fixed bottom-left at `left:135px`, same position as TestAuth1)
+- `_toggleGasLayer()` JS in the GAS iframe PROJECT block — toggles visibility of portal header, app sections, announcements, footer, and version display using `.gas-layer-hidden` CSS class
+- `.gas-layer-hidden { display: none !important; }` CSS in the GAS iframe
+- `id` attributes on portal header and footer divs for toggle targeting
+
+#### `programportal.html` — v01.73w
+
+##### Removed
+- GAS toggle button and `_toggleGasLayer()` function (moved to GAS layer)
+
+#### `programportal.gs` — v01.29g
+
+##### Added
+- GAS layer toggle button and `_toggleGasLayer()` function (moved from embedding page)
 
 ## [v07.98r] — 2026-03-29 07:06:43 PM EST
 

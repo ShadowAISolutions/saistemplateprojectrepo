@@ -1,4 +1,4 @@
-var VERSION = "v01.28g";
+var VERSION = "v01.29g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2626,6 +2626,7 @@ function doGet(e) {
         .announcement-card.dragging { opacity: 0.4; }
         .announcement-card.drag-over { border-top: 2px solid #42a5f5; margin-top: -2px; }
         .ann-drag-handle { cursor: grab; color: rgba(255,255,255,0.3); font-size: 14px; margin-right: 8px; user-select: none; }
+        .gas-layer-hidden { display: none !important; }
         .ann-status-bar {
           display: flex; align-items: center; gap: 12px; padding: 6px 0; margin-bottom: 8px;
           font-size: 11px; color: rgba(255,255,255,0.5);
@@ -2638,7 +2639,7 @@ function doGet(e) {
       </style>
     </head>
     <body>
-      <div class="portal-header">
+      <div class="portal-header" id="portal-header-wrap">
         <img src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt=""
              onerror="this.style.display='none'">
         <h1>Program Portal</h1>
@@ -2691,8 +2692,10 @@ function doGet(e) {
         <div class="portal-apps" id="portal-apps-public"></div>
       </div>
 
-      <div class="portal-footer">Developed by: ShadowAISolutions</div>
+      <div class="portal-footer" id="portal-footer">Developed by: ShadowAISolutions</div>
       <div id="version">${escapeHtml(VERSION)}</div>
+      <!-- PROJECT: GAS layer visibility toggle (matches TestAuth1 pattern — lives inside GAS iframe so it only appears after auth) -->
+      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.
@@ -3405,6 +3408,35 @@ function doGet(e) {
         if (_announcementsData) _renderAnnouncements(_announcementsData);
         _annLastPollTick = Date.now();
         setTimeout(_doAnnouncementsPoll, ANNOUNCEMENTS_POLL_INTERVAL);
+
+        // ── GAS layer visibility toggle (matches TestAuth1 pattern) ──
+        (function() {
+          var _gasLayerVisible = true;
+          var _gasLayerEls = ['announcements-section', 'portal-section-auth', 'portal-section-public',
+            'portal-header-wrap', 'portal-footer', 'version', 'ann-status-bar'];
+          window._toggleGasLayer = function() {
+            _gasLayerVisible = !_gasLayerVisible;
+            var btn = document.getElementById('gas-layer-toggle');
+            _gasLayerEls.forEach(function(id) {
+              var el = document.getElementById(id);
+              if (!el) return;
+              if (!_gasLayerVisible) {
+                el.classList.add('gas-layer-hidden');
+              } else {
+                el.classList.remove('gas-layer-hidden');
+              }
+            });
+            // Also toggle elements by class (portal-toggles doesn't have an id)
+            document.querySelectorAll('.portal-toggles, .portal-open-toggle').forEach(function(el) {
+              if (!_gasLayerVisible) { el.classList.add('gas-layer-hidden'); }
+              else { el.classList.remove('gas-layer-hidden'); }
+            });
+            if (btn) {
+              btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';
+              btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+            }
+          };
+        })();
 
         // PROJECT END
       </script>

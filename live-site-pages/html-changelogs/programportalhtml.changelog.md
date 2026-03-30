@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 72/50`
+`Sections: 73/50`
 
 ## [Unreleased]
+
+## [v01.73w] — 2026-03-29 09:31:52 PM EST — v07.99r
+
+### Changed
+- GAS toggle button removed from the sign-in page — it now only appears after authentication (moved to the GAS layer)
 
 ## [v01.72w] — 2026-03-29 06:31:20 PM EST — v07.88r
 
