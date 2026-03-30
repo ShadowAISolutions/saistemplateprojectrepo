@@ -1,4 +1,4 @@
-var VERSION = "v01.30g";
+var VERSION = "v01.31g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2864,8 +2864,9 @@ function doGet(e) {
 
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';
-        // PROJECT: User role for admin-only announcements editing
+        // PROJECT: User role and name for admin-only announcements editing
         var _userRole = '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}';
+        var _userName = '${escapeJs(session.displayName || session.email || '')}';
         // DJB2→HMAC migration complete: _s() and _mk removed.
         // All message signing now happens server-side via signAppMessage()
         // (called through google.script.run — same pattern as Phase 7 heartbeat/signout).
@@ -3204,7 +3205,7 @@ function doGet(e) {
               // Optimistic: update local item immediately
               for (var u = 0; u < _annLocalItems.length; u++) {
                 if (_annLocalItems[u].rowIndex === item.rowIndex) {
-                  _annLocalItems[u] = { rowIndex: item.rowIndex, title: title, body: body, date: _annLocalItems[u].date, priority: priority, active: active };
+                  _annLocalItems[u] = { rowIndex: item.rowIndex, title: title, body: body, date: _annLocalItems[u].date, priority: priority, active: active, author: _annLocalItems[u].author };
                   break;
                 }
               }
@@ -3215,8 +3216,8 @@ function doGet(e) {
                 .withFailureHandler(function(err) { console.error('Update error:', err); })
                 .updateAnnouncement(_sessionToken, item.rowIndex, title, body, priority, active);
             } else {
-              // Optimistic: add to local array immediately
-              _annLocalItems.push({ rowIndex: _annLocalItems.length, title: title, body: body, date: new Date().toISOString(), priority: priority, active: true });
+              // Optimistic: add to local array immediately (includes author for instant display)
+              _annLocalItems.push({ rowIndex: _annLocalItems.length, title: title, body: body, date: new Date().toISOString(), priority: priority, active: true, author: _userName });
               overlay.remove();
               _optimisticRender();
               google.script.run

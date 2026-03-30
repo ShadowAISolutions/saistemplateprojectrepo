@@ -3,7 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
+
+## [v08.01r] — 2026-03-29 10:03:03 PM EST
+
+> **Prompt:** "can the optimistic show it? i would hope that everything that we expect to be the result will always be done in the optimistic"
+
+### Changed
+- Optimistic add now includes author (`_userName` from session) and current timestamp — new announcements show "by YourName" instantly without waiting for server response
+- Optimistic edit now preserves the existing author field — prevents author from disappearing during the optimistic re-render
+- Added `_userName` client-side variable (injected from `session.displayName || session.email`) for optimistic author display
+
+#### `programportal.gs` — v01.31g
+
+##### Changed
+- Optimistic add item now includes `author: _userName`
+- Optimistic edit item now includes `author: _annLocalItems[u].author` (preserved from existing)
+- Added `var _userName` client-side injection from session data
 
 ## [v08.00r] — 2026-03-29 09:57:49 PM EST
 
