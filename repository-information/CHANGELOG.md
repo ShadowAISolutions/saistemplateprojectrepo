@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
+
+## [v08.16r] — 2026-03-30 12:23:05 PM EST
+
+> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md for testauth1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly"
+
+### Changed
+- Rewrote Section 16 (Implementation Status Audit) of `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` — fresh independent audit of all Phase A functions against source code, ignoring prior status claims
+- Updated Section 1 executive summary to reflect honest implementation status (core functions done, 7 items not implemented, 1 code discrepancy)
+
+### Added
+- Added "Items NOT Implemented (As Guide Expected)" table to Section 16 — 7 items: 30-day extension workflows (access + amendment), formal written denial notices, BA disclosure tracking, DisclosureLog `Source` column, organizational documentation, HITECH EHR dual-mode accounting
+- Added "Minor Code Discrepancies Found" table to Section 16 — documents DisclosureLog header mismatch in `getDisclosureRecipientsForRecord()` and `getGroupedDisclosureAccounting()` (missing `DataCategory` column vs. 11-column schema)
+- Expanded beyond-spec functions table from 6 to 13 entries (added `registerPersonalRepresentative`, `revokeRepresentative`, `getGroupedDisclosureAccounting`, `getNotificationStatus`, `sendHipaaEmail`, `REPRESENTATIVE_CONFIG`, `wrapHipaaOperation` alias)
+- Added GAS route handling verification table (7 Phase A message types confirmed in `doGet`)
+- Added audit methodology description to Section 16
 
 ## [v08.15r] — 2026-03-30 12:00:52 PM EST
 

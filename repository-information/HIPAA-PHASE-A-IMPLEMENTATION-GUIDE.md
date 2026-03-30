@@ -48,14 +48,16 @@ Before starting implementation:
 | **#23** Right of Access | §164.524 | Allow individuals to inspect and obtain copies of their ePHI | ✅ Implemented — `requestDataExport()`, `getIndividualData()`, `convertToCSV()`, `generateDataSummary()` + UI |
 | **#24** Right to Amendment | §164.526 | Allow individuals to request corrections; append-only history; review workflow | ✅ Implemented — `requestAmendment()`, `reviewAmendment()`, `submitDisagreement()`, `getAmendmentHistory()` + UI |
 
-### What "Done" Looks Like — ✅ All Achieved
+### What "Done" Looks Like — Status Summary
 
-Phase A is **fully implemented**:
+Phase A core functions are **implemented**; some ancillary items remain unbuilt (low risk):
 - ✅ **Individuals can** request a disclosure accounting, download their data (JSON/CSV/Summary), and submit amendment requests — all through the testauth1 UI
 - ✅ **Admins can** review and approve/deny amendment requests with documented reasons
 - ✅ **The system** automatically logs all disclosure, access, and amendment activity to HIPAA-compliant audit trails with configurable retention period (default 6 years)
 - ✅ **Compliance scorecard** moved from 16/40 ✅ (40%) to 19/40 ✅ (48%) — current law compliance from 61% to **71%**
 - ✅ **Beyond-spec**: Personal representative access, amendment notifications, data summary export, disclosure grouping, and CSV formula injection prevention were also implemented (originally planned for Phase B)
+- ⚠️ **Not implemented**: 30-day extension workflows (access + amendment), formal written denial notices per §164.524(d), business associate disclosure tracking (`Source` column), organizational documentation per §164.526(f), HITECH EHR dual-mode accounting (deferred — regulations not finalized). See Section 16 for full details
+- ⚠️ **Code discrepancy**: `getDisclosureRecipientsForRecord()` and `getGroupedDisclosureAccounting()` use DisclosureLog headers without the `DataCategory` column, causing a column index mismatch with the actual sheet structure. See Section 16
 
 ### Implementation Scope
 
@@ -2305,74 +2307,116 @@ For maximum efficiency, implement in this order (each builds on the previous):
 
 ## 16. Implementation Status Audit
 
-> **Last audited:** 2026-03-30 — All Phase A items fully implemented. Beyond-spec items also implemented.
+> **Last audited:** 2026-03-30 — Fresh independent audit of actual code vs. guide specifications. All existing status claims were disregarded; each item verified by reading the source code directly.
 
-### GAS Functions — All Implemented
+### Audit Methodology
 
-| # | Function | Line | Status | Notes |
-|---|----------|------|--------|-------|
-| 1 | `generateRequestId()` | ~1743 | ✅ Done | Matches spec |
-| 2 | `formatHipaaTimestamp()` | ~1754 | ✅ Done | Matches spec |
-| 3 | `validateIndividualAccess()` | ~1780 | ✅ Done + Enhanced | Extended with personal representative auth (originally Phase B) |
-| 4 | `getOrCreateSheet()` | ~1826 | ✅ Done | Auto-creation, bold headers, frozen rows, warning-only protection |
-| 5 | `wrapPhaseAOperation()` | ~1850 | ✅ Done | Safe error responses, no PHI leakage |
-| 6 | `recordDisclosure()` | ~1888 | ✅ Done + Enhanced | Added `DataCategory` column for 42 CFR Part 2 support |
-| 7 | `getDisclosureAccounting()` | ~1933 | ✅ Done + Enhanced | Configurable lookback via `HIPAA_DEADLINES`, `DataCategory` in output |
-| 8 | `exportDisclosureAccounting()` | ~1984 | ✅ Done + Enhanced | `DataCategory` included in CSV export |
-| 9 | `requestDataExport()` | ~2019 | ✅ Done | Synchronous export with AccessRequests tracking |
-| 10 | `getIndividualData()` | ~2079 | ✅ Done | Queries all 6 designated record set sheets |
-| 11 | `extractRecordsForEmail()` | ~2118 | ✅ Done | Generic email-matching across all columns |
-| 12 | `convertToCSV()` | ~2147 | ✅ Done + Enhanced | Added CSV formula injection prevention |
-| 13 | `updateAccessRequestStatus()` | ~2064 | ✅ Done | Matches spec |
-| 14 | `requestAmendment()` | ~2186 | ✅ Done + Enhanced | Uses `HIPAA_DEADLINES.AMENDMENT_RESPONSE_DAYS` instead of hardcoded 60 |
-| 15 | `reviewAmendment()` | ~2227 | ✅ Done | Admin-only, decision reason required for denial |
-| 16 | `submitDisagreement()` | ~2278 | ✅ Done | Denied-only, append-only, one disagreement limit |
-| 17 | `getAmendmentHistory()` | ~2322 | ✅ Done | Sorted results with access validation |
+Every function listed below was verified by:
+1. Searching `testauth1.gs` for the function definition (confirming it exists)
+2. Reading the function body to verify it matches the guide's specification (correct parameters, correct logic, correct sheet columns)
+3. Checking the HTML page (`testauth1.html`) for corresponding UI elements
+4. Checking the GAS route handler (`doGet` action='phaseA') for endpoint registration
 
-### Beyond-Spec Functions (Originally Phase B/Extension)
+### GAS Functions — Core Phase A (17 functions)
 
-| Function | Line | Spec Location | Notes |
-|----------|------|---------------|-------|
-| `getPendingAmendments()` | ~2361 | Not in guide | Admin-only listing for review panel |
-| `sendAmendmentNotifications()` | ~5083 | §164.526(c)(2)-(3) extension | Full notification workflow |
-| `generateDataSummary()` | ~5323 | §164.524(c)(3) — guide said Phase B | Summary export with agreement checkbox |
-| `isRepresentativeAuthorized()` | ~5606 | §164.502(g) — guide said Phase B | Personal representative auth |
-| `getPersonalRepresentatives()` | ~4417 | §164.502(g) — guide said Phase B | Representative management |
-| `HIPAA_DEADLINES` config | ~1735 | Section 14 recommendation | Configurable deadlines (was hardcoded) |
+| # | Function | Line | Verified | Verification Notes |
+|---|----------|------|----------|-------------------|
+| 1 | `generateRequestId()` | ~1746 | ✅ Matches spec | Generates `PREFIX-YYYYMMDD-UUID8` format; default prefix 'REQ' |
+| 2 | `formatHipaaTimestamp()` | ~1757 | ✅ Matches spec | Returns EST-formatted ISO timestamp via `Utilities.formatDate` |
+| 3 | `validateIndividualAccess()` | ~1783 | ✅ Matches spec + enhanced | Self-service + admin override + personal representative check (calls `isRepresentativeAuthorized` at ~1800); audit logs every access check |
+| 4 | `getOrCreateSheet()` | ~1829 | ✅ Matches spec | Auto-creates with bold headers (~1835), frozen row 1 (~1836), warning-only protection (~1838), audit log on creation |
+| 5 | `wrapPhaseAOperation()` | ~1853 | ✅ Matches spec | Validates session, catches errors, returns safe error responses (no PHI leakage); handles SESSION_EXPIRED, SESSION_INVALID, PERMISSION_DENIED, ACCESS_DENIED, NOT_FOUND, INVALID_INPUT, INVALID_STATE, ALREADY_EXISTS |
+| 6 | `recordDisclosure()` | ~1891 | ✅ Matches spec + enhanced | All 11 columns present: Timestamp, DisclosureID, IndividualEmail, RecipientName, RecipientType, PHIDescription, Purpose, IsExempt, ExemptionType, DataCategory, TriggeredBy. Validates 5 required fields. Uses `generateRequestId('DISC')` |
+| 7 | `getDisclosureAccounting()` | ~1937 | ✅ Matches spec | Wrapped in `wrapPhaseAOperation`; calls `validateIndividualAccess`; filters exempt disclosures (`IsExempt !== true`); enforces lookback via `HIPAA_DEADLINES.ACCOUNTING_PERIOD_YEARS` (default 6); returns disclosures array with count, period, and timestamp |
+| 8 | `exportDisclosureAccounting()` | ~1990 | ✅ Matches spec | Supports 'json' and 'csv' formats; generates `disclosure-accounting-YYYY-MM-DD` filenames with correct extensions |
+| 9 | `requestDataExport()` | ~2026 | ✅ Matches spec | Creates AccessRequests tracking row; delegates to `getIndividualData()` for all 6 designated record set sheets; updates request status on completion |
+| 10 | `getIndividualData()` | ~2086 | ✅ Matches spec | Scans all 6 sheets: Live_Sheet, SessionAuditLog, DataAuditLog, DisclosureLog, AmendmentRequests, AccessRequests; uses `extractRecordsForEmail()` for each |
+| 11 | `extractRecordsForEmail()` | ~2125 | ✅ Matches spec | Generic email-matching helper; scans all columns of a sheet for email matches; returns array of record objects with header keys |
+| 12 | `convertToCSV()` | ~2154 | ✅ Matches spec + enhanced | CSV formula injection prevention at ~2173: `/^[=+@\-]/` regex prefixes dangerous values with `'`; section headers per record type |
+| 13 | `updateAccessRequestStatus()` | ~2071 | ✅ Matches spec | Updates Status and ResponseDate columns in AccessRequests sheet by requestId |
+| 14 | `requestAmendment()` | ~2193 | ✅ Matches spec + enhanced | Calculates 60-day deadline using `HIPAA_DEADLINES.AMENDMENT_RESPONSE_DAYS` (~2202); sets status='Pending'; all 15 AmendmentRequests columns populated |
+| 15 | `reviewAmendment()` | ~2234 | ✅ Matches spec | Admin-only via `checkPermission(user, 'admin')` (~2236); requires `decisionReason` for denials (~2239); validates amendment is in 'Pending' or 'UnderReview' state (~2259) |
+| 16 | `submitDisagreement()` | ~2285 | ✅ Matches spec | Verifies amendment status is 'Denied' (~2308); prevents double-filing by checking existing disagreement (~2311); sets status to 'Denied — Disagreement Filed' (~2315) |
+| 17 | `getAmendmentHistory()` | ~2329 | ✅ Matches spec | Validates individual access (~2344); sorts by date descending (~2356); returns amendments array with count |
 
-### HTML UI Elements — All Implemented
+### Beyond-Spec Functions (Originally Phase B/Extension — All Found)
 
-| Element | Line | Status |
-|---------|------|--------|
-| Disclosure History button | ~559 | ✅ `data-requires-permission="read"` |
-| Disclosure panel + grouping toggle | ~594 | ✅ With §164.528(b)(2)(ii) grouping |
-| Data Export button | ~560 | ✅ `data-requires-permission="export"` |
-| Data Export panel (JSON/CSV/Summary) | ~618 | ✅ Enhanced with Summary option |
-| Request Correction button | ~561 | ✅ `data-requires-permission="amend"` |
-| Amendment Request form panel | ~643 | ✅ All 4 fields + submit |
-| Review Amendments button | ~562 | ✅ `data-requires-permission="admin"` |
-| Amendment Review panel | ~668 | ✅ Approve/deny with reason |
-| Disagreement panel | ~681 | ✅ Statement filing for denied amendments |
-| Phase A iframe (postMessage) | ~590 | ✅ HIPAA-compliant communication |
-| Client-side Blob download | ~5728 | ✅ With proper cleanup (revokeObjectURL) |
+| # | Function | Line | Verified | Origin | Notes |
+|---|----------|------|----------|--------|-------|
+| 1 | `getPendingAmendments()` | ~2368 | ✅ Present | Phase A extension | Admin-only; returns Pending + UnderReview amendments with deadlines |
+| 2 | `sendAmendmentNotifications()` | ~5090 | ✅ Present | §164.526(c)(2)-(3) | Creates AmendmentNotifications sheet entries; identifies disclosure recipients from DisclosureLog; uses `sendHipaaEmail()` for delivery |
+| 3 | `generateDataSummary()` | ~5330 | ✅ Present | §164.524(c)(3) — originally Phase B | Returns record counts per type, date ranges, data categories, export formats |
+| 4 | `isRepresentativeAuthorized()` | ~5613 | ✅ Present | §164.502(g) — originally Phase B | Validates approved + active + not expired representative status |
+| 5 | `getPersonalRepresentatives()` | ~4425 | ✅ Present | §164.502(g) — originally Phase B | Returns active representatives for an individual |
+| 6 | `registerPersonalRepresentative()` | ~4333 | ✅ Present | §164.502(g) — originally Phase B | Admin-only; validates relationship type against `REPRESENTATIVE_CONFIG` |
+| 7 | `revokeRepresentative()` | ~4473 | ✅ Present | §164.502(g) — originally Phase B | Admin-only; marks representative as Revoked with reason |
+| 8 | `getGroupedDisclosureAccounting()` | ~5440 | ✅ Present | §164.528(b)(2)(ii) | Groups disclosures by recipient+purpose; returns counts and date ranges |
+| 9 | `getNotificationStatus()` | ~5214 | ✅ Present | Phase A extension | Admin-only; retrieves notification history for an amendment |
+| 10 | `sendHipaaEmail()` | ~5540 | ✅ Present | Utility | Rate-limited, HIPAA-compliant email delivery |
+| 11 | `HIPAA_DEADLINES` config | ~1732 | ✅ Present | Section 14 recommendation | 7 configurable deadlines with CFR citations |
+| 12 | `REPRESENTATIVE_CONFIG` | ~350 | ✅ Present | Phase B config | Max 5 representatives, admin approval required, 5 relationship types |
+| 13 | `wrapHipaaOperation` | ~5534 | ✅ Present | Alias | `var wrapHipaaOperation = wrapPhaseAOperation;` — alias used by beyond-spec functions |
 
-### Security Enhancements Beyond Spec
+### GAS Route Handling — Phase A Endpoints
 
-| Enhancement | Location | Notes |
-|-------------|----------|-------|
-| CSV formula injection prevention | `convertToCSV()` line ~2153 | Prefixes `=+@-` values with `'` |
-| postMessage-based GAS communication | HTML ~5621 | No tokens in URLs |
-| Session token isolation | sessionStorage + memory-only | No localStorage persistence |
+All 7 core Phase A message types are registered in `doGet(action='phaseA')` at ~3010-3057:
 
-### Remaining Gaps (Low Priority)
+| Message Type | Routes To | Verified |
+|-------------|-----------|----------|
+| `phase-a-get-disclosures` | `getDisclosureAccounting()` | ✅ |
+| `phase-a-export-disclosures` | `exportDisclosureAccounting()` | ✅ |
+| `phase-a-request-export` | `requestDataExport()` | ✅ |
+| `phase-a-request-amendment` | `requestAmendment()` | ✅ |
+| `phase-a-get-pending-amendments` | `getPendingAmendments()` | ✅ |
+| `phase-a-review-amendment` | `reviewAmendment()` | ✅ |
+| `phase-a-submit-disagreement` | `submitDisagreement()` | ✅ |
 
-| Item | Status | Risk | Notes |
-|------|--------|------|-------|
-| 30-day extension workflow (access requests) | ⚠️ Not built | Low — testauth1 responds instantly | Status field `Extended` exists but no workflow |
-| 30-day extension workflow (amendments) | ⚠️ Not built | Low — testauth1 responds instantly | Status field exists but no workflow |
-| Formal written denial notice | ⚠️ Partial | Low | Error responses exist; not formatted as formal notice |
-| Business associate disclosure tracking | ⚠️ Not built | Low — no BA integrations yet | `DataCategory` column helps but no `Source` column for BA tracking |
-| Organizational documentation | ⚠️ Not code | Low | §164.526(f) requires documenting responsible persons/offices |
+Beyond-spec routes also registered (grouped disclosures, representatives, notifications, breach, summary).
+
+### HTML UI Elements — All Verified
+
+| # | Element | Location | Verified | Notes |
+|---|---------|----------|----------|-------|
+| 1 | Disclosure History button | ~559 | ✅ | `id="disclosure-accounting-btn"` · `data-requires-permission="read"` |
+| 2 | Disclosure panel + export + grouping toggle | ~594-615 | ✅ | Panel with JSON/CSV export dropdown, §164.528(b)(2)(ii) grouping checkbox |
+| 3 | Data Export button | ~560 | ✅ | `id="data-export-btn"` · `data-requires-permission="export"` |
+| 4 | Data Export panel (JSON/CSV/Summary) | ~618-640 | ✅ | Format radio picker with summary agreement checkbox; download button + status |
+| 5 | Request Correction button | ~561 | ✅ | `id="amendment-request-btn"` · `data-requires-permission="amend"` |
+| 6 | Amendment Request form | ~643-665 | ✅ | 4 fields: record ID, current content, proposed change, reason + submit |
+| 7 | Review Amendments button | ~562 | ✅ | `id="amendment-review-btn"` · `data-requires-permission="admin"` |
+| 8 | Amendment Review panel | ~668-678 | ✅ | Lists pending amendments with approve/deny buttons; denial reason required |
+| 9 | Disagreement button + panel | ~563, ~681-697 | ✅ | Statement filing form for denied amendments |
+| 10 | Personal Representative panel | ~742-785 | ✅ | Registration form, list display, revoke capability (beyond-spec) |
+| 11 | Phase A iframe (postMessage) | ~590 | ✅ | HIPAA-compliant communication — no tokens in URLs |
+| 12 | Client-side Blob download | ~5728 | ✅ | Proper MIME types (CSV/JSON); cleanup via `URL.revokeObjectURL()` |
+| 13 | `_sendPhaseA()` communication | ~5608 | ✅ | postMessage-based GAS endpoint caller for all Phase A operations |
+| 14 | Phase A CSS classes | ~387-431 | ✅ | 13 classes: `.phase-a-btn`, `.phase-a-panel`, `.pa-header`, `.pa-title`, `.pa-close`, `.pa-action`, `.pa-body`, `.pa-format-picker`, `.pa-status`, `.pa-card`, `.pa-card-header`, `.pa-card-meta`, `.pa-card-field` |
+
+### Security Enhancements (Beyond Spec — All Verified)
+
+| Enhancement | Location | Verified | Notes |
+|-------------|----------|----------|-------|
+| CSV formula injection prevention | `convertToCSV()` ~2173 | ✅ | `/^[=+@\-]/` regex prefixes `=+@-` values with `'` |
+| postMessage-based GAS communication | HTML `_sendPhaseA()` ~5608 | ✅ | Session tokens sent via postMessage, never in URL parameters |
+| Session token isolation | sessionStorage + memory-only | ✅ | No localStorage persistence; sessionStorage clears on tab close |
+
+### Items NOT Implemented (As Guide Expected)
+
+| # | Item | Guide Reference | Status | Risk Level | Details |
+|---|------|----------------|--------|------------|---------|
+| 1 | **30-day extension workflow (access requests)** | §164.524(b)(2)(iii), Section 6 | ⚠️ Not built | Low — testauth1 responds synchronously (instant) | The `Extended` status value is defined in the AccessRequests schema and `HIPAA_DEADLINES.ACCESS_EXTENSION_DAYS` is configured, but no actual workflow exists to trigger an extension, notify the individual, or track the extended deadline. Not needed because testauth1 exports data instantly — the 30-day window is never approached |
+| 2 | **30-day extension workflow (amendments)** | §164.526(b)(2)(ii), Section 7 | ⚠️ Not built | Low — amendments reviewed in-app | `HIPAA_DEADLINES.AMENDMENT_EXTENSION_DAYS` is configured but no extension workflow exists. Same rationale as #1: the admin reviews and responds within the app, well inside the 60-day window |
+| 3 | **Formal written denial notice (§164.524(d))** | §164.524(d)(2), Section 6 | ⚠️ Partial | Medium | Error responses exist with structured codes (`PERMISSION_DENIED`, `ACCESS_DENIED`, etc.) but are not formatted as formal HIPAA denial notices. §164.524(d)(2) requires specific elements: basis for denial, statement of review rights, description of complaint process, and contact information for HHS. The current error messages are safe (no PHI leaked) but lack the regulatory-required elements |
+| 4 | **Business associate disclosure tracking** | §164.528(c), Section 5 | ⚠️ Not built | Low — no BA integrations exist | The guide recommended adding a `Source` column to `DisclosureLog` to distinguish covered entity vs. business associate disclosures. This column was not added. Currently moot because testauth1 has no business associate data sharing. When BA integrations are added, the `Source` column and BA-aggregated accounting will be needed |
+| 5 | **DisclosureLog `Source` column** | §164.528(c), Section 5 | ⚠️ Not added | Low | Recommended by guide for BA tracking; see item #4 above. The `recordDisclosure()` function does not accept or record a `Source` parameter |
+| 6 | **Organizational documentation (§164.526(f))** | §164.526(f), Section 10 | ⚠️ Not code | Low | Requires documenting: (a) title of person/office receiving amendment requests, (b) title of person/office processing amendments, (c) retention per §164.530(j). These are administrative policy documents, not code — the guide recommended creating `HIPAA-ORGANIZATIONAL-DOCS.md` |
+| 7 | **HITECH EHR dual-mode disclosure accounting** | HITECH §13405(c), Section 5 | ⚠️ Not built (expected) | None — regulations not finalized | The guide described a future-proofed `includeEhrTpo` option for `getDisclosureAccounting()` that would include TPO disclosures within a 3-year window when HITECH implementing regulations finalize. This was explicitly noted as "enable when HITECH finalizes" — not expected to be built now |
+
+### Minor Code Discrepancies Found
+
+| # | Issue | Location | Severity | Details |
+|---|-------|----------|----------|---------|
+| 1 | **DisclosureLog header mismatch** | `getDisclosureRecipientsForRecord()` ~5270, `getGroupedDisclosureAccounting()` ~5447 | ⚠️ Low | These two functions define DisclosureLog headers **without** the `DataCategory` column (10 columns), while `recordDisclosure()` (~1912) and `getDisclosureAccounting()` (~1948) include `DataCategory` (11 columns). If the sheet was created by `recordDisclosure()` (which includes `DataCategory`), the column indices used by the 10-column functions will be shifted by one, causing `TriggeredBy` to read from the `DataCategory` column instead. This would affect disclosure grouping and recipient lookups |
 
 ---
 
@@ -2383,5 +2427,6 @@ For maximum efficiency, implement in this order (each builds on the previous):
 | 2026-03-23 | 1.0 | Claude Code | Initial implementation guide for Phase A |
 | 2026-03-23 | 1.1 | Claude Code | Regulatory deep-dive: enforcement context, HITECH expansion, fee policy, personal representatives, amendment notifications, compliance matrix, forward-looking preparation |
 | 2026-03-30 | 1.2 | Claude Code | Implementation status audit: marked all items as done/not done, implemented `HIPAA_DEADLINES` config, added `DataCategory` column to DisclosureLog, updated compliance matrix and checklists |
+| 2026-03-30 | 1.3 | Claude Code | Fresh independent audit of Section 16: verified every function against source code (ignored prior status claims), added "Items NOT Implemented" section (7 items), documented DisclosureLog header mismatch in `getGroupedDisclosureAccounting()`/`getDisclosureRecipientsForRecord()`, expanded beyond-spec table to 13 entries, updated executive summary to reflect honest status |
 
 Developed by: ShadowAISolutions
