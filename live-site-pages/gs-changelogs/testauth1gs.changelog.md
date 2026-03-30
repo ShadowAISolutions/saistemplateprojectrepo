@@ -3,7 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
+
+## [v02.31g] — 2026-03-30 12:36:09 PM EST — v08.17r
+
+### Added
+- 30-day deadline extension workflows for access and amendment requests — administrators can now grant extensions with written notice
+- Formal denial notice generation with all legally required elements including complaint filing instructions
+- Expanded disclosure accounting to include treatment, payment, and operations disclosures with configurable lookback period
+- Business associate disclosure source tracking for enhanced regulatory compliance
+
+### Fixed
+- Improved disclosure data consistency across all accounting functions
 
 ## [v02.30g] — 2026-03-30 12:00:52 PM EST — v08.15r
 

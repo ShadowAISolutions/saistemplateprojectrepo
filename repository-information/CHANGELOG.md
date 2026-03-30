@@ -3,7 +3,47 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v08.17r] — 2026-03-30 12:36:09 PM EST
+
+> **Prompt:** "go ahead and fix the discrepancies, and also go ahead and implement all of the non implemented future proof items"
+
+### Added
+- Implemented `requestAccessExtension()` in `testauth1.gs` — 30-day extension workflow for access requests per §164.524(b)(2), updates status to `Extended` with new deadline
+- Implemented `requestAmendmentExtension()` in `testauth1.gs` — 30-day extension workflow for amendment requests per §164.526(b)(2), updates status and deadline in AmendmentRequests sheet
+- Implemented `generateDenialNotice()` in `testauth1.gs` — formal written denial notice per §164.524(d)(2) with all 5 required elements: basis for denial, review rights, complaint process, contact info, HHS filing
+- Added HITECH EHR dual-mode to `getDisclosureAccounting()` — new `options.includeEhrTpo` parameter includes TPO disclosures with 3-year lookback per HITECH §13405(c)
+- Added `Source` column to DisclosureLog schema (12 columns total) — supports BA vs covered entity disclosure tracking per §164.528(c)
+- Added route handlers in doGet Phase A listener: `phase-a-request-access-extension`, `phase-a-request-amendment-extension`, `phase-a-generate-denial-notice`, `phase-a-get-ehr-disclosures`
+- Added Extension Workflow panel to `testauth1.html` — UI for granting 30-day extensions to access/amendment requests
+- Added Formal Denial Notice panel to `testauth1.html` — generates structured denial notices with all §164.524(d)(2) elements
+- Added EHR Disclosures panel to `testauth1.html` — HITECH EHR disclosure accounting with TPO disclosure tagging
+
+### Fixed
+- Fixed DisclosureLog header mismatch in `getDisclosureRecipientsForRecord()` — updated from 10 to 12 columns (added `DataCategory` and `Source`)
+- Fixed DisclosureLog header mismatch in `getGroupedDisclosureAccounting()` — updated from 10 to 12 columns (added `DataCategory` and `Source`)
+- Fixed `getDisclosureAccounting()` headers — updated from 11 to 12 columns (added `Source`)
+- Fixed `exportDisclosureAccounting()` CSV export — added `Source` column to CSV header and row output
+
+### Changed
+- Updated HIPAA Phase A Implementation Guide v1.4 — marked 6 of 7 "Items NOT Implemented" as ✅ Implemented, fixed minor code discrepancy, updated executive summary
+
+#### `testauth1.gs` — v02.31g
+##### Added
+- 30-day extension workflows for access and amendment requests
+- Formal written denial notice generation with all HIPAA-required elements
+- HITECH EHR dual-mode disclosure accounting with 3-year TPO lookback
+- Business associate disclosure tracking via `Source` column
+##### Fixed
+- Disclosure log header consistency across all consuming functions (12-column standard)
+
+#### `testauth1.html` — v03.81w
+##### Added
+- Extension Workflow panel for granting 30-day deadline extensions
+- Formal Denial Notice panel for generating structured denial documents
+- EHR Disclosures panel for HITECH-expanded disclosure accounting
+- Three new admin dropdown buttons (Extensions, Denial Notice, EHR Disclosures)
 
 ## [v08.16r] — 2026-03-30 12:23:05 PM EST
 

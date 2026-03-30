@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.80w">
+  <meta name="build-version" content="v03.81w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -561,6 +561,9 @@
         <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
         <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-permission="admin">Amendments</button>
         <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend">Disagree</button>
+        <button id="extension-workflow-btn" class="phase-a-btn" title="Grant 30-day extension" data-requires-permission="admin">Extensions</button>
+        <button id="denial-notice-btn" class="phase-a-btn" title="Generate formal denial notice" data-requires-permission="admin">Denial Notice</button>
+        <button id="ehr-disclosures-btn" class="phase-a-btn" title="HITECH EHR disclosure accounting" data-requires-permission="read">EHR Disclosures</button>
         <button id="breach-dashboard-btn" class="phase-a-btn" title="Breach detection & logging" data-requires-permission="admin">Breach Log</button>
         <button id="representative-mgmt-btn" class="phase-a-btn" title="Manage personal representatives" data-requires-permission="admin">Representatives</button>
         <button id="legal-holds-btn" class="phase-a-btn" title="Manage litigation holds" data-requires-permission="admin">Legal Holds</button>
@@ -697,6 +700,80 @@
   </div>
 
   <!-- ── PHASE B — Grouped Disclosure Toggle (inside disclosure panel handled via JS) ── -->
+
+  <!-- Extension Workflow Panel (Admin) — §164.524(b)(2) / §164.526(b)(2) -->
+  <div id="extension-workflow-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">30-Day Extension</span>
+      <button id="extension-close-btn" class="pa-close">&times;</button>
+    </div>
+    <div class="pa-body">
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Under HIPAA §164.524(b)(2) and §164.526(b)(2), the response period may be extended by up to 30 days with written notice to the individual.</p>
+      <label>Extension Type:
+        <select id="extension-type" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:11px monospace;padding:3px 6px;border-radius:3px;width:100%;">
+          <option value="access">Access Request (§164.524)</option>
+          <option value="amendment">Amendment Request (§164.526)</option>
+        </select>
+      </label>
+      <label>Request/Amendment ID:
+        <input type="text" id="extension-request-id" placeholder="ACCESS-XXXXXXXX or AMEND-XXXXXXXX" />
+      </label>
+      <label>Reason for extension (written notice):
+        <textarea id="extension-reason" rows="3" placeholder="Explain why additional time is needed to process this request"></textarea>
+      </label>
+      <button id="extension-submit-btn" class="pa-action" style="margin-top:8px;">Grant Extension</button>
+      <div id="extension-status" class="pa-status"></div>
+    </div>
+  </div>
+
+  <!-- Formal Denial Notice Panel (Admin) — §164.524(d) -->
+  <div id="denial-notice-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Formal Denial Notice</span>
+      <button id="denial-close-btn" class="pa-close">&times;</button>
+    </div>
+    <div class="pa-body">
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Generate a formal written denial notice per §164.524(d)(2) with all required elements.</p>
+      <label>Request Type:
+        <select id="denial-request-type" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:11px monospace;padding:3px 6px;border-radius:3px;width:100%;">
+          <option value="access">Access Request</option>
+          <option value="amendment">Amendment Request</option>
+        </select>
+      </label>
+      <label>Request/Amendment ID:
+        <input type="text" id="denial-request-id" placeholder="Request identifier" />
+      </label>
+      <label>Basis for denial:
+        <textarea id="denial-basis" rows="3" placeholder="The specific legal basis for denying this request (e.g., psychotherapy notes, compiled for litigation)"></textarea>
+      </label>
+      <label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;">
+        <input type="checkbox" id="denial-reviewable" checked /> Denial is reviewable
+      </label>
+      <label>Contact person:
+        <input type="text" id="denial-contact" placeholder="HIPAA Privacy Officer" value="HIPAA Privacy Officer" />
+      </label>
+      <label>Contact office:
+        <input type="text" id="denial-office" placeholder="Privacy Office" value="Privacy Office" />
+      </label>
+      <button id="denial-generate-btn" class="pa-action" style="margin-top:8px;">Generate Notice</button>
+      <div id="denial-status" class="pa-status"></div>
+      <div id="denial-notice-output" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.04);border-radius:4px;font-size:11px;color:#ccc;white-space:pre-wrap;"></div>
+    </div>
+  </div>
+
+  <!-- HITECH EHR Disclosure Accounting Panel — §13405(c) -->
+  <div id="ehr-disclosures-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">EHR Disclosure Accounting (HITECH)</span>
+      <button id="ehr-disclosures-close-btn" class="pa-close">&times;</button>
+    </div>
+    <div class="pa-body">
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">HITECH Act §13405(c) expands disclosure accounting to include treatment, payment, and healthcare operations (TPO) disclosures made through an EHR, with a 3-year lookback period.</p>
+      <div id="ehr-disclosures-period" class="pa-status"></div>
+      <div id="ehr-disclosures-list"></div>
+      <div id="ehr-disclosures-empty" class="pa-empty" style="display:none;">No EHR TPO disclosures found for the 3-year reporting period.</div>
+    </div>
+  </div>
 
   <!-- Breach Dashboard Panel (Admin) -->
   <div id="breach-dashboard-panel" class="phase-a-panel">
@@ -2182,7 +2259,9 @@
         'phase-a-ready': true, 'phase-a-disclosures-result': true,
         'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
         'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
-        'phase-a-review-result': true, 'phase-a-disagreement-result': true, 'phase-a-error': true,
+        'phase-a-review-result': true, 'phase-a-disagreement-result': true,
+        'phase-a-access-extension-result': true, 'phase-a-amendment-extension-result': true,
+        'phase-a-denial-notice-result': true, 'phase-a-ehr-disclosures-result': true, 'phase-a-error': true,
         'live-data': true, 'gas-write-error': true };
       // Strip liveData for HMAC verification — it's attached after signing on the GAS side
       // and nested objects cause JSON.stringify mismatches between GAS V8 and browser engines.
@@ -5897,6 +5976,170 @@
     document.getElementById('disagree-statement').value = '';
   }
 
+  // ── Extension Workflow Panel (§164.524(b)(2) / §164.526(b)(2)) ──
+  var _extensionPanelOpen = false;
+  function _closeExtensionPanel() {
+    document.getElementById('extension-workflow-panel').style.display = 'none';
+    _extensionPanelOpen = false;
+  }
+  _registerPanel('extension-workflow-panel', _closeExtensionPanel);
+
+  document.getElementById('extension-workflow-btn').addEventListener('click', function() {
+    if (_extensionPanelOpen) return;
+    _closeAllPanelsExcept('extension-workflow-panel');
+    document.getElementById('extension-workflow-panel').style.display = 'flex';
+    _extensionPanelOpen = true;
+    document.getElementById('extension-status').textContent = '';
+  });
+  document.getElementById('extension-close-btn').addEventListener('click', function() {
+    _closeExtensionPanel();
+  });
+  document.getElementById('extension-submit-btn').addEventListener('click', function() {
+    var extType = document.getElementById('extension-type').value;
+    var reqId = document.getElementById('extension-request-id').value.trim();
+    var reason = document.getElementById('extension-reason').value.trim();
+    var status = document.getElementById('extension-status');
+    if (!reqId || !reason) {
+      status.textContent = 'Please provide both a request ID and reason for extension.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Processing extension...';
+    status.style.color = '#aaa';
+    if (extType === 'access') {
+      _sendPhaseA({ type: 'phase-a-request-access-extension', token: _getToken(), requestId: reqId, reason: reason });
+    } else {
+      _sendPhaseA({ type: 'phase-a-request-amendment-extension', token: _getToken(), amendmentId: reqId, reason: reason });
+    }
+  });
+  function _handleExtensionResult(result) {
+    var status = document.getElementById('extension-status');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || 'Failed to grant extension.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = result.message;
+    status.style.color = '#66bb6a';
+    document.getElementById('extension-request-id').value = '';
+    document.getElementById('extension-reason').value = '';
+  }
+
+  // ── Formal Denial Notice Panel (§164.524(d)) ──
+  var _denialPanelOpen = false;
+  function _closeDenialPanel() {
+    document.getElementById('denial-notice-panel').style.display = 'none';
+    _denialPanelOpen = false;
+  }
+  _registerPanel('denial-notice-panel', _closeDenialPanel);
+
+  document.getElementById('denial-notice-btn').addEventListener('click', function() {
+    if (_denialPanelOpen) return;
+    _closeAllPanelsExcept('denial-notice-panel');
+    document.getElementById('denial-notice-panel').style.display = 'flex';
+    _denialPanelOpen = true;
+    document.getElementById('denial-status').textContent = '';
+    document.getElementById('denial-notice-output').style.display = 'none';
+  });
+  document.getElementById('denial-close-btn').addEventListener('click', function() {
+    _closeDenialPanel();
+  });
+  document.getElementById('denial-generate-btn').addEventListener('click', function() {
+    var reqType = document.getElementById('denial-request-type').value;
+    var reqId = document.getElementById('denial-request-id').value.trim();
+    var basis = document.getElementById('denial-basis').value.trim();
+    var isReviewable = document.getElementById('denial-reviewable').checked;
+    var contact = document.getElementById('denial-contact').value.trim();
+    var office = document.getElementById('denial-office').value.trim();
+    var status = document.getElementById('denial-status');
+    if (!reqId || !basis) {
+      status.textContent = 'Please provide both a request ID and basis for denial.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Generating denial notice...';
+    status.style.color = '#aaa';
+    _sendPhaseA({
+      type: 'phase-a-generate-denial-notice', token: _getToken(),
+      requestType: reqType, requestId: reqId,
+      params: { basisForDenial: basis, isReviewable: isReviewable, contactPerson: contact, contactOffice: office }
+    });
+  });
+  function _handleDenialNoticeResult(result) {
+    var status = document.getElementById('denial-status');
+    var output = document.getElementById('denial-notice-output');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || 'Failed to generate denial notice.';
+      status.style.color = '#ef5350';
+      output.style.display = 'none';
+      return;
+    }
+    status.textContent = 'Denial notice generated successfully.';
+    status.style.color = '#66bb6a';
+    var notice = result.notice;
+    var text = 'HIPAA FORMAL DENIAL NOTICE\n'
+      + 'Date: ' + notice.date + '\n'
+      + 'Request Type: ' + notice.requestType + '\n'
+      + 'Request ID: ' + notice.requestId + '\n\n';
+    var sections = notice.sections;
+    for (var key in sections) {
+      if (sections.hasOwnProperty(key)) {
+        text += sections[key].heading + '\n' + sections[key].content + '\n\n';
+      }
+    }
+    output.textContent = text;
+    output.style.display = 'block';
+  }
+
+  // ── HITECH EHR Disclosure Accounting Panel (§13405(c)) ──
+  var _ehrPanelOpen = false;
+  function _closeEhrPanel() {
+    document.getElementById('ehr-disclosures-panel').style.display = 'none';
+    _ehrPanelOpen = false;
+  }
+  _registerPanel('ehr-disclosures-panel', _closeEhrPanel);
+
+  document.getElementById('ehr-disclosures-btn').addEventListener('click', function() {
+    if (_ehrPanelOpen) return;
+    _closeAllPanelsExcept('ehr-disclosures-panel');
+    document.getElementById('ehr-disclosures-panel').style.display = 'flex';
+    _ehrPanelOpen = true;
+    document.getElementById('ehr-disclosures-list').innerHTML = '<div class="pa-status">Loading EHR disclosures...</div>';
+    document.getElementById('ehr-disclosures-empty').style.display = 'none';
+    _sendPhaseA({ type: 'phase-a-get-ehr-disclosures', token: _getToken() });
+  });
+  document.getElementById('ehr-disclosures-close-btn').addEventListener('click', function() {
+    _closeEhrPanel();
+  });
+  function _renderEhrDisclosures(result) {
+    var list = document.getElementById('ehr-disclosures-list');
+    var empty = document.getElementById('ehr-disclosures-empty');
+    var period = document.getElementById('ehr-disclosures-period');
+    if (!result || !result.success) {
+      list.innerHTML = '<div class="pa-status" style="color:#ef5350;">' + ((result && result.message) || 'Failed to load disclosures.') + '</div>';
+      return;
+    }
+    period.textContent = 'Period: ' + (result.periodStart || '').substring(0, 10) + ' to ' + (result.periodEnd || '').substring(0, 10) + ' (HITECH 3-year + standard 6-year)';
+    if (!result.disclosures || result.disclosures.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < result.disclosures.length; i++) {
+      var d = result.disclosures[i];
+      var ehrTag = d.isEhrTpo ? ' <span style="color:#ff9800;font-size:9px;">[EHR TPO]</span>' : '';
+      html += '<div class="pa-disclosure-item">'
+        + '<span class="pa-disc-date">' + (d.date || '').substring(0, 10) + '</span>'
+        + '<span class="pa-disc-recipient">' + (d.recipientName || 'Unknown') + ehrTag + '</span>'
+        + '<span class="pa-disc-purpose">' + (d.purpose || '') + '</span>'
+        + '<span class="pa-disc-source" style="color:#888;font-size:10px;">' + (d.source || 'CoveredEntity') + '</span>'
+        + '</div>';
+    }
+    list.innerHTML = html;
+  }
+
   // ── postMessage Response Router ──
   window.addEventListener('message', function(event) {
     var data = event.data;
@@ -5922,6 +6165,18 @@
         break;
       case 'phase-a-disagreement-result':
         _handleDisagreementResult(data.result);
+        break;
+      case 'phase-a-access-extension-result':
+        _handleExtensionResult(data.result);
+        break;
+      case 'phase-a-amendment-extension-result':
+        _handleExtensionResult(data.result);
+        break;
+      case 'phase-a-denial-notice-result':
+        _handleDenialNoticeResult(data.result);
+        break;
+      case 'phase-a-ehr-disclosures-result':
+        _renderEhrDisclosures(data.result);
         break;
       // ── Phase B response routing ──
       case 'phase-b-grouped-disclosures-result':

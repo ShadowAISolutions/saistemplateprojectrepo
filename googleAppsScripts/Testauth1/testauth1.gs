@@ -1,4 +1,4 @@
-var VERSION = "v02.30g";
+var VERSION = "v02.31g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1909,16 +1909,17 @@ function recordDisclosure(params) {
     }
   }
   var dataCategory = params.dataCategory || 'General';
+  var source = params.source || 'CoveredEntity';
   var headers = [
     'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
     'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-    'ExemptionType', 'DataCategory', 'TriggeredBy'
+    'ExemptionType', 'DataCategory', 'Source', 'TriggeredBy'
   ];
   var sheet = getOrCreateSheet('DisclosureLog', headers);
   sheet.appendRow([
     timestamp, disclosureId, params.individualEmail, params.recipientName,
     params.recipientType, params.phiDescription, params.purpose, isExempt,
-    exemptionType, dataCategory, triggeredBy
+    exemptionType, dataCategory, source, triggeredBy
   ]);
   auditLog('disclosure_recorded', triggeredBy, 'success', {
     disclosureId: disclosureId,
@@ -1932,21 +1933,34 @@ function recordDisclosure(params) {
 
 /**
  * Returns the disclosure accounting for the authenticated individual.
- * Filters to non-exempt disclosures within the past 6 years.
+ * Filters to non-exempt disclosures within the configured lookback period.
+ * Supports HITECH EHR dual-mode: when options.includeEhrTpo is true,
+ * includes TPO disclosures with a 3-year lookback per HITECH §13405(c).
+ *
+ * @param {string} sessionToken — Session token
+ * @param {string} [targetEmail] — Email to look up (defaults to authenticated user)
+ * @param {Object} [options] — Optional settings
+ * @param {boolean} [options.includeEhrTpo] — Include TPO disclosures with 3-year lookback (HITECH EHR mode)
  */
-function getDisclosureAccounting(sessionToken, targetEmail) {
+function getDisclosureAccounting(sessionToken, targetEmail, options) {
   return wrapPhaseAOperation('getDisclosureAccounting', sessionToken, function(user) {
     checkPermission(user, 'read', 'getDisclosureAccounting');
     var lookupEmail = targetEmail || user.email;
     validateIndividualAccess(user, lookupEmail, 'getDisclosureAccounting');
     var requestId = generateRequestId('ACCT');
     var now = new Date();
+    options = options || {};
+    var includeEhrTpo = options.includeEhrTpo || false;
     var lookbackYears = HIPAA_DEADLINES.ACCOUNTING_PERIOD_YEARS;
     var sixYearsAgo = new Date(now.getTime() - (lookbackYears * 365.25 * 24 * 60 * 60 * 1000));
+    // HITECH §13405(c): EHR TPO disclosures use 3-year lookback
+    var ehrTpoLookback = includeEhrTpo
+      ? new Date(now.getTime() - (3 * 365.25 * 24 * 60 * 60 * 1000))
+      : null;
     var headers = [
       'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
       'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-      'ExemptionType', 'DataCategory', 'TriggeredBy'
+      'ExemptionType', 'DataCategory', 'Source', 'TriggeredBy'
     ];
     var sheet = getOrCreateSheet('DisclosureLog', headers);
     var data = sheet.getDataRange().getValues();
@@ -1956,7 +1970,14 @@ function getDisclosureAccounting(sessionToken, targetEmail) {
       var rowEmail = String(row[2]).toLowerCase();
       var rowIsExempt = row[7] === true || row[7] === 'TRUE' || row[7] === 'true';
       var rowDate = new Date(row[0]);
-      if (rowEmail === lookupEmail.toLowerCase() && !rowIsExempt && rowDate >= sixYearsAgo) {
+      var rowPurpose = String(row[6] || '').toLowerCase();
+      var isTpoPurpose = (rowPurpose === 'treatment' || rowPurpose === 'payment' || rowPurpose === 'healthcare operations');
+      if (rowEmail !== lookupEmail.toLowerCase()) continue;
+      // Standard §164.528 accounting: non-exempt, non-TPO, 6-year lookback
+      var includeStandard = !rowIsExempt && !isTpoPurpose && rowDate >= sixYearsAgo;
+      // HITECH EHR mode: TPO disclosures with 3-year lookback
+      var includeEhr = includeEhrTpo && !rowIsExempt && isTpoPurpose && ehrTpoLookback && rowDate >= ehrTpoLookback;
+      if (includeStandard || includeEhr) {
         disclosures.push({
           disclosureId: row[1],
           date: row[0] instanceof Date ? row[0].toISOString() : String(row[0]),
@@ -1964,7 +1985,9 @@ function getDisclosureAccounting(sessionToken, targetEmail) {
           recipientType: row[4],
           phiDescription: row[5],
           purpose: row[6],
-          dataCategory: row[9] || 'General'
+          dataCategory: row[9] || 'General',
+          source: row[10] || 'CoveredEntity',
+          isEhrTpo: includeEhr && !includeStandard
         });
       }
     }
@@ -1973,12 +1996,14 @@ function getDisclosureAccounting(sessionToken, targetEmail) {
       targetEmail: lookupEmail,
       disclosureCount: disclosures.length,
       periodStart: sixYearsAgo.toISOString(),
-      periodEnd: now.toISOString()
+      periodEnd: now.toISOString(),
+      includeEhrTpo: includeEhrTpo
     });
     return {
       success: true, requestId: requestId, individualEmail: lookupEmail,
       disclosures: disclosures, count: disclosures.length,
       periodStart: sixYearsAgo.toISOString(), periodEnd: now.toISOString(),
+      includeEhrTpo: includeEhrTpo,
       generatedAt: formatHipaaTimestamp()
     };
   });
@@ -1996,7 +2021,7 @@ function exportDisclosureAccounting(sessionToken, format) {
     var dateStr = Utilities.formatDate(new Date(), 'America/New_York', 'yyyy-MM-dd');
     var filename = 'disclosure-accounting-' + dateStr;
     if (format === 'csv') {
-      var csvRows = ['Date,DisclosureID,RecipientName,RecipientType,PHIDescription,Purpose,DataCategory'];
+      var csvRows = ['Date,DisclosureID,RecipientName,RecipientType,PHIDescription,Purpose,DataCategory,Source'];
       for (var i = 0; i < accounting.disclosures.length; i++) {
         var d = accounting.disclosures[i];
         csvRows.push([
@@ -2006,7 +2031,8 @@ function exportDisclosureAccounting(sessionToken, format) {
           '"' + d.recipientType + '"',
           '"' + (d.phiDescription || '').replace(/"/g, '""') + '"',
           '"' + d.purpose + '"',
-          '"' + (d.dataCategory || 'General') + '"'
+          '"' + (d.dataCategory || 'General') + '"',
+          '"' + (d.source || 'CoveredEntity') + '"'
         ].join(','));
       }
       return { success: true, format: 'csv', data: csvRows.join('\n'), filename: filename + '.csv' };
@@ -2391,6 +2417,214 @@ function getPendingAmendments(sessionToken) {
     pending.sort(function(a, b) { return new Date(a.requestDate) - new Date(b.requestDate); });
     auditLog('admin_action', user.email, 'list_pending_amendments', { count: pending.length });
     return pending;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE A — 30-DAY EXTENSION WORKFLOWS (§164.524/§164.526)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Requests a 30-day extension for an access request.
+ * Per §164.524(b)(2)(i), a covered entity may extend the response period
+ * by no more than 30 days with written notice to the individual.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} requestId — The AccessRequests ID to extend
+ * @param {string} reason — Written statement explaining why extension is needed
+ */
+function requestAccessExtension(sessionToken, requestId, reason) {
+  return wrapPhaseAOperation('requestAccessExtension', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'requestAccessExtension');
+    if (!requestId || !reason) throw new Error('INVALID_INPUT');
+    var arHeaders = [
+      'RequestID', 'IndividualEmail', 'RequestDate', 'Format',
+      'Status', 'ResponseDate', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AccessRequests', arHeaders);
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = -1;
+    var requestRow = null;
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][0] === requestId) {
+        rowIndex = r + 1;
+        requestRow = data[r];
+        break;
+      }
+    }
+    if (rowIndex === -1) throw new Error('NOT_FOUND');
+    var currentStatus = String(requestRow[4]);
+    if (currentStatus === 'Completed' || currentStatus === 'Denied' || currentStatus === 'Extended') {
+      return { success: false, error: 'INVALID_STATE', message: 'Request is in status "' + currentStatus + '" and cannot be extended.' };
+    }
+    var originalDate = new Date(requestRow[2]);
+    var extendedDeadline = new Date(originalDate.getTime() +
+      ((HIPAA_DEADLINES.ACCESS_RESPONSE_DAYS + HIPAA_DEADLINES.ACCESS_EXTENSION_DAYS) * 24 * 60 * 60 * 1000));
+    var extendedDeadlineStr = Utilities.formatDate(extendedDeadline, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+    sheet.getRange(rowIndex, 5).setValue('Extended');
+    sheet.getRange(rowIndex, 7).setValue('Extension granted: ' + reason + ' | New deadline: ' + extendedDeadlineStr);
+    dataAuditLog(user, 'update', 'access_extension', requestId, {
+      reason: reason,
+      originalDate: requestRow[2],
+      newDeadline: extendedDeadlineStr,
+      individualEmail: requestRow[1]
+    });
+    auditLog('access_extension', user.email, 'success', {
+      requestId: requestId, individualEmail: requestRow[1]
+    });
+    return {
+      success: true, requestId: requestId, status: 'Extended',
+      newDeadline: extendedDeadlineStr,
+      message: 'Extension granted. The individual must be notified in writing. New deadline: ' + extendedDeadlineStr
+    };
+  });
+}
+
+/**
+ * Requests a 30-day extension for an amendment request.
+ * Per §164.526(b)(2)(i), a covered entity may extend the amendment response
+ * period by no more than 30 days with written notice to the individual.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} amendmentId — The AmendmentRequests ID to extend
+ * @param {string} reason — Written statement explaining why extension is needed
+ */
+function requestAmendmentExtension(sessionToken, amendmentId, reason) {
+  return wrapPhaseAOperation('requestAmendmentExtension', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'requestAmendmentExtension');
+    if (!amendmentId || !reason) throw new Error('INVALID_INPUT');
+    var headers = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('AmendmentRequests', headers);
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = -1;
+    var amendmentRow = null;
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][0] === amendmentId) {
+        rowIndex = r + 1;
+        amendmentRow = data[r];
+        break;
+      }
+    }
+    if (rowIndex === -1) throw new Error('NOT_FOUND');
+    var currentStatus = String(amendmentRow[7]);
+    if (currentStatus !== 'Pending' && currentStatus !== 'UnderReview') {
+      return { success: false, error: 'INVALID_STATE', message: 'Amendment is in status "' + currentStatus + '" and cannot be extended.' };
+    }
+    var originalDate = new Date(amendmentRow[3]);
+    var extendedDeadline = new Date(originalDate.getTime() +
+      ((HIPAA_DEADLINES.AMENDMENT_RESPONSE_DAYS + HIPAA_DEADLINES.AMENDMENT_EXTENSION_DAYS) * 24 * 60 * 60 * 1000));
+    var extendedDeadlineStr = Utilities.formatDate(extendedDeadline, 'America/New_York', "yyyy-MM-dd'T'HH:mm:ss");
+    sheet.getRange(rowIndex, 8).setValue('Extended');
+    sheet.getRange(rowIndex, 14).setValue(extendedDeadlineStr);
+    sheet.getRange(rowIndex, 15).setValue('Extension: ' + reason);
+    dataAuditLog(user, 'update', 'amendment_extension', amendmentId, {
+      reason: reason,
+      originalDeadline: amendmentRow[13],
+      newDeadline: extendedDeadlineStr,
+      individualEmail: amendmentRow[1]
+    });
+    auditLog('amendment_extension', user.email, 'success', {
+      amendmentId: amendmentId, individualEmail: amendmentRow[1]
+    });
+    return {
+      success: true, amendmentId: amendmentId, status: 'Extended',
+      newDeadline: extendedDeadlineStr,
+      message: 'Extension granted. The individual must be notified in writing. New deadline: ' + extendedDeadlineStr
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE A — FORMAL DENIAL NOTICE (§164.524(d))
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Generates a formal written denial notice per §164.524(d)(2).
+ * Required elements:
+ *   (i)   Basis for the denial
+ *   (ii)  Individual's right to submit a statement of disagreement (for reviewable denials)
+ *   (iii) Description of how the individual may complain to the covered entity
+ *   (iv)  Name/title of contact person or office for complaints
+ *   (v)   How to file a complaint with the HHS Secretary
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} requestType — 'access' or 'amendment'
+ * @param {string} requestId — The request ID (AccessRequests or AmendmentRequests)
+ * @param {Object} params — Additional denial parameters
+ * @param {string} params.basisForDenial — The specific legal basis
+ * @param {boolean} [params.isReviewable] — Whether the denial is reviewable (default: true)
+ * @param {string} [params.contactPerson] — Name of complaint contact (default: HIPAA Privacy Officer)
+ * @param {string} [params.contactOffice] — Office for complaints (default: Privacy Office)
+ */
+function generateDenialNotice(sessionToken, requestType, requestId, params) {
+  return wrapPhaseAOperation('generateDenialNotice', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'generateDenialNotice');
+    if (!requestType || !requestId || !params || !params.basisForDenial) {
+      throw new Error('INVALID_INPUT');
+    }
+    if (requestType !== 'access' && requestType !== 'amendment') {
+      throw new Error('INVALID_INPUT');
+    }
+    var isReviewable = params.isReviewable !== false;
+    var contactPerson = params.contactPerson || 'HIPAA Privacy Officer';
+    var contactOffice = params.contactOffice || 'Privacy Office';
+    var noticeDate = formatHipaaTimestamp();
+    var notice = {
+      noticeType: 'HIPAA Formal Denial Notice',
+      date: noticeDate,
+      requestType: requestType,
+      requestId: requestId,
+      sections: {
+        basisForDenial: {
+          heading: '(i) Basis for Denial',
+          content: params.basisForDenial
+        },
+        rightToDisagree: {
+          heading: '(ii) Right to Submit Statement of Disagreement',
+          content: isReviewable
+            ? 'You have the right to submit a written statement of disagreement with the denial. '
+              + 'Your statement will be appended to the designated record set and included with any future disclosures of the disputed information. '
+              + 'If you choose not to submit a statement of disagreement, you may request that the covered entity include your request and the denial with any future disclosures.'
+            : 'This denial is based on an unreviewable ground. The denied information was not created by this covered entity, '
+              + 'is not part of the designated record set, or the information is exempted from access under the Privacy Rule.'
+        },
+        complaintProcess: {
+          heading: '(iii) How to File a Complaint with the Covered Entity',
+          content: 'You may file a complaint regarding this denial by contacting the ' + contactOffice + '. '
+            + 'Contact person: ' + contactPerson + '. '
+            + 'Complaints should be submitted in writing and will be reviewed within 30 days.'
+        },
+        contactInformation: {
+          heading: '(iv) Complaint Contact',
+          content: 'Name/Title: ' + contactPerson + ' | Office: ' + contactOffice
+        },
+        hhsComplaint: {
+          heading: '(v) Filing a Complaint with the Secretary of HHS',
+          content: 'You have the right to file a complaint with the Secretary of the U.S. Department of Health and Human Services. '
+            + 'Complaints may be filed online at https://www.hhs.gov/hipaa/filing-a-complaint/ '
+            + 'or by mail to: Office for Civil Rights, U.S. Department of Health and Human Services, '
+            + '200 Independence Avenue S.W., Washington, D.C. 20201. '
+            + 'Filing a complaint will not result in retaliation.'
+        }
+      },
+      isReviewable: isReviewable,
+      generatedBy: user.email,
+      generatedAt: noticeDate
+    };
+    dataAuditLog(user, 'create', 'denial_notice', requestId, {
+      requestType: requestType,
+      basisForDenial: params.basisForDenial,
+      isReviewable: isReviewable
+    });
+    auditLog('denial_notice_generated', user.email, 'success', {
+      requestType: requestType, requestId: requestId
+    });
+    return { success: true, notice: notice };
   });
 }
 
@@ -3054,6 +3288,29 @@ function doGet(e) {
       + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-disagreement-result", {result:r}); })'
       + '      .withFailureHandler(function(e) { ok("phase-a-disagreement-result", {result:{success:false,message:String(e)}}); })'
       + '      .submitDisagreement(d.token, d.amendmentId, d.statement);'
+      + '  }'
+      // Extension Workflows
+      + '  if (d.type === "phase-a-request-access-extension") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-access-extension-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-access-extension-result", {result:{success:false,message:String(e)}}); })'
+      + '      .requestAccessExtension(d.token, d.requestId, d.reason);'
+      + '  }'
+      + '  if (d.type === "phase-a-request-amendment-extension") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-amendment-extension-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-amendment-extension-result", {result:{success:false,message:String(e)}}); })'
+      + '      .requestAmendmentExtension(d.token, d.amendmentId, d.reason);'
+      + '  }'
+      // Formal Denial Notice
+      + '  if (d.type === "phase-a-generate-denial-notice") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-denial-notice-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-denial-notice-result", {result:{success:false,message:String(e)}}); })'
+      + '      .generateDenialNotice(d.token, d.requestType, d.requestId, d.params);'
+      + '  }'
+      // HITECH EHR Disclosure Accounting
+      + '  if (d.type === "phase-a-get-ehr-disclosures") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-ehr-disclosures-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-a-ehr-disclosures-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getDisclosureAccounting(d.token, d.targetEmail, {includeEhrTpo: true});'
       + '  }'
       // Phase B — P1: Grouped Disclosure Accounting
       + '  if (d.type === "phase-b-get-grouped-disclosures") {'
@@ -5268,7 +5525,7 @@ function getDisclosureRecipientsForRecord(sessionToken, recordId) {
     var headers = [
       'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
       'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-      'ExemptionType', 'TriggeredBy'
+      'ExemptionType', 'DataCategory', 'Source', 'TriggeredBy'
     ];
     var sheet = getOrCreateSheet('DisclosureLog', headers);
     var data = sheet.getDataRange().getValues();
@@ -5445,7 +5702,7 @@ function getGroupedDisclosureAccounting(sessionToken, targetEmail) {
     var headers = [
       'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
       'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
-      'ExemptionType', 'TriggeredBy'
+      'ExemptionType', 'DataCategory', 'Source', 'TriggeredBy'
     ];
     var sheet = getOrCreateSheet('DisclosureLog', headers);
     var data = sheet.getDataRange().getValues();

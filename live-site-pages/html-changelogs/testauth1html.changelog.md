@@ -3,7 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
+
+## [v03.81w] — 2026-03-30 12:36:09 PM EST — v08.17r
+
+### Added
+- Extension Workflow panel — administrators can grant 30-day deadline extensions for access and amendment requests with written justification
+- Formal Denial Notice panel — generates structured denial documents with all required regulatory elements including appeal rights and complaint filing instructions
+- EHR Disclosures panel — view expanded disclosure accounting including treatment, payment, and operations disclosures with source tracking
 
 ## [v03.80w] — 2026-03-30 11:13:25 AM EST — v08.13r
 
