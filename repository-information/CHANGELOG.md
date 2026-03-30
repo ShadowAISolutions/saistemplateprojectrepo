@@ -3,7 +3,48 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
+
+## [v08.10r] — 2026-03-30 09:36:36 AM EST
+
+> **Prompt:** "Think deeply and implement repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md"
+
+### Added
+- Implemented full HIPAA Phase B compliance extension for testauth1 — 18 new GAS functions, 11 doGet() message routes, 3 config objects, and 4 shared utility functions across all 3 priority tiers (P1: Required Sub-Paragraphs, P2: Breach Infrastructure, P3: Personal Representatives)
+- P1: `getGroupedDisclosureAccounting()` for §164.528(b)(2)(ii) grouped disclosures, `generateDataSummary()` for §164.524(c)(3) summary PHI export, `sendAmendmentNotifications()` + `getNotificationStatus()` + `getDisclosureRecipientsForRecord()` for §164.526(d) third-party amendment notifications
+- P2: `evaluateBreachAlert()` + `sendBreachAlert()` + `getBreachAlertConfig()` for §164.404/408 breach detection and alerting, `logBreach()` + `logBreachFromAlert()` + `getBreachLog()` + `getBreachReport()` + `updateBreachStatus()` for §164.408 breach logging with annual report generation, `enforceRetention()` + `setupRetentionTrigger()` + `auditRetentionCompliance()` for §164.316 retention enforcement with automated time-driven triggers
+- P3: `registerPersonalRepresentative()` + `getPersonalRepresentatives()` + `revokeRepresentative()` + `validateRepresentativeAccess()` for §164.502(g) personal representative access management
+- Extended `validateIndividualAccess()` with representative authorization support
+- Added `evaluateBreachAlert()` call in `processSecurityEvent()` for real-time breach detection
+- Added breach dashboard panel and personal representative management panel to testauth1.html with full admin UI
+- Added grouped disclosure toggle, summary export radio option with agreement checkbox, and all 11 Phase B message handlers + JavaScript handler functions to testauth1.html
+- Wired data export download button to route "summary" format to Phase B `generateDataSummary()` endpoint
+- Updated `showAuthWall()` to hide Phase B panels (breach dashboard, representative panel) and clear Phase B data elements
+- Replaced browser `prompt()` in representative revocation with inline custom input (per "UI Dialogs — No Browser Defaults" coding guideline)
+
+#### `testauth1.gs` — v02.28g
+
+##### Added
+- 18 HIPAA Phase B functions: grouped disclosure accounting, summary PHI export, amendment notifications with tracking, breach detection/alerting/logging with annual reports, retention enforcement with automated triggers, personal representative registration/management/revocation
+- 3 configuration objects: BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, REPRESENTATIVE_CONFIG
+- 4 shared utility functions: wrapHipaaOperation, sendHipaaEmail, getRetentionCutoffDate, isRepresentativeAuthorized
+- 11 doGet() message routes for all Phase B operations
+- Real-time breach evaluation integrated into processSecurityEvent()
+- Representative authorization support in validateIndividualAccess()
+
+#### `testauth1.html` — v03.79w
+
+##### Added
+- Breach dashboard admin panel with log viewer, incident logging form, and annual report generation
+- Personal representative management panel with registration form, list view, and revoke functionality
+- Grouped disclosure toggle checkbox in disclosure accounting panel
+- Summary export radio button with HIPAA agreement checkbox in data export panel
+- 11 Phase B postMessage handler cases and complete JavaScript handler functions
+
+##### Changed
+- Data export download button now routes "summary" format to Phase B summary endpoint
+- Auth wall now hides Phase B panels and clears Phase B data elements on sign-out
+- Representative revocation uses inline input instead of browser prompt() dialog
 
 ## [v08.09r] — 2026-03-30 08:31:22 AM EST
 

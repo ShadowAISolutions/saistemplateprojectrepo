@@ -3,7 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
+
+## [v02.28g] — 2026-03-30 09:36:36 AM EST — v08.10r
+
+### Added
+- Full HIPAA Phase B compliance extension — grouped disclosure accounting, summary PHI export, third-party amendment notifications, breach detection and alerting, breach logging with annual report, retention enforcement with automated scheduling, and personal representative access management
+- Breach detection now automatically evaluates security events and alerts when thresholds are exceeded
+- Retention enforcement can be scheduled to run automatically via time-driven triggers
 
 ## [v02.27g] — 2026-03-30 07:29:44 AM EST — v08.07r
 

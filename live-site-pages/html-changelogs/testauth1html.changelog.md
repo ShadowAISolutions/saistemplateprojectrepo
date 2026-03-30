@@ -3,7 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 36/50`
+`Sections: 37/50`
+
+## [v03.79w] — 2026-03-30 09:36:36 AM EST — v08.10r
+
+### Added
+- Breach dashboard for administrators — view breach log, log new incidents, and generate annual reports
+- Personal representative management panel — register, view, and revoke authorized representatives
+- Grouped disclosure toggle — combine repeated disclosures to the same recipient in the disclosure accounting view
+- Summary export option — download a metadata-only summary of your health information instead of full records
 
 ## [v03.78w] — 2026-03-30 07:29:44 AM EST — v08.07r
 

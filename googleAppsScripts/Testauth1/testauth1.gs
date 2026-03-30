@@ -1,4 +1,4 @@
-var VERSION = "v02.27g";
+var VERSION = "v02.28g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -271,6 +271,65 @@ var PRESETS = {
     ENABLE_DATA_AUDIT_LOG: true,       // Log individual data access events (reads, writes)
     DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   }
+};
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — CONFIGURATION
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Breach alerting configuration.
+ * Thresholds define how many security events of each type within WINDOW_MINUTES
+ * trigger an email alert to the security officer.
+ */
+var BREACH_ALERT_CONFIG = {
+  ENABLED: true,
+  SECURITY_OFFICER_EMAIL: '',  // MUST be set before enabling — email address of designated security officer
+  ALERT_COOLDOWN_MINUTES: 60,  // Minimum time between alerts of the same type
+  WINDOW_MINUTES: 15,          // Rolling window for threshold evaluation
+  THRESHOLDS: {
+    'tier3_lockout': 1,        // Any Tier 3 lockout = immediate alert
+    'hmac_integrity_violation': 3,  // 3 HMAC failures in window
+    'session_hijack_attempt': 1,    // Any hijack attempt = immediate alert
+    'brute_force': 5,          // 5 failed auth attempts in window
+    'data_access_anomaly': 10, // 10 unusual data access patterns in window
+    'permission_escalation': 1 // Any permission escalation attempt = immediate alert
+  },
+  // Event types that are ALWAYS logged to BreachLog (regardless of threshold)
+  ALWAYS_LOG_EVENTS: ['tier3_lockout', 'session_hijack_attempt', 'permission_escalation']
+};
+
+/**
+ * Retention enforcement configuration.
+ * Controls how the retention trigger archives and protects audit data.
+ */
+var HIPAA_RETENTION_CONFIG = {
+  RETENTION_YEARS: 6,          // Reads from AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS when available
+  ARCHIVE_SHEET_SUFFIX: '_Archive',  // e.g. SessionAuditLog_Archive
+  PROTECTION_LEVEL: 'warning', // 'warning' (shows dialog) or 'full' (blocks all edits)
+  SHEETS_TO_PROTECT: [
+    'SessionAuditLog', 'DataAuditLog', 'DisclosureLog',
+    'AccessRequests', 'AmendmentRequests', 'AmendmentNotifications',
+    'BreachLog', 'PersonalRepresentatives'
+  ],
+  // How many rows to process per trigger execution (to stay within 6-min GAS limit)
+  BATCH_SIZE: 500
+};
+
+/**
+ * Personal representative configuration.
+ */
+var REPRESENTATIVE_CONFIG = {
+  MAX_REPRESENTATIVES_PER_INDIVIDUAL: 5,  // Prevent abuse
+  REQUIRE_ADMIN_APPROVAL: true,           // Admin must approve representative registrations
+  ALLOW_SELF_REGISTRATION: false,         // Representatives cannot register themselves
+  SUPPORTED_RELATIONSHIP_TYPES: [
+    'Parent',
+    'LegalGuardian',
+    'HealthcarePOA',
+    'CourtAppointed',
+    'Executor'   // Estate executor for deceased individuals
+  ]
 };
 
 // ══════════════
@@ -1666,7 +1725,19 @@ function formatHipaaTimestamp() {
  * @returns {boolean} true if access is permitted
  * @throws {Error} 'ACCESS_DENIED' if user cannot access this individual's data
  */
+/**
+ * EXTENDED validateIndividualAccess() — now checks personal representatives.
+ * Replaces the Phase A version. The function signature is unchanged, ensuring
+ * all existing Phase A callers continue to work without modification.
+ *
+ * Authorization chain:
+ * 1. Admin → access granted (existing behavior)
+ * 2. Self-service (user.email === targetEmail) → access granted (existing behavior)
+ * 3. Personal representative (user registered + approved + active + not expired) → access granted (NEW)
+ * 4. None of the above → ACCESS_DENIED (existing behavior)
+ */
 function validateIndividualAccess(user, targetEmail, operationName) {
+  // Admins can access any individual's data (unchanged from Phase A)
   if (hasPermission(user.role, 'admin')) {
     auditLog('individual_access', user.email, 'admin_access', {
       operation: operationName,
@@ -1675,15 +1746,32 @@ function validateIndividualAccess(user, targetEmail, operationName) {
     });
     return true;
   }
-  if (user.email.toLowerCase() !== targetEmail.toLowerCase()) {
-    auditLog('security_alert', user.email, 'individual_access_denied', {
+
+  // Self-service: user can access their own data (unchanged from Phase A)
+  if (user.email.toLowerCase() === targetEmail.toLowerCase()) {
+    return true;
+  }
+
+  // NEW: Check personal representative authorization
+  var repAuth = isRepresentativeAuthorized(user.email, targetEmail);
+  if (repAuth) {
+    auditLog('individual_access', user.email, 'representative_access', {
       operation: operationName,
       targetEmail: targetEmail,
-      reason: 'non_admin_accessing_other_user_data'
+      accessType: 'personal_representative',
+      representativeId: repAuth.representativeId,
+      relationshipType: repAuth.relationshipType
     });
-    throw new Error('ACCESS_DENIED');
+    return true;
   }
-  return true;
+
+  // Not authorized
+  auditLog('security_alert', user.email, 'individual_access_denied', {
+    operation: operationName,
+    targetEmail: targetEmail,
+    reason: 'not_self_not_admin_not_representative'
+  });
+  throw new Error('ACCESS_DENIED');
 }
 
 /**
@@ -2666,6 +2754,8 @@ function processSecurityEvent(eventType, details) {
       clientIp: 'not-collected',
       page: EMBED_PAGE_URL
     });
+    // Phase B: Evaluate breach alert thresholds after logging
+    evaluateBreachAlert(String(eventType).substring(0, 50), seDetails);
   } else if (seGlobalCount === 50) {
     cache.put(seGlobalKey, String(seGlobalCount + 1), 300);
     auditLog('security_event_flood', 'system', 'Global rate limit reached', {
@@ -2916,6 +3006,66 @@ function doGet(e) {
       + '    google.script.run.withSuccessHandler(function(r) { ok("phase-a-disagreement-result", {result:r}); })'
       + '      .withFailureHandler(function(e) { ok("phase-a-disagreement-result", {result:{success:false,message:String(e)}}); })'
       + '      .submitDisagreement(d.token, d.amendmentId, d.statement);'
+      + '  }'
+      // Phase B — P1: Grouped Disclosure Accounting
+      + '  if (d.type === "phase-b-get-grouped-disclosures") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-grouped-disclosures-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-grouped-disclosures-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getGroupedDisclosureAccounting(d.token, d.targetEmail);'
+      + '  }'
+      // Phase B — P1: Summary PHI Export
+      + '  if (d.type === "phase-b-generate-summary") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-summary-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-summary-result", {result:{success:false,message:String(e)}}); })'
+      + '      .generateDataSummary(d.token, d.targetEmail);'
+      + '  }'
+      // Phase B — P1: Amendment Notifications
+      + '  if (d.type === "phase-b-send-amendment-notifications") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-amendment-notifications-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-amendment-notifications-result", {result:{success:false,message:String(e)}}); })'
+      + '      .sendAmendmentNotifications(d.token, d.amendmentId, d.recipients);'
+      + '  }'
+      + '  if (d.type === "phase-b-get-notification-status") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-notification-status-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-notification-status-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getNotificationStatus(d.token, d.amendmentId);'
+      + '  }'
+      + '  if (d.type === "phase-b-get-disclosure-recipients") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-disclosure-recipients-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-disclosure-recipients-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getDisclosureRecipientsForRecord(d.token, d.recordId);'
+      + '  }'
+      // Phase B — P2: Breach Logging
+      + '  if (d.type === "phase-b-log-breach") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-log-breach-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-log-breach-result", {result:{success:false,message:String(e)}}); })'
+      + '      .logBreach(d.token, d.params);'
+      + '  }'
+      + '  if (d.type === "phase-b-update-breach-status") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-update-breach-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-update-breach-result", {result:{success:false,message:String(e)}}); })'
+      + '      .updateBreachStatus(d.token, d.breachId, d.updates);'
+      + '  }'
+      + '  if (d.type === "phase-b-get-breach-report") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-breach-report-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-breach-report-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getBreachReport(d.token, d.year);'
+      + '  }'
+      // Phase B — P3: Personal Representatives
+      + '  if (d.type === "phase-b-register-representative") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-register-rep-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-register-rep-result", {result:{success:false,message:String(e)}}); })'
+      + '      .registerPersonalRepresentative(d.token, d.params);'
+      + '  }'
+      + '  if (d.type === "phase-b-get-representatives") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-representatives-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-representatives-result", {result:{success:false,message:String(e)}}); })'
+      + '      .getPersonalRepresentatives(d.token, d.targetEmail);'
+      + '  }'
+      + '  if (d.type === "phase-b-revoke-representative") {'
+      + '    google.script.run.withSuccessHandler(function(r) { ok("phase-b-revoke-rep-result", {result:r}); })'
+      + '      .withFailureHandler(function(e) { ok("phase-b-revoke-rep-result", {result:{success:false,message:String(e)}}); })'
+      + '      .revokeRepresentative(d.token, d.representativeId, d.reason);'
       + '  }'
       + '});'
       + '</' + 'script></body></html>';
@@ -4067,6 +4217,1316 @@ function doGet(e) {
 function serverSignOut(sessionToken) {
   invalidateSession(sessionToken);
   return { success: true };
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P3: PERSONAL REPRESENTATIVE ACCESS (#25)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Registers a personal representative for an individual.
+ * Only admins can register representatives.
+ * The registration requires admin approval (separate step) unless auto-approved by config.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {Object} params
+ * @param {string} params.representativeEmail — The representative's email
+ * @param {string} params.individualEmail — The individual they will represent
+ * @param {string} params.relationshipType — One of REPRESENTATIVE_CONFIG.SUPPORTED_RELATIONSHIP_TYPES
+ * @param {string} [params.expirationDate] — When authorization expires (ISO 8601, null = indefinite)
+ * @param {string} [params.documentReference] — Reference to authorization document
+ * @param {string} [params.notes] — Additional notes
+ * @returns {Object} { success, representativeId, approvalStatus }
+ */
+function registerPersonalRepresentative(sessionToken, params) {
+  return wrapHipaaOperation('registerPersonalRepresentative', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'registerPersonalRepresentative');
+
+    if (!params || !params.representativeEmail || !params.individualEmail || !params.relationshipType) {
+      throw new Error('INVALID_INPUT');
+    }
+
+    // Validate relationship type
+    if (REPRESENTATIVE_CONFIG.SUPPORTED_RELATIONSHIP_TYPES.indexOf(params.relationshipType) === -1) {
+      throw new Error('INVALID_INPUT');
+    }
+
+    // Check representative limit per individual
+    var headers = [
+      'RepresentativeID', 'RepresentativeEmail', 'IndividualEmail',
+      'RelationshipType', 'AuthorizationDate', 'ExpirationDate',
+      'Status', 'ApprovalStatus', 'ApprovedBy', 'ApprovalDate',
+      'DocumentReference', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('PersonalRepresentatives', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var activeCount = 0;
+    for (var r = 1; r < data.length; r++) {
+      if (String(data[r][2] || '').toLowerCase() === params.individualEmail.toLowerCase()
+          && data[r][6] === 'Active') {
+        activeCount++;
+      }
+      // Check for duplicate registration
+      if (String(data[r][1] || '').toLowerCase() === params.representativeEmail.toLowerCase()
+          && String(data[r][2] || '').toLowerCase() === params.individualEmail.toLowerCase()
+          && data[r][6] === 'Active') {
+        throw new Error('ALREADY_EXISTS');
+      }
+    }
+
+    if (activeCount >= REPRESENTATIVE_CONFIG.MAX_REPRESENTATIVES_PER_INDIVIDUAL) {
+      return {
+        success: false,
+        error: 'LIMIT_EXCEEDED',
+        message: 'Maximum ' + REPRESENTATIVE_CONFIG.MAX_REPRESENTATIVES_PER_INDIVIDUAL
+          + ' active representatives per individual.'
+      };
+    }
+
+    var repId = generateRequestId('REP');
+    var timestamp = formatHipaaTimestamp();
+    var approvalStatus = REPRESENTATIVE_CONFIG.REQUIRE_ADMIN_APPROVAL ? 'Approved' : 'Pending';
+    // Since admin is doing the registration, auto-approve
+    var approvedBy = user.email;
+
+    var row = [
+      repId,
+      params.representativeEmail,
+      params.individualEmail,
+      params.relationshipType,
+      timestamp,  // AuthorizationDate
+      params.expirationDate || '',
+      'Active',
+      approvalStatus,
+      approvedBy,
+      timestamp,  // ApprovalDate
+      params.documentReference || '',
+      params.notes || ''
+    ];
+    sheet.appendRow(row);
+
+    dataAuditLog(user, 'create', 'personal_representative', repId, {
+      representativeEmail: params.representativeEmail,
+      individualEmail: params.individualEmail,
+      relationshipType: params.relationshipType,
+      approvalStatus: approvalStatus
+    });
+
+    return {
+      success: true,
+      representativeId: repId,
+      approvalStatus: approvalStatus
+    };
+  });
+}
+
+/**
+ * Returns the list of personal representatives for an individual.
+ * Admin can query any individual; non-admin can only see their own representatives.
+ *
+ * @param {string} sessionToken — Session token
+ * @param {string} [targetEmail] — For admin: specify individual's email
+ * @returns {Object} { success, representatives: [...], count }
+ */
+function getPersonalRepresentatives(sessionToken, targetEmail) {
+  return wrapHipaaOperation('getPersonalRepresentatives', sessionToken, function(user) {
+    var email = targetEmail || user.email;
+    validateIndividualAccess(user, email, 'getPersonalRepresentatives');
+
+    var headers = [
+      'RepresentativeID', 'RepresentativeEmail', 'IndividualEmail',
+      'RelationshipType', 'AuthorizationDate', 'ExpirationDate',
+      'Status', 'ApprovalStatus', 'ApprovedBy', 'ApprovalDate',
+      'DocumentReference', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('PersonalRepresentatives', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var representatives = [];
+    for (var r = 1; r < data.length; r++) {
+      var indEmail = String(data[r][2] || '').toLowerCase();
+      if (indEmail !== email.toLowerCase()) continue;
+
+      representatives.push({
+        representativeId: data[r][0],
+        representativeEmail: data[r][1],
+        relationshipType: data[r][3],
+        authorizationDate: data[r][4] ? String(data[r][4]) : null,
+        expirationDate: data[r][5] ? String(data[r][5]) : null,
+        status: data[r][6],
+        approvalStatus: data[r][7],
+        documentReference: data[r][10] || null
+      });
+    }
+
+    return {
+      success: true,
+      individualEmail: email,
+      representatives: representatives,
+      count: representatives.length
+    };
+  });
+}
+
+/**
+ * Revokes a personal representative's authorization.
+ * Supports the §164.502(g)(3) abuse/neglect override with documented reason.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} representativeId — The representative record to revoke
+ * @param {string} [reason] — Reason for revocation (required for abuse/neglect override)
+ * @returns {Object} { success, representativeId, newStatus }
+ */
+function revokeRepresentative(sessionToken, representativeId, reason) {
+  return wrapHipaaOperation('revokeRepresentative', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'revokeRepresentative');
+
+    if (!representativeId) throw new Error('INVALID_INPUT');
+
+    var headers = [
+      'RepresentativeID', 'RepresentativeEmail', 'IndividualEmail',
+      'RelationshipType', 'AuthorizationDate', 'ExpirationDate',
+      'Status', 'ApprovalStatus', 'ApprovedBy', 'ApprovalDate',
+      'DocumentReference', 'Notes'
+    ];
+    var sheet = getOrCreateSheet('PersonalRepresentatives', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var targetRow = -1;
+    var currentStatus = '';
+    var repEmail = '';
+    var indEmail = '';
+
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][0] === representativeId) {
+        targetRow = r + 1;
+        currentStatus = data[r][6];
+        repEmail = data[r][1];
+        indEmail = data[r][2];
+        break;
+      }
+    }
+
+    if (targetRow === -1) throw new Error('NOT_FOUND');
+    if (currentStatus === 'Revoked') throw new Error('ALREADY_EXISTS');
+
+    // Update status to Revoked
+    sheet.getRange(targetRow, 7).setValue('Revoked'); // Status column
+    // Append revocation reason to Notes
+    var existingNotes = String(data[targetRow - 1][11] || '');
+    var revocationNote = 'Revoked by ' + user.email + ' on ' + formatHipaaTimestamp();
+    if (reason) {
+      revocationNote += ' — Reason: ' + reason;
+    }
+    sheet.getRange(targetRow, 12).setValue(
+      existingNotes ? existingNotes + ' | ' + revocationNote : revocationNote
+    );
+
+    dataAuditLog(user, 'update', 'personal_representative', representativeId, {
+      previousStatus: currentStatus,
+      newStatus: 'Revoked',
+      representativeEmail: repEmail,
+      individualEmail: indEmail,
+      reason: reason || 'No reason provided'
+    });
+
+    return {
+      success: true,
+      representativeId: representativeId,
+      previousStatus: currentStatus,
+      newStatus: 'Revoked'
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P2: RETENTION ENFORCEMENT (#18)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Enforces HIPAA retention requirements across all protected sheets.
+ * Designed to run as a daily time-driven trigger.
+ *
+ * Actions:
+ * 1. Ensures sheet protection exists on all HIPAA sheets
+ * 2. Archives records older than the retention period to *_Archive sheets
+ * 3. Logs all actions to SessionAuditLog
+ *
+ * Does NOT delete any records — archival moves rows to a separate sheet.
+ * The original sheet becomes smaller over time (performance improvement)
+ * while the archive retains everything for the full retention period.
+ */
+function enforceRetention() {
+  var startTime = new Date().getTime();
+  var maxExecutionMs = 5 * 60 * 1000; // 5 minutes (leave 1-minute buffer for GAS 6-min limit)
+
+  var retentionYears = HIPAA_RETENTION_CONFIG.RETENTION_YEARS
+    || AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS || 6;
+  var cutoffDate = getRetentionCutoffDate(retentionYears);
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheetsToProtect = HIPAA_RETENTION_CONFIG.SHEETS_TO_PROTECT;
+  var batchSize = HIPAA_RETENTION_CONFIG.BATCH_SIZE || 500;
+
+  var totalArchived = 0;
+  var totalProtected = 0;
+
+  for (var s = 0; s < sheetsToProtect.length; s++) {
+    // Check execution time budget
+    if (new Date().getTime() - startTime > maxExecutionMs) {
+      auditLog('retention_timeout', 'system', 'partial', {
+        processedSheets: s,
+        totalSheets: sheetsToProtect.length,
+        totalArchived: totalArchived,
+        message: 'Trigger will resume on next daily execution'
+      });
+      break;
+    }
+
+    var sheetName = sheetsToProtect[s];
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) continue;
+
+    // Step 1: Ensure sheet protection
+    var protections = sheet.getProtections(SpreadsheetApp.ProtectionType.SHEET);
+    if (protections.length === 0) {
+      var protection = sheet.protect().setDescription('HIPAA Protected — ' + sheetName);
+      protection.setWarningOnly(true);
+      totalProtected++;
+    }
+
+    // Step 2: Archive old records
+    // Find the timestamp column (first column that looks like a date/timestamp)
+    var data = sheet.getDataRange().getValues();
+    if (data.length <= 1) continue; // Header only
+
+    var headers = data[0];
+    var tsColIdx = -1;
+    for (var h = 0; h < headers.length; h++) {
+      var hdr = String(headers[h]).toLowerCase();
+      if (hdr === 'timestamp' || hdr === 'createddate' || hdr === 'requestdate'
+          || hdr === 'discoverydate' || hdr === 'authorizationdate') {
+        tsColIdx = h;
+        break;
+      }
+    }
+    if (tsColIdx === -1) continue; // No timestamp column found
+
+    // Get or create archive sheet
+    var archiveSheetName = sheetName + HIPAA_RETENTION_CONFIG.ARCHIVE_SHEET_SUFFIX;
+    var archiveSheet = ss.getSheetByName(archiveSheetName);
+    if (!archiveSheet) {
+      archiveSheet = ss.insertSheet(archiveSheetName);
+      archiveSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      archiveSheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+      archiveSheet.setFrozenRows(1);
+      var archiveProtection = archiveSheet.protect().setDescription('HIPAA Archive — ' + archiveSheetName);
+      archiveProtection.setWarningOnly(true);
+    }
+
+    // Find rows to archive (older than cutoff, working from bottom to preserve row indices)
+    var rowsToArchive = [];
+    for (var r = 1; r < data.length && rowsToArchive.length < batchSize; r++) {
+      var ts = data[r][tsColIdx];
+      var rowDate = ts instanceof Date ? ts : new Date(ts);
+      if (!isNaN(rowDate.getTime()) && rowDate < cutoffDate) {
+        rowsToArchive.push({ rowIndex: r + 1, values: data[r] }); // 1-indexed for sheet ops
+      }
+    }
+
+    if (rowsToArchive.length === 0) continue;
+
+    // Append archived rows to archive sheet
+    var archiveValues = rowsToArchive.map(function(r) { return r.values; });
+    archiveSheet.getRange(
+      archiveSheet.getLastRow() + 1, 1,
+      archiveValues.length, archiveValues[0].length
+    ).setValues(archiveValues);
+
+    // Delete archived rows from source sheet (bottom-up to preserve indices)
+    rowsToArchive.sort(function(a, b) { return b.rowIndex - a.rowIndex; });
+    for (var d = 0; d < rowsToArchive.length; d++) {
+      sheet.deleteRow(rowsToArchive[d].rowIndex);
+    }
+
+    totalArchived += rowsToArchive.length;
+  }
+
+  auditLog('retention_enforcement', 'system', 'success', {
+    retentionYears: retentionYears,
+    cutoffDate: cutoffDate.toISOString(),
+    sheetsProcessed: sheetsToProtect.length,
+    totalArchived: totalArchived,
+    totalProtected: totalProtected
+  });
+}
+
+/**
+ * Sets up the daily time-driven trigger for retention enforcement.
+ * Run this ONCE from the Apps Script editor (Run → setupRetentionTrigger).
+ * The trigger fires once per day between 2:00-3:00 AM EST.
+ */
+function setupRetentionTrigger() {
+  // Remove any existing retention triggers to avoid duplicates
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'enforceRetention') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+
+  // Create new daily trigger
+  ScriptApp.newTrigger('enforceRetention')
+    .timeBased()
+    .atHour(2) // 2:00 AM
+    .everyDays(1)
+    .inTimezone('America/New_York')
+    .create();
+
+  auditLog('retention_trigger_installed', 'system', 'success', {
+    schedule: 'Daily at 2:00 AM EST',
+    handler: 'enforceRetention()'
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P2: BREACH DETECTION & ALERTING (#28)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Evaluates whether a security event warrants a breach alert.
+ * Called by processSecurityEvent() after logging the event.
+ * Checks event count against configurable thresholds and sends email if exceeded.
+ *
+ * @param {string} eventType — The security event type (e.g. 'tier3_lockout', 'hmac_integrity_violation')
+ * @param {Object} eventDetails — Details about the event (for the alert email)
+ */
+function evaluateBreachAlert(eventType, eventDetails) {
+  if (!BREACH_ALERT_CONFIG.ENABLED) return;
+
+  if (!BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL) {
+    auditLog('breach_alert_config_error', 'system', 'error', {
+      message: 'SECURITY_OFFICER_EMAIL not configured — breach alerting disabled',
+      eventType: eventType
+    });
+    return;
+  }
+
+  var threshold = BREACH_ALERT_CONFIG.THRESHOLDS[eventType];
+  if (!threshold) return; // Event type not configured for alerting
+
+  var cache = getEpochCache();
+  var windowKey = 'breach_window_' + eventType;
+
+  // Count events in the rolling window
+  var windowData = cache.get(windowKey);
+  var eventCount = windowData ? parseInt(windowData, 10) + 1 : 1;
+  cache.put(windowKey, String(eventCount), BREACH_ALERT_CONFIG.WINDOW_MINUTES * 60);
+
+  if (eventCount < threshold) return; // Below threshold
+
+  // Threshold exceeded — check cooldown before sending
+  var cooldownKey = 'breach_alert_cooldown_' + eventType;
+  if (cache.get(cooldownKey)) {
+    auditLog('breach_alert_suppressed', 'system', 'cooldown', {
+      eventType: eventType,
+      eventCount: eventCount,
+      threshold: threshold,
+      reason: 'alert_cooldown_active'
+    });
+    return;
+  }
+
+  // Send the alert
+  var alertSubject = 'HIPAA Security Alert — ' + eventType.replace(/_/g, ' ').toUpperCase();
+  var alertBody = 'HIPAA SECURITY ALERT\n'
+    + '━━━━━━━━━━━━━━━━━━━━\n\n'
+    + 'Event Type: ' + eventType + '\n'
+    + 'Threshold: ' + threshold + ' events in ' + BREACH_ALERT_CONFIG.WINDOW_MINUTES + ' minutes\n'
+    + 'Actual Count: ' + eventCount + '\n'
+    + 'Timestamp: ' + formatHipaaTimestamp() + '\n'
+    + 'Environment: testauth1\n\n'
+    + 'Event Details:\n'
+    + JSON.stringify(eventDetails || {}, null, 2).substring(0, 500) + '\n\n'
+    + 'ACTION REQUIRED:\n'
+    + '1. Review the SessionAuditLog for related events\n'
+    + '2. Determine if this constitutes a breach per the 4-factor analysis\n'
+    + '3. If a breach is confirmed, log it via the Breach Dashboard\n'
+    + '4. Begin the 60-day notification countdown if applicable\n\n'
+    + 'This alert was generated automatically by the HIPAA breach detection system.\n'
+    + 'Alert cooldown: ' + BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES + ' minutes (no duplicate alerts during this period).';
+
+  var emailResult = sendHipaaEmail({
+    to: BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL,
+    subject: alertSubject,
+    body: alertBody,
+    emailType: 'breach_alert',
+    triggeredBy: 'system',
+    metadata: {
+      eventType: eventType,
+      eventCount: eventCount,
+      threshold: threshold
+    }
+  });
+
+  if (emailResult.success) {
+    // Set cooldown to prevent alert storms
+    cache.put(cooldownKey, 'sent', BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES * 60);
+  }
+
+  // Always log to BreachLog for events in the ALWAYS_LOG_EVENTS list
+  if (BREACH_ALERT_CONFIG.ALWAYS_LOG_EVENTS.indexOf(eventType) > -1) {
+    logBreachFromAlert(eventType, eventCount, eventDetails);
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P2: BREACH LOGGING (#31)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Logs a breach or potential breach to the BreachLog sheet.
+ * Can be called manually by admin or automatically by evaluateBreachAlert().
+ *
+ * @param {string} sessionToken — Admin session token (null for system-generated entries)
+ * @param {Object} params
+ * @param {string} params.description — Brief description of the breach/incident
+ * @param {string} params.discoveryDate — When the breach was discovered (ISO 8601)
+ * @param {string} params.source — 'Manual' | 'Auto-Detected'
+ * @param {string} [params.natureOfPhi] — What types of PHI were involved
+ * @param {string} [params.unauthorizedPerson] — Who accessed/received the PHI
+ * @param {string} [params.acquiredOrViewed] — Whether PHI was actually accessed
+ * @param {string} [params.mitigationSteps] — Actions taken to reduce harm
+ * @param {number} [params.affectedIndividuals] — Number of individuals affected
+ * @param {string} [params.relatedEventType] — Security event type that triggered this entry
+ * @returns {Object} { success, breachId }
+ */
+function logBreach(sessionToken, params) {
+  var performLog = function(user) {
+    if (user) {
+      checkPermission(user, 'admin', 'logBreach');
+    }
+
+    if (!params || !params.description) {
+      throw new Error('INVALID_INPUT');
+    }
+
+    var breachId = generateRequestId('BREACH');
+    var timestamp = formatHipaaTimestamp();
+    var discoveryDate = params.discoveryDate || timestamp;
+
+    // Calculate 60-day notification deadline
+    var deadline = new Date(discoveryDate);
+    deadline.setDate(deadline.getDate() + 60);
+
+    var headers = [
+      'BreachID', 'CreatedDate', 'DiscoveryDate', 'Description',
+      'Source', 'Status', 'NatureOfPhi', 'UnauthorizedPerson',
+      'AcquiredOrViewed', 'MitigationSteps', 'AffectedIndividuals',
+      'RiskAssessment', 'NotificationDeadline', 'NotificationDate',
+      'HhsReportDate', 'RelatedEventType', 'InvestigatorEmail',
+      'ResolutionDate', 'ResolutionNotes'
+    ];
+    var sheet = getOrCreateSheet('BreachLog', headers);
+
+    var row = [
+      breachId,
+      timestamp,
+      discoveryDate,
+      params.description,
+      params.source || 'Manual',
+      'Under Investigation',
+      params.natureOfPhi || '',
+      params.unauthorizedPerson || '',
+      params.acquiredOrViewed || '',
+      params.mitigationSteps || '',
+      params.affectedIndividuals || 0,
+      '',  // RiskAssessment — to be filled during investigation
+      deadline.toISOString(),
+      '',  // NotificationDate
+      '',  // HhsReportDate
+      params.relatedEventType || '',
+      user ? user.email : 'system',
+      '',  // ResolutionDate
+      ''   // ResolutionNotes
+    ];
+    sheet.appendRow(row);
+
+    auditLog('breach_logged', user ? user.email : 'system', 'success', {
+      breachId: breachId,
+      source: params.source || 'Manual',
+      description: params.description.substring(0, 100)
+    });
+
+    return {
+      success: true,
+      breachId: breachId,
+      notificationDeadline: deadline.toISOString()
+    };
+  };
+
+  // If called with a session token (manual entry), validate session
+  if (sessionToken) {
+    return wrapHipaaOperation('logBreach', sessionToken, performLog);
+  }
+
+  // If called without session token (system-generated), execute directly
+  return performLog(null);
+}
+
+/**
+ * Automatically creates a BreachLog entry when evaluateBreachAlert() fires.
+ * Called internally — not exposed as a user-callable endpoint.
+ *
+ * @param {string} eventType — The security event type
+ * @param {number} eventCount — Number of events that triggered the alert
+ * @param {Object} eventDetails — Details from the security event
+ */
+function logBreachFromAlert(eventType, eventCount, eventDetails) {
+  logBreach(null, {
+    description: 'Auto-detected: ' + eventType + ' — ' + eventCount + ' events exceeded threshold within '
+      + BREACH_ALERT_CONFIG.WINDOW_MINUTES + ' minutes',
+    discoveryDate: formatHipaaTimestamp(),
+    source: 'Auto-Detected',
+    relatedEventType: eventType,
+    natureOfPhi: 'To be determined during investigation',
+    unauthorizedPerson: eventDetails && eventDetails.email ? eventDetails.email : 'Unknown — see audit logs',
+    acquiredOrViewed: 'To be determined during investigation',
+    mitigationSteps: 'Automatic escalating lockout applied. Alert sent to security officer.',
+    affectedIndividuals: 0  // To be determined during investigation
+  });
+}
+
+/**
+ * Updates the status and investigation details of a breach record.
+ * Used by admin during the investigation and notification process.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} breachId — The breach to update
+ * @param {Object} updates — Fields to update (only specified fields are changed)
+ * @returns {Object} { success, breachId, newStatus }
+ */
+function updateBreachStatus(sessionToken, breachId, updates) {
+  return wrapHipaaOperation('updateBreachStatus', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'updateBreachStatus');
+
+    if (!breachId || !updates) throw new Error('INVALID_INPUT');
+
+    var headers = [
+      'BreachID', 'CreatedDate', 'DiscoveryDate', 'Description',
+      'Source', 'Status', 'NatureOfPhi', 'UnauthorizedPerson',
+      'AcquiredOrViewed', 'MitigationSteps', 'AffectedIndividuals',
+      'RiskAssessment', 'NotificationDeadline', 'NotificationDate',
+      'HhsReportDate', 'RelatedEventType', 'InvestigatorEmail',
+      'ResolutionDate', 'ResolutionNotes'
+    ];
+    var sheet = getOrCreateSheet('BreachLog', headers);
+    var data = sheet.getDataRange().getValues();
+
+    // Valid status transitions
+    var validTransitions = {
+      'Under Investigation': ['Confirmed', 'Not a Breach'],
+      'Confirmed': ['Notified', 'Closed'],
+      'Not a Breach': ['Closed'],
+      'Notified': ['Closed']
+    };
+
+    var targetRow = -1;
+    var currentStatus = '';
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][0] === breachId) {
+        targetRow = r + 1; // 1-indexed for sheet operations
+        currentStatus = data[r][5];
+        break;
+      }
+    }
+
+    if (targetRow === -1) throw new Error('NOT_FOUND');
+
+    // Validate status transition if status is being updated
+    if (updates.status) {
+      var allowed = validTransitions[currentStatus] || [];
+      if (allowed.indexOf(updates.status) === -1) {
+        throw new Error('INVALID_STATE');
+      }
+    }
+
+    // Map update fields to column indices
+    var fieldMap = {
+      'status': 5, 'natureOfPhi': 6, 'unauthorizedPerson': 7,
+      'acquiredOrViewed': 8, 'mitigationSteps': 9, 'affectedIndividuals': 10,
+      'riskAssessment': 11, 'notificationDate': 13, 'hhsReportDate': 14,
+      'resolutionDate': 17, 'resolutionNotes': 18
+    };
+
+    for (var field in updates) {
+      if (updates.hasOwnProperty(field) && fieldMap[field] !== undefined) {
+        sheet.getRange(targetRow, fieldMap[field] + 1).setValue(updates[field]);
+      }
+    }
+
+    dataAuditLog(user, 'update', 'breach_record', breachId, {
+      previousStatus: currentStatus,
+      newStatus: updates.status || currentStatus,
+      fieldsUpdated: Object.keys(updates)
+    });
+
+    return {
+      success: true,
+      breachId: breachId,
+      previousStatus: currentStatus,
+      newStatus: updates.status || currentStatus
+    };
+  });
+}
+
+/**
+ * Generates a breach report for a specified calendar year.
+ * Per §164.408(c), this report must be submitted to HHS within 60 days
+ * after the end of the calendar year for breaches affecting <500 individuals.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {number} [year] — Calendar year to report (defaults to previous year)
+ * @returns {Object} { success, year, breaches: [...], totalBreaches, totalAffected }
+ */
+function getBreachReport(sessionToken, year) {
+  return wrapHipaaOperation('getBreachReport', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'getBreachReport');
+
+    var reportYear = year || (new Date().getFullYear() - 1);
+    var yearStart = new Date(reportYear, 0, 1);
+    var yearEnd = new Date(reportYear, 11, 31, 23, 59, 59);
+
+    var headers = [
+      'BreachID', 'CreatedDate', 'DiscoveryDate', 'Description',
+      'Source', 'Status', 'NatureOfPhi', 'UnauthorizedPerson',
+      'AcquiredOrViewed', 'MitigationSteps', 'AffectedIndividuals',
+      'RiskAssessment', 'NotificationDeadline', 'NotificationDate',
+      'HhsReportDate', 'RelatedEventType', 'InvestigatorEmail',
+      'ResolutionDate', 'ResolutionNotes'
+    ];
+    var sheet = getOrCreateSheet('BreachLog', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var breaches = [];
+    var totalAffected = 0;
+
+    for (var r = 1; r < data.length; r++) {
+      var discoveryDate = data[r][2];
+      var date = discoveryDate instanceof Date ? discoveryDate : new Date(discoveryDate);
+      if (isNaN(date.getTime())) continue;
+
+      if (date >= yearStart && date <= yearEnd) {
+        var affected = parseInt(data[r][10], 10) || 0;
+        totalAffected += affected;
+
+        breaches.push({
+          breachId: data[r][0],
+          discoveryDate: date.toISOString(),
+          description: data[r][3],
+          status: data[r][5],
+          natureOfPhi: data[r][6],
+          affectedIndividuals: affected,
+          riskAssessment: data[r][11],
+          notificationDate: data[r][13] ? String(data[r][13]) : null,
+          hhsReportDate: data[r][14] ? String(data[r][14]) : null
+        });
+      }
+    }
+
+    dataAuditLog(user, 'read', 'breach_report', 'year_' + reportYear, {
+      breachCount: breaches.length,
+      totalAffected: totalAffected
+    });
+
+    return {
+      success: true,
+      year: reportYear,
+      breaches: breaches,
+      totalBreaches: breaches.length,
+      totalAffected: totalAffected,
+      hhsDeadline: new Date(reportYear + 1, 1, 28).toISOString(), // Feb 28 of following year (approx 60 days)
+      note: breaches.length === 0
+        ? 'No breaches discovered during ' + reportYear + '. Annual HHS notification may still be required if prior-year breaches were not yet reported.'
+        : 'Report ' + breaches.length + ' breach(es) affecting ' + totalAffected + ' individuals to HHS by ' + new Date(reportYear + 1, 1, 28).toISOString().split('T')[0]
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P1: AMENDMENT NOTIFICATIONS (#24b)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Sends amendment notifications to specified third parties after an amendment is approved.
+ * Called by admin after approving an amendment via reviewAmendment().
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} amendmentId — The approved amendment's ID
+ * @param {Array<Object>} recipients — Array of { email, name } objects to notify
+ * @returns {Object} { success, notificationsSent, notificationsFailed }
+ */
+function sendAmendmentNotifications(sessionToken, amendmentId, recipients) {
+  return wrapHipaaOperation('sendAmendmentNotifications', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'sendAmendmentNotifications');
+
+    if (!amendmentId || !recipients || !recipients.length) {
+      throw new Error('INVALID_INPUT');
+    }
+
+    // Verify the amendment exists and is Approved
+    var amHeaders = [
+      'AmendmentID', 'IndividualEmail', 'RecordID', 'RequestDate',
+      'CurrentContent', 'ProposedChange', 'Reason', 'Status',
+      'ReviewerEmail', 'DecisionDate', 'DecisionReason',
+      'DisagreementStatement', 'DisagreementDate', 'Deadline', 'Notes'
+    ];
+    var amSheet = getOrCreateSheet('AmendmentRequests', amHeaders);
+    var amData = amSheet.getDataRange().getValues();
+
+    var amendment = null;
+    for (var r = 1; r < amData.length; r++) {
+      if (amData[r][0] === amendmentId) {
+        amendment = {
+          id: amData[r][0],
+          individualEmail: amData[r][1],
+          recordId: amData[r][2],
+          status: amData[r][7],
+          decisionDate: amData[r][9]
+        };
+        break;
+      }
+    }
+
+    if (!amendment) throw new Error('NOT_FOUND');
+    if (amendment.status !== 'Approved') {
+      throw new Error('INVALID_STATE');
+    }
+
+    // Create notification records and send emails
+    var notifHeaders = [
+      'NotificationID', 'AmendmentID', 'IndividualEmail',
+      'NotificationType', 'RecipientEmail', 'RecipientName',
+      'Status', 'SentDate', 'CreatedDate', 'ErrorDetails'
+    ];
+    var notifSheet = getOrCreateSheet('AmendmentNotifications', notifHeaders);
+
+    var sent = 0;
+    var failed = 0;
+    var results = [];
+
+    for (var i = 0; i < recipients.length; i++) {
+      var recipient = recipients[i];
+      var notifId = generateRequestId('NOTIF');
+      var createdDate = formatHipaaTimestamp();
+
+      // Send the notification email
+      var emailResult = sendHipaaEmail({
+        to: recipient.email,
+        subject: 'Amendment Notification — ' + amendmentId,
+        body: 'Dear ' + (recipient.name || recipient.email) + ',\n\n'
+          + 'This notice is to inform you that a correction has been made to protected health '
+          + 'information (PHI) that was previously disclosed to your organization.\n\n'
+          + 'Amendment Reference: ' + amendmentId + '\n'
+          + 'Date of Amendment Approval: ' + String(amendment.decisionDate) + '\n'
+          + 'Record Affected: ' + amendment.recordId + '\n\n'
+          + 'The correction has been approved and appended to the individual\'s designated record set. '
+          + 'If you have previously relied on the disclosed information, please contact us to obtain '
+          + 'the corrected information.\n\n'
+          + 'This notification is provided in accordance with HIPAA §164.526(c)(3).',
+        emailType: 'amendment_notification',
+        triggeredBy: user.email,
+        metadata: {
+          amendmentId: amendmentId,
+          recipientName: recipient.name,
+          notificationId: notifId
+        }
+      });
+
+      var status = emailResult.success ? 'Sent' : 'Failed';
+      var sentDate = emailResult.success ? formatHipaaTimestamp() : '';
+      var errorDetails = emailResult.success ? '' : (emailResult.error || 'Unknown error');
+
+      notifSheet.appendRow([
+        notifId, amendmentId, amendment.individualEmail,
+        'ThirdPartyCorrection', recipient.email, recipient.name || '',
+        status, sentDate, createdDate, errorDetails
+      ]);
+
+      if (emailResult.success) {
+        sent++;
+      } else {
+        failed++;
+      }
+
+      results.push({
+        notificationId: notifId,
+        recipientEmail: recipient.email,
+        status: status
+      });
+    }
+
+    dataAuditLog(user, 'create', 'amendment_notifications', amendmentId, {
+      recipientCount: recipients.length,
+      sent: sent,
+      failed: failed
+    });
+
+    return {
+      success: true,
+      amendmentId: amendmentId,
+      notificationsSent: sent,
+      notificationsFailed: failed,
+      results: results
+    };
+  });
+}
+
+/**
+ * Returns the notification history for a specific amendment.
+ * Used by the admin review panel to show notification status.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} amendmentId — The amendment to query notifications for
+ * @returns {Object} { success, notifications: [...] }
+ */
+function getNotificationStatus(sessionToken, amendmentId) {
+  return wrapHipaaOperation('getNotificationStatus', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'getNotificationStatus');
+
+    if (!amendmentId) throw new Error('INVALID_INPUT');
+
+    var notifHeaders = [
+      'NotificationID', 'AmendmentID', 'IndividualEmail',
+      'NotificationType', 'RecipientEmail', 'RecipientName',
+      'Status', 'SentDate', 'CreatedDate', 'ErrorDetails'
+    ];
+    var sheet = getOrCreateSheet('AmendmentNotifications', notifHeaders);
+    var data = sheet.getDataRange().getValues();
+
+    var notifications = [];
+    for (var r = 1; r < data.length; r++) {
+      if (data[r][1] === amendmentId) {
+        notifications.push({
+          notificationId: data[r][0],
+          notificationType: data[r][3],
+          recipientEmail: data[r][4],
+          recipientName: data[r][5],
+          status: data[r][6],
+          sentDate: data[r][7] ? String(data[r][7]) : null,
+          createdDate: String(data[r][8]),
+          errorDetails: data[r][9] || null
+        });
+      }
+    }
+
+    return {
+      success: true,
+      amendmentId: amendmentId,
+      notifications: notifications,
+      count: notifications.length
+    };
+  });
+}
+
+/**
+ * Returns disclosure recipients who received PHI related to a specific record.
+ * Helps admin identify who needs to be notified of an amendment.
+ * Searches DisclosureLog for disclosures mentioning the record ID in PHIDescription.
+ *
+ * @param {string} sessionToken — Admin session token
+ * @param {string} recordId — The record that was amended
+ * @returns {Object} { success, recipients: [{ email, name, lastDisclosureDate }] }
+ */
+function getDisclosureRecipientsForRecord(sessionToken, recordId) {
+  return wrapHipaaOperation('getDisclosureRecipientsForRecord', sessionToken, function(user) {
+    checkPermission(user, 'admin', 'getDisclosureRecipientsForRecord');
+
+    if (!recordId) throw new Error('INVALID_INPUT');
+
+    var headers = [
+      'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
+      'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
+      'ExemptionType', 'TriggeredBy'
+    ];
+    var sheet = getOrCreateSheet('DisclosureLog', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var recipientMap = {};
+    for (var r = 1; r < data.length; r++) {
+      var phiDesc = String(data[r][5] || '');
+      if (phiDesc.indexOf(recordId) === -1) continue;
+
+      var recipientName = String(data[r][3] || '');
+      var recipientKey = recipientName.toLowerCase();
+
+      if (!recipientMap[recipientKey]) {
+        recipientMap[recipientKey] = {
+          name: recipientName,
+          recipientType: data[r][4],
+          lastDisclosureDate: data[r][0]
+        };
+      } else {
+        var existingDate = recipientMap[recipientKey].lastDisclosureDate;
+        var newDate = data[r][0];
+        if (newDate > existingDate) {
+          recipientMap[recipientKey].lastDisclosureDate = newDate;
+        }
+      }
+    }
+
+    var recipients = [];
+    for (var key in recipientMap) {
+      if (recipientMap.hasOwnProperty(key)) {
+        var rec = recipientMap[key];
+        recipients.push({
+          name: rec.name,
+          recipientType: rec.recipientType,
+          lastDisclosureDate: rec.lastDisclosureDate instanceof Date
+            ? rec.lastDisclosureDate.toISOString()
+            : String(rec.lastDisclosureDate)
+        });
+      }
+    }
+
+    return {
+      success: true,
+      recordId: recordId,
+      recipients: recipients,
+      count: recipients.length
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P1: SUMMARY PHI EXPORT (#23b)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Generates a metadata-only summary of the individual's designated record set.
+ * Per §164.524(c)(3).
+ */
+function generateDataSummary(sessionToken, targetEmail) {
+  return wrapHipaaOperation('generateDataSummary', sessionToken, function(user) {
+    var email = targetEmail || user.email;
+    validateIndividualAccess(user, email, 'generateDataSummary');
+    checkPermission(user, 'export', 'generateDataSummary');
+
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheetsToScan = ['Live_Sheet', 'DisclosureLog', 'AccessRequests', 'AmendmentRequests'];
+    var summary = {
+      recordTypes: [],
+      countPerType: {},
+      dateRange: { earliest: null, latest: null },
+      totalRecords: 0,
+      lastUpdated: null,
+      dataCategories: [],
+      exportFormatsAvailable: ['json', 'csv']
+    };
+
+    var categoryMap = {
+      'Live_Sheet': 'Treatment notes',
+      'DisclosureLog': 'Disclosure records',
+      'AccessRequests': 'Access request history',
+      'AmendmentRequests': 'Amendment request history'
+    };
+
+    for (var s = 0; s < sheetsToScan.length; s++) {
+      var sheetName = sheetsToScan[s];
+      var sheet = ss.getSheetByName(sheetName);
+      if (!sheet) continue;
+
+      var data = sheet.getDataRange().getValues();
+      if (data.length <= 1) continue;
+
+      var headers = data[0];
+      var emailColIdx = -1;
+      var timestampColIdx = -1;
+
+      for (var h = 0; h < headers.length; h++) {
+        var hdr = String(headers[h]).toLowerCase();
+        if (hdr.indexOf('email') > -1 && emailColIdx === -1) emailColIdx = h;
+        if ((hdr === 'timestamp' || hdr === 'requestdate' || hdr === 'date') && timestampColIdx === -1) timestampColIdx = h;
+      }
+
+      var count = 0;
+      for (var r = 1; r < data.length; r++) {
+        var rowEmail = emailColIdx >= 0 ? String(data[r][emailColIdx] || '').toLowerCase() : '';
+        if (emailColIdx >= 0 && rowEmail !== email.toLowerCase()) continue;
+
+        count++;
+
+        if (timestampColIdx >= 0) {
+          var ts = data[r][timestampColIdx];
+          var date = ts instanceof Date ? ts : new Date(ts);
+          if (!isNaN(date.getTime())) {
+            if (!summary.dateRange.earliest || date < new Date(summary.dateRange.earliest)) {
+              summary.dateRange.earliest = date.toISOString();
+            }
+            if (!summary.dateRange.latest || date > new Date(summary.dateRange.latest)) {
+              summary.dateRange.latest = date.toISOString();
+              summary.lastUpdated = date.toISOString();
+            }
+          }
+        }
+      }
+
+      if (count > 0) {
+        summary.recordTypes.push(sheetName);
+        summary.countPerType[sheetName] = count;
+        summary.totalRecords += count;
+        if (categoryMap[sheetName]) {
+          summary.dataCategories.push(categoryMap[sheetName]);
+        }
+      }
+    }
+
+    dataAuditLog(user, 'summary_export', 'designated_record_set', email, {
+      recordTypes: summary.recordTypes,
+      totalRecords: summary.totalRecords,
+      note: 'Summary only — no PHI content included'
+    });
+
+    var arHeaders = [
+      'RequestID', 'IndividualEmail', 'RequestDate', 'Format',
+      'Status', 'ResponseDate', 'Notes'
+    ];
+    var arSheet = getOrCreateSheet('AccessRequests', arHeaders);
+    var requestId = generateRequestId('ACCESS');
+    arSheet.appendRow([
+      requestId, email, formatHipaaTimestamp(), 'summary',
+      'Completed', formatHipaaTimestamp(), 'Summary export generated'
+    ]);
+
+    return {
+      success: true,
+      requestId: requestId,
+      summary: summary,
+      fee: '$0 (electronic self-service)',
+      notice: 'This is a summary of your records. For the complete designated record set, request a full JSON or CSV export.'
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — P1: GROUPED DISCLOSURE ACCOUNTING (#19b)
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Returns a grouped disclosure accounting for the authenticated individual.
+ * Per §164.528(b)(2)(ii).
+ */
+function getGroupedDisclosureAccounting(sessionToken, targetEmail) {
+  return wrapHipaaOperation('getGroupedDisclosureAccounting', sessionToken, function(user) {
+    var email = targetEmail || user.email;
+    validateIndividualAccess(user, email, 'getGroupedDisclosureAccounting');
+
+    var headers = [
+      'Timestamp', 'DisclosureID', 'IndividualEmail', 'RecipientName',
+      'RecipientType', 'PHIDescription', 'Purpose', 'IsExempt',
+      'ExemptionType', 'TriggeredBy'
+    ];
+    var sheet = getOrCreateSheet('DisclosureLog', headers);
+    var data = sheet.getDataRange().getValues();
+
+    var sixYearsAgo = new Date();
+    sixYearsAgo.setFullYear(sixYearsAgo.getFullYear() - 6);
+
+    var rawDisclosures = [];
+    for (var r = 1; r < data.length; r++) {
+      var row = data[r];
+      var indEmail = String(row[2] || '').toLowerCase();
+      var isExempt = row[7] === true || row[7] === 'TRUE' || row[7] === 'true';
+      var timestamp = row[0];
+
+      if (indEmail !== email.toLowerCase()) continue;
+      if (isExempt) continue;
+
+      var discDate = timestamp instanceof Date ? timestamp : new Date(timestamp);
+      if (discDate < sixYearsAgo) continue;
+
+      rawDisclosures.push({
+        timestamp: discDate,
+        disclosureId: row[1],
+        recipientName: row[3],
+        recipientType: row[4],
+        phiDescription: row[5],
+        purpose: row[6]
+      });
+    }
+
+    rawDisclosures.sort(function(a, b) { return a.timestamp - b.timestamp; });
+
+    var groups = {};
+    for (var i = 0; i < rawDisclosures.length; i++) {
+      var disc = rawDisclosures[i];
+      var groupKey = disc.recipientName + '||' + disc.purpose;
+
+      if (!groups[groupKey]) {
+        groups[groupKey] = {
+          recipientName: disc.recipientName,
+          recipientType: disc.recipientType,
+          purpose: disc.purpose,
+          phiDescription: disc.phiDescription,
+          firstDisclosureId: disc.disclosureId,
+          firstDate: disc.timestamp.toISOString(),
+          lastDate: disc.timestamp.toISOString(),
+          count: 1
+        };
+      } else {
+        groups[groupKey].lastDate = disc.timestamp.toISOString();
+        groups[groupKey].count++;
+      }
+    }
+
+    var grouped = [];
+    for (var key in groups) {
+      if (groups.hasOwnProperty(key)) {
+        grouped.push(groups[key]);
+      }
+    }
+    grouped.sort(function(a, b) { return new Date(b.firstDate) - new Date(a.firstDate); });
+
+    dataAuditLog(user, 'read', 'grouped_disclosure_accounting', email, {
+      totalRawDisclosures: rawDisclosures.length,
+      groupedEntries: grouped.length
+    });
+
+    return {
+      success: true,
+      disclosures: grouped,
+      totalDisclosures: rawDisclosures.length,
+      groupedCount: grouped.length
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — SHARED UTILITIES
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Alias for wrapPhaseAOperation() — Phase B uses the same error handling pattern.
+ * All HIPAA operations (Phase A, B, and future) share the same session validation
+ * and error response structure.
+ */
+var wrapHipaaOperation = wrapPhaseAOperation;
+
+/**
+ * Sends an email via MailApp with HIPAA-compliant formatting and audit logging.
+ * Centralized to ensure all outgoing emails are tracked and rate-limited.
+ */
+function sendHipaaEmail(params) {
+  var required = ['to', 'subject', 'body', 'emailType', 'triggeredBy'];
+  for (var i = 0; i < required.length; i++) {
+    if (!params[required[i]]) {
+      throw new Error('INVALID_INPUT');
+    }
+  }
+
+  // Rate limiting: check cooldown per emailType + recipient
+  var cache = getEpochCache();
+  var cooldownKey = 'email_cooldown_' + params.emailType + '_' + params.to;
+  if (cache.get(cooldownKey)) {
+    auditLog('email_rate_limited', params.triggeredBy, 'skipped', {
+      emailType: params.emailType,
+      to: params.to,
+      reason: 'cooldown_active'
+    });
+    return { success: false, error: 'RATE_LIMITED', message: 'Email cooldown active for this recipient and type.' };
+  }
+
+  try {
+    var emailOptions = {
+      to: params.to,
+      subject: params.subject,
+      body: params.body
+    };
+    if (params.htmlBody) {
+      emailOptions.htmlBody = params.htmlBody;
+    }
+
+    MailApp.sendEmail(emailOptions);
+
+    // Set cooldown
+    var cooldownMinutes = params.emailType === 'breach_alert'
+      ? BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES
+      : 5;
+    cache.put(cooldownKey, 'sent', cooldownMinutes * 60);
+
+    var messageId = generateRequestId('EMAIL');
+
+    auditLog('hipaa_email_sent', params.triggeredBy, 'success', {
+      messageId: messageId,
+      emailType: params.emailType,
+      to: params.to,
+      subject: params.subject,
+      metadata: params.metadata || {}
+    });
+
+    return { success: true, messageId: messageId };
+  } catch (e) {
+    auditLog('hipaa_email_failed', params.triggeredBy, 'error', {
+      emailType: params.emailType,
+      to: params.to,
+      error: e.message
+    });
+    return { success: false, error: 'EMAIL_FAILED', message: 'Failed to send email.' };
+  }
+}
+
+/**
+ * Returns the cutoff date for retention enforcement.
+ */
+function getRetentionCutoffDate(retentionYears) {
+  var years = retentionYears || HIPAA_RETENTION_CONFIG.RETENTION_YEARS
+    || AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS || 6;
+  var cutoff = new Date();
+  cutoff.setFullYear(cutoff.getFullYear() - years);
+  return cutoff;
+}
+
+/**
+ * Checks whether a user is an authorized personal representative for a target individual.
+ */
+function isRepresentativeAuthorized(representativeEmail, individualEmail) {
+  var headers = [
+    'RepresentativeID', 'RepresentativeEmail', 'IndividualEmail',
+    'RelationshipType', 'AuthorizationDate', 'ExpirationDate',
+    'Status', 'ApprovalStatus', 'ApprovedBy', 'ApprovalDate',
+    'DocumentReference', 'Notes'
+  ];
+  var sheet = getOrCreateSheet('PersonalRepresentatives', headers);
+  var data = sheet.getDataRange().getValues();
+
+  var now = new Date();
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var repEmail = String(row[1] || '').toLowerCase();
+    var indEmail = String(row[2] || '').toLowerCase();
+    var status = String(row[6] || '');
+    var approvalStatus = String(row[7] || '');
+    var expirationDate = row[5];
+
+    if (repEmail === representativeEmail.toLowerCase()
+        && indEmail === individualEmail.toLowerCase()
+        && status === 'Active'
+        && approvalStatus === 'Approved') {
+      if (expirationDate && expirationDate instanceof Date && expirationDate < now) {
+        continue;
+      }
+      return {
+        representativeId: row[0],
+        relationshipType: row[3],
+        authorizationDate: row[4],
+        expirationDate: expirationDate,
+        documentReference: row[10]
+      };
+    }
+  }
+
+  return null;
 }
 
 // ══════════════

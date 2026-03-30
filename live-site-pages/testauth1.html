@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.78w">
+  <meta name="build-version" content="v03.79w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -561,6 +561,8 @@
         <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
         <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-permission="admin">Amendments</button>
         <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend">Disagree</button>
+        <button id="breach-dashboard-btn" class="phase-a-btn" title="Breach detection & logging" data-requires-permission="admin">Breach Log</button>
+        <button id="representative-mgmt-btn" class="phase-a-btn" title="Manage personal representatives" data-requires-permission="admin">Representatives</button>
       </div>
     </div>
     <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
@@ -597,6 +599,12 @@
         <button id="disclosure-close-btn" class="pa-close">&times;</button>
       </span>
     </div>
+    <div style="padding:4px 12px;">
+      <label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;">
+        <input type="checkbox" id="disclosure-grouped-toggle" /> Group repeated disclosures
+      </label>
+      <span style="color:#666;font-size:10px;margin-left:6px;">§164.528(b)(2)(ii)</span>
+    </div>
     <div id="disclosure-period" class="pa-status"></div>
     <div id="disclosure-list"></div>
     <div id="disclosure-empty" class="pa-empty" style="display:none;">No disclosures found for the reporting period.</div>
@@ -613,6 +621,14 @@
       <div class="pa-format-picker">
         <label><input type="radio" name="export-format" value="json" checked> JSON</label>
         <label><input type="radio" name="export-format" value="csv"> CSV</label>
+        <label><input type="radio" name="export-format" value="summary"> Summary (metadata only)</label>
+      </div>
+      <div id="summary-agreement" style="display:none;margin:6px 0;padding:6px;background:rgba(255,255,255,0.04);border-radius:4px;">
+        <p style="color:#aaa;font-size:10px;margin:0 0 4px;">Per HIPAA §164.524(c)(3), you are requesting a <strong style="color:#ccc;">summary</strong> instead of the complete record. The summary includes record types, counts, and date ranges — but not the actual content.</p>
+        <p style="color:#90caf9;font-size:10px;margin:0 0 4px;">Fee: $0 (electronic self-service)</p>
+        <label style="font-size:10px;display:inline;cursor:pointer;">
+          <input type="checkbox" id="summary-agree-checkbox" /> I agree to receive a summary instead of the complete record
+        </label>
       </div>
       <button id="data-export-download-btn" class="pa-action" style="margin-top:8px;">Download</button>
       <div id="data-export-status" class="pa-status"></div>
@@ -675,6 +691,96 @@
       <div id="disagree-status" class="pa-status"></div>
     </div>
   </div>
+
+  <!-- ── PHASE B — Grouped Disclosure Toggle (inside disclosure panel handled via JS) ── -->
+
+  <!-- Breach Dashboard Panel (Admin) -->
+  <div id="breach-dashboard-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Breach Log &amp; Reporting</span>
+      <span>
+        <button id="breach-refresh-btn" class="pa-action">Refresh</button>
+        <button id="breach-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div class="pa-body">
+      <div id="breach-log-list"></div>
+      <div id="breach-empty" class="pa-empty" style="display:none;">No breaches logged.</div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Log New Breach</span>
+        <label>Description:
+          <textarea id="breach-description" rows="2" placeholder="Brief description of the breach/incident"></textarea>
+        </label>
+        <label>Nature of PHI involved:
+          <input type="text" id="breach-nature-phi" placeholder="e.g., Clinical notes, email addresses" />
+        </label>
+        <label>Affected individuals count:
+          <input type="number" id="breach-affected-count" min="0" value="0" />
+        </label>
+        <label>Mitigation steps taken:
+          <textarea id="breach-mitigation" rows="2" placeholder="Actions taken to reduce harm"></textarea>
+        </label>
+        <button id="breach-log-submit-btn" class="pa-action" style="margin-top:8px;">Log Breach</button>
+        <div id="breach-log-status" class="pa-status"></div>
+      </div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Annual Report</span>
+        <label>Report Year:
+          <input type="number" id="breach-report-year" value="" placeholder="e.g. 2025" style="width:80px;" />
+        </label>
+        <button id="breach-report-btn" class="pa-action">Generate Report</button>
+        <div id="breach-report-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personal Representative Management Panel (Admin) -->
+  <div id="representative-panel" class="phase-a-panel">
+    <div class="pa-header">
+      <span class="pa-title">Personal Representatives</span>
+      <span>
+        <button id="rep-refresh-btn" class="pa-action">Refresh</button>
+        <button id="rep-close-btn" class="pa-close">&times;</button>
+      </span>
+    </div>
+    <div class="pa-body">
+      <div id="rep-list"></div>
+      <div id="rep-empty" class="pa-empty" style="display:none;">No representatives registered.</div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Register Representative</span>
+        <label>Representative Email:
+          <input type="email" id="rep-email" placeholder="representative@example.com" />
+        </label>
+        <label>Individual Email:
+          <input type="email" id="rep-individual-email" placeholder="patient@example.com" />
+        </label>
+        <label>Relationship Type:
+          <select id="rep-relationship">
+            <option value="">Select...</option>
+            <option value="Parent">Parent</option>
+            <option value="LegalGuardian">Legal Guardian</option>
+            <option value="HealthcarePOA">Healthcare Power of Attorney</option>
+            <option value="CourtAppointed">Court Appointed</option>
+            <option value="Executor">Executor</option>
+          </select>
+        </label>
+        <label>Expiration Date (optional):
+          <input type="date" id="rep-expiration" />
+        </label>
+        <label>Document Reference:
+          <input type="text" id="rep-document-ref" placeholder="Auth doc reference (optional)" />
+        </label>
+        <label>Notes:
+          <input type="text" id="rep-notes" placeholder="Additional notes (optional)" />
+        </label>
+        <button id="rep-register-btn" class="pa-action" style="margin-top:8px;">Register</button>
+        <div id="rep-register-status" class="pa-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Export Agreement (injected into data export panel via JS) -->
+  <!-- Amendment Notification Status (injected into amendment review panel via JS) -->
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -2676,7 +2782,14 @@
       // Clear data-bearing elements (PHI could be in these)
       var _phaseADataEls = ['disclosure-list', 'disclosure-period', 'data-export-status',
         'amend-status', 'amend-review-list', 'amend-record-id', 'amend-current', 'amend-proposed', 'amend-reason',
-        'disagree-amendment-id', 'disagree-statement', 'disagree-status'];
+        'disagree-amendment-id', 'disagree-statement', 'disagree-status',
+        'breach-log-list', 'breach-report-output', 'rep-list', 'rep-register-status']; // PROJECT: Phase B data elements
+      // PROJECT: Hide Phase B panels
+      var _phaseBPanels = ['breach-dashboard-panel', 'representative-panel'];
+      for (var _bp = 0; _bp < _phaseBPanels.length; _bp++) {
+        var _bpe = document.getElementById(_phaseBPanels[_bp]);
+        if (_bpe) _bpe.style.display = 'none';
+      }
       for (var _di = 0; _di < _phaseADataEls.length; _di++) {
         var _de = document.getElementById(_phaseADataEls[_di]);
         if (_de) { if (_de.tagName === 'INPUT' || _de.tagName === 'TEXTAREA') _de.value = ''; else _de.innerHTML = ''; }
@@ -5462,6 +5575,18 @@
   document.getElementById('data-export-download-btn').addEventListener('click', function() {
     var fmt = document.querySelector('input[name="export-format"]:checked').value;
     var status = document.getElementById('data-export-status');
+    if (fmt === 'summary') {
+      var agreeBox = document.getElementById('summary-agree-checkbox');
+      if (!agreeBox || !agreeBox.checked) {
+        status.textContent = 'You must agree to receive a summary before downloading.';
+        status.style.color = '#ef5350';
+        return;
+      }
+      status.textContent = 'Generating summary export...';
+      status.style.color = '';
+      _sendPhaseA({ type: 'phase-b-generate-summary', token: _getToken() });
+      return;
+    }
     status.textContent = 'Generating export...';
     _sendPhaseA({ type: 'phase-a-request-export', token: _getToken(), format: fmt });
   });
@@ -5677,8 +5802,378 @@
       case 'phase-a-disagreement-result':
         _handleDisagreementResult(data.result);
         break;
+      // ── Phase B response routing ──
+      case 'phase-b-grouped-disclosures-result':
+        _renderGroupedDisclosures(data.result);
+        break;
+      case 'phase-b-summary-result':
+        _handleSummaryResult(data.result);
+        break;
+      case 'phase-b-amendment-notifications-result':
+        _handleNotificationResult(data.result);
+        break;
+      case 'phase-b-notification-status-result':
+        _renderNotificationStatus(data.result);
+        break;
+      case 'phase-b-disclosure-recipients-result':
+        _renderDisclosureRecipients(data.result);
+        break;
+      case 'phase-b-log-breach-result':
+        _handleBreachLogResult(data.result);
+        break;
+      case 'phase-b-update-breach-result':
+        _handleBreachUpdateResult(data.result);
+        break;
+      case 'phase-b-breach-report-result':
+        _renderBreachReport(data.result);
+        break;
+      case 'phase-b-register-rep-result':
+        _handleRepRegisterResult(data.result);
+        break;
+      case 'phase-b-representatives-result':
+        _renderRepresentatives(data.result);
+        break;
+      case 'phase-b-revoke-rep-result':
+        _handleRepRevokeResult(data.result);
+        break;
     }
   });
+
+  // ══════════════════════════════════════════════════════
+  // PHASE B — UI Handler Functions
+  // ══════════════════════════════════════════════════════
+
+  var _breachPanelOpen = false;
+  var _repPanelOpen = false;
+
+  // Panel close functions
+  function _closeBreachPanel() {
+    document.getElementById('breach-dashboard-panel').style.display = 'none';
+    _breachPanelOpen = false;
+  }
+  function _closeRepPanel() {
+    document.getElementById('representative-panel').style.display = 'none';
+    _repPanelOpen = false;
+  }
+  _registerPanel('breach-dashboard-panel', _closeBreachPanel);
+  _registerPanel('representative-panel', _closeRepPanel);
+
+  // ── Grouped Disclosure Toggle ──
+  document.getElementById('disclosure-grouped-toggle').addEventListener('change', function() {
+    var isGrouped = this.checked;
+    if (isGrouped) {
+      _sendPhaseA({ type: 'phase-b-get-grouped-disclosures', token: _getToken() });
+    } else {
+      _sendPhaseA({ type: 'phase-a-get-disclosures', token: _getToken() });
+    }
+  });
+
+  function _renderGroupedDisclosures(result) {
+    var list = document.getElementById('disclosure-list');
+    var empty = document.getElementById('disclosure-empty');
+    if (!result || !result.success || !result.groups || result.groups.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < result.groups.length; i++) {
+      var g = result.groups[i];
+      html += '<div style="padding:6px 12px;border-bottom:1px solid #333;">'
+        + '<div style="color:#90caf9;font-size:12px;font-weight:bold;">' + _esc(g.recipientName || 'Unknown') + '</div>'
+        + '<div style="color:#aaa;font-size:10px;">Purpose: ' + _esc(g.purpose || 'N/A') + '</div>'
+        + '<div style="color:#888;font-size:10px;">'
+        + g.count + ' disclosure(s) &middot; '
+        + _esc(g.firstDate || '') + ' — ' + _esc(g.lastDate || '')
+        + '</div></div>';
+    }
+    list.innerHTML = html;
+  }
+
+  // ── Summary Export Handler ──
+  // Show/hide summary agreement when summary radio is selected
+  var exportRadios = document.querySelectorAll('input[name="export-format"]');
+  for (var ri = 0; ri < exportRadios.length; ri++) {
+    exportRadios[ri].addEventListener('change', function() {
+      var summaryDiv = document.getElementById('summary-agreement');
+      if (summaryDiv) summaryDiv.style.display = this.value === 'summary' ? 'block' : 'none';
+    });
+  }
+
+  function _handleSummaryResult(result) {
+    var status = document.getElementById('data-export-status');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || 'Failed to generate summary.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    var s = result.summary || {};
+    var html = '<div style="color:#66bb6a;font-size:11px;margin-bottom:6px;">Summary generated successfully</div>';
+    html += '<div style="color:#ccc;font-size:11px;">';
+    html += '<strong>Record Types:</strong> ' + (s.recordTypes || []).join(', ') + '<br>';
+    html += '<strong>Total Records:</strong> ' + (s.totalRecords || 0) + '<br>';
+    if (s.dateRange) {
+      html += '<strong>Date Range:</strong> ' + _esc(s.dateRange.earliest || 'N/A') + ' to ' + _esc(s.dateRange.latest || 'N/A') + '<br>';
+    }
+    if (s.countPerType) {
+      html += '<strong>Counts:</strong><ul style="margin:2px 0;padding-left:16px;">';
+      for (var k in s.countPerType) {
+        if (s.countPerType.hasOwnProperty(k)) {
+          html += '<li>' + _esc(k) + ': ' + s.countPerType[k] + '</li>';
+        }
+      }
+      html += '</ul>';
+    }
+    html += '<em style="color:#888;">' + _esc(result.notice || '') + '</em></div>';
+    status.innerHTML = html;
+  }
+
+  // ── Breach Dashboard ──
+  document.getElementById('breach-dashboard-btn').addEventListener('click', function() {
+    _closeAllPanelsExcept('breach-dashboard-panel');
+    document.getElementById('breach-dashboard-panel').style.display = 'flex';
+    _breachPanelOpen = true;
+    _loadBreachLog();
+  });
+  document.getElementById('breach-close-btn').addEventListener('click', _closeBreachPanel);
+  document.getElementById('breach-refresh-btn').addEventListener('click', _loadBreachLog);
+
+  function _loadBreachLog() {
+    // Use the breach report for current year to populate the list
+    var yr = new Date().getFullYear();
+    _sendPhaseA({ type: 'phase-b-get-breach-report', token: _getToken(), year: yr });
+  }
+
+  function _renderBreachReport(result) {
+    var list = document.getElementById('breach-log-list');
+    var empty = document.getElementById('breach-empty');
+    var reportResult = document.getElementById('breach-report-result');
+    if (!result || !result.success) {
+      list.innerHTML = '<div style="color:#ef5350;padding:8px;font-size:11px;">' + _esc((result && result.message) || 'Failed to load breach log.') + '</div>';
+      return;
+    }
+    if (!result.breaches || result.breaches.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      if (reportResult) reportResult.innerHTML = '<div style="color:#888;font-size:10px;">' + _esc(result.note || 'No breaches found.') + '</div>';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < result.breaches.length; i++) {
+      var b = result.breaches[i];
+      var statusColor = b.status === 'Closed' ? '#66bb6a' : b.status === 'Confirmed' ? '#ef5350' : '#ffb74d';
+      html += '<div style="padding:6px 12px;border-bottom:1px solid #333;">'
+        + '<div style="display:flex;justify-content:space-between;">'
+        + '<span style="color:#90caf9;font-size:11px;font-weight:bold;">' + _esc(b.breachId) + '</span>'
+        + '<span style="color:' + statusColor + ';font-size:10px;">' + _esc(b.status) + '</span>'
+        + '</div>'
+        + '<div style="color:#aaa;font-size:10px;">' + _esc(b.description || '') + '</div>'
+        + '<div style="color:#888;font-size:10px;">Discovered: ' + _esc(b.discoveryDate || '') + ' &middot; Affected: ' + (b.affectedIndividuals || 0) + '</div>'
+        + '</div>';
+    }
+    list.innerHTML = html;
+    if (reportResult) {
+      reportResult.innerHTML = '<div style="color:#aaa;font-size:10px;margin-top:4px;">'
+        + 'Year: ' + result.year + ' &middot; Total: ' + result.totalBreaches + ' &middot; Affected: ' + result.totalAffected
+        + '<br>' + _esc(result.note || '') + '</div>';
+    }
+  }
+
+  // Log new breach
+  document.getElementById('breach-log-submit-btn').addEventListener('click', function() {
+    var desc = document.getElementById('breach-description').value.trim();
+    if (!desc) {
+      document.getElementById('breach-log-status').textContent = 'Description is required.';
+      document.getElementById('breach-log-status').style.color = '#ef5350';
+      return;
+    }
+    _sendPhaseA({
+      type: 'phase-b-log-breach',
+      token: _getToken(),
+      params: {
+        description: desc,
+        source: 'Manual',
+        natureOfPhi: document.getElementById('breach-nature-phi').value.trim(),
+        affectedIndividuals: parseInt(document.getElementById('breach-affected-count').value, 10) || 0,
+        mitigationSteps: document.getElementById('breach-mitigation').value.trim()
+      }
+    });
+  });
+
+  function _handleBreachLogResult(result) {
+    var status = document.getElementById('breach-log-status');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || 'Failed to log breach.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Breach logged: ' + result.breachId + ' — Notification deadline: ' + (result.notificationDeadline || '').split('T')[0];
+    status.style.color = '#66bb6a';
+    document.getElementById('breach-description').value = '';
+    document.getElementById('breach-nature-phi').value = '';
+    document.getElementById('breach-affected-count').value = '0';
+    document.getElementById('breach-mitigation').value = '';
+    _loadBreachLog();
+  }
+
+  // Breach annual report
+  document.getElementById('breach-report-btn').addEventListener('click', function() {
+    var yr = parseInt(document.getElementById('breach-report-year').value, 10) || (new Date().getFullYear() - 1);
+    _sendPhaseA({ type: 'phase-b-get-breach-report', token: _getToken(), year: yr });
+  });
+
+  function _handleBreachUpdateResult(result) {
+    if (result && result.success) _loadBreachLog();
+  }
+
+  // ── Personal Representative Management ──
+  document.getElementById('representative-mgmt-btn').addEventListener('click', function() {
+    _closeAllPanelsExcept('representative-panel');
+    document.getElementById('representative-panel').style.display = 'flex';
+    _repPanelOpen = true;
+    _loadRepresentatives();
+  });
+  document.getElementById('rep-close-btn').addEventListener('click', _closeRepPanel);
+  document.getElementById('rep-refresh-btn').addEventListener('click', _loadRepresentatives);
+
+  function _loadRepresentatives() {
+    _sendPhaseA({ type: 'phase-b-get-representatives', token: _getToken() });
+  }
+
+  function _renderRepresentatives(result) {
+    var list = document.getElementById('rep-list');
+    var empty = document.getElementById('rep-empty');
+    if (!result || !result.success || !result.representatives || result.representatives.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < result.representatives.length; i++) {
+      var r = result.representatives[i];
+      var statusColor = r.status === 'Active' ? '#66bb6a' : r.status === 'Revoked' ? '#ef5350' : '#ffb74d';
+      html += '<div style="padding:6px 12px;border-bottom:1px solid #333;">'
+        + '<div style="display:flex;justify-content:space-between;">'
+        + '<span style="color:#90caf9;font-size:11px;">' + _esc(r.representativeEmail) + '</span>'
+        + '<span style="color:' + statusColor + ';font-size:10px;">' + _esc(r.status) + '</span>'
+        + '</div>'
+        + '<div style="color:#aaa;font-size:10px;">' + _esc(r.relationshipType) + ' for ' + _esc(result.individualEmail || '') + '</div>'
+        + '<div style="color:#888;font-size:10px;">Since: ' + _esc(r.authorizationDate || 'N/A')
+        + (r.expirationDate ? ' &middot; Expires: ' + _esc(r.expirationDate) : '') + '</div>';
+      if (r.status === 'Active') {
+        html += '<button class="pa-action rep-revoke-btn" data-rep-id="' + _esc(r.representativeId) + '" style="margin-top:4px;font-size:10px;padding:2px 8px;background:#ef5350;">Revoke</button>';
+      }
+      html += '</div>';
+    }
+    list.innerHTML = html;
+    // Attach revoke handlers
+    list.querySelectorAll('.rep-revoke-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var repId = this.getAttribute('data-rep-id');
+        var parent = this.parentNode;
+        var revokeRow = document.createElement('div');
+        revokeRow.style.cssText = 'margin-top:4px;display:flex;gap:4px;align-items:center;';
+        revokeRow.innerHTML = '<input type="text" placeholder="Reason (optional)" style="flex:1;font-size:10px;padding:2px 6px;background:#1e1e2f;color:#ccc;border:1px solid #555;border-radius:3px;" />'
+          + '<button class="pa-action" style="font-size:10px;padding:2px 6px;background:#ef5350;">Confirm</button>'
+          + '<button class="pa-action" style="font-size:10px;padding:2px 6px;background:#555;">Cancel</button>';
+        this.style.display = 'none';
+        parent.appendChild(revokeRow);
+        var input = revokeRow.querySelector('input');
+        var confirmBtn = revokeRow.querySelectorAll('button')[0];
+        var cancelBtn = revokeRow.querySelectorAll('button')[1];
+        var originalBtn = this;
+        confirmBtn.addEventListener('click', function() {
+          _sendPhaseA({ type: 'phase-b-revoke-representative', token: _getToken(), representativeId: repId, reason: input.value.trim() });
+          revokeRow.remove();
+        });
+        cancelBtn.addEventListener('click', function() {
+          revokeRow.remove();
+          originalBtn.style.display = '';
+        });
+        input.focus();
+      });
+    });
+  }
+
+  // Register representative
+  document.getElementById('rep-register-btn').addEventListener('click', function() {
+    var repEmail = document.getElementById('rep-email').value.trim();
+    var indEmail = document.getElementById('rep-individual-email').value.trim();
+    var relType = document.getElementById('rep-relationship').value;
+    if (!repEmail || !indEmail || !relType) {
+      document.getElementById('rep-register-status').textContent = 'All fields required.';
+      document.getElementById('rep-register-status').style.color = '#ef5350';
+      return;
+    }
+    _sendPhaseA({
+      type: 'phase-b-register-representative',
+      token: _getToken(),
+      params: {
+        representativeEmail: repEmail,
+        individualEmail: indEmail,
+        relationshipType: relType,
+        expirationDate: document.getElementById('rep-expiration').value || null,
+        documentReference: document.getElementById('rep-document-ref').value.trim(),
+        notes: document.getElementById('rep-notes').value.trim()
+      }
+    });
+  });
+
+  function _handleRepRegisterResult(result) {
+    var status = document.getElementById('rep-register-status');
+    if (!result || !result.success) {
+      status.textContent = (result && result.message) || (result && result.error) || 'Failed to register representative.';
+      status.style.color = '#ef5350';
+      return;
+    }
+    status.textContent = 'Registered: ' + result.representativeId + ' (' + result.approvalStatus + ')';
+    status.style.color = '#66bb6a';
+    document.getElementById('rep-email').value = '';
+    document.getElementById('rep-individual-email').value = '';
+    document.getElementById('rep-relationship').value = '';
+    document.getElementById('rep-expiration').value = '';
+    document.getElementById('rep-document-ref').value = '';
+    document.getElementById('rep-notes').value = '';
+    _loadRepresentatives();
+  }
+
+  function _handleRepRevokeResult(result) {
+    if (result && result.success) _loadRepresentatives();
+  }
+
+  // ── Amendment Notification Handlers ──
+  function _handleNotificationResult(result) {
+    // Show notification status in a simple status area
+    var reviewList = document.getElementById('amend-review-list');
+    if (!reviewList) return;
+    if (!result || !result.success) return;
+    var msg = 'Notifications sent: ' + result.notificationsSent + ', Failed: ' + result.notificationsFailed;
+    var div = document.createElement('div');
+    div.style.cssText = 'color:#66bb6a;font-size:10px;padding:4px 12px;';
+    div.textContent = msg;
+    reviewList.insertBefore(div, reviewList.firstChild);
+  }
+
+  function _renderNotificationStatus(result) {
+    // Could be rendered in an expanded amendment detail view
+    if (!result || !result.success) return;
+    // For now, notifications are visible via the amendment review panel
+  }
+
+  function _renderDisclosureRecipients(result) {
+    // Could be used to auto-populate notification recipients
+    if (!result || !result.success) return;
+  }
+
+  // ── Utility: HTML escape ──
+  function _esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
 })();
 
 // ══════════════
