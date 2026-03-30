@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v01.30g] — 2026-03-29 09:57:49 PM EST — v08.00r
+
+### Added
+- Announcements now automatically show who posted them and when — no manual entry needed
+- Author name and timestamp displayed on each announcement card
 
 ## [v01.29g] — 2026-03-29 09:31:52 PM EST — v07.99r
 

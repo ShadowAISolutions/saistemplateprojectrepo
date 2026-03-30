@@ -3,7 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v08.00r] — 2026-03-29 09:57:49 PM EST
+
+> **Prompt:** "in program portal, make it so that the announcements auto put who made the announcement as well as the timestamp"
+
+### Added
+- Author column (F) added to the Announcements spreadsheet schema — auto-populated from session user's displayName or email when adding an announcement
+- Author field included in cached announcement data and displayed on announcement cards alongside the date (`Mar 29, 2026 · by Shadow`)
+- Auto-create template now generates 6 columns (Title, Body, Date, Priority, Active, Author) with "System" as the welcome row author
+
+### Changed
+- `updateAnnouncement()` now preserves the existing author and date when editing (only title, body, priority, and active status are editable)
+
+#### `programportal.gs` — v01.30g
+
+##### Added
+- `author` field in cached announcement items (from spreadsheet column F)
+- Auto-populated author in `addAnnouncement()` from `user.displayName || user.email`
+- Author display in card rendering: `dateStr · by authorName`
+
+##### Changed
+- Auto-create headers expanded from A-E to A-F with "Author" column
+- `updateAnnouncement` preserves existing author (column F) and date (column C) on edits
 
 ## [v07.99r] — 2026-03-29 09:31:52 PM EST
 

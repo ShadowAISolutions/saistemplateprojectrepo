@@ -1,4 +1,4 @@
-var VERSION = "v01.29g";
+var VERSION = "v01.30g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -311,14 +311,15 @@ function refreshAnnouncementsCache() {
     if (!sheet) {
       // Auto-create the Announcements sheet with headers and a welcome row
       sheet = ss.insertSheet(ANNOUNCEMENTS_SHEET_NAME);
-      sheet.getRange('A1:E1').setValues([['Title', 'Body', 'Date', 'Priority', 'Active']]);
-      sheet.getRange('A1:E1').setFontWeight('bold');
-      sheet.getRange('A2:E2').setValues([['Welcome to Program Portal', 'The announcements system is now active.', new Date(), 'normal', 'TRUE']]);
+      sheet.getRange('A1:F1').setValues([['Title', 'Body', 'Date', 'Priority', 'Active', 'Author']]);
+      sheet.getRange('A1:F1').setFontWeight('bold');
+      sheet.getRange('A2:F2').setValues([['Welcome to Program Portal', 'The announcements system is now active.', new Date(), 'normal', 'TRUE', 'System']]);
       sheet.setColumnWidth(1, 200);
       sheet.setColumnWidth(2, 400);
       sheet.setColumnWidth(3, 120);
       sheet.setColumnWidth(4, 100);
       sheet.setColumnWidth(5, 80);
+      sheet.setColumnWidth(6, 150);
     }
     var data = sheet.getDataRange().getValues();
     if (data.length < 2) {
@@ -327,19 +328,20 @@ function refreshAnnouncementsCache() {
       getEpochCache().put('announcements_' + ANNOUNCEMENTS_SHEET_NAME, emptyResult, 21600);
       return;
     }
-    // Columns: A=Title, B=Body, C=Date, D=Priority, E=Active
+    // Columns: A=Title, B=Body, C=Date, D=Priority, E=Active, F=Author
     var rows = data.slice(1);
     var items = [];
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
       var active = String(row[4]).toUpperCase() === 'TRUE';
       items.push({
-        rowIndex: i, // 0-based index into data rows (for edit/delete operations)
+        rowIndex: i,
         title: String(row[0] || ''),
         body: String(row[1] || ''),
         date: row[2] instanceof Date ? row[2].toISOString() : String(row[2] || ''),
         priority: String(row[3] || 'normal').toLowerCase(),
-        active: active
+        active: active,
+        author: String(row[5] || '')
       });
     }
     // Preserve spreadsheet row order — admin controls reordering via up/down buttons
@@ -393,7 +395,8 @@ function addAnnouncement(token, title, body, priority) {
   if (!sheet) throw new Error('Announcements sheet not found');
   var p = (priority || 'normal').toLowerCase();
   if (p !== 'high' && p !== 'normal' && p !== 'low') p = 'normal';
-  sheet.appendRow([title || 'Untitled', body || '', new Date(), p, 'TRUE']);
+  var authorName = user.displayName || user.email || 'Unknown';
+  sheet.appendRow([title || 'Untitled', body || '', new Date(), p, 'TRUE', authorName]);
   refreshAnnouncementsCache();
   return getCachedAnnouncements();
 }
@@ -414,7 +417,9 @@ function updateAnnouncement(token, rowIndex, title, body, priority, active) {
   var p = (priority || 'normal').toLowerCase();
   if (p !== 'high' && p !== 'normal' && p !== 'low') p = 'normal';
   var activeVal = (active === false || String(active).toUpperCase() === 'FALSE') ? 'FALSE' : 'TRUE';
-  sheet.getRange(sheetRow, 1, 1, 5).setValues([[title || '', body || '', sheet.getRange(sheetRow, 3).getValue(), p, activeVal]]);
+  var existingDate = sheet.getRange(sheetRow, 3).getValue();
+  var existingAuthor = sheet.getRange(sheetRow, 6).getValue() || '';
+  sheet.getRange(sheetRow, 1, 1, 6).setValues([[title || '', body || '', existingDate, p, activeVal, existingAuthor]]);
   refreshAnnouncementsCache();
   return getCachedAnnouncements();
 }
@@ -3082,7 +3087,7 @@ function doGet(e) {
             card.innerHTML = adminHtml
               + '<div class="announcement-title">' + dragHandle + _escapeHtml(item.title) + inactiveTag + '</div>'
               + (item.body ? '<div class="announcement-body">' + _escapeHtml(item.body) + '</div>' : '')
-              + (dateStr ? '<div class="announcement-date">' + _escapeHtml(dateStr) + '</div>' : '');
+              + ((dateStr || item.author) ? '<div class="announcement-date">' + (dateStr ? _escapeHtml(dateStr) : '') + (dateStr && item.author ? ' · ' : '') + (item.author ? 'by ' + _escapeHtml(item.author) : '') + '</div>' : '');
 
             _annContainer.appendChild(card);
           }
