@@ -3,7 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
+
+## [v08.18r] — 2026-03-30 12:56:16 PM EST
+
+> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md for testauth1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally, using Edit to add subsequent sections one at a time"
+
+### Changed
+- Independently verified and rewrote HIPAA Phase B implementation status section in `HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` — corrected 4 phantom function names (`sendBreachAlert`, `getBreachAlertConfig`, `getBreachLog`, `validateRepresentativeAccess`), added "Items NOT Implemented (As Guide Expected)" section with 8 items, added "Implementation Discrepancies (Guide Spec vs Actual Code)" table with 5 spec-vs-code differences, added line number references for all 24 GAS-side additions and 11 doGet routes
+- Updated "Known Limitations & Gaps" table to reference the new detailed sections instead of duplicating information
 
 ## [v08.17r] — 2026-03-30 12:36:09 PM EST
 

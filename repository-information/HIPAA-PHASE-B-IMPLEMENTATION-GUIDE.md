@@ -95,25 +95,52 @@ When Phase B is complete:
 | **Shared Infrastructure** | 0 | 4 utilities | 0 | Low |
 | **Total** | **3 new sheets** | **~24 new functions** | **~11 UI elements** | |
 
-### Implementation Status (Updated 2026-03-30)
+### Implementation Status (Updated 2026-03-30 — Independently Verified)
 
-All 7 Phase B items have been implemented. The table below tracks what was done, what requires post-deployment configuration, and what limitations remain.
+All 7 Phase B items have been implemented. The table below tracks what was done, what was NOT done (as the guide expected), what requires post-deployment configuration, and what discrepancies exist between the guide spec and the actual implementation.
 
 #### What Was Implemented
 
 | Component | GAS Functions | HTML UI | doGet Routes | Status |
 |-----------|:---:|:---:|:---:|--------|
-| **Shared Infrastructure** | 4 utilities (`wrapHipaaOperation`, `sendHipaaEmail`, `getRetentionCutoffDate`, `isRepresentativeAuthorized`) + 3 config objects (`BREACH_ALERT_CONFIG`, `HIPAA_RETENTION_CONFIG`, `REPRESENTATIVE_CONFIG`) | — | — | ✅ Complete |
-| **#19b Grouped Disclosures** | `getGroupedDisclosureAccounting()` | Grouped toggle checkbox in disclosure panel | `phase-b-get-grouped-disclosures` | ✅ Complete |
-| **#23b Summary Export** | `generateDataSummary()` | Summary radio button + HIPAA agreement checkbox; download button wired to route summary format to Phase B endpoint | `phase-b-generate-summary` | ✅ Complete |
-| **#24b Amendment Notifications** | `sendAmendmentNotifications()`, `getNotificationStatus()`, `getDisclosureRecipientsForRecord()` | Notification status display in amendment review | `phase-b-send-notifications`, `phase-b-get-notification-status`, `phase-b-get-disclosure-recipients` | ✅ Complete |
-| **#28 Breach Detection** | `evaluateBreachAlert()`, `sendBreachAlert()`, `getBreachAlertConfig()` | — (integrated into existing `processSecurityEvent()` pipeline) | — (system-internal) | ✅ Complete |
-| **#31 Breach Logging** | `logBreach()`, `logBreachFromAlert()`, `getBreachLog()`, `getBreachReport()`, `updateBreachStatus()` | Breach dashboard panel (log form, breach list, annual report) | `phase-b-log-breach`, `phase-b-get-breach-log`, `phase-b-get-breach-report`, `phase-b-update-breach-status` | ✅ Complete |
-| **#18 Retention Enforcement** | `enforceRetention()`, `setupRetentionTrigger()`, `auditRetentionCompliance()` | — (backend only, triggered by time-driven trigger) | — (trigger-driven) | ✅ Complete |
-| **#25 Personal Representatives** | `registerPersonalRepresentative()`, `getPersonalRepresentatives()`, `revokeRepresentative()`, `validateRepresentativeAccess()` | Representative management panel (register form, list, revoke with inline input) | `phase-b-register-representative`, `phase-b-get-representatives`, `phase-b-revoke-representative` | ✅ Complete |
-| **Phase A Modifications** | Extended `validateIndividualAccess()` with representative support; added `evaluateBreachAlert()` call in `processSecurityEvent()` | Updated `showAuthWall()` to hide Phase B panels and clear Phase B data elements; replaced `prompt()` with inline input | — | ✅ Complete |
+| **Shared Infrastructure** | 4 utilities (`wrapHipaaOperation` alias at `:5791`, `sendHipaaEmail()` at `:5797`, `getRetentionCutoffDate()` at `:5859`, `isRepresentativeAuthorized()` at `:5870`) + 3 config objects (`BREACH_ALERT_CONFIG` at `:285`, `HIPAA_RETENTION_CONFIG` at `:306`, `REPRESENTATIVE_CONFIG` at `:350`) | — | — | ✅ Complete |
+| **#19b Grouped Disclosures** | `getGroupedDisclosureAccounting()` at `:5697` | Grouped toggle checkbox in disclosure panel (`:611`); JS handler + renderer (`:6293–6323`) | `phase-b-get-grouped-disclosures` (`:3316`) | ✅ Complete |
+| **#23b Summary Export** | `generateDataSummary()` at `:5587` | Summary radio button (`:631`) + HIPAA agreement checkbox (`:633–639`); download button wired to route summary format to Phase B endpoint (`:5775–5792`); handler + display (`:6335–6361`) | `phase-b-generate-summary` (`:3322`) | ✅ Complete |
+| **#24b Amendment Notifications** | `sendAmendmentNotifications()` at `:5347`, `getNotificationStatus()` at `:5471`, `getDisclosureRecipientsForRecord()` at `:5519` | Notification status display in amendment review (`:6851–6867`); stub renderer for disclosure recipients (`:6869–6871`) | `phase-b-send-notifications` (`:3328`), `phase-b-get-notification-status` (`:3333`), `phase-b-get-disclosure-recipients` (`:3338`) | ✅ Complete |
+| **#28 Breach Detection** | `evaluateBreachAlert()` at `:4982` — single function handles threshold evaluation, email sending via `sendHipaaEmail()`, cooldown management, and auto-logging to BreachLog. Integrated into `processSecurityEvent()` at `:3040` | — (system-internal, no UI) | — (system-internal, no doGet route) | ✅ Complete |
+| **#31 Breach Logging** | `logBreach()` at `:5082`, `logBreachFromAlert()` at `:5163`, `updateBreachStatus()` at `:5187`, `getBreachReport()` at `:5270` — 4 functions (not 5; see Discrepancies) | Breach dashboard panel (`:779–816`) with log form, breach list, annual report; handlers at `:6379–6456` | `phase-b-log-breach` (`:3344`), `phase-b-update-breach-status` (`:3349`), `phase-b-get-breach-report` (`:3354`) — 3 routes (not 4; no `phase-b-get-breach-log` route) | ✅ Implemented (with gaps noted below) |
+| **#18 Retention Enforcement** | `enforceRetention()` at `:4809`, `setupRetentionTrigger()` at `:4947`, `auditRetentionCompliance()` at `:6675` — 3 functions (the third is a bonus beyond the guide's spec) | — (backend only, triggered by time-driven trigger) | — (trigger-driven) | ✅ Complete |
+| **#25 Personal Representatives** | `registerPersonalRepresentative()` at `:4590`, `getPersonalRepresentatives()` at `:4681`, `revokeRepresentative()` at `:4730` — 3 CRUD functions + `isRepresentativeAuthorized()` at `:5870` (utility, not a separate endpoint) | Representative management panel (`:818–861`) with register form, list display (`:6476–6530`), revoke with inline input — no `prompt()` calls | `phase-b-register-representative` (`:3360`), `phase-b-get-representatives` (`:3365`), `phase-b-revoke-representative` (`:3370`) | ✅ Complete |
+| **Phase A Modifications** | Extended `validateIndividualAccess()` at `:1798–1808` with representative lookup via `isRepresentativeAuthorized()`; added `evaluateBreachAlert()` call in `processSecurityEvent()` at `:3040` | Updated `showAuthWall()` at `:2987–2996` to hide Phase B panels and clear Phase B data elements; all `prompt()` calls replaced with inline input | — | ✅ Complete |
 
-**Totals implemented:** 18 new GAS functions, 4 shared utilities, 3 config objects, 11 doGet() message routes, 2 admin buttons, 2 admin panels, 1 toggle checkbox, 1 radio option, 11 postMessage handler cases, ~200 lines of JavaScript handler functions.
+**Totals implemented (verified):** 16 new GAS functions + 4 shared utilities + 1 alias + 3 config objects = 24 GAS-side additions. 11 doGet message routes in the iframe bridge (`:3316–3372`). 11 postMessage handler cases in HTML (`:6182–6213`). 2 admin panels (breach dashboard, representative management), 1 toggle checkbox, 1 radio option, ~200 lines of JavaScript handler functions.
+
+#### Items NOT Implemented (As Guide Expected)
+
+The following items were identified in the guide as **known gaps** and are documented as NOT implemented by design. They are candidates for Phase C or require organizational (non-code) processes:
+
+| Item | CFR Reference | What's Missing | Why Not Implemented | Risk Level |
+|------|---------------|----------------|--------------------|-----------:|
+| **Individual breach notification** | §164.404(a) | No automated notification to affected individuals — only the security officer receives the alert email | Notifying individuals of a breach requires legally compliant content, format, and delivery methods that exceed what GAS + MailApp can reliably provide. Organizational workflow must handle this after the officer receives the alert | Medium |
+| **Substitute notice methods** | §164.404(d)(2) | No website posting or media notice for breaches affecting >500 individuals | Rare scenario; requires external systems (website CMS, media contacts) beyond testauth1's scope | Low |
+| **Automated HHS submission** | §164.408 | `getBreachReport()` generates the data but does NOT submit it to the HHS breach portal | HHS submission is a manual process in most organizations. The report output is structured to match HHS portal fields for easy copy-paste | Low |
+| **State law representative determination** | §164.502(g)(2) | `RelationshipType` enum captures the relationship type, but the system does not evaluate whether the relationship qualifies under the applicable state law | State law determination is an organizational policy decision — the system provides the data structure; humans provide the legal judgment | Low |
+| **Legal hold override for retention** | (Operational) | `enforceRetention()` archives records past 6 years but does NOT check for litigation hold status | Litigation holds are rare. Workaround: manually protect relevant sheets in Google Sheets to prevent archival | Low |
+| **Breach deduplication** | (Operational) | Multiple alerts for the same incident may create duplicate `BreachLog` entries | Basic cooldown (1 alert per type per hour) reduces duplicates. Admin can merge/resolve via `updateBreachStatus()` | Low |
+| **`getBreachLog()` — unfiltered breach list** | (Guide Section 9) | No function to retrieve ALL breaches regardless of year. `getBreachReport()` filters by calendar year. No `phase-b-get-breach-log` doGet route exists | The UI uses `getBreachReport()` with the current year as a workaround. A dedicated unfiltered list function was described in the original status table but was never implemented or specified in the guide's code sections | Low |
+| **Disclosure recipients auto-populate** | §164.526(c)(3) | `_renderDisclosureRecipients()` in the HTML (`:6869–6871`) is a stub — the handler exists but does nothing. `getDisclosureRecipientsForRecord()` works server-side but the UI doesn't display the results | Admin must manually enter notification recipients rather than selecting from a pre-populated list of prior disclosure recipients | Low |
+
+#### Implementation Discrepancies (Guide Spec vs Actual Code)
+
+These are differences between what the guide's specification sections describe and what was actually implemented:
+
+| Area | Guide Spec | Actual Implementation | Impact |
+|------|-----------|----------------------|--------|
+| **#19b Toggle default** | Section 5 HTML spec shows `checked` attribute (default to grouped view) | HTML at `:611` has NO `checked` attribute — defaults to ungrouped view | Minor UX — user must check the box to see grouped disclosures |
+| **#28 Function count** | Original status table listed 3 functions: `evaluateBreachAlert()`, `sendBreachAlert()`, `getBreachAlertConfig()` | Only 1 function exists: `evaluateBreachAlert()`. Alert sending is embedded within it (via `sendHipaaEmail()`). `BREACH_ALERT_CONFIG` is a var, not a function | No functional impact — the single function does everything the 3 were supposed to do |
+| **#31 Function count** | Original status table listed 5 functions including `getBreachLog()` | Only 4 functions exist. `getBreachLog()` was never implemented. `getBreachReport()` is year-filtered only | The UI cannot display an unfiltered list of all breaches across years |
+| **#25 Function names** | Original status table listed `validateRepresentativeAccess()` as a function | Function does not exist by that name. The functionality is in `isRepresentativeAuthorized()` (utility) called by the extended `validateIndividualAccess()` | No functional impact — the authorization check works correctly via different function name |
+| **#24b Disclosure recipients UI** | Guide Section 7 acceptance criterion #2: "selected from `DisclosureLog`" | `getDisclosureRecipientsForRecord()` works server-side, but `_renderDisclosureRecipients()` in HTML is a stub | Admin must type recipient emails manually instead of clicking from a list |
 
 #### What Requires Post-Deployment Configuration
 
@@ -127,14 +154,18 @@ These items are implemented in code but require manual setup before they functio
 
 #### Known Limitations & Gaps
 
-| Limitation | Impact | Regulatory Risk | Mitigation |
-|-----------|--------|----------------|------------|
-| **Individual breach notification** is alert-to-officer only — no automated notification to affected individuals | §164.404(a) requires notifying affected individuals within 60 days of discovery | Medium — organizational process must handle individual notification after officer receives alert | Phase C candidate: add individual notification workflow with templates and tracking |
-| **Substitute notice methods** (website posting, media notice for >500 affected) not implemented | §164.404(d)(2) requires substitute notice when contact information is insufficient | Low — rare scenario; organizational process can handle manually | Phase C candidate |
-| **HHS notification submission** is report-generation only — no automated submission to the HHS breach portal | §164.408 requires notifying HHS; the system generates the data but doesn't submit it | Low — HHS submission is a manual process in most organizations | The `getBreachReport()` output matches HHS portal fields for easy manual entry |
-| **State law determination** for representative authority is organizational | §164.502(g)(2) — state law determines who qualifies as a representative | Low — `RelationshipType` enum captures the relationship; state law compliance is an organizational policy decision | Document organizational policy for each relationship type |
-| **Legal hold override** for retention enforcement not implemented | Records under legal hold should be exempt from the 6-year archival | Low — litigation holds are rare; manually protect relevant sheets | Phase C candidate: add `LegalHold` flag to retention logic |
-| **Breach deduplication window** is basic | Multiple alerts for the same incident may create duplicate `BreachLog` entries | Low — admin can merge/resolve duplicates via `updateBreachStatus()` | Phase C candidate: event signature-based deduplication |
+> **Note:** These limitations are also listed in the "Items NOT Implemented" section above with full detail. This table provides a quick-reference summary.
+
+| Limitation | Regulatory Risk | Mitigation |
+|-----------|:--------------:|------------|
+| Individual breach notification — alert-to-officer only | Medium | Phase C candidate: individual notification workflow |
+| Substitute notice methods (website/media) | Low | Organizational process |
+| HHS breach portal submission — report-only | Low | Manual entry using `getBreachReport()` output |
+| State law representative determination | Low | Organizational policy decision |
+| Legal hold override for retention | Low | Manually protect sheets |
+| Breach deduplication | Low | Admin merges via `updateBreachStatus()` |
+| `getBreachLog()` unfiltered list missing | Low | Use `getBreachReport()` with current year |
+| Disclosure recipients UI auto-populate is stub | Low | Admin enters recipients manually |
 
 ---
 
