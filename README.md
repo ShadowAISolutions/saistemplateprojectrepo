@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-31 11:32:25 AM EST` · Repo version: `v08.27r`
+Last updated: `2026-03-31 12:04:49 PM EST` · Repo version: `v08.28r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -144,7 +144,10 @@ Initialize your repository and Claude will update the live site link and QR code
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/autoHotkey">autoHotkey/</a>                — [template] AutoHotkey v2 scripts
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/AutoUpdate.ahk">AutoUpdate.ahk</a>         — [template] Self-updating AHK script (polls GitHub for new versions)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/Combined%20Inventory%20and%20Intercept.ahk">Combined Inventory and Intercept.ahk</a> — [template] Inventory management GUI app
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/latest-version.txt">latest-version.txt</a>     — [template] Signal file for CDN-based version polling
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/latest-version.txt">latest-version.txt</a>     — [template] Signal file for CDN-based version polling
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/autoHotkey/ahk-versions">ahk-versions/</a>          — [template] Per-file AHK version tracking
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/ahk-versions/autoupdateahk.version.txt">autoupdateahk.version.txt</a>                      — [template] Version for AutoUpdate.ahk
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/ahk-versions/combined-inventory-and-interceptahk.version.txt">combined-inventory-and-interceptahk.version.txt</a> — [template] Version for inventory app
 │
 <b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]

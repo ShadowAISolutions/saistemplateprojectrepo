@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v08.28r] — 2026-03-31 12:04:49 PM EST
+
+> **Prompt:** "the version txts should be in their own folders similar to where the html and gas are in the live pages, and each ahk should have its own version, named same way as the other types"
+
+### Added
+- Created `autoHotkey/ahk-versions/` folder with per-file version tracking matching the HTML/GAS convention: `autoupdateahk.version.txt` (`|v01.05a|`) and `combined-inventory-and-interceptahk.version.txt` (`|v01.00a|`) using pipe-delimited format
+
+### Changed
+- Rewrote AutoUpdate.ahk Phase 2 to use per-file version files via CDN — when signal file changes, each target's individual version file is fetched from `raw.githubusercontent.com` and compared to the local copy; only targets with mismatched versions trigger a full file fetch from the API
+- Updated workflow "Update AHK version files" step to write per-file version files in `ahk-versions/` (extracts VERSION from each changed `.ahk`, converts filename to the naming convention, writes pipe-delimited version)
+- VERSION bumped to v01.05a
 
 ## [v08.27r] — 2026-03-31 11:32:25 AM EST
 

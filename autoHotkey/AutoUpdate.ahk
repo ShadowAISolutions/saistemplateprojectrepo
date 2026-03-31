@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-VERSION := "v01.04a"
+VERSION := "v01.05a"
 
 ; === GitHub Config ===
 GITHUB_OWNER  := "ShadowAISolutions"
@@ -16,10 +16,11 @@ POLL_INTERVAL := 15000  ; 15 seconds
 SIGNAL_FILE   := "autoHotkey/latest-version.txt"
 
 ; === Files to Monitor ===
-; Each entry: {local: filename, remote: repo path, isSelf: bool}
+; Each entry: {local: filename, remote: repo path, isSelf: bool, versionFile: path in repo}
+; versionFile follows the HTML/GAS convention: ahk-versions/<name>ahk.version.txt
 TARGETS := []
-TARGETS.Push({local: "AutoUpdate.ahk", remote: "autoHotkey/AutoUpdate.ahk", isSelf: true})
-TARGETS.Push({local: "Combined Inventory and Intercept.ahk", remote: "autoHotkey/Combined Inventory and Intercept.ahk", isSelf: false})
+TARGETS.Push({local: "AutoUpdate.ahk", remote: "autoHotkey/AutoUpdate.ahk", isSelf: true, versionFile: "autoHotkey/ahk-versions/autoupdateahk.version.txt"})
+TARGETS.Push({local: "Combined Inventory and Intercept.ahk", remote: "autoHotkey/Combined Inventory and Intercept.ahk", isSelf: false, versionFile: "autoHotkey/ahk-versions/combined-inventory-and-interceptahk.version.txt"})
 
 ; === State Tracking ===
 LastCheckTime := ""
@@ -169,116 +170,151 @@ CheckForUpdates() {
     }
 
     if localSignal = remoteSignal {
-        ; Nothing changed — mark all targets as current
+        ; Nothing changed — read local version files for display, mark all current
         idx := 0
         for target in TARGETS {
             idx++
-            localPath := A_ScriptDir "\" target.local
-            localVersion := ""
-            if FileExist(localPath) {
-                try
-                    localVersion := ExtractVersion(FileRead(localPath))
-            }
-            if localVersion = ""
-                localVersion := "—"
-            UpdateGuiRow(idx, localVersion, remoteSignal, "✓ current")
-            LastStatus[target.local] := localVersion " — up to date"
+            localVer := ReadLocalVersionFile(target.versionFile)
+            UpdateGuiRow(idx, localVer, localVer, "✓ current")
+            LastStatus[target.local] := localVer " — up to date"
         }
         IsChecking := false
         CountdownSeconds := POLL_INTERVAL // 1000
         return
     }
 
-    ; Phase 2: Signal changed — fetch each target individually and compare per-file
+    ; Phase 2: Signal changed — check each target's per-file version via CDN
     selfTarget := ""
     selfIndex := 0
     idx := 0
 
     for target in TARGETS {
         idx++
+        ; Fetch remote per-file version from CDN (cheap, no rate limit)
+        remoteVer := FetchRemoteVersionFile(target.versionFile)
+        localVer := ReadLocalVersionFile(target.versionFile)
+
+        if remoteVer = "" {
+            UpdateGuiRow(idx, localVer, "?", "✗ ver err")
+            LastStatus[target.local] := "Error: could not fetch version file"
+            continue
+        }
+
+        if localVer = remoteVer {
+            ; This specific file is up to date
+            UpdateGuiRow(idx, localVer, remoteVer, "✓ current")
+            LastStatus[target.local] := localVer " — up to date"
+            continue
+        }
+
+        ; Version mismatch — need to fetch full file and update
         if target.isSelf {
             selfTarget := target
             selfIndex := idx
             continue  ; Process self last
         }
 
-        localPath := A_ScriptDir "\" target.local
-        localVersion := ""
-        if FileExist(localPath) {
-            try
-                localVersion := ExtractVersion(FileRead(localPath))
-        }
-        if localVersion = ""
-            localVersion := "—"
-
-        UpdateOneFile(target, idx, localVersion, remoteSignal)
+        UpdateOneFile(target, idx, localVer, remoteVer)
     }
 
     ; Self-update is always last (Reload terminates execution)
     if selfTarget != "" {
-        localPath := A_ScriptDir "\" selfTarget.local
-        localVersion := ""
-        try
-            localVersion := ExtractVersion(FileRead(localPath))
-        if localVersion = ""
-            localVersion := "—"
-        UpdateOneFile(selfTarget, selfIndex, localVersion, remoteSignal)
+        remoteVer := FetchRemoteVersionFile(selfTarget.versionFile)
+        localVer := ReadLocalVersionFile(selfTarget.versionFile)
+        if remoteVer != "" && localVer != remoteVer {
+            UpdateOneFile(selfTarget, selfIndex, localVer, remoteVer)
+        }
         if SelfUpdatePending {
-            ; Update local signal file before Reload so we don't re-trigger
-            try {
-                f := FileOpen(localSignalPath, "w", "UTF-8")
-                f.Write(remoteSignal "`n")
-                f.Close()
-            }
+            ; Update local signal + version files before Reload
+            WriteLocalFile(localSignalPath, remoteSignal "`n")
+            WriteLocalVersionFile(selfTarget.versionFile, remoteVer)
             Reload()
         }
     }
 
     ; Update local signal file to match remote (prevents re-fetching next cycle)
-    try {
-        f := FileOpen(localSignalPath, "w", "UTF-8")
-        f.Write(remoteSignal "`n")
-        f.Close()
-    }
+    WriteLocalFile(localSignalPath, remoteSignal "`n")
 
     IsChecking := false
     CountdownSeconds := POLL_INTERVAL // 1000
 }
 
-UpdateOneFile(target, rowIndex, localVersion, signalVersion) {
+UpdateOneFile(target, rowIndex, localVersion, remoteVersion) {
     global LastStatus, SelfUpdatePending
 
-    UpdateGuiRow(rowIndex, localVersion, signalVersion, "↓ fetching")
+    UpdateGuiRow(rowIndex, localVersion, remoteVersion, "↓ fetching")
 
-    ; Fetch full file content from GitHub API
+    ; Fetch full file content from GitHub API (only when version mismatch confirmed)
     remoteContent := FetchRemoteContent(target.remote)
     if remoteContent = "" {
         LastStatus[target.local] := "Error: failed to fetch full file"
-        UpdateGuiRow(rowIndex, localVersion, signalVersion, "✗ fetch err")
-        return
-    }
-
-    ; Compare per-file VERSION (remote file vs local file)
-    remoteVersion := ExtractVersion(remoteContent)
-    if remoteVersion = ""
-        remoteVersion := signalVersion  ; Fallback for files without VERSION
-
-    if remoteVersion = localVersion {
-        ; This specific file is already up to date
-        UpdateGuiRow(rowIndex, localVersion, remoteVersion, "✓ current")
-        LastStatus[target.local] := localVersion " — up to date"
+        UpdateGuiRow(rowIndex, localVersion, remoteVersion, "✗ fetch err")
         return
     }
 
     ; File needs updating
     updated := UpdateFile(target, remoteContent, localVersion, remoteVersion)
     if updated {
+        ; Write the new version to the local version file
+        WriteLocalVersionFile(target.versionFile, remoteVersion)
         LastStatus[target.local] := localVersion " → " remoteVersion " — updated"
         UpdateGuiRow(rowIndex, remoteVersion, remoteVersion, "↑ updated")
         TrayTip("Updated: " target.local, "AutoUpdate: " localVersion " → " remoteVersion, "Mute")
     } else {
         LastStatus[target.local] := "Error: update failed"
         UpdateGuiRow(rowIndex, localVersion, remoteVersion, "✗ failed")
+    }
+}
+
+ReadLocalVersionFile(versionFilePath) {
+    ; Read version from local version file (pipe-delimited: |v01.00a|)
+    ; versionFilePath is relative to repo root, convert to local path
+    parts := StrSplit(versionFilePath, "/")
+    localPath := A_ScriptDir "\" parts[parts.Length - 1] "\" parts[parts.Length]
+    if !FileExist(localPath)
+        return "—"
+    try {
+        content := Trim(FileRead(localPath), " `t`r`n")
+        ; Strip pipe delimiters: |v01.00a| → v01.00a
+        content := StrReplace(content, "|", "")
+        return content
+    }
+    return "—"
+}
+
+FetchRemoteVersionFile(versionFilePath) {
+    global GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH
+    ; Fetch per-file version from CDN (same as signal file — cheap, no rate limit)
+    url := "https://raw.githubusercontent.com/" GITHUB_OWNER "/" GITHUB_REPO
+        . "/" GITHUB_BRANCH "/" versionFilePath
+        . "?t=" A_TickCount
+    try {
+        req := ComObject("WinHttp.WinHttpRequest.5.1")
+        req.Open("GET", url, false)
+        req.SetRequestHeader("User-Agent", "AHK-AutoUpdate/" VERSION)
+        req.Send()
+        if req.Status = 200 {
+            content := Trim(req.ResponseText, " `t`r`n")
+            return StrReplace(content, "|", "")
+        }
+        return ""
+    } catch {
+        return ""
+    }
+}
+
+WriteLocalVersionFile(versionFilePath, version) {
+    ; Write version to local version file with pipe delimiters
+    parts := StrSplit(versionFilePath, "/")
+    localPath := A_ScriptDir "\" parts[parts.Length - 1] "\" parts[parts.Length]
+    WriteLocalFile(localPath, "|" version "|")
+}
+
+WriteLocalFile(path, content) {
+    try {
+        f := FileOpen(path, "w", "UTF-8")
+        f.Write(content)
+        f.Close()
     }
 }
 

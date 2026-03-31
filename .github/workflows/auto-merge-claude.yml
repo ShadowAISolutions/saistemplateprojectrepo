@@ -377,24 +377,39 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
-      # ── AHK SIGNAL FILE UPDATE ──
-      # When .ahk files change, extract VERSION from each and write to
-      # autoHotkey/latest-version.txt so the AHK auto-updater can poll
-      # via raw.githubusercontent.com (CDN, no rate limit) instead of the API.
-      - name: Update AHK signal file
+      # ── AHK VERSION FILE UPDATE ──
+      # When .ahk files change, update per-file version files in ahk-versions/
+      # and the signal file (latest-version.txt) so the AHK auto-updater can
+      # poll via raw.githubusercontent.com (CDN, no rate limit).
+      - name: Update AHK version files
         if: steps.guard.outputs.skip != 'true'
         run: |
           PRE=${{ steps.merge.outputs.pre_merge_sha }}
           if git diff --name-only "$PRE" HEAD | grep -q '\.ahk$'; then
-            echo "AHK files changed — updating signal file"
-            # Extract VERSION from AutoUpdate.ahk (the primary managed script)
-            VER=$(grep -oP 'VERSION\s*:=\s*"\K[^"]+' autoHotkey/AutoUpdate.ahk || echo "unknown")
-            echo "$VER" > autoHotkey/latest-version.txt
-            git add autoHotkey/latest-version.txt
-            git commit -m "Update AHK signal file to $VER [skip ci]" || echo "No changes to commit"
+            echo "AHK files changed — updating version files"
+            mkdir -p autoHotkey/ahk-versions
+            CHANGED=false
+            # Update per-file version files for each .ahk that changed
+            for ahk_file in $(git diff --name-only "$PRE" HEAD | grep '\.ahk$'); do
+              if [ -f "$ahk_file" ]; then
+                VER=$(grep -oP 'VERSION\s*:=\s*"\K[^"]+' "$ahk_file" || echo "")
+                if [ -n "$VER" ]; then
+                  # Convert filename to version file name: lowercase, spaces→hyphens, no ext, + ahk.version.txt
+                  BASENAME=$(basename "$ahk_file" .ahk | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+                  echo "|${VER}|" > "autoHotkey/ahk-versions/${BASENAME}ahk.version.txt"
+                  CHANGED=true
+                  echo "  Updated ${BASENAME}ahk.version.txt → |${VER}|"
+                fi
+              fi
+            done
+            # Update signal file with AutoUpdate.ahk's VERSION
+            SIGNAL_VER=$(grep -oP 'VERSION\s*:=\s*"\K[^"]+' autoHotkey/AutoUpdate.ahk || echo "unknown")
+            echo "$SIGNAL_VER" > autoHotkey/latest-version.txt
+            git add autoHotkey/ahk-versions/ autoHotkey/latest-version.txt
+            git commit -m "Update AHK version files to $SIGNAL_VER [skip ci]" || echo "No changes to commit"
             git push origin main || echo "Push failed"
           else
-            echo "No AHK files changed — skipping signal file update"
+            echo "No AHK files changed — skipping version file update"
           fi
       # ──────────────
 
