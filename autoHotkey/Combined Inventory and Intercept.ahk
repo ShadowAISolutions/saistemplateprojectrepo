@@ -1,6 +1,8 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 VERSION := "v01.00a"
+#Include ReloadHandler.ahk
+InitReloadHandler()
 
 LogFile := A_ScriptDir "\inventory.txt"
 HistoryFile := A_ScriptDir "\history.txt"

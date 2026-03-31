@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-31 12:12:06 PM EST` · Repo version: `v08.29r`
+Last updated: `2026-03-31 12:28:45 PM EST` · Repo version: `v08.30r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -145,8 +145,9 @@ Initialize your repository and Claude will update the live site link and QR code
 │
 <b>─── AutoHotkey ───────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/autoHotkey">autoHotkey/</a>                — [template] AutoHotkey v2 scripts
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/AutoUpdate.ahk">AutoUpdate.ahk</a>         — [template] Self-updating AHK script (polls GitHub Pages for new versions)
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/Combined%20Inventory%20and%20Intercept.ahk">Combined Inventory and Intercept.ahk</a> — [template] Inventory management GUI app
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/AutoUpdate.ahk">AutoUpdate.ahk</a>         — [template] Admin-only updater (polls GitHub Pages, writes to network share)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/Combined%20Inventory%20and%20Intercept.ahk">Combined Inventory and Intercept.ahk</a> — [template] Inventory management GUI app
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/ReloadHandler.ahk">ReloadHandler.ahk</a>      — [template] Optional #Include for auto-reload via IPC
 │
 <b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]

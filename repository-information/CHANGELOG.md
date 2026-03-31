@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v08.30r] — 2026-03-31 12:28:45 PM EST
+
+> **Prompt:** "i think that the ahk is more like the gas version than the html version, because in the html version, its looking for the version change to refresh the page, where as the change version in the gas updates the actual code. im going to be using the ahk in a server where i want a single ahk file for each project, which multiple users will run so i dont want them all to be polling to update the file, it should probably be a single script run by only 1 admin user, which handles updating all the other scripts if their versions change. come up with the best idea with this goal in mind, research online and think deep"
+
+### Added
+- Created `autoHotkey/ReloadHandler.ahk` — optional `#Include` for project scripts that enables auto-reload via IPC when the admin pushes an update to the network share
+- Added `NotifyRunningInstances()` function to AutoUpdate.ahk — uses `PostMessage` with custom `WM_USER + 256` message to signal all running instances of a script to Reload
+- Added `NETWORK_SHARE` config constant and `networkPath` field on each TARGETS entry — maps project scripts to their UNC path on the shared drive
+
+### Changed
+- Redesigned AutoUpdate.ahk as an **admin-only management tool**: runs on one machine, polls GitHub Pages for version changes, downloads new code, and writes it to the network share where multiple users run the scripts
+- `UpdateFile()` now branches: self-updates write to `A_ScriptDir` (admin local), project scripts write to `target.networkPath` (network share)
+- Replaced `Run(localPath)` (re-launch) with `NotifyRunningInstances()` (IPC signal) — running instances on the network receive the message and Reload from the updated file
+- Added `#Include ReloadHandler.ahk` and `InitReloadHandler()` to `Combined Inventory and Intercept.ahk`
+- VERSION bumped to v01.07a
 
 ## [v08.29r] — 2026-03-31 12:12:06 PM EST
 

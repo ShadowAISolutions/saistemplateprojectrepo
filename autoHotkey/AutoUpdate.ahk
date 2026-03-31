@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-VERSION := "v01.06a"
+VERSION := "v01.07a"
 
 ; === GitHub Config ===
 GITHUB_OWNER  := "ShadowAISolutions"
@@ -15,13 +15,23 @@ GITHUB_TOKEN  := ""  ; Optional: set to "github_pat_..." for private repos (high
 POLL_INTERVAL := 15000  ; 15 seconds
 PAGES_BASE    := "https://" GITHUB_OWNER ".github.io/" GITHUB_REPO "/"
 
+; === Network Share Config ===
+; The UNC path where project scripts live on the shared drive.
+; AutoUpdate.ahk (admin tool) runs locally — project scripts are deployed here.
+NETWORK_SHARE := "\\SERVER\Share\AHK Scripts"  ; ← Configure for your environment
+
+; === IPC Reload Message ===
+WM_AHK_RELOAD := 0x0500  ; WM_USER + 256 — custom message to signal Reload
+
 ; === Files to Monitor ===
-; Each entry: {local: filename, remote: repo path, isSelf: bool, versionFile: GitHub Pages path}
-; versionFile follows the HTML/GAS convention: ahk-versions/<name>ahk.version.txt
-; These are deployed to GitHub Pages via live-site-pages/
+; local: filename (used for self-update and display)
+; remote: path in GitHub repo (for fetching full content)
+; isSelf: true = admin tool (writes to A_ScriptDir), false = project script (writes to networkPath)
+; versionFile: path on GitHub Pages (polled via CDN)
+; networkPath: UNC path on network share (empty for self)
 TARGETS := []
-TARGETS.Push({local: "AutoUpdate.ahk", remote: "autoHotkey/AutoUpdate.ahk", isSelf: true, versionFile: "ahk-versions/autoupdateahk.version.txt"})
-TARGETS.Push({local: "Combined Inventory and Intercept.ahk", remote: "autoHotkey/Combined Inventory and Intercept.ahk", isSelf: false, versionFile: "ahk-versions/combined-inventory-and-interceptahk.version.txt"})
+TARGETS.Push({local: "AutoUpdate.ahk", remote: "autoHotkey/AutoUpdate.ahk", isSelf: true, versionFile: "ahk-versions/autoupdateahk.version.txt", networkPath: ""})
+TARGETS.Push({local: "Combined Inventory and Intercept.ahk", remote: "autoHotkey/Combined Inventory and Intercept.ahk", isSelf: false, versionFile: "ahk-versions/combined-inventory-and-interceptahk.version.txt", networkPath: NETWORK_SHARE "\Combined Inventory and Intercept.ahk"})
 
 ; === State Tracking ===
 LastCheckTime := ""
@@ -317,28 +327,46 @@ ExtractVersion(content) {
 
 UpdateFile(target, newContent, oldVersion, newVersion) {
     global SelfUpdatePending
-    localPath := A_ScriptDir "\" target.local
+
+    ; Self-updates write to admin's local dir; project scripts write to network share
+    if target.isSelf {
+        writePath := A_ScriptDir "\" target.local
+    } else {
+        writePath := target.networkPath
+    }
 
     try {
-        f := FileOpen(localPath, "w", "UTF-8")
+        f := FileOpen(writePath, "w", "UTF-8")
         f.Write(newContent)
         f.Close()
     } catch as err {
-        TrayTip("Update failed", "AutoUpdate: Could not write to " target.local "`n" err.Message, "Mute")
+        TrayTip("Update failed", "Could not write to " writePath "`n" err.Message, "Mute")
         return false
     }
 
     if target.isSelf {
         SelfUpdatePending := true
     } else {
-        if WinExist(target.local) {
-            try {
-                Run(localPath)
-            }
-        }
+        ; Signal running instances on the network to Reload with the new code
+        NotifyRunningInstances(target.local)
     }
 
     return true
+}
+
+NotifyRunningInstances(scriptName) {
+    global WM_AHK_RELOAD
+    ; Find all windows belonging to the target script and send reload signal.
+    ; AHK creates a hidden window with title matching the script filename.
+    ; Running instances that #Include ReloadHandler.ahk will Reload on receipt.
+    try {
+        prevDetect := A_DetectHiddenWindows
+        DetectHiddenWindows(true)
+        for hwnd in WinGetList(scriptName) {
+            PostMessage(WM_AHK_RELOAD, 0, 0, , "ahk_id " hwnd)
+        }
+        DetectHiddenWindows(prevDetect)
+    }
 }
 
 UriEncode(str) {
