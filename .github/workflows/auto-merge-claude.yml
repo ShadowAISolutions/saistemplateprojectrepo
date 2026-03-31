@@ -377,6 +377,27 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
+      # ── AHK SIGNAL FILE UPDATE ──
+      # When .ahk files change, extract VERSION from each and write to
+      # autoHotkey/latest-version.txt so the AHK auto-updater can poll
+      # via raw.githubusercontent.com (CDN, no rate limit) instead of the API.
+      - name: Update AHK signal file
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          if git diff --name-only "$PRE" HEAD | grep -q '\.ahk$'; then
+            echo "AHK files changed — updating signal file"
+            # Extract VERSION from AutoUpdate.ahk (the primary managed script)
+            VER=$(grep -oP 'VERSION\s*:=\s*"\K[^"]+' autoHotkey/AutoUpdate.ahk || echo "unknown")
+            echo "$VER" > autoHotkey/latest-version.txt
+            git add autoHotkey/latest-version.txt
+            git commit -m "Update AHK signal file to $VER [skip ci]" || echo "No changes to commit"
+            git push origin main || echo "Push failed"
+          else
+            echo "No AHK files changed — skipping signal file update"
+          fi
+      # ──────────────
+
       - name: Delete branch
         if: steps.guard.outputs.skip != 'true'
         run: |

@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v08.26r] — 2026-03-31 11:16:15 AM EST
+
+> **Prompt:** "yes implement that"
+
+### Added
+- Created `autoHotkey/latest-version.txt` — signal file containing the current AHK version, updated by GitHub Actions workflow when `.ahk` files change (mirrors the `gs.version.txt` pattern)
+- Added workflow step "Update AHK signal file" to `auto-merge-claude.yml` — detects `.ahk` changes after merge, extracts VERSION, commits updated signal file to main with `[skip ci]`
+
+### Changed
+- Rewrote `AutoUpdate.ahk` polling to two-phase approach: (1) poll `raw.githubusercontent.com` for the tiny signal file (CDN, no rate limit), (2) only fetch full file content from GitHub API when a version mismatch is detected — eliminates unnecessary API calls
+- Reduced poll interval from 120s to 15s (CDN polling has no rate limit, so frequent checks are free)
+- VERSION bumped to v01.03a
 
 ## [v08.25r] — 2026-03-31 11:02:52 AM EST
 

@@ -10,7 +10,10 @@ GITHUB_BRANCH := "main"
 GITHUB_TOKEN  := ""  ; Optional: set to "github_pat_..." for private repos (higher rate limit)
 
 ; === Poll Config ===
-POLL_INTERVAL := 120000  ; 120 seconds (safe for unauthenticated GitHub API 60 req/hr limit)
+; Signal file polling via raw.githubusercontent.com (CDN, no rate limit)
+; so we can poll frequently without hitting GitHub API limits
+POLL_INTERVAL := 15000  ; 15 seconds
+SIGNAL_FILE   := "autoHotkey/latest-version.txt"
 
 ; === Files to Monitor ===
 ; Each entry: {local: filename, remote: repo path, isSelf: bool}
@@ -137,27 +140,78 @@ UpdateGuiRow(index, localVer, remoteVer, status) {
 
 CheckForUpdates() {
     global LastCheckTime, SelfUpdatePending, CountdownSeconds, POLL_INTERVAL
-    global LastCheckLabel, IsChecking
+    global LastCheckLabel, IsChecking, TARGETS, LastStatus
+
     IsChecking := true
     LastCheckTime := FormatTime(, "yyyy-MM-dd hh:mm:ss tt")
     LastCheckLabel.Text := "Last check: " LastCheckTime
+
+    ; Phase 1: Poll the signal file (tiny CDN fetch, no rate limit)
+    signalVersion := FetchSignalVersion()
+    if signalVersion = "" {
+        ; Signal file fetch failed — update all rows with error
+        idx := 0
+        for target in TARGETS {
+            idx++
+            LastStatus[target.local] := "Error: signal file unreachable"
+            UpdateGuiRow(idx, "?", "?", "✗ signal err")
+        }
+        IsChecking := false
+        CountdownSeconds := POLL_INTERVAL // 1000
+        return
+    }
+
+    ; Phase 2: Compare signal version against each local file
+    ; Only fetch full content from GitHub API when a mismatch is found
     selfTarget := ""
     selfIndex := 0
     idx := 0
 
     for target in TARGETS {
         idx++
+        localPath := A_ScriptDir "\" target.local
+        localVersion := ""
+
+        if FileExist(localPath) {
+            try {
+                localContent := FileRead(localPath)
+                localVersion := ExtractVersion(localContent)
+            }
+        }
+
+        if localVersion = "" {
+            UpdateGuiRow(idx, "—", signalVersion, "✗ no ver")
+            LastStatus[target.local] := "Warning: no VERSION in local file"
+            continue
+        }
+
+        if localVersion = signalVersion {
+            ; Up to date — no need to fetch full content
+            UpdateGuiRow(idx, localVersion, signalVersion, "✓ current")
+            LastStatus[target.local] := localVersion " — up to date"
+            continue
+        }
+
+        ; Version mismatch — need to fetch full file and update
         if target.isSelf {
             selfTarget := target
             selfIndex := idx
-            continue
+            continue  ; Process self last
         }
-        CheckOneFile(target, idx)
+
+        UpdateOneFile(target, idx, localVersion, signalVersion)
     }
 
     ; Self-update is always last (Reload terminates execution)
     if selfTarget != "" {
-        CheckOneFile(selfTarget, selfIndex)
+        localPath := A_ScriptDir "\" selfTarget.local
+        localVersion := ""
+        try {
+            localVersion := ExtractVersion(FileRead(localPath))
+        }
+        if localVersion != signalVersion && localVersion != "" {
+            UpdateOneFile(selfTarget, selfIndex, localVersion, signalVersion)
+        }
         if SelfUpdatePending {
             Reload()
         }
@@ -167,68 +221,50 @@ CheckForUpdates() {
     CountdownSeconds := POLL_INTERVAL // 1000
 }
 
-CheckOneFile(target, rowIndex) {
+UpdateOneFile(target, rowIndex, localVersion, signalVersion) {
     global LastStatus, SelfUpdatePending
 
-    UpdateGuiRow(rowIndex, "...", "...", "checking")
+    UpdateGuiRow(rowIndex, localVersion, signalVersion, "↓ fetching")
 
-    ; Fetch remote file content from GitHub
+    ; Fetch full file content from GitHub API (only on mismatch)
     remoteContent := FetchRemoteContent(target.remote)
     if remoteContent = "" {
-        LastStatus[target.local] := "Error: failed to fetch remote"
-        UpdateGuiRow(rowIndex, "?", "?", "✗ fetch err")
-        return "error"
+        LastStatus[target.local] := "Error: failed to fetch full file"
+        UpdateGuiRow(rowIndex, localVersion, signalVersion, "✗ fetch err")
+        return
     }
 
-    ; Extract remote version
-    remoteVersion := ExtractVersion(remoteContent)
-    if remoteVersion = "" {
-        LastStatus[target.local] := "Error: no VERSION found in remote"
-        UpdateGuiRow(rowIndex, "?", "—", "✗ no ver")
-        return "error"
-    }
-
-    ; Read local file and extract version
-    localPath := A_ScriptDir "\" target.local
-    if !FileExist(localPath) {
-        LastStatus[target.local] := "Error: local file not found"
-        UpdateGuiRow(rowIndex, "—", remoteVersion, "✗ missing")
-        return "error"
-    }
-
-    try {
-        localContent := FileRead(localPath)
-    } catch {
-        LastStatus[target.local] := "Error: could not read local file"
-        UpdateGuiRow(rowIndex, "?", remoteVersion, "✗ read err")
-        return "error"
-    }
-
-    localVersion := ExtractVersion(localContent)
-    if localVersion = "" {
-        LastStatus[target.local] := "Warning: no VERSION in local file"
-        UpdateGuiRow(rowIndex, "—", remoteVersion, "✗ no ver")
-        return "no-version"
-    }
-
-    ; Compare versions
-    if localVersion = remoteVersion {
-        LastStatus[target.local] := localVersion " — up to date"
-        UpdateGuiRow(rowIndex, localVersion, remoteVersion, "✓ current")
-        return "current"
-    }
-
-    ; Update needed
-    updated := UpdateFile(target, remoteContent, localVersion, remoteVersion)
+    updated := UpdateFile(target, remoteContent, localVersion, signalVersion)
     if updated {
-        LastStatus[target.local] := localVersion " → " remoteVersion " — updated"
-        UpdateGuiRow(rowIndex, remoteVersion, remoteVersion, "↑ updated")
-        TrayTip("Updated: " target.local, "AutoUpdate: " localVersion " → " remoteVersion, "Mute")
-        return "updated"
+        LastStatus[target.local] := localVersion " → " signalVersion " — updated"
+        UpdateGuiRow(rowIndex, signalVersion, signalVersion, "↑ updated")
+        TrayTip("Updated: " target.local, "AutoUpdate: " localVersion " → " signalVersion, "Mute")
     } else {
         LastStatus[target.local] := "Error: update failed"
-        UpdateGuiRow(rowIndex, localVersion, remoteVersion, "✗ failed")
-        return "error"
+        UpdateGuiRow(rowIndex, localVersion, signalVersion, "✗ failed")
+    }
+}
+
+FetchSignalVersion() {
+    global GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, SIGNAL_FILE
+
+    ; Use raw.githubusercontent.com (CDN) — no rate limit, no auth needed for public repos
+    url := "https://raw.githubusercontent.com/" GITHUB_OWNER "/" GITHUB_REPO
+        . "/" GITHUB_BRANCH "/" SIGNAL_FILE
+        . "?t=" A_TickCount  ; Cache buster
+
+    try {
+        req := ComObject("WinHttp.WinHttpRequest.5.1")
+        req.Open("GET", url, false)
+        req.SetRequestHeader("User-Agent", "AHK-AutoUpdate/" VERSION)
+        req.Send()
+
+        if req.Status = 200 {
+            return Trim(req.ResponseText, " `t`r`n")
+        }
+        return ""
+    } catch {
+        return ""
     }
 }
 
