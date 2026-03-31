@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-30 07:31:49 PM EST` · Repo version: `v08.22r`
+Last updated: `2026-03-31 09:51:22 AM EST` · Repo version: `v08.23r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -139,6 +139,11 @@ Initialize your repository and Claude will update the live site link and QR code
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Rndlivedata">Rndlivedata/</a>           — [template] GAS for live-site-pages/rndlivedata.html
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Rndlivedata/rndlivedata.gs">rndlivedata.gs</a>                — [template] Self-updating GAS web app
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Rndlivedata/rndlivedata.config.json">rndlivedata.config.json</a>       — [template] Project config (source of truth)
+│
+<b>─── AutoHotkey ───────────────────────────────────────────────────────────────</b>
+├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/autoHotkey">autoHotkey/</a>                — [template] AutoHotkey v2 scripts
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/AutoUpdate.ahk">AutoUpdate.ahk</a>         — [template] Self-updating AHK script (polls GitHub for new versions)
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/autoHotkey/Combined%20Inventory%20and%20Intercept.ahk">Combined Inventory and Intercept.ahk</a> — [template] Inventory management GUI app
 │
 <b>─── Scripts ──────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/scripts">scripts/</a>                   — [template]

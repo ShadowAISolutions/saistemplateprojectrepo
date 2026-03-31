@@ -3,7 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [Unreleased]
+
+## [v08.23r] — 2026-03-31 09:51:22 AM EST
+
+> **Prompt:** "i added an autoHotkey folder in the root, i want you to make an ahk v2 script in that folder that functions similarly to the auto updating gas we have in our projects, it can be simple while we are getting it to work. research online, think deep"
+
+### Added
+- Created `autoHotkey/AutoUpdate.ahk` — AHK v2 auto-update script that mirrors the GAS self-update pattern (polls GitHub API for newer versions, compares via regex VERSION extraction, overwrites local files, and Reload()s itself)
+- Added `VERSION := "v01.00a"` to existing `Combined Inventory and Intercept.ahk` for version tracking
+- Added autoHotkey section to README structure tree
 
 ## [v08.22r] — 2026-03-30 07:31:49 PM EST
 
