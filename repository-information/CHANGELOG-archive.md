@@ -77,6 +77,623 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v07.63r] — 2026-03-28 09:11:25 PM EST — [ad3f32a6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ad3f32a6)
+
+> **Prompt:** "we are now getting stuck on waiting for server confirmation signing out, using the testauth1 to try it out"
+
+### Fixed
+- Fixed `_finalizeSignOut()` guard being too strict — previous guard (`_authState !== 'signing-out'`) blocked even normal sign-out completion because the general `gas-signed-out` handler sets `_authState = 'signed-out'` before `_finalizeSignOut()` runs. Changed to only block when user has actively started a new auth flow (`signing-in`, `reconnecting`, or `authenticated`)
+
+#### `testauth1.html` — v03.68w
+
+##### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+#### `programportal.html` — v01.60w
+
+##### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+#### `globalacl.html` — v01.54w
+
+##### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+## [v07.62r] — 2026-03-28 08:50:32 PM EST — [c9302e11](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c9302e11)
+
+> **Prompt:** "i tried it in testauth1 (sign out and quickly sign back in), and its saying you have been signed out. but of course the fix should apply to all of them"
+
+### Fixed
+- Guarded `_finalizeSignOut()` with `_authState !== 'signing-out'` check — the previous fix guarded the general `gas-signed-out` handler but missed the closure-scoped `_soConfirmHandler` and 10-second fallback timeout, both of which call `_finalizeSignOut()`. These late callbacks were the actual culprit: they fire after sign-out completes (calling `showAuthWall('You have been signed out.')`) even if the user has already started a new sign-in
+
+#### `testauth1.html` — v03.67w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
+
+#### `programportal.html` — v01.59w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
+
+#### `globalacl.html` — v01.53w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
+
+## [v07.61r] — 2026-03-28 08:23:32 PM EST — [62794dac](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/62794dac)
+
+> **Prompt:** "when i try to sign in fairly quickly after ive been signed out, it triy to sign in and it gets a few seconds into exchanging credentials but then says you have been signed out and goes back to the sign in page. anything you can come up with to address that?"
+
+### Fixed
+- Added auth state machine (`_authState`) to prevent stale sign-out signals from interrupting fresh sign-in attempts. Five states: `signed-out`, `signing-in`, `authenticated`, `signing-out`, `reconnecting`. The `gas-signed-out` handler now only processes during `signing-out` state — HIPAA-safe because that message only originates from a GAS iframe loaded with `?action=signout` (inside `performSignOut()`)
+- Fixed BroadcastChannel sign-out self-reception — added `tabId` to the sign-out broadcast message and a `tabId !== _tabId` guard on the receiver, preventing a tab from processing its own sign-out broadcast
+
+#### `testauth1.html` — v03.66w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
+
+#### `programportal.html` — v01.58w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
+
+#### `globalacl.html` — v01.52w
+
+##### Fixed
+- Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
+
+## [v07.60r] — 2026-03-28 07:48:08 PM EST — [15c95177](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/15c95177)
+
+> **Prompt:** "you made them a separate row instead of how i asked for it. we could do it that way but as is it looks like its an additional step not a total, so make it more obvious. also the reconnecting isnt showing timers properly as per the screenshot"
+
+### Fixed
+- Parent stage timers on stages with sub-steps now show "X.Xs total" suffix in italic styling (`stage-time-total` class) to distinguish them from sub-step timers — makes it clear the value is a total, not another step
+- Added live-ticking timer to reconnecting checklist stages — `_updateReconnectStage()` now activates `_startStageTick()`, and `_completeAllReconnectStages()`/`_resetReconnectChecklist()` properly clean up the timer
+
+#### `testauth1.html` — v03.65w
+
+##### Fixed
+- Stage timers on steps with sub-steps now show "total" suffix in italic
+- Reconnecting checklist stages now show live timers while active
+
+#### `programportal.html` — v01.57w
+
+##### Fixed
+- Stage timers on steps with sub-steps now show "total" suffix in italic
+- Reconnecting checklist stages now show live timers while active
+
+#### `globalacl.html` — v01.51w
+
+##### Fixed
+- Stage timers on steps with sub-steps now show "total" suffix in italic
+- Reconnecting checklist stages now show live timers while active
+
+## [v07.59r] — 2026-03-28 07:40:23 PM EST — [79001e78](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/79001e78)
+
+> **Prompt:** "then can you make the main stage timers be to the right of the cooresponding main stages instead of to the right of the substeps, so it should be left to right, main stage, main stage timer, sub stages , sub stages timers"
+
+### Fixed
+- Fixed checklist layout so stage timer appears on the same line as the stage text, with sub-steps wrapping to a new row below. Previously, sub-steps (as flex items) pushed the parent stage timer to the far right after the sub-step block, breaking the visual hierarchy. Used CSS `flex-wrap`, `order`, and `flex-basis: 100%` to enforce: line 1 = icon + stage text + timer, line 2 = indented sub-steps
+
+#### `testauth1.html` — v03.64w
+
+##### Fixed
+- Stage timer now appears next to its stage text, not displaced by sub-steps
+
+#### `programportal.html` — v01.56w
+
+##### Fixed
+- Stage timer now appears next to its stage text, not displaced by sub-steps
+
+#### `globalacl.html` — v01.50w
+
+##### Fixed
+- Stage timer now appears next to its stage text, not displaced by sub-steps
+
+## [v07.58r] — 2026-03-28 07:32:09 PM EST — [7e828fda](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7e828fda)
+
+> **Prompt:** "on sign out, waiting for server confirmation is not showing a timer, any reason for this?"
+
+### Fixed
+- Added live-ticking timer for active main stages (sign-in and sign-out) — previously only sub-steps had a 100ms ticker (`_startSubStepTick`), while main stages only showed elapsed time on completion. Added `_startStageTick()` function that updates the active stage's timer every 100ms, matching the sub-step behavior. "Waiting for server confirmation" now shows a running timer while active
+
+#### `testauth1.html` — v03.63w
+
+##### Fixed
+- "Waiting for server confirmation" now shows a live-ticking timer during sign-out
+- All sign-in and sign-out stages now show live timers while active
+
+#### `programportal.html` — v01.55w
+
+##### Fixed
+- "Waiting for server confirmation" now shows a live-ticking timer during sign-out
+- All sign-in and sign-out stages now show live timers while active
+
+#### `globalacl.html` — v01.49w
+
+##### Fixed
+- "Waiting for server confirmation" now shows a live-ticking timer during sign-out
+- All sign-in and sign-out stages now show live timers while active
+
+## [v07.57r] — 2026-03-28 06:58:25 PM EST — [e7ebd82d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e7ebd82d)
+
+> **Prompt:** "you removed the totals for signing in, fix it so its shown, i can see that the server authenticating wasnt turned green when it finished."
+
+### Fixed
+- Restored parent stage total time display — removed the overly aggressive `:scope > .sub-steps` guard that was blocking all parent stage times. The `:scope > .stage-time` selector already prevents overwriting sub-step times
+- Sub-steps now complete (turn green with frozen time) when their parent stage transitions to done — added `_completeSubStepsForStage(el)` call in both `_updateSignInStage` and `_updateSignOutStage` so "Server authenticating" properly turns green when "Setting up your secure session" begins
+
+#### `testauth1.html` — v03.62w
+
+##### Fixed
+- "Exchanging credentials with server" now shows its total time again
+- "Server authenticating" sub-step now turns green when sign-in moves to the next stage
+
+#### `programportal.html` — v01.54w
+
+##### Fixed
+- Parent stage total times restored, sub-steps now complete when parent stage transitions
+
+#### `globalacl.html` — v01.48w
+
+##### Fixed
+- Parent stage total times restored, sub-steps now complete when parent stage transitions
+
+## [v07.55r] — 2026-03-28 06:33:14 PM EST — [27aef21f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/27aef21f)
+
+> **Prompt:** "in the sign out its showing the total time for invalidating server session as 2.2s for example mathcing the connecting to server even though we havent even finished the invalidating server session portion, still on sending sign out request"
+
+### Fixed
+- Parent stages with sub-steps no longer show a redundant total time — `_setStageTime` now skips any stage element that contains a `.sub-steps` child UL, since the sub-steps already provide the timing breakdown
+
+#### `testauth1.html` — v03.61w
+
+##### Fixed
+- "Invalidating server session" and "Exchanging credentials with server" no longer show a confusing total time that duplicates sub-step values
+
+#### `programportal.html` — v01.53w
+
+##### Fixed
+- Parent stages with sub-steps no longer show redundant total time
+
+#### `globalacl.html` — v01.47w
+
+##### Fixed
+- Parent stages with sub-steps no longer show redundant total time
+
+## [v07.54r] — 2026-03-28 06:19:20 PM EST — [b95ba39c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b95ba39c)
+
+> **Prompt:** "it seems to be remembering the totals from the previous sign ins and sign outs"
+
+### Fixed
+- Checklist reset now removes ALL `.stage-time` spans via `querySelectorAll` before resetting LI classes — previously `querySelector` per LI only removed the first `.stage-time` match, leaving parent stage total time spans orphaned across sign-in/sign-out cycles
+
+#### `testauth1.html` — v03.60w
+
+##### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+#### `programportal.html` — v01.52w
+
+##### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+#### `globalacl.html` — v01.46w
+
+##### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+## [v07.53r] — 2026-03-28 06:19:20 PM EST — [ac224780](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac224780)
+
+> **Prompt:** "nope, again the number is being added to the connecting to server instead of there being a separate total timer for the exchanging credentials with server"
+
+### Fixed
+- Parent stage total time no longer overwrites first sub-step time — `_setStageTime` now uses `:scope > .stage-time` selector to only find direct child time spans, preventing it from matching time spans inside nested sub-step ULs
+
+#### `testauth1.html` — v03.59w
+
+##### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+#### `programportal.html` — v01.51w
+
+##### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+#### `globalacl.html` — v01.45w
+
+##### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+## [v07.52r] — 2026-03-28 05:55:55 PM EST — [177fb817](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/177fb817)
+
+> **Prompt:** "these two screenshots are actually from the same login attempt, do you see how the connecting to server total time went up to 5.1 when it was 2.8 while server authenticating was happening. i think its adding up the connecting to server number and the server authenticating number, summing them up and putting it into the connecting to server number. we can have a total time for the exchanging credentials with server section but it should be something separate not replace the connecting to server duration"
+
+### Fixed
+- Sub-step timers now freeze when completed — added `_subStepFrozenTimes` map that captures elapsed time at the moment a sub-step transitions to done, preventing `_setSubStepTime` from recalculating with `Date.now() - startTime` on already-completed sub-steps
+
+#### `testauth1.html` — v03.58w
+
+##### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+#### `programportal.html` — v01.50w
+
+##### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+#### `globalacl.html` — v01.44w
+
+##### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+## [v07.51r] — 2026-03-28 05:37:53 PM EST — [3c7b73c1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3c7b73c1)
+
+> **Prompt:** "instead of using miliseconds for these, make them use decimals of seconds"
+
+### Changed
+- Stage timers now always display as decimal seconds (e.g. "0.0s" instead of "0ms") — removed the millisecond branch from `_formatStageTime` across testauth1, programportal, and globalacl
+
+#### `testauth1.html` — v03.57w
+
+##### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+#### `programportal.html` — v01.49w
+
+##### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+#### `globalacl.html` — v01.43w
+
+##### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+## [v07.50r] — 2026-03-28 05:04:13 PM EST — [e41b9021](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e41b9021)
+
+> **Prompt:** "ok great. make these changes including intermediary steps now apply to signing out and also for the application portal and global acl"
+
+### Fixed
+- Added missing sign-out sub-step wiring calls (`_updateSubStep('sub-so-connecting')` and `_updateSubStep('sub-so-sending')`) in globalacl.html sign-out flow — sub-steps were defined in HTML and JS but not triggered during the actual sign-out sequence
+
+#### `globalacl.html` — v01.41w
+
+##### Fixed
+- Sign-out sub-step timing now works correctly
+
+## [v07.49r] — 2026-03-28 05:01:25 PM EST — [2597b3ae](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2597b3ae)
+
+> **Prompt:** "ok great. make these changes including intermediary steps now apply to signing out and also for the application portal and global acl"
+
+### Added
+- Sign-out sub-steps with live timing for "Invalidating server session" — tracks Connecting to server and Sending sign-out request as separate timed phases (testauth1, programportal, globalacl)
+- Sign-in and sign-out sub-steps propagated to programportal.html and globalacl.html — both pages now have the same sub-step tracking as testauth1
+
+#### `testauth1.html` — v03.56w
+
+##### Added
+- Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
+
+#### `programportal.html` — v01.47w
+
+##### Added
+- Sign-in checklist sub-steps with live timing (Connecting, Sending credentials, Server authenticating, Downloading app, Starting up)
+- Sign-out checklist sub-steps with live timing (Connecting to server, Sending sign-out request)
+
+#### `globalacl.html` — v01.40w
+
+##### Added
+- Sign-in checklist sub-steps with live timing (Connecting, Sending credentials, Server authenticating, Downloading app, Starting up)
+- Sign-out checklist sub-steps with live timing (Connecting to server, Sending sign-out request)
+
+## [v07.48r] — 2026-03-28 04:41:33 PM EST — [0bf49271](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0bf49271)
+
+> **Prompt:** "if i sign out and sign back in without refreshing the page the timers seem to be aggregated, showing high numbers. its not actually taking that long"
+
+### Fixed
+- Sign-in sub-step timers now reset on each new sign-in — `_subStepStartTimes`, `_activeSubStepId`, and `_subStepTickTimer` are cleared in `showSigningIn()` alongside the existing `_stageStartTimes` reset. Sub-step containers (`.sub-steps.visible`) are also hidden so they re-appear fresh
+
+#### `testauth1.html` — v03.55w
+
+##### Fixed
+- Sign-in checklist timers no longer accumulate across sign-out/sign-in cycles — timers reset cleanly on each new sign-in
+
+## [v07.47r] — 2026-03-28 04:33:31 PM EST — [079bfdd4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/079bfdd4)
+
+> **Prompt:** "on the checklists when signing in, i see that exchanging credentials with server can take between 5 and 15 seconds. are there intermediary steps that can be tracked for their timing? same with loading application"
+
+### Added
+- Sign-in checklist sub-steps with live timing for "Exchanging credentials with server" — tracks Connecting, Sending credentials (postMessage path), and Server authenticating as separate timed phases
+- Sign-in checklist sub-steps for "Loading the application" — tracks Downloading app and Starting up using iframe load event detection
+- Live ticking timer (100ms interval) on active sub-steps so users see real-time progress during the 5–15s server wait
+- CSS for nested sub-step list items within the sign-in checklist
+- URL path auto-hides "Sending credentials" sub-step (only relevant to postMessage/HIPAA path)
+
+#### `testauth1.html` — v03.54w
+
+##### Added
+- Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
+- Sub-steps include: Connecting to server, Sending credentials, Server authenticating, Downloading app, and Starting up
+- Active sub-steps display a real-time elapsed timer that updates every 100ms
+
+## [v07.46r] — 2026-03-28 03:49:09 PM EST — [8cb043ba](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8cb043ba)
+
+> **Prompt:** "in testauth1, when deleting a row, ask for confirmation, it should be a gas confirmation not a browser confirmation. also when i try to double click on a cell on mobile/android its zooming in rather than clicking the cell. make it mobile friendly"
+
+### Added
+- Custom styled delete confirmation modal in GAS iframe — shows row data preview with Cancel/Delete buttons, replacing direct deletion without confirmation
+- Touch-based double-tap detection for cell editing on mobile — `touchend` event with 400ms threshold triggers cell editor since `dblclick` does not fire reliably on touch devices
+- Viewport meta tag (`maximum-scale=1.0, user-scalable=no`) in GAS srcdoc to prevent mobile zoom
+- `touch-action: manipulation` CSS on interactive elements to disable double-tap-to-zoom browser behavior
+
+### Changed
+- Mobile responsive improvements: add-row bar stacks vertically on narrow screens, table cells get tighter padding
+
+#### `testauth1.gs` — v02.26g
+
+##### Added
+- Custom HTML/CSS delete confirmation modal with row data preview
+- Mobile touch double-tap handler for cell editing
+- Viewport meta tag for proper mobile rendering
+- `touch-action: manipulation` on table cells and buttons
+
+##### Changed
+- Mobile layout: add-row bar wraps vertically, table cells use compact padding on small screens
+
+## [v07.45r] — 2026-03-28 02:51:47 PM EST — [5eb94471](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5eb94471)
+
+> **Prompt:** "i dont want it to close the ones that were open i just want the menu to be over those. also the delete row buttons are not showing up until after the first poll happens, fix that"
+
+### Fixed
+- Admin dropdown now renders above open panels by raising `#user-pill` z-index from 9999 to 10012 — no longer closes panels when opening the dropdown
+- Delete row buttons now appear on initial data load — `_showLiveDataApp` re-renders the table after setting `_ldCanEdit`, so buttons show immediately instead of waiting for the first poll
+
+#### `testauth1.html` — v03.53w
+
+##### Fixed
+- Admin dropdown menu now appears above open panels instead of closing them
+
+#### `testauth1.gs` — v02.25g
+
+##### Fixed
+- Delete buttons now appear immediately when data loads instead of after the first refresh
+
+## [v07.44r] — 2026-03-28 02:43:50 PM EST — [63da2504](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/63da2504)
+
+> **Prompt:** "when i click on one from the menu, it shows up but if i click on the admin menu again, its hiding behind the previous one"
+
+### Fixed
+- Admin dropdown now closes all open panels before opening — prevents the dropdown from appearing behind a previously opened panel (e.g. Active Sessions)
+
+#### `testauth1.html` — v03.52w
+
+##### Fixed
+- Admin dropdown no longer hides behind open panels
+
+## [v07.43r] — 2026-03-28 02:39:19 PM EST — [cd0b5e49](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cd0b5e49)
+
+> **Prompt:** "instead of sessions, disclosures, my data, correction, ammendments, and disagree all being shown priminently, have them be in a submenu under the admin label, of course this should only happen for admin users"
+
+### Changed
+- Moved Sessions, Disclosures, My Data, Correction, Amendments, and Disagree buttons into a dropdown submenu under the ADMIN badge — only visible to admin users. Sign Out buttons remain directly in the user pill
+
+#### `testauth1.html` — v03.51w
+
+##### Changed
+- Admin navigation buttons now appear in a dropdown menu instead of inline in the top bar
+
+## [v07.42r] — 2026-03-28 02:24:26 PM EST — [67b4e62e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/67b4e62e)
+
+> **Prompt:** "yes clean that up, but explain why this in the screenshot is using a google font"
+
+### Changed
+- Removed unused `https://www.slant.co` from CSP `font-src` directive — no fonts were loaded from this domain. Kept `https://fonts.gstatic.com` which is required by the Google Sign-In (GIS) library for Material Icons
+
+#### `testauth1.html` — v03.50w
+
+##### Changed
+- Cleaned up Content Security Policy to remove unused external font source
+
+## [v07.41r] — 2026-03-28 02:16:42 PM EST — [18d3baca](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/18d3baca)
+
+> **Prompt:** "the live Xs ago, remove the ago, and instead of it being blank when at 0 , make it say 0s"
+
+### Changed
+- Connection status display changed from "Live Xs ago" to "Live Xs" and now shows "0s" instead of blank at zero seconds
+
+#### `testauth1.gs` — v02.24g
+
+##### Changed
+- Data freshness indicator now shows "0s" at zero seconds instead of blank, and removed "ago" suffix
+
+## [v07.40r] — 2026-03-28 02:07:55 PM EST — [a7431913](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a7431913)
+
+> **Prompt:** "i think we had added that because it was completely wack with the timing before, if you can make sure it will properly poll at the timing it says then yes go ahead"
+
+### Fixed
+- Data poll countdown now counts down cleanly to 0s before showing "polling..." — removed 2000ms guard that was eating the last 2-3 seconds, switched from `Math.floor` to `Math.ceil` for natural countdown feel
+- Poll timing now uses chained `setTimeout` instead of `setInterval` — each poll fires exactly `DATA_POLL_INTERVAL` ms after the previous poll completes, so the countdown always matches the actual timing
+
+#### `testauth1.gs` — v02.23g
+
+##### Fixed
+- Data poll countdown now reaches 0 before polling instead of jumping from 2-3 seconds directly to "polling..."
+
+## [v07.39r] — 2026-03-28 01:59:03 PM EST — [4ce01a10](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4ce01a10)
+
+> **Prompt:** "move the toggles further apart so that they dont overlap when both opened"
+
+### Fixed
+- Increased spacing between HTML and GAS toggle buttons at bottom-left — GAS toggle moved from `left: 110px` to `left: 135px` so the expanded states ("HTML ○" and "GAS ○") no longer overlap
+
+#### `testauth1.gs` — v02.22g
+
+##### Fixed
+- Toggle buttons no longer overlap when both are in their toggled-off state
+
+## [v07.38r] — 2026-03-28 01:55:28 PM EST — [529e0db5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/529e0db5)
+
+> **Prompt:** "3 things. 1 - on first load its not showing a countdown for the data poll, after the first one it is showing it. 2- the version bottom left, should be left to the html and gas toggles. 3 - the username on gas layer top right corner is overlapped by the html pill, so move the gas username down below it"
+
+### Fixed
+- Data poll countdown now shows immediately on first load instead of displaying "--" until the first poll completes — `_lastDataPollTick` is initialized when the poll starts
+- Repositioned GAS `#version` to `left: 8px` (leftmost), HTML toggle to `left: 70px`, GAS toggle to `left: 110px` — version now appears to the left of both toggle buttons
+- Moved GAS `#user-email` from inside the Live Data header to a fixed position at `top: 35px, right: 8px` — sits below the HTML user-pill instead of behind it
+
+#### `testauth1.html` — v03.49w
+
+##### Changed
+- HTML toggle button repositioned to `left: 70px` to make room for GAS version indicator at bottom-left
+
+#### `testauth1.gs` — v02.21g
+
+##### Fixed
+- Data poll countdown now starts immediately instead of showing "--" until the first poll
+- Version indicator moved to leftmost position at bottom-left
+- Username moved below the navigation bar to avoid overlap
+
+## [v07.37r] — 2026-03-28 01:47:24 PM EST — [003eef93](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/003eef93)
+
+> **Prompt:** "alright, now address the overlapping of elements, these overlaps mainly occur because the html and gas layers are not aware of eachother, so move them around based on what you see in the screenshot"
+
+### Fixed
+- Repositioned GAS `#version` element from `left: 8px` to `left: 100px` to avoid overlapping with HTML layer toggle buttons at bottom-left corner
+- Hidden GAS `#user-email` element (redundant — email already shown in HTML user-pill and GAS Live Data header)
+
+#### `testauth1.gs` — v02.20g
+
+##### Fixed
+- Version indicator no longer overlaps with page controls at the bottom-left corner
+- Removed redundant email display that overlapped with the main header
+
+## [v07.36r] — 2026-03-28 01:39:47 PM EST — [0115cd2f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0115cd2f)
+
+> **Prompt:** "yes"
+
+### Fixed
+- GAS layer toggle now uses CSS class (`gas-layer-hidden` with `!important`) instead of save/restore pattern — same fix as the HTML layer toggle in v07.35r, preventing stale display values from causing elements to disappear or overlap
+
+#### `testauth1.gs` — v02.19g
+
+##### Fixed
+- Toggle button no longer causes elements to overlap or disappear when used repeatedly
+
+## [v07.35r] — 2026-03-28 01:34:55 PM EST — [f3d4c7e9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f3d4c7e9)
+
+> **Prompt:** "in testauth1, there are lots of elements overlapping and i dont see the sign out and other buttons at the top. i refreshed the page and they came back but see why that could have happened."
+
+### Fixed
+- HTML layer toggle now uses CSS class (`html-layer-hidden` with `!important`) instead of save/restore pattern for element display values — prevents race condition where other code paths (`showApp`, `showAuthWall`, `startCountdownTimers`) modifying inline display styles would cause stale values to be restored, making elements disappear or overlap
+
+#### `testauth1.html` — v03.48w
+
+##### Fixed
+- Toggle button no longer causes elements to overlap or disappear when used repeatedly
+
+## [v07.34r] — 2026-03-28 12:53:44 AM EST — [09159d5a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/09159d5a)
+
+> **Prompt:** "ok go for it"
+
+### Fixed
+- Layer visibility toggles now use `display: none` instead of `visibility: hidden` — all elements hide/show simultaneously instead of staggering due to different CSS transition speeds per element
+
+#### `testauth1.html` — v03.47w
+
+##### Fixed
+- HTML toggle now hides/shows all elements at the same time
+
+#### `testauth1.gs` — v02.18g
+
+##### Fixed
+- GAS toggle now hides/shows all elements at the same time
+
+## [v07.33r] — 2026-03-28 12:43:27 AM EST — [45aa0073](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/45aa0073)
+
+> **Prompt:** "going back to the data poll countdown that was in the session menu, it should be removed from there and there should be one on the gas layer replacing how it worked before the transition. make sure its somewhere thats not overlapped by an html element"
+
+### Changed
+- Moved data poll countdown from HTML-layer session timers panel to GAS-layer Live Data header — now displays inline next to the connection status ("Live 4s ago | ▷ 12s")
+- Removed `gas-datapoll-state` postMessage bridge — the GAS layer now renders the countdown directly with a 1-second update interval
+- Removed the "Data Poll:" row from the HTML auth-timers panel
+
+#### `testauth1.html` — v03.46w
+
+##### Removed
+- Data Poll row from session timer panel — moved to the secure application layer
+
+#### `testauth1.gs` — v02.17g
+
+##### Changed
+- Data refresh countdown now displays directly in the Live Data header next to connection status
+
+## [v07.32r] — 2026-03-28 12:35:52 AM EST — [7a4b7b7a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a4b7b7a)
+
+> **Prompt:** "add a toggle on the html layer to hide/show the visual html elements other than that toggle itself. also make the same type of toggle on the gas layer for gas layer elements"
+
+### Added
+- HTML layer visibility toggle — small "HTML" button (fixed bottom-left) hides/shows all HTML-layer visual elements (nav bar, version indicator, GAS pill, timers, test buttons, etc.)
+- GAS layer visibility toggle — small "GAS" button (fixed bottom-left inside GAS iframe) hides/shows all GAS-layer visual elements (Live Data app, version, email)
+
+#### `testauth1.html` — v03.45w
+
+##### Added
+- "HTML" toggle button to hide/show the page controls overlay
+
+#### `testauth1.gs` — v02.16g
+
+##### Added
+- "GAS" toggle button to hide/show the data interface overlay
+
+## [v07.31r] — 2026-03-28 12:28:26 AM EST — [3edd1c0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3edd1c0c)
+
+> **Prompt:** "it seems to be working. move the data poll countdown from where it was in the html layer into the gas layer, making it work how it worked before the migration"
+
+### Changed
+- Data poll countdown timer now works across the layer boundary: GAS layer tracks poll state and sends `gas-datapoll-state` postMessage to the HTML layer, which renders the countdown/polling display in the timer panel — restoring the pre-migration behavior
+
+#### `testauth1.html` — v03.44w
+
+##### Changed
+- Data poll timer display restored — receives state from GAS layer and renders countdown
+
+#### `testauth1.gs` — v02.15g
+
+##### Changed
+- Data poll now tracks in-flight state and sends countdown state to the parent page for timer display
+
+## [v07.30r] — 2026-03-28 12:12:58 AM EST — [678f9c18](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/678f9c18)
+
+> **Prompt:** "this is a blueprint for production, so everything regarding UI and interacting with google should be on the gas layer, other than things relating to authentication. only things that have to be on the html layer should be there"
+
+### Changed
+- **Major architecture migration**: moved entire Live Data UI (table, add-row, delete-row, cell editing, dashboard, sorting, overlays, connection status) from HTML layer to GAS layer. The GAS `doGet()` HTML output now contains all data UI CSS, HTML, and JavaScript
+- Data operations (write-cell, add-row, delete-row) now use `google.script.run` directly from the GAS UI instead of postMessage relay through the HTML layer
+- Data poll migrated from HTML-side `fetch()` to GAS-internal `google.script.run.getAuthenticatedData()` — eliminates token-in-URL exposure on the data poll path
+- HTML layer now sends `ld-init` postMessage with auth context to activate the GAS UI after authentication
+- HTML layer retains only: authentication, session management, GAS iframe lifecycle, version polling, splash screens, auth wall
+
+### Added
+- `getAuthenticatedData(token)` server-side function — validates session before returning cached data (used by the GAS-internal data poll)
+
+#### `testauth1.html` — v03.43w
+
+##### Removed
+- Live Data UI (CSS, HTML, JavaScript) — migrated to GAS layer
+- HTML-side data poll (`_startDataPoll`, `_stopDataPoll`, `_sendDataPoll`) — replaced by GAS-internal poll
+
+##### Changed
+- `_showLiveDataApp` call converted to `ld-init` postMessage to GAS sandbox
+
+#### `testauth1.gs` — v02.14g
+
+##### Added
+- Full Live Data UI (table, add-row, delete-row, cell editing, dashboard, sorting, connection status, optimistic rendering overlays) in `doGet()` HTML output
+- `getAuthenticatedData(token)` function for session-validated data polling
+- `ld-init` message listener for auth context delivery from HTML layer
+- GAS-internal 15-second data poll via `google.script.run`
+- Direct `google.script.run` calls for all data operations (no postMessage relay)
 ## [v07.29r] — 2026-03-27 11:48:48 PM EST — [355550e1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/355550e1a3fea179b4fe447dabc7dc3fede8166f)
 
 > **Prompt:** "the sending... splash is going away after the data poll 15 seconds, but it should be going away as soon as it has written it to the spreadsheet, i know it was already doing its own refresh upon sending the data"

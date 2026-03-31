@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-31 12:28:45 PM EST` · Repo version: `v08.30r`
+Last updated: `2026-03-31 12:37:43 PM EST` · Repo version: `v08.31r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -91,6 +91,11 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/ahk-versions">ahk-versions/</a>            — [template] AHK version files for auto-update polling
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-versions/autoupdateahk.version.txt">autoupdateahk.version.txt</a>                      — [template] Version for AutoUpdate.ahk
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-versions/combined-inventory-and-interceptahk.version.txt">combined-inventory-and-interceptahk.version.txt</a> — [template] Version for inventory app
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/ahk-changelogs">ahk-changelogs/</a>          — [template] AHK changelogs (user-facing change history)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-changelogs/autoupdateahk.changelog.md">autoupdateahk.changelog.md</a>                     — [template] AutoUpdate.ahk changelog
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-changelogs/autoupdateahk.changelog-archive.md">autoupdateahk.changelog-archive.md</a>             — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-changelogs/combined-inventory-and-interceptahk.changelog.md">combined-inventory-and-interceptahk.changelog.md</a> — [template] Inventory app changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-changelogs/combined-inventory-and-interceptahk.changelog-archive.md">combined-inventory-and-interceptahk.changelog-archive.md</a> — [template] Older sections (rotated)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/html-changelogs">html-changelogs/</a>         — [template] HTML changelogs (source of truth + deployed)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">indexhtml.changelog.md</a>                 — [template] Homepage changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog-archive.md">indexhtml.changelog-archive.md</a>         — [template] Older sections (rotated)
