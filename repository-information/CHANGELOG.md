@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v08.29r] — 2026-03-31 12:12:06 PM EST
+
+> **Prompt:** "yes move them , and i think you ahve an old latest-version.txt that we shouldnt use anymore i think? verify that"
+
+### Changed
+- Moved `ahk-versions/` from `autoHotkey/` to `live-site-pages/` — version files are now deployed to GitHub Pages, making them accessible via CDN even on private repos (same pattern as html-versions/ and gs-versions/)
+- Removed `autoHotkey/latest-version.txt` signal file — redundant now that per-file version files are polled directly from GitHub Pages
+- AutoUpdate.ahk now polls `OWNER.github.io/REPO/ahk-versions/...` instead of `raw.githubusercontent.com` — works on private repos without authentication
+- Removed `FetchSignalVersion()` and all signal file logic from AutoUpdate.ahk — simpler single-phase polling: check each target's version file from GitHub Pages, update only on mismatch
+- Updated workflow step to write version files to `live-site-pages/ahk-versions/`
+- VERSION bumped to v01.06a
+
+### Removed
+- `autoHotkey/latest-version.txt` — replaced by direct per-file version polling
 
 ## [v08.28r] — 2026-03-31 12:04:49 PM EST
 

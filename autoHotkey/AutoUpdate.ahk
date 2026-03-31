@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-VERSION := "v01.05a"
+VERSION := "v01.06a"
 
 ; === GitHub Config ===
 GITHUB_OWNER  := "ShadowAISolutions"
@@ -10,17 +10,18 @@ GITHUB_BRANCH := "main"
 GITHUB_TOKEN  := ""  ; Optional: set to "github_pat_..." for private repos (higher rate limit)
 
 ; === Poll Config ===
-; Signal file polling via raw.githubusercontent.com (CDN, no rate limit)
-; so we can poll frequently without hitting GitHub API limits
+; Version files are in live-site-pages/ahk-versions/ and deployed to GitHub Pages.
+; Polling GitHub Pages is free (CDN, no rate limit, works on private repos).
 POLL_INTERVAL := 15000  ; 15 seconds
-SIGNAL_FILE   := "autoHotkey/latest-version.txt"
+PAGES_BASE    := "https://" GITHUB_OWNER ".github.io/" GITHUB_REPO "/"
 
 ; === Files to Monitor ===
-; Each entry: {local: filename, remote: repo path, isSelf: bool, versionFile: path in repo}
+; Each entry: {local: filename, remote: repo path, isSelf: bool, versionFile: GitHub Pages path}
 ; versionFile follows the HTML/GAS convention: ahk-versions/<name>ahk.version.txt
+; These are deployed to GitHub Pages via live-site-pages/
 TARGETS := []
-TARGETS.Push({local: "AutoUpdate.ahk", remote: "autoHotkey/AutoUpdate.ahk", isSelf: true, versionFile: "autoHotkey/ahk-versions/autoupdateahk.version.txt"})
-TARGETS.Push({local: "Combined Inventory and Intercept.ahk", remote: "autoHotkey/Combined Inventory and Intercept.ahk", isSelf: false, versionFile: "autoHotkey/ahk-versions/combined-inventory-and-interceptahk.version.txt"})
+TARGETS.Push({local: "AutoUpdate.ahk", remote: "autoHotkey/AutoUpdate.ahk", isSelf: true, versionFile: "ahk-versions/autoupdateahk.version.txt"})
+TARGETS.Push({local: "Combined Inventory and Intercept.ahk", remote: "autoHotkey/Combined Inventory and Intercept.ahk", isSelf: false, versionFile: "ahk-versions/combined-inventory-and-interceptahk.version.txt"})
 
 ; === State Tracking ===
 LastCheckTime := ""
@@ -141,56 +142,19 @@ UpdateGuiRow(index, localVer, remoteVer, status) {
 
 CheckForUpdates() {
     global LastCheckTime, SelfUpdatePending, CountdownSeconds, POLL_INTERVAL
-    global LastCheckLabel, IsChecking, TARGETS, LastStatus, SIGNAL_FILE
+    global LastCheckLabel, IsChecking, TARGETS, LastStatus
 
     IsChecking := true
     LastCheckTime := FormatTime(, "yyyy-MM-dd hh:mm:ss tt")
     LastCheckLabel.Text := "Last check: " LastCheckTime
 
-    ; Phase 1: Compare remote signal file (CDN) vs local signal file (on disk)
-    remoteSignal := FetchSignalVersion()
-    if remoteSignal = "" {
-        idx := 0
-        for target in TARGETS {
-            idx++
-            LastStatus[target.local] := "Error: signal file unreachable"
-            UpdateGuiRow(idx, "?", "?", "✗ signal err")
-        }
-        IsChecking := false
-        CountdownSeconds := POLL_INTERVAL // 1000
-        return
-    }
-
-    ; Read local signal file from disk
-    localSignalPath := A_ScriptDir "\latest-version.txt"
-    localSignal := ""
-    if FileExist(localSignalPath) {
-        try
-            localSignal := Trim(FileRead(localSignalPath), " `t`r`n")
-    }
-
-    if localSignal = remoteSignal {
-        ; Nothing changed — read local version files for display, mark all current
-        idx := 0
-        for target in TARGETS {
-            idx++
-            localVer := ReadLocalVersionFile(target.versionFile)
-            UpdateGuiRow(idx, localVer, localVer, "✓ current")
-            LastStatus[target.local] := localVer " — up to date"
-        }
-        IsChecking := false
-        CountdownSeconds := POLL_INTERVAL // 1000
-        return
-    }
-
-    ; Phase 2: Signal changed — check each target's per-file version via CDN
+    ; Poll each target's version file from GitHub Pages (CDN, no rate limit, works on private repos)
     selfTarget := ""
     selfIndex := 0
     idx := 0
 
     for target in TARGETS {
         idx++
-        ; Fetch remote per-file version from CDN (cheap, no rate limit)
         remoteVer := FetchRemoteVersionFile(target.versionFile)
         localVer := ReadLocalVersionFile(target.versionFile)
 
@@ -201,7 +165,6 @@ CheckForUpdates() {
         }
 
         if localVer = remoteVer {
-            ; This specific file is up to date
             UpdateGuiRow(idx, localVer, remoteVer, "✓ current")
             LastStatus[target.local] := localVer " — up to date"
             continue
@@ -225,15 +188,10 @@ CheckForUpdates() {
             UpdateOneFile(selfTarget, selfIndex, localVer, remoteVer)
         }
         if SelfUpdatePending {
-            ; Update local signal + version files before Reload
-            WriteLocalFile(localSignalPath, remoteSignal "`n")
             WriteLocalVersionFile(selfTarget.versionFile, remoteVer)
             Reload()
         }
     }
-
-    ; Update local signal file to match remote (prevents re-fetching next cycle)
-    WriteLocalFile(localSignalPath, remoteSignal "`n")
 
     IsChecking := false
     CountdownSeconds := POLL_INTERVAL // 1000
@@ -268,26 +226,22 @@ UpdateOneFile(target, rowIndex, localVersion, remoteVersion) {
 
 ReadLocalVersionFile(versionFilePath) {
     ; Read version from local version file (pipe-delimited: |v01.00a|)
-    ; versionFilePath is relative to repo root, convert to local path
-    parts := StrSplit(versionFilePath, "/")
-    localPath := A_ScriptDir "\" parts[parts.Length - 1] "\" parts[parts.Length]
+    ; versionFilePath is relative to GitHub Pages root (e.g. "ahk-versions/autoupdateahk.version.txt")
+    ; Stored locally in A_ScriptDir\ahk-versions\ for comparison
+    localPath := A_ScriptDir "\" StrReplace(versionFilePath, "/", "\")
     if !FileExist(localPath)
         return "—"
     try {
         content := Trim(FileRead(localPath), " `t`r`n")
-        ; Strip pipe delimiters: |v01.00a| → v01.00a
-        content := StrReplace(content, "|", "")
-        return content
+        return StrReplace(content, "|", "")
     }
     return "—"
 }
 
 FetchRemoteVersionFile(versionFilePath) {
-    global GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH
-    ; Fetch per-file version from CDN (same as signal file — cheap, no rate limit)
-    url := "https://raw.githubusercontent.com/" GITHUB_OWNER "/" GITHUB_REPO
-        . "/" GITHUB_BRANCH "/" versionFilePath
-        . "?t=" A_TickCount
+    global PAGES_BASE
+    ; Fetch per-file version from GitHub Pages (CDN, no rate limit, works on private repos)
+    url := PAGES_BASE versionFilePath "?t=" A_TickCount
     try {
         req := ComObject("WinHttp.WinHttpRequest.5.1")
         req.Open("GET", url, false)
@@ -305,8 +259,11 @@ FetchRemoteVersionFile(versionFilePath) {
 
 WriteLocalVersionFile(versionFilePath, version) {
     ; Write version to local version file with pipe delimiters
-    parts := StrSplit(versionFilePath, "/")
-    localPath := A_ScriptDir "\" parts[parts.Length - 1] "\" parts[parts.Length]
+    localPath := A_ScriptDir "\" StrReplace(versionFilePath, "/", "\")
+    ; Ensure the directory exists
+    SplitPath(localPath, , &dir)
+    if !DirExist(dir)
+        DirCreate(dir)
     WriteLocalFile(localPath, "|" version "|")
 }
 
@@ -315,29 +272,6 @@ WriteLocalFile(path, content) {
         f := FileOpen(path, "w", "UTF-8")
         f.Write(content)
         f.Close()
-    }
-}
-
-FetchSignalVersion() {
-    global GITHUB_OWNER, GITHUB_REPO, GITHUB_BRANCH, SIGNAL_FILE
-
-    ; Use raw.githubusercontent.com (CDN) — no rate limit, no auth needed for public repos
-    url := "https://raw.githubusercontent.com/" GITHUB_OWNER "/" GITHUB_REPO
-        . "/" GITHUB_BRANCH "/" SIGNAL_FILE
-        . "?t=" A_TickCount  ; Cache buster
-
-    try {
-        req := ComObject("WinHttp.WinHttpRequest.5.1")
-        req.Open("GET", url, false)
-        req.SetRequestHeader("User-Agent", "AHK-AutoUpdate/" VERSION)
-        req.Send()
-
-        if req.Status = 200 {
-            return Trim(req.ResponseText, " `t`r`n")
-        }
-        return ""
-    } catch {
-        return ""
     }
 }
 
