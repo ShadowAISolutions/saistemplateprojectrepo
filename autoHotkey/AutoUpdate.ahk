@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-VERSION := "v01.02a"
+VERSION := "v01.03a"
 
 ; === GitHub Config ===
 GITHUB_OWNER  := "ShadowAISolutions"
