@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v08.25r] — 2026-03-31 11:02:52 AM EST
+
+> **Prompt:** "it is properly detecting it once it goes from 120 to 0, but when i initially load it, it goes from 2,1, and stays stuck waiting"
+
+### Fixed
+- Fixed initial countdown stuck at 0 — removed separate one-shot and recurring `SetTimer(CheckForUpdates)` calls; the 1-second countdown timer is now the sole driver that triggers `CheckForUpdates()` when it reaches 0, then resets to the full poll interval
+- VERSION bumped to v01.02a
 
 ## [v08.24r] — 2026-03-31 10:55:42 AM EST
 

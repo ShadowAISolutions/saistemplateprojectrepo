@@ -84,10 +84,9 @@ A_TrayMenu.Add("Exit", (*) => ExitApp())
 A_TrayMenu.Default := "Show / Hide"
 A_IconTip := "AutoUpdate " VERSION " — Monitoring " TARGETS.Length " file(s)"
 
-; === Start Timers ===
-SetTimer(CheckForUpdates, -3000)        ; One-shot: check 3 seconds after launch
-SetTimer(CheckForUpdates, POLL_INTERVAL) ; Recurring check
-SetTimer(UpdateCountdown, 1000)          ; Countdown ticks every 1 second
+; === Start Timer ===
+; The 1-second countdown is the sole driver — it calls CheckForUpdates when it hits 0
+SetTimer(UpdateCountdown, 1000)
 
 Persistent()
 
@@ -110,18 +109,20 @@ ManualCheck() {
     global CountdownSeconds, POLL_INTERVAL
     CheckForUpdates()
     CountdownSeconds := POLL_INTERVAL // 1000
-    ; Reset the recurring timer so next auto-check is a full interval from now
-    SetTimer(CheckForUpdates, POLL_INTERVAL)
 }
 
 UpdateCountdown() {
-    global CountdownSeconds, CountdownLabel, IsChecking
+    global CountdownSeconds, CountdownLabel, IsChecking, POLL_INTERVAL
     if IsChecking {
         CountdownLabel.Text := "Checking now..."
         return
     }
-    if CountdownSeconds > 0
-        CountdownSeconds--
+    if CountdownSeconds <= 0 {
+        CountdownSeconds := POLL_INTERVAL // 1000
+        CheckForUpdates()
+        return
+    }
+    CountdownSeconds--
     CountdownLabel.Text := "Next check in: " CountdownSeconds "s"
 }
 
