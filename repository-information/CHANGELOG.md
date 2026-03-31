@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v08.27r] — 2026-03-31 11:32:25 AM EST
+
+> **Prompt:** "make it so that there is  no version in the autoupdate ahk, just in the txt, and make sure you update the latest version every time we update the ahk" + "well actually there can be a version in the ahk but make sure it matches the txt"
+
+### Changed
+- Made `latest-version.txt` the single source of truth for update detection — AutoUpdate.ahk now compares the local signal file on disk against the remote CDN signal file. When they match, all targets are marked current (zero API calls). When they differ, each target is fetched individually and compared per-file VERSION
+- After updating targets, the local signal file is written to match remote — prevents re-fetching on the next cycle
+- VERSION in AutoUpdate.ahk stays as informational display (GUI title, tray tip) and is kept in sync with the signal file on every commit
+- VERSION bumped to v01.04a (matches latest-version.txt)
 
 ## [v08.26r] — 2026-03-31 11:16:15 AM EST
 
