@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v08.34r] — 2026-04-01 03:16:28 PM EST
+
+> **Prompt:** "can you generate a single image file which contains an example of each of the 13 types of codes for testing"
+
+### Added
+- Generated `barcode-test-sheet.png` — test image containing all 13 BarcodeDetector formats (QR Code, EAN-13, EAN-8, UPC-A, UPC-E, Code 128, Code 39, Code 93, Codabar, ITF, Aztec, Data Matrix, PDF417) with labeled data values for scanner testing
 
 ## [v08.33r] — 2026-04-01 03:05:02 PM EST
 
