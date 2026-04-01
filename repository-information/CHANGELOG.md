@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v08.33r] — 2026-04-01 03:05:02 PM EST
+
+> **Prompt:** "the page isnt live, i think it has to be added to the yml file"
+
+### Changed
+- Added QR Scanner (qr-scanner5.html) and QR & Barcode Scanner (qr-scanner6.html) to `open-all.html` project list and Open All button — triggers fresh GitHub Pages deployment
+
+#### `open-all.html` — v01.02w
+
+##### Added
+- Added QR Scanner and QR & Barcode Scanner to the project list and Open All button
 
 ## [v08.32r] — 2026-04-01 02:41:11 PM EST
 

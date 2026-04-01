@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self';">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Open All Projects</title>
   <style>
@@ -98,6 +98,8 @@
       <li><a href="./gas-project-creator.html" target="_blank" rel="noopener">GAS Project Creator</a><span class="project-label">gas-project-creator.html</span></li>
       <li><a href="./testauth1.html" target="_blank" rel="noopener">Test Auth 1</a><span class="project-label">testauth1.html</span></li>
       <li><a href="./globalacl.html" target="_blank" rel="noopener">Global ACL</a><span class="project-label">globalacl.html</span></li>
+      <li><a href="./qr-scanner5.html" target="_blank" rel="noopener">QR Scanner</a><span class="project-label">qr-scanner5.html</span></li>
+      <li><a href="./qr-scanner6.html" target="_blank" rel="noopener">QR &amp; Barcode Scanner</a><span class="project-label">qr-scanner6.html</span></li>
     </ul>
 
     <button class="open-all-btn" onclick="openAll()">Open All in New Tabs</button>
@@ -113,7 +115,9 @@
         './testenvironment.html',
         './gas-project-creator.html',
         './testauth1.html',
-        './globalacl.html'
+        './globalacl.html',
+        './qr-scanner5.html',
+        './qr-scanner6.html'
       ];
       for (var i = 0; i < pages.length; i++) {
         window.open(pages[i], '_blank', 'noopener');

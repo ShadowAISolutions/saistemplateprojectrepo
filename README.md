@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-01 02:41:11 PM EST` · Repo version: `v08.32r`
+Last updated: `2026-04-01 03:05:02 PM EST` · Repo version: `v08.33r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -42,7 +42,7 @@ Initialize your repository and Claude will update the live site link and QR code
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/favicon.ico">favicon.ico</a>                            — Placeholder favicon (replace with your own)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/open-all.html">open-all.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/open-all.html">🌐</a>🟢  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/open-allhtml.changelog.md">v01.01w</a> · vNoGASg | [template] Open all project pages in separate tabs
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/open-all.html">open-all.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/open-all.html">🌐</a>🟢  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/open-allhtml.changelog.md">v01.02w</a> · vNoGASg | [template] Open all project pages in separate tabs
 │   │
 │   <b>│ ─ Public Website ──────────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/index.html">index.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1fZhpw9h_Ci4bIQTwyT-3txrKmtg1tWASBHM2n0UFCRY/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Index/index.gs">⛽</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/index-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/indexhtml.changelog.md">v01.09w</a> &middot; <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/indexgs.changelog.md">v01.01g</a> | [template] Live landing page
