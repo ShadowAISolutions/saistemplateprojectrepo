@@ -44,6 +44,9 @@
     .start-btn:active { transform: scale(0.96); }
     .engine-badge { position: absolute; bottom: 10px; right: 10px; font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 3px 7px; border-radius: 20px; background: rgba(0,0,0,0.6); color: var(--muted); z-index: 15; border: 1px solid var(--border); }
     .engine-badge.native { color: var(--accent); border-color: var(--accent); }
+    .torch-btn { position: absolute; bottom: 10px; left: 10px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: rgba(0,0,0,0.6); color: var(--muted); font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: all 0.2s; padding: 0; line-height: 1; }
+    .torch-btn:active { transform: scale(0.9); }
+    .torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
     .status-bar { display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--muted); padding: 0 2px; }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
     .status-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 1.5s ease-in-out infinite; }
@@ -107,6 +110,7 @@
     <div class="corner bl"></div><div class="corner br"></div>
     <div class="scan-line" id="scan-line"></div>
     <div class="found-flash" id="found-flash"></div>
+    <button class="torch-btn" id="torch-btn" onclick="toggleTorch()">&#128294;</button>
     <div class="engine-badge" id="engine-badge">detecting engine...</div>
     <div id="start-screen">
       <div class="big-icon">&#128247;</div>
@@ -178,6 +182,7 @@ var engineBadge    = document.getElementById('engine-badge');
 var toast          = document.getElementById('toast');
 var resultFormat   = document.getElementById('result-format');
 var capNotice      = document.getElementById('capability-notice');
+var torchBtn       = document.getElementById('torch-btn');
 
 // ─── State ──────────────────────────────────────────────────────
 var scanning = false;
@@ -187,6 +192,8 @@ var cooldown = false;
 var useNative = false;
 var barcodeDetector = null;
 var nativeLoopActive = false;
+var torchOn = false;
+var torchSupported = false;
 
 // ─── Engine detection ────────────────────────────────────────────
 function detectEngine() {
@@ -239,6 +246,16 @@ async function startCamera() {
     document.getElementById('start-screen').style.display = 'none';
     setStatus('active', 'Scanning' + (useNative ? ' (native \u00B7 all formats)' : ' (jsQR \u00B7 QR only)') + '...');
     scanning = true;
+
+    // Check torch support
+    try {
+      var track = stream.getVideoTracks()[0];
+      var caps = track.getCapabilities ? track.getCapabilities() : {};
+      if (caps.torch) {
+        torchSupported = true;
+        torchBtn.style.display = 'flex';
+      }
+    } catch(e) {}
 
     if (useNative) {
       startNativeLoop();
@@ -399,6 +416,24 @@ function formatLabel(fmt) {
     'qr_code':'QR CODE','upc_a':'UPC-A','upc_e':'UPC-E'
   };
   return labels[fmt] || fmt.toUpperCase().replace(/_/g, ' ');
+}
+
+// ─── Torch toggle ────────────────────────────────────────────────
+function toggleTorch() {
+  if (!torchSupported || !video.srcObject) return;
+  var track = video.srcObject.getVideoTracks()[0];
+  if (!track) return;
+  torchOn = !torchOn;
+  track.applyConstraints({ advanced: [{ torch: torchOn }] })
+    .then(function() {
+      torchBtn.classList.toggle('on', torchOn);
+      showToast(torchOn ? 'Light on' : 'Light off');
+    })
+    .catch(function() {
+      torchOn = false;
+      torchBtn.classList.remove('on');
+      showToast('Torch not available');
+    });
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────

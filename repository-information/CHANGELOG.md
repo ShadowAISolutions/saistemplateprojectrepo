@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v08.35r] — 2026-04-01 03:22:55 PM EST
+
+> **Prompt:** "yes add it"
+
+### Added
+- Added torch/flashlight toggle button to `qr-scanner6.html` — appears in the camera viewport (bottom-left) when the device supports torch via the MediaStreamTrack API
+- Button glows yellow when active, auto-hides on unsupported devices
+- Torch capability detected after camera starts via `getCapabilities().torch`
 
 ## [v08.34r] — 2026-04-01 03:16:28 PM EST
 
