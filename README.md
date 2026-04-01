@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-03-31 12:37:43 PM EST` · Repo version: `v08.31r`
+Last updated: `2026-04-01 02:41:11 PM EST` · Repo version: `v08.32r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -59,6 +59,10 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/programportal.html">programportal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/programportal.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/programportalhtml.changelog.md">v01.73w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/programportalgs.changelog.md">v01.36g</a> | [template] Program Portal page
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/rndlivedata.html">rndlivedata.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/rndlivedata.html">🌐</a>🟢 · ◽ · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Rndlivedata/rndlivedata.gs">⛽</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/rndlivedata-diagram.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/rndlivedatahtml.changelog.md">v01.07w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/rndlivedatags.changelog.md">v01.06g</a> | [template] RND Live Data page
+│   │
+│   <b>│ ─ Standalone Utilities ─────────────────────────────────────────────────────</b>
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner5.html">qr-scanner5.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner5.html">🌐</a>  — [template] QR code scanner (native + jsQR fallback)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner6.html">qr-scanner6.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner6.html">🌐</a>  — [template] QR &amp; barcode scanner (native multi-format + jsQR fallback)
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>

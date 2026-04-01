@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>QR & Barcode Scanner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap');
+    :root {
+      --bg: #0a0a0f; --surface: #12121a; --border: #1e1e2e;
+      --accent: #00ffcc; --text: #e8e8f0; --muted: #555570; --error: #ff4466;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+    header { width: 100%; padding: 16px 20px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .logo { width: 28px; height: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+    .logo-cell { background: var(--accent); border-radius: 2px; }
+    .logo-cell:nth-child(4) { background: #7c3aed; }
+    header h1 { font-family: 'Space Mono', monospace; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent); }
+    #scan-count { font-size: 0.7rem; color: var(--muted); margin-left: auto; font-family: 'Space Mono', monospace; }
+    .scanner-container { width: 100%; max-width: 480px; padding: 18px 16px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .viewport-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--border); }
+    video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    canvas#proc-canvas { display: none; }
+    .corner { position: absolute; width: 28px; height: 28px; z-index: 10; pointer-events: none; }
+    .corner::before, .corner::after { content: ''; position: absolute; background: var(--accent); border-radius: 2px; }
+    .corner::before { width: 100%; height: 3px; top: 0; left: 0; }
+    .corner::after  { width: 3px; height: 100%; top: 0; left: 0; }
+    .corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
+    .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+    .corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
+    .corner.tl { top: 14px; left: 14px; }
+    .scan-line { position: absolute; left: 14px; right: 14px; height: 2px; background: linear-gradient(90deg, transparent, rgba(0,255,204,0.7), transparent); top: 14px; z-index: 9; animation: scanMove 2s ease-in-out infinite; box-shadow: 0 0 8px var(--accent); border-radius: 2px; }
+    @keyframes scanMove { 0%{top:14px;opacity:1} 48%{top:calc(100% - 18px);opacity:1} 50%{top:calc(100% - 18px);opacity:0} 52%{top:14px;opacity:0} 54%{opacity:1} 100%{top:calc(100% - 18px);opacity:1} }
+    .scan-line.paused { animation-play-state: paused; opacity: 0; }
+    .found-flash { position: absolute; inset: 0; background: rgba(0,255,204,0.15); z-index: 8; opacity: 0; border-radius: 16px; pointer-events: none; }
+    @keyframes flashFade { 0%{opacity:1} 100%{opacity:0} }
+    .found-flash.active { animation: flashFade 0.5s forwards; }
+    #start-screen { position: absolute; inset: 0; background: rgba(10,10,15,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 20; border-radius: 16px; backdrop-filter: blur(4px); }
+    #start-screen .big-icon { font-size: 2.4rem; animation: bounce 2s ease-in-out infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    #start-screen p { font-size: 0.82rem; color: var(--muted); text-align: center; padding: 0 20px; line-height: 1.5; }
+    .start-btn { padding: 11px 26px; border-radius: 10px; background: var(--accent); color: var(--bg); border: none; font-family: 'Space Mono', monospace; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; }
+    .start-btn:active { transform: scale(0.96); }
+    .engine-badge { position: absolute; bottom: 10px; right: 10px; font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 3px 7px; border-radius: 20px; background: rgba(0,0,0,0.6); color: var(--muted); z-index: 15; border: 1px solid var(--border); }
+    .engine-badge.native { color: var(--accent); border-color: var(--accent); }
+    .status-bar { display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--muted); padding: 0 2px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
+    .status-dot.active { background: var(--accent); box-shadow: 0 0 6px var(--accent); animation: pulse 1.5s ease-in-out infinite; }
+    .status-dot.found  { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: none; }
+    .status-dot.error  { background: var(--error); animation: none; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.3s; }
+    .result-card.has-result { border-color: var(--accent); }
+    .result-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid var(--border); }
+    .result-label { font-family: 'Space Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+    .result-type-badge { font-family: 'Space Mono', monospace; font-size: 0.58rem; padding: 2px 8px; border-radius: 20px; background: transparent; border: 1px solid var(--muted); color: var(--muted); }
+    .result-type-badge.url   { border-color:#3b82f6;color:#3b82f6 }
+    .result-type-badge.text  { border-color:var(--accent);color:var(--accent) }
+    .result-type-badge.wifi  { border-color:#f59e0b;color:#f59e0b }
+    .result-type-badge.email { border-color:#ec4899;color:#ec4899 }
+    .result-type-badge.phone { border-color:#10b981;color:#10b981 }
+    .result-type-badge.sms   { border-color:#8b5cf6;color:#8b5cf6 }
+    .result-format-badge { font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 2px 7px; border-radius: 20px; background: rgba(124,58,237,0.1); border: 1px solid #7c3aed; color: #7c3aed; }
+    .capability-notice { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); padding: 4px 10px; background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.2); border-radius: 8px; text-align: center; }
+    .result-body { padding: 14px 16px; min-height: 72px; display: flex; flex-direction: column; gap: 12px; }
+    .result-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--text); word-break: break-all; white-space: pre-wrap; }
+    .result-text.empty { color: var(--muted); font-size: 0.73rem; }
+    .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .action-btn { flex: 1; min-width: 80px; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .action-btn:active { transform: scale(0.96); }
+    .action-btn.primary { background: var(--accent); color: #0a0a0f; border-color: var(--accent); }
+    .action-btn.secondary { border-color: var(--accent); color: var(--accent); }
+    .upload-row { display: flex; gap: 8px; }
+    .upload-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px dashed var(--border); background: transparent; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; text-align: center; transition: border-color 0.2s; letter-spacing: 0.04em; }
+    .upload-btn:active { border-color: var(--accent); color: var(--accent); }
+    #file-input { display: none; }
+    .history-section { display: flex; flex-direction: column; gap: 10px; }
+    .history-title { font-family: 'Space Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; padding: 0 2px; }
+    .history-list { display: flex; flex-direction: column; gap: 6px; }
+    .history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: border-color 0.2s; animation: slideIn 0.25s ease; }
+    @keyframes slideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .history-item:active { border-color: var(--accent); }
+    .history-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; background: var(--border); flex-shrink: 0; }
+    .history-content { flex: 1; overflow: hidden; }
+    .history-text { font-size: 0.76rem; font-family: 'Space Mono', monospace; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-time { font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--accent); color: var(--bg); font-family: 'Space Mono', monospace; font-size: 0.72rem; padding: 8px 18px; border-radius: 30px; opacity: 0; transition: all 0.3s; z-index: 100; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-cell"></div><div class="logo-cell"></div>
+    <div class="logo-cell"></div><div class="logo-cell"></div>
+  </div>
+  <h1>QR & BARCODE</h1>
+  <span id="scan-count">0 scanned</span>
+</header>
+
+<div class="scanner-container">
+  <div class="viewport-wrapper" id="viewport">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="proc-canvas"></canvas>
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="scan-line" id="scan-line"></div>
+    <div class="found-flash" id="found-flash"></div>
+    <div class="engine-badge" id="engine-badge">detecting engine...</div>
+    <div id="start-screen">
+      <div class="big-icon">&#128247;</div>
+      <p>Tap below to start scanning.<br>Supports QR codes and barcodes when native engine is available.</p>
+      <button class="start-btn" onclick="startCamera()">START CAMERA</button>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span id="status-text">Camera inactive</span>
+  </div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-header">
+      <span class="result-label">Last Scan</span>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span class="result-format-badge" id="result-format" style="display:none"></span>
+        <span class="result-type-badge" id="result-type">&#8212;</span>
+      </div>
+    </div>
+    <div class="result-body">
+      <div class="result-text empty" id="result-text">Point your camera at a QR code or barcode...</div>
+      <div class="action-row" id="action-row" style="display:none">
+        <button class="action-btn secondary" onclick="copyResult()">&#10148; Copy</button>
+        <button class="action-btn primary" id="open-btn" onclick="openResult()">&#8599; Open</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image upload fallback -->
+  <div class="upload-row">
+    <label class="upload-btn" for="file-input">&#128444; Scan from image / gallery</label>
+    <input type="file" id="file-input" accept="image/*" onchange="scanFromFile(event)">
+  </div>
+  <div class="capability-notice" id="capability-notice" style="display:none">
+    &#9888; JS engine active — QR codes only. Use Chrome/Edge for barcode support.
+  </div>
+
+  <div class="history-section" id="history-section" style="display:none">
+    <div class="history-title">Scan History</div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- jsQR fallback -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+
+<script>
+// ─── DOM refs ───────────────────────────────────────────────────
+var video          = document.getElementById('video');
+var procCanvas     = document.getElementById('proc-canvas');
+var ctx            = procCanvas.getContext('2d', {willReadFrequently: true});
+var statusDot      = document.getElementById('status-dot');
+var statusText     = document.getElementById('status-text');
+var resultCard     = document.getElementById('result-card');
+var resultText     = document.getElementById('result-text');
+var resultType     = document.getElementById('result-type');
+var actionRow      = document.getElementById('action-row');
+var openBtn        = document.getElementById('open-btn');
+var foundFlash     = document.getElementById('found-flash');
+var scanLine       = document.getElementById('scan-line');
+var historySection = document.getElementById('history-section');
+var historyList    = document.getElementById('history-list');
+var scanCountEl    = document.getElementById('scan-count');
+var engineBadge    = document.getElementById('engine-badge');
+var toast          = document.getElementById('toast');
+var resultFormat   = document.getElementById('result-format');
+var capNotice      = document.getElementById('capability-notice');
+
+// ─── State ──────────────────────────────────────────────────────
+var scanning = false;
+var scanCount = 0;
+var historyItems = [];
+var cooldown = false;
+var useNative = false;
+var barcodeDetector = null;
+var nativeLoopActive = false;
+
+// ─── Engine detection ────────────────────────────────────────────
+function detectEngine() {
+  if ('BarcodeDetector' in window) {
+    BarcodeDetector.getSupportedFormats().then(function(fmts) {
+      if (fmts.indexOf('qr_code') !== -1) {
+        useNative = true;
+        var desired = ['aztec','codabar','code_128','code_39','code_93','data_matrix','ean_13','ean_8','itf','pdf417','qr_code','upc_a','upc_e'];
+        var supported = desired.filter(function(f) { return fmts.indexOf(f) !== -1; });
+        barcodeDetector = new BarcodeDetector({formats: supported});
+        engineBadge.textContent = 'NATIVE \u00B7 QR+BARCODE';
+        engineBadge.classList.add('native');
+      } else {
+        setJsQREngine();
+      }
+    }).catch(function() { setJsQREngine(); });
+  } else {
+    setJsQREngine();
+  }
+}
+
+function setJsQREngine() {
+  useNative = false;
+  engineBadge.textContent = 'JS \u00B7 QR ONLY';
+  capNotice.style.display = 'block';
+}
+
+detectEngine();
+
+// ─── Camera start ────────────────────────────────────────────────
+async function startCamera() {
+  try {
+    // Try exact environment first, then any video
+    var stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: {exact: 'environment'}, width: {ideal: 1280}, height: {ideal: 720} }
+      });
+    } catch(e) {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} }
+      });
+    }
+
+    video.srcObject = stream;
+    await new Promise(function(res) {
+      video.onloadedmetadata = function() { video.play().then(res).catch(res); };
+    });
+
+    document.getElementById('start-screen').style.display = 'none';
+    setStatus('active', 'Scanning' + (useNative ? ' (native \u00B7 all formats)' : ' (jsQR \u00B7 QR only)') + '...');
+    scanning = true;
+
+    if (useNative) {
+      startNativeLoop();
+    } else {
+      requestAnimationFrame(jsQRTick);
+    }
+  } catch(e) {
+    setStatus('error', 'Camera error: ' + e.message);
+    showToast('Camera denied — use image upload below');
+  }
+}
+
+// ─── Native BarcodeDetector loop ─────────────────────────────────
+function startNativeLoop() {
+  if (nativeLoopActive) return;
+  nativeLoopActive = true;
+  nativeTick();
+}
+
+async function nativeTick() {
+  if (!scanning) { nativeLoopActive = false; return; }
+  if (!cooldown && video.readyState >= 2) {
+    try {
+      var barcodes = await barcodeDetector.detect(video);
+      if (barcodes.length > 0 && barcodes[0].rawValue) {
+        onFound(barcodes[0].rawValue, barcodes[0].format);
+      }
+    } catch(e) {
+      // Silently continue
+    }
+  }
+  setTimeout(nativeTick, 200); // 5fps is plenty for native
+}
+
+// ─── jsQR loop ───────────────────────────────────────────────────
+function jsQRTick() {
+  if (!scanning) return;
+  if (!cooldown && video.readyState >= 2 && video.videoWidth > 0) {
+    procCanvas.width  = video.videoWidth;
+    procCanvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    var imageData = ctx.getImageData(0, 0, procCanvas.width, procCanvas.height);
+    var code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: 'attemptBoth'
+    });
+    if (code && code.data) {
+      onFound(code.data);
+    }
+  }
+  requestAnimationFrame(jsQRTick);
+}
+
+// ─── Scan from image file ─────────────────────────────────────────
+function scanFromFile(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var img = new Image();
+  img.onload = async function() {
+    // Try native first
+    if (useNative && barcodeDetector) {
+      try {
+        var barcodes = await barcodeDetector.detect(img);
+        if (barcodes.length > 0 && barcodes[0].rawValue) {
+          onFound(barcodes[0].rawValue, barcodes[0].format);
+          event.target.value = '';
+          return;
+        }
+      } catch(e) {}
+    }
+    // Fall back to jsQR
+    var c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    var cx = c.getContext('2d');
+    cx.drawImage(img, 0, 0);
+    var id = cx.getImageData(0, 0, c.width, c.height);
+    var code = jsQR(id.data, id.width, id.height, {inversionAttempts: 'attemptBoth'});
+    if (code && code.data) {
+      onFound(code.data);
+    } else {
+      showToast('No QR code or barcode found in image');
+    }
+    event.target.value = '';
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+// ─── On found ────────────────────────────────────────────────────
+function onFound(data, format) {
+  if (cooldown) return;
+  cooldown = true;
+  setTimeout(function() { cooldown = false; }, 2000);
+
+  // Flash effect
+  foundFlash.classList.remove('active');
+  void foundFlash.offsetWidth;
+  foundFlash.classList.add('active');
+  scanLine.classList.add('paused');
+  setTimeout(function() { scanLine.classList.remove('paused'); }, 500);
+
+  if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+
+  var type = classify(data, format);
+  scanCount++;
+  scanCountEl.textContent = scanCount + ' scanned';
+
+  resultCard.classList.add('has-result');
+  resultText.classList.remove('empty');
+  resultText.textContent = data;
+  resultType.className = 'result-type-badge ' + type.id;
+  resultType.textContent = type.label;
+  actionRow.style.display = 'flex';
+
+  if (format) {
+    resultFormat.textContent = formatLabel(format);
+    resultFormat.style.display = 'inline';
+  } else {
+    resultFormat.textContent = 'QR CODE';
+    resultFormat.style.display = 'inline';
+  }
+
+  openBtn.textContent =
+    type.id === 'url'   ? '\u2197 Open URL' :
+    type.id === 'email' ? '\u2709 Email'    :
+    type.id === 'phone' ? '\uD83D\uDCDE Call'     :
+    type.id === 'sms'   ? '\uD83D\uDCAC SMS'      :
+    type.id === 'wifi'  ? '\uD83D\uDCCB Details'  : '\u2315 Copy';
+
+  setStatus('found', 'Found \u2714 ' + (format ? formatLabel(format) : 'QR') + ' \u00B7 ' + type.label);
+  setTimeout(function() {
+    setStatus('active', 'Scanning' + (useNative ? ' (native \u00B7 all formats)' : ' (jsQR \u00B7 QR only)') + '...');
+  }, 1800);
+
+  addToHistory(data, type, format);
+}
+
+// ─── Classify ────────────────────────────────────────────────────
+function classify(data, format) {
+  if (/^https?:\/\//i.test(data))  return {id:'url',   label:'URL'};
+  if (/^mailto:/i.test(data))       return {id:'email', label:'EMAIL'};
+  if (/^tel:/i.test(data))          return {id:'phone', label:'PHONE'};
+  if (/^smsto?:/i.test(data))       return {id:'sms',   label:'SMS'};
+  if (/^WIFI:/i.test(data))         return {id:'wifi',  label:'WIFI'};
+  if (format && format !== 'qr_code') {
+    if (/^[0-9]{12,13}$/.test(data)) return {id:'text', label:'PRODUCT'};
+    if (/^[0-9]{8}$/.test(data))     return {id:'text', label:'PRODUCT'};
+    if (/^[0-9]+$/.test(data))       return {id:'text', label:'NUMERIC'};
+    return {id:'text', label:'BARCODE'};
+  }
+  return {id:'text', label:'TEXT'};
+}
+
+// ─── Format label ────────────────────────────────────────────────
+function formatLabel(fmt) {
+  var labels = {
+    'aztec':'AZTEC','codabar':'CODABAR','code_128':'CODE 128',
+    'code_39':'CODE 39','code_93':'CODE 93','data_matrix':'DATA MATRIX',
+    'ean_13':'EAN-13','ean_8':'EAN-8','itf':'ITF','pdf417':'PDF417',
+    'qr_code':'QR CODE','upc_a':'UPC-A','upc_e':'UPC-E'
+  };
+  return labels[fmt] || fmt.toUpperCase().replace(/_/g, ' ');
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────
+function setStatus(state, msg) {
+  statusDot.className = 'status-dot ' + state;
+  statusText.textContent = msg;
+}
+
+function copyResult() {
+  var text = resultText.textContent;
+  if (!text || resultText.classList.contains('empty')) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { showToast('Copied!'); }).catch(function() { fallbackCopy(text); });
+  } else { fallbackCopy(text); }
+}
+
+function fallbackCopy(text) {
+  var el = document.createElement('textarea');
+  el.value = text; document.body.appendChild(el); el.select();
+  document.execCommand('copy'); document.body.removeChild(el);
+  showToast('Copied!');
+}
+
+function openResult() {
+  var text = resultText.textContent;
+  if (!text || resultText.classList.contains('empty')) return;
+  var type = classify(text);
+  if (['url','email','phone','sms'].indexOf(type.id) !== -1) window.open(text, '_blank');
+  else copyResult();
+}
+
+function addToHistory(data, type, format) {
+  var icons = {url:'\uD83D\uDD17',email:'\u2709\uFE0F',phone:'\uD83D\uDCDE',sms:'\uD83D\uDCAC',wifi:'\uD83D\uDCF6',text:'\uD83D\uDCC4'};
+  historyItems.unshift({data:data, type:type, format:format, time:new Date()});
+  if (historyItems.length > 10) historyItems.pop();
+  historySection.style.display = 'flex';
+  historyList.innerHTML = '';
+  historyItems.forEach(function(item) {
+    var el = document.createElement('div');
+    el.className = 'history-item';
+    var ts = item.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    var fmtStr = item.format ? ' &middot; ' + formatLabel(item.format) : '';
+    el.innerHTML =
+      '<div class="history-icon">' + (icons[item.type.id]||'\uD83D\uDCC4') + '</div>' +
+      '<div class="history-content">' +
+        '<div class="history-text">' + escHtml(item.data) + '</div>' +
+        '<div class="history-time">' + item.type.label + fmtStr + ' &middot; ' + ts + '</div>' +
+      '</div>';
+    el.onclick = function() {
+      resultText.textContent = item.data;
+      resultText.classList.remove('empty');
+      resultType.className = 'result-type-badge ' + item.type.id;
+      resultType.textContent = item.type.label;
+      if (item.format) {
+        resultFormat.textContent = formatLabel(item.format);
+        resultFormat.style.display = 'inline';
+      } else {
+        resultFormat.textContent = 'QR CODE';
+        resultFormat.style.display = 'inline';
+      }
+      resultCard.classList.add('has-result');
+      actionRow.style.display = 'flex';
+      window.scrollTo({top:0, behavior:'smooth'});
+    };
+    historyList.appendChild(el);
+  });
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function() { toast.classList.remove('show'); }, 2000);
+}
+</script>
+</body>
+</html>
+<!-- Developed by: ShadowAISolutions -->

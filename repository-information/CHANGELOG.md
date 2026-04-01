@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v08.32r] — 2026-04-01 02:41:11 PM EST
+
+> **Prompt:** "copy qr-scanner5.html into a new hmtl file qr-scanner6.html, then make the scanner work with barcodes also"
+
+### Added
+- Created `live-site-pages/qr-scanner6.html` — copied from qr-scanner5.html with barcode scanning support
+- Expanded native BarcodeDetector to support all 13 barcode formats (EAN-13, EAN-8, UPC-A, UPC-E, Code 128, Code 39, Code 93, Codabar, ITF, Aztec, Data Matrix, PDF417, QR Code)
+- Added format badge (purple) in result card showing detected barcode format (e.g. EAN-13, CODE 128, QR CODE)
+- Added barcode-specific data classification (PRODUCT, NUMERIC, BARCODE types) in `classify()` function
+- Added `formatLabel()` helper for human-readable barcode format names
+- Added capability notice when JS fallback is active (QR codes only warning)
+- Format information stored and displayed in scan history items
+- Added qr-scanner5.html and qr-scanner6.html to README.md structure tree
+
+### Changed
+- Engine badge shows "NATIVE · QR+BARCODE" or "JS · QR ONLY" to reflect capability
+- Status bar shows "(native · all formats)" or "(jsQR · QR only)" during scanning
+- BarcodeDetector initialization intersects desired formats with `getSupportedFormats()` for device compatibility
 
 ## [v08.31r] — 2026-03-31 12:37:43 PM EST
 
