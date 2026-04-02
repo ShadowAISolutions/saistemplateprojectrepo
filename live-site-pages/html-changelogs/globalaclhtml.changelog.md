@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 66/50`
+`Sections: 67/50`
 
 ## [Unreleased]
+
+## [v01.67w] — 2026-04-02 09:29:22 AM EST — v08.39r
+
+### Changed
+- Admin controls now appear in a compact dropdown menu instead of a long button bar
 
 ## [v01.66w] — 2026-04-02 09:20:12 AM EST — v08.38r
 

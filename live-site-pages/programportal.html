@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.74w">
+  <meta name="build-version" content="v01.75w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Program Portal</title>
 <!-- ══════════════ -->
@@ -327,10 +327,19 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
-    #admin-sessions-btn {
-      background: none; border: none; color: #90caf9; cursor: pointer;
-      font: 11px/1 monospace; padding: 0 4px; display: none;
+    #admin-menu { position: relative; }
+    #admin-dropdown {
+      display: none; position: absolute; top: 100%; right: 0; margin-top: 4px;
+      background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px; padding: 4px 0; min-width: 140px; z-index: 10011;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     }
+    #admin-dropdown button {
+      display: block; width: 100%; text-align: left; padding: 6px 12px;
+      background: none; border: none; color: #90caf9; cursor: pointer;
+      font: 11px/1.4 monospace; white-space: nowrap;
+    }
+    #admin-dropdown button:hover { background: rgba(144,202,249,0.1); color: #fff; }
     #admin-sessions-btn:hover { color: #42a5f5; }
     #admin-sessions-panel {
       display: none; position: fixed; top: 40px; right: 8px; z-index: 10010;
@@ -515,24 +524,28 @@
 
   <div id="user-pill">
     <span id="user-email-display"></span>
-    <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;display:none;"></span>
-    <button id="admin-sessions-btn" title="Manage active sessions" data-requires-role="admin">Sessions</button>
-    <!-- ── HIPAA COMPLIANCE START ── -->
-    <button id="disclosure-accounting-btn" class="phase-a-btn" title="View disclosure history" data-requires-role="admin" data-requires-permission="read">Disclosures</button>
-    <button id="data-export-btn" class="phase-a-btn" title="Download your data" data-requires-role="admin" data-requires-permission="export">My Data</button>
-    <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-role="admin" data-requires-permission="amend">Correction</button>
-    <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-role="admin" data-requires-permission="admin">Amendments</button>
-    <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-role="admin" data-requires-permission="amend">Disagree</button>
-    <button id="extension-workflow-btn" class="phase-a-btn" title="Grant 30-day extension" data-requires-role="admin" data-requires-permission="admin">Extensions</button>
-    <button id="denial-notice-btn" class="phase-a-btn" title="Generate formal denial notice" data-requires-role="admin" data-requires-permission="admin">Denial Notice</button>
-    <button id="ehr-disclosures-btn" class="phase-a-btn" title="HITECH EHR disclosure accounting" data-requires-role="admin" data-requires-permission="read">EHR Disclosures</button>
-    <button id="breach-dashboard-btn" class="phase-a-btn" title="Breach detection & logging" data-requires-role="admin" data-requires-permission="admin">Breach Log</button>
-    <button id="representative-mgmt-btn" class="phase-a-btn" title="Manage personal representatives" data-requires-role="admin" data-requires-permission="admin">Representatives</button>
-    <button id="legal-holds-btn" class="phase-a-btn" title="Manage litigation holds" data-requires-role="admin" data-requires-permission="admin">Legal Holds</button>
-    <button id="compliance-audit-btn" class="phase-a-btn" title="Retention compliance audit" data-requires-role="admin" data-requires-permission="admin">Compliance Audit</button>
-    <button id="archive-integrity-btn" class="phase-a-btn" title="Verify archive integrity" data-requires-role="admin" data-requires-permission="admin">Archive Integrity</button>
-    <button id="retention-policy-btn" class="phase-a-btn" title="Retention policy documentation" data-requires-role="admin" data-requires-permission="admin">Retention Policy</button>
-    <!-- ── HIPAA COMPLIANCE END ── -->
+    <div id="admin-menu" data-requires-role="admin" style="position:relative;display:none;">
+      <span id="user-role-badge" style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:3px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#90caf9;cursor:pointer;">ADMIN &#x25BE;</span>
+      <div id="admin-dropdown">
+        <button id="admin-sessions-btn" title="Manage active sessions">Sessions</button>
+        <!-- ── HIPAA COMPLIANCE START ── -->
+        <button id="disclosure-accounting-btn" class="phase-a-btn" title="View disclosure history" data-requires-permission="read">Disclosures</button>
+        <button id="data-export-btn" class="phase-a-btn" title="Download your data" data-requires-permission="export">My Data</button>
+        <button id="amendment-request-btn" class="phase-a-btn" title="Request a correction" data-requires-permission="amend">Correction</button>
+        <button id="amendment-review-btn" class="phase-a-btn" title="Review amendments" data-requires-permission="admin">Amendments</button>
+        <button id="disagreement-btn" class="phase-a-btn" title="File a disagreement statement" data-requires-permission="amend">Disagree</button>
+        <button id="extension-workflow-btn" class="phase-a-btn" title="Grant 30-day extension" data-requires-permission="admin">Extensions</button>
+        <button id="denial-notice-btn" class="phase-a-btn" title="Generate formal denial notice" data-requires-permission="admin">Denial Notice</button>
+        <button id="ehr-disclosures-btn" class="phase-a-btn" title="HITECH EHR disclosure accounting" data-requires-permission="read">EHR Disclosures</button>
+        <button id="breach-dashboard-btn" class="phase-a-btn" title="Breach detection & logging" data-requires-permission="admin">Breach Log</button>
+        <button id="representative-mgmt-btn" class="phase-a-btn" title="Manage personal representatives" data-requires-permission="admin">Representatives</button>
+        <button id="legal-holds-btn" class="phase-a-btn" title="Manage litigation holds" data-requires-permission="admin">Legal Holds</button>
+        <button id="compliance-audit-btn" class="phase-a-btn" title="Retention compliance audit" data-requires-permission="admin">Compliance Audit</button>
+        <button id="archive-integrity-btn" class="phase-a-btn" title="Verify archive integrity" data-requires-permission="admin">Archive Integrity</button>
+        <button id="retention-policy-btn" class="phase-a-btn" title="Retention policy documentation" data-requires-permission="admin">Retention Policy</button>
+        <!-- ── HIPAA COMPLIANCE END ── -->
+      </div>
+    </div>
     <button id="sign-out-btn" title="Sign out of this page only">Sign Out</button>
     <span class="sign-out-sep">|</span>
     <button id="sign-out-all-btn" title="Sign out of all connected pages">Sign Out All</button>
@@ -2986,7 +2999,7 @@
       // Show role badge from parameter or stored session
       var displayRole = role || getStorage().getItem(ROLE_KEY) || '';
       if (displayRole && roleBadge) {
-        roleBadge.textContent = displayRole;
+        roleBadge.textContent = displayRole.toUpperCase() + ' \u25BE';
         roleBadge.style.display = 'inline';
       }
 
@@ -4013,6 +4026,19 @@
     })();
 
     // ── HIPAA COMPLIANCE START ──
+
+    // =============================================
+    // HIPAA — Admin Dropdown Toggle
+    // =============================================
+    document.getElementById('user-role-badge').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var dd = document.getElementById('admin-dropdown');
+      dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    });
+    document.addEventListener('click', function() {
+      var dd = document.getElementById('admin-dropdown');
+      if (dd) dd.style.display = 'none';
+    });
 
     // =============================================
     // HIPAA — Phase A Iframe Communication

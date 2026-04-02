@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v08.39r] — 2026-04-02 09:29:22 AM EST
+
+> **Prompt:** "the panel should be the same format as the testauth1, under dropdown, for all of them"
+
+### Changed
+- Restructured HIPAA buttons from flat inline buttons to dropdown menu matching testauth1's pattern — buttons now appear under an "ADMIN" badge dropdown (`#admin-menu` > `#admin-dropdown`) instead of cluttering the top bar
+- Applied dropdown structure to auth template, programportal, and globalacl
+- Added `#admin-menu`, `#admin-dropdown` CSS and dropdown toggle JS to all three files
+- Role badge now shows uppercase role name with dropdown arrow (e.g. "ADMIN ▾")
+
+#### `programportal.html` — v01.75w
+
+##### Changed
+- Admin controls now appear in a compact dropdown menu instead of a long button bar
+
+#### `globalacl.html` — v01.67w
+
+##### Changed
+- Admin controls now appear in a compact dropdown menu instead of a long button bar
 
 ## [v08.38r] — 2026-04-02 09:20:12 AM EST
 
