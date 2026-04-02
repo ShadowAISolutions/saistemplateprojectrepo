@@ -206,24 +206,36 @@
     @keyframes auth-pulse { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
 
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
-    .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
     .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; /* ○ */ }
     .signin-checklist li.stage-active { color: #4285f4; font-weight: 500; }
     .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; /* ● */ }
     .signin-checklist li.stage-done { color: #34a853; }
     .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; /* ✓ */ }
-    .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
+    .signin-checklist .stage-time-total { font-style: italic; color: #aaa; }
+    .signin-checklist .sub-steps {
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
+    }
+    .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
+    .signin-checklist .sub-steps .stage-time { font-size: 10px; }
 
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
-    .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
+    .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
     .signout-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
     .signout-checklist li.stage-active { color: #4285f4; font-weight: 500; }
     .signout-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
     .signout-checklist li.stage-done { color: #34a853; }
     .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
-    .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+    .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
+    .signout-checklist .stage-time-total { font-style: italic; color: #aaa; }
+    .signout-checklist .sub-steps {
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
+    }
+    .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
+    .signout-checklist .sub-steps .stage-time { font-size: 10px; }
 
     .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
@@ -486,9 +498,20 @@
       <div class="auth-spinner"></div>
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
-        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server</li>
+        <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server
+          <ul class="sub-steps" id="sub-steps-verifying">
+            <li id="sub-connecting" class="stage-pending"><span class="chk-icon"></span>Connecting to server</li>
+            <li id="sub-sending" class="stage-pending"><span class="chk-icon"></span>Sending credentials</li>
+            <li id="sub-processing" class="stage-pending"><span class="chk-icon"></span>Server authenticating</li>
+          </ul>
+        </li>
         <li id="stage-creating" class="stage-pending"><span class="chk-icon"></span>Setting up your secure session</li>
-        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading the application</li>
+        <li id="stage-loading" class="stage-pending"><span class="chk-icon"></span>Loading the application
+          <ul class="sub-steps" id="sub-steps-loading">
+            <li id="sub-downloading" class="stage-pending"><span class="chk-icon"></span>Preparing interface</li>
+            <li id="sub-starting" class="stage-pending"><span class="chk-icon"></span>Initializing</li>
+          </ul>
+        </li>
         <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
       </ul>
     </div>
@@ -501,7 +524,12 @@
       <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
       <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
       <li id="so-stage-apps" class="stage-pending"><span class="chk-icon"></span>Signing out connected apps</li>
-      <li id="so-stage-server" class="stage-pending"><span class="chk-icon"></span>Invalidating server session</li>
+      <li id="so-stage-server" class="stage-pending"><span class="chk-icon"></span>Invalidating server session
+          <ul class="sub-steps" id="sub-steps-so-server">
+            <li id="sub-so-connecting" class="stage-pending"><span class="chk-icon"></span>Connecting to server</li>
+            <li id="sub-so-sending" class="stage-pending"><span class="chk-icon"></span>Sending sign-out request</li>
+          </ul>
+        </li>
       <li id="so-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Waiting for server confirmation</li>
     </ul>
   </div>
@@ -626,6 +654,9 @@
       <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Under HIPAA §164.526, you have the right to request corrections to your health records.</p>
       <label>Record to correct:
         <input type="text" id="amend-record-id" placeholder="Record ID or description" />
+      </label>
+      <label>Current content you believe is incorrect:
+        <textarea id="amend-current" rows="2" placeholder="The existing content that needs correction"></textarea>
       </label>
       <label>Proposed correction:
         <textarea id="amend-proposed" rows="3" placeholder="Your proposed correction"></textarea>
@@ -4458,13 +4489,14 @@
     document.getElementById('amendment-close-btn').addEventListener('click', _closeAmendmentPanel);
     document.getElementById('amend-submit-btn').addEventListener('click', function() {
       var recordId = document.getElementById('amend-record-id').value.trim();
+      var currentContent = document.getElementById('amend-current').value.trim();
       var proposed = document.getElementById('amend-proposed').value.trim();
       var reason = document.getElementById('amend-reason').value.trim();
       if (!recordId || !proposed) {
         document.getElementById('amend-status').textContent = 'Record ID and proposed correction are required.';
         return;
       }
-      _sendPhaseA({ type: 'phase-a-request-amendment', token: _getToken(), recordId: recordId, proposed: proposed, reason: reason });
+      _sendPhaseA({ type: 'phase-a-request-amendment', token: _getToken(), recordId: recordId, currentContent: currentContent, proposed: proposed, reason: reason });
       document.getElementById('amend-status').textContent = 'Submitting...';
     });
 

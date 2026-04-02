@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v08.49r] — 2026-04-02 12:01:37 PM EST
+
+> **Prompt:** "yes add them"
+
+### Added
+- Sub-step progress tracking CSS (`.sub-steps`, `.stage-time-total`, flex-wrap layout) added to auth template — programportal and globalacl already had the HTML sub-steps from earlier propagation
+- Amendment "current content" field (`amend-current`) added to amendment request panel in auth template, programportal, and globalacl — allows users to specify what content they believe is incorrect (matching testauth1)
+- `currentContent` parameter now sent with amendment requests via `_sendPhaseA`
+
+#### `programportal.html` — v01.81w
+
+##### Added
+- Amendment panel now includes "current content" field for specifying incorrect content
+
+#### `globalacl.html` — v01.73w
+
+##### Added
+- Amendment panel now includes "current content" field for specifying incorrect content
 
 ## [v08.48r] — 2026-04-02 11:47:25 AM EST
 
