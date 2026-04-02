@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 68/50`
+`Sections: 69/50`
 
 ## [Unreleased]
+
+## [v01.69w] — 2026-04-02 10:06:03 AM EST — v08.41r
+
+### Added
+- HTML and GAS Layer Toggles — quickly hide or show each layer for a clean view
 
 ## [v01.68w] — 2026-04-02 09:54:42 AM EST — v08.40r
 

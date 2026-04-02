@@ -3,9 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v08.41r] — 2026-04-02 10:06:03 AM EST
+
+> **Prompt:** "the HTML Layer Toggle and GAS Layer Toggle should be on all of the projects including the template"
+
+### Added
+- HTML Layer Toggle button — hides/shows all HTML overlay UI elements (user pill, version indicator, GAS pill, timers, warnings, SSO indicator) for clean GAS-only view
+- GAS Layer Toggle button — hides/shows the GAS iframe for clean HTML-only view
+- Both toggles positioned at bottom-left (HTML at 70px, GAS at 120px) with subtle dark styling and blue border highlight when layer is hidden
+- Added to auth template as template-level features — all future auth pages inherit them automatically
+- CSS classes `.html-layer-hidden` and `.gas-layer-hidden` added to AUTH CSS section
+
+### Changed
+- Moved programportal's existing HTML layer toggle from PROJECT section to template-level (removed duplicate)
+
+#### `programportal.html` — v01.77w
+
+##### Added
+- GAS Layer Toggle button for hiding/showing the GAS iframe
+
+##### Changed
+- HTML Layer Toggle moved from project-specific to template-level code
+
+#### `globalacl.html` — v01.69w
+
+##### Added
+- HTML Layer Toggle and GAS Layer Toggle buttons
 
 ## [v08.40r] — 2026-04-02 09:54:42 AM EST
 

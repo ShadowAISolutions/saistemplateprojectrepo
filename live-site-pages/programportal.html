@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.76w">
+  <meta name="build-version" content="v01.77w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Program Portal</title>
 <!-- ══════════════ -->
@@ -415,9 +415,11 @@
     #phase-a-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
     /* ── HIPAA COMPLIANCE END ── */
 /* ══════════════ */
+    .html-layer-hidden { display: none !important; }
+    .gas-layer-hidden { visibility: hidden !important; width: 0 !important; height: 0 !important; }
+/* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
-    .html-layer-hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -764,6 +766,10 @@
   <div id="retention-policy-panel" class="phase-a-panel"><div class="pa-header"><span class="pa-title">Retention Policy Documentation</span><span><button id="rp-generate-btn" class="pa-action">Generate</button><button id="rp-close-btn" class="pa-close">&times;</button></span></div><div class="pa-body"><div id="rp-result"></div><div id="rp-empty" class="pa-empty">Click "Generate" to create a formal retention policy document.</div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><span style="color:#aaa;font-size:11px;font-weight:bold;">Export Policy</span><div class="pa-format-picker"><label><input type="radio" name="rp-export-format" value="text" checked /> Text</label><label><input type="radio" name="rp-export-format" value="json" /> JSON</label></div><button id="rp-export-btn" class="pa-action">Export</button><div id="rp-export-result"></div></div></div></div>
   <!-- ── HIPAA COMPLIANCE END ── -->
 
+  <!-- Layer visibility toggles -->
+  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
+  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:120px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
     <div class="timer-body" id="timer-body">
@@ -779,8 +785,6 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- HTML layer visibility toggle -->
-  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -5049,23 +5053,19 @@
 
     // ── HIPAA COMPLIANCE END ──
 
-// ══════════════
-// AUTH END
-// ══════════════
-
-// ══════════════
-// PROJECT START — Add your project-specific JavaScript here
-// ══════════════
-
-    // HTML layer visibility toggle — hides/shows all HTML-layer visual elements
+    // =============================================
+    // Layer Visibility Toggles
+    // =============================================
     (function() {
       var _htmlLayerVisible = true;
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
-        'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner', 'absolute-warning-banner'];
+        'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
+        'absolute-warning-banner', 'html-layer-toggle', 'gas-layer-toggle'];
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
         var btn = document.getElementById('html-layer-toggle');
         _htmlLayerEls.forEach(function(id) {
+          if (id === 'html-layer-toggle') return;
           var el = document.getElementById(id);
           if (!el) return;
           if (!_htmlLayerVisible) {
@@ -5080,6 +5080,35 @@
         }
       };
     })();
+
+    (function() {
+      var _gasLayerVisible = true;
+      window._toggleGasLayer = function() {
+        _gasLayerVisible = !_gasLayerVisible;
+        var btn = document.getElementById('gas-layer-toggle');
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp) {
+          if (!_gasLayerVisible) {
+            gasApp.classList.add('gas-layer-hidden');
+          } else {
+            gasApp.classList.remove('gas-layer-hidden');
+          }
+        }
+        if (btn) {
+          btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \u25CB';
+          btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+        }
+      };
+    })();
+
+// ══════════════
+// AUTH END
+// ══════════════
+
+// ══════════════
+// PROJECT START — Add your project-specific JavaScript here
+// ══════════════
+
 
 // PROJECT END
 // ══════════════

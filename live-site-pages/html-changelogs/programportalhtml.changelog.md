@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 76/50`
+`Sections: 77/50`
 
 ## [Unreleased]
+
+## [v01.77w] — 2026-04-02 10:06:03 AM EST — v08.41r
+
+### Added
+- GAS Layer Toggle — quickly hide or show the application layer for a clean view of the page controls
 
 ## [v01.76w] — 2026-04-02 09:54:42 AM EST — v08.40r
 

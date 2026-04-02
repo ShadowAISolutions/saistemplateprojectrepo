@@ -433,6 +433,8 @@
     }
     #phase-a-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
     /* ── HIPAA COMPLIANCE END ── */
+    .html-layer-hidden { display: none !important; }
+    .gas-layer-hidden { visibility: hidden !important; width: 0 !important; height: 0 !important; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -966,6 +968,10 @@
     </div>
   </div>
   <!-- ── HIPAA COMPLIANCE END ── -->
+
+  <!-- Layer visibility toggles -->
+  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
+  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:120px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -5051,6 +5057,54 @@
     });
 
     // ── HIPAA COMPLIANCE END ──
+
+    // =============================================
+    // Layer Visibility Toggles
+    // =============================================
+    (function() {
+      var _htmlLayerVisible = true;
+      var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
+        'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
+        'absolute-warning-banner', 'html-layer-toggle', 'gas-layer-toggle'];
+      window._toggleHtmlLayer = function() {
+        _htmlLayerVisible = !_htmlLayerVisible;
+        var btn = document.getElementById('html-layer-toggle');
+        _htmlLayerEls.forEach(function(id) {
+          if (id === 'html-layer-toggle') return; // don't hide the toggle itself
+          var el = document.getElementById(id);
+          if (!el) return;
+          if (!_htmlLayerVisible) {
+            el.classList.add('html-layer-hidden');
+          } else {
+            el.classList.remove('html-layer-hidden');
+          }
+        });
+        if (btn) {
+          btn.textContent = _htmlLayerVisible ? 'HTML' : 'HTML \u25CB';
+          btn.style.borderColor = _htmlLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+        }
+      };
+    })();
+
+    (function() {
+      var _gasLayerVisible = true;
+      window._toggleGasLayer = function() {
+        _gasLayerVisible = !_gasLayerVisible;
+        var btn = document.getElementById('gas-layer-toggle');
+        var gasApp = document.getElementById('gas-app');
+        if (gasApp) {
+          if (!_gasLayerVisible) {
+            gasApp.classList.add('gas-layer-hidden');
+          } else {
+            gasApp.classList.remove('gas-layer-hidden');
+          }
+        }
+        if (btn) {
+          btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \u25CB';
+          btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+        }
+      };
+    })();
 
 // ══════════════
 // AUTH END
