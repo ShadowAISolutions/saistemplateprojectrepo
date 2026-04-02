@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v08.47r] — 2026-04-02 11:43:20 AM EST
+
+> **Prompt:** "yes proceed. Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally"
+
+### Added
+- Complete HIPAA compliance backend added to GAS auth template (`gas-minimal-auth-template-code.js.txt`) — 60+ functions extracted from testauth1.gs covering all three compliance phases:
+  - **Configuration**: `BREACH_ALERT_CONFIG`, `HIPAA_RETENTION_CONFIG`, `LEGAL_HOLD_CONFIG`, `INTEGRITY_CONFIG`, `REPRESENTATIVE_CONFIG`, `HIPAA_DEADLINES`
+  - **Shared Utilities**: `generateRequestId`, `formatHipaaTimestamp`, `validateIndividualAccess`, `getOrCreateSheet`, `wrapPhaseAOperation`
+  - **Phase A — Individual Rights**: Disclosure accounting (§164.528), right of access (§164.524), right to amendment (§164.526), 30-day extensions, formal denial notices
+  - **Phase B — Organizational Compliance**: Personal representatives, retention enforcement, breach detection & alerting, breach logging, amendment notifications, grouped disclosure accounting, summary PHI export
+  - **Phase C — Data Governance**: Legal hold management (query, place, release), retention policy documentation, archive integrity verification (SHA-256 checksums), retention compliance auditing
+  - **doGet Route**: `action='phaseA'` — postMessage listener page that routes all HIPAA panel requests to their corresponding server-side functions
+- All future GAS projects created from the auth template will inherit the complete HIPAA backend
 
 ## [v08.46r] — 2026-04-02 11:18:15 AM EST
 
