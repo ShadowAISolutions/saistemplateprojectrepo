@@ -3,7 +3,19 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 27/50`
+`Sections: 29/50`
+
+## [Unreleased]
+
+## [v01.29g] — 2026-04-02 10:39:56 AM EST — v08.45r
+
+### Added
+- Version number now displayed in the bottom-left corner of the application
+
+## [v01.28g] — 2026-04-02 10:28:07 AM EST — v08.43r
+
+### Added
+- Quick toggle to hide or show the application interface
 
 ## [v01.27g] — 2026-03-29 02:09:05 AM EST — v07.71r
 

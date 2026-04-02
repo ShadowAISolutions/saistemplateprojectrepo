@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v08.45r] — 2026-04-02 10:39:56 AM EST
+
+> **Prompt:** "on the gas layer make all the pages have the gas version in the bottom left corner, like it is in testauth1, including the templates (im looking particularly at the globalacl which doesnt have it yet)"
+
+### Added
+- GAS version display (`<h2 id="version">`) with fixed bottom-left positioning added to `globalacl.gs` — matching testauth1's pattern. All other `.gs` files and all 4 GAS templates already had it
+
+#### `globalacl.gs` — v01.29g
+
+##### Added
+- Version number now displayed in the bottom-left corner of the application
 
 ## [v08.44r] — 2026-04-02 10:35:03 AM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.28g";
+var VERSION = "v01.29g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3181,9 +3181,11 @@ function doGet(e) {
         .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ccc; border-top-color: #1565c0; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .count-badge { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
       </style>
     </head>
     <body>
+      <h2 id="version">${escapeHtml(VERSION)}</h2>
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
       <div id="acl-app">
         <div class="acl-header">
@@ -4056,7 +4058,7 @@ function doGet(e) {
         // GAS layer visibility toggle
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['acl-app'];
+          var _gasLayerEls = ['acl-app', 'version'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');
