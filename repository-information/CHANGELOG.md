@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v08.52r] — 2026-04-02 01:20:10 PM EST
+
+> **Prompt:** "do an analysis to see if we were to use the gas-project-creator and the corresponding setup-gas-project.sh would the outcome be identical on the html and gas to the testauth1 (aside from project specific items). if not fix everything so that is the case for all projects moving forward"
+
+### Fixed
+- Added missing `var SHEET_NAME` and `var SOUND_FILE_ID` config variables to `gas-minimal-auth-template-code.js.txt` — the only template variant missing these, causing `setup-gas-project.sh` and `gas-project-creator.html` to silently fail when substituting values for new auth projects
+- Fixed inconsistent `SHEET_NAME` default in `gas-test-auth-template-code.js.txt` from `"Sheet1"` to `"Live_Sheet"` to match all other templates and the setup script's default
+- Propagated missing `SHEET_NAME` and `SOUND_FILE_ID` vars to existing auth GAS files that were created from the buggy template: `globalacl.gs`, `programportal.gs`, `testauth1.gs`
+- Normalized `SHEET_NAME` spacing in `testauth1.gs` to match template format (5-space alignment)
+
+#### `globalacl.gs` — v01.32g
+
+##### Fixed
+- Added missing `SHEET_NAME` and `SOUND_FILE_ID` config variables (undefined `SHEET_NAME` was referenced at line 4775)
+
+#### `programportal.gs` — v01.39g
+
+##### Fixed
+- Added missing `SHEET_NAME` and `SOUND_FILE_ID` config variables (undefined `SHEET_NAME` was referenced at line 4160)
+
+#### `testauth1.gs` — v02.34g
+
+##### Fixed
+- Added missing `SOUND_FILE_ID` config variable and normalized `SHEET_NAME` spacing to match template format
 
 ## [v08.51r] — 2026-04-02 12:37:36 PM EST
 

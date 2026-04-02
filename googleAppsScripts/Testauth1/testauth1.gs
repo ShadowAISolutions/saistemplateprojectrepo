@@ -1,4 +1,4 @@
-var VERSION = "v02.33g";
+var VERSION = "v02.34g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -24,7 +24,8 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 // ══════════════
 // Spreadsheet ID for project data (the GAS app reads/writes user data here).
 var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
-var SHEET_NAME = "Live_Sheet";
+var SHEET_NAME     = "Live_Sheet";
+var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
 
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
 // Two tabs:
