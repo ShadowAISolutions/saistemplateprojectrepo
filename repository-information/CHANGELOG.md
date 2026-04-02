@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v08.44r] — 2026-04-02 10:35:03 AM EST
+
+> **Prompt:** "the html toggle can be visible on the sign in page. please look at how the testauth1 is set up, that is the most accurate project of how we want it set up so check other features to make sure they match it"
+
+### Fixed
+- HTML Layer Toggle now always visible (matching testauth1) — reverted `display:none` and showApp/showAuthWall gating added in v08.43r
+- Admin sessions button now closes the dropdown menu before opening the sessions panel (matching testauth1 behavior)
+- Added `admin-sessions-panel` to `_htmlLayerEls` array — HTML toggle now hides the sessions panel too (matching testauth1)
+- Reverted `roleBadge.textContent` to match testauth1 — role badge text set by `displayRole` directly (CSS `text-transform:uppercase` handles capitalization)
+
+#### `programportal.html` — v01.80w
+
+##### Fixed
+- Admin dropdown now closes when clicking Sessions; HTML toggle behavior matches testauth1
+
+#### `globalacl.html` — v01.72w
+
+##### Fixed
+- Admin dropdown now closes when clicking Sessions; HTML toggle behavior matches testauth1
 
 ## [v08.43r] — 2026-04-02 10:28:07 AM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 71/50`
+`Sections: 72/50`
 
 ## [Unreleased]
+
+## [v01.72w] — 2026-04-02 10:35:03 AM EST — v08.44r
+
+### Fixed
+- HTML toggle now always visible; admin dropdown closes properly when selecting options
 
 ## [v01.71w] — 2026-04-02 10:28:07 AM EST — v08.43r
 

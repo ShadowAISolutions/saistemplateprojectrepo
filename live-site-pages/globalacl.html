@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.71w">
+  <meta name="build-version" content="v01.72w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -847,7 +847,7 @@
   <!-- ── HIPAA COMPLIANCE END ── -->
 
   <!-- Layer visibility toggles -->
-  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="display:none;position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
+  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -2751,9 +2751,7 @@
       if (phaseAIframe) phaseAIframe.src = 'about:blank';
       _phaseAIframeReady = false; _phaseAIframeSource = null;
       // ── HIPAA COMPLIANCE END ──
-      // Hide HTML layer toggle
-      var htmlToggle = document.getElementById('html-layer-toggle');
-      if (htmlToggle) htmlToggle.style.display = 'none';
+
       var gclOverlay = document.getElementById('gcl-overlay');
       if (gclOverlay) gclOverlay.style.display = 'none';
       var tabWall = document.getElementById('tab-takeover-wall');
@@ -3216,14 +3214,12 @@
         emailDisplay.textContent = email;
         userPill.style.display = 'flex';
       }
-      // Show HTML layer toggle after auth
-      var htmlToggle = document.getElementById('html-layer-toggle');
-      if (htmlToggle) htmlToggle.style.display = '';
+
 
       // Show role badge from parameter or stored session
       var displayRole = role || getStorage().getItem(ROLE_KEY) || '';
       if (displayRole && roleBadge) {
-        roleBadge.textContent = displayRole.toUpperCase() + ' \u25BE';
+        roleBadge.textContent = displayRole;
         roleBadge.style.display = 'inline';
       }
 
@@ -3988,6 +3984,7 @@
     }
 
     document.getElementById('admin-sessions-btn').addEventListener('click', function() {
+      document.getElementById('admin-dropdown').style.display = 'none';
       var panel = document.getElementById('admin-sessions-panel');
       if (_adminPanelOpen) {
         panel.style.display = 'none';
@@ -5291,7 +5288,7 @@
     (function() {
       var _htmlLayerVisible = true;
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
-        'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
+        'sso-indicator', 'admin-sessions-panel', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
         'absolute-warning-banner'];
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
