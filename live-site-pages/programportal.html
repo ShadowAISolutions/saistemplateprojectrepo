@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com https://www.slant.co; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.77w">
+  <meta name="build-version" content="v01.78w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Program Portal</title>
 <!-- ══════════════ -->
@@ -5060,12 +5060,11 @@
       var _htmlLayerVisible = true;
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
         'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
-        'absolute-warning-banner', 'html-layer-toggle', 'gas-layer-toggle'];
+        'absolute-warning-banner'];
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
         var btn = document.getElementById('html-layer-toggle');
         _htmlLayerEls.forEach(function(id) {
-          if (id === 'html-layer-toggle') return;
           var el = document.getElementById(id);
           if (!el) return;
           if (!_htmlLayerVisible) {

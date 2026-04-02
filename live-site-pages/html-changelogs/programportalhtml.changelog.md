@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 77/50`
+`Sections: 78/50`
 
 ## [Unreleased]
+
+## [v01.78w] — 2026-04-02 10:11:41 AM EST — v08.42r
+
+### Fixed
+- Layer toggle buttons now stay visible when toggling HTML or GAS layers on and off
 
 ## [v01.77w] — 2026-04-02 10:06:03 AM EST — v08.41r
 

@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v08.42r] — 2026-04-02 10:11:41 AM EST
+
+> **Prompt:** "the html toggle in the globalacl is hiding the gas toggle, telling me that the gas toggle is on the html layer, it should be on the gas layer, so it should function like it does in the testauth1. make it so that in the global acl it also shows the gas version in the bottom left corner just like in the testauth1, do the same for the templates"
+
+### Fixed
+- HTML Layer Toggle no longer hides the GAS Layer Toggle button — removed `gas-layer-toggle` and `html-layer-toggle` from the `_htmlLayerEls` array so both toggle buttons remain visible regardless of layer visibility state
+- Removed stale `if (id === 'html-layer-toggle') return` guard that was no longer needed
+
+#### `programportal.html` — v01.78w
+
+##### Fixed
+- Layer toggle buttons now stay visible when toggling layers
+
+#### `globalacl.html` — v01.70w
+
+##### Fixed
+- Layer toggle buttons now stay visible when toggling layers
 
 ## [v08.41r] — 2026-04-02 10:06:03 AM EST
 

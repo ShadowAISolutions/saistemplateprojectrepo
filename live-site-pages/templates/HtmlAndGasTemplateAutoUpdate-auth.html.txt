@@ -5065,12 +5065,11 @@
       var _htmlLayerVisible = true;
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
         'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
-        'absolute-warning-banner', 'html-layer-toggle', 'gas-layer-toggle'];
+        'absolute-warning-banner'];
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
         var btn = document.getElementById('html-layer-toggle');
         _htmlLayerEls.forEach(function(id) {
-          if (id === 'html-layer-toggle') return; // don't hide the toggle itself
           var el = document.getElementById(id);
           if (!el) return;
           if (!_htmlLayerVisible) {
