@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v08.51r] — 2026-04-02 12:37:36 PM EST
+
+> **Prompt:** "do an analysis to see if we were to use the gas-project-creator and the corresponding setup-gas-project.sh would the outcome be identical on the html and gas to the testauth1 (aside from project specific items). if not fix everything so that is the case for all projects moving forward"
+
+### Fixed
+- Added complete HIPAA compliance backend to `gas-test-auth-template-code.js.txt` — this template was missing all Phase A/B/C functions and the phaseA doGet route. Projects created with "Include Test Features" checked would have had HIPAA panels with no backend. Now all auth GAS templates (minimal and test) produce identical HIPAA backends
 
 ## [v08.50r] — 2026-04-02 12:16:46 PM EST
 
