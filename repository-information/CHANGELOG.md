@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v08.38r] — 2026-04-02 09:20:12 AM EST
+
+> **Prompt:** "ok we will have it on every page. make sure that the code for this is clearly separated from the other components of the pages so maintenance is more clear. also carefully apply this to the programportal, global acl, and the templates. Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally"
+
+### Added
+- HIPAA compliance panels (14 panels: Disclosures, My Data, Correction, Amendments, Disagree, Extensions, Denial Notice, EHR Disclosures, Breach Log, Representatives, Legal Holds, Compliance Audit, Archive Integrity, Retention Policy) added to all authenticated pages — ensures HIPAA Privacy Rule rights (§164.524–§164.528) are exercisable from any independently-accessible page
+- Clearly separated HIPAA component using `HIPAA COMPLIANCE START/END` boundary markers in CSS, HTML, and JS zones for easy maintenance
+- HIPAA panel cleanup in `showAuthWall()` — all panels are hidden and iframe destroyed on sign-out/session expiry
+- Phase A iframe communication system for GAS backend integration of HIPAA panels
+- Panel mutual exclusion and cooldown system for HIPAA buttons
+
+#### `programportal.html` — v01.74w
+
+##### Added
+- HIPAA compliance panels with full admin UI for disclosures, amendments, breach logging, and retention management
+
+#### `globalacl.html` — v01.66w
+
+##### Added
+- HIPAA compliance panels with full admin UI for disclosures, amendments, breach logging, and retention management
 
 ## [v08.37r] — 2026-04-01 03:29:13 PM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 73/50`
+`Sections: 74/50`
 
 ## [Unreleased]
+
+## [v01.74w] — 2026-04-02 09:20:12 AM EST — v08.38r
+
+### Added
+- Full HIPAA compliance panel suite — access disclosures, request corrections, file disagreements, manage breach logs, legal holds, and more directly from this page
 
 ## [v01.73w] — 2026-03-29 09:31:52 PM EST — v07.99r
 
