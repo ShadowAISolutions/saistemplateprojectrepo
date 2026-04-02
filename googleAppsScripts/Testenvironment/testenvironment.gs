@@ -1,4 +1,4 @@
-var VERSION = "v01.01g";
+var VERSION = "v01.02g";
 var TITLE = "Test Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -48,6 +48,7 @@ function doGet() {
     </head>
     <body>
       <h2 id="version">${VERSION}</h2>
+      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
       <div style="display:flex; align-items:flex-start; justify-content:center; width:100%; gap:20px; padding:0 20px; box-sizing:border-box;">
       <div style="text-align:center; flex:0 1 auto;">
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${TITLE}</h1>
@@ -186,6 +187,24 @@ function doGet() {
           }
         });
 
+        // GAS layer visibility toggle
+        (function() {
+          var _gasLayerVisible = true;
+          var _gasLayerEls = ['version'];
+          window._toggleGasLayer = function() {
+            _gasLayerVisible = !_gasLayerVisible;
+            var btn = document.getElementById('gas-layer-toggle');
+            _gasLayerEls.forEach(function(id) {
+              var el = document.getElementById(id);
+              if (!el) return;
+              el.style.display = _gasLayerVisible ? '' : 'none';
+            });
+            if (btn) {
+              btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \u25CB';
+              btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+            }
+          };
+        })();
       </script>
     </body>
     </html>

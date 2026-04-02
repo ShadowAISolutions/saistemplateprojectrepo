@@ -3,9 +3,52 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v08.43r] — 2026-04-02 10:28:07 AM EST
+
+> **Prompt:** "why can i see the gas toggle in the globalacl when on the sign in page, the gas layer should not be loaded yet, and the toggle is supposed to be on the gas layer"
+
+### Fixed
+- Moved GAS Layer Toggle from the HTML page to the GAS iframe (rendered by `doGet()`) — matches testauth1's architecture where the GAS toggle lives on the GAS layer, only appearing when the GAS app is loaded
+- HTML Layer Toggle now starts hidden (`display:none`) and only shows after authentication via `showApp()` — no longer visible on the sign-in page
+- Removed `.gas-layer-hidden` CSS class and `_toggleGasLayer` JS from HTML pages (template, programportal, globalacl) — these belong in the GAS layer
+
+### Added
+- GAS Layer Toggle button + JS IIFE added to all 4 GAS template source files (`gas-minimal-auth`, `gas-minimal-noauth`, `gas-test-auth`, `gas-test-noauth`)
+- GAS Layer Toggle propagated to existing `.gs` files: `index.gs`, `globalacl.gs`, `rndlivedata.gs`, `testenvironment.gs` (programportal.gs and testauth1.gs already had it)
+
+#### `programportal.html` — v01.79w
+
+##### Fixed
+- HTML toggle now only appears after sign-in, GAS toggle moved to the GAS layer
+
+#### `globalacl.html` — v01.71w
+
+##### Fixed
+- HTML toggle now only appears after sign-in, GAS toggle moved to the GAS layer
+
+#### `globalacl.gs` — v01.28g
+
+##### Added
+- GAS Layer Toggle button for hiding/showing the ACL Manager interface
+
+#### `index.gs` — v01.02g
+
+##### Added
+- GAS Layer Toggle button for hiding/showing GAS content
+
+#### `rndlivedata.gs` — v01.07g
+
+##### Added
+- GAS Layer Toggle button for hiding/showing GAS content
+
+#### `testenvironment.gs` — v01.02g
+
+##### Added
+- GAS Layer Toggle button for hiding/showing GAS content
 
 ## [v08.42r] — 2026-04-02 10:11:41 AM EST
 

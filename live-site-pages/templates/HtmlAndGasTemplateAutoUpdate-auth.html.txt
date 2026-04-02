@@ -434,7 +434,6 @@
     #phase-a-iframe { display: none; width: 0; height: 0; border: none; position: absolute; }
     /* ── HIPAA COMPLIANCE END ── */
     .html-layer-hidden { display: none !important; }
-    .gas-layer-hidden { visibility: hidden !important; width: 0 !important; height: 0 !important; }
 /* ══════════════ */
 /* AUTH END */
 /* ══════════════ */
@@ -970,8 +969,7 @@
   <!-- ── HIPAA COMPLIANCE END ── -->
 
   <!-- Layer visibility toggles -->
-  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
-  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:120px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="display:none;position:fixed;bottom:8px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -2902,6 +2900,9 @@
       if (phaseAIframe) phaseAIframe.src = 'about:blank';
       _phaseAIframeReady = false; _phaseAIframeSource = null;
       // ── HIPAA COMPLIANCE END ──
+      // Hide HTML layer toggle
+      var htmlToggle = document.getElementById('html-layer-toggle');
+      if (htmlToggle) htmlToggle.style.display = 'none';
       var gclOverlay = document.getElementById('gcl-overlay');
       if (gclOverlay) gclOverlay.style.display = 'none';
       var tabWall = document.getElementById('tab-takeover-wall');
@@ -3168,6 +3169,9 @@
         emailDisplay.textContent = email;
         userPill.style.display = 'flex';
       }
+      // Show HTML layer toggle after auth
+      var htmlToggle = document.getElementById('html-layer-toggle');
+      if (htmlToggle) htmlToggle.style.display = '';
 
       // Show role badge from parameter or stored session
       var displayRole = role || getStorage().getItem(ROLE_KEY) || '';
@@ -5085,25 +5089,7 @@
       };
     })();
 
-    (function() {
-      var _gasLayerVisible = true;
-      window._toggleGasLayer = function() {
-        _gasLayerVisible = !_gasLayerVisible;
-        var btn = document.getElementById('gas-layer-toggle');
-        var gasApp = document.getElementById('gas-app');
-        if (gasApp) {
-          if (!_gasLayerVisible) {
-            gasApp.classList.add('gas-layer-hidden');
-          } else {
-            gasApp.classList.remove('gas-layer-hidden');
-          }
-        }
-        if (btn) {
-          btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \u25CB';
-          btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
-        }
-      };
-    })();
+
 
 // ══════════════
 // AUTH END

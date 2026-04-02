@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 70/50`
+`Sections: 71/50`
 
 ## [Unreleased]
+
+## [v01.71w] — 2026-04-02 10:28:07 AM EST — v08.43r
+
+### Fixed
+- HTML toggle now only appears after sign-in; GAS toggle moved to the application layer where it belongs
 
 ## [v01.70w] — 2026-04-02 10:11:41 AM EST — v08.42r
 
