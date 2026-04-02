@@ -1,4 +1,4 @@
-var VERSION = "v01.36g";
+var VERSION = "v01.37g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3453,6 +3453,8 @@ function doGet(e) {
               btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';
               btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
             }
+            // Toggle body background so the gradient doesn't remain when content is hidden
+            document.body.style.background = _gasLayerVisible ? '' : 'transparent';
           };
         })();
 

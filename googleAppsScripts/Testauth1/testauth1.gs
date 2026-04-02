@@ -1,4 +1,4 @@
-var VERSION = "v02.32g";
+var VERSION = "v02.33g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -4557,6 +4557,7 @@ function doGet(e) {
               btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';
               btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
             }
+            document.body.style.background = _gasLayerVisible ? '' : 'transparent';
           };
         })();
       </script>

@@ -1,4 +1,4 @@
-var VERSION = "v01.29g";
+var VERSION = "v01.30g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -4071,6 +4071,7 @@ function doGet(e) {
               btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';
               btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
             }
+            document.body.style.background = _gasLayerVisible ? '' : 'transparent';
           };
         })();
       </script>

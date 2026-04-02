@@ -3,9 +3,46 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v08.46r] — 2026-04-02 11:18:15 AM EST
+
+> **Prompt:** "the gas toggle is not hiding the background in the program portal, is that because the background is in the html layer? in any case all of them should be functioning like the testauth1"
+
+### Fixed
+- GAS Layer Toggle now sets `document.body.style.background = 'transparent'` when hiding GAS content — prevents body background (gradient, color) from remaining visible when GAS elements are hidden. Applied to all `.gs` files and all 4 GAS templates
+
+#### `programportal.gs` — v01.37g
+
+##### Fixed
+- GAS toggle now hides the body gradient background along with content elements
+
+#### `globalacl.gs` — v01.30g
+
+##### Fixed
+- GAS toggle now hides the body background along with content elements
+
+#### `testauth1.gs` — v02.33g
+
+##### Changed
+- Minor internal improvements
+
+#### `index.gs` — v01.03g
+
+##### Changed
+- Minor internal improvements
+
+#### `rndlivedata.gs` — v01.08g
+
+##### Changed
+- Minor internal improvements
+
+#### `testenvironment.gs` — v01.03g
+
+##### Changed
+- Minor internal improvements
 
 ## [v08.45r] — 2026-04-02 10:39:56 AM EST
 

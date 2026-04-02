@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "Test Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -203,6 +203,7 @@ function doGet() {
               btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \u25CB';
               btn.style.borderColor = _gasLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
             }
+            document.body.style.background = _gasLayerVisible ? '' : 'transparent';
           };
         })();
       </script>
