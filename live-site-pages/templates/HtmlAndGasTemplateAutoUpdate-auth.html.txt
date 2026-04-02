@@ -3026,6 +3026,129 @@
       timeSpan.textContent = _formatStageTime(elapsed);
     }
 
+    // Sub-step tracking — granular progress within multi-step stages
+    var _subStepGroups = {
+      'sub-steps-verifying': ['sub-connecting', 'sub-sending', 'sub-processing'],
+      'sub-steps-loading': ['sub-downloading', 'sub-starting'],
+      'sub-steps-so-server': ['sub-so-connecting', 'sub-so-sending']
+    };
+    var _subStepStartTimes = {};
+    var _subStepFrozenTimes = {};
+    var _subStepTickTimer = null;
+    var _activeSubStepId = null;
+    var _stageTickTimer = null;
+    var _activeStageId = null;
+
+    function _updateSubStep(subStepId) {
+      var parentUl = null;
+      var order = null;
+      for (var gId in _subStepGroups) {
+        var arr = _subStepGroups[gId];
+        if (arr.indexOf(subStepId) !== -1) {
+          parentUl = document.getElementById(gId);
+          order = arr;
+          break;
+        }
+      }
+      if (!parentUl || !order) return;
+      var targetIdx = order.indexOf(subStepId);
+      var now = Date.now();
+      for (var i = 0; i < order.length; i++) {
+        var el = document.getElementById(order[i]);
+        if (!el) continue;
+        if (i < targetIdx) {
+          if (el.className !== 'stage-done') {
+            _freezeSubStepTime(order[i]);
+            _setSubStepTime(el, order[i]);
+            el.className = 'stage-done';
+          }
+        } else if (i === targetIdx) {
+          el.className = 'stage-active';
+          if (!_subStepStartTimes[order[i]]) {
+            _subStepStartTimes[order[i]] = now;
+          }
+          _activeSubStepId = order[i];
+          _startSubStepTick();
+        } else {
+          el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _freezeSubStepTime(subStepId) {
+      if (_subStepFrozenTimes[subStepId] !== undefined) return;
+      var start = _subStepStartTimes[subStepId];
+      if (start) _subStepFrozenTimes[subStepId] = Date.now() - start;
+    }
+
+    function _setSubStepTime(el, subStepId) {
+      var elapsed = _subStepFrozenTimes[subStepId];
+      if (elapsed === undefined) {
+        var start = _subStepStartTimes[subStepId];
+        if (!start) return;
+        elapsed = Date.now() - start;
+      }
+      var timeSpan = el.querySelector('.stage-time');
+      if (!timeSpan) {
+        timeSpan = document.createElement('span');
+        timeSpan.className = 'stage-time';
+        el.appendChild(timeSpan);
+      }
+      timeSpan.textContent = _formatStageTime(elapsed);
+    }
+
+    function _startSubStepTick() {
+      if (_subStepTickTimer) clearInterval(_subStepTickTimer);
+      _subStepTickTimer = setInterval(function() {
+        if (!_activeSubStepId) { clearInterval(_subStepTickTimer); return; }
+        var el = document.getElementById(_activeSubStepId);
+        if (!el || el.className !== 'stage-active') { clearInterval(_subStepTickTimer); return; }
+        _setSubStepTime(el, _activeSubStepId);
+      }, 100);
+    }
+
+    function _startStageTick() {
+      if (_stageTickTimer) clearInterval(_stageTickTimer);
+      _stageTickTimer = setInterval(function() {
+        if (!_activeStageId) { clearInterval(_stageTickTimer); _stageTickTimer = null; return; }
+        var el = document.getElementById(_activeStageId);
+        if (!el || el.className !== 'stage-active') { clearInterval(_stageTickTimer); _stageTickTimer = null; return; }
+        _setStageTime(el, _activeStageId);
+      }, 100);
+    }
+
+    function _completeSubStepsForStage(stageEl) {
+      var subUl = stageEl.querySelector(':scope > .sub-steps');
+      if (!subUl) return;
+      var subItems = subUl.getElementsByTagName('li');
+      for (var i = 0; i < subItems.length; i++) {
+        if (subItems[i].className !== 'stage-done') {
+          _freezeSubStepTime(subItems[i].id);
+          _setSubStepTime(subItems[i], subItems[i].id);
+          subItems[i].className = 'stage-done';
+        }
+      }
+      if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      _activeSubStepId = null;
+    }
+
+    function _completeAllSubSteps() {
+      if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      _activeSubStepId = null;
+      for (var gId in _subStepGroups) {
+        var arr = _subStepGroups[gId];
+        for (var i = 0; i < arr.length; i++) {
+          var el = document.getElementById(arr[i]);
+          if (!el) continue;
+          if (el.className !== 'stage-done') {
+            _freezeSubStepTime(arr[i]);
+            _setSubStepTime(el, arr[i]);
+            el.className = 'stage-done';
+          }
+        }
+      }
+    }
+
     function _updateSignInStage(text) {
       var targetId = _stageMap[text];
       if (!targetId) return;

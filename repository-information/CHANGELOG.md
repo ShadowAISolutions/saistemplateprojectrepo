@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v08.50r] — 2026-04-02 12:16:46 PM EST
+
+> **Prompt:** "yes"
+
+### Added
+- Sub-step progress animation JS added to auth template — 7 functions (`_updateSubStep`, `_freezeSubStepTime`, `_setSubStepTime`, `_startSubStepTick`, `_startStageTick`, `_completeSubStepsForStage`, `_completeAllSubSteps`) plus state variables (`_subStepGroups`, `_subStepStartTimes`, `_subStepFrozenTimes`, `_subStepTickTimer`, `_activeSubStepId`, `_stageTickTimer`, `_activeStageId`). Programportal and globalacl already had these from earlier propagation — only the template was missing them
 
 ## [v08.49r] — 2026-04-02 12:01:37 PM EST
 
