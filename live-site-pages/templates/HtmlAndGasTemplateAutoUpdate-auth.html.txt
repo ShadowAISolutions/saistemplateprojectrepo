@@ -697,37 +697,35 @@
   <!-- Denial Notice Panel (Admin) -->
   <div id="denial-notice-panel" class="phase-a-panel">
     <div class="pa-header">
-      <span class="pa-title">Generate Denial Notice</span>
+      <span class="pa-title">Formal Denial Notice</span>
       <button id="denial-close-btn" class="pa-close">&times;</button>
     </div>
     <div class="pa-body">
-      <label>Denial type:
-        <select id="denial-type" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:12px monospace;padding:4px;border-radius:4px;width:100%;">
-          <option value="access">Access Denial (§164.524)</option>
-          <option value="amendment">Amendment Denial (§164.526)</option>
+      <p style="color:#aaa;font-size:11px;margin:0 0 8px;">Generate a formal written denial notice per §164.524(d)(2) with all required elements.</p>
+      <label>Request Type:
+        <select id="denial-request-type" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:11px monospace;padding:3px 6px;border-radius:3px;width:100%;">
+          <option value="access">Access Request</option>
+          <option value="amendment">Amendment Request</option>
         </select>
       </label>
-      <label>Request ID:
-        <input type="text" id="denial-request-id" placeholder="Request being denied" />
+      <label>Request/Amendment ID:
+        <input type="text" id="denial-request-id" placeholder="Request identifier" />
       </label>
       <label>Basis for denial:
-        <select id="denial-basis" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:12px monospace;padding:4px;border-radius:4px;width:100%;">
-          <option value="psychotherapy">Psychotherapy notes</option>
-          <option value="litigation">Compiled for litigation</option>
-          <option value="clia">CLIA-exempt lab results</option>
-          <option value="inmate">Inmate restriction</option>
-          <option value="research">Research participant agreed to denial</option>
-          <option value="not-created">Entity did not create the information</option>
-          <option value="not-designated">Not part of designated record set</option>
-          <option value="accurate">Information is already accurate and complete</option>
-          <option value="other">Other (specify below)</option>
-        </select>
+        <textarea id="denial-basis" rows="3" placeholder="The specific legal basis for denying this request (e.g., psychotherapy notes, compiled for litigation)"></textarea>
       </label>
-      <label>Additional explanation:
-        <textarea id="denial-explanation" rows="3" placeholder="Detailed reason for denial"></textarea>
+      <label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;">
+        <input type="checkbox" id="denial-reviewable" checked /> Denial is reviewable
+      </label>
+      <label>Contact person:
+        <input type="text" id="denial-contact" placeholder="HIPAA Privacy Officer" value="HIPAA Privacy Officer" />
+      </label>
+      <label>Contact office:
+        <input type="text" id="denial-office" placeholder="Privacy Office" value="Privacy Office" />
       </label>
       <button id="denial-generate-btn" class="pa-action" style="margin-top:8px;">Generate Notice</button>
-      <div id="denial-result"></div>
+      <div id="denial-status" class="pa-status"></div>
+      <div id="denial-notice-output" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.04);border-radius:4px;font-size:11px;color:#ccc;white-space:pre-wrap;"></div>
     </div>
   </div>
 
@@ -750,34 +748,38 @@
   <!-- Breach Dashboard Panel (Admin) -->
   <div id="breach-dashboard-panel" class="phase-a-panel">
     <div class="pa-header">
-      <span class="pa-title">Breach Log</span>
+      <span class="pa-title">Breach Log &amp; Reporting</span>
       <span>
-        <button id="breach-log-refresh-btn" class="pa-action">Refresh</button>
+        <button id="breach-refresh-btn" class="pa-action">Refresh</button>
         <button id="breach-close-btn" class="pa-close">&times;</button>
       </span>
     </div>
     <div class="pa-body">
       <div id="breach-log-list"></div>
-      <div id="breach-log-empty" class="pa-empty">No breaches logged.</div>
+      <div id="breach-empty" class="pa-empty" style="display:none;">No breaches logged.</div>
       <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
         <span style="color:#aaa;font-size:11px;font-weight:bold;">Log New Breach</span>
         <label>Description:
-          <textarea id="breach-description" rows="2" placeholder="Brief description of the breach"></textarea>
+          <textarea id="breach-description" rows="2" placeholder="Brief description of the breach/incident"></textarea>
         </label>
-        <label>PHI types involved:
-          <input type="text" id="breach-phi-types" placeholder="e.g. Name, DOB, Diagnosis" />
+        <label>Nature of PHI involved:
+          <input type="text" id="breach-nature-phi" placeholder="e.g., Clinical notes, email addresses" />
         </label>
-        <label>Individuals affected:
-          <input type="number" id="breach-count" placeholder="Number of individuals" min="1" />
+        <label>Affected individuals count:
+          <input type="number" id="breach-affected-count" min="0" value="0" />
         </label>
-        <label>Discovery date:
-          <input type="date" id="breach-discovery-date" />
+        <label>Mitigation steps taken:
+          <textarea id="breach-mitigation" rows="2" placeholder="Actions taken to reduce harm"></textarea>
         </label>
         <button id="breach-log-submit-btn" class="pa-action" style="margin-top:8px;">Log Breach</button>
         <div id="breach-log-status" class="pa-status"></div>
       </div>
       <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
-        <button id="breach-report-btn" class="pa-action">Generate Annual Report</button>
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Annual Report</span>
+        <label>Report Year:
+          <input type="number" id="breach-report-year" value="" placeholder="e.g. 2025" style="width:80px;" />
+        </label>
+        <button id="breach-report-btn" class="pa-action">Generate Report</button>
         <div id="breach-report-result"></div>
       </div>
     </div>
@@ -797,26 +799,30 @@
       <div id="rep-empty" class="pa-empty">No representatives registered.</div>
       <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
         <span style="color:#aaa;font-size:11px;font-weight:bold;">Register Representative</span>
-        <label>Patient email:
-          <input type="email" id="rep-patient-email" placeholder="Patient's email address" />
+        <label>Representative Email:
+          <input type="email" id="rep-email" placeholder="representative@example.com" />
         </label>
-        <label>Representative email:
-          <input type="email" id="rep-email" placeholder="Representative's email address" />
+        <label>Individual Email:
+          <input type="email" id="rep-individual-email" placeholder="patient@example.com" />
         </label>
-        <label>Representative name:
-          <input type="text" id="rep-name" placeholder="Full name" />
-        </label>
-        <label>Relationship:
-          <select id="rep-relationship" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:12px monospace;padding:4px;border-radius:4px;width:100%;">
-            <option value="parent">Parent/Guardian of Minor</option>
-            <option value="guardian">Legal Guardian</option>
-            <option value="poa">Power of Attorney (Healthcare)</option>
-            <option value="executor">Executor/Administrator of Deceased</option>
-            <option value="other">Other (specify)</option>
+        <label>Relationship Type:
+          <select id="rep-relationship">
+            <option value="">Select...</option>
+            <option value="Parent">Parent</option>
+            <option value="LegalGuardian">Legal Guardian</option>
+            <option value="HealthcarePOA">Healthcare Power of Attorney</option>
+            <option value="CourtAppointed">Court Appointed</option>
+            <option value="Executor">Executor</option>
           </select>
         </label>
-        <label>Authority documentation:
-          <input type="text" id="rep-authority-doc" placeholder="Court order #, POA document ref, etc." />
+        <label>Expiration Date (optional):
+          <input type="date" id="rep-expiration" />
+        </label>
+        <label>Document Reference:
+          <input type="text" id="rep-document-ref" placeholder="Auth doc reference (optional)" />
+        </label>
+        <label>Notes:
+          <input type="text" id="rep-notes" placeholder="Additional notes (optional)" />
         </label>
         <button id="rep-register-btn" class="pa-action" style="margin-top:8px;">Register</button>
         <div id="rep-register-status" class="pa-status"></div>
@@ -827,36 +833,69 @@
   <!-- Legal Holds Panel (Admin) -->
   <div id="legal-holds-panel" class="phase-a-panel">
     <div class="pa-header">
-      <span class="pa-title">Litigation Holds</span>
+      <span class="pa-title">Legal Holds</span>
       <span>
         <button id="lh-refresh-btn" class="pa-action">Refresh</button>
         <button id="lh-close-btn" class="pa-close">&times;</button>
       </span>
     </div>
     <div class="pa-body">
-      <div id="lh-list"></div>
-      <div id="lh-empty" class="pa-empty">No active litigation holds.</div>
-      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
-        <span style="color:#aaa;font-size:11px;font-weight:bold;">Place New Hold</span>
-        <label>Hold name/case:
-          <input type="text" id="lh-case-name" placeholder="Case name or reference" />
-        </label>
-        <label>Scope:
-          <select id="lh-scope" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:12px monospace;padding:4px;border-radius:4px;width:100%;">
-            <option value="all">All records</option>
-            <option value="patient">Specific patient(s)</option>
-            <option value="date-range">Date range</option>
-            <option value="record-type">Record type</option>
+      <div style="margin-bottom:8px;">
+        <label style="color:#aaa;font-size:11px;">Filter by Status:
+          <select id="lh-status-filter" style="font-size:11px;background:#1a1a2e;color:#ccc;border:1px solid #555;border-radius:3px;padding:2px 4px;">
+            <option value="">All statuses</option>
+            <option value="Active" selected>Active</option>
+            <option value="Released">Released</option>
+            <option value="Expired">Expired</option>
           </select>
         </label>
-        <label>Scope details:
-          <input type="text" id="lh-scope-details" placeholder="Patient email, date range, or record type" />
+      </div>
+      <div id="lh-list"></div>
+      <div id="lh-empty" class="pa-empty" style="display:none;">No legal holds found.</div>
+      <div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;">
+        <span style="color:#aaa;font-size:11px;font-weight:bold;">Place New Legal Hold</span>
+        <label>Sheet Name:
+          <select id="lh-sheet-name">
+            <option value="">Select sheet...</option>
+            <option value="SessionAuditLog">SessionAuditLog</option>
+            <option value="DataAuditLog">DataAuditLog</option>
+            <option value="DisclosureLog">DisclosureLog</option>
+            <option value="AccessRequests">AccessRequests</option>
+            <option value="AmendmentRequests">AmendmentRequests</option>
+            <option value="AmendmentNotifications">AmendmentNotifications</option>
+            <option value="BreachLog">BreachLog</option>
+            <option value="PersonalRepresentatives">PersonalRepresentatives</option>
+            <option value="LegalHolds">LegalHolds</option>
+            <option value="RetentionIntegrityLog">RetentionIntegrityLog</option>
+          </select>
         </label>
-        <label>Custodian:
-          <input type="text" id="lh-custodian" placeholder="Person responsible for the hold" />
+        <label>Hold Type:
+          <select id="lh-hold-type">
+            <option value="">Select type...</option>
+            <option value="Litigation">Litigation</option>
+            <option value="Regulatory">Regulatory</option>
+            <option value="InternalInvestigation">Internal Investigation</option>
+            <option value="Audit">Audit</option>
+            <option value="Preservation">Preservation</option>
+          </select>
         </label>
         <label>Reason:
-          <textarea id="lh-reason" rows="2" placeholder="Basis for litigation hold"></textarea>
+          <textarea id="lh-reason" rows="2" placeholder="Legal basis for this hold..."></textarea>
+        </label>
+        <label>Case Reference (optional):
+          <input type="text" id="lh-case-ref" placeholder="Case or docket number" />
+        </label>
+        <label>Custodian Email (optional):
+          <input type="email" id="lh-custodian" placeholder="custodian@example.com" />
+        </label>
+        <label>Start Date (optional):
+          <input type="date" id="lh-start-date" />
+        </label>
+        <label>End Date (optional):
+          <input type="date" id="lh-end-date" />
+        </label>
+        <label>Expiration Date (optional):
+          <input type="date" id="lh-expiration" />
         </label>
         <button id="lh-place-btn" class="pa-action" style="margin-top:8px;">Place Hold</button>
         <div id="lh-place-status" class="pa-status"></div>
@@ -4359,7 +4398,8 @@
     function _loadLegalHolds() {
       document.getElementById('lh-list').innerHTML = '';
       document.getElementById('lh-empty').style.display = 'none';
-      _sendPhaseA({ type: 'phase-c-get-legal-holds', token: _getToken() });
+      var statusFilter = document.getElementById('lh-status-filter').value;
+      _sendPhaseA({ type: 'phase-c-get-legal-holds', token: _getToken(), statusFilter: statusFilter });
     }
 
     // =============================================
@@ -4466,16 +4506,18 @@
     });
     document.getElementById('denial-close-btn').addEventListener('click', _closeDenialPanel);
     document.getElementById('denial-generate-btn').addEventListener('click', function() {
-      var dtype = document.getElementById('denial-type').value;
+      var dtype = document.getElementById('denial-request-type').value;
       var reqId = document.getElementById('denial-request-id').value.trim();
-      var basis = document.getElementById('denial-basis').value;
-      var explanation = document.getElementById('denial-explanation').value.trim();
+      var basis = document.getElementById('denial-basis').value.trim();
+      var reviewable = document.getElementById('denial-reviewable').checked;
+      var contact = document.getElementById('denial-contact').value.trim();
+      var office = document.getElementById('denial-office').value.trim();
       if (!reqId) {
-        document.getElementById('denial-result').innerHTML = '<div style="color:#ef5350;">Request ID is required.</div>';
+        document.getElementById('denial-status').textContent = 'Request ID is required.';
         return;
       }
-      _sendPhaseA({ type: 'phase-a-generate-denial-notice', token: _getToken(), denialType: dtype, requestId: reqId, basis: basis, explanation: explanation });
-      document.getElementById('denial-result').innerHTML = '<div class="pa-status">Generating...</div>';
+      _sendPhaseA({ type: 'phase-a-generate-denial-notice', token: _getToken(), denialType: dtype, requestId: reqId, basis: basis, reviewable: reviewable, contact: contact, office: office });
+      document.getElementById('denial-status').textContent = 'Generating...';
     });
 
     document.getElementById('ehr-disclosures-btn').addEventListener('click', function() {
@@ -4490,21 +4532,22 @@
       _openHipaaPanel('breach-dashboard-panel', function(v) { _breachPanelOpen = v; }, _loadBreachLog);
     });
     document.getElementById('breach-close-btn').addEventListener('click', _closeBreachPanel);
-    document.getElementById('breach-log-refresh-btn').addEventListener('click', _loadBreachLog);
     document.getElementById('breach-log-submit-btn').addEventListener('click', function() {
       var desc = document.getElementById('breach-description').value.trim();
-      var phiTypes = document.getElementById('breach-phi-types').value.trim();
-      var count = document.getElementById('breach-count').value;
-      var discoveryDate = document.getElementById('breach-discovery-date').value;
+      var phiNature = document.getElementById('breach-nature-phi').value.trim();
+      var count = document.getElementById('breach-affected-count').value;
+      var mitigation = document.getElementById('breach-mitigation').value.trim();
       if (!desc) {
         document.getElementById('breach-log-status').textContent = 'Description is required.';
         return;
       }
-      _sendPhaseA({ type: 'phase-b-log-breach', token: _getToken(), description: desc, phiTypes: phiTypes, count: count, discoveryDate: discoveryDate });
+      _sendPhaseA({ type: 'phase-b-log-breach', token: _getToken(), description: desc, phiNature: phiNature, count: count, mitigation: mitigation });
       document.getElementById('breach-log-status').textContent = 'Logging...';
     });
+    document.getElementById('breach-refresh-btn').addEventListener('click', _loadBreachLog);
     document.getElementById('breach-report-btn').addEventListener('click', function() {
-      _sendPhaseA({ type: 'phase-b-get-breach-report', token: _getToken() });
+      var year = document.getElementById('breach-report-year').value;
+      _sendPhaseA({ type: 'phase-b-get-breach-report', token: _getToken(), year: year || '' });
       document.getElementById('breach-report-result').innerHTML = '<div class="pa-status">Generating...</div>';
     });
 
@@ -4515,16 +4558,17 @@
     document.getElementById('rep-close-btn').addEventListener('click', _closeRepPanel);
     document.getElementById('rep-refresh-btn').addEventListener('click', _loadRepresentatives);
     document.getElementById('rep-register-btn').addEventListener('click', function() {
-      var patientEmail = document.getElementById('rep-patient-email').value.trim();
       var repEmail = document.getElementById('rep-email').value.trim();
-      var repName = document.getElementById('rep-name').value.trim();
+      var individualEmail = document.getElementById('rep-individual-email').value.trim();
       var relationship = document.getElementById('rep-relationship').value;
-      var authorityDoc = document.getElementById('rep-authority-doc').value.trim();
-      if (!patientEmail || !repEmail || !repName) {
-        document.getElementById('rep-register-status').textContent = 'Patient email, representative email, and name are required.';
+      var expiration = document.getElementById('rep-expiration').value;
+      var documentRef = document.getElementById('rep-document-ref').value.trim();
+      var notes = document.getElementById('rep-notes').value.trim();
+      if (!individualEmail || !repEmail) {
+        document.getElementById('rep-register-status').textContent = 'Representative email and individual email are required.';
         return;
       }
-      _sendPhaseA({ type: 'phase-b-register-representative', token: _getToken(), patientEmail: patientEmail, repEmail: repEmail, repName: repName, relationship: relationship, authorityDoc: authorityDoc });
+      _sendPhaseA({ type: 'phase-b-register-representative', token: _getToken(), repEmail: repEmail, individualEmail: individualEmail, relationship: relationship, expiration: expiration, documentRef: documentRef, notes: notes });
       document.getElementById('rep-register-status').textContent = 'Registering...';
     });
 
@@ -4534,17 +4578,23 @@
     });
     document.getElementById('lh-close-btn').addEventListener('click', _closeLegalHoldsPanel);
     document.getElementById('lh-refresh-btn').addEventListener('click', _loadLegalHolds);
+    document.getElementById('lh-status-filter').addEventListener('change', function() {
+      if (_legalHoldsPanelOpen) _loadLegalHolds();
+    });
     document.getElementById('lh-place-btn').addEventListener('click', function() {
-      var caseName = document.getElementById('lh-case-name').value.trim();
-      var scope = document.getElementById('lh-scope').value;
-      var scopeDetails = document.getElementById('lh-scope-details').value.trim();
-      var custodian = document.getElementById('lh-custodian').value.trim();
+      var sheetName = document.getElementById('lh-sheet-name').value;
+      var holdType = document.getElementById('lh-hold-type').value;
       var reason = document.getElementById('lh-reason').value.trim();
-      if (!caseName || !custodian) {
-        document.getElementById('lh-place-status').textContent = 'Case name and custodian are required.';
+      var caseRef = document.getElementById('lh-case-ref').value.trim();
+      var custodian = document.getElementById('lh-custodian').value.trim();
+      var startDate = document.getElementById('lh-start-date').value;
+      var endDate = document.getElementById('lh-end-date').value;
+      var expiration = document.getElementById('lh-expiration').value;
+      if (!sheetName || !holdType) {
+        document.getElementById('lh-place-status').textContent = 'Sheet name and hold type are required.';
         return;
       }
-      _sendPhaseA({ type: 'phase-c-place-legal-hold', token: _getToken(), caseName: caseName, scope: scope, scopeDetails: scopeDetails, custodian: custodian, reason: reason });
+      _sendPhaseA({ type: 'phase-c-place-legal-hold', token: _getToken(), sheetName: sheetName, holdType: holdType, reason: reason, caseRef: caseRef, custodian: custodian, startDate: startDate, endDate: endDate, expiration: expiration });
       document.getElementById('lh-place-status').textContent = 'Placing hold...';
     });
 

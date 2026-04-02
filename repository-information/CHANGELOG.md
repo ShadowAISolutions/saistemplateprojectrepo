@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v08.40r] — 2026-04-02 09:54:42 AM EST
+
+> **Prompt:** "yes add these missing operational fields"
+
+### Changed
+- Upgraded Legal Holds panel with status filter, sheet name selector, hold type dropdown, case reference, start/end/expiration date fields (matching testauth1's operational form)
+- Upgraded Breach Dashboard panel with mitigation steps textarea, report year selector, and renamed fields to match HIPAA §164.404(c) requirements
+- Upgraded Denial Notice panel with reviewable checkbox (§164.524(d)(2) appeal indicator), contact person, contact office fields, and notice output display
+- Upgraded Representatives panel with expiration date tracking, document reference, and notes field for operational workflow
+- Applied all 4 panel upgrades to auth template, programportal, and globalacl
+
+#### `programportal.html` — v01.76w
+
+##### Changed
+- HIPAA compliance panels upgraded with full operational fields for breach logging, denial notices, legal holds, and representative management
+
+#### `globalacl.html` — v01.68w
+
+##### Changed
+- HIPAA compliance panels upgraded with full operational fields for breach logging, denial notices, legal holds, and representative management
 
 ## [v08.39r] — 2026-04-02 09:29:22 AM EST
 

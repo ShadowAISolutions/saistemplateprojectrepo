@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 67/50`
+`Sections: 68/50`
 
 ## [Unreleased]
+
+## [v01.68w] — 2026-04-02 09:54:42 AM EST — v08.40r
+
+### Changed
+- Breach logging now captures mitigation steps and report year for full §164.404(c) compliance
+- Denial notices now include appeal indicator and contact information per §164.524(d)(2)
+- Legal holds form now supports status filtering, hold types, date ranges, and sheet selection
+- Representative registration now tracks authority expiration dates and notes
 
 ## [v01.67w] — 2026-04-02 09:29:22 AM EST — v08.39r
 
