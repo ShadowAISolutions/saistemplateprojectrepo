@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v08.53r] — 2026-04-03 10:54:25 AM EST
+
+> **Prompt:** "i approve, Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally"
+
+### Added
+- Full HIPAA admin panel served via GAS iframe (`action=hipaaAdmin` in `doGet()`) — self-contained UI with sidebar navigation, all 14 HIPAA panels (disclosures, amendments, breach log, legal holds, etc.), RBAC-filtered menu via `getHipaaMenu()`, and direct `google.script.run` calls (no postMessage bridge needed)
+
+#### `programportal.gs` — v01.40g
+
+##### Added
+- `getHipaaMenu(sessionToken)` server function — returns RBAC-filtered menu items based on user permissions
+- `action=hipaaAdmin` handler in `doGet()` — serves complete self-contained HIPAA admin panel HTML/CSS/JS via HtmlService
+- Full admin panel UI: phase-based tab navigation (Patient Rights / Breach & Reps / Retention & Legal), all 14 panel templates with forms, render functions for data display, file download helper for exports
+- Direct `google.script.run` integration — iframe calls server functions directly instead of using postMessage bridge
 
 ## [v08.52r] — 2026-04-02 01:20:10 PM EST
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.40g] — 2026-04-03 10:54:25 AM EST — v08.53r
+
+### Added
+- New Compliance Tools admin panel — all HIPAA features now load inside a dedicated panel with organized navigation tabs
+- Server-filtered menu — only shows tools you have permission to access
 
 ## [v01.39g] — 2026-04-02 01:20:10 PM EST — v08.52r
 
