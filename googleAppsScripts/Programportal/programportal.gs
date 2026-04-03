@@ -1,4 +1,4 @@
-var VERSION = "v01.42g";
+var VERSION = "v01.43g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -6626,6 +6626,62 @@ var wrapHipaaOperation = wrapPhaseAOperation;
  */
 function sendHipaaEmail(params) {
   var required = ['to', 'subject', 'body', 'emailType', 'triggeredBy'];
+  for (var i = 0; i < required.length; i++) {
+    if (!params[required[i]]) {
+      throw new Error('INVALID_INPUT');
+    }
+  }
+
+  // Rate limiting: check cooldown per emailType + recipient
+  var cache = getEpochCache();
+  var cooldownKey = 'email_cooldown_' + params.emailType + '_' + params.to;
+  if (cache.get(cooldownKey)) {
+    auditLog('email_rate_limited', params.triggeredBy, 'skipped', {
+      emailType: params.emailType,
+      to: params.to,
+      reason: 'cooldown_active'
+    });
+    return { success: false, error: 'RATE_LIMITED', message: 'Email cooldown active for this recipient and type.' };
+  }
+
+  try {
+    var emailOptions = {
+      to: params.to,
+      subject: params.subject,
+      body: params.body
+    };
+    if (params.htmlBody) {
+      emailOptions.htmlBody = params.htmlBody;
+    }
+
+    MailApp.sendEmail(emailOptions);
+
+    // Set cooldown
+    var cooldownMinutes = params.emailType === 'breach_alert'
+      ? BREACH_ALERT_CONFIG.ALERT_COOLDOWN_MINUTES
+      : 5;
+    cache.put(cooldownKey, 'sent', cooldownMinutes * 60);
+
+    var messageId = generateRequestId('EMAIL');
+
+    auditLog('hipaa_email_sent', params.triggeredBy, 'success', {
+      messageId: messageId,
+      emailType: params.emailType,
+      to: params.to,
+      subject: params.subject,
+      metadata: params.metadata || {}
+    });
+
+    return { success: true, messageId: messageId };
+  } catch (e) {
+    auditLog('hipaa_email_failed', params.triggeredBy, 'error', {
+      emailType: params.emailType,
+      to: params.to,
+      error: e.message
+    });
+    return { success: false, error: 'EMAIL_FAILED', message: 'Failed to send email.' };
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // HIPAA COMPLIANCE — Phase C: Data Governance

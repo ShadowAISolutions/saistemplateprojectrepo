@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v08.57r] — 2026-04-03 12:45:15 PM EST
+
+> **Prompt:** "last session got an api error so we are continuing, this is what we were talking about last time. [syntax error investigation — sendHipaaEmail truncated]"
+
+### Fixed
+- Fixed syntax error ("Unexpected end of input") in programportal.gs caused by truncated `sendHipaaEmail` function — the function body was missing since the HIPAA backend propagation (d1a8542), leaving an unclosed `{` that caused GAS deploy failure
+- Fixed identical truncated `sendHipaaEmail` in globalacl.gs — same root cause from the same propagation commit
+- Restored complete function body (parameter validation, rate limiting, email sending via MailApp, audit logging, error handling) from testauth1.gs which had the working version
+
+#### `programportal.gs` — v01.43g
+
+##### Fixed
+- Fixed a deployment error caused by incomplete internal function — script can now deploy successfully
+
+#### `globalacl.gs` — v01.34g
+
+##### Fixed
+- Fixed a deployment error caused by incomplete internal function — script can now deploy successfully
 
 ## [v08.56r] — 2026-04-03 12:24:34 PM EST
 
