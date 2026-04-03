@@ -1,4 +1,4 @@
-var VERSION = "v01.36g";
+var VERSION = "v01.37g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3378,13 +3378,13 @@ function doGet(e) {
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         ${isAdmin ? `
         /* PROJECT: Admin panel styles */
-        #admin-badge { position: fixed; top: 12px; right: 12px; z-index: 100; background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 16px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; user-select: none; }
+        #admin-badge { position: fixed; top: 12px; left: 12px; z-index: 100; background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 16px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; user-select: none; }
         #admin-badge:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        #admin-dropdown-gas { display: none; position: fixed; top: 36px; right: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        #admin-dropdown-gas { display: none; position: fixed; top: 36px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
         #admin-dropdown-gas button:hover { background: rgba(144,202,249,0.1); color: #fff; }
         #admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; background: rgba(0,0,0,0.6); }
-        #admin-panel { position: fixed; top: 40px; right: 8px; z-index: 201; background: rgba(20,20,30,0.98); color: #ccc; border: 1px solid #444; border-radius: 8px; font: 12px/1.4 monospace; width: 480px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        #admin-panel { position: fixed; top: 40px; left: 8px; z-index: 201; background: rgba(20,20,30,0.98); color: #ccc; border: 1px solid #444; border-radius: 8px; font: 12px/1.4 monospace; width: 480px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
         #admin-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #444; flex-shrink: 0; }
         #admin-panel-header .admin-title { color: #90caf9; font-weight: bold; font-size: 13px; }
         #admin-panel-close { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0 4px; }

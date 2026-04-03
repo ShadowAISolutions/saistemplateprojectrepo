@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v01.44g] — 2026-04-03 02:47:47 PM EST — v08.62r
+
+### Fixed
+- Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
 
 ## [v01.43g] — 2026-04-03 12:45:15 PM EST — v08.57r
 

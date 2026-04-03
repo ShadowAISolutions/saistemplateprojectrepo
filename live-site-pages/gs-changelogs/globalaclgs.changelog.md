@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.37g] — 2026-04-03 02:47:47 PM EST — v08.62r
+
+### Fixed
+- Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
 
 ## [v01.36g] — 2026-04-03 02:21:25 PM EST — v08.61r
 

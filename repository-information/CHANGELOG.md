@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v08.62r] — 2026-04-03 02:47:47 PM EST
+
+> **Prompt:** "move the admin dropdown on the gas layer so that its not relatively overlapped by the pill on the html layer for all our projects"
+
+### Fixed
+- Moved GAS admin badge, dropdown, and panel from top-right (`right: 12px`) to top-left (`left: 12px`) in all three auth GAS scripts — the HTML user-pill (z-index 9999+) in the top-right was covering the admin badge due to iframe stacking context constraints
+
+#### `testauth1.gs` — v02.37g
+
+##### Fixed
+- Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
+
+#### `programportal.gs` — v01.44g
+
+##### Fixed
+- Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
+
+#### `globalacl.gs` — v01.37g
+
+##### Fixed
+- Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
 
 ## [v08.61r] — 2026-04-03 02:21:25 PM EST
 
