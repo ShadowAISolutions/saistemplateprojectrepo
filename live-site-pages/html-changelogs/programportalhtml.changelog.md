@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 80/50`
+`Sections: 81/50`
 
 ## [Unreleased]
+
+## [v01.82w] — 2026-04-03 12:08:19 PM EST — v08.55r
+
+### Removed
+- Admin dropdown and settings panels removed from page — admin features now load within the application dashboard
 
 ## [v01.80w] — 2026-04-02 10:35:03 AM EST — v08.44r
 

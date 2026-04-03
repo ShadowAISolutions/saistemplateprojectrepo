@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v08.55r] — 2026-04-03 12:08:19 PM EST
+
+> **Prompt:** "review the repository-information/SESSION-CONTEXT.md to continue where we left off in previous session and plan it out"
+
+### Removed
+- Removed all HIPAA admin UI from HTML layer — admin badge, dropdown, 14 HIPAA panel divs, sessions panel, phase-a-iframe, and all associated CSS/JS (~4,600 lines across 3 files)
+- Removed admin session management JavaScript (iframe communication, panel state tracking, cooldown system, render functions, message router with 30+ cases)
+- Removed admin session postMessage handlers (`gas-admin-sessions-ready`, `gas-admin-sessions-list`, `gas-admin-sessions-error`, `gas-admin-signout-result`, `gas-admin-signout-error`) from allowed types lists and message routing
+- Removed admin panel cleanup from `showAuthWall()` (14-panel closure loop, phase-a-iframe reset, panel state flag resets)
+- Removed `admin-sessions-panel` from HTML layer toggle element list
+
+#### `programportal.html` — v01.82w
+
+##### Removed
+- Admin dropdown and all HIPAA panel UI (now handled entirely by GAS layer)
+
+#### `globalacl.html` — v01.74w
+
+##### Removed
+- Admin dropdown and all HIPAA panel UI (now handled entirely by GAS layer)
 
 ## [v08.54r] — 2026-04-03 11:33:43 AM EST
 
