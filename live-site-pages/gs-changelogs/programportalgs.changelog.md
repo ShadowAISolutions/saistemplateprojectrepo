@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
 
 ## [Unreleased]
+
+## [v01.42g] — 2026-04-03 12:24:34 PM EST — v08.56r
+
+### Removed
+- Removed legacy admin panel that loaded in a separate window — admin tools are now part of the main dashboard
 
 ## [v01.41g] — 2026-04-03 11:33:43 AM EST — v08.54r
 

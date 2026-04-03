@@ -3,9 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v08.56r] — 2026-04-03 12:24:34 PM EST
+
+> **Prompt:** "ok you removed the admin dropdown from the html layer, but i still need to be able to interact with it, so the dropdown should be on the gas layer"
+
+### Added
+- Propagated admin dashboard (badge, dropdown, 14 HIPAA panels, sessions panel) to globalacl.gs and testauth1.gs doGet() dashboards — admin UI now available on all auth GAS pages
+- Added admin dashboard to GAS auth templates (gas-minimal-auth-template-code.js.txt and gas-test-auth-template-code.js.txt) for new projects
+
+### Removed
+- Removed legacy `action=hipaaAdmin` iframe handler from programportal.gs (~578 lines) — superseded by inline admin panel in doGet() dashboard
+- Removed `getHipaaMenu()` function from programportal.gs — only used by the legacy handler
+
+#### `globalacl.gs` — v01.33g
+
+##### Added
+- Admin badge, dropdown, and 14 HIPAA admin panels integrated into main GAS dashboard (conditionally rendered for admin users)
+
+#### `testauth1.gs` — v02.35g
+
+##### Added
+- Admin badge, dropdown, and 14 HIPAA admin panels integrated into main GAS dashboard (conditionally rendered for admin users)
+
+#### `programportal.gs` — v01.42g
+
+##### Removed
+- Legacy `action=hipaaAdmin` iframe handler and `getHipaaMenu()` function (replaced by inline admin panel)
 
 ## [v08.55r] — 2026-04-03 12:08:19 PM EST
 

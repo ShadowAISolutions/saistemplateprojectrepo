@@ -2479,6 +2479,10 @@ function doGet(e) {
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
 
+  // PROJECT: Admin role detection for conditional admin UI
+  var isAdmin = (session.role === 'admin');
+  var sessionTokenForAdmin = isAdmin ? sessionToken : '';
+
   // Session valid — build the test/diagnostic app HTML (same as noauth but with user context)
   var html = `
     <html>
@@ -2502,12 +2506,97 @@ function doGet(e) {
         #sheet-iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
         #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        ${isAdmin ? `
+        /* PROJECT: Admin panel styles */
+        #admin-badge { position: fixed; top: 12px; right: 12px; z-index: 100; background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 16px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; user-select: none; }
+        #admin-badge:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        #admin-dropdown-gas { display: none; position: fixed; top: 36px; right: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
+        #admin-dropdown-gas button:hover { background: rgba(144,202,249,0.1); color: #fff; }
+        #admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; background: rgba(0,0,0,0.6); }
+        #admin-panel { position: fixed; top: 40px; right: 8px; z-index: 201; background: rgba(20,20,30,0.98); color: #ccc; border: 1px solid #444; border-radius: 8px; font: 12px/1.4 monospace; width: 480px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        #admin-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #444; flex-shrink: 0; }
+        #admin-panel-header .admin-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+        #admin-panel-close { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0 4px; }
+        #admin-panel-close:hover { color: #fff; }
+        #admin-nav { display: flex; border-bottom: 1px solid #333; padding: 4px 8px; gap: 4px; flex-shrink: 0; }
+        .admin-tab { background: none; border: 1px solid #555; color: #90caf9; cursor: pointer; font: 10px/1 monospace; padding: 3px 8px; border-radius: 3px; }
+        .admin-tab:hover { background: rgba(144,202,249,0.1); }
+        .admin-tab.active { background: rgba(144,202,249,0.15); border-color: #90caf9; }
+        #admin-menu-gas { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 8px; border-bottom: 1px solid #333; flex-shrink: 0; }
+        .admin-menu-btn { background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1 monospace; padding: 2px 6px; }
+        .admin-menu-btn:hover { color: #fff; text-decoration: underline; }
+        .admin-menu-btn.active { color: #fff; font-weight: bold; }
+        #admin-content { flex: 1; overflow-y: auto; padding: 10px 12px; }
+        .pa-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px; }
+        .pa-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+        .pa-action { border: 1px solid #90caf9; color: #90caf9; background: none; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; }
+        .pa-action:hover { background: rgba(144,202,249,0.1); }
+        .pa-body { margin-top: 8px; }
+        .pa-body label { display: block; color: #aaa; font-size: 11px; margin: 8px 0 4px; }
+        .pa-body input, .pa-body textarea, .pa-body select { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555; color: #eee; padding: 6px 8px; border-radius: 4px; font: 12px monospace; box-sizing: border-box; }
+        .pa-body textarea { resize: vertical; }
+        .pa-format-picker { margin: 8px 0; }
+        .pa-format-picker label { display: inline; margin-right: 12px; color: #ccc; font-size: 12px; }
+        .pa-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
+        .pa-empty { color: #888; font-size: 11px; text-align: center; padding: 16px 0; }
+        .pa-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+        .pa-card-header { color: #90caf9; font-weight: bold; font-size: 11px; }
+        .pa-card-meta { color: #888; font-size: 10px; margin: 4px 0; }
+        .pa-card-field { font-size: 11px; margin: 4px 0; }
+        .pa-card-field strong { color: #aaa; }
+        .pa-card-actions { margin-top: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .pa-approve { border: 1px solid #66bb6a; color: #66bb6a; background: none; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; }
+        .pa-approve:hover { background: rgba(102,187,106,0.15); }
+        .pa-deny { border: 1px solid #ef5350; color: #ef5350; background: none; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; }
+        .pa-deny:hover { background: rgba(239,83,80,0.15); }
+        .pa-deny-reason { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555; color: #eee; padding: 4px 6px; border-radius: 3px; font: 10px monospace; margin-top: 4px; display: none; }
+        .asp-session { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+        .asp-session.asp-self { border-color: #1565c0; }
+        .asp-session.asp-emergency { border-color: #ef5350; }
+        .asp-role-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; text-transform: uppercase; background: rgba(255,255,255,0.1); color: #90caf9; }
+        .asp-meta { color: #888; font-size: 10px; margin: 4px 0; }
+        .asp-kick { background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px; }
+        .asp-kick:hover { background: rgba(239,83,80,0.15); }
+        ` : ''}
       </style>
     </head>
     <body>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      ${isAdmin ? `
+      <!-- PROJECT: Admin badge and panel (only rendered for admin users) -->
+      <div id="admin-badge">ADMIN &#x25BE;</div>
+      <div id="admin-dropdown-gas">
+        <button data-admin-panel="sessions">Sessions</button>
+        <button data-admin-panel="disclosures">Disclosures</button>
+        <button data-admin-panel="data-export">My Data</button>
+        <button data-admin-panel="amendment">Correction</button>
+        <button data-admin-panel="amendment-review">Amendments</button>
+        <button data-admin-panel="disagreement">Disagree</button>
+        <button data-admin-panel="extension">Extensions</button>
+        <button data-admin-panel="denial-notice">Denial Notice</button>
+        <button data-admin-panel="ehr-disclosures">EHR Disclosures</button>
+        <button data-admin-panel="breach-log">Breach Log</button>
+        <button data-admin-panel="representatives">Representatives</button>
+        <button data-admin-panel="legal-holds">Legal Holds</button>
+        <button data-admin-panel="compliance-audit">Compliance Audit</button>
+        <button data-admin-panel="archive-integrity">Archive Integrity</button>
+        <button data-admin-panel="retention-policy">Retention Policy</button>
+      </div>
+      <div id="admin-panel-overlay">
+        <div id="admin-panel">
+          <div id="admin-panel-header">
+            <span class="admin-title">Admin Tools</span>
+            <button id="admin-panel-close">&times;</button>
+          </div>
+          <div id="admin-content">
+            <div id="admin-loading" class="pa-empty">Select a tool from the admin menu.</div>
+          </div>
+        </div>
+      </div>
+      ` : ''}
       <div style="display:flex; align-items:flex-start; justify-content:center; width:100%; gap:20px; padding:0 20px; box-sizing:border-box;">
       <div style="text-align:center; flex:0 1 auto;">
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${escapeHtml(TITLE)}</h1>
@@ -2731,6 +2820,486 @@ function doGet(e) {
           };
         })();
 
+        // PROJECT: Admin panel logic (only included for admin users)
+        ${isAdmin ? `
+        (function() {
+          var _adminToken = '${escapeJs(sessionTokenForAdmin)}';
+          var _adminPanelOpen = false;
+          var _activeAdminPanel = null;
+
+          function _escA(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+          function _setStatus(elId, msg, color) {
+            var el = document.getElementById(elId);
+            if (el) { el.textContent = msg; if (color) el.style.color = color; }
+          }
+
+          function _gasCall(fn, args, onOk, onErr) {
+            var r = google.script.run.withSuccessHandler(onOk || function(){}).withFailureHandler(onErr || function(e){ console.error('Admin GAS error:', e); });
+            r[fn].apply(r, args);
+          }
+
+          // Admin badge toggle dropdown
+          document.getElementById('admin-badge').addEventListener('click', function(e) {
+            e.stopPropagation();
+            var dd = document.getElementById('admin-dropdown-gas');
+            dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+          });
+          document.addEventListener('click', function(e) {
+            var dd = document.getElementById('admin-dropdown-gas');
+            if (dd && !dd.contains(e.target) && e.target.id !== 'admin-badge') dd.style.display = 'none';
+          });
+
+          // Dropdown button click → open panel
+          var ddBtns = document.querySelectorAll('#admin-dropdown-gas button');
+          for (var i = 0; i < ddBtns.length; i++) {
+            ddBtns[i].addEventListener('click', function() {
+              document.getElementById('admin-dropdown-gas').style.display = 'none';
+              _openAdminPanel(this.getAttribute('data-admin-panel'));
+            });
+          }
+
+          // Close panel
+          document.getElementById('admin-panel-close').addEventListener('click', function() {
+            document.getElementById('admin-panel-overlay').style.display = 'none';
+            _adminPanelOpen = false;
+            _activeAdminPanel = null;
+          });
+          document.getElementById('admin-panel-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+              this.style.display = 'none';
+              _adminPanelOpen = false;
+              _activeAdminPanel = null;
+            }
+          });
+
+          function _openAdminPanel(panelId) {
+            _activeAdminPanel = panelId;
+            _adminPanelOpen = true;
+            document.getElementById('admin-panel-overlay').style.display = 'block';
+            var content = document.getElementById('admin-content');
+            content.innerHTML = _getAdminPanelHtml(panelId);
+            _attachAdminListeners(panelId);
+            _loadAdminData(panelId);
+          }
+
+          function _loadAdminData(id) {
+            switch(id) {
+              case 'sessions': _loadSessions(); break;
+              case 'disclosures': _loadDisclosures(); break;
+              case 'amendment-review': _loadPendingAmendments(); break;
+              case 'ehr-disclosures': _loadEhrDisclosures(); break;
+              case 'breach-log': _loadBreachLog(); break;
+              case 'representatives': _loadRepresentatives(); break;
+              case 'legal-holds': _loadLegalHolds(); break;
+            }
+          }
+
+          // Sessions loader
+          function _loadSessions() {
+            var el = document.getElementById('admin-session-list');
+            if (el) el.innerHTML = '<div class="pa-status">Loading sessions...</div>';
+            _gasCall('listActiveSessions', [_adminToken], function(r) { _renderSessions(r); });
+          }
+          function _renderSessions(sessions) {
+            var list = document.getElementById('admin-session-list');
+            if (!list) return;
+            if (!sessions || sessions.length === 0) { list.innerHTML = '<div class="pa-empty">No active sessions found.</div>'; return; }
+            var html = '';
+            for (var i = 0; i < sessions.length; i++) {
+              var s = sessions[i];
+              var selfClass = s.isSelf ? ' asp-self' : '';
+              var selfLabel = s.isSelf ? ' (you)' : '';
+              html += '<div class="asp-session' + selfClass + '">';
+              html += '<div style="display:flex;justify-content:space-between;align-items:center;">';
+              html += '<strong style="color:#ccc;font-size:11px;">' + _escA(s.email || '') + selfLabel + '</strong>';
+              html += '<span class="asp-role-badge">' + _escA(s.role || '') + '</span>';
+              html += '</div>';
+              html += '<div class="asp-meta">Created: ' + _escA(s.createdAt ? new Date(s.createdAt).toLocaleString() : '') + '</div>';
+              html += '<div class="asp-meta">Last activity: ' + _escA(s.lastActivity ? new Date(s.lastActivity).toLocaleString() : '') + '</div>';
+              if (!s.isSelf) {
+                html += '<button class="asp-kick" data-kick-email="' + _escA(s.email) + '">Sign Out User</button>';
+              }
+              html += '</div>';
+            }
+            list.innerHTML = html;
+            var kickBtns = list.querySelectorAll('.asp-kick');
+            for (var k = 0; k < kickBtns.length; k++) {
+              kickBtns[k].addEventListener('click', function() {
+                var email = this.getAttribute('data-kick-email');
+                this.textContent = 'Signing out...';
+                this.disabled = true;
+                _gasCall('adminSignOutUser', [_adminToken, email], function(r) {
+                  if (r && r.success) { setTimeout(function(){ _loadSessions(); }, 500); }
+                });
+              });
+            }
+          }
+
+          // HIPAA data loaders (same as Phase 1 but using google.script.run directly)
+          function _loadDisclosures() {
+            var el = document.getElementById('disclosure-list'); if(el) el.innerHTML = '';
+            var empty = document.getElementById('disclosure-empty'); if(empty) empty.style.display = 'none';
+            var period = document.getElementById('disclosure-period'); if(period) period.textContent = 'Loading disclosures (6-year lookback)...';
+            var grouped = document.getElementById('disclosure-grouped-toggle');
+            if (grouped && grouped.checked) {
+              _gasCall('getGroupedDisclosureAccounting', [_adminToken], function(r) { _renderDisclosures(r); });
+            } else {
+              _gasCall('getDisclosureAccounting', [_adminToken], function(r) { _renderDisclosures(r); });
+            }
+          }
+          function _loadPendingAmendments() {
+            var el = document.getElementById('amend-review-list'); if(el) el.innerHTML = '';
+            var empty = document.getElementById('amend-review-empty'); if(empty) empty.style.display = 'none';
+            _gasCall('getPendingAmendments', [_adminToken], function(r) { _renderPendingAmendments(r); });
+          }
+          function _loadEhrDisclosures() {
+            var el = document.getElementById('ehr-list'); if(el) el.innerHTML = '';
+            var empty = document.getElementById('ehr-empty'); if(empty) empty.style.display = 'none';
+            var period = document.getElementById('ehr-period'); if(period) period.textContent = 'Loading EHR TPO disclosures (3-year lookback)...';
+            _gasCall('getDisclosureAccounting', [_adminToken, null, {includeEhrTpo: true}], function(r) { _renderEhrDisclosures(r); });
+          }
+          function _loadBreachLog() {
+            var el = document.getElementById('breach-log-list'); if(el) el.innerHTML = '';
+            var empty = document.getElementById('breach-empty'); if(empty) empty.style.display = 'none';
+            _gasCall('getBreachLog', [_adminToken], function(r) { _renderBreachLog(r); });
+          }
+          function _loadRepresentatives() {
+            var el = document.getElementById('rep-list'); if(el) el.innerHTML = '';
+            var empty = document.getElementById('rep-empty'); if(empty) empty.style.display = 'none';
+            _gasCall('getPersonalRepresentatives', [_adminToken], function(r) { _renderRepresentatives(r); });
+          }
+          function _loadLegalHolds() {
+            var el = document.getElementById('lh-list'); if(el) el.innerHTML = '';
+            var empty = document.getElementById('lh-empty'); if(empty) empty.style.display = 'none';
+            var filter = document.getElementById('lh-status-filter');
+            _gasCall('getLegalHolds', [_adminToken, filter ? {status: filter.value} : {}], function(r) { _renderLegalHolds(r); });
+          }
+
+          // Render functions
+          function _renderDisclosures(result) {
+            var container = document.getElementById('disclosure-list');
+            var empty = document.getElementById('disclosure-empty');
+            var period = document.getElementById('disclosure-period');
+            if (!result || !result.success) { if(container) container.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            if(period) period.textContent = result.period || '';
+            if (!result.items || result.items.length === 0) { if(empty) empty.style.display = ''; return; }
+            var html = '';
+            for (var i = 0; i < result.items.length; i++) {
+              var d = result.items[i];
+              html += '<div class="pa-card"><div class="pa-card-header">' + _escA(d.recipient || 'Unknown') + '</div>';
+              html += '<div class="pa-card-meta">' + _escA(d.date || '') + '</div>';
+              html += '<div class="pa-card-field"><strong>Purpose:</strong> ' + _escA(d.purpose || '') + '</div>';
+              if (d.description) html += '<div class="pa-card-field">' + _escA(d.description) + '</div>';
+              if (d.count) html += '<div class="pa-card-field"><strong>Occurrences:</strong> ' + _escA(d.count) + '</div>';
+              html += '</div>';
+            }
+            if(container) container.innerHTML = html;
+          }
+          function _renderEhrDisclosures(result) {
+            var container = document.getElementById('ehr-list');
+            var empty = document.getElementById('ehr-empty');
+            var period = document.getElementById('ehr-period');
+            if (!result || !result.success) { if(container) container.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            if(period) period.textContent = result.period || '';
+            if (!result.items || result.items.length === 0) { if(empty) empty.style.display = ''; return; }
+            var html = '';
+            for (var i = 0; i < result.items.length; i++) {
+              var d = result.items[i];
+              html += '<div class="pa-card"><div class="pa-card-header">' + _escA(d.recipient || 'Unknown') + '</div>';
+              html += '<div class="pa-card-meta">' + _escA(d.date || '') + ' \\u2014 ' + _escA(d.purpose || 'TPO') + '</div>';
+              if (d.description) html += '<div class="pa-card-field">' + _escA(d.description) + '</div>';
+              html += '</div>';
+            }
+            if(container) container.innerHTML = html;
+          }
+          function _renderPendingAmendments(result) {
+            var container = document.getElementById('amend-review-list');
+            var empty = document.getElementById('amend-review-empty');
+            if (!result || !result.success) { if(container) container.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            if (!result.items || result.items.length === 0) { if(empty) empty.style.display = ''; return; }
+            var html = '';
+            for (var i = 0; i < result.items.length; i++) {
+              var a = result.items[i];
+              html += '<div class="pa-card"><div class="pa-card-header">Amendment #' + _escA(a.id || '') + '</div>';
+              html += '<div class="pa-card-meta">Requested: ' + _escA(a.date || '') + ' by ' + _escA(a.requestor || '') + '</div>';
+              html += '<div class="pa-card-field"><strong>Record:</strong> ' + _escA(a.recordId || '') + '</div>';
+              html += '<div class="pa-card-field"><strong>Proposed:</strong> ' + _escA(a.proposed || '') + '</div>';
+              if (a.reason) html += '<div class="pa-card-field"><strong>Reason:</strong> ' + _escA(a.reason) + '</div>';
+              html += '<div class="pa-card-actions">';
+              html += '<button class="pa-approve" data-amend-id="' + _escA(a.id) + '">Approve</button>';
+              html += '<button class="pa-deny" data-amend-id="' + _escA(a.id) + '">Deny</button>';
+              html += '<textarea class="pa-deny-reason" data-amend-id="' + _escA(a.id) + '" placeholder="Reason for denial"></textarea>';
+              html += '</div></div>';
+            }
+            if(container) container.innerHTML = html;
+            var appBtns = container.querySelectorAll('.pa-approve');
+            for (var j = 0; j < appBtns.length; j++) {
+              appBtns[j].addEventListener('click', function() {
+                _gasCall('reviewAmendment', [_adminToken, this.getAttribute('data-amend-id'), 'Approved', ''], function() { _loadPendingAmendments(); });
+              });
+            }
+            var denBtns = container.querySelectorAll('.pa-deny');
+            for (var k = 0; k < denBtns.length; k++) {
+              denBtns[k].addEventListener('click', function() {
+                var id = this.getAttribute('data-amend-id');
+                var reasonEl = container.querySelector('.pa-deny-reason[data-amend-id="' + id + '"]');
+                if (reasonEl.style.display === 'none' || !reasonEl.style.display) { reasonEl.style.display = 'block'; return; }
+                var reason = reasonEl.value.trim();
+                if (!reason) { reasonEl.style.borderColor = '#ef5350'; return; }
+                _gasCall('reviewAmendment', [_adminToken, id, 'Denied', reason], function() { _loadPendingAmendments(); });
+              });
+            }
+          }
+          function _renderBreachLog(result) {
+            var container = document.getElementById('breach-log-list');
+            var empty = document.getElementById('breach-empty');
+            if (!result || !result.success) { if(container) container.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            if (!result.items || result.items.length === 0) { if(empty) empty.style.display = ''; return; }
+            if(empty) empty.style.display = 'none';
+            var html = '';
+            for (var i = 0; i < result.items.length; i++) {
+              var b = result.items[i];
+              html += '<div class="pa-card"><div class="pa-card-header">Breach #' + _escA(b.id || '') + '</div>';
+              html += '<div class="pa-card-meta">Discovered: ' + _escA(b.discoveryDate || '') + ' | Status: ' + _escA(b.status || '') + '</div>';
+              html += '<div class="pa-card-field">' + _escA(b.description || '') + '</div>';
+              if (b.count) html += '<div class="pa-card-field"><strong>Affected:</strong> ' + _escA(b.count) + ' individuals</div>';
+              html += '</div>';
+            }
+            if(container) container.innerHTML = html;
+          }
+          function _renderRepresentatives(result) {
+            var container = document.getElementById('rep-list');
+            var empty = document.getElementById('rep-empty');
+            if (!result || !result.success) { if(container) container.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            if (!result.items || result.items.length === 0) { if(empty) empty.style.display = ''; return; }
+            if(empty) empty.style.display = 'none';
+            var html = '';
+            for (var i = 0; i < result.items.length; i++) {
+              var r = result.items[i];
+              html += '<div class="pa-card"><div class="pa-card-header">' + _escA(r.name || '') + '</div>';
+              html += '<div class="pa-card-meta">' + _escA(r.email || '') + ' \\u2014 ' + _escA(r.relationship || '') + '</div>';
+              html += '<div class="pa-card-field"><strong>Patient:</strong> ' + _escA(r.patientEmail || '') + '</div>';
+              html += '<div class="pa-card-actions"><button class="pa-deny" data-rep-id="' + _escA(r.id) + '">Revoke</button></div>';
+              html += '</div>';
+            }
+            if(container) container.innerHTML = html;
+            var revBtns = container.querySelectorAll('.pa-deny[data-rep-id]');
+            for (var j = 0; j < revBtns.length; j++) {
+              revBtns[j].addEventListener('click', function() {
+                _gasCall('revokeRepresentative', [_adminToken, this.getAttribute('data-rep-id'), 'Revoked by admin'], function() { _loadRepresentatives(); });
+              });
+            }
+          }
+          function _renderLegalHolds(result) {
+            var container = document.getElementById('lh-list');
+            var empty = document.getElementById('lh-empty');
+            if (!result || !result.success) { if(container) container.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            if (!result.items || result.items.length === 0) { if(empty) empty.style.display = ''; return; }
+            if(empty) empty.style.display = 'none';
+            var html = '';
+            for (var i = 0; i < result.items.length; i++) {
+              var h = result.items[i];
+              html += '<div class="pa-card"><div class="pa-card-header">' + _escA(h.caseName || '') + '</div>';
+              html += '<div class="pa-card-meta">Placed: ' + _escA(h.date || '') + ' | Custodian: ' + _escA(h.custodian || '') + '</div>';
+              html += '<div class="pa-card-field"><strong>Scope:</strong> ' + _escA(h.scope || '') + '</div>';
+              html += '<div class="pa-card-actions"><button class="pa-approve" data-hold-id="' + _escA(h.id) + '">Release</button></div>';
+              html += '</div>';
+            }
+            if(container) container.innerHTML = html;
+            var relBtns = container.querySelectorAll('.pa-approve[data-hold-id]');
+            for (var j = 0; j < relBtns.length; j++) {
+              relBtns[j].addEventListener('click', function() {
+                _gasCall('releaseLegalHold', [_adminToken, this.getAttribute('data-hold-id'), 'Released by admin'], function() { _loadLegalHolds(); });
+              });
+            }
+          }
+
+          function _renderSimpleResult(elId, result, field) {
+            var el = document.getElementById(elId);
+            if (!el) return;
+            if (!result || !result.success) { el.innerHTML = '<div style="color:#ef5350">Error: ' + _escA(result ? result.message : 'No response') + '</div>'; return; }
+            el.innerHTML = '<div class="pa-card" style="white-space:pre-wrap;font-size:10px;">' + _escA(result[field] || '') + '</div>';
+          }
+
+          function _downloadResult(result, defaultName) {
+            if (!result || !result.success || !result.data) return;
+            var blob = new Blob([typeof result.data === 'string' ? result.data : JSON.stringify(result.data, null, 2)], {type:'text/plain'});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a'); a.href = url; a.download = defaultName; a.click();
+            URL.revokeObjectURL(url);
+          }
+
+          // Panel HTML templates
+          function _getAdminPanelHtml(id) {
+            switch(id) {
+              case 'sessions': return '<div class="pa-header"><span class="pa-title">Active Sessions</span><span><button id="admin-sessions-refresh" class="pa-action">Refresh</button></span></div><div id="admin-session-list"><div class="pa-status">Loading sessions...</div></div>';
+              case 'disclosures': return '<div class="pa-header"><span class="pa-title">Disclosure Accounting</span><span><select id="disclosure-export-format" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:10px monospace;padding:1px 4px;border-radius:3px;"><option value="json">JSON</option><option value="csv">CSV</option></select><button id="disclosure-export-btn" class="pa-action">Export</button></span></div><div style="padding:4px 0;"><label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;"><input type="checkbox" id="disclosure-grouped-toggle" checked /> Group repeated disclosures</label></div><div id="disclosure-period" class="pa-status"></div><div id="disclosure-list"></div><div id="disclosure-empty" class="pa-empty" style="display:none;">No disclosures found.</div>';
+              case 'data-export': return '<div class="pa-header"><span class="pa-title">Download My Data</span></div><div class="pa-body"><p style="color:#aaa;font-size:11px;margin:0 0 8px;">Download a copy of all your data (HIPAA \\u00a7164.524).</p><div class="pa-format-picker"><label><input type="radio" name="export-format" value="json" checked> JSON</label><label><input type="radio" name="export-format" value="csv"> CSV</label><label><input type="radio" name="export-format" value="summary"> Summary</label></div><div id="summary-agreement" style="display:none;margin:6px 0;padding:6px;background:rgba(255,255,255,0.04);border-radius:4px;"><label style="font-size:10px;display:inline;cursor:pointer;"><input type="checkbox" id="summary-agree-checkbox" /> I agree to receive a summary</label></div><button id="data-export-download-btn" class="pa-action" style="margin-top:8px;">Download</button><div id="data-export-status" class="pa-status"></div></div>';
+              case 'amendment': return '<div class="pa-header"><span class="pa-title">Request Record Correction</span></div><div class="pa-body"><label>Record to correct:<input type="text" id="amend-record-id" placeholder="Record ID" /></label><label>Current content:<textarea id="amend-current" rows="2"></textarea></label><label>Proposed correction:<textarea id="amend-proposed" rows="3"></textarea></label><label>Reason:<textarea id="amend-reason" rows="2"></textarea></label><button id="amend-submit-btn" class="pa-action" style="margin-top:8px;">Submit</button><div id="amend-status" class="pa-status"></div></div>';
+              case 'amendment-review': return '<div class="pa-header"><span class="pa-title">Pending Amendments</span><span><button id="amend-review-refresh" class="pa-action">Refresh</button></span></div><div id="amend-review-list"></div><div id="amend-review-empty" class="pa-empty" style="display:none;">No pending amendments.</div>';
+              case 'disagreement': return '<div class="pa-header"><span class="pa-title">Statement of Disagreement</span></div><div class="pa-body"><label>Amendment Request ID:<input type="text" id="disagree-amendment-id" /></label><label>Your statement:<textarea id="disagree-statement" rows="4"></textarea></label><button id="disagree-submit-btn" class="pa-action" style="margin-top:8px;">Submit</button><div id="disagree-status" class="pa-status"></div></div>';
+              case 'extension': return '<div class="pa-header"><span class="pa-title">Grant 30-Day Extension</span></div><div class="pa-body"><label>Request type:<select id="extension-type" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:12px monospace;padding:4px;border-radius:4px;width:100%;"><option value="access">Access Request</option><option value="amendment">Amendment Request</option></select></label><label>Request ID:<input type="text" id="extension-request-id" /></label><label>Reason:<textarea id="extension-reason" rows="3"></textarea></label><button id="extension-submit-btn" class="pa-action" style="margin-top:8px;">Grant Extension</button><div id="extension-status" class="pa-status"></div></div>';
+              case 'denial-notice': return '<div class="pa-header"><span class="pa-title">Formal Denial Notice</span></div><div class="pa-body"><label>Request Type:<select id="denial-request-type" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:11px monospace;padding:3px 6px;border-radius:3px;width:100%;"><option value="access">Access Request</option><option value="amendment">Amendment Request</option></select></label><label>Request/Amendment ID:<input type="text" id="denial-request-id" /></label><label>Basis for denial:<textarea id="denial-basis" rows="3"></textarea></label><label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;"><input type="checkbox" id="denial-reviewable" checked /> Denial is reviewable</label><label>Contact person:<input type="text" id="denial-contact" value="HIPAA Privacy Officer" /></label><label>Contact office:<input type="text" id="denial-office" value="Privacy Office" /></label><button id="denial-generate-btn" class="pa-action" style="margin-top:8px;">Generate</button><div id="denial-status" class="pa-status"></div><div id="denial-notice-output" style="display:none;margin-top:8px;padding:8px;background:rgba(255,255,255,0.04);border-radius:4px;font-size:11px;color:#ccc;white-space:pre-wrap;"></div></div>';
+              case 'ehr-disclosures': return '<div class="pa-header"><span class="pa-title">EHR Disclosure Accounting (HITECH)</span><span><button id="ehr-refresh-btn" class="pa-action">Refresh</button></span></div><div class="pa-body"><div id="ehr-period" class="pa-status"></div><div id="ehr-list"></div><div id="ehr-empty" class="pa-empty" style="display:none;">No EHR TPO disclosures found.</div></div>';
+              case 'breach-log': return '<div class="pa-header"><span class="pa-title">Breach Log</span><span><button id="breach-refresh-btn" class="pa-action">Refresh</button></span></div><div class="pa-body"><div id="breach-log-list"></div><div id="breach-empty" class="pa-empty" style="display:none;">No breaches logged.</div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><span style="color:#aaa;font-size:11px;font-weight:bold;">Log New Breach</span><label>Description:<textarea id="breach-description" rows="2"></textarea></label><label>Nature of PHI:<input type="text" id="breach-nature-phi" /></label><label>Affected count:<input type="number" id="breach-affected-count" min="0" value="0" /></label><label>Mitigation:<textarea id="breach-mitigation" rows="2"></textarea></label><button id="breach-log-submit-btn" class="pa-action" style="margin-top:8px;">Log Breach</button><div id="breach-log-status" class="pa-status"></div></div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><span style="color:#aaa;font-size:11px;font-weight:bold;">Annual Report</span><label>Year:<input type="number" id="breach-report-year" style="width:80px;" /></label><button id="breach-report-btn" class="pa-action">Generate Report</button><div id="breach-report-result"></div></div></div>';
+              case 'representatives': return '<div class="pa-header"><span class="pa-title">Personal Representatives</span><span><button id="rep-refresh-btn" class="pa-action">Refresh</button></span></div><div class="pa-body"><div id="rep-list"></div><div id="rep-empty" class="pa-empty">No representatives registered.</div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><span style="color:#aaa;font-size:11px;font-weight:bold;">Register Representative</span><label>Rep Email:<input type="email" id="rep-email" /></label><label>Individual Email:<input type="email" id="rep-individual-email" /></label><label>Relationship:<select id="rep-relationship"><option value="">Select...</option><option value="Parent">Parent</option><option value="LegalGuardian">Legal Guardian</option><option value="HealthcarePOA">Healthcare POA</option><option value="CourtAppointed">Court Appointed</option><option value="Executor">Executor</option></select></label><label>Expiration:<input type="date" id="rep-expiration" /></label><label>Document Ref:<input type="text" id="rep-document-ref" /></label><label>Notes:<input type="text" id="rep-notes" /></label><button id="rep-register-btn" class="pa-action" style="margin-top:8px;">Register</button><div id="rep-register-status" class="pa-status"></div></div></div>';
+              case 'legal-holds': return '<div class="pa-header"><span class="pa-title">Legal Holds</span><span><button id="lh-refresh-btn" class="pa-action">Refresh</button></span></div><div class="pa-body"><div style="margin-bottom:8px;"><label style="color:#aaa;font-size:11px;">Filter:<select id="lh-status-filter" style="font-size:11px;background:#1a1a2e;color:#ccc;border:1px solid #555;border-radius:3px;padding:2px 4px;"><option value="">All</option><option value="Active" selected>Active</option><option value="Released">Released</option><option value="Expired">Expired</option></select></label></div><div id="lh-list"></div><div id="lh-empty" class="pa-empty" style="display:none;">No legal holds found.</div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><span style="color:#aaa;font-size:11px;font-weight:bold;">Place New Hold</span><label>Sheet:<select id="lh-sheet-name"><option value="">Select...</option><option value="SessionAuditLog">SessionAuditLog</option><option value="DataAuditLog">DataAuditLog</option><option value="DisclosureLog">DisclosureLog</option><option value="AccessRequests">AccessRequests</option><option value="AmendmentRequests">AmendmentRequests</option><option value="AmendmentNotifications">AmendmentNotifications</option><option value="BreachLog">BreachLog</option><option value="PersonalRepresentatives">PersonalRepresentatives</option><option value="LegalHolds">LegalHolds</option><option value="RetentionIntegrityLog">RetentionIntegrityLog</option></select></label><label>Hold Type:<select id="lh-hold-type"><option value="">Select...</option><option value="Litigation">Litigation</option><option value="Regulatory">Regulatory</option><option value="InternalInvestigation">Internal Investigation</option><option value="Audit">Audit</option><option value="Preservation">Preservation</option></select></label><label>Reason:<textarea id="lh-reason" rows="2"></textarea></label><label>Case Ref:<input type="text" id="lh-case-ref" /></label><label>Custodian:<input type="email" id="lh-custodian" /></label><label>Start Date:<input type="date" id="lh-start-date" /></label><label>End Date:<input type="date" id="lh-end-date" /></label><label>Expiration:<input type="date" id="lh-expiration" /></label><button id="lh-place-btn" class="pa-action" style="margin-top:8px;">Place Hold</button><div id="lh-place-status" class="pa-status"></div></div></div>';
+              case 'compliance-audit': return '<div class="pa-header"><span class="pa-title">Retention Compliance Audit</span><span><button id="ca-run-btn" class="pa-action">Run Audit</button></span></div><div class="pa-body"><div id="ca-result"></div><div id="ca-empty" class="pa-empty">Click "Run Audit" to check retention compliance.</div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><div class="pa-format-picker"><label><input type="radio" name="ca-export-format" value="json" checked /> JSON</label><label><input type="radio" name="ca-export-format" value="text" /> Text</label></div><button id="ca-export-btn" class="pa-action">Export</button><div id="ca-export-result"></div></div></div>';
+              case 'archive-integrity': return '<div class="pa-header"><span class="pa-title">Archive Integrity Verification</span><span><button id="ai-verify-btn" class="pa-action">Verify All</button></span></div><div class="pa-body"><div id="ai-result"></div><div id="ai-empty" class="pa-empty">Click "Verify All" to check archive checksums.</div></div>';
+              case 'retention-policy': return '<div class="pa-header"><span class="pa-title">Retention Policy</span><span><button id="rp-generate-btn" class="pa-action">Generate</button></span></div><div class="pa-body"><div id="rp-result"></div><div id="rp-empty" class="pa-empty">Click "Generate" to create a retention policy document.</div><div style="margin-top:10px;border-top:1px solid #333;padding-top:10px;"><div class="pa-format-picker"><label><input type="radio" name="rp-export-format" value="text" checked /> Text</label><label><input type="radio" name="rp-export-format" value="json" /> JSON</label></div><button id="rp-export-btn" class="pa-action">Export</button><div id="rp-export-result"></div></div></div>';
+              default: return '<div class="pa-empty">Unknown panel.</div>';
+            }
+          }
+
+          // Attach listeners per panel
+          function _attachAdminListeners(id) {
+            switch(id) {
+              case 'sessions':
+                var sRef = document.getElementById('admin-sessions-refresh');
+                if (sRef) sRef.addEventListener('click', function() { _loadSessions(); });
+                break;
+              case 'disclosures':
+                var gT = document.getElementById('disclosure-grouped-toggle');
+                if (gT) gT.addEventListener('change', function() { _loadDisclosures(); });
+                var eB = document.getElementById('disclosure-export-btn');
+                if (eB) eB.addEventListener('click', function() {
+                  _gasCall('exportDisclosureAccounting', [_adminToken, document.getElementById('disclosure-export-format').value], function(r) { _downloadResult(r, 'hipaa-disclosures.' + (r.format||'json')); });
+                });
+                break;
+              case 'data-export':
+                var radios = document.querySelectorAll('input[name="export-format"]');
+                for (var ri = 0; ri < radios.length; ri++) radios[ri].addEventListener('change', function() { var sa = document.getElementById('summary-agreement'); if(sa) sa.style.display = this.value === 'summary' ? '' : 'none'; });
+                var dl = document.getElementById('data-export-download-btn');
+                if (dl) dl.addEventListener('click', function() {
+                  var fmt = document.querySelector('input[name="export-format"]:checked').value;
+                  if (fmt === 'summary') {
+                    var cb = document.getElementById('summary-agree-checkbox'); if (!cb || !cb.checked) { _setStatus('data-export-status', 'Please agree first.', '#ef5350'); return; }
+                    _gasCall('generateDataSummary', [_adminToken], function(r) { _downloadResult(r, 'hipaa-summary.json'); _setStatus('data-export-status', 'Ready.', '#66bb6a'); });
+                  } else { _gasCall('requestDataExport', [_adminToken, fmt], function(r) { _downloadResult(r, 'hipaa-export.' + fmt); _setStatus('data-export-status', 'Ready.', '#66bb6a'); }); }
+                });
+                break;
+              case 'amendment':
+                var aS = document.getElementById('amend-submit-btn');
+                if (aS) aS.addEventListener('click', function() {
+                  var rId = document.getElementById('amend-record-id').value.trim(), cur = document.getElementById('amend-current').value.trim(), prop = document.getElementById('amend-proposed').value.trim(), rsn = document.getElementById('amend-reason').value.trim();
+                  if (!rId || !prop) { _setStatus('amend-status', 'Record ID and proposed correction required.'); return; }
+                  _setStatus('amend-status', 'Submitting...');
+                  _gasCall('requestAmendment', [_adminToken, rId, cur, prop, rsn], function(r) { if (r&&r.success) _setStatus('amend-status', 'Submitted. ID: '+(r.id||'N/A'), '#66bb6a'); else _setStatus('amend-status', 'Error: '+(r?r.message:''), '#ef5350'); });
+                });
+                break;
+              case 'amendment-review':
+                var arR = document.getElementById('amend-review-refresh');
+                if (arR) arR.addEventListener('click', function() { _loadPendingAmendments(); });
+                break;
+              case 'disagreement':
+                var dS = document.getElementById('disagree-submit-btn');
+                if (dS) dS.addEventListener('click', function() {
+                  var aId = document.getElementById('disagree-amendment-id').value.trim(), stmt = document.getElementById('disagree-statement').value.trim();
+                  if (!aId || !stmt) { _setStatus('disagree-status', 'Both fields required.'); return; }
+                  _setStatus('disagree-status', 'Submitting...');
+                  _gasCall('submitDisagreement', [_adminToken, aId, stmt], function(r) { if (r&&r.success) _setStatus('disagree-status', 'Filed.', '#66bb6a'); else _setStatus('disagree-status', 'Error: '+(r?r.message:''), '#ef5350'); });
+                });
+                break;
+              case 'extension':
+                var eS = document.getElementById('extension-submit-btn');
+                if (eS) eS.addEventListener('click', function() {
+                  var et = document.getElementById('extension-type').value, rId = document.getElementById('extension-request-id').value.trim(), rsn = document.getElementById('extension-reason').value.trim();
+                  if (!rId || !rsn) { _setStatus('extension-status', 'Request ID and reason required.'); return; }
+                  _setStatus('extension-status', 'Submitting...');
+                  var fn = et === 'amendment' ? 'requestAmendmentExtension' : 'requestAccessExtension';
+                  _gasCall(fn, [_adminToken, rId, rsn], function(r) { if (r&&r.success) _setStatus('extension-status', 'Granted. Deadline: '+(r.newDeadline||'N/A'), '#66bb6a'); else _setStatus('extension-status', 'Error: '+(r?r.message:''), '#ef5350'); });
+                });
+                break;
+              case 'denial-notice':
+                var dG = document.getElementById('denial-generate-btn');
+                if (dG) dG.addEventListener('click', function() {
+                  var rId = document.getElementById('denial-request-id').value.trim();
+                  if (!rId) { _setStatus('denial-status', 'Request ID required.'); return; }
+                  _setStatus('denial-status', 'Generating...');
+                  var params = {basis:document.getElementById('denial-basis').value.trim(), reviewable:document.getElementById('denial-reviewable').checked, contact:document.getElementById('denial-contact').value.trim(), office:document.getElementById('denial-office').value.trim()};
+                  _gasCall('generateDenialNotice', [_adminToken, document.getElementById('denial-request-type').value, rId, params], function(r) {
+                    if (r&&r.success) { _setStatus('denial-status', 'Generated.', '#66bb6a'); var out=document.getElementById('denial-notice-output'); if(out){out.style.display='';out.textContent=r.notice||'';} }
+                    else _setStatus('denial-status', 'Error: '+(r?r.message:''), '#ef5350');
+                  });
+                });
+                break;
+              case 'ehr-disclosures':
+                var eR = document.getElementById('ehr-refresh-btn');
+                if (eR) eR.addEventListener('click', function() { _loadEhrDisclosures(); });
+                break;
+              case 'breach-log':
+                var bR = document.getElementById('breach-refresh-btn');
+                if (bR) bR.addEventListener('click', function() { _loadBreachLog(); });
+                var bS = document.getElementById('breach-log-submit-btn');
+                if (bS) bS.addEventListener('click', function() {
+                  var desc = document.getElementById('breach-description').value.trim();
+                  if (!desc) { _setStatus('breach-log-status', 'Description required.'); return; }
+                  _setStatus('breach-log-status', 'Logging...');
+                  _gasCall('logBreach', [_adminToken, {description:desc, phiNature:document.getElementById('breach-nature-phi').value.trim(), count:document.getElementById('breach-affected-count').value, mitigation:document.getElementById('breach-mitigation').value.trim()}], function(r) {
+                    if (r&&r.success) { _setStatus('breach-log-status', 'Logged. ID: '+(r.id||'N/A'), '#66bb6a'); _loadBreachLog(); } else _setStatus('breach-log-status', 'Error: '+(r?r.message:''), '#ef5350');
+                  });
+                });
+                var bRpt = document.getElementById('breach-report-btn');
+                if (bRpt) bRpt.addEventListener('click', function() {
+                  document.getElementById('breach-report-result').innerHTML = '<div class="pa-status">Generating...</div>';
+                  _gasCall('getBreachReport', [_adminToken, document.getElementById('breach-report-year').value||''], function(r) {
+                    var el = document.getElementById('breach-report-result');
+                    if (!r||!r.success) el.innerHTML = '<div style="color:#ef5350">Error: '+_escA(r?r.message:'')+'</div>';
+                    else el.innerHTML = '<div class="pa-card" style="white-space:pre-wrap;font-size:10px;">'+_escA(r.report||'No breaches.')+'</div>';
+                  });
+                });
+                break;
+              case 'representatives':
+                var rpR = document.getElementById('rep-refresh-btn');
+                if (rpR) rpR.addEventListener('click', function() { _loadRepresentatives(); });
+                var rpReg = document.getElementById('rep-register-btn');
+                if (rpReg) rpReg.addEventListener('click', function() {
+                  var re = document.getElementById('rep-email').value.trim(), ie = document.getElementById('rep-individual-email').value.trim();
+                  if (!re || !ie) { _setStatus('rep-register-status', 'Both emails required.'); return; }
+                  _setStatus('rep-register-status', 'Registering...');
+                  _gasCall('registerPersonalRepresentative', [_adminToken, {repEmail:re, individualEmail:ie, relationship:document.getElementById('rep-relationship').value, expiration:document.getElementById('rep-expiration').value, documentRef:document.getElementById('rep-document-ref').value.trim(), notes:document.getElementById('rep-notes').value.trim()}], function(r) {
+                    if (r&&r.success) { _setStatus('rep-register-status', 'Registered.', '#66bb6a'); _loadRepresentatives(); } else _setStatus('rep-register-status', 'Error: '+(r?r.message:''), '#ef5350');
+                  });
+                });
+                break;
+              case 'legal-holds':
+                var lR = document.getElementById('lh-refresh-btn');
+                if (lR) lR.addEventListener('click', function() { _loadLegalHolds(); });
+                var lF = document.getElementById('lh-status-filter');
+                if (lF) lF.addEventListener('change', function() { _loadLegalHolds(); });
+                var lP = document.getElementById('lh-place-btn');
+                if (lP) lP.addEventListener('click', function() {
+                  var sh = document.getElementById('lh-sheet-name').value, ht = document.getElementById('lh-hold-type').value;
+                  if (!sh || !ht) { _setStatus('lh-place-status', 'Sheet and hold type required.'); return; }
+                  _setStatus('lh-place-status', 'Placing hold...');
+                  _gasCall('placeLegalHold', [_adminToken, {sheetName:sh, holdType:ht, reason:document.getElementById('lh-reason').value.trim(), caseRef:document.getElementById('lh-case-ref').value.trim(), custodian:document.getElementById('lh-custodian').value.trim(), startDate:document.getElementById('lh-start-date').value, endDate:document.getElementById('lh-end-date').value, expiration:document.getElementById('lh-expiration').value}], function(r) {
+                    if (r&&r.success) { _setStatus('lh-place-status', 'Hold placed. ID: '+(r.id||'N/A'), '#66bb6a'); _loadLegalHolds(); } else _setStatus('lh-place-status', 'Error: '+(r?r.message:''), '#ef5350');
+                  });
+                });
+                break;
+              case 'compliance-audit':
+                var caR = document.getElementById('ca-run-btn');
+                if (caR) caR.addEventListener('click', function() { document.getElementById('ca-result').innerHTML='<div class="pa-status">Running audit...</div>'; var ce=document.getElementById('ca-empty'); if(ce)ce.style.display='none'; _gasCall('auditRetentionCompliance', [_adminToken], function(r) { _renderSimpleResult('ca-result', r, 'report'); }); });
+                var caE = document.getElementById('ca-export-btn');
+                if (caE) caE.addEventListener('click', function() { var fmt=document.querySelector('input[name="ca-export-format"]:checked').value; _gasCall('getComplianceAuditReport', [_adminToken, fmt], function(r) { _downloadResult(r, 'audit-report.'+fmt); var el=document.getElementById('ca-export-result'); if(el)el.innerHTML='<div style="color:#66bb6a">Downloaded.</div>'; }); });
+                break;
+              case 'archive-integrity':
+                var aiV = document.getElementById('ai-verify-btn');
+                if (aiV) aiV.addEventListener('click', function() { document.getElementById('ai-result').innerHTML='<div class="pa-status">Verifying...</div>'; var ae=document.getElementById('ai-empty'); if(ae)ae.style.display='none'; _gasCall('verifyArchiveIntegrity', [_adminToken], function(r) { _renderSimpleResult('ai-result', r, 'report'); }); });
+                break;
+              case 'retention-policy':
+                var rpG = document.getElementById('rp-generate-btn');
+                if (rpG) rpG.addEventListener('click', function() { document.getElementById('rp-result').innerHTML='<div class="pa-status">Generating...</div>'; var re=document.getElementById('rp-empty'); if(re)re.style.display='none'; _gasCall('getRetentionPolicyDocument', [_adminToken], function(r) { _renderSimpleResult('rp-result', r, 'policy'); }); });
+                var rpE = document.getElementById('rp-export-btn');
+                if (rpE) rpE.addEventListener('click', function() { var fmt=document.querySelector('input[name="rp-export-format"]:checked').value; _gasCall('exportRetentionPolicy', [_adminToken, fmt], function(r) { _downloadResult(r, 'retention-policy.'+fmt); var el=document.getElementById('rp-export-result'); if(el)el.innerHTML='<div style="color:#66bb6a">Exported.</div>'; }); });
+                break;
+            }
+          }
+        })();
+        ` : ''}
+
+        // PROJECT END
         // PROJECT START — Add your project-specific UI handlers here
         // PROJECT END
       </script>
