@@ -1,4 +1,4 @@
-var VERSION = "v01.35g";
+var VERSION = "v01.36g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3453,6 +3453,7 @@ function doGet(e) {
         <button data-admin-panel="compliance-audit">Compliance Audit</button>
         <button data-admin-panel="archive-integrity">Archive Integrity</button>
         <button data-admin-panel="retention-policy">Retention Policy</button>
+        <button data-admin-panel="global-sessions" style="border-top:1px solid rgba(255,255,255,0.1);color:#66bb6a;">Global Sessions</button>
       </div>
       <div id="admin-panel-overlay">
         <div id="admin-panel">
@@ -4425,6 +4426,7 @@ function doGet(e) {
           function _loadAdminData(id) {
             switch(id) {
               case 'sessions': _loadSessions(); break;
+              case 'global-sessions': _loadGlobalSessions(); break;
               case 'disclosures': _loadDisclosures(); break;
               case 'amendment-review': _loadPendingAmendments(); break;
               case 'ehr-disclosures': _loadEhrDisclosures(); break;
@@ -4470,6 +4472,85 @@ function doGet(e) {
                 this.disabled = true;
                 _gasCall('adminSignOutUser', [_adminToken, email], function(r) {
                   if (r && r.success) { setTimeout(function(){ _loadSessions(); }, 500); }
+                });
+              });
+            }
+          }
+
+          // PROJECT: Global sessions loader (globalacl-only — cross-project session management)
+          function _loadGlobalSessions() {
+            var el = document.getElementById('gsp-session-list');
+            if (el) el.innerHTML = '<div class="pa-status">Loading sessions from all projects...</div>';
+            _gasCall('listGlobalSessions', [_adminToken], function(r) { _renderGlobalSessions(r); }, function(e) {
+              if (el) el.innerHTML = '<div class="pa-status" style="color:#ef5350;">Error: ' + String(e) + '</div>';
+            });
+          }
+          function _renderGlobalSessions(result) {
+            var list = document.getElementById('gsp-session-list');
+            if (!list) return;
+            if (!result) { list.innerHTML = '<div class="pa-empty">No data returned.</div>'; return; }
+            var sessions = result.sessions || [];
+            var projectStatus = result.projects || [];
+            if (sessions.length === 0 && projectStatus.length === 0) {
+              list.innerHTML = '<div class="pa-empty">No active sessions found across any project.</div>'; return;
+            }
+            var groups = {}; var projectOrder = [];
+            for (var p = 0; p < projectStatus.length; p++) {
+              var pName = projectStatus[p].name;
+              if (!groups[pName]) { groups[pName] = { sessions: [], status: projectStatus[p] }; projectOrder.push(pName); }
+            }
+            for (var i = 0; i < sessions.length; i++) {
+              var proj = sessions[i].project || 'Unknown';
+              if (!groups[proj]) { groups[proj] = { sessions: [], status: { name: proj, status: 'ok', count: 0 } }; projectOrder.push(proj); }
+              groups[proj].sessions.push(sessions[i]);
+            }
+            var html = '';
+            for (var g = 0; g < projectOrder.length; g++) {
+              var grpName = projectOrder[g]; var grp = groups[grpName];
+              html += '<div style="margin-bottom:12px;">';
+              html += '<div style="color:#90caf9;font-weight:bold;font-size:12px;margin-bottom:6px;padding:4px 8px;background:rgba(144,202,249,0.1);border-radius:4px;display:flex;justify-content:space-between;align-items:center;"><span>' + _escA(grpName) + '</span>';
+              if (grp.status.status === 'ok') { html += '<span style="color:#888;font-weight:normal;font-size:11px;">' + grp.sessions.length + ' session' + (grp.sessions.length !== 1 ? 's' : '') + '</span>'; }
+              else { html += '<span style="color:#ef5350;font-weight:normal;font-size:11px;">unavailable</span>'; }
+              html += '</div>';
+              if (grp.status.status !== 'ok') { html += '<div style="color:#ef5350;font-size:11px;padding:4px 8px;background:rgba(239,83,80,0.1);border-radius:4px;margin-bottom:6px;">' + _escA(grp.status.error || 'Could not reach project') + '</div>'; }
+              for (var s = 0; s < grp.sessions.length; s++) {
+                var sess = grp.sessions[s];
+                var selfClass = sess.isSelf ? 'border-color:#1565c0;' : '';
+                var selfLabel = sess.isSelf ? ' (you)' : '';
+                var roleStyle = sess.isEmergencyAccess ? 'background:rgba(255,152,0,0.2);color:#ff9800;' : '';
+                var absMin = Math.floor(sess.absoluteRemaining / 60); var absSec = sess.absoluteRemaining % 60;
+                var rollMin = Math.floor(sess.rollingRemaining / 60); var rollSec = sess.rollingRemaining % 60;
+                html += '<div style="background:rgba(255,255,255,0.05);border:1px solid #333;border-radius:6px;padding:8px 10px;margin-bottom:6px;' + selfClass + '">'
+                  + '<div><strong style="color:#fff;font-size:12px;">' + _escA(sess.email) + selfLabel + '</strong>'
+                  + '<span style="display:inline-block;background:rgba(144,202,249,0.15);color:#90caf9;padding:1px 5px;border-radius:3px;font-size:10px;text-transform:uppercase;margin-left:6px;' + roleStyle + '">' + _escA(sess.role) + (sess.isEmergencyAccess ? ' (emergency)' : '') + '</span></div>'
+                  + '<div style="color:#888;font-size:11px;margin-top:4px;">Signed in: ' + new Date(sess.createdAt).toLocaleTimeString() + '</div>'
+                  + '<div style="color:#888;font-size:11px;">Last activity: ' + new Date(sess.lastActivity).toLocaleTimeString() + '</div>'
+                  + '<div style="color:#888;font-size:11px;">Remaining: ' + absMin + 'm ' + absSec + 's abs / ' + rollMin + 'm ' + rollSec + 's rolling</div>';
+                html += '<button class="gsp-kick pa-action" data-email="' + _escA(sess.email) + '" data-project="' + _escA(grpName) + '" style="margin-top:6px;border-color:#ef5350;color:#ef5350;">Sign Out</button> ';
+                html += '<button class="gsp-kick-all pa-action" data-email="' + _escA(sess.email) + '" style="margin-top:6px;border-color:#ff9800;color:#ff9800;">Sign Out All Projects</button>';
+                html += '</div>';
+              }
+              html += '</div>';
+            }
+            list.innerHTML = html;
+            var kickBtns = list.querySelectorAll('.gsp-kick');
+            for (var k = 0; k < kickBtns.length; k++) {
+              kickBtns[k].addEventListener('click', function() {
+                var email = this.getAttribute('data-email');
+                var project = this.getAttribute('data-project');
+                this.textContent = 'Signing out...'; this.disabled = true;
+                _gasCall('adminGlobalSignOutUser', [_adminToken, email, project], function(r) {
+                  if (r && r.success) { setTimeout(function(){ _loadGlobalSessions(); }, 500); }
+                });
+              });
+            }
+            var kickAllBtns = list.querySelectorAll('.gsp-kick-all');
+            for (var ka = 0; ka < kickAllBtns.length; ka++) {
+              kickAllBtns[ka].addEventListener('click', function() {
+                var email = this.getAttribute('data-email');
+                this.textContent = 'Signing out...'; this.disabled = true;
+                _gasCall('adminGlobalSignOutUser', [_adminToken, email, 'ALL'], function(r) {
+                  if (r && r.success) { setTimeout(function(){ _loadGlobalSessions(); }, 500); }
                 });
               });
             }
@@ -4673,6 +4754,7 @@ function doGet(e) {
           function _getAdminPanelHtml(id) {
             switch(id) {
               case 'sessions': return '<div class="pa-header"><span class="pa-title">Active Sessions</span><span><button id="admin-sessions-refresh" class="pa-action">Refresh</button></span></div><div id="admin-session-list"><div class="pa-status">Loading sessions...</div></div>';
+              case 'global-sessions': return '<div class="pa-header"><span class="pa-title" style="color:#66bb6a;">Global Sessions \\u2014 All Projects</span><span><button id="gsp-refresh-btn" class="pa-action" style="border-color:#66bb6a;color:#66bb6a;">Refresh</button></span></div><div id="gsp-session-list"><div class="pa-status">Loading sessions from all projects...</div></div>';
               case 'disclosures': return '<div class="pa-header"><span class="pa-title">Disclosure Accounting</span><span><select id="disclosure-export-format" style="background:rgba(255,255,255,0.08);border:1px solid #555;color:#ccc;font:10px monospace;padding:1px 4px;border-radius:3px;"><option value="json">JSON</option><option value="csv">CSV</option></select><button id="disclosure-export-btn" class="pa-action">Export</button></span></div><div style="padding:4px 0;"><label style="display:inline;color:#aaa;font-size:11px;cursor:pointer;"><input type="checkbox" id="disclosure-grouped-toggle" checked /> Group repeated disclosures</label></div><div id="disclosure-period" class="pa-status"></div><div id="disclosure-list"></div><div id="disclosure-empty" class="pa-empty" style="display:none;">No disclosures found.</div>';
               case 'data-export': return '<div class="pa-header"><span class="pa-title">Download My Data</span></div><div class="pa-body"><p style="color:#aaa;font-size:11px;margin:0 0 8px;">Download a copy of all your data (HIPAA \\u00a7164.524).</p><div class="pa-format-picker"><label><input type="radio" name="export-format" value="json" checked> JSON</label><label><input type="radio" name="export-format" value="csv"> CSV</label><label><input type="radio" name="export-format" value="summary"> Summary</label></div><div id="summary-agreement" style="display:none;margin:6px 0;padding:6px;background:rgba(255,255,255,0.04);border-radius:4px;"><label style="font-size:10px;display:inline;cursor:pointer;"><input type="checkbox" id="summary-agree-checkbox" /> I agree to receive a summary</label></div><button id="data-export-download-btn" class="pa-action" style="margin-top:8px;">Download</button><div id="data-export-status" class="pa-status"></div></div>';
               case 'amendment': return '<div class="pa-header"><span class="pa-title">Request Record Correction</span></div><div class="pa-body"><label>Record to correct:<input type="text" id="amend-record-id" placeholder="Record ID" /></label><label>Current content:<textarea id="amend-current" rows="2"></textarea></label><label>Proposed correction:<textarea id="amend-proposed" rows="3"></textarea></label><label>Reason:<textarea id="amend-reason" rows="2"></textarea></label><button id="amend-submit-btn" class="pa-action" style="margin-top:8px;">Submit</button><div id="amend-status" class="pa-status"></div></div>';
@@ -4697,6 +4779,10 @@ function doGet(e) {
               case 'sessions':
                 var sRef = document.getElementById('admin-sessions-refresh');
                 if (sRef) sRef.addEventListener('click', function() { _loadSessions(); });
+                break;
+              case 'global-sessions':
+                var gsRef = document.getElementById('gsp-refresh-btn');
+                if (gsRef) gsRef.addEventListener('click', function() { _loadGlobalSessions(); });
                 break;
               case 'disclosures':
                 var gT = document.getElementById('disclosure-grouped-toggle');

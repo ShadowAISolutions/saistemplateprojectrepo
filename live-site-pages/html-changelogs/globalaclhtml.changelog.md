@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 74/50`
+`Sections: 75/50`
 
 ## [Unreleased]
+
+## [v01.76w] — 2026-04-03 02:21:25 PM EST — v08.61r
+
+### Changed
+- Global sessions management moved from page layer to application layer for consistency
 
 ## [v01.75w] — 2026-04-03 02:06:38 PM EST — v08.60r
 

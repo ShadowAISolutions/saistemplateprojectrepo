@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v08.61r] — 2026-04-03 02:21:25 PM EST
+
+> **Prompt:** "speaking of that, right now im only seeing the global sessions in globalacl when untoggling both html and has layers, its supposed to be on the gas layer, like the admin dropdown."
+
+### Changed
+- Moved global sessions panel from HTML layer to GAS layer in globalacl — now accessible as "Global Sessions" button in the GAS admin dropdown, using `google.script.run` directly instead of a separate iframe + postMessage pattern
+
+### Removed
+- Removed ~230 lines of orphaned global sessions HTML markup, CSS references, postMessage handlers, iframe management, and event listener code from globalacl.html — all replaced by GAS-layer implementation in globalacl.gs
+
+#### `globalacl.html` — v01.76w
+
+##### Changed
+- Global sessions management moved from page layer to application layer for consistency
+
+#### `globalacl.gs` — v01.36g
+
+##### Added
+- Global sessions panel now available from the admin tools dropdown — view and manage sessions across all projects
 
 ## [v08.60r] — 2026-04-03 02:06:38 PM EST
 

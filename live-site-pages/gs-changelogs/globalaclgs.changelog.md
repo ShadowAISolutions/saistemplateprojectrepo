@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.36g] — 2026-04-03 02:21:25 PM EST — v08.61r
+
+### Added
+- Global sessions panel now available from admin tools dropdown — view and manage sessions across all projects
 
 ## [v01.35g] — 2026-04-03 01:30:35 PM EST — v08.59r
 
