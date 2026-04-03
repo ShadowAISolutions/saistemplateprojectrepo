@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclhtml.changelog-archive.md](globalaclhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 73/50`
+`Sections: 74/50`
 
 ## [Unreleased]
+
+## [v01.75w] — 2026-04-03 02:06:38 PM EST — v08.60r
+
+### Fixed
+- Sign-in via Program Portal now works — the page was previously unable to complete authentication when opened from the portal
 
 ## [v01.74w] — 2026-04-03 12:08:19 PM EST — v08.55r
 
