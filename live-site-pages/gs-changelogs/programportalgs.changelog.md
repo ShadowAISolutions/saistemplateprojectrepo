@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 38/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v01.41g] — 2026-04-03 11:33:43 AM EST — v08.54r
+
+### Changed
+- Admin tools now appear directly in the portal dashboard instead of a separate popup — no extra windows or overlays
+- Session management integrated into the admin panel alongside compliance tools
 
 ## [v01.40g] — 2026-04-03 10:54:25 AM EST — v08.53r
 

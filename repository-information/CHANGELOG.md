@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v08.54r] — 2026-04-03 11:33:43 AM EST
+
+> **Prompt:** "why do i still see the admin dropdown in the html layer, i know its on that layer because the html toggle hides it when i use it. the admin dropdown should be separated from the html layer completely so its on the gas layer in its entirety, should not be part of the signout pill"
+
+### Changed
+- Integrated admin UI (badge, dropdown, all 14 HIPAA panels, sessions panel) into the main GAS dashboard served by `doGet()` — admin is now a native GAS application component, not a separate iframe
+- Admin UI is conditionally rendered server-side based on user role — non-admin users receive zero admin code in the served HTML
+- Admin badge, dropdown, and panel overlay render inside the GAS `gas-app` iframe alongside the portal dashboard content
+
+#### `programportal.gs` — v01.41g
+
+##### Added
+- Admin badge and dropdown rendered conditionally in `doGet()` dashboard HTML (only for admin role users)
+- Admin panel overlay with all 14 HIPAA panels + Sessions panel, using `google.script.run` directly
+- Sessions management integrated into admin panel (previously separate `action=adminSessions` iframe)
+- GAS layer toggle updated to include admin elements
 
 ## [v08.53r] — 2026-04-03 10:54:25 AM EST
 
