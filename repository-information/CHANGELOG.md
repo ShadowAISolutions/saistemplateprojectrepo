@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v08.59r] — 2026-04-03 01:30:35 PM EST
+
+> **Prompt:** "go ahead and fix it. the program portal, testauth1, globalgcl should all handle the admin portal identically within the gas layer, make sure thats the case"
+
+### Fixed
+- Added admin elements (`admin-badge`, `admin-dropdown-gas`, `admin-panel-overlay`) to the GAS layer toggle's `_gasLayerEls` array in testauth1.gs and globalacl.gs — the GAS toggle now hides/shows admin UI when toggling the layer, matching programportal.gs behavior
+- Switched globalacl.gs GAS toggle from inline `style.display` manipulation to CSS class approach (`gas-layer-hidden` with `!important`), matching the pattern used by programportal.gs and testauth1.gs for consistent override of inline styles
+
+#### `testauth1.gs` — v02.36g
+
+##### Fixed
+- GAS layer toggle now properly hides/shows admin dropdown, badge, and panel overlay
+
+#### `globalacl.gs` — v01.35g
+
+##### Fixed
+- GAS layer toggle now properly hides/shows admin dropdown, badge, and panel overlay
+- Toggle mechanism upgraded from inline style to CSS class approach for consistency
 
 ## [v08.58r] — 2026-04-03 01:11:45 PM EST
 

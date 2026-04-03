@@ -1,4 +1,4 @@
-var VERSION = "v01.34g";
+var VERSION = "v01.35g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3300,6 +3300,7 @@ function doGet(e) {
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
+        .gas-layer-hidden { display: none !important; }
         * { box-sizing: border-box; }
         html, body { height: 100%; margin: 0; overflow: auto; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #333; }
@@ -4336,14 +4337,19 @@ function doGet(e) {
         // GAS layer visibility toggle
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['acl-app', 'version'];
+          var _gasLayerEls = ['acl-app', 'version',
+            'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');
             _gasLayerEls.forEach(function(id) {
               var el = document.getElementById(id);
               if (!el) return;
-              el.style.display = _gasLayerVisible ? '' : 'none';
+              if (!_gasLayerVisible) {
+                el.classList.add('gas-layer-hidden');
+              } else {
+                el.classList.remove('gas-layer-hidden');
+              }
             });
             if (btn) {
               btn.textContent = _gasLayerVisible ? 'GAS' : 'GAS \\u25CB';

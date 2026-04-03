@@ -1,4 +1,4 @@
-var VERSION = "v02.35g";
+var VERSION = "v02.36g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -4630,7 +4630,8 @@ function doGet(e) {
         // paths that modify element display values independently via inline styles.
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['live-data-app', 'version', 'user-email'];
+          var _gasLayerEls = ['live-data-app', 'version', 'user-email',
+            'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');

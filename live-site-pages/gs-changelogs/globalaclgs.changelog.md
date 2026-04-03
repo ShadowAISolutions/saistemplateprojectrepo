@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.35g] — 2026-04-03 01:30:35 PM EST — v08.59r
+
+### Fixed
+- Admin tools panel now properly hides when toggling the application layer visibility
 
 ## [v01.34g] — 2026-04-03 12:45:15 PM EST — v08.57r
 
