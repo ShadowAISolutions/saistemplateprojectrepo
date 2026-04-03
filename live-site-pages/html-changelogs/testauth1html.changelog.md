@@ -3,7 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
+
+## [Unreleased]
+
+## [v03.84w] — 2026-04-03 01:11:45 PM EST — v08.58r
+
+### Removed
+- Removed duplicate admin dropdown and compliance panels — these controls now appear only within the application dashboard, eliminating a redundant copy that was visible outside the dashboard
 
 ## [v03.83w] — 2026-03-30 03:30:47 PM EST — v08.21r
 

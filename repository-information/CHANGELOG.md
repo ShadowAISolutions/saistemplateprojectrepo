@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v08.58r] — 2026-04-03 01:11:45 PM EST
+
+> **Prompt:** "why is it that when i toggle the gas layer in the testauth1, i still see the admin dropdown. it should be on the gas layer if its not already"
+
+### Removed
+- Removed all HIPAA admin UI from testauth1.html HTML layer (~2150 lines) — admin dropdown, sessions panel, Phase A/B/C panels (disclosure, data export, amendment, breach, representatives, legal holds, compliance audit, archive integrity, retention policy), and all associated CSS and JavaScript handlers. This was missed in the v08.55r cleanup that removed the same UI from programportal.html and globalacl.html. The GAS layer (testauth1.gs doGet()) already has the admin dropdown since v08.56r
+
+#### `testauth1.html` — v03.84w
+
+##### Removed
+- Removed duplicate admin dropdown and compliance panels — these controls now appear only within the application dashboard, eliminating a redundant copy that was visible outside the dashboard
 
 ## [v08.57r] — 2026-04-03 12:45:15 PM EST
 
