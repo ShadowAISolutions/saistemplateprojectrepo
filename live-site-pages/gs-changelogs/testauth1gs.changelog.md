@@ -3,8 +3,11 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 0/50`
+`Sections: 1/50`
 
 ## [Unreleased]
 
-*(No changes yet)*
+## [v02.38g] — 2026-04-05 12:10:48 PM EST — v08.71r
+
+### Changed
+- Added a control strip at the top of the page, matching the existing bottom strip

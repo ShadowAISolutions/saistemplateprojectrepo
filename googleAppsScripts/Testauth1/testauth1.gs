@@ -1,4 +1,4 @@
-var VERSION = "v02.37g";
+var VERSION = "v02.38g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3700,7 +3700,7 @@ function doGet(e) {
         #user-email { position: fixed; top: 35px; right: 8px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; }
         /* PROJECT: Live Data App styles */
         #live-data-app {
-          position: fixed; top: 0; left: 0; right: 0; bottom: 30px; z-index: 2;
+          position: fixed; top: 30px; left: 0; right: 0; bottom: 30px; z-index: 2;
           display: none; flex-direction: column;
           background: #0f1117; color: #e1e4e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           overflow: hidden;

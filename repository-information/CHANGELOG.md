@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 7/100`
+`Sections: 8/100`
 
 ## [Unreleased]
+
+## [v08.71r] — 2026-04-05 12:10:48 PM EST
+
+> **Prompt:** "in the screenshot you can see in testauth1 we have a little strip of space at the bottom for the gas layer, i want a similar strip of space at the top for the gas layer also"
+
+### Changed
+- Added 30px top strip space for the GAS layer in testauth1, mirroring the existing bottom strip — gives GAS UI elements (admin badge, user email) a dedicated top area
+
+#### `testauth1.gs` — v02.38g
+
+##### Changed
+- Adjusted layout spacing to show a control strip at the top of the page
 
 ## [v08.70r] — 2026-04-04 10:13:01 PM EST
 
