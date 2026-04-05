@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 23/100`
+`Sections: 24/100`
 
 ## [Unreleased]
+
+## [v08.87r] — 2026-04-05 04:28:54 PM EST
+
+> **Prompt:** "make sure that the templates are also identical, the idea is that if we use the gas-project-creator and associated setup-gas-project.sh , we should have an identical code to the testauth1 except for project specific code. make sure that this is the case"
+
+### Changed
+- Updated GAS auth templates (minimal-auth + test-auth) to match testauth1: unified RBAC to 4 roles with amend, added getData/heartbeat doPost() handlers, improved PROJECT_OVERRIDES comments, standardized placeholder strings
+- Updated HTML auth template to match testauth1: unified CSP headers, removed divergent user-select properties from pills, changed user-pill z-index to 10012, moved html-layer-hidden to PROJECT CSS, added DATA_POLL_INTERVAL, removed ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, added HIPAA comments
+- Updated HTML noauth template: removed divergent user-select properties from pills
+
+### Fixed
+- Fixed validateSessionForData() in both GAS auth templates — now extracts role/permissions from cache when data validation is disabled (prevents silent permission check failures)
 
 ## [v08.86r] — 2026-04-05 04:14:37 PM EST
 

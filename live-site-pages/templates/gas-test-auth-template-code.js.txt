@@ -23,7 +23,7 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 // AUTH CONFIG
 // ══════════════
 // Spreadsheet ID for project data (the GAS app reads/writes user data here).
-var SPREADSHEET_ID = "TEMPLATE_SPREADSHEET_ID";
+var SPREADSHEET_ID = "YOUR_SPREADSHEET_ID";
 var SHEET_NAME     = "Live_Sheet";
 var SOUND_FILE_ID = "";
 
@@ -42,8 +42,8 @@ var ACL_PAGE_NAME  = "TEMPLATE_ACL_PAGE_NAME";
 // Select a preset, then apply per-project overrides.
 var ACTIVE_PRESET = 'hipaa';     // 'standard' or 'hipaa'
 var PROJECT_OVERRIDES = {
-  ENABLE_DOMAIN_RESTRICTION: false,
-  ALLOWED_DOMAINS: [],
+  ENABLE_DOMAIN_RESTRICTION: false,  // allow any Google account (override hipaa default)
+  // ALLOWED_DOMAINS: ['yourdomain.com'],  // set this if you enable domain restriction
 };
 
 // ══════════════
@@ -57,9 +57,10 @@ var PROJECT_OVERRIDES = {
 // Hardcoded fallback — used ONLY when the Roles tab is missing or unreadable.
 // In normal operation, getRolesFromSpreadsheet() reads from the spreadsheet.
 var RBAC_ROLES_FALLBACK = {
-  admin:  ['read', 'write', 'delete', 'export', 'admin'],
-  editor: ['read', 'write', 'export'],
-  viewer: ['read']
+  admin:     ['read', 'write', 'delete', 'export', 'amend', 'admin'],
+  clinician: ['read', 'write', 'export', 'amend'],
+  billing:   ['read', 'export'],
+  viewer:    ['read']
 };
 
 // Default role when ACL does not specify one (fallback access via editor/viewer list)
@@ -529,7 +530,7 @@ function inspectCache() {
       }
     } catch(e) { Logger.log('ACL read error: ' + e.message); }
   }
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (hasSheet) {
     try {
       var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -708,6 +709,25 @@ function doPost(e) {
     return ContentService.createTextOutput(result);
   }
 
+  // Data poll via fetch() — eliminates iframe navigation churn that caused
+  // "A listener indicated an asynchronous response" errors in the console.
+  // Uses doPost + ContentService (which sets CORS headers on ANYONE_ANONYMOUS
+  // deployments) instead of doGet + HtmlService iframe navigation.
+  if (action === "getData") {
+    var dpToken = (e && e.parameter && e.parameter.token) || "";
+    var dpResult = processDataPoll(dpToken);
+    return ContentService.createTextOutput(JSON.stringify(dpResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Heartbeat via fetch() — same pattern as getData to eliminate iframe churn.
+  if (action === "heartbeat") {
+    var hbToken = (e && e.parameter && e.parameter.token) || "";
+    var hbResult = processHeartbeat(hbToken);
+    return ContentService.createTextOutput(JSON.stringify(hbResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   return ContentService.createTextOutput("Unknown action");
 }
 
@@ -753,7 +773,7 @@ function getSoundBase64() {
 }
 
 function writeVersionToSheet() {
-  if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
   try {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(SHEET_NAME);
@@ -763,7 +783,7 @@ function writeVersionToSheet() {
 }
 
 function readB1FromCacheOrSheet() {
-  if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return "";
+  if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return "";
   var cache = CacheService.getScriptCache();
   var cached = cache.get("live_b1");
   if (cached !== null) return cached;
@@ -995,7 +1015,7 @@ function auditLog(event, user, result, details) {
 
 function _writeAuditLogEntry(event, user, result, details) {
   try {
-    if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(AUTH_CONFIG.AUDIT_LOG_SHEET_NAME);
     if (!sheet) {
@@ -1026,7 +1046,7 @@ function _writeAuditLogEntry(event, user, result, details) {
 function dataAuditLog(user, action, resourceType, resourceId, details) {
   if (!AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG) return;
   try {
-    if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheetName = AUTH_CONFIG.DATA_AUDIT_LOG_SHEET_NAME || 'DataAuditLog';
     var sheet = ss.getSheetByName(sheetName);
@@ -1231,7 +1251,7 @@ function exchangeTokenForSession(accessToken) {
   // Check access via master ACL spreadsheet (or fall back to SPREADSHEET_ID editor/viewer list)
   // Returns RBAC-aware object: { hasAccess, role, isEmergencyAccess }
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   var accessResult = { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
   if (hasAcl || hasSheet) {
     accessResult = checkSpreadsheetAccess(userInfo.email);
@@ -1385,9 +1405,23 @@ function validateSession(sessionToken) {
 // =============================================
 
 function validateSessionForData(sessionToken, operationName) {
-  // Toggle check — standard preset skips validation entirely
+  // Toggle check — standard preset skips full validation but still extracts
+  // role/permissions from the session cache so permission checks work correctly
   if (!AUTH_CONFIG.ENABLE_DATA_OP_VALIDATION) {
-    return { email: 'unvalidated', displayName: '' };
+    var skipResult = { email: 'unvalidated', displayName: '', role: RBAC_DEFAULT_ROLE, permissions: [] };
+    if (sessionToken) {
+      try {
+        var skipCache = getEpochCache();
+        var skipRaw = skipCache.get("session_" + sessionToken);
+        if (skipRaw) {
+          var skipSession = JSON.parse(skipRaw);
+          skipResult.email = skipSession.email || 'unvalidated';
+          skipResult.role = skipSession.role || RBAC_DEFAULT_ROLE;
+          skipResult.permissions = skipSession.permissions || getRolesFromSpreadsheet()[skipResult.role] || [];
+        }
+      } catch (e) { /* fall through with defaults */ }
+    }
+    return skipResult;
   }
 
   if (!sessionToken || sessionToken.length < 32) {
@@ -1703,7 +1737,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
   // ONLY used when the ACL tab is NOT configured — when ACL exists, it is the
   // sole authority and the sharing list is not consulted.
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (!hasAcl && hasSheet) {
     var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
     var editors = ss.getEditors();
@@ -2603,9 +2637,9 @@ function doGet(e) {
         <form id="redirect-form" method="GET" action="${escapeHtml(EMBED_PAGE_URL)}" target="_top" style="display:inline;">
           <button id="reload-btn" type="submit" style="background:#2e7d32;color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-size:14px;white-space:nowrap;">🔄 Reload Page</button>
         </form>
-        \${SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID" ? '<h3 style="color:#333; margin:6px 0 2px 0;">${escapeHtml(SHEET_NAME)}</h3>' : ''}
+        \${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? '<h3 style="color:#333; margin:6px 0 2px 0;">${escapeHtml(SHEET_NAME)}</h3>' : ''}
         <div id="versionCount" style="margin-top:6px; font-size:12px; color:#888;"><span style="color:#666;">Versions:</span> <span id="versionCountValue">...</span></div>
-        \${SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID" ? '<div style="margin-top:4px;"><span style="font-size:14px; color:#666;">B1 Content:</span> <span id="live-b1" style="font-size:20px; font-weight:bold; color:#333;">...</span></div>' : ''}
+        \${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? '<div style="margin-top:4px;"><span style="font-size:14px; color:#666;">B1 Content:</span> <span id="live-b1" style="font-size:20px; font-weight:bold; color:#333;">...</span></div>' : ''}
       </div>
       </div>
       <div id="token-info">
@@ -2620,7 +2654,7 @@ function doGet(e) {
       </div>
       </div>
 
-      \${SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID" ? '<div id="sheet-container" style="width:90%;max-width:600px;text-align:center;"><iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe></div>' : ''}
+      \${SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID" ? '<div id="sheet-container" style="width:90%;max-width:600px;text-align:center;"><iframe id="sheet-iframe" src="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?rm=minimal" style="width:100%;height:300px;border:1px solid #ddd;border-radius:6px;"></iframe></div>' : ''}
 
       <div style="margin-top:10px;">
         <button onclick="playReadySound()" style="background:#1565c0;color:white;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-size:13px;">🔊 Test Sound (Drive)</button>
