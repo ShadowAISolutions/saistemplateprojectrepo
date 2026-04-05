@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 18/100`
+`Sections: 19/100`
 
 ## [Unreleased]
+
+## [v08.82r] — 2026-04-05 03:00:10 PM EST
+
+> **Prompt:** "i want the others to also have the top and bottom padding on the gas layer that the testauth1 has"
+
+### Changed
+- Added 30px top/bottom body padding to globalacl and programportal GAS layers, matching testauth1's layout strips for admin badge and version/toggle elements
+
+#### `globalacl.gs` — v01.39g
+
+##### Changed
+- Added top and bottom padding to match testauth1 layout
+
+#### `programportal.gs` — v01.48g
+
+##### Changed
+- Added top and bottom padding to match testauth1 layout
 
 ## [v08.81r] — 2026-04-05 02:52:59 PM EST
 

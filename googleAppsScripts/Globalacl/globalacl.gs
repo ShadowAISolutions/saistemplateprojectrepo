@@ -1,4 +1,4 @@
-var VERSION = "v01.38g";
+var VERSION = "v01.39g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3303,7 +3303,7 @@ function doGet(e) {
         .gas-layer-hidden { display: none !important; }
         * { box-sizing: border-box; }
         html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #333; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #333; padding-top: 30px; padding-bottom: 30px; box-sizing: border-box; }
         #acl-app { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .acl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 16px 20px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
         .acl-header h1 { margin: 0; font-size: 20px; color: #1565c0; }

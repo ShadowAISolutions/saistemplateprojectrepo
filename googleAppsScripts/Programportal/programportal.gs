@@ -1,4 +1,4 @@
-var VERSION = "v01.47g";
+var VERSION = "v01.48g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2660,7 +2660,7 @@ function doGet(e) {
           display: flex; flex-direction: column; align-items: center;
           justify-content: flex-start; min-height: 100vh;
           background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-          font-family: sans-serif; padding: 20px; box-sizing: border-box;
+          font-family: sans-serif; padding: 30px 20px; box-sizing: border-box;
         }
         .portal-header { text-align: center; margin-bottom: 40px; }
         .portal-header img { max-width: 80px; max-height: 80px; margin-bottom: 16px; border-radius: 12px; }
