@@ -4,47 +4,40 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-03 02:52:22 PM EST
-**Repo version:** v08.62r
+**Date:** 2026-04-04 08:49:08 PM EST
+**Repo version:** v08.64r
 
 ### What was done
-- **v08.59r** — Added admin elements (`admin-badge`, `admin-dropdown-gas`, `admin-panel-overlay`) to the GAS toggle's `_gasLayerEls` array in testauth1.gs and globalacl.gs. Also switched globalacl.gs from inline `style.display` to CSS class approach (`gas-layer-hidden`) matching programportal and testauth1
-- **v08.60r** — Fixed globalacl SSO sign-in crash. Root cause: `document.getElementById('admin-global-sessions-btn').addEventListener(...)` in globalacl.html threw TypeError because the button was removed in v08.55r but the JS handler was left behind, halting the entire script block before `attemptSSOAuth()` could execute. Added null guard
-- **v08.61r** — Moved global sessions panel from HTML layer to GAS layer in globalacl. Added "Global Sessions" button to the GAS admin dropdown, implemented `_loadGlobalSessions`/`_renderGlobalSessions` using `google.script.run` via `_gasCall()`. Removed ~230 lines of orphaned HTML code (markup, iframe, postMessage handlers, event listeners)
-- **v08.62r** — Moved admin badge, dropdown, and panel from top-right (`right: 12px`) to top-left (`left: 12px`) in all 3 auth GAS scripts. The HTML user-pill (z-index 9999+) in the top-right was covering the admin badge due to iframe stacking context constraints
+- **v08.63r** — Added mandatory "Incremental writing reminder" as the second bullet in every coding plan response in `chat-bookends.md`. Added new "Incremental Writing" behavioral rule in `behavioral-rules.md`. Updated CLAUDE.md Covers list
+- **v08.64r** — Archived ALL 484 version sections across 15 changelogs (1 repo, 8 HTML page, 6 GAS) to their respective archive files with SHA enrichment. All changelogs now at 0 sections (0/50 or 0/100)
 
 ### Where we left off
-- All admin UI is now exclusively on the GAS layer and positioned in the top-left to avoid overlap with the HTML user-pill
-- Global sessions feature is fully on the GAS layer (globalacl-only) — accessible via "Global Sessions" button in admin dropdown
+- All changelogs are clean — 0 sections in every changelog, all archived with SHA links
+- Incremental writing rule is now enforced via both coding plan reminder and behavioral rule
 - All changes pushed and merged to main
 
 ### Key decisions made
-- Admin badge moved to top-left corner to avoid iframe stacking context conflict with HTML user-pill (z-index inside iframe cannot exceed iframe's z-index in parent document)
-- Global sessions migrated from iframe+postMessage pattern to direct `google.script.run` via `_gasCall()` — simpler, no separate iframe needed
-- All three auth GAS scripts (testauth1, programportal, globalacl) must have identical admin dropdown/badge/panel CSS and toggle behavior
+- Used a Python script to batch-process all 15 changelogs for archive rotation rather than manual per-file edits
+- Pre-existing testauth1 archive entries (110 HTML, 38 GAS) without SHAs were left as-is — they predate SHA enrichment enforcement
 
 ### Active context
-- Branch: `claude/check-admin-dropdown-layer-Xr0Bg`
-- Repo version: v08.62r
-- testauth1.gs: v02.37g, programportal.gs: v01.44g, globalacl.gs: v01.37g
-- testauth1.html: v03.84w, programportal.html: v01.82w, globalacl.html: v01.76w
+- Branch: `claude/add-coding-plan-reminder-N2ekg`
+- Repo version: v08.64r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- CHANGELOG at 99/100 (approaching rotation threshold)
-- globalacl html changelog at 75/50 (over rotation threshold — needs rotation)
+- All changelogs at 0 sections — clean slate
 
 ## Previous Sessions
 
-**Date:** 2026-04-03 01:16:15 PM EST
-**Repo version:** v08.58r
+**Date:** 2026-04-03 02:52:22 PM EST
+**Repo version:** v08.62r
 
 ### What was done
-- **v08.57r** — Fixed truncated `sendHipaaEmail` in programportal.gs and globalacl.gs
-- **v08.58r** — Removed all HIPAA admin UI from testauth1.html HTML layer (~2150 lines)
+- **v08.59r–v08.62r** — Admin UI migration: moved admin elements to GAS toggle arrays, fixed globalacl SSO crash, moved global sessions panel to GAS layer, repositioned admin badge/dropdown to top-left on all auth GAS scripts
 
 ### Where we left off
-- All three auth pages had admin UI solely on the GAS layer — HTML layer cleanup complete
+- All admin UI exclusively on GAS layer, positioned top-left to avoid HTML user-pill overlap
 
 Developed by: ShadowAISolutions
