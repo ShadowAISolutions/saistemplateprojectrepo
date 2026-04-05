@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 12/100`
+`Sections: 13/100`
 
 ## [Unreleased]
+
+## [v08.76r] — 2026-04-05 12:52:45 PM EST
+
+> **Prompt:** "comment out the gas toggle in the gas layer (in case i want to enable it), and add the gas toggle to the html layer, make it so that the new gas toggle on the html layer is shown only when the gas layer exists"
+
+### Changed
+- Moved GAS layer toggle from GAS layer to HTML layer — now hides/shows the entire GAS iframe instead of individual elements within it, enabling true full hide of the GAS layer
+- GAS toggle in GAS layer commented out (preserved for re-enable if needed)
+- HTML-layer GAS toggle only appears when the `#gas-app` iframe exists in the DOM
+
+#### `testauth1.gs` — v02.43g
+
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.html` — v03.86w
+
+##### Added
+- Added GAS layer toggle that fully hides the GAS iframe
 
 ## [v08.75r] — 2026-04-05 12:37:59 PM EST
 
