@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 16/100`
+`Sections: 17/100`
 
 ## [Unreleased]
+
+## [v08.80r] — 2026-04-05 02:42:37 PM EST
+
+> **Prompt:** "as per the screenshot in testauth1, make it so that the admin button is centered vertically in the white area, same of the other elements on the html layer within the white areas, also make it so that the pills on the right side are moved a bit to the left so that when a scollbar appears they are not overlapping it"
+
+### Changed
+- Centered admin badge vertically in the top 30px strip of the GAS layer (top: 12px → 7px)
+- Adjusted admin dropdown position to match badge shift (top: 36px → 31px)
+- Centered HTML/GAS layer toggle buttons vertically in the bottom strip (bottom: 8px → 7px)
+- Moved all right-side pills from right: 8px to right: 22px to prevent scrollbar overlap: version indicator, GAS pill, SSO indicator, auth timers, user pill, and warning banners
+- Moved GAS user-email display from right: 8px to right: 22px for consistency
+
+#### `testauth1.html` — v03.89w
+
+##### Changed
+- Controls no longer overlap with the browser scrollbar
+- Bottom toggle buttons better centered in their area
+
+#### `testauth1.gs` — v02.44g
+
+##### Changed
+- Admin button better centered in the header bar
+- User info positioned to avoid scrollbar overlap
 
 ## [v08.79r] — 2026-04-05 01:22:20 PM EST
 
