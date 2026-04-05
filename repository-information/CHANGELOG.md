@@ -3,9 +3,45 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 17/100`
+`Sections: 18/100`
 
 ## [Unreleased]
+
+## [v08.81r] — 2026-04-05 02:52:59 PM EST
+
+> **Prompt:** "ok good. we have made a bunch of changes in the last 2 sessions with the gas and html layer toggles and positioning of pills in testauth1. i want those changes to be propagated to the other environments, i.e. globalacl and programportal"
+
+### Changed
+- Propagated pill positioning and admin badge centering changes from testauth1 to globalacl and programportal
+- All right-side pills shifted from right: 8px to right: 22px on both pages (version indicator, GAS pill, SSO indicator, auth timers, user pill, warning banners)
+- Admin badge centered vertically in top strip (top: 12px → 7px) on both GAS files
+- Admin dropdown position adjusted (top: 36px → 31px) on both GAS files
+- GAS version label centered in bottom strip (bottom: 8px → 9px) on both GAS files
+- HTML/GAS layer toggle buttons centered (bottom: 8px → 7px) on both environments
+
+#### `globalacl.html` — v01.77w
+
+##### Changed
+- Controls no longer overlap with the browser scrollbar
+- Bottom toggle buttons better centered in their area
+
+#### `globalacl.gs` — v01.38g
+
+##### Changed
+- Admin button better centered in the header bar
+- GAS toggle button better centered in its area
+
+#### `programportal.html` — v01.83w
+
+##### Changed
+- Controls no longer overlap with the browser scrollbar
+- Bottom toggle buttons better centered in their area
+
+#### `programportal.gs` — v01.47g
+
+##### Changed
+- Admin button better centered in the header bar
+- GAS toggle button better centered in its area
 
 ## [v08.80r] — 2026-04-05 02:42:37 PM EST
 
