@@ -32,12 +32,12 @@ function doGet() {
       <style>
         html, body { height: 100%; margin: 0; overflow: auto; }
         body { font-family: Arial; }
-        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
+        #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
       </style>
     </head>
     <body>
       <h2 id="version">${VERSION}</h2>
-      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
       <script>
         // GAS layer visibility toggle

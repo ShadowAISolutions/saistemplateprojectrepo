@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 21/100`
+`Sections: 22/100`
 
 ## [Unreleased]
+
+## [v08.85r] — 2026-04-05 03:20:35 PM EST
+
+> **Prompt:** "ok, now these changes we have made to all of these, make them also apply to the templates and associated setup-gas-project.sh for the gas-project-creator"
+
+### Changed
+- Propagated pill and admin badge positioning changes to all 6 template files and gas-project-creator.html
+- HTML templates (noauth + auth): right-side pills `right: 8px` → `right: 22px`, html-layer-toggle `bottom: 8px` → `bottom: 7px`
+- GAS templates (all 4): `#version` `bottom: 8px` → `bottom: 9px`, gas-layer-toggle `bottom: 8px` → `bottom: 7px`
+- GAS auth templates (2): admin badge normalized (dark bg, border, opacity hover, `top: 7px; left: 12px`), dropdown `top: 31px; left: 12px`
+- gas-project-creator.html: version indicator `right: 8px` → `right: 22px`
+- setup-gas-project.sh: no changes needed (copies from templates)
+
+#### `gas-project-creator.html` — v01.29w
+
+##### Changed
+- Version indicator no longer overlaps with the browser scrollbar
 
 ## [v08.84r] — 2026-04-05 03:11:35 PM EST
 

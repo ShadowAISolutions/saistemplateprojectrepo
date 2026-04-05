@@ -43,12 +43,12 @@ function doGet() {
         #token-info div { margin-bottom: 2px; }
         #live-b1 { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 4px; text-align: center; }
         #sheet-iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 6px; }
-        #version { position: fixed; bottom: 8px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
+        #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
       </style>
     </head>
     <body>
       <h2 id="version">${VERSION}</h2>
-      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
       <div style="display:flex; align-items:flex-start; justify-content:center; width:100%; gap:20px; padding:0 20px; box-sizing:border-box;">
       <div style="text-align:center; flex:0 1 auto;">
       <h1 id="title" style="font-size: 28px; margin: 0 0 4px 0;">${TITLE}</h1>
