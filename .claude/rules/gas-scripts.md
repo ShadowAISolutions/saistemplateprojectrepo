@@ -23,7 +23,6 @@ Each GAS project has a code file and a corresponding embedding page. Register th
 
 | Project | Code File | Config File | Embedding Page |
 |---------|-----------|-------------|----------------|
-| Index | `googleAppsScripts/Index/index.gs` | `googleAppsScripts/Index/index.config.json` | `live-site-pages/index.html` |
 
 
 ## GAS Project Config (config.json)
@@ -31,9 +30,9 @@ Each GAS project has a code file and a corresponding embedding page. Register th
 Each GAS project directory contains a `<page-name>.config.json` file that is the **single source of truth** for project-unique variables. This mirrors the `version.txt` pattern — one small file to edit, with sync rules that propagate values to `<page-name>.gs` and the embedding HTML page.
 
 ### Naming convention
-All GAS files are named after the HTML page they serve — mirroring the `indexhtml.version.txt` pattern:
-- `index.gs` — GAS code for `index.html`
-- `index.config.json` — config for `index.html`
+All GAS files are named after the HTML page they serve — mirroring the `testauth1html.version.txt` pattern:
+- `testauth1.gs` — GAS code for `testauth1.html`
+- `testauth1.config.json` — config for `testauth1.html`
 - `dashboard.gs` — GAS code for `dashboard.html`
 - `dashboard.config.json` — config for `dashboard.html`
 

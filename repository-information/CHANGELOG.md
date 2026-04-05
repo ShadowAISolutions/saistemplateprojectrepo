@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 3/100`
+`Sections: 4/100`
 
 ## [Unreleased]
+
+## [v08.67r] — 2026-04-04 09:37:16 PM EST
+
+> **Prompt:** "remove the index environment completely, in the project structure leave the public website divider but have it say (No public-site pages yet)"
+
+### Removed
+- Completely removed the index environment — deleted index.html, Index/ GAS directory, all version/changelog files, and index-diagram.md
+- Removed index.html from programportal.gs navigation menu (bumped v01.45g → v01.46g)
+- Removed Index from GAS Projects table in gas-scripts.md
+- Removed INDEX/GAS_INDEX nodes and all edges from REPO-ARCHITECTURE.md flowchart diagram
+- Updated README tree: replaced index.html entry with "(No public-site pages yet)" placeholder under Public Website divider
+- Updated gas-project-creator-diagram.md, html-pages.md, and gas-scripts.md to remove index-specific references
+
+#### `programportal.gs` — v01.46g
+##### Changed
+- Removed Website (index.html) entry from the project navigation menu
 
 ## [v08.66r] — 2026-04-04 09:25:47 PM EST
 
