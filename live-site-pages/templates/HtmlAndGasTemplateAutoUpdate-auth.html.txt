@@ -372,17 +372,17 @@
       <div class="auth-email" id="auth-email"></div>
     </div>
     <div id="auth-wall-reconnecting" style="display:none;text-align:center;">
-      <h2 style="color:#666;font-weight:normal;">Reconnecting…</h2>
+      <h2 style="color:#666;font-weight:normal;">Reconnecting&hellip;</h2>
       <div class="auth-pulse-dots"><span></span><span></span><span></span></div>
       <ul id="reconnect-checklist" class="reconnect-checklist">
         <li id="rc-stage-verify" class="stage-pending"><span class="chk-icon"></span>Verifying your session</li>
         <li id="rc-stage-sso" class="stage-pending" style="display:none;"><span class="chk-icon"></span>Preparing sign-in for linked apps</li>
-        <li id="rc-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
+        <li id="rc-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Session restored</li>
       </ul>
     </div>
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
-      <h2 style="color:#666;font-weight:normal;">Signing in…</h2>
-      <p id="signing-in-subtitle" style="color:#999;display:none;">Setting up your session</p>
+      <h2 style="color:#666;font-weight:normal;">Signing in&hellip;</h2>
+      <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
       <div class="auth-spinner"></div>
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
@@ -400,7 +400,7 @@
             <li id="sub-starting" class="stage-pending"><span class="chk-icon"></span>Initializing</li>
           </ul>
         </li>
-        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Confirming session with server</li>
+        <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Sign-in complete</li>
       </ul>
     </div>
   </div>
@@ -2384,7 +2384,7 @@
       'Sending credentials\u2026': 'stage-verifying',
       'Creating your session\u2026': 'stage-creating',
       'Loading application\u2026': 'stage-loading',
-      'Almost ready\u2026': 'stage-ready'
+      'Sign-in complete': 'stage-ready'
     };
 
     function _formatStageTime(ms) {

@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 24/100`
+`Sections: 25/100`
 
 ## [Unreleased]
+
+## [v08.88r] — 2026-04-05 04:35:19 PM EST
+
+> **Prompt:** "yes continue"
+
+### Changed
+- Fixed HTML auth template checklist text to match testauth1: reconnect final stage → "Session restored", sign-in final stage → "Sign-in complete", JS stage map updated
+- Fixed HTML auth template sign-in subtitle: added margin-top:10px, removed default placeholder text
+- Standardized HTML entities: all auth headings now use `&hellip;` consistently (was mixing Unicode `…` and entity)
 
 ## [v08.87r] — 2026-04-05 04:28:54 PM EST
 
