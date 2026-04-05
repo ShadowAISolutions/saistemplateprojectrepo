@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v08.63r] — 2026-04-04 08:41:44 PM EST
+
+> **Prompt:** "in our repo, in the 🚩🚩CODING PLAN🚩🚩 after showing the prompt i send you, have a line which says the following, which is a reminder to you to follow it as part of the prompt, also add it to your claude.md so that it applies to every single action that you perform. "Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally""
+
+### Added
+- Added mandatory "Incremental writing reminder" as the second bullet in every coding plan response — reminds Claude to write in small chunks using Edit calls instead of large single Write calls
+- Added new "Incremental Writing" behavioral rule in `.claude/rules/behavioral-rules.md` — enforces incremental file creation and editing as a universal rule across all tasks
 
 ## [v08.62r] — 2026-04-03 02:47:47 PM EST
 

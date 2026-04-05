@@ -81,6 +81,13 @@ This rule applies to any future commands that could target a subset of pages —
   4. **Present the strongest option first** — when presenting choices, lead with the most elegant solution. Include alternatives for completeness, but make it clear which one you'd ship
 - **The default depth is maximum depth.** Do not wait for the user to say "think harder" or "be more creative" — that level of rigor should be the baseline for every troubleshooting and design task. Quick tasks (version bumps, timestamp updates, straightforward edits) do not need this treatment — apply it when the problem has genuine design space to explore
 
+## Incremental Writing
+- **Write in small chunks** — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally
+- This applies to all file creation and large edits: new files >100 lines, major rewrites, and any content that could be built section-by-section
+- For new files: use Write for a small skeleton/header, then Edit calls to add each section
+- For existing files: always use Edit calls to modify specific sections rather than rewriting the entire file
+- This rule reinforces the existing "Large file writes" guidance in Execution Style but applies universally — not just to files >500 lines
+
 ## Confidence Disclosure
 - When proposing a solution, **explicitly flag the confidence level** — distinguish between behavior you have confirmed (documentation, tested, directly observed) and behavior you have inferred by combining separate facts into an untested conclusion
 - This is broader than the Web Search Confidence rule (which covers web search results specifically). This applies to **any** solution — whether derived from research, reasoning, code reading, or experience. If the solution depends on two or more individually-confirmed facts working together in a way no source explicitly confirms, that combination is an untested inference and must be disclosed
