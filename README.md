@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-04 09:58:18 PM EST` · Repo version: `v08.69r`
+Last updated: `2026-04-04 10:13:01 PM EST` · Repo version: `v08.70r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -37,7 +37,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   🧜‍♀️  Architecture diagram  — ◽  No diagram
 
 <b>Repository Root ─────────────────────────────────────────────────────────────</b>
-<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REPO-ARCHITECTURE.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">v08.69r</a>
+<a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo">saistemplateprojectrepo/</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/REPO-ARCHITECTURE.md">🧜‍♀️</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">v08.70r</a>
 │
 <b>─── Live Site ────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages">live-site-pages/</a>             — [template] Deployed to GitHub Pages
@@ -132,7 +132,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │
 <b>─── Tests ────────────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests">tests/</a>                     — [template] Security &amp; integration tests
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests/offensive-security">offensive-security/</a>    — [template] Offensive security tests (Playwright)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests/offensive-security">offensive-security/</a>    — [template] Offensive security tests (Playwright)
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/HTML-AUTH-SECURITY-AUDIT.md">HTML-AUTH-SECURITY-AUDIT.md</a>        — [template] Independent security audit of HTML auth layer (HIPAA context)
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/README.md">README.md</a>                         — [template] Test suite documentation
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/SECURITY-FINDINGS.md">SECURITY-FINDINGS.md</a>              — [template] Comprehensive findings from all tests
@@ -147,6 +147,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_08_csp_bypass_resource_injection.py">test_08_csp_bypass_resource_injection.py</a> — [template] CSP bypass &amp; resource injection
 │       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/test_09_auth_state_manipulation.py">test_09_auth_state_manipulation.py</a> — [template] Auth state manipulation &amp; privilege escalation
 │       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/offensive-security/GAS-HIPAA-COMPLIANCE-ANALYSIS.md">GAS-HIPAA-COMPLIANCE-ANALYSIS.md</a>  — [template] GAS HIPAA compliance analysis under Workspace BAA
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/tests/defensive-security">defensive-security/</a>    — Defensive security validation tests (Playwright)
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/tests/defensive-security/test_01_csp_headers_validation.py">test_01_csp_headers_validation.py</a> — CSP &amp; security headers validation across all pages
 │
 <b>─── Repository Information ───────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information">repository-information/</a>    — [template]

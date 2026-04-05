@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 6/100`
+`Sections: 7/100`
 
 ## [Unreleased]
+
+## [v08.70r] — 2026-04-04 10:13:01 PM EST
+
+> **Prompt:** "in tests folder, add a defensive-security folder, and add something we can use to test defensive security"
+
+### Added
+- Created `tests/defensive-security/` folder with `test_01_csp_headers_validation.py` — Playwright-based defensive security test that validates CSP meta tags, required directives, Referrer-Policy, auth wall presence/absence, external script source whitelisting, and inline event handler detection across all deployed pages
 
 ## [v08.69r] — 2026-04-04 09:58:18 PM EST
 
