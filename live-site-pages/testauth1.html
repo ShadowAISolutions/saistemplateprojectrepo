@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.87w">
+  <meta name="build-version" content="v03.88w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -821,25 +821,18 @@
       checkForUpdate();
     })();
 
-    // PROJECT: GAS iframe creation deferred until after authentication (security hardening).
-    // The iframe is NOT created on page load — it is created by _createGasIframe() which is
-    // called from showApp() after the user successfully authenticates.
-    // REVERT NOTE: To restore pre-auth iframe loading (for debugging or if post-auth creation
-    // causes issues), uncomment the document.body.appendChild(f) line below and remove the
-    // _createGasIframe() call from showApp(). The iframe will then load in parallel with the
-    // auth wall as it did before v03.87w/v08.76r.
-    var _gasBaseUrlEncoded = 'Y2V4ZS93Xy1MTnB4N0otNGU0cUJtcDJLMVNoMkdYdy02Vk1XTWM2UEllTTZ3MFp0OGFIb0dhbklwS2l6NVNDZHBYNzNRbUtjemJjeWZLQS9zL3NvcmNhbS9tb2MuZWxnb29nLnRwaXJjcy8vOnNwdHRo';
-    function _createGasIframe() {
-      if (document.getElementById('gas-app')) return; // already created
-      if (!_gasBaseUrlEncoded) return;
-      var _u; try { _u = atob(_gasBaseUrlEncoded).split('').reverse().join(''); } catch(x) { return; }
+    (function() {
+      var _e = 'Y2V4ZS93Xy1MTnB4N0otNGU0cUJtcDJLMVNoMkdYdy02Vk1XTWM2UEllTTZ3MFp0OGFIb0dhbklwS2l6NVNDZHBYNzNRbUtjemJjeWZLQS9zL3NvcmNhbS9tb2MuZWxnb29nLnRwaXJjcy8vOnNwdHRo';
+      if (!_e) return;
+      var _u; try { _u = atob(_e).split('').reverse().join(''); } catch(x) { return; }
       if (!_u) return;
+      // cr34t3 1fr4m3
       var f = document.createElement(atob('aWZyYW1l'));
       f.id = 'gas-app';
       f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
       f.dataset.baseUrl = _u;
       document.body.appendChild(f);
-    }
+    })();
 
     // Changelog HTML sanitizer — strips dangerous elements and event handlers
     // Declared at top-level scope so both changelog rendering and security tests can access it
@@ -2374,6 +2367,7 @@
 
     function showAuthWall(message, email) {
       _authState = 'signed-out';
+      if (window._hideGasToggle) _hideGasToggle(); // PROJECT: hide GAS toggle on sign-out
       var wall = document.getElementById('auth-wall');
       var errorEl = document.getElementById('auth-error');
       var emailEl = document.getElementById('auth-email');
@@ -2843,8 +2837,7 @@
     function showApp(email, displayName, role) {
       _authState = 'authenticated';
       if (email) _ssoUserEmail = email;  // Hold for SSO sharing
-      // PROJECT: Create GAS iframe on first auth (deferred from page load for security)
-      _createGasIframe();
+      if (window._showGasToggle) _showGasToggle(); // PROJECT: show GAS toggle after auth
 
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
@@ -3867,14 +3860,9 @@
     })();
 
     // PROJECT: GAS layer visibility toggle — hides/shows the entire GAS iframe
-    // Only shown when the GAS iframe (#gas-app) exists in the DOM
+    // Only shown when the GAS iframe exists AND user is authenticated (auth wall hidden)
     (function() {
       var _gasVisible = true;
-      function _initGasToggle() {
-        var gasApp = document.getElementById('gas-app');
-        var btn = document.getElementById('gas-layer-toggle');
-        if (gasApp && btn) btn.style.display = '';
-      }
       window._toggleGasLayer = function() {
         var gasApp = document.getElementById('gas-app');
         var btn = document.getElementById('gas-layer-toggle');
@@ -3886,13 +3874,14 @@
           btn.style.borderColor = _gasVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
         }
       };
-      // Check periodically until gas-app appears (it's created dynamically)
-      var _checkInterval = setInterval(function() {
-        if (document.getElementById('gas-app')) {
-          _initGasToggle();
-          clearInterval(_checkInterval);
-        }
-      }, 500);
+      window._showGasToggle = function() {
+        var btn = document.getElementById('gas-layer-toggle');
+        if (btn && document.getElementById('gas-app')) btn.style.display = '';
+      };
+      window._hideGasToggle = function() {
+        var btn = document.getElementById('gas-layer-toggle');
+        if (btn) btn.style.display = 'none';
+      };
     })();
 
     // Security test registry — each test has a name and a run function

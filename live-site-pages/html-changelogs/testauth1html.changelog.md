@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v03.88w] — 2026-04-05 01:10:05 PM EST — v08.78r
+
+### Fixed
+- Fixed sign-in getting stuck at "Requesting sign-in from Google"
+- GAS toggle button no longer visible on the sign-in page
 
 ## [v03.87w] — 2026-04-05 01:03:54 PM EST — v08.77r
 

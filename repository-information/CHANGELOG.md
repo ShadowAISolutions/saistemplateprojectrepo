@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 14/100`
+`Sections: 15/100`
 
 ## [Unreleased]
+
+## [v08.78r] — 2026-04-05 01:10:05 PM EST
+
+> **Prompt:** "unfortunately, now we are getting stuck at requesting sign-in from google" / "wait so if its going to load it anyway, just revert it to how we had it"
+
+### Fixed
+- Reverted deferred GAS iframe creation — restored iframe loading on page load (needed for auth token exchange with GAS backend)
+- GAS toggle button now hidden on sign-in page and shown only after authentication — `showAuthWall()` hides it, `showApp()` shows it
+
+#### `testauth1.html` — v03.88w
+
+##### Fixed
+- Fixed sign-in getting stuck at "Requesting sign-in from Google"
+- GAS toggle button no longer visible on the sign-in page
 
 ## [v08.77r] — 2026-04-05 01:03:54 PM EST
 
