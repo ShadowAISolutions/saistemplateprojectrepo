@@ -204,7 +204,7 @@ Google Sheets is also BAA-covered, but if you put PHI in a Sheet and shared it p
 
 ### Related Documents in This Repository
 - [HTML-AUTH-SECURITY-AUDIT.md](HTML-AUTH-SECURITY-AUDIT.md) — the independent security audit (24 findings)
-- [10.1-SECURITY-REMEDIATION-GUIDE.md](../../repository-information/10.1-SECURITY-REMEDIATION-GUIDE.md) — implementation-ready fixes for all audit findings
+- [10.1-SECURITY-REMEDIATION-GUIDE.md](../../repository-information/archive%20info/10.1-SECURITY-REMEDIATION-GUIDE.md) — implementation-ready fixes for all audit findings
 
 ---
 

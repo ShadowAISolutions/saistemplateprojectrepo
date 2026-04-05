@@ -2,7 +2,7 @@
 
 > **Source of Truth** — This document contains every HIPAA requirement relevant to software development and coding for healthcare applications. It is derived from the unabridged regulatory text of **45 CFR Part 164** (the HIPAA Security Rule, Privacy Rule, and Breach Notification Rule) and supplemented by NIST implementation guidance and the 2025 Notice of Proposed Rulemaking (NPRM).
 >
-> **This document supersedes** `HIPAA-COMPLIANCE-REFERENCE.md` as the authoritative HIPAA reference for this project. The older document remains for historical context but should not be used for compliance decisions.
+> **This document supersedes** `archive info/HIPAA-COMPLIANCE-REFERENCE.md` as the authoritative HIPAA reference for this project. The older document remains for historical context but should not be used for compliance decisions.
 
 ## Authoritative Sources
 
