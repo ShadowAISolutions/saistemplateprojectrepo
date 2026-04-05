@@ -10,6 +10,243 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 <!-- Rotated 2026-03-30: 36 sections from 2026-03-26 and 2026-03-27 -->
 
+## [v03.84w] — 2026-04-03 01:11:45 PM EST — v08.58r — [c60afb4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c60afb43)
+
+### Removed
+- Removed duplicate admin dropdown and compliance panels — these controls now appear only within the application dashboard, eliminating a redundant copy that was visible outside the dashboard
+
+## [v03.83w] — 2026-03-30 03:30:47 PM EST — v08.21r — [7255efe](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7255efe9)
+
+### Fixed
+- Legal hold form now correctly lists all protected sheets for hold placement
+- Date fields are properly cleared when signing out
+
+### Added
+- Optional date pickers for setting hold date ranges and auto-expiration
+- Status filter to quickly find active, released, or expired holds
+- Hold cards now display date range and expiration information
+
+## [v03.82w] — 2026-03-30 01:35:41 PM EST — v08.19r — [20c3c0e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/20c3c0e5)
+
+### Fixed
+- Grouped disclosure toggle now defaults to the grouped view as intended
+- Disclosure recipients section now shows a functional list of prior recipients instead of being empty
+
+### Added
+- Breach log viewer showing all breaches within the retention period with status indicators and summary statistics
+- Approving an amendment now automatically shows prior disclosure recipients for easy notification
+
+## [v03.81w] — 2026-03-30 12:36:09 PM EST — v08.17r — [6ad2d3f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ad2d3fb)
+
+### Added
+- Extension Workflow panel — administrators can grant 30-day deadline extensions for access and amendment requests with written justification
+- Formal Denial Notice panel — generates structured denial documents with all required regulatory elements including appeal rights and complaint filing instructions
+- EHR Disclosures panel — view expanded disclosure accounting including treatment, payment, and operations disclosures with source tracking
+
+## [v03.80w] — 2026-03-30 11:13:25 AM EST — v08.13r — [a699793](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a699793d)
+
+### Added
+- Legal hold management panel for administrators — place, view, and release litigation holds on protected health data
+- Retention compliance audit panel — run comprehensive audits and export reports in JSON or text format
+- Archive integrity verification panel — verify SHA-256 checksums of archived records
+- Retention policy documentation panel — generate and export formal retention policy documents
+
+## [v03.79w] — 2026-03-30 09:36:36 AM EST — v08.10r — [4f32af7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4f32af71)
+
+### Added
+- Breach dashboard for administrators — view breach log, log new incidents, and generate annual reports
+- Personal representative management panel — register, view, and revoke authorized representatives
+- Grouped disclosure toggle — combine repeated disclosures to the same recipient in the disclosure accounting view
+- Summary export option — download a metadata-only summary of your health information instead of full records
+
+## [v03.78w] — 2026-03-30 07:29:44 AM EST — v08.07r — [873f00b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/873f00bd)
+
+### Fixed
+- Amendment review button now correctly hidden for non-admin users
+
+## [v03.77w] — 2026-03-29 02:39:56 AM EST — v07.75r — [b629793](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b6297935)
+
+### Changed
+- Parent stage timers now show "group" instead of "total" to distinguish from the grand total
+
+## [v03.76w] — 2026-03-29 02:29:20 AM EST — v07.74r — [62e6604](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/62e6604b)
+
+### Changed
+- Total elapsed timer now counts live from the start on the final checklist row
+
+## [v03.75w] — 2026-03-29 02:23:50 AM EST — v07.73r — [ed6ee05](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ed6ee059)
+
+### Changed
+- Total elapsed time now shows on the final checklist row instead of below the checklist
+
+## [v03.74w] — 2026-03-29 02:18:23 AM EST — v07.72r — [fc6fa50](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc6fa504)
+
+### Added
+- Total elapsed time now shown at the bottom of sign-in and sign-out checklists
+
+## [v03.73w] — 2026-03-29 01:54:51 AM EST — v07.70r — [76bf94b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/76bf94bf)
+
+### Added
+- "Sign-out complete" final step added to sign-out checklist
+
+## [v03.72w] — 2026-03-29 01:49:03 AM EST — v07.69r — [17cfcb3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/17cfcb3d)
+
+### Changed
+- Sign-out final step now reads "Waiting for sign-out confirmation"
+
+## [v03.71w] — 2026-03-29 01:43:18 AM EST — v07.68r — [7b763ad](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7b763ada)
+
+### Changed
+- Final sign-in step now reads "Sign-in complete" instead of "Confirming session with server"
+- Reconnecting final step now reads "Session restored"
+
+## [v03.70w] — 2026-03-29 01:36:33 AM EST — v07.67r — [33ecb4a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/33ecb4a9)
+
+### Changed
+- Renamed loading sub-steps to "Preparing interface" and "Initializing" for clearer descriptions
+
+## [v03.69w] — 2026-03-29 01:09:43 AM EST — v07.65r — [c986e07](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c986e07e)
+
+### Changed
+- Sign-in and sign-out checklists now show all sub-steps from the start instead of revealing them one at a time
+
+## [v03.68w] — 2026-03-28 09:11:25 PM EST — v07.63r — [ad3f32a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ad3f32a6)
+
+### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+## [v03.67w] — 2026-03-28 08:50:32 PM EST — v07.62r — [c9302e1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c9302e11)
+
+### Fixed
+- Signing in immediately after signing out no longer gets interrupted by a false "You have been signed out" message
+
+## [v03.66w] — 2026-03-28 08:23:32 PM EST — v07.61r — [62794da](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/62794dac)
+
+### Fixed
+- Signing in immediately after signing out no longer gets interrupted by a false "You have been signed out" message
+
+## [v03.65w] — 2026-03-28 07:48:08 PM EST — v07.60r — [15c9517](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/15c95177)
+
+### Fixed
+- Steps with sub-steps now show "total" next to their timer to distinguish from individual sub-step timers
+- Reconnecting checklist steps now show live timers while in progress
+
+## [v03.64w] — 2026-03-28 07:40:23 PM EST — v07.59r — [79001e7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/79001e78)
+
+### Fixed
+- Step timers now appear next to each step's text instead of being displaced by sub-steps
+
+## [v03.63w] — 2026-03-28 07:32:09 PM EST — v07.58r — [7e828fd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7e828fda)
+
+### Fixed
+- Sign-out "Waiting for server confirmation" now shows a live-updating timer while active
+- All sign-in and sign-out checklist steps now show live timers while in progress
+
+## [v03.62w] — 2026-03-28 06:58:25 PM EST — v07.57r — [e7ebd82](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e7ebd82d)
+
+### Fixed
+- "Exchanging credentials with server" now shows its total time again
+- "Server authenticating" sub-step now turns green when sign-in moves to the next stage
+
+## [v03.61w] — 2026-03-28 06:33:14 PM EST — v07.55r — [27aef21](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/27aef21f)
+
+### Fixed
+- Parent checklist stages with sub-steps no longer show a confusing duplicate total time
+
+## [v03.60w] — 2026-03-28 06:19:20 PM EST — v07.54r — [b95ba39](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b95ba39c)
+
+### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+## [v03.59w] — 2026-03-28 06:19:20 PM EST — v07.53r — [ac22478](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac224780)
+
+### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+## [v03.58w] — 2026-03-28 05:55:55 PM EST — v07.52r — [177fb81](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/177fb817)
+
+### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+## [v03.57w] — 2026-03-28 05:37:53 PM EST — v07.51r — [3c7b73c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3c7b73c1)
+
+### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+## [v03.56w] — 2026-03-28 05:01:25 PM EST — v07.49r — [2597b3a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2597b3ae)
+
+### Added
+- Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
+
+## [v03.55w] — 2026-03-28 04:41:33 PM EST — v07.48r — [0bf4927](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0bf49271)
+
+### Fixed
+- Sign-in checklist timers no longer accumulate across sign-out/sign-in cycles — timers reset cleanly on each new sign-in
+
+## [v03.54w] — 2026-03-28 04:33:31 PM EST — v07.47r — [079bfdd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/079bfdd4)
+
+### Added
+- Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
+- Sub-steps include: Connecting to server, Sending credentials, Server authenticating, Downloading app, and Starting up
+- Active sub-steps display a real-time elapsed timer that updates every 100ms
+
+## [v03.53w] — 2026-03-28 02:51:47 PM EST — v07.45r — [5eb9447](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5eb94471)
+
+### Fixed
+- Admin dropdown menu now appears above open panels instead of closing them
+
+## [v03.52w] — 2026-03-28 02:43:50 PM EST — v07.44r — [63da250](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/63da2504)
+
+### Fixed
+- Admin dropdown no longer hides behind open panels
+
+## [v03.51w] — 2026-03-28 02:39:19 PM EST — v07.43r — [cd0b5e4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cd0b5e49)
+
+### Changed
+- Admin navigation buttons (Sessions, Disclosures, My Data, Correction, Amendments, Disagree) now appear in a dropdown menu under the ADMIN badge instead of inline
+
+## [v03.50w] — 2026-03-28 02:24:26 PM EST — v07.42r — [67b4e62](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/67b4e62e)
+
+### Changed
+- Removed unused external font source from security policy
+
+## [v03.49w] — 2026-03-28 01:55:28 PM EST — v07.38r — [529e0db](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/529e0db5)
+
+### Changed
+- Toggle button repositioned to make room for version indicator at bottom-left
+
+## [v03.48w] — 2026-03-28 01:34:55 PM EST — v07.35r — [f3d4c7e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f3d4c7e9)
+
+### Fixed
+- Toggle button no longer causes controls to overlap or disappear when used repeatedly
+
+## [v03.47w] — 2026-03-28 12:53:44 AM EST — v07.34r — [09159d5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/09159d5a)
+
+### Fixed
+- Toggle button now hides/shows all controls simultaneously
+
+## [v03.46w] — 2026-03-28 12:43:27 AM EST — v07.33r — [45aa007](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/45aa0073)
+
+### Changed
+- Data refresh countdown moved from the session panel into the data interface header
+
+## [v03.45w] — 2026-03-28 12:35:52 AM EST — v07.32r — [7a4b7b7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a4b7b7a)
+
+### Added
+- "HTML" toggle button to hide/show page controls
+
+## [v03.44w] — 2026-03-28 12:28:26 AM EST — v07.31r — [3edd1c0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3edd1c0c)
+
+### Changed
+- Data refresh countdown timer restored in the status panel
+
+## [v03.43w] — 2026-03-28 12:12:58 AM EST — v07.30r — [678f9c1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/678f9c18)
+
+### Changed
+- Data table and controls now load inside the secure application layer for improved security
+
+Developed by: ShadowAISolutions
+
 ## [v03.42w] — 2026-03-27 11:48:48 PM EST — v07.29r — [355550e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/355550e1a3fea179b4fe447dabc7dc3fede8166f)
 
 ### Fixed

@@ -8,6 +8,278 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v02.37g] — 2026-04-03 02:47:47 PM EST — v08.62r — [a0b6e82](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a0b6e821)
+
+### Fixed
+- Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
+
+## [v02.36g] — 2026-04-03 01:30:35 PM EST — v08.59r — [28afef6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/28afef6c)
+
+### Fixed
+- Admin tools panel now properly hides when toggling the application layer visibility
+
+## [v02.35g] — 2026-04-03 12:24:34 PM EST — v08.56r — [b3d9a37](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b3d9a37d)
+
+### Added
+- Admin tools panel now available for administrator users within the application dashboard
+
+## [v02.34g] — 2026-04-02 01:20:10 PM EST — v08.52r — [ca08f65](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ca08f65b)
+
+### Changed
+- Minor internal improvements
+
+## [v02.32g] — 2026-03-30 01:35:41 PM EST — v08.19r — [20c3c0e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/20c3c0e5)
+
+### Added
+- Standalone breach alert sending function for better code organization
+- Configuration introspection for breach alert settings
+- Full breach log retrieval with retention-aware filtering and optional status/date filters
+- Automatic duplicate prevention when logging breaches from alerts
+
+### Changed
+- Breach alert sending is now a reusable standalone operation instead of embedded in detection logic
+
+## [v02.31g] — 2026-03-30 12:36:09 PM EST — v08.17r — [6ad2d3f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ad2d3fb)
+
+### Added
+- 30-day deadline extension workflows for access and amendment requests — administrators can now grant extensions with written notice
+- Formal denial notice generation with all legally required elements including complaint filing instructions
+- Expanded disclosure accounting to include treatment, payment, and operations disclosures with configurable lookback period
+- Business associate disclosure source tracking for enhanced regulatory compliance
+
+### Fixed
+- Improved disclosure data consistency across all accounting functions
+
+## [v02.30g] — 2026-03-30 12:00:52 PM EST — v08.15r — [0730fc1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0730fc10)
+
+### Added
+- Configurable compliance deadline settings — response timeframes for access requests, amendments, and breach notifications can now be adjusted without code changes
+- Disclosure records now track data category classification for enhanced regulatory tracking
+
+## [v02.29g] — 2026-03-30 11:13:25 AM EST — v08.13r — [a699793](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a699793d)
+
+### Added
+- Legal hold management — place, release, and query litigation holds that prevent automated archival of protected records
+- Retention compliance audit — comprehensive analysis of all protected sheets with status assessment and findings
+- Archive integrity verification — SHA-256 checksum computation and verification for archived records
+- Retention policy documentation — formal policy document generation with section-by-section regulatory coverage
+- Records under legal hold are now automatically excluded from the daily retention enforcement archival
+
+### Changed
+- Daily retention enforcement now uses "last in effect" date calculation instead of raw creation date for more accurate retention timing
+
+## [v02.28g] — 2026-03-30 09:36:36 AM EST — v08.10r — [4f32af7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4f32af71)
+
+### Added
+- Full HIPAA Phase B compliance extension — grouped disclosure accounting, summary PHI export, third-party amendment notifications, breach detection and alerting, breach logging with annual report, retention enforcement with automated scheduling, and personal representative access management
+- Breach detection now automatically evaluates security events and alerts when thresholds are exceeded
+- Retention enforcement can be scheduled to run automatically via time-driven triggers
+
+## [v02.27g] — 2026-03-30 07:29:44 AM EST — v08.07r — [873f00b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/873f00bd)
+
+### Security
+- Improved data export safety — values that could be interpreted as formulas are now sanitized before export
+
+## [v02.26g] — 2026-03-28 03:49:09 PM EST — v07.46r — [8cb043b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8cb043ba)
+
+### Added
+- Delete row now asks for confirmation before deleting — shows a styled dialog with row data preview
+- Double-tap on table cells now opens the editor on mobile devices
+- Mobile-friendly layout improvements for smaller screens
+
+## [v02.25g] — 2026-03-28 02:51:47 PM EST — v07.45r — [5eb9447](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5eb94471)
+
+### Fixed
+- Delete buttons now appear immediately when data loads instead of after the first refresh
+
+## [v02.24g] — 2026-03-28 02:16:42 PM EST — v07.41r — [18d3bac](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/18d3baca)
+
+### Changed
+- Data freshness indicator now shows "0s" at zero seconds and removed "ago" suffix for cleaner display
+
+## [v02.23g] — 2026-03-28 02:07:55 PM EST — v07.40r — [a743191](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a7431913)
+
+### Fixed
+- Data poll countdown now reaches 0 before polling instead of jumping from 2-3 seconds
+
+## [v02.22g] — 2026-03-28 01:59:03 PM EST — v07.39r — [4ce01a1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4ce01a10)
+
+### Fixed
+- Toggle buttons no longer overlap when both are in their toggled-off state
+
+## [v02.21g] — 2026-03-28 01:55:28 PM EST — v07.38r — [529e0db](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/529e0db5)
+
+### Fixed
+- Data poll countdown now starts immediately instead of showing "--" until first poll
+- Version indicator moved to leftmost position at bottom-left
+- Username moved below the navigation bar to avoid overlap
+
+## [v02.20g] — 2026-03-28 01:47:24 PM EST — v07.37r — [003eef9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/003eef93)
+
+### Fixed
+- Version indicator no longer overlaps with page controls at the bottom-left corner
+- Removed redundant email display that overlapped with the main header
+
+## [v02.19g] — 2026-03-28 01:39:47 PM EST — v07.36r — [0115cd2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0115cd2f)
+
+### Fixed
+- Toggle button no longer causes controls to overlap or disappear when used repeatedly
+
+## [v02.18g] — 2026-03-28 12:53:44 AM EST — v07.34r — [09159d5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/09159d5a)
+
+### Fixed
+- Toggle button now hides/shows all elements simultaneously
+
+## [v02.17g] — 2026-03-28 12:43:27 AM EST — v07.33r — [45aa007](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/45aa0073)
+
+### Changed
+- Data refresh countdown now shows in the header next to the connection status
+
+## [v02.16g] — 2026-03-28 12:35:52 AM EST — v07.32r — [7a4b7b7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a4b7b7a)
+
+### Added
+- "GAS" toggle button to hide/show the data interface
+
+## [v02.15g] — 2026-03-28 12:28:26 AM EST — v07.31r — [3edd1c0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3edd1c0c)
+
+### Changed
+- Data refresh countdown now reports its state to the status panel
+
+## [v02.14g] — 2026-03-28 12:12:58 AM EST — v07.30r — [678f9c1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/678f9c18)
+
+### Added
+- Data table, add row, delete row, cell editing, and dashboard now run directly in the secure application layer
+- Real-time data updates via direct server polling
+
+### Changed
+- All data operations now communicate directly with the server instead of relaying through the embedding page
+
+## [v02.13g] — 2026-03-27 09:52:43 PM EST — v07.24r — [e003944](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e0039442)
+
+### Added
+- You can now delete rows from the data table
+
+## [v02.12g] — 2026-03-27 09:14:05 PM EST — v07.21r — [e814c35](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e814c353)
+
+### Changed
+- Minor internal improvements
+
+## [v02.11g] — 2026-03-27 08:57:54 PM EST — v07.19r — [c1a81ad](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c1a81adb)
+
+### Changed
+- Minor internal improvements
+
+## [v02.10g] — 2026-03-27 07:51:34 PM EST — v07.17r — [c8862da](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8862da3)
+
+### Changed
+- Minor internal improvements
+
+## [v02.09g] — 2026-03-27 07:35:03 PM EST — v07.14r — [4f6e9ad](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4f6e9ad4)
+
+### Changed
+- Minor internal improvements
+
+## [v02.08g] — 2026-03-27 06:37:42 PM EST — v07.09r — [e7826e3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e7826e30)
+
+### Fixed
+- Adding rows to the live data table now works correctly
+
+## [v02.07g] — 2026-03-27 06:14:47 PM EST — v07.08r — [75de234](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/75de234d)
+
+### Added
+- You can now add new rows to the live data table directly from the page
+
+## [v02.06g] — 2026-03-25 11:30:27 PM EST — v06.74r — [cdfbe9c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cdfbe9cc)
+
+### Fixed
+- Data refresh now correctly validates your session before delivering updates
+
+## [v02.05g] — 2026-03-25 11:21:12 PM EST — v06.73r — [a6d770d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a6d770db)
+
+### Fixed
+- Data refresh now works correctly with session authentication
+
+## [v02.04g] — 2026-03-25 10:23:52 PM EST — v06.68r — [e3f0ac2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e3f0ac21)
+
+### Security
+- Data poll endpoint now validates session token before returning spreadsheet data
+
+## [v02.03g] — 2026-03-25 09:47:45 PM EST — v06.66r — [c8a789b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8a789bf)
+
+### Changed
+- Data updates now arrive through a dedicated lightweight channel instead of being bundled with session management — more consistent refresh timing
+
+## [v02.02g] — 2026-03-25 08:47:57 PM EST — v06.61r — [487e616](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/487e6160)
+
+### Fixed
+- Background data polling now works correctly — data updates are delivered reliably when you're idle
+
+## [v02.01g] — 2026-03-25 05:56:05 PM EST — v06.59r — [e4cf2f7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e4cf2f71)
+
+### Fixed
+- Heartbeat response time restored to normal speed — data updates no longer slow down the connection check
+
+## [v02.00g] — 2026-03-25 05:41:07 PM EST — v06.58r — [0764aa8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0764aa8d)
+
+### Added
+- Live data updates now arrive with every heartbeat — no extra loading or delays
+- Cell editing support — changes you make in the table are saved to the spreadsheet instantly
+- Data refreshes automatically when the spreadsheet is edited directly
+
+## [v01.99g] — 2026-03-23 08:34:55 PM EST — v06.43r — [6ee5f53](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ee5f536)
+
+### Added
+- Disagreement statement submission — when an amendment request is denied, you can now file a formal disagreement through the app
+
+## [v01.98g] — 2026-03-23 07:32:02 PM EST — v06.39r — [dddb39f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dddb39f4)
+
+### Fixed
+- Fixed disclosure accounting and amendment panels not loading — date values from spreadsheet are now properly converted to strings
+
+## [v01.97g] — 2026-03-23 07:13:41 PM EST — v06.38r — [be4106c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/be4106ca)
+
+### Removed
+- Removed the temporary data seeding endpoint — test data has been populated and the endpoint is no longer needed
+
+## [v01.96g] — 2026-03-23 06:56:11 PM EST — v06.37r — [ec35655](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ec35655e)
+
+### Changed
+- Sample data seeding now works via a direct URL call instead of through the app UI — more reliable for populating test data
+
+## [v01.95g] — 2026-03-23 06:29:26 PM EST — v06.36r — [fd9ca5d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fd9ca5d6)
+
+### Added
+- New "Seed Sample Data" feature — populates your account with sample disclosures, amendment requests, and clinical notes for testing
+
+## [v01.94g] — 2026-03-23 06:08:12 PM EST — v06.35r — [ee99c9b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ee99c9bc)
+
+### Fixed
+- Data download now works — you can export your data as JSON or CSV from the "My Data" panel
+- Improved error messages when sessions are interrupted — you'll see a clear "please sign in again" message instead of a generic error
+
+## [v01.93g] — 2026-03-23 02:41:17 PM EST — v06.30r — [3c16cf0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3c16cf00)
+
+### Fixed
+- Phase A postMessage communication — added listener page in `doGet()` for all HIPAA operations
+
+### Added
+- Admin function to list all pending amendment requests for the review panel
+
+## [v01.92g] — 2026-03-23 02:20:16 PM EST — v06.29r — [fab7c7b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fab7c7b3)
+
+### Added
+- Disclosure accounting: track and report PHI disclosures to external parties
+- Data export: download all your stored data in JSON or CSV format
+- Amendment requests: submit corrections to your health records
+- Admin amendment review: approve or deny submitted correction requests
+- Statement of disagreement: respond to denied amendment decisions
+- Amendment history: view the complete correction trail for any record
+
+## [v01.91g] — 2026-03-22 02:58:37 PM EST — v06.09r — [76f329f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/76f329fc)
+
+### Changed
+- Minor internal improvements
+
 ## [v01.90g] — 2026-03-21 05:14:49 PM EST — v05.73r — [84cc996c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/84cc996c)
 
 ### Fixed

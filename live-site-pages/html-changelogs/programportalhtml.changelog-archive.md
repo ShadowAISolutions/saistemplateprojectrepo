@@ -2,12 +2,429 @@
 
 Older version sections rotated from [programportalhtml.changelog.md](programportalhtml.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
+## [v01.82w] — 2026-04-03 12:08:19 PM EST — v08.55r — [ac33900](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac339008)
+
+### Removed
+- Admin dropdown and settings panels removed from page — admin features now load within the application dashboard
+
+## [v01.80w] — 2026-04-02 10:35:03 AM EST — v08.44r — [63dbdd3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/63dbdd31)
+
+### Fixed
+- HTML toggle now always visible; admin dropdown closes properly when selecting options
+
+## [v01.79w] — 2026-04-02 10:28:07 AM EST — v08.43r — [5c12e6b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5c12e6b1)
+
+### Fixed
+- HTML toggle now only appears after sign-in; GAS toggle moved to the application layer where it belongs
+
+## [v01.78w] — 2026-04-02 10:11:41 AM EST — v08.42r — [7ab92ab](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7ab92ab6)
+
+### Fixed
+- Layer toggle buttons now stay visible when toggling HTML or GAS layers on and off
+
+## [v01.77w] — 2026-04-02 10:06:03 AM EST — v08.41r — [dd61b5f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dd61b5ff)
+
+### Added
+- GAS Layer Toggle — quickly hide or show the application layer for a clean view of the page controls
+
+## [v01.76w] — 2026-04-02 09:54:42 AM EST — v08.40r — [a1e7767](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a1e77677)
+
+### Changed
+- Breach logging now captures mitigation steps and report year for full §164.404(c) compliance
+- Denial notices now include appeal indicator and contact information per §164.524(d)(2)
+- Legal holds form now supports status filtering, hold types, date ranges, and sheet selection
+- Representative registration now tracks authority expiration dates and notes
+
+## [v01.75w] — 2026-04-02 09:29:22 AM EST — v08.39r — [4b652e5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b652e5f)
+
+### Changed
+- Admin controls now appear in a compact dropdown menu instead of a long button bar
+
+## [v01.74w] — 2026-04-02 09:20:12 AM EST — v08.38r — [0c89a44](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0c89a44b)
+
+### Added
+- Full HIPAA compliance panel suite — access disclosures, request corrections, file disagreements, manage breach logs, legal holds, and more directly from this page
+
+## [v01.73w] — 2026-03-29 09:31:52 PM EST — v07.99r — [ccacaaf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ccacaaf0)
+
+### Changed
+- GAS toggle button removed from the sign-in page — it now only appears after authentication (moved to the GAS layer)
+
+## [v01.72w] — 2026-03-29 06:31:20 PM EST — v07.88r — [5cb1b26](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5cb1b266)
+
+### Fixed
+- HTML and GAS toggle buttons no longer overlap when both are toggled off
+
+## [v01.71w] — 2026-03-29 06:28:19 PM EST — v07.87r — [f19c835](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f19c8355)
+
+### Added
+- HTML layer visibility toggle button — hides/shows version pills, auth timers, and other overlay elements
+- GAS layer visibility toggle button — hides/shows the GAS application iframe
+
+## [v01.70w] — 2026-03-29 12:59:16 PM EST — v07.76r — [21443cf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/21443cfd)
+
+### Changed
+- Page renamed from Application Portal to Program Portal
+
+## [v01.69w] — 2026-03-29 02:39:56 AM EST — v07.75r — [b629793](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b6297935)
+
+### Changed
+- Parent stage timers now show "group" instead of "total" to distinguish from the grand total
+
+## [v01.68w] — 2026-03-29 02:29:20 AM EST — v07.74r — [62e6604](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/62e6604b)
+
+### Changed
+- Total elapsed timer now counts live from the start on the final checklist row
+
+## [v01.67w] — 2026-03-29 02:23:50 AM EST — v07.73r — [ed6ee05](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ed6ee059)
+
+### Changed
+- Total elapsed time now shows on the final checklist row instead of below the checklist
+
+## [v01.66w] — 2026-03-29 02:18:23 AM EST — v07.72r — [fc6fa50](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc6fa504)
+
+### Added
+- Total elapsed time now shown at the bottom of sign-in and sign-out checklists
+
+## [v01.65w] — 2026-03-29 01:54:51 AM EST — v07.70r — [76bf94b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/76bf94bf)
+
+### Added
+- "Sign-out complete" final step added to sign-out checklist
+
+## [v01.64w] — 2026-03-29 01:49:03 AM EST — v07.69r — [17cfcb3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/17cfcb3d)
+
+### Changed
+- Sign-out final step now reads "Waiting for sign-out confirmation"
+
+## [v01.63w] — 2026-03-29 01:43:18 AM EST — v07.68r — [7b763ad](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7b763ada)
+
+### Changed
+- Final sign-in step now reads "Sign-in complete" instead of "Confirming session with server"
+- Reconnecting final step now reads "Session restored"
+
+## [v01.62w] — 2026-03-29 01:36:33 AM EST — v07.67r — [33ecb4a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/33ecb4a9)
+
+### Changed
+- Renamed loading sub-steps to "Preparing interface" and "Initializing" for clearer descriptions
+
+## [v01.61w] — 2026-03-29 01:09:43 AM EST — v07.65r — [c986e07](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c986e07e)
+
+### Changed
+- Sign-in and sign-out checklists now show all sub-steps from the start instead of revealing them one at a time
+
+## [v01.60w] — 2026-03-28 09:11:25 PM EST — v07.63r — [ad3f32a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ad3f32a6)
+
+### Fixed
+- Sign-out no longer gets stuck on "Waiting for server confirmation"
+
+## [v01.59w] — 2026-03-28 08:50:32 PM EST — v07.62r — [c9302e1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c9302e11)
+
+### Fixed
+- Signing in immediately after signing out no longer gets interrupted by a false "You have been signed out" message
+
+## [v01.58w] — 2026-03-28 08:23:32 PM EST — v07.61r — [62794da](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/62794dac)
+
+### Fixed
+- Signing in immediately after signing out no longer gets interrupted by a false "You have been signed out" message
+
+## [v01.57w] — 2026-03-28 07:48:08 PM EST — v07.60r — [15c9517](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/15c95177)
+
+### Fixed
+- Steps with sub-steps now show "total" next to their timer to distinguish from individual sub-step timers
+- Reconnecting checklist steps now show live timers while in progress
+
+## [v01.56w] — 2026-03-28 07:40:23 PM EST — v07.59r — [79001e7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/79001e78)
+
+### Fixed
+- Step timers now appear next to each step's text instead of being displaced by sub-steps
+
+## [v01.55w] — 2026-03-28 07:32:09 PM EST — v07.58r — [7e828fd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7e828fda)
+
+### Fixed
+- Sign-out "Waiting for server confirmation" now shows a live-updating timer while active
+- All sign-in and sign-out checklist steps now show live timers while in progress
+
+## [v01.54w] — 2026-03-28 06:58:25 PM EST — v07.57r — [e7ebd82](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e7ebd82d)
+
+### Fixed
+- Parent stage total times restored, sub-steps now complete when parent stage transitions
+
+## [v01.53w] — 2026-03-28 06:33:14 PM EST — v07.55r — [27aef21](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/27aef21f)
+
+### Fixed
+- Parent checklist stages with sub-steps no longer show a confusing duplicate total time
+
+## [v01.52w] — 2026-03-28 06:19:20 PM EST — v07.54r — [b95ba39](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b95ba39c)
+
+### Fixed
+- Checklist timer values no longer carry over between sign-in and sign-out cycles
+
+## [v01.51w] — 2026-03-28 06:19:20 PM EST — v07.53r — [ac22478](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac224780)
+
+### Fixed
+- Parent stage total time now displays separately from sub-step times
+
+## [v01.50w] — 2026-03-28 05:55:55 PM EST — v07.52r — [177fb81](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/177fb817)
+
+### Fixed
+- Sub-step timers now freeze when completed — no longer show inflated times that keep growing
+
+## [v01.49w] — 2026-03-28 05:37:53 PM EST — v07.51r — [3c7b73c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3c7b73c1)
+
+### Changed
+- Checklist timers now display seconds with one decimal place instead of milliseconds
+
+## [v01.48w] — 2026-03-28 05:04:13 PM EST — v07.50r — [e41b902](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e41b9021)
+
+### Changed
+- Minor internal improvements
+
+## [v01.47w] — 2026-03-28 05:01:25 PM EST — v07.49r — [2597b3a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2597b3ae)
+
+### Added
+- Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
+- Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
+
+## [v01.46w] — 2026-03-27 07:18:05 PM EST — v07.13r — [eac3b54](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/eac3b541)
+
+### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+## [v01.45w] — 2026-03-27 07:00:26 PM EST — v07.11r — [bcef27f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bcef27f2)
+
+### Changed
+- Minor internal improvements
+
+## [v01.44w] — 2026-03-27 06:53:06 PM EST — v07.10r — [1147ef4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1147ef40)
+
+### Fixed
+- Eliminated font loading errors that appeared on every page load
+
+## [v01.43w] — 2026-03-26 02:29:03 PM EST — v06.99r — [0f3d15d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0f3d15dd)
+
+### Changed
+- Minor internal improvements
+
+## [v01.42w] — 2026-03-26 01:58:55 PM EST — v06.98r — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1)
+
+### Fixed
+- SSO status badge no longer appears when signed out or on the sign-in screen
+
+## [v01.41w] — 2026-03-26 01:17:37 PM EST — v06.97r — [c72027f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c72027f4)
+
+### Fixed
+- Fixed re-authentication to properly auto-select the same Google account without showing the account picker
+
+## [v01.40w] — 2026-03-26 12:58:10 PM EST — v06.96r — [c645e17](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c645e17b)
+
+### Changed
+- Re-authenticating now automatically signs you in with the same Google account instead of showing the account picker
+
+## [v01.39w] — 2026-03-26 10:49:30 AM EST — v06.92r — [a88695f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a88695ff)
+
+### Fixed
+- "Use Here" session reclaim no longer gets stuck on reconnecting
+
+## [v01.38w] — 2026-03-26 09:47:33 AM EST — v06.91r — [dfdd430](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dfdd4304)
+
+### Security
+- SSO re-acquisition after page refresh now verifies that the selected Google account matches your signed-in account — selecting a different account no longer falsely enables SSO for other applications
+
+## [v01.37w] — 2026-03-26 09:32:01 AM EST — v06.90r — [78fa23f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/78fa23f2)
+
+### Changed
+- SSO sign-in now shows the authentication progress checklist with timing alongside the source indicator
+
+## [v01.36w] — 2026-03-26 09:25:30 AM EST — v06.89r — [31dbf54](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/31dbf546)
+
+### Fixed
+- Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
+
+## [v01.35w] — 2026-03-26 08:35:21 AM EST — v06.86r — [048e3d5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/048e3d50)
+
+### Added
+- Sign-out now shows a real-time checklist (clearing session, notifying tabs, signing out connected apps, invalidating server session, waiting for confirmation) with timing for each step
+- Reconnecting now shows a real-time checklist (verifying session, preparing linked app sign-in, confirming with server) with timing for each step
+
+## [v01.34w] — 2026-03-26 08:23:47 AM EST — v06.85r — [2dfc3f4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2dfc3f40)
+
+### Added
+- Each sign-in step now shows how long it took to complete
+
+## [v01.33w] — 2026-03-26 08:19:16 AM EST — v06.84r — [b4cf4d2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b4cf4d2a)
+
+### Changed
+- Sign-in checklist steps now have clearer descriptions explaining what's happening at each stage
+
+## [v01.32w] — 2026-03-26 08:10:52 AM EST — v06.83r — [4d7123e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4d7123e1)
+
+### Changed
+- Sign-in progress now shows as a visual checklist under the spinner — you can see all steps at once with checkmarks as each completes
+
+## [v01.31w] — 2026-03-26 08:02:27 AM EST — v06.82r — [491ff0e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/491ff0e0)
+
+### Added
+- Sign-in now shows real-time progress messages ("Contacting Google…", "Verifying your identity…", "Creating your session…", "Almost ready…") so you can see exactly what stage of authentication you're at
+
+## [v01.30w] — 2026-03-25 09:07:53 AM EST — v06.44r — [8845bc4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8845bc44)
+
+### Fixed
+- Panels and overlays now close properly during sign-out, preventing UI glitches
+
+## [v01.29w] — 2026-03-23 10:12:15 AM EST — v06.25r — [ced1488](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ced14887)
+
+### Added
+- Click the SSO indicator when it shows "retry" to re-attempt Google sign-in for SSO
+
+## [v01.28w] — 2026-03-23 10:04:38 AM EST — v06.24r — [f2850cc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f2850cc2)
+
+### Added
+- SSO indicator now shows "dismissed" (red) when you close the Google sign-in popup without signing in
+
+## [v01.27w] — 2026-03-23 09:52:01 AM EST — v06.23r — [8a44282](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8a442821)
+
+### Fixed
+- SSO indicator no longer gets stuck on "pending" after closing the Google sign-in popup — now correctly shows "off"
+
+## [v01.26w] — 2026-03-23 09:42:59 AM EST — v06.22r — [b75c19f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b75c19f3)
+
+### Fixed
+- SSO indicator no longer stays on "pending" if you close the Google sign-in popup without signing in
+
+## [v01.25w] — 2026-03-23 09:34:07 AM EST — v06.21r — [b6d2f55](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b6d2f551)
+
+### Fixed
+- SSO readiness indicator now accurately tracks when the portal is ready to authenticate other applications
+
+## [v01.24w] — 2026-03-23 09:24:08 AM EST — v06.20r — [fee96e6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fee96e6e)
+
+### Fixed
+- SSO readiness indicator no longer hidden behind other status elements
+
+## [v01.23w] — 2026-03-23 09:19:18 AM EST — v06.19r — [266909f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/266909f4)
+
+### Changed
+- Replaced GIS popup indicator with standalone SSO readiness indicator — shows whether the portal is ready to authenticate other applications (off/pending/ready)
+
+## [v01.22w] — 2026-03-23 09:06:12 AM EST — v06.18r — [7c13056](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7c130563)
+
+### Added
+- GIS popup state indicator in the auth timers panel — shows whether Google sign-in is idle, running silently, or has a popup open
+
+## [v01.21w] — 2026-03-23 08:38:15 AM EST — v06.17r — [a9f4842](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a9f48420)
+
+### Added
+- New "Sign Out" and "Sign Out All" buttons — sign out of just this page or all connected pages at once
+
+## [v01.20w] — 2026-03-23 08:20:05 AM EST — v06.16r — [bc7e7f4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bc7e7f4e)
+
+### Fixed
+- Single sign-on now only shares authentication when this page is the designated SSO hub — other pages can no longer provide sign-in tokens to this portal
+
+## [v01.19w] — 2026-03-23 07:30:39 AM EST — v06.13r — [7ef54a9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7ef54a95)
+
+### Fixed
+- Removed verbose debug logging that could expose sensitive session information in browser console
+
+## [v01.18w] — 2026-03-22 03:19:28 PM EST — v06.12r — [3f380b4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3f380b44)
+
+### Fixed
+- Session countdown timer now matches server-side 15-minute HIPAA timeout
+
+## [v01.17w] — 2026-03-22 02:30:05 PM EST — v06.07r — [99debf5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/99debf55)
+
+### Changed
+- Minor internal improvements
+
+## [v01.16w] — 2026-03-22 02:05:02 PM EST — v06.05r — [d9ef905](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d9ef9056)
+
+### Fixed
+- Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
+
+## [v01.15w] — 2026-03-22 12:51:12 PM EST — v06.03r — [6f2bb24](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6f2bb24b)
+
+### Fixed
+- SSO preparation during reconnect now works reliably
+
+## [v01.14w] — 2026-03-22 12:45:46 PM EST — v06.02r — [1e13b23](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1e13b230)
+
+### Changed
+- SSO preparation now happens during reconnect instead of after sign-in completes
+
+## [v01.13w] — 2026-03-22 12:29:36 PM EST — v06.00r — [5cdb9be](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5cdb9bea)
+
+### Changed
+- Reconnecting message now mentions that sign-in for linked apps is being prepared
+
+## [v01.12w] — 2026-03-22 12:23:54 PM EST — v05.99r — [525b128](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/525b1284)
+
+### Changed
+- Portal now designated as SSO provider — re-acquires Google token after reconnect for seamless child app authentication
+
+## [v01.11w] — 2026-03-22 12:08:17 PM EST — v05.98r — [ef32524](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ef325246)
+
+### Fixed
+- SSO auto-authentication now works after page refresh
+
+## [v01.10w] — 2026-03-22 11:38:56 AM EST — v05.97r — [e07ca56](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e07ca56e)
+
+### Changed
+- "Session Active Elsewhere" overlay now shows the application name
+
+## [v01.09w] — 2026-03-22 01:26:48 AM EST — v05.95r — [065936c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/065936ca)
+
+### Fixed
+- "Signing in via [source]" subtitle now correctly displays during SSO authentication
+
+## [v01.08w] — 2026-03-22 01:19:31 AM EST — v05.94r — [ca7a4de](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ca7a4dee)
+
+### Changed
+- Sign-in screen now shows which page provided your credentials when signing in via SSO
+
+## [v01.07w] — 2026-03-22 01:03:31 AM EST — v05.93r — [a37e2fa](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a37e2fa2)
+
+### Fixed
+- Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
+
+## [v01.06w] — 2026-03-22 12:27:41 AM EST — v05.92r — [f536455](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f536455e)
+
+### Added
+- Single sign-on support — sign in once, other auth pages auto-authenticate without a sign-in prompt
+- Cross-page sign-out — signing out from any connected page signs out all pages
+
+## [v01.05w] — 2026-03-21 11:34:54 PM EST — v05.89r — [18da255](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/18da2556)
+
+### Added
+- Debug logging for sign-in flow troubleshooting — check browser console (F12) during sign-in
+
+## [v01.04w] — 2026-03-21 11:25:17 PM EST — v05.88r — [34659e8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/34659e88)
+
+### Fixed
+- Connected to working GAS deployment — sign-in should now complete successfully
+
+## [v01.03w] — 2026-03-21 11:14:52 PM EST — v05.87r — [39f0dfb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/39f0dfb8)
+
+### Changed
+- Now requires its own GAS deployment — no longer shares portal's backend
+- Restored secure postMessage token exchange
+
+## [v01.02w] — 2026-03-21 11:01:21 PM EST — v05.86r — [12c3107](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/12c31079)
+
+### Fixed
+- Sign-in no longer gets stuck on "Signing in..." screen
+
+## [v01.01w] — 2026-03-21 10:45:49 PM EST — v05.85r — [b04d3ca](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b04d3ca7)
+
+### Changed
+- Configured with portal's OAuth Client ID and HIPAA security settings
+- Sessions now clear on tab close and tokens are exchanged securely
+
+Developed by: ShadowAISolutions
+
 ## Rotation Logic
 
 Same rotation logic as the repository changelog archive — see [CHANGELOG-archive.md](../../repository-information/CHANGELOG-archive.md) for the full procedure. In brief: count version sections, skip if ≤50, never rotate today's sections, rotate the oldest full date group together.
 
 ---
-
-*(No archived sections yet)*
 
 Developed by: ShadowAISolutions
