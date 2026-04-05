@@ -1,4 +1,4 @@
-var VERSION = "v01.50g";
+var VERSION = "v01.51g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -58,9 +58,10 @@ var PROJECT_OVERRIDES = {
 // Hardcoded fallback — used ONLY when the Roles tab is missing or unreadable.
 // In normal operation, getRolesFromSpreadsheet() reads from the spreadsheet.
 var RBAC_ROLES_FALLBACK = {
-  admin:  ['read', 'write', 'delete', 'export', 'admin'],
-  editor: ['read', 'write', 'export'],
-  viewer: ['read']
+  admin:     ['read', 'write', 'delete', 'export', 'amend', 'admin'],
+  clinician: ['read', 'write', 'export', 'amend'],
+  billing:   ['read', 'export'],
+  viewer:    ['read']
 };
 
 // Default role when ACL does not specify one (fallback access via editor/viewer list)
@@ -262,6 +263,93 @@ var PRESETS = {
     ENABLE_DATA_AUDIT_LOG: true,       // Log individual data access events (reads, writes)
     DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   }
+};
+
+// ═══════════════════════════════════════════════════════
+// PHASE B — CONFIGURATION
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Breach alerting configuration.
+ * Thresholds define how many security events of each type within WINDOW_MINUTES
+ * trigger an email alert to the security officer.
+ */
+var BREACH_ALERT_CONFIG = {
+  ENABLED: true,
+  SECURITY_OFFICER_EMAIL: '',  // MUST be set before enabling — email address of designated security officer
+  ALERT_COOLDOWN_MINUTES: 60,  // Minimum time between alerts of the same type
+  WINDOW_MINUTES: 15,          // Rolling window for threshold evaluation
+  THRESHOLDS: {
+    'tier3_lockout': 1,        // Any Tier 3 lockout = immediate alert
+    'hmac_integrity_violation': 3,  // 3 HMAC failures in window
+    'session_hijack_attempt': 1,    // Any hijack attempt = immediate alert
+    'brute_force': 5,          // 5 failed auth attempts in window
+    'data_access_anomaly': 10, // 10 unusual data access patterns in window
+    'permission_escalation': 1 // Any permission escalation attempt = immediate alert
+  },
+  // Event types that are ALWAYS logged to BreachLog (regardless of threshold)
+  ALWAYS_LOG_EVENTS: ['tier3_lockout', 'session_hijack_attempt', 'permission_escalation']
+};
+
+/**
+ * Retention enforcement configuration.
+ * Controls how the retention trigger archives and protects audit data.
+ */
+var HIPAA_RETENTION_CONFIG = {
+  RETENTION_YEARS: 6,          // Reads from AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS when available
+  ARCHIVE_SHEET_SUFFIX: '_Archive',  // e.g. SessionAuditLog_Archive
+  PROTECTION_LEVEL: 'warning', // 'warning' (shows dialog) or 'full' (blocks all edits)
+  SHEETS_TO_PROTECT: [
+    'SessionAuditLog', 'DataAuditLog', 'DisclosureLog',
+    'AccessRequests', 'AmendmentRequests', 'AmendmentNotifications',
+    'BreachLog', 'PersonalRepresentatives',
+    'LegalHolds', 'RetentionIntegrityLog'
+  ],
+  // How many rows to process per trigger execution (to stay within 6-min GAS limit)
+  BATCH_SIZE: 500
+};
+
+// ═══════════════════════════════════════════════════════
+// PHASE C — RETENTION CONFIGURATION EXTENSIONS
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Legal hold configuration — controls litigation preservation behavior.
+ * §164.316(b)(2)(i) + FRCP Rule 37(e)
+ */
+var LEGAL_HOLD_CONFIG = {
+  ENABLED: true,
+  MAX_HOLDS_PER_SHEET: 10,
+  ALLOW_ARCHIVE_HOLDS: true,
+  HOLD_TYPES: ['Litigation', 'Regulatory', 'InternalInvestigation', 'Audit', 'Preservation'],
+  HOLD_NOTIFICATION_EMAIL: ''
+};
+
+/**
+ * Archive integrity verification configuration — controls checksum behavior.
+ * §164.312(c)(1) — Integrity controls
+ */
+var INTEGRITY_CONFIG = {
+  ALGORITHM: 'SHA_256',
+  CHECKSUM_BATCH_SIZE: 1000,
+  STORAGE_MODE: 'tracking_sheet',
+  TRACKING_SHEET_NAME: 'RetentionIntegrityLog'
+};
+
+/**
+ * Personal representative configuration.
+ */
+var REPRESENTATIVE_CONFIG = {
+  MAX_REPRESENTATIVES_PER_INDIVIDUAL: 5,  // Prevent abuse
+  REQUIRE_ADMIN_APPROVAL: true,           // Admin must approve representative registrations
+  ALLOW_SELF_REGISTRATION: false,         // Representatives cannot register themselves
+  SUPPORTED_RELATIONSHIP_TYPES: [
+    'Parent',
+    'LegalGuardian',
+    'HealthcarePOA',
+    'CourtAppointed',
+    'Executor'   // Estate executor for deceased individuals
+  ]
 };
 
 // ══════════════
@@ -752,7 +840,7 @@ function inspectCache() {
       }
     } catch(e) { Logger.log('ACL read error: ' + e.message); }
   }
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (hasSheet) {
     try {
       var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -929,6 +1017,25 @@ function doPost(e) {
   if (action === "deploy") {
     var result = pullAndDeployFromGitHub();
     return ContentService.createTextOutput(result);
+  }
+
+  // Data poll via fetch() — eliminates iframe navigation churn that caused
+  // "A listener indicated an asynchronous response" errors in the console.
+  // Uses doPost + ContentService (which sets CORS headers on ANYONE_ANONYMOUS
+  // deployments) instead of doGet + HtmlService iframe navigation.
+  if (action === "getData") {
+    var dpToken = (e && e.parameter && e.parameter.token) || "";
+    var dpResult = processDataPoll(dpToken);
+    return ContentService.createTextOutput(JSON.stringify(dpResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Heartbeat via fetch() — same pattern as getData to eliminate iframe churn.
+  if (action === "heartbeat") {
+    var hbToken = (e && e.parameter && e.parameter.token) || "";
+    var hbResult = processHeartbeat(hbToken);
+    return ContentService.createTextOutput(JSON.stringify(hbResult))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
   return ContentService.createTextOutput("Unknown action");
@@ -1116,7 +1223,7 @@ function auditLog(event, user, result, details) {
 
 function _writeAuditLogEntry(event, user, result, details) {
   try {
-    if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(AUTH_CONFIG.AUDIT_LOG_SHEET_NAME);
     if (!sheet) {
@@ -1147,7 +1254,7 @@ function _writeAuditLogEntry(event, user, result, details) {
 function dataAuditLog(user, action, resourceType, resourceId, details) {
   if (!AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG) return;
   try {
-    if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheetName = AUTH_CONFIG.DATA_AUDIT_LOG_SHEET_NAME || 'DataAuditLog';
     var sheet = ss.getSheetByName(sheetName);
@@ -1352,7 +1459,7 @@ function exchangeTokenForSession(accessToken) {
   // Check access via master ACL spreadsheet (or fall back to SPREADSHEET_ID editor/viewer list)
   // Returns RBAC-aware object: { hasAccess, role, isEmergencyAccess }
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   var accessResult = { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
   if (hasAcl || hasSheet) {
     accessResult = checkSpreadsheetAccess(userInfo.email);
@@ -1506,9 +1613,23 @@ function validateSession(sessionToken) {
 // =============================================
 
 function validateSessionForData(sessionToken, operationName) {
-  // Toggle check — standard preset skips validation entirely
+  // Toggle check — standard preset skips full validation but still extracts
+  // role/permissions from the session cache so permission checks work correctly
   if (!AUTH_CONFIG.ENABLE_DATA_OP_VALIDATION) {
-    return { email: 'unvalidated', displayName: '' };
+    var skipResult = { email: 'unvalidated', displayName: '', role: RBAC_DEFAULT_ROLE, permissions: [] };
+    if (sessionToken) {
+      try {
+        var skipCache = getEpochCache();
+        var skipRaw = skipCache.get("session_" + sessionToken);
+        if (skipRaw) {
+          var skipSession = JSON.parse(skipRaw);
+          skipResult.email = skipSession.email || 'unvalidated';
+          skipResult.role = skipSession.role || RBAC_DEFAULT_ROLE;
+          skipResult.permissions = skipSession.permissions || getRolesFromSpreadsheet()[skipResult.role] || [];
+        }
+      } catch (e) { /* fall through with defaults */ }
+    }
+    return skipResult;
   }
 
   if (!sessionToken || sessionToken.length < 32) {
@@ -1821,7 +1942,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
   // ONLY used when the ACL tab is NOT configured — when ACL exists, it is the
   // sole authority and the sharing list is not consulted.
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (!hasAcl && hasSheet) {
     var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
     var editors = ss.getEditors();

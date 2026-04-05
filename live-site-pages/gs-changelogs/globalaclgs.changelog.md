@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.42g] — 2026-04-05 04:14:37 PM EST — v08.86r
+
+### Changed
+- Unified RBAC roles, HIPAA compliance configs, cache management, and template code to match across all environments
+
+### Fixed
+- Permission checks now work correctly when data validation is disabled
 
 ## [v01.41g] — 2026-04-05 03:11:35 PM EST — v08.84r
 

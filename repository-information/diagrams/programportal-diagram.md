@@ -76,6 +76,7 @@ sequenceDiagram
 
 ## Key Design Notes
 
+- **Google OAuth** — uses Google Identity Services (GIS) with `ACTIVE_PRESET` configuration. Standard preset uses URL parameter token exchange; HIPAA preset uses postMessage three-phase handshake
 - **GAS iframe injection** — the deployment URL is stored as a reversed+base64-encoded string in `_e`. The iframe uses `srcdoc` with a bootstrap script that reads the URL from `parent._r`, deletes it, then navigates — preventing the URL from being visible in page source
 - **Dual polling** — HTML and GAS versions are polled independently with anti-sync protection (if polls align within 3s, GAS poll gets a 5s delay to re-stagger them)
 - **Two splash screens** — green "Website Ready" for HTML version changes, blue "Code Ready" for GAS version changes

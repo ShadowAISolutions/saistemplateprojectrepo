@@ -1,4 +1,4 @@
-var VERSION = "v01.41g";
+var VERSION = "v01.42g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -57,9 +57,10 @@ var PROJECT_OVERRIDES = {
 // Hardcoded fallback — used ONLY when the Roles tab is missing or unreadable.
 // In normal operation, getRolesFromSpreadsheet() reads from the spreadsheet.
 var RBAC_ROLES_FALLBACK = {
-  admin:  ['read', 'write', 'delete', 'export', 'admin'],
-  editor: ['read', 'write', 'export'],
-  viewer: ['read']
+  admin:     ['read', 'write', 'delete', 'export', 'amend', 'admin'],
+  clinician: ['read', 'write', 'export', 'amend'],
+  billing:   ['read', 'export'],
+  viewer:    ['read']
 };
 
 // Default role when ACL does not specify one (fallback access via editor/viewer list)
@@ -72,8 +73,8 @@ var _rbacRolesCacheExpiry = 0;
 /**
  * Cache epoch — a counter stored in ScriptProperties that prefixes all CacheService keys.
  * Incrementing the epoch instantly orphans ALL existing cache entries (they have the old
- * prefix and will never be read again). See nuclearCacheClear() for this emergency-only
- * operation. The epoch is read once per execution and cached in memory.
+ * prefix and will never be read again). This is a nuclear cache clear without needing to
+ * know individual cache keys. The epoch is read once per execution and cached in memory.
  *
  * getEpochCache() returns a wrapper around CacheService.getScriptCache() that auto-prefixes
  * all keys with the epoch. Use this instead of CacheService.getScriptCache() directly.
@@ -263,6 +264,93 @@ var PRESETS = {
   }
 };
 
+// ═══════════════════════════════════════════════════════
+// PHASE B — CONFIGURATION
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Breach alerting configuration.
+ * Thresholds define how many security events of each type within WINDOW_MINUTES
+ * trigger an email alert to the security officer.
+ */
+var BREACH_ALERT_CONFIG = {
+  ENABLED: true,
+  SECURITY_OFFICER_EMAIL: '',  // MUST be set before enabling — email address of designated security officer
+  ALERT_COOLDOWN_MINUTES: 60,  // Minimum time between alerts of the same type
+  WINDOW_MINUTES: 15,          // Rolling window for threshold evaluation
+  THRESHOLDS: {
+    'tier3_lockout': 1,        // Any Tier 3 lockout = immediate alert
+    'hmac_integrity_violation': 3,  // 3 HMAC failures in window
+    'session_hijack_attempt': 1,    // Any hijack attempt = immediate alert
+    'brute_force': 5,          // 5 failed auth attempts in window
+    'data_access_anomaly': 10, // 10 unusual data access patterns in window
+    'permission_escalation': 1 // Any permission escalation attempt = immediate alert
+  },
+  // Event types that are ALWAYS logged to BreachLog (regardless of threshold)
+  ALWAYS_LOG_EVENTS: ['tier3_lockout', 'session_hijack_attempt', 'permission_escalation']
+};
+
+/**
+ * Retention enforcement configuration.
+ * Controls how the retention trigger archives and protects audit data.
+ */
+var HIPAA_RETENTION_CONFIG = {
+  RETENTION_YEARS: 6,          // Reads from AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS when available
+  ARCHIVE_SHEET_SUFFIX: '_Archive',  // e.g. SessionAuditLog_Archive
+  PROTECTION_LEVEL: 'warning', // 'warning' (shows dialog) or 'full' (blocks all edits)
+  SHEETS_TO_PROTECT: [
+    'SessionAuditLog', 'DataAuditLog', 'DisclosureLog',
+    'AccessRequests', 'AmendmentRequests', 'AmendmentNotifications',
+    'BreachLog', 'PersonalRepresentatives',
+    'LegalHolds', 'RetentionIntegrityLog'
+  ],
+  // How many rows to process per trigger execution (to stay within 6-min GAS limit)
+  BATCH_SIZE: 500
+};
+
+// ═══════════════════════════════════════════════════════
+// PHASE C — RETENTION CONFIGURATION EXTENSIONS
+// ═══════════════════════════════════════════════════════
+
+/**
+ * Legal hold configuration — controls litigation preservation behavior.
+ * §164.316(b)(2)(i) + FRCP Rule 37(e)
+ */
+var LEGAL_HOLD_CONFIG = {
+  ENABLED: true,
+  MAX_HOLDS_PER_SHEET: 10,
+  ALLOW_ARCHIVE_HOLDS: true,
+  HOLD_TYPES: ['Litigation', 'Regulatory', 'InternalInvestigation', 'Audit', 'Preservation'],
+  HOLD_NOTIFICATION_EMAIL: ''
+};
+
+/**
+ * Archive integrity verification configuration — controls checksum behavior.
+ * §164.312(c)(1) — Integrity controls
+ */
+var INTEGRITY_CONFIG = {
+  ALGORITHM: 'SHA_256',
+  CHECKSUM_BATCH_SIZE: 1000,
+  STORAGE_MODE: 'tracking_sheet',
+  TRACKING_SHEET_NAME: 'RetentionIntegrityLog'
+};
+
+/**
+ * Personal representative configuration.
+ */
+var REPRESENTATIVE_CONFIG = {
+  MAX_REPRESENTATIVES_PER_INDIVIDUAL: 5,  // Prevent abuse
+  REQUIRE_ADMIN_APPROVAL: true,           // Admin must approve representative registrations
+  ALLOW_SELF_REGISTRATION: false,         // Representatives cannot register themselves
+  SUPPORTED_RELATIONSHIP_TYPES: [
+    'Parent',
+    'LegalGuardian',
+    'HealthcarePOA',
+    'CourtAppointed',
+    'Executor'   // Estate executor for deceased individuals
+  ]
+};
+
 // ══════════════
 // AUTH CONFIG RESOLUTION
 // ══════════════
@@ -310,15 +398,12 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 
 /**
- * Clear the access cache for a specific user so their next request reads the ACL fresh.
+ * Clear the access cache for a specific user so their next login reads the ACL fresh.
  * @param {string} email — the user's email address. When called from the GAS editor
  *   (no parameter), reads from Script Properties key "CLEAR_CACHE_EMAIL".
  *   Usage: Script Properties → CLEAR_CACHE_EMAIL = user@example.com → Run this function.
- *
- * IMPORTANT: This does NOT bump the cache epoch — sessions remain valid.
- * Only the access_EMAIL and role_EMAIL keys are removed so the user's ACL permissions
- * are re-read from the spreadsheet on the next request. The rbac_roles_matrix cache
- * is also cleared so role definitions are refreshed.
+ * Note: uses the same epoch bump as clearAllAccessCache — all users are affected.
+ * GAS CacheService does not support per-key enumeration, so targeted clearing is not possible.
  */
 function clearAccessCacheForUser(email) {
   if (!email) {
@@ -328,60 +413,9 @@ function clearAccessCacheForUser(email) {
     Logger.log('No email specified. Set Script Properties key "CLEAR_CACHE_EMAIL" or pass email as parameter.');
     return;
   }
-  var cache = getEpochCache();
-  var lowerEmail = email.trim().toLowerCase();
-  // Remove the user's access and role cache keys
-  cache.remove('access_' + lowerEmail);
-  cache.remove('role_' + lowerEmail);
-  // Also clear the roles matrix so updated role definitions take effect
-  cache.remove('rbac_roles_matrix');
-  // Reset in-memory roles cache for this execution
-  _rbacRolesCache = null;
-  _rbacRolesCacheExpiry = 0;
-  Logger.log('Access cache cleared for user: ' + email + ' (sessions preserved)');
-}
-
-/**
- * Clear access cache for ALL users by reading emails from the ACL spreadsheet and
- * removing each user's access_/role_ keys. Sessions remain valid — only ACL permission
- * caches are cleared. Also clears the rbac_roles_matrix cache.
- *
- * Use this after bulk ACL changes (e.g. adding a new page column).
- * For individual user changes, use clearAccessCacheForUser(email) instead.
- */
-function clearAllAccessCache() {
-  var cache = getEpochCache();
-  // Clear the roles matrix
-  cache.remove('rbac_roles_matrix');
-  _rbacRolesCache = null;
-  _rbacRolesCacheExpiry = 0;
-
-  // Read all emails from the ACL spreadsheet and clear their access/role keys
-  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  if (hasAcl) {
-    try {
-      var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-      var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-      if (sheet) {
-        var data = sheet.getDataRange().getValues();
-        var keysToRemove = [];
-        for (var r = 1; r < data.length; r++) {
-          if (isMetadataRow(data[r])) continue;
-          var email = String(data[r][0]).trim().toLowerCase();
-          if (email) {
-            keysToRemove.push('access_' + email);
-            keysToRemove.push('role_' + email);
-          }
-        }
-        if (keysToRemove.length > 0) {
-          cache.removeAll(keysToRemove);
-        }
-      }
-    } catch (e) {
-      Logger.log('Warning: could not read ACL spreadsheet to clear caches — ' + e.message);
-    }
-  }
-  Logger.log('Access cache cleared for all users (sessions preserved).');
+  // Bump epoch to invalidate all cache (no way to target individual keys in GAS)
+  clearAllAccessCache();
+  Logger.log('Cache cleared for all users (epoch bumped). Target user: ' + email);
 }
 
 /**
@@ -389,12 +423,8 @@ function clearAllAccessCache() {
  * are instantly orphaned (they have the old epoch prefix and will never be read again).
  * No need to enumerate individual keys — everything is invalidated at once.
  * After incrementing, all users must re-authenticate on their next request.
- *
- * WARNING: This invalidates ALL sessions — every user will be signed out.
- * For ACL-only cache clearing (preserving sessions), use clearAllAccessCache() instead.
- * Only use this for emergencies (compromised sessions, security incidents).
  */
-function nuclearCacheClear() {
+function clearAllAccessCache() {
   var props = PropertiesService.getScriptProperties();
   var oldEpoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
   var newEpoch = String(oldEpoch + 1);
@@ -436,7 +466,7 @@ function inspectCache() {
       }
     } catch(e) { Logger.log('ACL read error: ' + e.message); }
   }
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (hasSheet) {
     try {
       var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -1060,6 +1090,25 @@ function doPost(e) {
     return ContentService.createTextOutput(result);
   }
 
+  // Data poll via fetch() — eliminates iframe navigation churn that caused
+  // "A listener indicated an asynchronous response" errors in the console.
+  // Uses doPost + ContentService (which sets CORS headers on ANYONE_ANONYMOUS
+  // deployments) instead of doGet + HtmlService iframe navigation.
+  if (action === "getData") {
+    var dpToken = (e && e.parameter && e.parameter.token) || "";
+    var dpResult = processDataPoll(dpToken);
+    return ContentService.createTextOutput(JSON.stringify(dpResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Heartbeat via fetch() — same pattern as getData to eliminate iframe churn.
+  if (action === "heartbeat") {
+    var hbToken = (e && e.parameter && e.parameter.token) || "";
+    var hbResult = processHeartbeat(hbToken);
+    return ContentService.createTextOutput(JSON.stringify(hbResult))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   return ContentService.createTextOutput("Unknown action");
 }
 
@@ -1245,7 +1294,7 @@ function auditLog(event, user, result, details) {
 
 function _writeAuditLogEntry(event, user, result, details) {
   try {
-    if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(AUTH_CONFIG.AUDIT_LOG_SHEET_NAME);
     if (!sheet) {
@@ -1276,7 +1325,7 @@ function _writeAuditLogEntry(event, user, result, details) {
 function dataAuditLog(user, action, resourceType, resourceId, details) {
   if (!AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG) return;
   try {
-    if (!SPREADSHEET_ID || SPREADSHEET_ID === "TEMPLATE_SPREADSHEET_ID") return;
+    if (!SPREADSHEET_ID || SPREADSHEET_ID === "YOUR_SPREADSHEET_ID") return;
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheetName = AUTH_CONFIG.DATA_AUDIT_LOG_SHEET_NAME || 'DataAuditLog';
     var sheet = ss.getSheetByName(sheetName);
@@ -1481,7 +1530,7 @@ function exchangeTokenForSession(accessToken) {
   // Check access via master ACL spreadsheet (or fall back to SPREADSHEET_ID editor/viewer list)
   // Returns RBAC-aware object: { hasAccess, role, isEmergencyAccess }
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   var accessResult = { hasAccess: true, role: RBAC_DEFAULT_ROLE, isEmergencyAccess: false };
   if (hasAcl || hasSheet) {
     accessResult = checkSpreadsheetAccess(userInfo.email);
@@ -2472,7 +2521,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
   // Method 2: Editor/viewer sharing-list check on SPREADSHEET_ID
   // ONLY used when the ACL tab is NOT configured — when ACL exists, it is the
   // sole authority and the sharing list is not consulted.
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "TEMPLATE_SPREADSHEET_ID";
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
   if (!hasAcl && hasSheet) {
     var ss = opt_ss || SpreadsheetApp.openById(SPREADSHEET_ID);
     var editors = ss.getEditors();

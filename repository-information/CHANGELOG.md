@@ -3,9 +3,58 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 22/100`
+`Sections: 23/100`
 
 ## [Unreleased]
+
+## [v08.86r] — 2026-04-05 04:14:37 PM EST
+
+> **Prompt:** "do an analysis of the program portal, testauth1, and globalacl environments to identify every single difference in how they are coded, EXCEPT for project specific code in the gas layer. my goal after your analysis is to make every environment identically coded and organized other than their specific project code"
+
+### Changed
+- Unified CSP headers across all three environments (portal, testauth1, globalacl) — standardized connect-src and font-src directives
+- Unified CSS styling across all environments — standardized z-index values, removed divergent user-select properties, moved html-layer-hidden to consistent location
+- Unified HTML_CONFIG across all environments — added DATA_POLL_INTERVAL, removed divergent ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, standardized HIPAA comments
+- Unified GAS RBAC roles to 4-role structure (admin/clinician/billing/viewer + amend permission) across all environments
+- Added Phase B (breach alerting) and Phase C (retention, legal hold, integrity, representative) configuration blocks to portal and globalacl GAS scripts
+- Added getData and heartbeat doPost() handlers to portal and globalacl GAS scripts (previously testauth1-only)
+- Standardized cache management approach (epoch-bump) across all GAS scripts
+- Standardized placeholder strings and comments across all GAS scripts
+- Added Google OAuth design note to portal and globalacl architecture diagrams
+
+### Fixed
+- Fixed validateSessionForData() in portal and testauth1 — now correctly extracts role/permissions from cache when data validation is disabled (prevents silent permission check failures)
+
+#### `programportal.html` — v01.84w
+
+##### Changed
+- Unified security headers, auth configuration, and UI styling to match across all environments
+
+#### `programportal.gs` — v01.51g
+
+##### Changed
+- Unified RBAC roles, HIPAA compliance configs, and template code to match across all environments
+
+##### Fixed
+- Permission checks now work correctly when data validation is disabled
+
+#### `testauth1.gs` — v02.45g
+
+##### Fixed
+- Permission checks now work correctly when data validation is disabled
+
+#### `globalacl.html` — v01.78w
+
+##### Changed
+- Unified security headers, auth configuration, and UI styling to match across all environments
+
+#### `globalacl.gs` — v01.42g
+
+##### Changed
+- Unified RBAC roles, HIPAA compliance configs, cache management, and template code to match across all environments
+
+##### Fixed
+- Permission checks now work correctly when data validation is disabled
 
 ## [v08.85r] — 2026-04-05 03:20:35 PM EST
 

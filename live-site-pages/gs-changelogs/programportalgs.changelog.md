@@ -3,9 +3,17 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.51g] — 2026-04-05 04:14:37 PM EST — v08.86r
+
+### Changed
+- Unified RBAC roles, HIPAA compliance configs, and template code to match across all environments
+
+### Fixed
+- Permission checks now work correctly when data validation is disabled
 
 ## [v01.50g] — 2026-04-05 03:11:35 PM EST — v08.84r
 
