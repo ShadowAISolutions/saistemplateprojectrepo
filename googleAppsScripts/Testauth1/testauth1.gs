@@ -1,4 +1,4 @@
-var VERSION = "v02.41g";
+var VERSION = "v02.42g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3830,7 +3830,7 @@ function doGet(e) {
         }
         ${isAdmin ? `
         /* PROJECT: Admin panel styles */
-        #admin-badge { position: fixed; top: 12px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #ccc; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        #admin-badge { position: fixed; top: 12px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
         #admin-dropdown-gas { display: none; position: fixed; top: 36px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
         #admin-dropdown-gas button:hover { background: rgba(144,202,249,0.1); color: #fff; }

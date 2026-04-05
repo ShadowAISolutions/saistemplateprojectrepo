@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 11/100`
+`Sections: 12/100`
 
 ## [Unreleased]
+
+## [v08.75r] — 2026-04-05 12:37:59 PM EST
+
+> **Prompt:** "when i said same fond i meant the color too, should go back to the blue it was"
+
+### Fixed
+- Restored admin badge text color to original blue (`#90caf9`) — was incorrectly changed to `#ccc` when matching GAS toggle pill style
+
+#### `testauth1.gs` — v02.42g
+
+##### Fixed
+- Restored admin button text to its original blue color
 
 ## [v08.74r] — 2026-04-05 12:34:16 PM EST
 
