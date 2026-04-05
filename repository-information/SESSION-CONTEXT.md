@@ -4,53 +4,50 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 01:37:59 PM EST
-**Repo version:** v08.79r
+**Date:** 2026-04-05 03:34:38 PM EST
+**Repo version:** v08.85r
 
 ### What was done
-- **v08.71r** — Added 30px top strip space for the GAS layer in testauth1 (`#live-data-app` `top: 0` → `top: 30px`), mirroring the existing 30px bottom strip
-- **v08.72r** — Fixed admin dropdown gap (moved `top: 36px` → `top: 28px`) — later reverted as user clarified the issue was hover visibility, not dropdown positioning
-- **v08.73r** — Fixed admin badge hover visibility on white top strip — changed badge colors from light-on-light to dark-on-light (`rgba(0,0,0,0.12)` bg, `#1565c0`/`#0d47a1` text)
-- **v08.74r** — Matched admin badge pill to GAS toggle pill style (`rgba(0,0,0,0.55)` bg, `border`, `opacity:0.6`, hover via onmouseover), removed `user-select: none` from all pills (5 in HTML layer + 1 in GAS layer)
-- **v08.75r** — Restored admin badge text color to original blue (`#90caf9`) per user request (pill bg/border matches GAS toggle, but font color stays blue)
-- **v08.76r** — Moved GAS toggle from GAS layer to HTML layer for full iframe hide/show — commented out GAS layer toggle (preserved for re-enable), added HTML layer toggle with auth-gated visibility
-- **v08.77r** — Attempted deferred GAS iframe creation until after auth — broke sign-in (iframe is the auth transport layer)
-- **v08.78r** — Reverted deferred iframe, implemented toggle-hiding instead — `_showGasToggle()`/`_hideGasToggle()` called from `showApp()`/`showAuthWall()` so GAS toggle is hidden on sign-in page
-- **v08.79r** — Created `repository-information/DEFERRED-GAS-IFRAME-PLAN.md` — comprehensive implementation plan documenting the goal, what was tried, CORS blocker, and viable alternatives
+- **v08.80r** — Centered admin badge vertically in testauth1 GAS top strip (`top: 12px` → `top: 7px`), adjusted dropdown position (`top: 36px` → `top: 31px`), centered HTML/GAS toggle buttons (`bottom: 8px` → `bottom: 7px`), shifted all right-side pills from `right: 8px` → `right: 22px` (version indicator, GAS pill, SSO indicator, auth timers, user pill, warning banners) to prevent scrollbar overlap
+- **v08.81r** — Propagated all pill positioning and admin badge centering changes to globalacl and programportal (same right:22px shift, admin badge centering, toggle button centering)
+- **v08.82r** — Added 30px body padding to globalacl/programportal GAS layers (first attempt at white strips — didn't work because body background filled edge-to-edge)
+- **v08.83r** — Fixed white strips properly: wrapped main content in `#acl-main`/`#portal-main` divs with `position: fixed; top: 30px; bottom: 30px`, moved backgrounds to wrappers, set body overflow to hidden. Matches testauth1's `#live-data-app` pattern
+- **v08.84r** — Fixed programportal `#version` color from invisible `rgba(255,255,255,0.3)` to `#1565c0` (blue), normalized admin badge styling on both globalacl/programportal to match testauth1 (dark bg, border, opacity hover)
+- **v08.85r** — Propagated all changes to templates (2 HTML templates, 4 GAS templates) and gas-project-creator.html. Admin badge in auth templates normalized (dark bg, left-positioned, opacity hover). setup-gas-project.sh copies from templates so no changes needed
 
 ### Where we left off
 - All changes pushed and merged to main
-- GAS layer top strip added (30px), admin badge styled with GAS toggle pill colors (blue text, dark bg), all pills selectable
-- GAS toggle moved to HTML layer — hides entire iframe, hidden on auth wall, shown after sign-in
-- Deferred iframe creation explored but blocked by CORS — the iframe IS the auth transport. Plan document written at `repository-information/DEFERRED-GAS-IFRAME-PLAN.md` with "hidden auth iframe" as the viable long-term solution
-- Current security posture: iframe loads pre-auth but only serves a minimal postMessage listener page (no app code), GAS toggle hidden until post-auth — acceptable for practical purposes
+- All three environments (testauth1, globalacl, programportal) now have consistent:
+  - Right-side pills at `right: 22px` (scrollbar clearance)
+  - White 30px strips at top and bottom of GAS layer
+  - Admin badge centered at `top: 7px; left: 12px` with dark pill style
+  - GAS version label at `bottom: 9px` in blue (`#1565c0`)
+  - Toggle buttons at `bottom: 7px`
+- All 6 templates updated to match
+- gas-project-creator.html updated (version indicator at `right: 22px`)
 
 ### Key decisions made
-- Admin badge pill: bg/border matches GAS toggle (`rgba(0,0,0,0.55)`, `border: 1px solid rgba(255,255,255,0.2)`), but text stays original blue (`#90caf9`)
-- `user-select: none` removed from ALL pills (both layers) so Ctrl+A selects everything
-- GAS toggle moved from GAS layer to HTML layer to enable full iframe hide/show (GAS-layer toggle commented out, not deleted)
-- Deferred iframe creation is not viable without architectural changes due to CORS — `fetch()` to `script.google.com` is blocked. The iframe + postMessage is the only cross-origin channel
-- Current approach (iframe exists but hidden behind auth wall + toggle hidden) is acceptable — the pre-auth iframe only contains a minimal auth shim, not the full app
+- `right: 22px` chosen for scrollbar clearance (~15-17px scrollbar + margin)
+- White strips created via wrapper div pattern (`position: fixed; top: 30px; bottom: 30px`) with body background staying white — body padding approach didn't work because it doesn't create visible strips when the body has a dark background
+- Admin badge normalized to testauth1 style across all environments: `rgba(0,0,0,0.55)` bg, `border: 1px solid rgba(255,255,255,0.2)`, `border-radius: 10px`, `opacity: 0.6` with `onmouseover`/`onmouseout` handlers
 
 ### Active context
-- Branch: `claude/add-gas-layer-top-space-kc5nC`
-- Repo version: v08.79r
+- Branch: `claude/center-admin-button-pills-WHrQn`
+- Repo version: v08.85r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
 - `MULTI_SESSION_MODE` = `Off`
-- GAS toggle is now on HTML layer (testauth1.html), GAS layer toggle commented out (testauth1.gs)
-- `DEFERRED-GAS-IFRAME-PLAN.md` exists in `repository-information/` with the full plan for future implementation
 
 ## Previous Sessions
 
-**Date:** 2026-04-04 10:15:50 PM EST
-**Repo version:** v08.70r
+**Date:** 2026-04-05 01:37:59 PM EST
+**Repo version:** v08.79r
 
 ### What was done
-- **v08.65r–v08.70r** — Removed 3 environments (testenvironment, rndlivedata, open-all), moved 33 archive files to `archive info/`, removed index environment, created defensive security test folder
+- **v08.71r–v08.79r** — Added 30px top strip to testauth1 GAS layer, styled admin badge, moved GAS toggle to HTML layer, explored deferred iframe creation (blocked by CORS), documented plan
 
 ### Where we left off
-- Major cleanup complete, remaining environments: gas-project-creator, testauth1, globalacl, programportal (+ qr-scanner5, qr-scanner6)
+- GAS layer top strip added, admin badge styled, GAS toggle on HTML layer, deferred iframe plan at `DEFERRED-GAS-IFRAME-PLAN.md`
 
 Developed by: ShadowAISolutions
