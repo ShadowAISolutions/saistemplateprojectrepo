@@ -4,36 +4,33 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 03:34:38 PM EST
-**Repo version:** v08.85r
+**Date:** 2026-04-05 04:38:12 PM EST
+**Repo version:** v08.88r
 
 ### What was done
-- **v08.80r** — Centered admin badge vertically in testauth1 GAS top strip (`top: 12px` → `top: 7px`), adjusted dropdown position (`top: 36px` → `top: 31px`), centered HTML/GAS toggle buttons (`bottom: 8px` → `bottom: 7px`), shifted all right-side pills from `right: 8px` → `right: 22px` (version indicator, GAS pill, SSO indicator, auth timers, user pill, warning banners) to prevent scrollbar overlap
-- **v08.81r** — Propagated all pill positioning and admin badge centering changes to globalacl and programportal (same right:22px shift, admin badge centering, toggle button centering)
-- **v08.82r** — Added 30px body padding to globalacl/programportal GAS layers (first attempt at white strips — didn't work because body background filled edge-to-edge)
-- **v08.83r** — Fixed white strips properly: wrapped main content in `#acl-main`/`#portal-main` divs with `position: fixed; top: 30px; bottom: 30px`, moved backgrounds to wrappers, set body overflow to hidden. Matches testauth1's `#live-data-app` pattern
-- **v08.84r** — Fixed programportal `#version` color from invisible `rgba(255,255,255,0.3)` to `#1565c0` (blue), normalized admin badge styling on both globalacl/programportal to match testauth1 (dark bg, border, opacity hover)
-- **v08.85r** — Propagated all changes to templates (2 HTML templates, 4 GAS templates) and gas-project-creator.html. Admin badge in auth templates normalized (dark bg, left-positioned, opacity hover). setup-gas-project.sh copies from templates so no changes needed
+- **v08.86r** — Major environment code unification across portal, testauth1, and globalacl. Performed comprehensive analysis (38 differences identified), then unified all non-project-specific code with testauth1 as source of truth:
+  - HTML: CSP headers (connect-src, font-src), CSS (user-select removed from pills, z-index 10012, html-layer-hidden moved to PROJECT), HTML_CONFIG (DATA_POLL_INTERVAL added, ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION removed, HIPAA comments)
+  - GAS: RBAC unified to 4 roles (admin/clinician/billing/viewer + amend), Phase B/C HIPAA configs added to portal/globalacl, getData/heartbeat doPost handlers added, validateSessionForData fixed (role/permission extraction from cache), placeholder strings standardized, cache management unified (epoch-bump), architecture diagram notes updated
+- **v08.87r** — Unified all 4 template files (2 GAS auth, 1 HTML auth, 1 HTML noauth) to match testauth1 so gas-project-creator produces identical template code
+- **v08.88r** — Fixed remaining HTML auth template drifts: checklist stage text ("Session restored", "Sign-in complete"), JS stage map, sign-in subtitle (margin-top:10px, empty content), HTML entities standardized to `&hellip;`
 
 ### Where we left off
-- All changes pushed and merged to main
-- All three environments (testauth1, globalacl, programportal) now have consistent:
-  - Right-side pills at `right: 22px` (scrollbar clearance)
-  - White 30px strips at top and bottom of GAS layer
-  - Admin badge centered at `top: 7px; left: 12px` with dark pill style
-  - GAS version label at `bottom: 9px` in blue (`#1565c0`)
-  - Toggle buttons at `bottom: 7px`
-- All 6 templates updated to match
-- gas-project-creator.html updated (version indicator at `right: 22px`)
+- All changes pushed and merged to main (3 pushes this session)
+- All three environments (testauth1, globalacl, programportal) now have identical template/shared code — only project-specific code differs
+- All 4 template files updated to match — new projects from gas-project-creator will be identical to testauth1 except for project code
+- Confirmed PROJECT-SPECIFIC items that correctly differ: `_gasSandboxSource` (testauth1 GAS iframe messaging), `_fetchPausedForGIS` (testauth1 COOP mitigation), HEARTBEAT_INTERVAL values (each env has test/production), SSO_PROVIDER (portal=true, others=false), CLIENT_ID (unique per env), auth preset timings (testauth1 uses ⚡ TEST VALUES)
 
 ### Key decisions made
-- `right: 22px` chosen for scrollbar clearance (~15-17px scrollbar + margin)
-- White strips created via wrapper div pattern (`position: fixed; top: 30px; bottom: 30px`) with body background staying white — body padding approach didn't work because it doesn't create visible strips when the body has a dark background
-- Admin badge normalized to testauth1 style across all environments: `rgba(0,0,0,0.55)` bg, `border: 1px solid rgba(255,255,255,0.2)`, `border-radius: 10px`, `opacity: 0.6` with `onmouseover`/`onmouseout` handlers
+- **testauth1 is source of truth** — when it differs from portal/globalacl, testauth1 is correct (user decision)
+- **RBAC unified to 4 roles** — admin/clinician/billing/viewer with amend permission across all environments (user chose over keeping project-specific roles)
+- **Phase B/C configs added to all** — BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG are shared template code, not testauth1-only
+- **doPost getData/heartbeat are template code** — added to all environments (user chose over keeping project-specific)
+- **validateSessionForData exception** — globalacl's robust implementation (extracts role/permissions from cache) was used instead of testauth1's simpler version (user chose this as the better fix)
+- **`rc-stage-sso` in template is correct** — hidden by default, shows for SSO_PROVIDER=true pages. Not drift from testauth1
 
 ### Active context
-- Branch: `claude/center-admin-button-pills-WHrQn`
-- Repo version: v08.85r
+- Branch: `claude/unify-environment-code-nQOru`
+- Repo version: v08.88r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -41,13 +38,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-05 01:37:59 PM EST
-**Repo version:** v08.79r
+**Date:** 2026-04-05 03:34:38 PM EST
+**Repo version:** v08.85r
 
 ### What was done
-- **v08.71r–v08.79r** — Added 30px top strip to testauth1 GAS layer, styled admin badge, moved GAS toggle to HTML layer, explored deferred iframe creation (blocked by CORS), documented plan
+- **v08.80r–v08.85r** — Centered admin badge, shifted pills to right:22px for scrollbar clearance, added white 30px strips to GAS layers, normalized admin badge styling, propagated to all templates
 
 ### Where we left off
-- GAS layer top strip added, admin badge styled, GAS toggle on HTML layer, deferred iframe plan at `DEFERRED-GAS-IFRAME-PLAN.md`
+- All environments consistent with right-side pills, white strips, admin badge styling, toggle buttons
 
 Developed by: ShadowAISolutions
