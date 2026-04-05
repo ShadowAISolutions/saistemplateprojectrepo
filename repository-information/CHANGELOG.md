@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 15/100`
+`Sections: 16/100`
 
 ## [Unreleased]
+
+## [v08.79r] — 2026-04-05 01:22:20 PM EST
+
+> **Prompt:** "plan it out in its own document, include all context in particular what we tried and didnt work"
+
+### Added
+- Created `DEFERRED-GAS-IFRAME-PLAN.md` — comprehensive implementation plan documenting the goal of deferring GAS iframe creation until after authentication, what was tried (moving to `showApp()` broke auth, the CORS blocker for `fetch()`-based exchange), and viable alternatives (hidden auth iframe, current toggle-hiding approach)
 
 ## [v08.78r] — 2026-04-05 01:10:05 PM EST
 
