@@ -3,9 +3,41 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 26/100`
+`Sections: 27/100`
 
 ## [Unreleased]
+
+## [v08.90r] — 2026-04-05 05:39:43 PM EST
+
+> **Prompt:** "go ahead and improve it"
+
+### Changed
+- Aligned reconnecting checklist in all three auth projects (testauth1, globalacl, programportal) back to the template's dynamic SSO handling — `_rcStageOrder` is now config-driven via `SSO_PROVIDER` instead of hardcoded per-project
+- Restored `rc-stage-sso` HTML element in testauth1 and globalacl (hidden by default, shown dynamically when `SSO_PROVIDER: true`)
+- Added `style="display:none;"` default to programportal's `rc-stage-sso` element to match template (SSO stage is shown dynamically by `showReconnecting()`)
+- Restored dynamic SSO show/hide logic in `showReconnecting()` across all three projects
+- Removed `// PROJECT:` markers on reconnecting checklist sections (now template-standard, no longer project customizations)
+
+### Fixed
+- Fixed missing `user-select: none` on `.warning-banner` CSS in programportal (was present in template and other projects)
+
+#### `testauth1.html` — v03.90w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.79w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.85w
+
+##### Changed
+- Minor internal improvements
+
+##### Fixed
+- Fixed warning banner text selection behavior
 
 ## [v08.89r] — 2026-04-05 05:11:37 PM EST
 

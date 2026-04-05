@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.85w] — 2026-04-05 05:39:43 PM EST — v08.90r
+
+### Changed
+- Minor internal improvements
+
+### Fixed
+- Fixed warning banner text selection behavior
 
 ## [v01.84w] — 2026-04-05 04:14:37 PM EST — v08.86r
 

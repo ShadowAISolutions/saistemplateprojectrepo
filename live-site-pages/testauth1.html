@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.89w">
+  <meta name="build-version" content="v03.90w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -230,7 +230,6 @@
     .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     .signout-checklist .stage-time-total { font-style: italic; color: #aaa; }
-    /* PROJECT: Reconnecting stage checklist */
     .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
     .reconnect-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -366,9 +365,9 @@
     <div id="auth-wall-reconnecting" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Reconnecting&hellip;</h2>
       <div class="auth-pulse-dots"><span></span><span></span><span></span></div>
-      <!-- PROJECT: Reconnecting stage checklist (no SSO stage — SSO_PROVIDER: false) -->
       <ul id="reconnect-checklist" class="reconnect-checklist">
         <li id="rc-stage-verify" class="stage-pending"><span class="chk-icon"></span>Verifying your session</li>
+        <li id="rc-stage-sso" class="stage-pending" style="display:none;"><span class="chk-icon"></span>Preparing sign-in for linked apps</li>
         <li id="rc-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Session restored</li>
       </ul>
     </div>
@@ -2008,7 +2007,6 @@
           _directSessionLoad = false;
           _updateSignInStage('Sign-in complete');
           _completeAllStages();
-          // PROJECT: Complete reconnecting checklist (Use Here reclaim confirmed)
           _updateReconnectStage('rc-stage-confirm');
           _completeAllReconnectStages();
           var gasAppReshow = document.getElementById('gas-app');
@@ -2030,7 +2028,6 @@
         } else if (_pendingSessionShow) {
           _updateSignInStage('Sign-in complete');
           _completeAllStages();
-          // PROJECT: Complete reconnecting checklist (gas-auth-ok confirms session)
           _updateReconnectStage('rc-stage-confirm');
           _completeAllReconnectStages();
           // Deferred UI show — gas-session-created, page-load resume, or cross-tab
@@ -2430,7 +2427,9 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = '';
       document.getElementById('auth-wall-signing-in').style.display = 'none';
-      // PROJECT: Reset and start reconnecting checklist
+      // Show/hide SSO reconnect stage based on SSO_PROVIDER config
+      var ssoStage = document.getElementById('rc-stage-sso');
+      if (ssoStage) ssoStage.style.display = HTML_CONFIG.SSO_PROVIDER ? '' : 'none';
       _resetReconnectChecklist();
       _updateReconnectStage('rc-stage-verify');
     }
@@ -2777,8 +2776,11 @@
       }
     }
 
-    // PROJECT: Reconnecting stage checklist logic (no SSO stage — SSO_PROVIDER: false)
-    var _rcStageOrder = ['rc-stage-verify', 'rc-stage-confirm'];
+    // Reconnecting stage checklist logic
+    // _rcStageOrder is built dynamically based on SSO_PROVIDER
+    var _rcStageOrder = HTML_CONFIG.SSO_PROVIDER
+      ? ['rc-stage-verify', 'rc-stage-sso', 'rc-stage-confirm']
+      : ['rc-stage-verify', 'rc-stage-confirm'];
     var _rcStageStartTimes = {};
 
     function _updateReconnectStage(stageId) {
