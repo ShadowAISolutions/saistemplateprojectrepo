@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.49g] — 2026-04-05 03:06:33 PM EST — v08.83r
+
+### Changed
+- Page content now has visible top and bottom margins matching other pages
 
 ## [v01.48g] — 2026-04-05 03:00:10 PM EST — v08.82r
 

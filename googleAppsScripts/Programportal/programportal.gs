@@ -1,4 +1,4 @@
-var VERSION = "v01.48g";
+var VERSION = "v01.49g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2655,12 +2655,14 @@ function doGet(e) {
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
-        html, body { height: 100%; margin: 0; overflow: auto; }
-        body {
-          display: flex; flex-direction: column; align-items: center;
-          justify-content: flex-start; min-height: 100vh;
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: sans-serif; }
+        #portal-main {
+          position: fixed; top: 30px; left: 0; right: 0; bottom: 30px;
+          overflow: auto; display: flex; flex-direction: column; align-items: center;
+          justify-content: flex-start;
           background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-          font-family: sans-serif; padding: 30px 20px; box-sizing: border-box;
+          padding: 20px; box-sizing: border-box;
         }
         .portal-header { text-align: center; margin-bottom: 40px; }
         .portal-header img { max-width: 80px; max-height: 80px; margin-bottom: 16px; border-radius: 12px; }
@@ -2895,6 +2897,7 @@ function doGet(e) {
       </style>
     </head>
     <body>
+      <div id="portal-main">
       <div class="portal-header" id="portal-header-wrap">
         <img src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt=""
              onerror="this.style.display='none'">
@@ -2981,6 +2984,7 @@ function doGet(e) {
       </div>
 
       <div class="portal-footer" id="portal-footer">Developed by: ShadowAISolutions</div>
+      </div><!-- end #portal-main -->
       <div id="version">${escapeHtml(VERSION)}</div>
       <!-- PROJECT: GAS layer visibility toggle (matches TestAuth1 pattern — lives inside GAS iframe so it only appears after auth) -->
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
@@ -3706,8 +3710,7 @@ function doGet(e) {
         // ── GAS layer visibility toggle (matches TestAuth1 pattern) ──
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['announcements-section', 'portal-section-auth', 'portal-section-public',
-            'portal-header-wrap', 'portal-footer', 'version', 'ann-status-bar',
+          var _gasLayerEls = ['portal-main', 'version',
             'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;

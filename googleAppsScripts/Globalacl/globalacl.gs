@@ -1,4 +1,4 @@
-var VERSION = "v01.39g";
+var VERSION = "v01.40g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3302,8 +3302,12 @@ function doGet(e) {
       <style>
         .gas-layer-hidden { display: none !important; }
         * { box-sizing: border-box; }
-        html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #333; padding-top: 30px; padding-bottom: 30px; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; color: #333; }
+        #acl-main {
+          position: fixed; top: 30px; left: 0; right: 0; bottom: 30px;
+          overflow: auto; background: #f5f6fa;
+        }
         #acl-app { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .acl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 16px 20px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
         .acl-header h1 { margin: 0; font-size: 20px; color: #1565c0; }
@@ -3467,6 +3471,7 @@ function doGet(e) {
         </div>
       </div>
       ` : ''}
+      <div id="acl-main">
       <div id="acl-app">
         <div class="acl-header">
           <div>
@@ -3567,6 +3572,7 @@ function doGet(e) {
 
       <!-- Context menu (injected dynamically) -->
       <div class="ctx-menu" id="ctx-menu" style="display:none;"></div>
+      </div><!-- end #acl-main -->
 
       <script>
         // Session token for data operation validation
@@ -4338,7 +4344,7 @@ function doGet(e) {
         // GAS layer visibility toggle
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['acl-app', 'version',
+          var _gasLayerEls = ['acl-main', 'version',
             'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;

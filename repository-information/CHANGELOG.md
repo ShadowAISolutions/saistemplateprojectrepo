@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 19/100`
+`Sections: 20/100`
 
 ## [Unreleased]
+
+## [v08.83r] — 2026-04-05 03:06:33 PM EST
+
+> **Prompt:** "idk what you just did but you still dont have padding like we have on the testauth1, im talking about the white space at the top and bottom"
+
+### Changed
+- Added `#acl-main` wrapper to globalacl.gs with `position: fixed; top: 30px; bottom: 30px` — creates white strips at top/bottom matching testauth1's `#live-data-app` pattern
+- Added `#portal-main` wrapper to programportal.gs with same fixed positioning — moves gradient background to inset container, exposing white body strips
+- Body overflow set to `hidden` on both, wrapper handles scrolling
+- Updated gas layer toggle element lists to use new wrapper IDs
+
+#### `globalacl.gs` — v01.40g
+
+##### Changed
+- Page content now has visible top and bottom margins matching other pages
+
+#### `programportal.gs` — v01.49g
+
+##### Changed
+- Page content now has visible top and bottom margins matching other pages
 
 ## [v08.82r] — 2026-04-05 03:00:10 PM EST
 
