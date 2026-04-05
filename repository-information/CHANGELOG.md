@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 8/100`
+`Sections: 9/100`
 
 ## [Unreleased]
+
+## [v08.72r] — 2026-04-05 12:17:33 PM EST
+
+> **Prompt:** "the admin dropdown on hover is disappearing"
+
+### Fixed
+- Fixed admin dropdown disappearing when moving mouse from badge to dropdown — reduced gap between badge and dropdown by moving dropdown from `top: 36px` to `top: 28px`
+
+#### `testauth1.gs` — v02.39g
+
+##### Fixed
+- Fixed admin menu disappearing when trying to select an option
 
 ## [v08.71r] — 2026-04-05 12:10:48 PM EST
 
