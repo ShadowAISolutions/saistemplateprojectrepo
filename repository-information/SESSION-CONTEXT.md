@@ -4,33 +4,34 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 04:38:12 PM EST
-**Repo version:** v08.88r
+**Date:** 2026-04-05 05:17:54 PM EST
+**Repo version:** v08.89r
 
 ### What was done
-- **v08.86r** — Major environment code unification across portal, testauth1, and globalacl. Performed comprehensive analysis (38 differences identified), then unified all non-project-specific code with testauth1 as source of truth:
-  - HTML: CSP headers (connect-src, font-src), CSS (user-select removed from pills, z-index 10012, html-layer-hidden moved to PROJECT), HTML_CONFIG (DATA_POLL_INTERVAL added, ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION removed, HIPAA comments)
-  - GAS: RBAC unified to 4 roles (admin/clinician/billing/viewer + amend), Phase B/C HIPAA configs added to portal/globalacl, getData/heartbeat doPost handlers added, validateSessionForData fixed (role/permission extraction from cache), placeholder strings standardized, cache management unified (epoch-bump), architecture diagram notes updated
-- **v08.87r** — Unified all 4 template files (2 GAS auth, 1 HTML auth, 1 HTML noauth) to match testauth1 so gas-project-creator produces identical template code
-- **v08.88r** — Fixed remaining HTML auth template drifts: checklist stage text ("Session restored", "Sign-in complete"), JS stage map, sign-in subtitle (margin-top:10px, empty content), HTML entities standardized to `&hellip;`
+- **v08.89r** — Analyzed gas-project-creator + setup-gas-project.sh consistency with testauth1, then absorbed common auth project code into the HTML auth template:
+  - Confirmed GAS auth template already has all common code (HIPAA configs, admin utilities, session mgmt — no changes needed)
+  - HTML auth template had 6 gaps where all 3 projects (testauth1, globalacl, programportal) evolved identically but the template didn't keep up:
+    1. Added `so-stage-complete` (6th sign-out stage) to HTML body + JS `_soStageOrder`
+    2. Fixed sign-out confirm text: "server confirmation" → "sign-out confirmation"
+    3. Reordered sign-in DOM: subtitle moved after checklist (H2 → spinner → checklist → subtitle)
+    4. Moved CSS `.auth-pulse-dots` after all checklist styles
+    5. Expanded `_resetSignOutChecklist` with timer cleanup, sub-step reset, and total ticker
+    6. Added `_updateSignOutStage('so-stage-complete')` in `_finalizeSignOut`
+  - No propagation to projects needed — template was catching up to what projects already had
 
 ### Where we left off
-- All changes pushed and merged to main (3 pushes this session)
-- All three environments (testauth1, globalacl, programportal) now have identical template/shared code — only project-specific code differs
-- All 4 template files updated to match — new projects from gas-project-creator will be identical to testauth1 except for project code
-- Confirmed PROJECT-SPECIFIC items that correctly differ: `_gasSandboxSource` (testauth1 GAS iframe messaging), `_fetchPausedForGIS` (testauth1 COOP mitigation), HEARTBEAT_INTERVAL values (each env has test/production), SSO_PROVIDER (portal=true, others=false), CLIENT_ID (unique per env), auth preset timings (testauth1 uses ⚡ TEST VALUES)
+- All changes pushed and merged to main
+- HTML auth template now matches all 3 auth projects in the AUTH block areas that were common
+- Remaining known project-specific items that correctly differ: `_hideGasToggle()` (testauth1 only), SSO reconnect stage (testauth1/globalacl removed, programportal visible), HEARTBEAT_INTERVAL test values, inline `// PROJECT:` markers in AUTH blocks, CSS PROJECT block missing in testauth1
 
 ### Key decisions made
-- **testauth1 is source of truth** — when it differs from portal/globalacl, testauth1 is correct (user decision)
-- **RBAC unified to 4 roles** — admin/clinician/billing/viewer with amend permission across all environments (user chose over keeping project-specific roles)
-- **Phase B/C configs added to all** — BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG are shared template code, not testauth1-only
-- **doPost getData/heartbeat are template code** — added to all environments (user chose over keeping project-specific)
-- **validateSessionForData exception** — globalacl's robust implementation (extracts role/permissions from cache) was used instead of testauth1's simpler version (user chose this as the better fix)
-- **`rc-stage-sso` in template is correct** — hidden by default, shows for SSO_PROVIDER=true pages. Not drift from testauth1
+- **`rc-stage-sso` kept in template** — hidden by default with JS toggle. testauth1/globalacl removing it entirely is a project customization, programportal showing it visible is also a customization. Template's approach (include hidden, JS toggles) is the correct universal default
+- **Template absorbs project consensus** — when all 3 projects independently evolved the same way, the template should match them (template catches up to projects, not the reverse)
+- **testauth1 missing CSS PROJECT block** identified as a testauth1 bug, not a template issue
 
 ### Active context
-- Branch: `claude/unify-environment-code-nQOru`
-- Repo version: v08.88r
+- Branch: `claude/analyze-gas-creator-consistency-8Ip70`
+- Repo version: v08.89r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -38,13 +39,15 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-05 03:34:38 PM EST
-**Repo version:** v08.85r
+**Date:** 2026-04-05 04:38:12 PM EST
+**Repo version:** v08.88r
 
 ### What was done
-- **v08.80r–v08.85r** — Centered admin badge, shifted pills to right:22px for scrollbar clearance, added white 30px strips to GAS layers, normalized admin badge styling, propagated to all templates
+- **v08.86r** — Major environment code unification across portal, testauth1, and globalacl (38 differences unified)
+- **v08.87r** — Unified all 4 template files to match testauth1
+- **v08.88r** — Fixed remaining HTML auth template drifts: checklist text, sign-in subtitle, HTML entities
 
 ### Where we left off
-- All environments consistent with right-side pills, white strips, admin badge styling, toggle buttons
+- All three environments have identical template/shared code — only project-specific code differs
 
 Developed by: ShadowAISolutions
