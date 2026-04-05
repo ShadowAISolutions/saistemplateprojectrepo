@@ -3,9 +3,48 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 27/100`
+`Sections: 28/100`
 
 ## [Unreleased]
+
+## [v08.91r] — 2026-04-05 06:17:39 PM EST
+
+> **Prompt:** "go ahead and ask me questions as to which options to go with in making it so that they are all identical foundationally other than designated project sections. include in the question an option to skip in case i want to leave them as is for some reason"
+
+### Changed
+- Harmonized three auth projects (testauth1, globalacl, programportal) to match the auth HTML/GAS templates foundationally — all TEMPLATE/AUTH sections now identical, with only PROJECT-designated sections differing
+- Updated `YOUR_ORG_LOGO_URL` template placeholder from `logoipsum.com` to `www.shadowaisolutions.com/SAIS_Logo.png` across all templates and projects
+- Added `gas-layer-toggle` button and `_toggleGasLayer` IIFE to auth HTML template AUTH section — propagated to all three auth projects (previously only testauth1 had it, in PROJECT section)
+- Moved testauth1's `html-layer-toggle` and `gas-layer-toggle` from PROJECT to AUTH section to match template placement
+- Moved programportal's `_validateSSOTokenEmail()` back to template-matching position (was moved earlier for project-specific reasons)
+- Added PROJECT OVERRIDE markers to testauth1 auth presets for test-environment shortened timeouts
+- Added PROJECT OVERRIDE markers to testauth1 `_htmlLayerEls` extra test UI elements
+- Removed "(programportal only)" comment qualifiers from programportal to match template
+- Removed "Data Poll timer removed" comment from testauth1 to match template
+- Updated noauth template CSP `img-src` to include `www.shadowaisolutions.com`
+
+### Fixed
+- Restored `loadIframeViaNonce()` function to globalacl — was completely missing, causing lack of replay protection for iframe loading on page refresh/tab reclaim
+
+#### `testauth1.html` — v03.91w
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.46g
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.80w
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.86w
+##### Changed
+- Minor internal improvements
+
+#### `gas-project-creator.html` — v01.30w
+##### Changed
+- Minor internal improvements
 
 ## [v08.90r] — 2026-04-05 05:39:43 PM EST
 

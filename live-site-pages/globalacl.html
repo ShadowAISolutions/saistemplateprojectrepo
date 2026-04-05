@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.79w">
+  <meta name="build-version" content="v01.80w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -452,6 +452,7 @@
 
   <!-- Layer visibility toggles -->
   <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:7px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
+  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="display:none;position:fixed;bottom:7px;left:135px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -478,7 +479,7 @@
 /* tpl:7f3e9b2d */ // ── CONFIG ──
     // Logo shown on the "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
-    var YOUR_ORG_LOGO_URL = 'https://logoipsum.com/logoipsum-avatar.png';
+    var YOUR_ORG_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var LOGO_URL = DEVELOPER_LOGO_URL;
 
     // Auto-refresh: set to false to disable build-version polling
@@ -1227,6 +1228,26 @@
     var _directSessionLoad = false; // true when iframe was loaded directly with ?session= (Use Here) — skips the reload in gas-session-created
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
     var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
+    var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
+    var _nonceCallback = null;      // callback after nonce is received (optional)
+
+    // Load the GAS iframe via a one-time-use page nonce instead of ?session=TOKEN.
+    // This prevents session URL replay — the nonce expires in 60 seconds and is single-use.
+    // Flow: load ?action=getNonce → gas-nonce-ready → send session token → gas-nonce-result → load ?page_nonce=NONCE
+    // Options:
+    //   skipExpectingSession: true to NOT set _expectingSession (needed on page-load
+    //     where no prior iframe content exists to send stale gas-needs-auth)
+    function loadIframeViaNonce(sessionToken, options) {
+      var gasApp = document.getElementById('gas-app');
+      var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+      if (!gasApp || !baseUrl || !sessionToken) return;
+      _pendingNonceToken = sessionToken;
+      _nonceCallback = (options && options.callback) || null;
+      if (!(options && options.skipExpectingSession)) {
+        _expectingSession = true;
+      }
+      gasApp.src = baseUrl + '?action=getNonce';
+    }
 
     function initGoogleSignIn() {
       var session = loadSession();
@@ -3663,6 +3684,31 @@
           btn.textContent = _htmlLayerVisible ? 'HTML' : 'HTML \u25CB';
           btn.style.borderColor = _htmlLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
         }
+      };
+    })();
+
+    // GAS layer visibility toggle — hides/shows the entire GAS iframe
+    // Only shown when the GAS iframe exists AND user is authenticated (auth wall hidden)
+    (function() {
+      var _gasVisible = true;
+      window._toggleGasLayer = function() {
+        var gasApp = document.getElementById('gas-app');
+        var btn = document.getElementById('gas-layer-toggle');
+        if (!gasApp) return;
+        _gasVisible = !_gasVisible;
+        gasApp.style.display = _gasVisible ? '' : 'none';
+        if (btn) {
+          btn.textContent = _gasVisible ? 'GAS' : 'GAS \u25CB';
+          btn.style.borderColor = _gasVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+        }
+      };
+      window._showGasToggle = function() {
+        var btn = document.getElementById('gas-layer-toggle');
+        if (btn && document.getElementById('gas-app')) btn.style.display = '';
+      };
+      window._hideGasToggle = function() {
+        var btn = document.getElementById('gas-layer-toggle');
+        if (btn) btn.style.display = 'none';
       };
     })();
 

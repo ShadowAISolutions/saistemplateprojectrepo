@@ -1,4 +1,4 @@
-var VERSION = "v02.45g";
+var VERSION = "v02.46g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -211,18 +211,19 @@ function checkPermission(user, requiredPermission, operationName) {
 // ══════════════
 var PRESETS = {
   standard: {
-    // SESSION_EXPIRATION: 3600,       // seconds — rolling session lifetime, reset by heartbeats (1hr)
-    SESSION_EXPIRATION: 180,           // ⚡ TEST VALUE (3min) — uncomment line above and delete this line to restore
-    // ABSOLUTE_SESSION_TIMEOUT: 28800, // seconds — hard ceiling, never resets regardless of activity (8hr)
-    ABSOLUTE_SESSION_TIMEOUT: 300,     // ⚡ TEST VALUE (5min) — uncomment line above and delete this line to restore
+    // PROJECT OVERRIDE START: test environment shortened timeouts
+    SESSION_EXPIRATION: 180,           // ⚡ TEST VALUE (3min) — production: 3600
+    ABSOLUTE_SESSION_TIMEOUT: 300,     // ⚡ TEST VALUE (5min) — production: 28800
+    // PROJECT OVERRIDE END
     ENABLE_HEARTBEAT: true,
-    // HEARTBEAT_INTERVAL: 300,        // seconds — how often GAS checks/extends the session when user is active (5min)
-    HEARTBEAT_INTERVAL: 30,            // ⚡ TEST VALUE (30s) — uncomment line above and delete this line to restore
+    // PROJECT OVERRIDE START: test environment shortened timeouts
+    HEARTBEAT_INTERVAL: 30,            // ⚡ TEST VALUE (30s) — production: 300
+    // PROJECT OVERRIDE END
     MAX_SESSIONS_PER_USER: 1,
-    // OAUTH_TOKEN_LIFETIME: 3600,     // seconds — expected lifetime of the Google OAuth access token (1hr)
-    OAUTH_TOKEN_LIFETIME: 180,         // ⚡ TEST VALUE (3min) — uncomment line above and delete this line to restore
-    // OAUTH_REFRESH_BUFFER: 300,      // seconds — show "expiring soon" banner this long before token expires (5min)
-    OAUTH_REFRESH_BUFFER: 60,          // ⚡ TEST VALUE (1min) — uncomment line above and delete this line to restore
+    // PROJECT OVERRIDE START: test environment shortened timeouts
+    OAUTH_TOKEN_LIFETIME: 180,         // ⚡ TEST VALUE (3min) — production: 3600
+    OAUTH_REFRESH_BUFFER: 60,          // ⚡ TEST VALUE (1min) — production: 300
+    // PROJECT OVERRIDE END
     ENABLE_DOMAIN_RESTRICTION: false,
     ALLOWED_DOMAINS: [],
     ENABLE_AUDIT_LOG: false,
@@ -242,18 +243,19 @@ var PRESETS = {
     DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   },
   hipaa: {
-    // SESSION_EXPIRATION: 900,        // seconds — rolling session lifetime, reset by heartbeats (15min)
-    SESSION_EXPIRATION: 180,           // ⚡ TEST VALUE (3min) — uncomment line above and delete this line to restore
-    // ABSOLUTE_SESSION_TIMEOUT: 28800, // seconds — hard ceiling, never resets regardless of activity (8hr)
-    ABSOLUTE_SESSION_TIMEOUT: 300,     // ⚡ TEST VALUE (5min) — uncomment line above and delete this line to restore
+    // PROJECT OVERRIDE START: test environment shortened timeouts
+    SESSION_EXPIRATION: 180,           // ⚡ TEST VALUE (3min) — production: 900
+    ABSOLUTE_SESSION_TIMEOUT: 300,     // ⚡ TEST VALUE (5min) — production: 28800
+    // PROJECT OVERRIDE END
     ENABLE_HEARTBEAT: true,
-    // HEARTBEAT_INTERVAL: 300,        // seconds — how often GAS checks/extends the session when user is active (5min)
-    HEARTBEAT_INTERVAL: 30,            // ⚡ TEST VALUE (30s) — uncomment line above and delete this line to restore
+    // PROJECT OVERRIDE START: test environment shortened timeouts
+    HEARTBEAT_INTERVAL: 30,            // ⚡ TEST VALUE (30s) — production: 300
+    // PROJECT OVERRIDE END
     MAX_SESSIONS_PER_USER: 1,
-    // OAUTH_TOKEN_LIFETIME: 3600,     // seconds — expected lifetime of the Google OAuth access token (1hr)
-    OAUTH_TOKEN_LIFETIME: 180,         // ⚡ TEST VALUE (3min) — uncomment line above and delete this line to restore
-    // OAUTH_REFRESH_BUFFER: 300,      // seconds — show "expiring soon" banner this long before token expires (5min)
-    OAUTH_REFRESH_BUFFER: 60,          // ⚡ TEST VALUE (1min) — uncomment line above and delete this line to restore
+    // PROJECT OVERRIDE START: test environment shortened timeouts
+    OAUTH_TOKEN_LIFETIME: 180,         // ⚡ TEST VALUE (3min) — production: 3600
+    OAUTH_REFRESH_BUFFER: 60,          // ⚡ TEST VALUE (1min) — production: 300
+    // PROJECT OVERRIDE END
     ENABLE_DOMAIN_RESTRICTION: true,
     ALLOWED_DOMAINS: [],
     ENABLE_AUDIT_LOG: true,

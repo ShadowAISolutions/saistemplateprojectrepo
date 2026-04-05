@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.90w">
+  <meta name="build-version" content="v03.91w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -438,13 +438,17 @@
     <button id="sign-out-all-btn" title="Sign out of all connected pages">Sign Out All</button>
   </div>
 
+
+  <!-- Layer visibility toggles -->
+  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:7px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
+  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="display:none;position:fixed;bottom:7px;left:135px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
     <div class="timer-body" id="timer-body">
       <div class="timer-row"><span class="timer-label">Absolute:</span><span class="timer-value" id="timer-absolute">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Session:</span><span class="timer-value" id="timer-session">--:--</span></div>
       <div class="timer-row"><span class="timer-label">Heartbeat:</span><span class="timer-value" id="timer-heartbeat">--</span></div>
-      <!-- Data Poll timer removed — now rendered on the GAS layer -->
     </div>
   </div>
 <!-- ══════════════ -->
@@ -476,10 +480,6 @@
     <div id="security-test-summary" style="display:none;margin-bottom:10px;padding:8px 12px;border-radius:6px;"></div>
     <div id="security-test-output"></div>
   </div>
-  <!-- HTML layer visibility toggle -->
-  <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:7px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
-  <!-- PROJECT: GAS layer visibility toggle (moved from GAS layer for full iframe hide/show) -->
-  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="display:none;position:fixed;bottom:7px;left:135px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -3199,7 +3199,6 @@
             heartbeatEl.className = 'timer-value';
           }
 
-          // Data Poll timer removed — now rendered on the GAS layer
         } else if (remaining <= 0 && heartbeatEl) {
           heartbeatEl.textContent = 'expired';
           heartbeatEl.className = 'timer-value critical';
@@ -3821,27 +3820,17 @@
       retryClient.requestAccessToken();
     });
 
-// ══════════════
-// AUTH END
-// ══════════════
-
-// ══════════════
-// PROJECT START
-// ══════════════
-
-    // ── Live Data Viewer ──
-    // Displays spreadsheet data in a sortable table with cell editing.
-    // Live Data UI IIFE migrated to GAS layer (testauth1.gs doGet output)
-
-    // HTML layer visibility toggle — hides/shows all HTML-layer visual elements
-    // Uses a CSS class with !important to avoid race conditions with other code
-    // paths (showApp, showAuthWall, startCountdownTimers) that modify element
-    // display values independently via inline styles.
+    // =============================================
+    // Layer Visibility Toggles
+    // =============================================
     (function() {
       var _htmlLayerVisible = true;
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
-        'ld-test-bar', 'sso-indicator', 'security-test-results',
-        'changelog-overlay', 'gcl-overlay', 'session-warning-banner', 'absolute-warning-banner'];
+        'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
+        'absolute-warning-banner'];
+      // PROJECT OVERRIDE START: test UI elements added to toggle list
+      _htmlLayerEls.push('ld-test-bar', 'security-test-results');
+      // PROJECT OVERRIDE END
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
         var btn = document.getElementById('html-layer-toggle');
@@ -3861,7 +3850,7 @@
       };
     })();
 
-    // PROJECT: GAS layer visibility toggle — hides/shows the entire GAS iframe
+    // GAS layer visibility toggle — hides/shows the entire GAS iframe
     // Only shown when the GAS iframe exists AND user is authenticated (auth wall hidden)
     (function() {
       var _gasVisible = true;
@@ -3885,6 +3874,20 @@
         if (btn) btn.style.display = 'none';
       };
     })();
+
+
+
+// ══════════════
+// AUTH END
+// ══════════════
+
+// ══════════════
+// PROJECT START
+// ══════════════
+
+    // ── Live Data Viewer ──
+    // Displays spreadsheet data in a sortable table with cell editing.
+    // Live Data UI IIFE migrated to GAS layer (testauth1.gs doGet output)
 
     // Security test registry — each test has a name and a run function
     var _securityTests = [];

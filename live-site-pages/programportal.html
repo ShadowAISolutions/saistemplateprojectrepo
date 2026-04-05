@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.85w">
+  <meta name="build-version" content="v01.86w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Program Portal</title>
 <!-- ══════════════ -->
@@ -196,7 +196,7 @@
       animation: auth-spin 0.8s linear infinite;
     }
     @keyframes auth-spin { to { transform: rotate(360deg); } }
-    /* PROJECT: Sign-in stage checklist (programportal only) */
+    /* PROJECT: Sign-in stage checklist */
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -219,7 +219,7 @@
     }
     .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signout-checklist .sub-steps .stage-time { font-size: 10px; }
-    /* PROJECT: Sign-out stage checklist (programportal only) */
+    /* PROJECT: Sign-out stage checklist */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -383,7 +383,7 @@
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Signing in…</h2>
       <div class="auth-spinner"></div>
-      <!-- PROJECT: Sign-in stage checklist (programportal only) -->
+      <!-- PROJECT: Sign-in stage checklist -->
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
         <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server
@@ -409,7 +409,7 @@
   <div id="signing-out-wall">
     <h2>Signing out&hellip;</h2>
     <div class="auth-spinner"></div>
-    <!-- PROJECT: Sign-out stage checklist (programportal only) -->
+    <!-- PROJECT: Sign-out stage checklist -->
     <ul id="signout-checklist" class="signout-checklist">
       <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
       <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
@@ -450,6 +450,7 @@
 
   <!-- Layer visibility toggles -->
   <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:7px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
+  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="display:none;position:fixed;bottom:7px;left:135px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -475,7 +476,7 @@
 /* tpl:7f3e9b2d */ // ── CONFIG ──
     // Logo shown on the "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
-    var YOUR_ORG_LOGO_URL = 'https://logoipsum.com/logoipsum-avatar.png';
+    var YOUR_ORG_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var LOGO_URL = DEVELOPER_LOGO_URL;
 
     // Auto-refresh: set to false to disable build-version polling
@@ -1333,37 +1334,6 @@
       }
     }
 
-    // PROJECT: Validate SSO token matches the active session's Google account.
-    // After page refresh, the GIS popup may let the user pick a different account.
-    // This check ensures only the same account's token is accepted for SSO sharing.
-    function _validateSSOTokenEmail(accessToken, onValid, onMismatch) {
-      var session = loadSession();
-      if (!session.email) {
-        if (onMismatch) onMismatch('no_session');
-        return;
-      }
-      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { 'Authorization': 'Bearer ' + accessToken }
-      })
-      .then(function(resp) { return resp.json(); })
-      .then(function(info) {
-        if (info.email && info.email.toLowerCase() === session.email.toLowerCase()) {
-          onValid();
-        } else {
-          console.warn('[SSO] Token email mismatch \u2014 session: ' + session.email + ', Google: ' + (info.email || 'unknown'));
-          _reportSecurityEvent('sso_email_mismatch', {
-            sessionEmail: session.email,
-            tokenEmail: info.email || 'unknown'
-          });
-          if (onMismatch) onMismatch('mismatch');
-        }
-      })
-      .catch(function(err) {
-        console.warn('[SSO] Failed to validate token email:', err);
-        if (onMismatch) onMismatch('error');
-      });
-    }
-
     function exchangeToken(googleAccessToken) {
       _iframeLoadTime = Date.now();
       showSigningIn();
@@ -1542,6 +1512,36 @@
         }
         if (frame.parentNode) frame.parentNode.removeChild(frame);
       }, 10000);
+    }
+
+    // Validate that a Google access token's email matches the active session.
+    // Prevents wrong-account tokens from being accepted for SSO sharing.
+    function _validateSSOTokenEmail(accessToken, onValid, onMismatch) {
+      var session = loadSession();
+      if (!session.email) {
+        if (onMismatch) onMismatch('no_session');
+        return;
+      }
+      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': 'Bearer ' + accessToken }
+      })
+      .then(function(resp) { return resp.json(); })
+      .then(function(info) {
+        if (info.email && info.email.toLowerCase() === session.email.toLowerCase()) {
+          onValid();
+        } else {
+          console.warn('[SSO] Token email mismatch \u2014 session: ' + session.email + ', Google: ' + (info.email || 'unknown'));
+          _reportSecurityEvent('sso_email_mismatch', {
+            sessionEmail: session.email,
+            tokenEmail: info.email || 'unknown'
+          });
+          if (onMismatch) onMismatch('mismatch');
+        }
+      })
+      .catch(function(err) {
+        console.warn('[SSO] Failed to validate token email:', err);
+        if (onMismatch) onMismatch('error');
+      });
     }
 
     // ── HMAC Key Import (Web Crypto API) ──
@@ -2412,8 +2412,7 @@
       }
     }
 
-    // PROJECT: Sign-in stage checklist logic (programportal only)
-    var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
+    // PROJECT: Sign-in stage checklist logic    var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
     var _stageStartTimes = {};  // tracks when each stage became active
     var _stageMap = {
       'Contacting Google\u2026': 'stage-contacting',
@@ -2623,8 +2622,7 @@
       if (subSending) subSending.style.display = 'none';
     }
 
-    // PROJECT: Sign-out stage checklist logic (programportal only)
-    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
+    // PROJECT: Sign-out stage checklist logic    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
     var _soStageStartTimes = {};
 
     function _updateSignOutStage(stageId) {
@@ -3727,6 +3725,31 @@
           btn.textContent = _htmlLayerVisible ? 'HTML' : 'HTML \u25CB';
           btn.style.borderColor = _htmlLayerVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
         }
+      };
+    })();
+
+    // GAS layer visibility toggle — hides/shows the entire GAS iframe
+    // Only shown when the GAS iframe exists AND user is authenticated (auth wall hidden)
+    (function() {
+      var _gasVisible = true;
+      window._toggleGasLayer = function() {
+        var gasApp = document.getElementById('gas-app');
+        var btn = document.getElementById('gas-layer-toggle');
+        if (!gasApp) return;
+        _gasVisible = !_gasVisible;
+        gasApp.style.display = _gasVisible ? '' : 'none';
+        if (btn) {
+          btn.textContent = _gasVisible ? 'GAS' : 'GAS \u25CB';
+          btn.style.borderColor = _gasVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
+        }
+      };
+      window._showGasToggle = function() {
+        var btn = document.getElementById('gas-layer-toggle');
+        if (btn && document.getElementById('gas-app')) btn.style.display = '';
+      };
+      window._hideGasToggle = function() {
+        var btn = document.getElementById('gas-layer-toggle');
+        if (btn) btn.style.display = 'none';
       };
     })();
 
