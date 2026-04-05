@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 5/100`
+`Sections: 6/100`
 
 ## [Unreleased]
+
+## [v08.69r] — 2026-04-04 09:58:18 PM EST
+
+> **Prompt:** "in live-site-pages add a "images" folder, and move the barcode-test-sheet.png which is currently in the root to that new images folder"
+
+### Changed
+- Moved `barcode-test-sheet.png` from repo root to new `live-site-pages/images/` folder — now accessible via GitHub Pages
+- Added `images/` directory with file entry to README tree
 
 ## [v08.68r] — 2026-04-04 09:42:26 PM EST
 
