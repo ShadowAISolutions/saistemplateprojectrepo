@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.80w">
+  <meta name="build-version" content="v01.81w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -1225,7 +1225,7 @@
     var gasFrame = document.getElementById('gas-app');
     var signInClient = null;
     var _expectingSession = false;  // guards against stale gas-needs-auth during session resume
-    var _directSessionLoad = false; // true when iframe was loaded directly with ?session= (Use Here) — skips the reload in gas-session-created
+    var _directSessionLoad = false; // true when iframe loaded via nonce for session reclaim (Use Here) — tells gas-auth-ok to re-show iframe
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
     var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
     var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
@@ -1403,7 +1403,9 @@
       'gas-version': true,
       'gas-session-invalid': true,
       'gas-admin-global-signout-result': true,
-      'gas-admin-global-signout-error': true
+      'gas-admin-global-signout-error': true,
+      'gas-nonce-ready': true,
+      'gas-nonce-result': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1623,6 +1625,20 @@
       //   }
       // }
 
+      // Frame handshake responder — proves to the GAS iframe that it's embedded in our page.
+      // Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
+      // GAS double-iframe architecture: contentWindow → Google's outer shell → sandbox.
+      // event.source is the sandbox frame that sent the challenge.
+      if (data.type === 'frame-handshake-challenge' && data.handshakeId) {
+        if (event.source) {
+          event.source.postMessage({
+            type: 'frame-handshake-response',
+            handshakeId: data.handshakeId
+          }, '*');  // '*' required — GAS sandbox origin is unpredictable
+        }
+        return;  // Handled — don't continue through the message processing chain
+      }
+
       // Layer 1: Only process known GAS message types (allowlist)
       if (!_KNOWN_GAS_MESSAGES[data.type]) {
         _reportSecurityEvent('unknown_message_type', {
@@ -1664,11 +1680,14 @@
       // or action listener pages that have no signing key). Security impact is minimal —
       // forging these would at most log the user out (DoS), and origin validation still applies.
       var _SIG_EXEMPT = { 'gas-session-created': true, 'gas-needs-auth': true,
+        'gas-ready-for-token': true,  // Token exchange listener — no signing key
+        'gas-auth-ok': true,          // Immediate unsigned send fires before signed version
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true };
+        'gas-admin-signout-error': true,
+        'gas-nonce-ready': true, 'gas-nonce-result': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
           if (!valid) {
@@ -1705,6 +1724,45 @@
             type: 'heartbeat-token',
             token: session.token
           }, event.origin);
+        }
+        return;
+      }
+
+      // ── Nonce generation flow ──
+      // Step 1: getNonce listener page is ready — send the session token
+      if (data.type === 'gas-nonce-ready' && _pendingNonceToken) {
+        if (event.source) {
+          event.source.postMessage({
+            type: 'request-nonce',
+            sessionToken: _pendingNonceToken
+          }, event.origin);
+        }
+        return;
+      }
+
+      // Step 2: Nonce result received — reload iframe with ?page_nonce=NONCE
+      if (data.type === 'gas-nonce-result') {
+        var nonceToken = _pendingNonceToken;
+        _pendingNonceToken = null;
+        if (data.success && data.nonce) {
+          var gasApp = document.getElementById('gas-app');
+          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+          if (gasApp && baseUrl) {
+            gasApp.src = baseUrl + '?page_nonce=' + encodeURIComponent(data.nonce);
+          }
+          if (_nonceCallback) {
+            _nonceCallback(null);
+            _nonceCallback = null;
+          }
+        } else {
+          // Nonce generation failed — show error, do NOT fall back to ?session=
+          console.error('Nonce generation failed:', data.error);
+          if (_nonceCallback) {
+            _nonceCallback(data.error || 'nonce_failed');
+            _nonceCallback = null;
+          } else {
+            showAuthWall('Session could not be verified. Please sign in again.');
+          }
         }
         return;
       }

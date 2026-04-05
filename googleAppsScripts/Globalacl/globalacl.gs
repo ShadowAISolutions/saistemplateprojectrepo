@@ -1,4 +1,4 @@
-var VERSION = "v01.42g";
+var VERSION = "v01.43g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -264,93 +264,6 @@ var PRESETS = {
   }
 };
 
-// ═══════════════════════════════════════════════════════
-// PHASE B — CONFIGURATION
-// ═══════════════════════════════════════════════════════
-
-/**
- * Breach alerting configuration.
- * Thresholds define how many security events of each type within WINDOW_MINUTES
- * trigger an email alert to the security officer.
- */
-var BREACH_ALERT_CONFIG = {
-  ENABLED: true,
-  SECURITY_OFFICER_EMAIL: '',  // MUST be set before enabling — email address of designated security officer
-  ALERT_COOLDOWN_MINUTES: 60,  // Minimum time between alerts of the same type
-  WINDOW_MINUTES: 15,          // Rolling window for threshold evaluation
-  THRESHOLDS: {
-    'tier3_lockout': 1,        // Any Tier 3 lockout = immediate alert
-    'hmac_integrity_violation': 3,  // 3 HMAC failures in window
-    'session_hijack_attempt': 1,    // Any hijack attempt = immediate alert
-    'brute_force': 5,          // 5 failed auth attempts in window
-    'data_access_anomaly': 10, // 10 unusual data access patterns in window
-    'permission_escalation': 1 // Any permission escalation attempt = immediate alert
-  },
-  // Event types that are ALWAYS logged to BreachLog (regardless of threshold)
-  ALWAYS_LOG_EVENTS: ['tier3_lockout', 'session_hijack_attempt', 'permission_escalation']
-};
-
-/**
- * Retention enforcement configuration.
- * Controls how the retention trigger archives and protects audit data.
- */
-var HIPAA_RETENTION_CONFIG = {
-  RETENTION_YEARS: 6,          // Reads from AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS when available
-  ARCHIVE_SHEET_SUFFIX: '_Archive',  // e.g. SessionAuditLog_Archive
-  PROTECTION_LEVEL: 'warning', // 'warning' (shows dialog) or 'full' (blocks all edits)
-  SHEETS_TO_PROTECT: [
-    'SessionAuditLog', 'DataAuditLog', 'DisclosureLog',
-    'AccessRequests', 'AmendmentRequests', 'AmendmentNotifications',
-    'BreachLog', 'PersonalRepresentatives',
-    'LegalHolds', 'RetentionIntegrityLog'
-  ],
-  // How many rows to process per trigger execution (to stay within 6-min GAS limit)
-  BATCH_SIZE: 500
-};
-
-// ═══════════════════════════════════════════════════════
-// PHASE C — RETENTION CONFIGURATION EXTENSIONS
-// ═══════════════════════════════════════════════════════
-
-/**
- * Legal hold configuration — controls litigation preservation behavior.
- * §164.316(b)(2)(i) + FRCP Rule 37(e)
- */
-var LEGAL_HOLD_CONFIG = {
-  ENABLED: true,
-  MAX_HOLDS_PER_SHEET: 10,
-  ALLOW_ARCHIVE_HOLDS: true,
-  HOLD_TYPES: ['Litigation', 'Regulatory', 'InternalInvestigation', 'Audit', 'Preservation'],
-  HOLD_NOTIFICATION_EMAIL: ''
-};
-
-/**
- * Archive integrity verification configuration — controls checksum behavior.
- * §164.312(c)(1) — Integrity controls
- */
-var INTEGRITY_CONFIG = {
-  ALGORITHM: 'SHA_256',
-  CHECKSUM_BATCH_SIZE: 1000,
-  STORAGE_MODE: 'tracking_sheet',
-  TRACKING_SHEET_NAME: 'RetentionIntegrityLog'
-};
-
-/**
- * Personal representative configuration.
- */
-var REPRESENTATIVE_CONFIG = {
-  MAX_REPRESENTATIVES_PER_INDIVIDUAL: 5,  // Prevent abuse
-  REQUIRE_ADMIN_APPROVAL: true,           // Admin must approve representative registrations
-  ALLOW_SELF_REGISTRATION: false,         // Representatives cannot register themselves
-  SUPPORTED_RELATIONSHIP_TYPES: [
-    'Parent',
-    'LegalGuardian',
-    'HealthcarePOA',
-    'CourtAppointed',
-    'Executor'   // Estate executor for deceased individuals
-  ]
-};
-
 // ══════════════
 // AUTH CONFIG RESOLUTION
 // ══════════════
@@ -391,6 +304,451 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 // PROJECT END
 // ══════════════
+
+// ══════════════
+// CROSS-PROJECT SESSION MANAGEMENT
+// ══════════════
+
+/**
+ * Check if a row in the Access tab is a metadata row (#NAME, #URL, #AUTH).
+ * Metadata rows have '#' as the first character of column A.
+ */
+function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
+
+/**
+ * Ensure the Access tab has the 3 metadata rows (#NAME, #URL, #AUTH) after the header.
+ * If missing, inserts them and shifts existing user data down.
+ */
+function ensureMetadataRows(sheet) {
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2 || String(data[1][0]).trim() !== '#NAME') {
+    sheet.insertRowsAfter(1, 3);
+    sheet.getRange(2, 1).setValue('#NAME');
+    sheet.getRange(3, 1).setValue('#URL');
+    sheet.getRange(4, 1).setValue('#AUTH');
+  }
+}
+
+/**
+ * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
+ * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
+ * Runs once per execution (cached flag).
+ * GlobalACL registers as SELF; other projects register with their deployment URL.
+ */
+var _selfRegistered = false;
+function registerSelfProject() {
+  if (_selfRegistered) return;
+  _selfRegistered = true;
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return;
+
+    ensureMetadataRows(sheet);
+
+    // Find column for this project
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var colIdx = -1;
+    for (var c = 0; c < headers.length; c++) {
+      if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
+        colIdx = c;
+        break;
+      }
+    }
+
+    // If column doesn't exist, add it
+    if (colIdx === -1) {
+      colIdx = headers.length;
+      sheet.getRange(1, colIdx + 1).setValue(ACL_PAGE_NAME);
+      // Initialize metadata cells for the new column
+      sheet.getRange(2, colIdx + 1).setValue('');
+      sheet.getRange(3, colIdx + 1).setValue('');
+      sheet.getRange(4, colIdx + 1).setValue(false);
+      // Set FALSE checkboxes for all user rows (row 5 onward)
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 4) {
+        var falseValues = [];
+        for (var f = 0; f < lastRow - 4; f++) falseValues.push([false]);
+        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).setValues(falseValues);
+        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).insertCheckboxes();
+      }
+    }
+
+    // Determine this project's URL: GlobalACL uses SELF, others use deployment URL
+    var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
+    var myUrl = isSelfProject ? 'SELF'
+      : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
+        ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
+        : '';
+    if (!myUrl) return;
+
+    // Write/update metadata rows for this project's column
+    var col = colIdx + 1; // 1-indexed for getRange
+    sheet.getRange(2, col).setValue(TITLE);  // #NAME row
+    sheet.getRange(3, col).setValue(myUrl);  // #URL row
+    sheet.getRange(4, col).setValue(true);   // #AUTH row
+  } catch (e) {
+    Logger.log('registerSelfProject error: ' + e.message);
+  }
+}
+
+/**
+ * In-memory cache for cross-project admin secret.
+ */
+var _crossProjectSecret = null;
+
+/**
+ * Read the cross-project admin secret from Script Properties.
+ * Cached in memory for the current execution.
+ */
+function getCrossProjectSecret() {
+  if (_crossProjectSecret) return _crossProjectSecret;
+  try {
+    _crossProjectSecret = PropertiesService.getScriptProperties()
+      .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    return _crossProjectSecret;
+  } catch (e) {
+    Logger.log('getCrossProjectSecret error: ' + e.message);
+  }
+  return '';
+}
+
+/**
+ * Validate a cross-project admin request using the shared secret.
+ * @param {Object} params — e.parameter from doGet
+ * @returns {boolean} — true if secret matches and callerEmail is admin
+ */
+function validateCrossProjectAdmin(params) {
+  var secret = (params && params.secret) || '';
+  var callerEmail = (params && params.callerEmail) || '';
+  if (!secret || !callerEmail) return { valid: false, reason: 'missing_params' };
+  var expected = getCrossProjectSecret();
+  if (!expected || secret !== expected) return { valid: false, reason: 'invalid_secret' };
+  // Verify caller has admin role via ACL
+  var access = checkSpreadsheetAccess(callerEmail);
+  if (!access.hasAccess || access.role !== 'admin') return { valid: false, reason: 'not_admin' };
+  return { valid: true, email: callerEmail };
+}
+
+/**
+ * Internal variant of listActiveSessions — skips session token validation.
+ * Used by the cross-project endpoint (caller already authenticated via shared secret)
+ * and by listGlobalSessions for the local project.
+ * @param {string} callerEmail — the admin's email (for isSelf comparison)
+ * @returns {Array} — active sessions with project label
+ */
+function listActiveSessionsInternal(callerEmail) {
+  var cache = getEpochCache();
+  var activeSessions = [];
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return activeSessions;
+    var data = sheet.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) continue;
+      var trackKey = 'sessions_' + email;
+      var raw = cache.get(trackKey);
+      if (!raw) continue;
+      var tokens;
+      try { tokens = JSON.parse(raw); } catch (e) { continue; }
+      for (var i = 0; i < tokens.length; i++) {
+        var sessionRaw = cache.get('session_' + tokens[i]);
+        if (!sessionRaw) continue;
+        var sess;
+        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
+        var absRemaining = 0;
+        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+          absRemaining = Math.max(0, Math.round(
+            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
+          ));
+        }
+        var rollingRemaining = Math.max(0, Math.round(
+          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
+        ));
+        activeSessions.push({
+          email: sess.email,
+          displayName: sess.displayName || '',
+          role: sess.role || RBAC_DEFAULT_ROLE,
+          createdAt: sess.absoluteCreatedAt || sess.createdAt,
+          lastActivity: sess.lastActivity,
+          absoluteRemaining: absRemaining,
+          rollingRemaining: rollingRemaining,
+          isEmergencyAccess: sess.isEmergencyAccess || false,
+          isSelf: (sess.email || '').toLowerCase() === (callerEmail || '').toLowerCase(),
+          project: TITLE
+        });
+      }
+    }
+  } catch (e) {
+    Logger.log('listActiveSessionsInternal error: ' + e.message);
+  }
+  return activeSessions;
+}
+
+/**
+ * Ensure a cross-project admin secret exists in Script Properties.
+ * GlobalACL-only — generates a random 64-char secret if none exists,
+ * then pushes it to all registered projects via distributeSecret_().
+ */
+function ensureCrossProjectSecret() {
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var existing = props.getProperty('CROSS_PROJECT_ADMIN_SECRET');
+    if (existing) return;
+    // Generate a random 64-character secret
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var secret = '';
+    for (var j = 0; j < 64; j++) {
+      secret += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', secret);
+    // Push to all registered projects
+    distributeSecret_(secret, '');
+  } catch (e) {
+    Logger.log('ensureCrossProjectSecret error: ' + e.message);
+  }
+}
+
+/**
+ * Push the cross-project admin secret to all registered projects.
+ * @param {string} newSecret — the new secret to distribute
+ * @param {string} oldSecret — the previous secret (empty on first setup)
+ */
+function distributeSecret_(newSecret, oldSecret) {
+  var projects = getRegisteredProjects();
+  var requests = [];
+  for (var i = 0; i < projects.length; i++) {
+    if (projects[i].isSelf || !projects[i].authEnabled) continue;
+    requests.push({
+      url: projects[i].url + '?action=setAdminSecret'
+          + '&newSecret=' + encodeURIComponent(newSecret)
+          + '&oldSecret=' + encodeURIComponent(oldSecret),
+      method: 'get',
+      muteHttpExceptions: true
+    });
+  }
+  if (requests.length > 0) {
+    var responses = UrlFetchApp.fetchAll(requests);
+    for (var j = 0; j < responses.length; j++) {
+      if (responses[j].getResponseCode() !== 200) {
+        Logger.log('distributeSecret_ failed for project index ' + j
+          + ': ' + responses[j].getContentText());
+      }
+    }
+  }
+}
+
+/**
+ * Rotate the cross-project admin secret. Generates a new secret,
+ * distributes it to all projects, then updates local storage.
+ * Called by admin action from the Global Sessions panel.
+ */
+function rotateAdminSecret(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'rotateAdminSecret');
+  checkPermission(user, 'admin', 'rotateAdminSecret');
+
+  var props = PropertiesService.getScriptProperties();
+  var oldSecret = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var newSecret = '';
+  for (var j = 0; j < 64; j++) {
+    newSecret += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  // Push new secret to all projects first (they accept if oldSecret matches)
+  distributeSecret_(newSecret, oldSecret);
+
+  // Update local only after distribution succeeds
+  props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
+  _crossProjectSecret = null; // clear cache
+
+  auditLog('admin_action', user.email, 'rotate_admin_secret', {});
+  return { success: true };
+}
+
+/**
+ * Read registered projects from Access tab metadata rows (#NAME, #URL, #AUTH).
+ * Layout: Row 1 = headers (Email, Role, page1, page2, ...).
+ *         Row 2 = #NAME row (project display names).
+ *         Row 3 = #URL  row (deployment URLs; SELF for the local project).
+ *         Row 4 = #AUTH row (TRUE/FALSE auth enabled).
+ *         Row 5+ = user data.
+ * Page columns start at column C (index 2). Each column header is the projectId.
+ * Returns array of { name, url, isSelf, authEnabled, projectId }.
+ */
+var _registeredProjects = null;
+function getRegisteredProjects() {
+  if (_registeredProjects) return _registeredProjects;
+  _registeredProjects = [];
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return _registeredProjects;
+    var data = sheet.getRange(1, 1, Math.min(sheet.getLastRow(), 4), sheet.getLastColumn()).getValues();
+    if (data.length < 4) return _registeredProjects;
+    var headers = data[0];  // Row 1: column headers
+    var names   = data[1];  // Row 2: #NAME
+    var urls    = data[2];  // Row 3: #URL
+    var auths   = data[3];  // Row 4: #AUTH
+    // Page columns start at index 2 (column C)
+    for (var c = 2; c < headers.length; c++) {
+      var projectId = String(headers[c]).trim();
+      var url = String(urls[c]).trim();
+      if (!projectId || !url) continue;
+      var name = String(names[c]).trim() || projectId;
+      var enabled = auths[c] === true || String(auths[c]).toUpperCase() === 'TRUE';
+      _registeredProjects.push({
+        name: name,
+        url: url,
+        isSelf: url.toUpperCase() === 'SELF',
+        authEnabled: enabled,
+        projectId: projectId
+      });
+    }
+  } catch (e) {
+    Logger.log('getRegisteredProjects error: ' + e.message);
+  }
+  return _registeredProjects;
+}
+
+/**
+ * List active sessions across ALL registered projects.
+ * Admin-only — requires a valid session with 'admin' permission.
+ * Calls each remote project's listSessions endpoint via UrlFetchApp.fetchAll().
+ */
+function listGlobalSessions(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'listGlobalSessions');
+  checkPermission(user, 'admin', 'listGlobalSessions');
+
+  var projects = getRegisteredProjects();
+  var secret = getCrossProjectSecret();
+  var allSessions = [];
+  var projectStatus = [];
+
+  // Collect local sessions and build remote requests
+  var requests = [];
+  var requestProjectMap = [];
+  for (var i = 0; i < projects.length; i++) {
+    if (!projects[i].authEnabled) continue;
+    if (projects[i].isSelf) {
+      var local = listActiveSessionsInternal(user.email);
+      // Override project name to match spreadsheet display name
+      for (var li = 0; li < local.length; li++) local[li].project = projects[i].name;
+      allSessions = allSessions.concat(local);
+      projectStatus.push({ name: projects[i].name, status: 'ok', count: local.length });
+    } else {
+      requests.push({
+        url: projects[i].url + '?action=listSessions&secret=' + encodeURIComponent(secret)
+            + '&callerEmail=' + encodeURIComponent(user.email),
+        method: 'get',
+        muteHttpExceptions: true
+      });
+      requestProjectMap.push(projects[i].name);
+    }
+  }
+
+  // Fetch all remote projects in parallel
+  if (requests.length > 0) {
+    var responses = UrlFetchApp.fetchAll(requests);
+    for (var j = 0; j < responses.length; j++) {
+      var projectName = requestProjectMap[j];
+      if (responses[j].getResponseCode() === 200) {
+        try {
+          var body = responses[j].getContentText();
+          var parsed = JSON.parse(body);
+          var remoteSessions;
+          // Handle both response formats:
+          // Format A (legacy): plain array of sessions
+          // Format B (template): { success: true, sessions: [...], project: "..." }
+          if (Array.isArray(parsed)) {
+            remoteSessions = parsed;
+          } else if (parsed && parsed.success && Array.isArray(parsed.sessions)) {
+            remoteSessions = parsed.sessions;
+          } else if (parsed && (parsed.error || parsed.success === false)) {
+            projectStatus.push({ name: projectName, status: 'error', error: parsed.error || 'Remote error' });
+            continue;
+          } else {
+            projectStatus.push({ name: projectName, status: 'error', error: 'Unexpected response format' });
+            continue;
+          }
+          // Ensure isSelf is computed relative to the calling admin
+          // and override project name to match the master spreadsheet display name
+          for (var k = 0; k < remoteSessions.length; k++) {
+            remoteSessions[k].isSelf = (remoteSessions[k].email || '').toLowerCase() === (user.email || '').toLowerCase();
+            remoteSessions[k].project = projectName;
+          }
+          allSessions = allSessions.concat(remoteSessions);
+          projectStatus.push({ name: projectName, status: 'ok', count: remoteSessions.length });
+        } catch (e) {
+          projectStatus.push({ name: projectName, status: 'error', error: 'Invalid JSON response' });
+        }
+      } else {
+        projectStatus.push({ name: projectName, status: 'error', error: 'HTTP ' + responses[j].getResponseCode() });
+      }
+    }
+  }
+
+  auditLog('admin_action', user.email, 'list_global_sessions',
+    { totalCount: allSessions.length, projects: projectStatus });
+
+  return { sessions: allSessions, projects: projectStatus };
+}
+
+/**
+ * Sign out a user from a specific project or from all projects.
+ * Admin-only — requires a valid session with 'admin' permission.
+ * @param {string} sessionToken — admin's session token
+ * @param {string} targetEmail — email of user to sign out
+ * @param {string} targetProject — project name, or 'ALL' for all projects
+ */
+function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
+  var user = validateSessionForData(sessionToken, 'adminGlobalSignOutUser');
+  checkPermission(user, 'admin', 'adminGlobalSignOutUser');
+
+  if (!targetEmail) return { success: false, error: 'no_email' };
+
+  var projects = getRegisteredProjects();
+  var secret = getCrossProjectSecret();
+  var results = [];
+
+  var requests = [];
+  var requestProjectMap = [];
+  for (var i = 0; i < projects.length; i++) {
+    if (!projects[i].authEnabled) continue;
+    if (targetProject !== 'ALL' && projects[i].name !== targetProject) continue;
+    if (projects[i].isSelf) {
+      invalidateAllSessions(targetEmail, 'admin_signout');
+      results.push({ name: projects[i].name, success: true });
+    } else {
+      requests.push({
+        url: projects[i].url + '?action=adminSignOut&secret=' + encodeURIComponent(secret)
+            + '&callerEmail=' + encodeURIComponent(user.email)
+            + '&targetEmail=' + encodeURIComponent(targetEmail),
+        method: 'get',
+        muteHttpExceptions: true
+      });
+      requestProjectMap.push(projects[i].name);
+    }
+  }
+
+  if (requests.length > 0) {
+    var responses = UrlFetchApp.fetchAll(requests);
+    for (var j = 0; j < responses.length; j++) {
+      results.push({
+        name: requestProjectMap[j],
+        success: responses[j].getResponseCode() === 200
+      });
+    }
+  }
+
+  auditLog('admin_action', user.email, 'admin_global_sign_out_user',
+    { targetEmail: targetEmail, targetProject: targetProject, results: results });
+
+  return { success: true, email: targetEmail, results: results };
+}
 
 // ══════════════
 // ADMIN UTILITIES — run from the GAS Editor (select function → Run)
@@ -618,451 +976,6 @@ function adminSignOutUser(sessionToken, targetEmail) {
     { targetEmail: targetEmail });
 
   return { success: true, email: targetEmail };
-}
-
-// ══════════════
-// CROSS-PROJECT SESSION MANAGEMENT
-// ══════════════
-
-/**
- * Check if a row in the Access tab is a metadata row (#NAME, #URL, #AUTH).
- * Metadata rows have '#' as the first character of column A.
- */
-function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
-
-/**
- * Ensure the Access tab has the 3 metadata rows (#NAME, #URL, #AUTH) after the header.
- * If missing, inserts them and shifts existing user data down.
- */
-function ensureMetadataRows(sheet) {
-  var data = sheet.getDataRange().getValues();
-  if (data.length < 2 || String(data[1][0]).trim() !== '#NAME') {
-    sheet.insertRowsAfter(1, 3);
-    sheet.getRange(2, 1).setValue('#NAME');
-    sheet.getRange(3, 1).setValue('#URL');
-    sheet.getRange(4, 1).setValue('#AUTH');
-  }
-}
-
-/**
- * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
- * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
- * Runs once per execution (cached flag).
- * GlobalACL registers as SELF; other projects register with their deployment URL.
- */
-var _selfRegistered = false;
-function registerSelfProject() {
-  if (_selfRegistered) return;
-  _selfRegistered = true;
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (!sheet) return;
-
-    ensureMetadataRows(sheet);
-
-    // Find column for this project
-    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    var colIdx = -1;
-    for (var c = 0; c < headers.length; c++) {
-      if (String(headers[c]).trim().toLowerCase() === ACL_PAGE_NAME.toLowerCase()) {
-        colIdx = c;
-        break;
-      }
-    }
-
-    // If column doesn't exist, add it
-    if (colIdx === -1) {
-      colIdx = headers.length;
-      sheet.getRange(1, colIdx + 1).setValue(ACL_PAGE_NAME);
-      // Initialize metadata cells for the new column
-      sheet.getRange(2, colIdx + 1).setValue('');
-      sheet.getRange(3, colIdx + 1).setValue('');
-      sheet.getRange(4, colIdx + 1).setValue(false);
-      // Set FALSE checkboxes for all user rows (row 5 onward)
-      var lastRow = sheet.getLastRow();
-      if (lastRow > 4) {
-        var falseValues = [];
-        for (var f = 0; f < lastRow - 4; f++) falseValues.push([false]);
-        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).setValues(falseValues);
-        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).insertCheckboxes();
-      }
-    }
-
-    // Determine this project's URL: GlobalACL uses SELF, others use deployment URL
-    var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
-    var myUrl = isSelfProject ? 'SELF'
-      : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
-        ? 'https://script.google.com/macros/s/' + DEPLOYMENT_ID + '/exec'
-        : '';
-    if (!myUrl) return;
-
-    // Write/update metadata rows for this project's column
-    var col = colIdx + 1; // 1-indexed for getRange
-    sheet.getRange(2, col).setValue(TITLE);  // #NAME row
-    sheet.getRange(3, col).setValue(myUrl);  // #URL row
-    sheet.getRange(4, col).setValue(true);   // #AUTH row
-  } catch (e) {
-    Logger.log('registerSelfProject error: ' + e.message);
-  }
-}
-
-/**
- * Ensure a cross-project admin secret exists in Script Properties.
- * GlobalACL-only — generates a random 64-char secret if none exists,
- * then pushes it to all registered projects via distributeSecret_().
- */
-function ensureCrossProjectSecret() {
-  try {
-    var props = PropertiesService.getScriptProperties();
-    var existing = props.getProperty('CROSS_PROJECT_ADMIN_SECRET');
-    if (existing) return;
-    // Generate a random 64-character secret
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var secret = '';
-    for (var j = 0; j < 64; j++) {
-      secret += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', secret);
-    // Push to all registered projects
-    distributeSecret_(secret, '');
-  } catch (e) {
-    Logger.log('ensureCrossProjectSecret error: ' + e.message);
-  }
-}
-
-/**
- * Push the cross-project admin secret to all registered projects.
- * @param {string} newSecret — the new secret to distribute
- * @param {string} oldSecret — the previous secret (empty on first setup)
- */
-function distributeSecret_(newSecret, oldSecret) {
-  var projects = getRegisteredProjects();
-  var requests = [];
-  for (var i = 0; i < projects.length; i++) {
-    if (projects[i].isSelf || !projects[i].authEnabled) continue;
-    requests.push({
-      url: projects[i].url + '?action=setAdminSecret'
-          + '&newSecret=' + encodeURIComponent(newSecret)
-          + '&oldSecret=' + encodeURIComponent(oldSecret),
-      method: 'get',
-      muteHttpExceptions: true
-    });
-  }
-  if (requests.length > 0) {
-    var responses = UrlFetchApp.fetchAll(requests);
-    for (var j = 0; j < responses.length; j++) {
-      if (responses[j].getResponseCode() !== 200) {
-        Logger.log('distributeSecret_ failed for project index ' + j
-          + ': ' + responses[j].getContentText());
-      }
-    }
-  }
-}
-
-/**
- * Rotate the cross-project admin secret. Generates a new secret,
- * distributes it to all projects, then updates local storage.
- * Called by admin action from the Global Sessions panel.
- */
-function rotateAdminSecret(sessionToken) {
-  var user = validateSessionForData(sessionToken, 'rotateAdminSecret');
-  checkPermission(user, 'admin', 'rotateAdminSecret');
-
-  var props = PropertiesService.getScriptProperties();
-  var oldSecret = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
-
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var newSecret = '';
-  for (var j = 0; j < 64; j++) {
-    newSecret += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  // Push new secret to all projects first (they accept if oldSecret matches)
-  distributeSecret_(newSecret, oldSecret);
-
-  // Update local only after distribution succeeds
-  props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
-  _crossProjectSecret = null; // clear cache
-
-  auditLog('admin_action', user.email, 'rotate_admin_secret', {});
-  return { success: true };
-}
-
-/**
- * In-memory cache for cross-project admin secret.
- */
-var _crossProjectSecret = null;
-
-/**
- * Read the cross-project admin secret from Script Properties.
- * Cached in memory for the current execution.
- */
-function getCrossProjectSecret() {
-  if (_crossProjectSecret) return _crossProjectSecret;
-  try {
-    _crossProjectSecret = PropertiesService.getScriptProperties()
-      .getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
-    return _crossProjectSecret;
-  } catch (e) {
-    Logger.log('getCrossProjectSecret error: ' + e.message);
-  }
-  return '';
-}
-
-/**
- * Read registered projects from Access tab metadata rows (#NAME, #URL, #AUTH).
- * Layout: Row 1 = headers (Email, Role, page1, page2, ...).
- *         Row 2 = #NAME row (project display names).
- *         Row 3 = #URL  row (deployment URLs; SELF for the local project).
- *         Row 4 = #AUTH row (TRUE/FALSE auth enabled).
- *         Row 5+ = user data.
- * Page columns start at column C (index 2). Each column header is the projectId.
- * Returns array of { name, url, isSelf, authEnabled, projectId }.
- */
-var _registeredProjects = null;
-function getRegisteredProjects() {
-  if (_registeredProjects) return _registeredProjects;
-  _registeredProjects = [];
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (!sheet) return _registeredProjects;
-    var data = sheet.getRange(1, 1, Math.min(sheet.getLastRow(), 4), sheet.getLastColumn()).getValues();
-    if (data.length < 4) return _registeredProjects;
-    var headers = data[0];  // Row 1: column headers
-    var names   = data[1];  // Row 2: #NAME
-    var urls    = data[2];  // Row 3: #URL
-    var auths   = data[3];  // Row 4: #AUTH
-    // Page columns start at index 2 (column C)
-    for (var c = 2; c < headers.length; c++) {
-      var projectId = String(headers[c]).trim();
-      var url = String(urls[c]).trim();
-      if (!projectId || !url) continue;
-      var name = String(names[c]).trim() || projectId;
-      var enabled = auths[c] === true || String(auths[c]).toUpperCase() === 'TRUE';
-      _registeredProjects.push({
-        name: name,
-        url: url,
-        isSelf: url.toUpperCase() === 'SELF',
-        authEnabled: enabled,
-        projectId: projectId
-      });
-    }
-  } catch (e) {
-    Logger.log('getRegisteredProjects error: ' + e.message);
-  }
-  return _registeredProjects;
-}
-
-/**
- * Internal variant of listActiveSessions — skips session token validation.
- * Used by the cross-project endpoint (caller already authenticated via shared secret)
- * and by listGlobalSessions for the local project.
- * @param {string} callerEmail — the admin's email (for isSelf comparison)
- * @returns {Array} — active sessions with project label
- */
-function listActiveSessionsInternal(callerEmail) {
-  var cache = getEpochCache();
-  var activeSessions = [];
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (!sheet) return activeSessions;
-    var data = sheet.getDataRange().getValues();
-    for (var r = 1; r < data.length; r++) {
-      var email = String(data[r][0]).trim().toLowerCase();
-      if (!email || email.indexOf('@') === -1) continue;
-      var trackKey = 'sessions_' + email;
-      var raw = cache.get(trackKey);
-      if (!raw) continue;
-      var tokens;
-      try { tokens = JSON.parse(raw); } catch (e) { continue; }
-      for (var i = 0; i < tokens.length; i++) {
-        var sessionRaw = cache.get('session_' + tokens[i]);
-        if (!sessionRaw) continue;
-        var sess;
-        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
-        var absRemaining = 0;
-        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
-          absRemaining = Math.max(0, Math.round(
-            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
-          ));
-        }
-        var rollingRemaining = Math.max(0, Math.round(
-          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
-        ));
-        activeSessions.push({
-          email: sess.email,
-          displayName: sess.displayName || '',
-          role: sess.role || RBAC_DEFAULT_ROLE,
-          createdAt: sess.absoluteCreatedAt || sess.createdAt,
-          lastActivity: sess.lastActivity,
-          absoluteRemaining: absRemaining,
-          rollingRemaining: rollingRemaining,
-          isEmergencyAccess: sess.isEmergencyAccess || false,
-          isSelf: (sess.email || '').toLowerCase() === (callerEmail || '').toLowerCase(),
-          project: TITLE
-        });
-      }
-    }
-  } catch (e) {
-    Logger.log('listActiveSessionsInternal error: ' + e.message);
-  }
-  return activeSessions;
-}
-
-/**
- * Validate a cross-project admin request using the shared secret.
- * @param {Object} params — e.parameter from doGet
- * @returns {boolean} — true if secret matches and callerEmail is admin
- */
-function validateCrossProjectAdmin(params) {
-  var secret = (params && params.secret) || '';
-  var callerEmail = (params && params.callerEmail) || '';
-  if (!secret || !callerEmail) return { valid: false, reason: 'missing_params' };
-  var expected = getCrossProjectSecret();
-  if (!expected || secret !== expected) return { valid: false, reason: 'invalid_secret' };
-  // Verify caller has admin role via ACL
-  var access = checkSpreadsheetAccess(callerEmail);
-  if (!access.hasAccess || access.role !== 'admin') return { valid: false, reason: 'not_admin' };
-  return { valid: true, email: callerEmail };
-}
-
-/**
- * List active sessions across ALL registered projects.
- * Admin-only — requires a valid session with 'admin' permission.
- * Calls each remote project's listSessions endpoint via UrlFetchApp.fetchAll().
- */
-function listGlobalSessions(sessionToken) {
-  var user = validateSessionForData(sessionToken, 'listGlobalSessions');
-  checkPermission(user, 'admin', 'listGlobalSessions');
-
-  var projects = getRegisteredProjects();
-  var secret = getCrossProjectSecret();
-  var allSessions = [];
-  var projectStatus = [];
-
-  // Collect local sessions and build remote requests
-  var requests = [];
-  var requestProjectMap = [];
-  for (var i = 0; i < projects.length; i++) {
-    if (!projects[i].authEnabled) continue;
-    if (projects[i].isSelf) {
-      var local = listActiveSessionsInternal(user.email);
-      // Override project name to match spreadsheet display name
-      for (var li = 0; li < local.length; li++) local[li].project = projects[i].name;
-      allSessions = allSessions.concat(local);
-      projectStatus.push({ name: projects[i].name, status: 'ok', count: local.length });
-    } else {
-      requests.push({
-        url: projects[i].url + '?action=listSessions&secret=' + encodeURIComponent(secret)
-            + '&callerEmail=' + encodeURIComponent(user.email),
-        method: 'get',
-        muteHttpExceptions: true
-      });
-      requestProjectMap.push(projects[i].name);
-    }
-  }
-
-  // Fetch all remote projects in parallel
-  if (requests.length > 0) {
-    var responses = UrlFetchApp.fetchAll(requests);
-    for (var j = 0; j < responses.length; j++) {
-      var projectName = requestProjectMap[j];
-      if (responses[j].getResponseCode() === 200) {
-        try {
-          var body = responses[j].getContentText();
-          var parsed = JSON.parse(body);
-          var remoteSessions;
-          // Handle both response formats:
-          // Format A (legacy): plain array of sessions
-          // Format B (template): { success: true, sessions: [...], project: "..." }
-          if (Array.isArray(parsed)) {
-            remoteSessions = parsed;
-          } else if (parsed && parsed.success && Array.isArray(parsed.sessions)) {
-            remoteSessions = parsed.sessions;
-          } else if (parsed && (parsed.error || parsed.success === false)) {
-            projectStatus.push({ name: projectName, status: 'error', error: parsed.error || 'Remote error' });
-            continue;
-          } else {
-            projectStatus.push({ name: projectName, status: 'error', error: 'Unexpected response format' });
-            continue;
-          }
-          // Ensure isSelf is computed relative to the calling admin
-          // and override project name to match the master spreadsheet display name
-          for (var k = 0; k < remoteSessions.length; k++) {
-            remoteSessions[k].isSelf = (remoteSessions[k].email || '').toLowerCase() === (user.email || '').toLowerCase();
-            remoteSessions[k].project = projectName;
-          }
-          allSessions = allSessions.concat(remoteSessions);
-          projectStatus.push({ name: projectName, status: 'ok', count: remoteSessions.length });
-        } catch (e) {
-          projectStatus.push({ name: projectName, status: 'error', error: 'Invalid JSON response' });
-        }
-      } else {
-        projectStatus.push({ name: projectName, status: 'error', error: 'HTTP ' + responses[j].getResponseCode() });
-      }
-    }
-  }
-
-  auditLog('admin_action', user.email, 'list_global_sessions',
-    { totalCount: allSessions.length, projects: projectStatus });
-
-  return { sessions: allSessions, projects: projectStatus };
-}
-
-/**
- * Sign out a user from a specific project or from all projects.
- * Admin-only — requires a valid session with 'admin' permission.
- * @param {string} sessionToken — admin's session token
- * @param {string} targetEmail — email of user to sign out
- * @param {string} targetProject — project name, or 'ALL' for all projects
- */
-function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
-  var user = validateSessionForData(sessionToken, 'adminGlobalSignOutUser');
-  checkPermission(user, 'admin', 'adminGlobalSignOutUser');
-
-  if (!targetEmail) return { success: false, error: 'no_email' };
-
-  var projects = getRegisteredProjects();
-  var secret = getCrossProjectSecret();
-  var results = [];
-
-  var requests = [];
-  var requestProjectMap = [];
-  for (var i = 0; i < projects.length; i++) {
-    if (!projects[i].authEnabled) continue;
-    if (targetProject !== 'ALL' && projects[i].name !== targetProject) continue;
-    if (projects[i].isSelf) {
-      invalidateAllSessions(targetEmail, 'admin_signout');
-      results.push({ name: projects[i].name, success: true });
-    } else {
-      requests.push({
-        url: projects[i].url + '?action=adminSignOut&secret=' + encodeURIComponent(secret)
-            + '&callerEmail=' + encodeURIComponent(user.email)
-            + '&targetEmail=' + encodeURIComponent(targetEmail),
-        method: 'get',
-        muteHttpExceptions: true
-      });
-      requestProjectMap.push(projects[i].name);
-    }
-  }
-
-  if (requests.length > 0) {
-    var responses = UrlFetchApp.fetchAll(requests);
-    for (var j = 0; j < responses.length; j++) {
-      results.push({
-        name: requestProjectMap[j],
-        success: responses[j].getResponseCode() === 200
-      });
-    }
-  }
-
-  auditLog('admin_action', user.email, 'admin_global_sign_out_user',
-    { targetEmail: targetEmail, targetProject: targetProject, results: results });
-
-  return { success: true, email: targetEmail, results: results };
 }
 
 // ══════════════

@@ -196,23 +196,30 @@
       animation: auth-spin 0.8s linear infinite;
     }
     @keyframes auth-spin { to { transform: rotate(360deg); } }
-
+    /* PROJECT: Sign-in stage checklist */
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
-    .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; /* ○ */ }
+    .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
     .signin-checklist li.stage-active { color: #4285f4; font-weight: 500; }
-    .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; /* ● */ }
+    .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
     .signin-checklist li.stage-done { color: #34a853; }
-    .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; /* ✓ */ }
+    .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     .signin-checklist .stage-time-total { font-style: italic; color: #aaa; }
+    /* PROJECT: Sign-in sub-steps */
     .signin-checklist .sub-steps {
       list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
     }
     .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signin-checklist .sub-steps .stage-time { font-size: 10px; }
-
+    /* PROJECT: Sign-out sub-steps */
+    .signout-checklist .sub-steps {
+      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
+    }
+    .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
+    .signout-checklist .sub-steps .stage-time { font-size: 10px; }
+    /* PROJECT: Sign-out stage checklist */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -223,12 +230,6 @@
     .signout-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signout-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     .signout-checklist .stage-time-total { font-style: italic; color: #aaa; }
-    .signout-checklist .sub-steps {
-      list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
-    }
-    .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
-    .signout-checklist .sub-steps .stage-time { font-size: 10px; }
-
     .reconnect-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .reconnect-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; align-items: center; gap: 8px; }
     .reconnect-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -334,7 +335,7 @@
 /* ══════════════ */
 /* PROJECT START */
 /* ══════════════ */
-    .html-layer-hidden { display: none !important; }
+
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -1352,7 +1353,12 @@
 
       // Reload iframe with exchangeToken param — GAS doGet() handles the exchange
       _updateSignInStage('Verifying your identity\u2026');
+      _updateSubStep('sub-connecting');
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
+      gasApp.addEventListener('load', function _urlExchangeLoad() {
+        gasApp.removeEventListener('load', _urlExchangeLoad);
+        _updateSubStep('sub-processing');
+      }, { once: true });
     }
 
     // --- postMessage Path (HIPAA) ---
@@ -1371,6 +1377,7 @@
 
       // Reload iframe to get a fresh postMessage listener page
       _updateSignInStage('Verifying your identity\u2026');
+      _updateSubStep('sub-connecting');
       gasApp.src = baseUrl;
     }
 
@@ -1758,6 +1765,7 @@
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
         _updateSignInStage('Sending credentials\u2026');
+        _updateSubStep('sub-sending');
         // CONSTRAINT: Must use event.source (not gasApp.contentWindow) to reach the sandbox frame.
         // GAS double-iframe architecture: the <iframe> contentWindow is the outer script.google.com
         // shell, but the actual listener runs in an inner googleusercontent.com sandbox frame.
@@ -1773,6 +1781,7 @@
             timestamp: Date.now()
           }, '*');  // Constraint: unpredictable GAS sandbox origin requires '*'
           _pendingToken = null;  // One-shot delivery — clear immediately
+          _updateSubStep('sub-processing');
         }
       }
 
@@ -1838,11 +1847,16 @@
           // network request (not the address bar), and OAuth already verified the user.
           // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
           _updateSignInStage('Loading application\u2026');
+          _updateSubStep('sub-downloading');
           var gasApp = document.getElementById('gas-app');
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+            gasApp.addEventListener('load', function _appLoadSub() {
+              gasApp.removeEventListener('load', _appLoadSub);
+              _updateSubStep('sub-starting');
+            }, { once: true });
           }
         } else {
           // Surface specific misconfiguration errors so the admin knows what to fix
@@ -1928,7 +1942,7 @@
         // the GAS app confirmed the session is valid.
         if (_directSessionLoad) {
           _directSessionLoad = false;
-          _updateSignInStage('Almost ready\u2026');
+          _updateSignInStage('Sign-in complete');
           _completeAllStages();
           _updateReconnectStage('rc-stage-confirm');
           _completeAllReconnectStages();
@@ -1948,7 +1962,7 @@
           hideAllWarningBanners();
           _gasAuthOkHandled = true;
         } else if (_pendingSessionShow) {
-          _updateSignInStage('Almost ready\u2026');
+          _updateSignInStage('Sign-in complete');
           _completeAllStages();
           _updateReconnectStage('rc-stage-confirm');
           _completeAllReconnectStages();

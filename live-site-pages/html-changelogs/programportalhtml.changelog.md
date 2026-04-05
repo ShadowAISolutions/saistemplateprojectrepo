@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.87w] — 2026-04-05 06:59:44 PM EST — v08.92r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.86w] — 2026-04-05 06:17:39 PM EST — v08.91r
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.51g";
+var VERSION = "v01.52g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -263,93 +263,6 @@ var PRESETS = {
     ENABLE_DATA_AUDIT_LOG: true,       // Log individual data access events (reads, writes)
     DATA_AUDIT_LOG_SHEET_NAME: 'DataAuditLog'
   }
-};
-
-// ═══════════════════════════════════════════════════════
-// PHASE B — CONFIGURATION
-// ═══════════════════════════════════════════════════════
-
-/**
- * Breach alerting configuration.
- * Thresholds define how many security events of each type within WINDOW_MINUTES
- * trigger an email alert to the security officer.
- */
-var BREACH_ALERT_CONFIG = {
-  ENABLED: true,
-  SECURITY_OFFICER_EMAIL: '',  // MUST be set before enabling — email address of designated security officer
-  ALERT_COOLDOWN_MINUTES: 60,  // Minimum time between alerts of the same type
-  WINDOW_MINUTES: 15,          // Rolling window for threshold evaluation
-  THRESHOLDS: {
-    'tier3_lockout': 1,        // Any Tier 3 lockout = immediate alert
-    'hmac_integrity_violation': 3,  // 3 HMAC failures in window
-    'session_hijack_attempt': 1,    // Any hijack attempt = immediate alert
-    'brute_force': 5,          // 5 failed auth attempts in window
-    'data_access_anomaly': 10, // 10 unusual data access patterns in window
-    'permission_escalation': 1 // Any permission escalation attempt = immediate alert
-  },
-  // Event types that are ALWAYS logged to BreachLog (regardless of threshold)
-  ALWAYS_LOG_EVENTS: ['tier3_lockout', 'session_hijack_attempt', 'permission_escalation']
-};
-
-/**
- * Retention enforcement configuration.
- * Controls how the retention trigger archives and protects audit data.
- */
-var HIPAA_RETENTION_CONFIG = {
-  RETENTION_YEARS: 6,          // Reads from AUTH_CONFIG.AUDIT_LOG_RETENTION_YEARS when available
-  ARCHIVE_SHEET_SUFFIX: '_Archive',  // e.g. SessionAuditLog_Archive
-  PROTECTION_LEVEL: 'warning', // 'warning' (shows dialog) or 'full' (blocks all edits)
-  SHEETS_TO_PROTECT: [
-    'SessionAuditLog', 'DataAuditLog', 'DisclosureLog',
-    'AccessRequests', 'AmendmentRequests', 'AmendmentNotifications',
-    'BreachLog', 'PersonalRepresentatives',
-    'LegalHolds', 'RetentionIntegrityLog'
-  ],
-  // How many rows to process per trigger execution (to stay within 6-min GAS limit)
-  BATCH_SIZE: 500
-};
-
-// ═══════════════════════════════════════════════════════
-// PHASE C — RETENTION CONFIGURATION EXTENSIONS
-// ═══════════════════════════════════════════════════════
-
-/**
- * Legal hold configuration — controls litigation preservation behavior.
- * §164.316(b)(2)(i) + FRCP Rule 37(e)
- */
-var LEGAL_HOLD_CONFIG = {
-  ENABLED: true,
-  MAX_HOLDS_PER_SHEET: 10,
-  ALLOW_ARCHIVE_HOLDS: true,
-  HOLD_TYPES: ['Litigation', 'Regulatory', 'InternalInvestigation', 'Audit', 'Preservation'],
-  HOLD_NOTIFICATION_EMAIL: ''
-};
-
-/**
- * Archive integrity verification configuration — controls checksum behavior.
- * §164.312(c)(1) — Integrity controls
- */
-var INTEGRITY_CONFIG = {
-  ALGORITHM: 'SHA_256',
-  CHECKSUM_BATCH_SIZE: 1000,
-  STORAGE_MODE: 'tracking_sheet',
-  TRACKING_SHEET_NAME: 'RetentionIntegrityLog'
-};
-
-/**
- * Personal representative configuration.
- */
-var REPRESENTATIVE_CONFIG = {
-  MAX_REPRESENTATIVES_PER_INDIVIDUAL: 5,  // Prevent abuse
-  REQUIRE_ADMIN_APPROVAL: true,           // Admin must approve representative registrations
-  ALLOW_SELF_REGISTRATION: false,         // Representatives cannot register themselves
-  SUPPORTED_RELATIONSHIP_TYPES: [
-    'Parent',
-    'LegalGuardian',
-    'HealthcarePOA',
-    'CourtAppointed',
-    'Executor'   // Estate executor for deceased individuals
-  ]
 };
 
 // ══════════════

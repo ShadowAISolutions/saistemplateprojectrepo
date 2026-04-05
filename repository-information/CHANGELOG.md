@@ -3,9 +3,46 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 28/100`
+`Sections: 29/100`
 
 ## [Unreleased]
+
+## [v08.92r] — 2026-04-05 06:59:44 PM EST
+
+> **Prompt:** "go ahead and get started with your remediation recommendations with emphasis on removing dead code"
+
+### Changed
+- Removed dead duplicate Phase B config blocks (BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG) from globalacl.gs and programportal.gs — pre-template copies were silently overwritten by auth-section copies (174 lines of dead code removed)
+- Updated auth HTML template to match projects: CSS comment cleanup, signout sub-steps reordering, PROJECT block cleanup, `'Almost ready…'` → `'Sign-in complete'` text fix
+- Added `_updateSubStep()` calls to auth HTML template — function definition existed but was never called (dead code until now)
+- Restored missing frame-handshake-challenge handler and nonce message handlers in globalacl.html — nonce variables/function were dead code without the handlers
+- Fixed section ordering in globalacl.gs (ADMIN UTILITIES → CROSS-PROJECT reversed to match template canonical order: CROSS-PROJECT → ADMIN UTILITIES)
+- Moved admin utilities out of testauth1.gs PROJECT section to between CROSS-PROJECT and TEMPLATE START (matching template structure)
+- Fixed `_directSessionLoad` comment in globalacl.html to match template text
+- Fixed entity encoding in programportal.html (`…` → `&hellip;`)
+- Removed `.html-layer-hidden` class from template CSS PROJECT block (project-specific, not template)
+- Added `gas-nonce-ready`, `gas-nonce-result`, `gas-ready-for-token`, `gas-auth-ok` to globalacl.html `_SIG_EXEMPT` allowlist
+
+#### `globalacl.html` — v01.81w
+##### Changed
+- Improved security (added frame verification and session nonce flow)
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.43g
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.87w
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.52g
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.47g
+##### Changed
+- Minor internal improvements
 
 ## [v08.91r] — 2026-04-05 06:17:39 PM EST
 

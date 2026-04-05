@@ -1,4 +1,4 @@
-var VERSION = "v02.46g";
+var VERSION = "v02.47g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -400,231 +400,6 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // PROJECT START
 // ══════════════
 
-// ── Admin Utilities — run from the GAS Editor (select function → Run) ──
-
-/**
- * Clear the access cache for a specific user so their next login reads the ACL fresh.
- * @param {string} email — the user's email address. When called from the GAS editor
- *   (no parameter), reads from Script Properties key "CLEAR_CACHE_EMAIL".
- *   Usage: Script Properties → CLEAR_CACHE_EMAIL = user@example.com → Run this function.
- * Note: uses the same epoch bump as clearAllAccessCache — all users are affected.
- * GAS CacheService does not support per-key enumeration, so targeted clearing is not possible.
- */
-function clearAccessCacheForUser(email) {
-  if (!email) {
-    email = PropertiesService.getScriptProperties().getProperty('CLEAR_CACHE_EMAIL');
-  }
-  if (!email) {
-    Logger.log('No email specified. Set Script Properties key "CLEAR_CACHE_EMAIL" or pass email as parameter.');
-    return;
-  }
-  // Bump epoch to invalidate all cache (no way to target individual keys in GAS)
-  clearAllAccessCache();
-  Logger.log('Cache cleared for all users (epoch bumped). Target user: ' + email);
-}
-
-/**
- * Nuclear cache clear — increments the cache epoch so ALL existing CacheService entries
- * are instantly orphaned (they have the old epoch prefix and will never be read again).
- * No need to enumerate individual keys — everything is invalidated at once.
- * After incrementing, all users must re-authenticate on their next request.
- */
-function clearAllAccessCache() {
-  var props = PropertiesService.getScriptProperties();
-  var oldEpoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
-  var newEpoch = String(oldEpoch + 1);
-  props.setProperty('CACHE_EPOCH', newEpoch);
-
-  // Reset in-memory cache for this execution
-  _cacheEpoch = newEpoch;
-  _rbacRolesCache = null;
-  _rbacRolesCacheExpiry = 0;
-
-  Logger.log('Cache epoch bumped from ' + oldEpoch + ' to ' + newEpoch
-    + ' — ALL cached access, roles, and sessions are now invalidated.'
-    + ' Old entries will expire naturally from CacheService within 10 minutes.');
-}
-
-/**
- * Diagnostic — probe all known cache key patterns and log what's found.
- * Run from the GAS editor to see what's currently in the cache.
- * Checks both the current epoch and the previous epoch (to detect stale entries).
- */
-function inspectCache() {
-  var props = PropertiesService.getScriptProperties();
-  var epoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
-  var raw = CacheService.getScriptCache();
-
-  // Collect emails from ACL + sharing list
-  var emails = [];
-  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
-  if (hasAcl) {
-    try {
-      var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-      var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
-      if (aclSheet) {
-        var data = aclSheet.getDataRange().getValues();
-        for (var r = 1; r < data.length; r++) {
-          var em = String(data[r][0]).trim().toLowerCase();
-          if (em && em.indexOf('@') > -1) emails.push(em);
-        }
-      }
-    } catch(e) { Logger.log('ACL read error: ' + e.message); }
-  }
-  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
-  if (hasSheet) {
-    try {
-      var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
-      var allUsers = dataSs.getEditors().concat(dataSs.getViewers());
-      for (var u = 0; u < allUsers.length; u++) {
-        var ue = allUsers[u].getEmail().toLowerCase();
-        if (ue && emails.indexOf(ue) === -1) emails.push(ue);
-      }
-    } catch(e) { Logger.log('Sharing list read error: ' + e.message); }
-  }
-
-  Logger.log('══════ CACHE INSPECTION ══════');
-  Logger.log('Current epoch: ' + epoch);
-  Logger.log('Users found: ' + emails.length);
-  Logger.log('');
-
-  // Check both current and previous epoch
-  var epochs = [epoch, epoch - 1];
-  for (var ei = 0; ei < epochs.length; ei++) {
-    var ep = epochs[ei];
-    if (ep < 0) continue;
-    var pfx = 'e' + ep + '_';
-    var label = (ep === epoch) ? 'CURRENT (e' + ep + ')' : 'PREVIOUS (e' + ep + ' — should be empty)';
-    Logger.log('── ' + label + ' ──');
-
-    // Roles matrix
-    var rolesVal = raw.get(pfx + 'rbac_roles_matrix');
-    Logger.log('  rbac_roles_matrix: ' + (rolesVal ? rolesVal.substring(0, 100) + '...' : '(empty)'));
-
-    // Per-user keys
-    for (var i = 0; i < emails.length; i++) {
-      var email = emails[i];
-      var access = raw.get(pfx + 'access_' + email);
-      var role = raw.get(pfx + 'role_' + email);
-      var sessions = raw.get(pfx + 'sessions_' + email);
-      if (access || role || sessions) {
-        Logger.log('  ' + email + ':');
-        if (access) Logger.log('    access_: ' + access);
-        if (role) Logger.log('    role_: ' + role);
-        if (sessions) {
-          try {
-            var tokens = JSON.parse(sessions);
-            Logger.log('    sessions_: ' + tokens.length + ' active token(s)');
-            for (var t = 0; t < tokens.length; t++) {
-              var sessRaw = raw.get(pfx + 'session_' + tokens[t]);
-              if (sessRaw) {
-                try {
-                  var sess = JSON.parse(sessRaw);
-                  Logger.log('      session ' + (t+1) + ': role=' + sess.role + ', created=' + new Date(sess.createdAt).toISOString());
-                } catch(pe) {
-                  Logger.log('      session ' + (t+1) + ': (unparseable)');
-                }
-              } else {
-                Logger.log('      session ' + (t+1) + ': (expired/missing)');
-              }
-            }
-          } catch(je) { Logger.log('    sessions_: (unparseable)'); }
-        }
-      }
-    }
-    Logger.log('');
-  }
-  Logger.log('══════ END INSPECTION ══════');
-}
-
-/**
- * List all active sessions by walking the ACL spreadsheet.
- * Admin-only — requires a valid session with 'admin' permission.
- * Called via google.script.run from the admin session panel.
- */
-function listActiveSessions(sessionToken) {
-  var user = validateSessionForData(sessionToken, 'listActiveSessions');
-  checkPermission(user, 'admin', 'listActiveSessions');
-
-  var cache = getEpochCache();
-  var activeSessions = [];
-
-  try {
-    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
-    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
-    if (!sheet) return activeSessions;
-    var data = sheet.getDataRange().getValues();
-
-    for (var r = 1; r < data.length; r++) {
-      var email = String(data[r][0]).trim().toLowerCase();
-      if (!email || email.indexOf('@') === -1) continue;
-
-      var trackKey = 'sessions_' + email;
-      var raw = cache.get(trackKey);
-      if (!raw) continue;
-
-      var tokens;
-      try { tokens = JSON.parse(raw); } catch (e) { continue; }
-
-      for (var i = 0; i < tokens.length; i++) {
-        var sessionRaw = cache.get('session_' + tokens[i]);
-        if (!sessionRaw) continue;
-
-        var sess;
-        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
-
-        var absRemaining = 0;
-        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
-          absRemaining = Math.max(0, Math.round(
-            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
-          ));
-        }
-        var rollingRemaining = Math.max(0, Math.round(
-          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
-        ));
-
-        activeSessions.push({
-          email: sess.email,
-          displayName: sess.displayName || '',
-          role: sess.role || RBAC_DEFAULT_ROLE,
-          createdAt: sess.absoluteCreatedAt || sess.createdAt,
-          lastActivity: sess.lastActivity,
-          absoluteRemaining: absRemaining,
-          rollingRemaining: rollingRemaining,
-          isEmergencyAccess: sess.isEmergencyAccess || false,
-          isSelf: (sess.email || '').toLowerCase() === (user.email || '').toLowerCase()
-        });
-      }
-    }
-  } catch (e) {
-    Logger.log('listActiveSessions error: ' + e.message);
-  }
-
-  auditLog('admin_action', user.email, 'list_active_sessions',
-    { sessionCount: activeSessions.length });
-
-  return activeSessions;
-}
-
-/**
- * Sign out a specific user by email (invalidate all their sessions).
- * Admin-only — requires a valid session with 'admin' permission.
- * Called via google.script.run from the admin session panel.
- */
-function adminSignOutUser(sessionToken, targetEmail) {
-  var user = validateSessionForData(sessionToken, 'adminSignOutUser');
-  checkPermission(user, 'admin', 'adminSignOutUser');
-
-  if (!targetEmail) return { success: false, error: 'no_email' };
-
-  invalidateAllSessions(targetEmail, 'admin_signout');
-
-  auditLog('admin_action', user.email, 'admin_sign_out_user',
-    { targetEmail: targetEmail });
-
-  return { success: true, email: targetEmail };
-}
-
 // ── Live Data via CacheService ──
 // PROJECT OVERRIDE: Data reads via CacheService — refreshed by installable onEdit
 // trigger bound to the target spreadsheet. Spreadsheet stays private.
@@ -996,6 +771,234 @@ function listActiveSessionsInternal(callerEmail) {
     Logger.log('listActiveSessionsInternal error: ' + e.message);
   }
   return activeSessions;
+}
+
+// ══════════════
+// ADMIN UTILITIES — run from the GAS Editor (select function → Run)
+// These are generic admin tools that work with any auth project.
+// ══════════════
+
+/**
+ * Clear the access cache for a specific user so their next login reads the ACL fresh.
+ * @param {string} email — the user's email address. When called from the GAS editor
+ *   (no parameter), reads from Script Properties key "CLEAR_CACHE_EMAIL".
+ *   Usage: Script Properties → CLEAR_CACHE_EMAIL = user@example.com → Run this function.
+ * Note: uses the same epoch bump as clearAllAccessCache — all users are affected.
+ * GAS CacheService does not support per-key enumeration, so targeted clearing is not possible.
+ */
+function clearAccessCacheForUser(email) {
+  if (!email) {
+    email = PropertiesService.getScriptProperties().getProperty('CLEAR_CACHE_EMAIL');
+  }
+  if (!email) {
+    Logger.log('No email specified. Set Script Properties key "CLEAR_CACHE_EMAIL" or pass email as parameter.');
+    return;
+  }
+  // Bump epoch to invalidate all cache (no way to target individual keys in GAS)
+  clearAllAccessCache();
+  Logger.log('Cache cleared for all users (epoch bumped). Target user: ' + email);
+}
+
+/**
+ * Nuclear cache clear — increments the cache epoch so ALL existing CacheService entries
+ * are instantly orphaned (they have the old epoch prefix and will never be read again).
+ * No need to enumerate individual keys — everything is invalidated at once.
+ * After incrementing, all users must re-authenticate on their next request.
+ */
+function clearAllAccessCache() {
+  var props = PropertiesService.getScriptProperties();
+  var oldEpoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
+  var newEpoch = String(oldEpoch + 1);
+  props.setProperty('CACHE_EPOCH', newEpoch);
+
+  // Reset in-memory cache for this execution
+  _cacheEpoch = newEpoch;
+  _rbacRolesCache = null;
+  _rbacRolesCacheExpiry = 0;
+
+  Logger.log('Cache epoch bumped from ' + oldEpoch + ' to ' + newEpoch
+    + ' — ALL cached access, roles, and sessions are now invalidated.'
+    + ' Old entries will expire naturally from CacheService within 10 minutes.');
+}
+
+/**
+ * Diagnostic — probe all known cache key patterns and log what's found.
+ * Run from the GAS editor to see what's currently in the cache.
+ * Checks both the current epoch and the previous epoch (to detect stale entries).
+ */
+function inspectCache() {
+  var props = PropertiesService.getScriptProperties();
+  var epoch = parseInt(props.getProperty('CACHE_EPOCH') || '0', 10);
+  var raw = CacheService.getScriptCache();
+
+  // Collect emails from ACL + sharing list
+  var emails = [];
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (hasAcl) {
+    try {
+      var aclSs = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+      var aclSheet = aclSs.getSheetByName(ACL_SHEET_NAME);
+      if (aclSheet) {
+        var data = aclSheet.getDataRange().getValues();
+        for (var r = 1; r < data.length; r++) {
+          var em = String(data[r][0]).trim().toLowerCase();
+          if (em && em.indexOf('@') > -1) emails.push(em);
+        }
+      }
+    } catch(e) { Logger.log('ACL read error: ' + e.message); }
+  }
+  var hasSheet = SPREADSHEET_ID && SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID";
+  if (hasSheet) {
+    try {
+      var dataSs = SpreadsheetApp.openById(SPREADSHEET_ID);
+      var allUsers = dataSs.getEditors().concat(dataSs.getViewers());
+      for (var u = 0; u < allUsers.length; u++) {
+        var ue = allUsers[u].getEmail().toLowerCase();
+        if (ue && emails.indexOf(ue) === -1) emails.push(ue);
+      }
+    } catch(e) { Logger.log('Sharing list read error: ' + e.message); }
+  }
+
+  Logger.log('══════ CACHE INSPECTION ══════');
+  Logger.log('Current epoch: ' + epoch);
+  Logger.log('Users found: ' + emails.length);
+  Logger.log('');
+
+  // Check both current and previous epoch
+  var epochs = [epoch, epoch - 1];
+  for (var ei = 0; ei < epochs.length; ei++) {
+    var ep = epochs[ei];
+    if (ep < 0) continue;
+    var pfx = 'e' + ep + '_';
+    var label = (ep === epoch) ? 'CURRENT (e' + ep + ')' : 'PREVIOUS (e' + ep + ' — should be empty)';
+    Logger.log('── ' + label + ' ──');
+
+    // Roles matrix
+    var rolesVal = raw.get(pfx + 'rbac_roles_matrix');
+    Logger.log('  rbac_roles_matrix: ' + (rolesVal ? rolesVal.substring(0, 100) + '...' : '(empty)'));
+
+    // Per-user keys
+    for (var i = 0; i < emails.length; i++) {
+      var email = emails[i];
+      var access = raw.get(pfx + 'access_' + email);
+      var role = raw.get(pfx + 'role_' + email);
+      var sessions = raw.get(pfx + 'sessions_' + email);
+      if (access || role || sessions) {
+        Logger.log('  ' + email + ':');
+        if (access) Logger.log('    access_: ' + access);
+        if (role) Logger.log('    role_: ' + role);
+        if (sessions) {
+          try {
+            var tokens = JSON.parse(sessions);
+            Logger.log('    sessions_: ' + tokens.length + ' active token(s)');
+            for (var t = 0; t < tokens.length; t++) {
+              var sessRaw = raw.get(pfx + 'session_' + tokens[t]);
+              if (sessRaw) {
+                try {
+                  var sess = JSON.parse(sessRaw);
+                  Logger.log('      session ' + (t+1) + ': role=' + sess.role + ', created=' + new Date(sess.createdAt).toISOString());
+                } catch(pe) {
+                  Logger.log('      session ' + (t+1) + ': (unparseable)');
+                }
+              } else {
+                Logger.log('      session ' + (t+1) + ': (expired/missing)');
+              }
+            }
+          } catch(je) { Logger.log('    sessions_: (unparseable)'); }
+        }
+      }
+    }
+    Logger.log('');
+  }
+  Logger.log('══════ END INSPECTION ══════');
+}
+
+/**
+ * List all active sessions by walking the ACL spreadsheet.
+ * Admin-only — requires a valid session with 'admin' permission.
+ * Called via google.script.run from the admin session panel.
+ */
+function listActiveSessions(sessionToken) {
+  var user = validateSessionForData(sessionToken, 'listActiveSessions');
+  checkPermission(user, 'admin', 'listActiveSessions');
+
+  var cache = getEpochCache();
+  var activeSessions = [];
+
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return activeSessions;
+    var data = sheet.getDataRange().getValues();
+
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) continue;
+
+      var trackKey = 'sessions_' + email;
+      var raw = cache.get(trackKey);
+      if (!raw) continue;
+
+      var tokens;
+      try { tokens = JSON.parse(raw); } catch (e) { continue; }
+
+      for (var i = 0; i < tokens.length; i++) {
+        var sessionRaw = cache.get('session_' + tokens[i]);
+        if (!sessionRaw) continue;
+
+        var sess;
+        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
+
+        var absRemaining = 0;
+        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+          absRemaining = Math.max(0, Math.round(
+            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
+          ));
+        }
+        var rollingRemaining = Math.max(0, Math.round(
+          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
+        ));
+
+        activeSessions.push({
+          email: sess.email,
+          displayName: sess.displayName || '',
+          role: sess.role || RBAC_DEFAULT_ROLE,
+          createdAt: sess.absoluteCreatedAt || sess.createdAt,
+          lastActivity: sess.lastActivity,
+          absoluteRemaining: absRemaining,
+          rollingRemaining: rollingRemaining,
+          isEmergencyAccess: sess.isEmergencyAccess || false,
+          isSelf: (sess.email || '').toLowerCase() === (user.email || '').toLowerCase()
+        });
+      }
+    }
+  } catch (e) {
+    Logger.log('listActiveSessions error: ' + e.message);
+  }
+
+  auditLog('admin_action', user.email, 'list_active_sessions',
+    { sessionCount: activeSessions.length });
+
+  return activeSessions;
+}
+
+/**
+ * Sign out a specific user by email (invalidate all their sessions).
+ * Admin-only — requires a valid session with 'admin' permission.
+ * Called via google.script.run from the admin session panel.
+ */
+function adminSignOutUser(sessionToken, targetEmail) {
+  var user = validateSessionForData(sessionToken, 'adminSignOutUser');
+  checkPermission(user, 'admin', 'adminSignOutUser');
+
+  if (!targetEmail) return { success: false, error: 'no_email' };
+
+  invalidateAllSessions(targetEmail, 'admin_signout');
+
+  auditLog('admin_action', user.email, 'admin_sign_out_user',
+    { targetEmail: targetEmail });
+
+  return { success: true, email: targetEmail };
 }
 
 // ══════════════
