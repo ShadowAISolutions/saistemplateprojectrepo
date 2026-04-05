@@ -4,34 +4,36 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 05:46:53 PM EST
-**Repo version:** v08.90r
+**Date:** 2026-04-05 06:22:37 PM EST
+**Repo version:** v08.91r
 
 ### What was done
-- **v08.89r** (prior session) — Absorbed common auth project code into the HTML auth template (6 gaps: sign-out stage, sign-out text, sign-in DOM order, pulse-dots CSS, resetSignOutChecklist, finalizeSignOut)
-- **v08.90r** — Deep analysis of setup-gas-project.sh + GAS project creator vs deployed projects (testauth1, globalacl, programportal):
-  - Confirmed GAS templates are 100% aligned with all 3 projects (TEMPLATE/AUTH sections identical)
-  - Confirmed HTML templates are 100% aligned with all 3 projects (TEMPLATE/AUTH CSS, HTML, JS identical)
-  - Only divergences were PROJECT customizations on the reconnecting checklist (SSO stage handling)
-  - Aligned all 3 projects back to the template's dynamic SSO handling — `_rcStageOrder` now config-driven via `SSO_PROVIDER` instead of hardcoded per-project
-  - Restored `rc-stage-sso` element in testauth1/globalacl (hidden by default), added `style="display:none;"` to programportal's
-  - Restored dynamic `showReconnecting()` SSO show/hide logic in all 3 projects
-  - Removed all `// PROJECT:` markers on reconnecting checklist sections (now template-standard)
-  - Fixed missing `user-select: none` on `.warning-banner` CSS in programportal
+- **v08.91r** — Harmonized all 3 auth projects (testauth1, globalacl, programportal) with the auth templates, resolving 9 identified drift issues:
+  1. Added `gas-layer-toggle` button + `_toggleGasLayer` IIFE to auth HTML template AUTH section — propagated to all 3 projects (previously only testauth1 had it, in PROJECT section)
+  2. Moved testauth1's `html-layer-toggle` and `gas-layer-toggle` from PROJECT back to AUTH section
+  3. Restored missing `loadIframeViaNonce()` function + variables to globalacl (was completely absent — functional gap)
+  4. Updated `YOUR_ORG_LOGO_URL` template placeholder from `logoipsum.com` to `www.shadowaisolutions.com/SAIS_Logo.png` across all templates and projects (including CLAUDE.md table, gas-project-creator, noauth template CSP)
+  5. Moved programportal's `_validateSSOTokenEmail()` back to template-matching position
+  6. Added PROJECT OVERRIDE markers to testauth1 auth presets (test-environment shortened timeouts)
+  7. Added PROJECT OVERRIDE markers to testauth1's extra `_htmlLayerEls` entries (`ld-test-bar`, `security-test-results`)
+  8. Removed "(programportal only)" comment qualifiers from programportal
+  9. Removed "Data Poll timer removed" comments from testauth1
+- Confirmed HIPAA Phase functions (~50+) already exist in auth GAS template — no action needed
 
 ### Where we left off
 - All changes pushed and merged to main
-- **Templates and all 3 auth projects are now fully aligned** — a new project created by setup-gas-project.sh would produce output identical to the deployed projects for all non-project-specific code
-- No known template drift remains — the reconnecting checklist was the last divergence and is now resolved
+- **All 3 auth projects are now foundationally identical to the auth templates** — TEMPLATE and AUTH sections match, with only PROJECT-designated sections differing
+- All PROJECT-specific overrides in testauth1 now have proper `PROJECT OVERRIDE` markers for template propagation safety
 
 ### Key decisions made
-- **Template's dynamic SSO approach is canonical** — all projects now use the template's config-driven `SSO_PROVIDER` toggle instead of hardcoded per-project reconnecting checklists
-- **setup-gas-project.sh needs no changes** — the script + templates already produce correct output
-- **`user-select: none` was a programportal CSS bug** — fixed to match template and other projects
+- **`gas-layer-toggle` belongs in AUTH** (not PROJECT) — all auth projects will have it, so it's template-standard
+- **SAIS logo is the new template placeholder** for `YOUR_ORG_LOGO_URL` — replaces logoipsum.com
+- **`loadIframeViaNonce` was a functional gap** in globalacl — restored for replay protection on iframe loading
+- **Function ordering must match template** — programportal's `_validateSSOTokenEmail` moved back to canonical position
 
 ### Active context
-- Branch: `claude/analyze-gas-creator-setup-HcGO4`
-- Repo version: v08.90r
+- Branch: `claude/analyze-gas-creator-setup-XkPqs`
+- Repo version: v08.91r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -39,16 +41,14 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-05 05:17:54 PM EST
-**Repo version:** v08.89r
+**Date:** 2026-04-05 05:46:53 PM EST
+**Repo version:** v08.90r
 
 ### What was done
-- **v08.86r** — Major environment code unification across portal, testauth1, and globalacl (38 differences unified)
-- **v08.87r** — Unified all 4 template files to match testauth1
-- **v08.88r** — Fixed remaining HTML auth template drifts: checklist text, sign-in subtitle, HTML entities
-- **v08.89r** — Absorbed common auth project code into the HTML auth template (6 sign-out/sign-in template gaps)
+- **v08.90r** — Deep analysis of setup-gas-project.sh + GAS project creator vs deployed projects — aligned reconnecting checklist SSO handling, fixed programportal CSS bug
+- **v08.89r** — Absorbed common auth project code into the HTML auth template (6 gaps)
 
 ### Where we left off
-- All three environments have identical template/shared code — only project-specific code differs
+- Templates and all 3 auth projects fully aligned — reconnecting checklist was the last divergence
 
 Developed by: ShadowAISolutions
