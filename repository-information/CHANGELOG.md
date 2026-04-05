@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 10/100`
+`Sections: 11/100`
 
 ## [Unreleased]
+
+## [v08.74r] — 2026-04-05 12:34:16 PM EST
+
+> **Prompt:** "the admin font can stay as is but make the pill colors the same as the gas toggle pill by default and on hover, remove the user select none on all pills"
+
+### Changed
+- Updated admin badge pill to match GAS toggle pill styling — dark semi-transparent background with opacity hover effect instead of color-swap hover
+- Removed `user-select: none` from all pill elements (version indicator, GAS pill, SSO indicator, user pill, auth timers, admin badge) so text is selectable with Ctrl+A
+
+#### `testauth1.gs` — v02.41g
+
+##### Changed
+- Admin button now matches the style of other control pills
+
+#### `testauth1.html` — v03.85w
+
+##### Changed
+- Control pills are now text-selectable
 
 ## [v08.73r] — 2026-04-05 12:22:23 PM EST
 
