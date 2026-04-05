@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.41g] — 2026-04-05 03:11:35 PM EST — v08.84r
+
+### Changed
+- Admin button style normalized to match other pages
 
 ## [v01.40g] — 2026-04-05 03:06:33 PM EST — v08.83r
 

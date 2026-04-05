@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 20/100`
+`Sections: 21/100`
 
 ## [Unreleased]
+
+## [v08.84r] — 2026-04-05 03:11:35 PM EST
+
+> **Prompt:** "the font color for the gas version in bottom left corner of the program portal is white so we cant see it, should be same color as the other environments, see if theres any more inconsistencies that can be normalized"
+
+### Fixed
+- Fixed programportal.gs `#version` color from `rgba(255,255,255,0.3)` (invisible on white strip) to `#1565c0` (blue, matching testauth1 and globalacl)
+- Fixed programportal.gs `#version` font-size from 11px to 12px (matching other environments)
+
+### Changed
+- Normalized admin badge styling on globalacl.gs and programportal.gs to match testauth1: dark semi-transparent background (`rgba(0,0,0,0.55)`), border, 10px border-radius, opacity hover effect
+- Added `onmouseover`/`onmouseout` opacity handlers to admin badge HTML on both environments
+
+#### `globalacl.gs` — v01.41g
+
+##### Changed
+- Admin button style normalized to match other pages
+
+#### `programportal.gs` — v01.50g
+
+##### Fixed
+- Version label in bottom-left corner now visible (was white on white)
+
+##### Changed
+- Admin button style normalized to match other pages
 
 ## [v08.83r] — 2026-04-05 03:06:33 PM EST
 
