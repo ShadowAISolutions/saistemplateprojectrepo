@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 13/100`
+`Sections: 14/100`
 
 ## [Unreleased]
+
+## [v08.77r] — 2026-04-05 01:03:54 PM EST
+
+> **Prompt:** "yes go ahead, make a note somewhere in case we need to revert"
+
+### Security
+- Deferred GAS iframe creation until after authentication — the iframe is no longer loaded on the sign-in page, preventing unauthenticated users from accessing the GAS deployment URL, app structure, and JavaScript logic via DevTools
+
+#### `testauth1.html` — v03.87w
+
+##### Changed
+- Improved login security — backend connection deferred until after sign-in
 
 ## [v08.76r] — 2026-04-05 12:52:45 PM EST
 
