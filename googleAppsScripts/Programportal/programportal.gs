@@ -1,4 +1,4 @@
-var VERSION = "v01.44g";
+var VERSION = "v01.45g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3019,7 +3019,6 @@ function doGet(e) {
           { name: 'Global Access Control List', url: 'globalacl.html', icon: '🛡', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
           { name: 'Test Auth 1', url: 'testauth1.html', icon: '🔐', description: 'Authentication testing environment with full security features.', requiresAuth: true },
           { name: 'Website', url: 'index.html', icon: '🏠', description: 'Main landing page.', requiresAuth: false },
-          { name: 'Test Environment', url: 'testenvironment.html', icon: '🧪', description: 'General testing environment for development.', requiresAuth: false },
           { name: 'GAS Project Creator', url: 'gas-project-creator.html', icon: '⚙️', description: 'Create and configure new Google Apps Script projects.', requiresAuth: false }
         ];
 

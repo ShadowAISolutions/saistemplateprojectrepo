@@ -102,11 +102,9 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | GCP Project Setup & Troubleshooting | *See `repository-information/CODING-GUIDELINES.md` — section "GCP Project Setup & Troubleshooting"* |
 | Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `googleAppsScripts/Testation7/testation7.config.json` | `live-site-pages/testation7.html` |
 | Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `googleAppsScripts/Testation8/testation8.config.json` | `live-site-pages/testation8.html` |
-| Testenvironment | `googleAppsScripts/Testenvironment/testenvironment.gs` | `googleAppsScripts/Testenvironment/testenvironment.config.json` | `live-site-pages/testenvironment.html` |
 | Testauth1 | `googleAppsScripts/Testauth1/testauth1.gs` | `googleAppsScripts/Testauth1/testauth1.config.json` | `live-site-pages/testauth1.html` |
 | Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 | Programportal | `googleAppsScripts/Programportal/programportal.gs` | `googleAppsScripts/Programportal/programportal.config.json` | `live-site-pages/programportal.html` |
-| Rndlivedata | `googleAppsScripts/Rndlivedata/rndlivedata.gs` | `googleAppsScripts/Rndlivedata/rndlivedata.config.json` | `live-site-pages/rndlivedata.html` |
 
 ## GAS Architecture Overview
 

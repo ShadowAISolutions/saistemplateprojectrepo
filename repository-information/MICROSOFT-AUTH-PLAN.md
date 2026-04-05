@@ -655,7 +655,7 @@ This should be called early, before the page load IIFE, so MSAL is ready when th
 Per Pre-Commit #19, changes to the auth template propagate to all existing auth pages:
 - `live-site-pages/testauth1.html` — auth page, gets all changes
 
-Non-auth pages (`index.html`, `testenvironment.html`, `gas-project-creator.html`) are unaffected — they use the noauth template.
+Non-auth pages (`index.html`, `gas-project-creator.html`) are unaffected — they use the noauth template.
 
 ### 5. GAS Test Auth Template: `live-site-pages/templates/gas-test-auth-template-code.js.txt`
 

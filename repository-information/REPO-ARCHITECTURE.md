@@ -4,7 +4,7 @@
 
 ## 1. Flowchart — System Overview
 
-> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqtWf1u20YSf5WFChyaNpScpHFqH3oHRqIlXWhJkOTcBVUgrMgVxXrFJbikXTUO0Ie4J7wnudldfnMpy270j-HlzG9mdr7JLx2HuaRz2fEiHO7Q8v0qQPDjyUYdrDpzEjLuxyw6XCKOfR6TfUhxTMKI_UacOILHq47iEj_Xj-DUZ4HEKs5LiANyRygLSYT-zaLbLWX3ZQDxG1gffy3T9VCf4sQlqA_Krjqfq9T990DsSILeD2gT4cDZNYgAEhnGPx5WnTDh8PgB2AoKErgtyvbHvf4A_e_P_yKcxMzYk8gjhhLWPewp-jW7j891I6o3UX6ynI-HQ2v-ZdWZgS4oZijT_p-rzte6cULtjEWLI-36RPgDWozMdX9k9T8AdJ_t934sjlar4BdEMY8N8JlDOCduU07OWqANLNtaWuvF0rQt6Q5KYoL8YEciPyZudtOr4Ht-64dIXs2LxsVXgSfsAV1b86EAvBYMgAf277EfNDglnbT-ZjYwhSYjE9huQheuG8RWTTIcaXCX73ADqeCXcIPx1RUA9XfEuUUeXJLrb7fNiAGqNGSof0cMSAJihNgjvIecHQ484oowmplDa7G-ss0hQMrHRvoU_YLiKCHHgLseL2MNzcV6YM3s6Sd53yFlB3GG7nyMnCSiaDZdLBt4BZeyTrnt_bztNnOCwqmPZU9hZIogpK3laXtIArpMARSmUa68_NDC3p6DQz8eJRs0E5eL1LXsSRA3q0YBW9xfw3cxg9gpQzastccfRXzawIkWvoy1xQ677N4cLxhNRE7zLsTNLtl0fdZrrYqf2_WT1yjknGK_Fdz5EQuEzRx9L3V-0V5t7Jrjx5OB9R8wp6hUkHMu-b27i_dUZK-NA9cPPHkZzfxdWoul1LkKEROwudArB1vCOSop_EIXrsuZrYH0MDfS-zOciGDoOTmsyIKZeob66pleVfNmOXrVoi9U8N2rqqYmHKFXGiXt6XvTNvtaPSnbYIodWmgnTxCQN5GmM2ti2jocaG2BgWkBM4UDZFKaWcqbaLP5dDg3r2fTOVRlDSbcH0TNPmRRjAvgmTpFM3ncRJ1PBiIWoUiaGswocEUSQdXFOSJwIJkfAzitAh7JY8Y8SpAZhhwtnMgPIZxP6Z_1iBYFrzWqPa4tkCI2jkfwEUYZVG3xVONrNx9qSARdYU44SyJoWs-yfTL9l_Xhk21XtekGEDC3B0qb7XcyqJKC8MDlvQbhaHltrz9a80WVXDjcuCMRF0WvyTVcaHg8foRDyunbGimqEVLm6eXUeTzeytHug3o3yOCgL7R7Q5SryVQEQVWDEWhtBu4Q82V6BuWEqfnECJgID5kw3fj3WCSNMB1l7OgeGghLYjFX7jS1DGQ-UeIJ8lCagnqZaWW-Hk-05or6vPcDf49pap2RPTTEFtH9jWeSrxWZHF4ymqPyjkt7sixl7FErZV9rM1Nk92M2XiVUJ1SwopvxcblHpP4FmehvUPn_rjG7PR_ynsqCre8dyYG-bd4MrPV1rZqo4-7eFdqlzRsKMYfBV9YvTQub39hWrWB00_kzSihkooDC9B4fuEEZdqFk_ohCDLfCHWiZLpJUmkXjw9i2W4BhQaFUIfvBHbvFG0iC-3T7ROqpRlNrNhXlrdYO84W4m1Y56Z3mlG-KTr1oYzb8YMuiPRa31HN9LBq00hA2XqPUmBCOnB1ULCdOIoIySo391nI5ngzbboDEMQx5HIKJBUKK2Ht-UEstzCDsnrj63e1qbNfmgXT07bXvX_Kaq2si8hIcuaeGpahqIxbfksORkDRHH0QiTdV2V9UR5wC9okJ28e5WrquEbo1EHImxF2AQl9NI8wKEiPHkozVZTuefWiXAqr3xAzB1HNyBw8C5CEZq-C8m0OfDOJPr54_3OID2I7071NWKqmnpNrVngYgcnqa5NEBsLw9VNU8aRR6dvsaT8XK96M_Hs9rYpK6K96DqxoYIZ_C4MI4F0Fh3LEYQ1bdIPPUx9f-Q8a0thmsI2JuZHhyiNQmN0kKQChGlL6syWx9yWO4JWgn9xWw9MhcjvQAI1jAR9ZWHxg7zXYoPTCLojddvz5E4RoruiBH5otC2I7SMlZVB_tgM38JfGtnbp3UNb8mvyOjKuJI1wCWiwnDEIq8nt9dVAH_AAphTX7-Wly1DLe8DtTCrxVsxMmVSoHYf5Ksu4TGxUgfkHoVq_35QS-rzWOvLS4HyKIbolAVQdX18Nkx1dXw2THPTU1CNIS3DzEcCtV6oQtdMoxfZi6bSlTdHoueCCoiGnn8VUDrlm6LmPvqmqBWXfWNvlaJcIUv3ZWhkvyEul-8J_S3UDqJxcv4i51GmwonVlDiJseQsoXDGw0l010h1PUGu6DGi0lukx7DqOd0CqElbPWX5jc4xurYM1lPry1j53W4aOJHveTB3omKKIfqUfgJjJW2fyFfNzicwN5PwCcz6XHsCQCOhsmE3Y4bSDMPrQdDn3zAUZflzgqK9F6Muz0gFiqLMX6pkhOnGgEJGKQyftXw4hbyWHaewNHLlVDn1zDlJmCaPTuFry5ZTeJu5k37GjA8wI4pPfzC_0MvvfsIXZ-7FS4dRFl1-t91uy2QyLRXd-flmc45b6PI4UbRk-_bN27MW2vIntJz-Al_k2GdnZ2X60uyjqLdb_O71-RHqU2nz8pATvzv76U2L2qWAOQU7nwlTYodcvHF_biGW6_8phGqfP4WyPNMq8nc_X5xdOCXrOi87ewLbtu92LjtfoDLsiGhbl6uOS7Y4obC_fwUaMQovDoHTuRRf7l52VMkYqJ1bHX79P8nLthE) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Flowchart](https://mermaid.live/edit#pako:eNqtWf-O2zYSfhXCBQ5NG9mbpNlk95A7KLbWdqO1Dduba1AHBi3Rkrq0KIjSbn3ZAH2IPuE9yQ1J_bQorzet_wlCznzDGX4znNF-6TjMJZ3LjhfjyEfL96sQwY-nG7Ww6sxJxHiQsHh_iTgOeEJ2EcUJiWL2G3GSGLZXHaUlfm4Qw2rAQolVrlcQB-SOUBaRGP2Hxbdbyu6rAOI3sD7-WpXroT7FqUtQHw676nyuS_ffg7AjBXo_oE2MQ8dvCAEkMox_Paw6Ucph-wHUSgkSui2H7Y97_QH63x9_IpwmzNiR2COGMtbd7yj6NY_H50Mn6pGo7izn4-HQmn9ZdWZwFpQwlJ_-36vO10PnxLFzFS2O9OsT4Q9oMTLX_ZHV_wDQfbbbBYlYWq3Cd4hinhhwZw7hnLhNO4VqiTawbGtprRdL07bkdVCSEBSEPomDhLh5pFfh9_w2iJAMzbNG4OvAE_aArq35UABeCwXAA_93OAgbmlJOen8zG5jiJCMT1G4iF8INZusuGY50uMt93EAq9SXcYHx1BUB9nzi3yIMgucF222QMSGWUocEdMSAJiBFhj_AecnwcesQVNJqZQ2uxvrLNIUDKbSPbRe9QEqfkGHDX41WsoblYD6yZPf0k4x1Rthdr6C7AyEljimbTxbKBV2op79S1vZ-3RbMQKC_1sewpncwQhLW1XG2nJKDLFEBRxnJ1yw8t6u05OAySUbpBMxFcpMKyI2HSrBolbBm_xt0lDLhThWx4a48_Cn7aoIkWgeTawscuuzfHC0ZTkdO8C7zx0003YL3Wqvi5_XwyjMLOKf5b4V0Qs1D4zNH38szP2quNfXDx48nA-gXcKSsV5JxLfu_6yY6K7LVx6AahJ4PxTMeu5cyWp66DeJgbmbuGExMMT0QBKUg7U3uor_aayEsLSsvNcvRCA54QnkDB9V8UkEtYQSYsoReaQ9rT96Zt9rXnpGyDKXZoeTq5gkC8iTSbT4dz83o2nUPZ06CBx3Atu4jFCS4RZ2oVzeRyHfUIrxnzKEFmFHG0cOIggus95T05vGFRAFpv2ePaglEEvy3uB3rtXkBqxFDs5oSzNIZa_E0uTKY_Wx8-2Xb9NN0QKHS7p7T5qkwGdVEwHrq81xAcLa_t9UdrvqiLi4sz7kjMRS43tYYLjY7Hj2hIO31bY0XVd8o8vZ1DHY-3arTfwWGRy-Gg3LXfhkjryVSQoH6CEZzaDN0h5stsDdKOqWfXCJmghyR-N_k9EeQXrqNcHd1DXWRpItolX5PzYPOJFk-wh7JM0tvMKtj1eKJ1V9SxXRAGO0wz74x80xDNcfc3nlu-VmLyTc5ljto7bu3JtpSzR70Ued3qpsjux3y8SqnOqFBFN-Pjdo9Y_Qs20T-g3v5T43Z7PhRvDwu3gXckB_q2eTOw1tcH1UQtd3euOF32yEE95dDPyfrFm3GY39jWQcHoZm1VnFLIRAGF6T3ec4My7ELJ_BFFGKLCHRhyXCSlNP3zh7FttwBD302pQg7CO3aLN5AE99lQhdSu5qTWbCrKWx0zLua8blbl5O00m1dTvI-LNmUjCLcs3mERpZ4bYPEsqhPCIGeQspNBOHZ8qFhOksYE5ZIa_63lcjwZtkWAJAn0LhzIxEJhRbTzP6hZDVOIAnH1I8nV2D542bOOrtc-Vsgw16cf5KU4dk-lpahqI5bckv0RSpqjDyKRpmpoqZ8RFwC9skJ2sX8rpzBCt0YqlkQ3BzCIy6aiGQBhYjz5aE2W0_mnVgswQW6CEFwdh3dwYXC5CDpF-F9C4J2PktxuUGzvcAjPj7zdoa5W1F3LhoQdCwVzeJbm0gHRlD_Uj3lSK_JoEzWejJfrRX8-ni0P-gel2oOqmxiCznDjwjkWwsPqswQBq2-R2A0wDf4r-a0thmsg7M1MDw5sTSOj0jhnRkTpy6vMNoAclv201kJ_MVuPzMVIbwDIGqWivvLI8DH3M3xQEqQ3Xr4-R2IZKbkjThQNdVsv3dJW1trnY52zRr9yN8joSm7IPHaJqBIcsdjrycFqFcI_cAroNV--lAGTdClq-QFVDjhTtj25Fai_e_kVRkRdTHshuUeRGg0f1PxUqj6qKN6pUrs-5HwzTH3A-WaY5nSjoBotUo5ZPMiquVdlpkniZ_nXi0qwDtqgb0UsAvi3ohbx_FtRa-FVyDIgOR7ZbYjL5eecYAu5QDRhqxPmUc2D8IhPCrkOJ_Fdg8J6gcqQf0xMR-YWQA1f9ZJHKFl81cpuIw48D1oTVD50RM-7Jyg26fUE5SaLnqCsIUvemOTqkMjQaOyFRvEZVUlWv2gq2XvRlvBcVKAoyWIAzgWz7g5FjFJoFA74cYp4gy2nKOm4c5IxDZNO0dPxKvvjRrKHJ1b8QQCeDnr53U_44sy9eO4wyuLL77bbbVVMklbJnZ9vNue4Ra64OiVLtq9fvT5rka1-WC_kL_BFgX12dlaVr7xYSnq7xW9enh-RPlW2SJ1C-M3ZT69ajl259lOwi-c4E3bIxSv3bYuwnJ5OEVTj0CmS1XZCib95e3F24VS86zzv7AgMK4Hbuex8gXT1iaisl6uOS7Y4pTD-fAUZ0YUs9qHTuRTf8593VB4P1MiiFr_-H49KfIA) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 graph TB
@@ -43,19 +43,15 @@ graph TB
         subgraph "Environments (Pages)"
             direction LR
             INDEX["[template] index.html\n(Landing Page)"]
-            TEST_PAGE["[template] testenvironment.html\n(Test Environment)"]
             GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
             TESTAUTH1_PAGE["[template] testauth1.html\n(Test Auth 1)"]
             GLOBALACL_PAGE["[template] globalacl.html\n(Global ACL)"]
-            OPENALL_PAGE["[template] open-all.html\n(Open All Projects)"]
             PROGRAMPORTAL_PAGE["[template] programportal.html\n(Program Portal)"]
-            RNDLIVEDATA_PAGE["[template] rndlivedata.html\n(RND Live Data)"]
         end
 
         subgraph "Google Apps Scripts [template]"
             direction LR
             GAS_INDEX["[template] index.gs"]
-            GAS_TEST["[template] testenvironment.gs"]
             GAS_TESTAUTH1["[template] testauth1.gs"]
         end
 
@@ -100,48 +96,36 @@ graph TB
             CSP_HASH["[template] scripts/compute-csp-hash.sh\n(CSP SHA-256 hash computation)"]
             GAS_GLOBALACL["[template] globalacl.gs"]
             GAS_PROGRAMPORTAL["[template] programportal.gs"]
-            GAS_RNDLIVEDATA["[template] rndlivedata.gs"]
             INIT_SCRIPT -.->|"auto-detects org/repo\nreplaces 22 files"| CLAUDE_MD
         end
     end
 
     TPL_NOAUTH -.->|"copy to create\nnew pages"| INDEX
-    TPL_NOAUTH -.->|"copy to create\nnew pages"| RNDLIVEDATA_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTH1_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| GLOBALACL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| PROGRAMPORTAL_PAGE
     GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INDEX
-    GASTPL_TEST_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TEST
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_GLOBALACL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_PROGRAMPORTAL
-    GASTPL_MIN_NOAUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_RNDLIVEDATA
     INDEX -.->|"embeds via iframe"| GAS_INDEX
-    TEST_PAGE -.->|"embeds via iframe"| GAS_TEST
     TESTAUTH1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTH1
     LIVE -.->|"serves"| INDEX
-    LIVE -.->|"serves"| TEST_PAGE
     LIVE -.->|"serves"| GASTPL_PAGE
     LIVE -.->|"serves"| TESTAUTH1_PAGE
     LIVE -.->|"serves"| GLOBALACL_PAGE
-    LIVE -.->|"serves"| OPENALL_PAGE
     LIVE -.->|"serves"| PROGRAMPORTAL_PAGE
-    LIVE -.->|"serves"| RNDLIVEDATA_PAGE
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INDEX
-    GAS_DEPLOY -.->|"triggers self-update"| GAS_TEST
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
     GAS_DEPLOY -.->|"triggers self-update"| GAS_GLOBALACL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_PROGRAMPORTAL
-    GAS_DEPLOY -.->|"triggers self-update"| GAS_RNDLIVEDATA
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| INDEX
-    HTML_VERS -.->|"version polling"| TEST_PAGE
     HTML_VERS -.->|"version polling"| GASTPL_PAGE
     HTML_VERS -.->|"version polling"| TESTAUTH1_PAGE
     HTML_VERS -.->|"version polling"| GLOBALACL_PAGE
     HTML_VERS -.->|"version polling"| PROGRAMPORTAL_PAGE
-    HTML_VERS -.->|"version polling"| RNDLIVEDATA_PAGE
 
     style DEV fill:#4a90d9,color:#fff
     style LIVE fill:#66bb6a,color:#fff
@@ -352,12 +336,10 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Environment | Diagram |
 |-------------|---------|
 | Landing Page (index) | [`repository-information/diagrams/index-diagram.md`](diagrams/index-diagram.md) |
-| Test Environment | [`repository-information/diagrams/testenvironment-diagram.md`](diagrams/testenvironment-diagram.md) |
 | GAS Project Creator | [`repository-information/diagrams/gas-project-creator-diagram.md`](diagrams/gas-project-creator-diagram.md) |
 | Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
 | Global ACL | [`repository-information/diagrams/globalacl-diagram.md`](diagrams/globalacl-diagram.md) |
 | Program Portal | [`repository-information/diagrams/programportal-diagram.md`](diagrams/programportal-diagram.md) |
-| RND Live Data | [`repository-information/diagrams/rndlivedata-diagram.md`](diagrams/rndlivedata-diagram.md) |
 
 ## 4. Git Graph — Branching Strategy
 
@@ -495,7 +477,7 @@ erDiagram
 
 ## 9. Class Diagram — Component Model
 
-> [Open in mermaid.live — Class Diagram](https://mermaid.live/edit#pako:eNqtVdtu4jAQ_RXLT3spaPc1DyuhElokbmrYVqtlZRl7SKw6dmQ7dBHqv69DAsSQti-bp2TOnJnjuTh7zDQHHGEmqbVDQVND85VC_jlY0P1yOlnQFNC-tlbP18QZoVK0LoXkvS0YK7S6hsXGx4KeNayFFVpK0lA-fW4BtHSaGNgYsFkA2Ey_EFt4NaHdW3bE6lLxo_m1LfxukCTMiMJ1KX-MH5LxfHYNDOPFZP5rGs-WZDy8hpPFQzwYJvdxfIFzfQcukMf1QtvQVJRSDhQfQiH1bmR0fifcfbl-S_6tVhuRdslfjpeT-P-JP-IHZDaYdoRO5j9nQzIaT-ITNZD7WHd0JGTnpFzPiLenqbf6lktNu1t4m1GVeviiBsCcj_X7DyqVJwO1wDvhJqltgUY76oD4SaOGZWILnXkHfhSnYFJ40uZ5I_VLkJ9lwJ6JzWjQ27zyJ2tDFQvHlB-6TQq_QzYAmgqQlFpSO13wJLjLiIHMJeR-B1xnwf1eGAakWu72ABrtdTQVCBQFgWO1FUarHJRrboSuFFIz6sKmcs3KimWJUA6MorKdoH45XSgr_H2FUa_3o3lrj1CEMpfLftPBvvvr3iF_6_erj_PCRwjyNXCLtoI2t9AHuc-TVmdG7Gj4gNhRqgidDo-OBQHujXWos8z3C5Da6-O_zW0fILWX8t_mna-ZCLHDS2m82PXuRGzg2r3fPxJPFYmQ3SlmkRNONmU-DWab9CUkMQPew35AaPc0YFyvaEVqxa836l3vdvDjdYTKgvss-Ab7hc6p4P7XuF9hl4GfIRytMIcNLaVb4VfvU_2zEn96HDlTwg2uyc0g1MbXfze3PRE) — *interactive editor with pan, zoom, and export*
+> [Open in mermaid.live — Class Diagram](https://mermaid.live/edit#pako:eNqtVd9vmzAQ_lcsnvajQdsrD5VYQ9NIJEEh6zSNyXKMA1aNjWyTLmrzv88EQnGg7R7GE9x33_l8393x5GCREsdzMENKTSnKJCoSDsxzsoC7zSKMUEbAU2Otn8-xlpRnYFtRlk72RCoq-BCmOxOLTJTEPawUjMGW8uFjD0CVFlCSnSQqtwCVi0eoSpONbTeWA1Si4unZfOwnPvPjGEta6rHM74N1PF8th8A0iMLVz0Ww3MD5dAjH0Trwp_FdEFzgqZgRbaWXikgo21RWjPk8nZKSicOtFMWM6rtq-1r6N4LvaDaW_ma-CYP_l_wZPyFLfzESOl59X07h7TwMOqqV7n2j6C1lo50y7BFjzzJjNZIzgcYlvMkRzwx8UQOCtYn16zeouCETpEg6CreHqh4ohUaaQNNpSOKc7snoub5pxQWRGfkh5MOOiUfrfJwT_ABVjixti9ofbiXi2G7T9KQ2LM0MKQtoKwAzpGDjdMFjRF9GtNLckMLMgB4tuJkLiQmsh7vfgFKYPNoKWBlZgQO-p1LwgnDdboSxI5jASNuipgJXNUtByjWRHLH-Ac1Lt1AS52vigMnkun3rt5AHcl0wt1XQ1X_0G-Qvrlt_vAy8B0ixJakCe4raLdTQZ-Hqmx_6NyGM_FkAJu7k-jlxhs7Ocx0Ndu4NO1qvZmt_Ea3WG_8fI1iUd-7_0u3N7QE-G94hjsjlgU4AcBaFpMbY1qEr1dsiZGoowevc_gUydZn-67yXVecBfHqppEl2e-iILdy4u-6Z2FXEA-rAsQKaatZK3Q1Hn_TJJmFJjId6h9DvK4sxXBM1qRe_meo3vfvBzysRVGVqTnGuHLNUCkRT83t-Shydk7qxvMRJyQ5VTCfO0fjU_83Y3N7xtKzIldOQ20ZojMe_7v9kow) — *interactive editor with pan, zoom, and export*
 
 ```mermaid
 classDiagram
@@ -551,7 +533,6 @@ classDiagram
     HTMLPage "1" --> "0..1" GASScript : embeds via iframe
     GLOBALACL_PAGE -.->|"embeds via iframe"| GAS_GLOBALACL
     PROGRAMPORTAL_PAGE -.->|"embeds via iframe"| GAS_PROGRAMPORTAL
-    RNDLIVEDATA_PAGE -.->|"embeds via iframe"| GAS_RNDLIVEDATA
     HTMLPage "1" --> "1" Changelog : html changelog
     HTMLPage "1" --> "1" EnvironmentDiagram : internals documented in
     GASScript "1" --> "1" VersionFile : gs.version.txt

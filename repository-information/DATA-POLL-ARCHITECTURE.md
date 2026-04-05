@@ -181,7 +181,7 @@ The 30 simultaneous executions limit is **per deploying user**, not per viewer. 
 
 ### Why it matters for multi-app deployments
 
-If you deploy multiple GAS projects (testauth1, rndlivedata, programportal, globalacl, etc.), all of their data polls, heartbeats, and other GAS calls share the same 30-slot pool. The calls don't get separate pools per project — they all compete for the same 30 concurrent execution slots under the deploying account.
+If you deploy multiple GAS projects (testauth1, programportal, globalacl, etc.), all of their data polls, heartbeats, and other GAS calls share the same 30-slot pool. The calls don't get separate pools per project — they all compete for the same 30 concurrent execution slots under the deploying account.
 
 ### When you're safe
 
