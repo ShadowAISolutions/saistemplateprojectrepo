@@ -196,14 +196,6 @@
       animation: auth-spin 0.8s linear infinite;
     }
     @keyframes auth-spin { to { transform: rotate(360deg); } }
-    .auth-pulse-dots { display: flex; gap: 8px; justify-content: center; }
-    .auth-pulse-dots span {
-      width: 10px; height: 10px; border-radius: 50%; background: #999;
-      animation: auth-pulse 1.2s ease-in-out infinite;
-    }
-    .auth-pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .auth-pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes auth-pulse { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
 
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
@@ -246,6 +238,15 @@
     .reconnect-checklist li.stage-done { color: #34a853; }
     .reconnect-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .reconnect-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
+
+    .auth-pulse-dots { display: flex; gap: 8px; justify-content: center; }
+    .auth-pulse-dots span {
+      width: 10px; height: 10px; border-radius: 50%; background: #999;
+      animation: auth-pulse 1.2s ease-in-out infinite;
+    }
+    .auth-pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .auth-pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes auth-pulse { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
 
     #signing-out-wall {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -382,7 +383,6 @@
     </div>
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Signing in&hellip;</h2>
-      <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
       <div class="auth-spinner"></div>
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
@@ -402,6 +402,7 @@
         </li>
         <li id="stage-ready" class="stage-pending"><span class="chk-icon"></span>Sign-in complete</li>
       </ul>
+      <p id="signing-in-subtitle" style="color:#999;margin-top:10px;display:none;"></p>
     </div>
   </div>
 
@@ -418,7 +419,8 @@
             <li id="sub-so-sending" class="stage-pending"><span class="chk-icon"></span>Sending sign-out request</li>
           </ul>
         </li>
-      <li id="so-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Waiting for server confirmation</li>
+      <li id="so-stage-confirm" class="stage-pending"><span class="chk-icon"></span>Waiting for sign-out confirmation</li>
+      <li id="so-stage-complete" class="stage-pending"><span class="chk-icon"></span>Sign-out complete</li>
     </ul>
   </div>
 
@@ -2565,8 +2567,10 @@
     }
 
     // Sign-out stage checklist logic
-    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm'];
+    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
     var _soStageStartTimes = {};
+    var _signOutStartTime = null;
+    var _totalTickTimer = null;
 
     function _updateSignOutStage(stageId) {
       var targetIdx = _soStageOrder.indexOf(stageId);
@@ -2603,15 +2607,34 @@
     }
 
     function _resetSignOutChecklist() {
+      _signOutStartTime = Date.now();
       _soStageStartTimes = {};
+      _subStepStartTimes = {};
+      _subStepFrozenTimes = {};
+      _activeSubStepId = null;
+      _activeStageId = null;
+      if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       var checklist = document.getElementById('signout-checklist');
       if (checklist) {
+        var allTimes = checklist.querySelectorAll('.stage-time');
+        for (var k = 0; k < allTimes.length; k++) allTimes[k].remove();
         var items = checklist.getElementsByTagName('li');
         for (var i = 0; i < items.length; i++) {
           items[i].className = 'stage-pending';
-          var oldTime = items[i].querySelector('.stage-time');
-          if (oldTime) oldTime.remove();
         }
+      }
+      // Start live total ticker on the "Sign-out complete" row
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
+      var _soLastStage = document.getElementById('so-stage-complete');
+      if (_soLastStage) {
+        var _soTotalSpan = document.createElement('span');
+        _soTotalSpan.className = 'stage-time stage-time-total';
+        _soTotalSpan.textContent = '0.0s total';
+        _soLastStage.appendChild(_soTotalSpan);
+        _totalTickTimer = setInterval(function() {
+          if (_signOutStartTime) _soTotalSpan.textContent = _formatStageTime(Date.now() - _signOutStartTime) + ' total';
+        }, 100);
       }
     }
 
@@ -3233,6 +3256,7 @@
         // Allow when 'signing-out' (still in progress) or 'signed-out' (general
         // handler already showed auth wall — we still need to hide the overlay).
         if (_authState === 'signing-in' || _authState === 'reconnecting' || _authState === 'authenticated') return;
+        _updateSignOutStage('so-stage-complete');
         _completeAllSignOutStages();
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);

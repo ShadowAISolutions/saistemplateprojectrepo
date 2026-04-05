@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 25/100`
+`Sections: 26/100`
 
 ## [Unreleased]
+
+## [v08.89r] — 2026-04-05 05:11:37 PM EST
+
+> **Prompt:** "everything that is currently identical in the other projects i.e. globalacl and program portal as well as the testauth1 should be in the templates"
+
+### Changed
+- Absorbed common auth project code into the HTML auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — all changes were already identical across testauth1, globalacl, and programportal but missing from the template
+- Added `so-stage-complete` sign-out checklist stage (6th stage) to HTML body and JS `_soStageOrder` array
+- Fixed sign-out confirm text: "Waiting for server confirmation" → "Waiting for sign-out confirmation"
+- Reordered sign-in DOM elements: moved subtitle paragraph after checklist (H2 → spinner → checklist → subtitle)
+- Moved CSS `.auth-pulse-dots` definition after all checklist styles (after `.reconnect-checklist`)
+- Expanded `_resetSignOutChecklist` with timer cleanup, sub-step reset, and total ticker on the "Sign-out complete" row
+- Added `_updateSignOutStage('so-stage-complete')` call in `_finalizeSignOut` before completing all stages
 
 ## [v08.88r] — 2026-04-05 04:35:19 PM EST
 
