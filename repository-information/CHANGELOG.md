@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 9/100`
+`Sections: 10/100`
 
 ## [Unreleased]
+
+## [v08.73r] — 2026-04-05 12:22:23 PM EST
+
+> **Prompt:** "undo your last change, i literally mean the admin dropdown button, when i hover over it, i cant see it anymore might be blending with the white background. theres nothing wrong with the list after i click it."
+
+### Fixed
+- Reverted dropdown `top` change (28px back to 36px) — the dropdown click behavior was not the issue
+- Fixed admin badge colors blending with the white top strip background — changed from light-on-light (`rgba(255,255,255,0.12)` bg, `#90caf9`/`#fff` text) to dark-on-light (`rgba(0,0,0,0.12)` bg, `#1565c0`/`#0d47a1` text) so the badge and its hover state are visible against the white strip
+
+#### `testauth1.gs` — v02.40g
+
+##### Fixed
+- Fixed admin button becoming invisible when hovered — now uses darker colors visible on light backgrounds
 
 ## [v08.72r] — 2026-04-05 12:17:33 PM EST
 

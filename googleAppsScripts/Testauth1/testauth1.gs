@@ -1,4 +1,4 @@
-var VERSION = "v02.39g";
+var VERSION = "v02.40g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3830,9 +3830,9 @@ function doGet(e) {
         }
         ${isAdmin ? `
         /* PROJECT: Admin panel styles */
-        #admin-badge { position: fixed; top: 12px; left: 12px; z-index: 100; background: rgba(255,255,255,0.12); padding: 4px 10px; border-radius: 16px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; user-select: none; }
-        #admin-badge:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        #admin-dropdown-gas { display: none; position: fixed; top: 28px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        #admin-badge { position: fixed; top: 12px; left: 12px; z-index: 100; background: rgba(0,0,0,0.12); padding: 4px 10px; border-radius: 16px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #1565c0; cursor: pointer; user-select: none; }
+        #admin-badge:hover { background: rgba(0,0,0,0.2); color: #0d47a1; }
+        #admin-dropdown-gas { display: none; position: fixed; top: 36px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
         #admin-dropdown-gas button:hover { background: rgba(144,202,249,0.1); color: #fff; }
         #admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; background: rgba(0,0,0,0.6); }
