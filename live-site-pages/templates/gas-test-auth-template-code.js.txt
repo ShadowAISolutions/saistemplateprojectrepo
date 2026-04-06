@@ -429,31 +429,52 @@ function validateCrossProjectAdmin(params) {
  */
 function listActiveSessionsInternal(callerEmail) {
   var cache = getEpochCache();
-  var sessions = [];
-  var indexRaw = cache.get('session_index');
-  if (!indexRaw) return sessions;
-  var index;
-  try { index = JSON.parse(indexRaw); } catch (err) { return sessions; }
-  var now = Date.now();
-  for (var email in index) {
-    var tokens = index[email];
-    if (!Array.isArray(tokens)) continue;
-    for (var i = 0; i < tokens.length; i++) {
-      var sessionRaw = cache.get('session_' + tokens[i]);
-      if (!sessionRaw) continue;
-      try {
-        var session = JSON.parse(sessionRaw);
-        sessions.push({
-          email: session.email || email,
-          role: session.role || RBAC_DEFAULT_ROLE,
-          loginTime: session.loginTime || '',
-          lastSeen: session.lastActivity || session.loginTime || '',
+  var activeSessions = [];
+  try {
+    var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+    if (!sheet) return activeSessions;
+    var data = sheet.getDataRange().getValues();
+    for (var r = 1; r < data.length; r++) {
+      var email = String(data[r][0]).trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) continue;
+      var trackKey = 'sessions_' + email;
+      var raw = cache.get(trackKey);
+      if (!raw) continue;
+      var tokens;
+      try { tokens = JSON.parse(raw); } catch (e) { continue; }
+      for (var i = 0; i < tokens.length; i++) {
+        var sessionRaw = cache.get('session_' + tokens[i]);
+        if (!sessionRaw) continue;
+        var sess;
+        try { sess = JSON.parse(sessionRaw); } catch (e) { continue; }
+        var absRemaining = 0;
+        if (sess.absoluteCreatedAt && AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT) {
+          absRemaining = Math.max(0, Math.round(
+            AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT - ((Date.now() - sess.absoluteCreatedAt) / 1000)
+          ));
+        }
+        var rollingRemaining = Math.max(0, Math.round(
+          AUTH_CONFIG.SESSION_EXPIRATION - ((Date.now() - sess.createdAt) / 1000)
+        ));
+        activeSessions.push({
+          email: sess.email,
+          displayName: sess.displayName || '',
+          role: sess.role || RBAC_DEFAULT_ROLE,
+          createdAt: sess.absoluteCreatedAt || sess.createdAt,
+          lastActivity: sess.lastActivity,
+          absoluteRemaining: absRemaining,
+          rollingRemaining: rollingRemaining,
+          isEmergencyAccess: sess.isEmergencyAccess || false,
+          isSelf: (sess.email || '').toLowerCase() === (callerEmail || '').toLowerCase(),
           project: TITLE
         });
-      } catch (err) { /* skip corrupt entries */ }
+      }
     }
+  } catch (e) {
+    Logger.log('listActiveSessionsInternal error: ' + e.message);
   }
-  return sessions;
+  return activeSessions;
 }
 
 // ══════════════
@@ -2127,6 +2148,32 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // Nonce generation action — returns page that generates a one-time-use page nonce
+  // via google.script.run, replacing the insecure ?session=TOKEN URL pattern.
+  // The parent page loads this, sends the session token via postMessage, and receives
+  // a short-lived nonce to use in ?page_nonce=NONCE for the actual app load.
+  if (action === 'getNonce') {
+    var nonceListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-nonce-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "request-nonce") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:r.success, nonce:r.nonce||"", error:r.error||""}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:false, error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .generatePageNonce(evt.data.sessionToken);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(nonceListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
   // Security event action — returns page that listens for event data via postMessage
   if (action === 'phaseA') {
     var phaseAListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
@@ -2331,32 +2378,6 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Nonce generation action — returns page that generates a one-time-use page nonce
-  // via google.script.run, replacing the insecure ?session=TOKEN URL pattern.
-  // The parent page loads this, sends the session token via postMessage, and receives
-  // a short-lived nonce to use in ?page_nonce=NONCE for the actual app load.
-  if (action === 'getNonce') {
-    var nonceListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
-      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      + 'window.top.postMessage({type:"gas-nonce-ready"}, PARENT_ORIGIN);'
-      + 'window.addEventListener("message", function(evt) {'
-      + '  if (evt.origin !== PARENT_ORIGIN) return;'
-      + '  if (!evt.data || evt.data.type !== "request-nonce") return;'
-      + '  google.script.run'
-      + '    .withSuccessHandler(function(r) {'
-      + '      window.top.postMessage({type:"gas-nonce-result", success:r.success, nonce:r.nonce||"", error:r.error||""}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .withFailureHandler(function(e) {'
-      + '      window.top.postMessage({type:"gas-nonce-result", success:false, error:String(e)}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .generatePageNonce(evt.data.sessionToken);'
-      + '});'
-      + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(nonceListenerHtml)
-      .setTitle(TITLE)
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-
   // Security event reporting — client-side defense layers report blocked attacks
   // Phase 7: URL-parameter path kept for backwards compatibility during migration
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
@@ -2525,8 +2546,8 @@ function doGet(e) {
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
-        html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; display: flex; flex-direction: column; align-items: center; padding: 20px 0; box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: sans-serif; }
         button { background: #2e7d32; color: white; border: none; padding: 8px 20px;
                  border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px; }
         button:hover { background: #1b5e20; }

@@ -3,7 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 53/100`
+`Sections: 54/100`
+
+## [v09.17r] — 2026-04-06 11:56:31 AM EST
+
+> **Prompt:** "now apply the same to the templates"
+
+### Changed
+- Synchronized GAS auth template files to match canonical programportal.gs shared code
+- Fixed CSS baseline in both auth templates: `overflow: auto` → `overflow: hidden`, `font-family: Arial` → `font-family: sans-serif`
+- Fixed action handler ordering in `gas-test-auth-template-code.js.txt`: moved `getNonce` before `phaseA` to match canonical order
+- Replaced simplified `listActiveSessionsInternal()` in test-auth template with the canonical spreadsheet-based implementation
 
 ## [v09.16r] — 2026-04-06 11:45:32 AM EST
 
