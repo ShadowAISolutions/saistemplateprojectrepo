@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 38/100`
+`Sections: 39/100`
 
 ## [Unreleased]
+
+## [v09.02r] — 2026-04-05 11:20:04 PM EST
+
+> **Prompt:** "the following is the comparison between testauth1 and globalcl, i want their non project specific code to be idential, so address that."
+
+### Changed
+- Unified shared auth/template code between testauth1.html and globalacl.html — non-project-specific code is now identical
+- Replaced fetch()-based heartbeat in testauth1 with iframe+postMessage approach (token never in URL, HIPAA-aligned)
+- Removed `_fetchPausedForGIS` from both files (no longer needed with iframe-based heartbeat)
+- Added `_gasSandboxSource` to globalacl (shared auth infrastructure for GAS sandbox frame communication)
+- Restored `loadIframeViaNonce()` usage in globalacl for cross-tab sync and DOM clearing reload (session replay protection)
+- Added comprehensive documentation to `loadIframeViaNonce()` explaining the 7-attempt history (v05.59r–v05.70r), CacheService limitations, and design tradeoffs
+- Separated project-specific message types from shared `_KNOWN_GAS_MESSAGES` and `_SIG_EXEMPT` with `// PROJECT:` markers in both files
+- Added stale session checks on page load in testauth1 (already in globalacl) — prevents "Reconnecting" for expired sessions
+- Added `applyUIGating()` and role badge display to testauth1's `showApp()` (already in globalacl)
+- Moved panel cooldown system to PROJECT section in testauth1 (shared panel registry kept as template code)
+- Fixed AUTH END CSS comment formatting in testauth1 (added proper separators)
+- Moved `.html-layer-hidden` CSS to PROJECT CSS section in testauth1
+- Standardized SSO section comment header across both files
+- Cleaned up stale comments (data poll migration, CacheService, redundant code annotations)
+- Made IP logging comment generic (`your project's .gs file` instead of page-specific reference)
+- Added `_closeAllPanelsExcept(null)` to globalacl's `showAuthWall()` (was missing)
+
+#### `testauth1.html` — v03.92w
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.82w
+##### Changed
+- Minor internal improvements
 
 ## [v09.01r] — 2026-04-05 10:23:46 PM EST
 

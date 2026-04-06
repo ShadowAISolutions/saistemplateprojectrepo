@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.81w">
+  <meta name="build-version" content="v01.82w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Global ACL</title>
 <!-- ══════════════ -->
@@ -1211,6 +1211,7 @@
       // Phase 6 (H-4): Reset timer enforcer for next session
       _sessionTimerEnforcer.reset();
       _gasAuthOkHandled = false;
+      _gasSandboxSource = null;  // Clear stale sandbox reference — new gas-auth-ok will refresh it
       // SSO: clear held tokens
       _ssoAccessToken = null;
       _ssoUserEmail = null;
@@ -1228,12 +1229,36 @@
     var _directSessionLoad = false; // true when iframe loaded via nonce for session reclaim (Use Here) — tells gas-auth-ok to re-show iframe
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
     var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
+    var _gasSandboxSource = null;   // WindowProxy of the GAS inner sandbox frame (captured from event.source on gas-auth-ok)
     var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
     var _nonceCallback = null;      // callback after nonce is received (optional)
 
     // Load the GAS iframe via a one-time-use page nonce instead of ?session=TOKEN.
     // This prevents session URL replay — the nonce expires in 60 seconds and is single-use.
     // Flow: load ?action=getNonce → gas-nonce-ready → send session token → gas-nonce-result → load ?page_nonce=NONCE
+    //
+    // WHY THIS EXISTS (v05.59r–v05.70r):
+    // Direct ?session=TOKEN URLs are visible in DevTools Network tab. A user could copy
+    // the URL and replay it in another tab/browser to gain authenticated access without
+    // signing in. The nonce flow prevents this — the nonce is single-use and expires in
+    // 60 seconds, so a copied URL is worthless.
+    //
+    // WHY INITIAL SIGN-IN USES DIRECT ?session= INSTEAD:
+    // GAS CacheService is eventually consistent — a nonce written by generatePageNonce()
+    // may not be readable by validatePageNonce() moments later (cache.get returns null).
+    // This causes sign-in failures. Initial sign-in uses ?session= directly because the
+    // token was just created and the postMessage handshake guard prevents direct URL access.
+    //
+    // DRAWBACKS:
+    // - Adds latency (extra round-trip to GAS for nonce generation)
+    // - CacheService dependency (eventual consistency can cause intermittent failures)
+    // - More complex code path (3-step postMessage handshake)
+    //
+    // FUNDAMENTAL DEFENSE LAYER:
+    // The postMessage handshake guard in GAS blocks direct URL navigation — even with a
+    // valid ?session= URL, opening it in a browser tab shows "Access denied" after 2 seconds.
+    // The nonce flow adds defense-in-depth for the iframe src attribute specifically.
+    //
     // Options:
     //   skipExpectingSession: true to NOT set _expectingSession (needed on page-load
     //     where no prior iframe content exists to send stale gas-needs-auth)
@@ -1402,10 +1427,11 @@
       'gas-signed-out': true,
       'gas-version': true,
       'gas-session-invalid': true,
-      'gas-admin-global-signout-result': true,
-      'gas-admin-global-signout-error': true,
       'gas-nonce-ready': true,
-      'gas-nonce-result': true
+      'gas-nonce-result': true,
+      // PROJECT: globalacl-specific message types
+      'gas-admin-global-signout-result': true,
+      'gas-admin-global-signout-error': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1684,9 +1710,6 @@
         'gas-auth-ok': true,          // Immediate unsigned send fires before signed version
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
-        'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
-        'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true,
         'gas-nonce-ready': true, 'gas-nonce-result': true };
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
         _verifyMessageSignature(data).then(function(valid) {
@@ -1909,6 +1932,11 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
+        // Capture the sandbox frame's WindowProxy so we can send messages back to it.
+        // GAS double-iframe: gasApp.contentWindow is the outer shell (script.google.com),
+        // but the listener runs in the inner sandbox (googleusercontent.com).
+        // event.source from gas-auth-ok IS the sandbox — store it for write-cell/add-row.
+        if (event.source) _gasSandboxSource = event.source;
         // Phase 5: Import messageKey if delivered via gas-auth-ok (the ?session path
         // includes it). This handles "Use Here" reclaim, tab duplicate, and page refresh
         // where gas-session-created is not sent. Only import if no key is set yet.
@@ -2120,12 +2148,7 @@
           _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
-          var gasApp = document.getElementById('gas-app');
-          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-          if (gasApp && baseUrl) {
-            _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
-          }
+          loadIframeViaNonce(session.token);
         }
       }
 
@@ -2328,6 +2351,7 @@
       // High-z-index overlays (gcl-overlay, auth-timers, tab-takeover-wall)
       // would otherwise float above the auth wall and remain interactive.
       // PROJECT: Global sessions panel now lives in GAS layer (admin dropdown)
+      _closeAllPanelsExcept(null);
       var gclOverlay = document.getElementById('gcl-overlay');
       if (gclOverlay) gclOverlay.style.display = 'none';
       var tabWall = document.getElementById('tab-takeover-wall');
@@ -2782,11 +2806,8 @@
         var session = loadSession();
         if (gasFrame && session.token) {
           var gasBaseUrl = gasFrame.dataset.baseUrl;
-          if (gasBaseUrl) {
-            var gasUrl = gasBaseUrl + '?session=' + encodeURIComponent(session.token);
-            if (gasFrame.src !== gasUrl) {
-              gasFrame.src = gasUrl;
-            }
+          if (gasBaseUrl && (!gasFrame.src || gasFrame.src === 'about:blank')) {
+            loadIframeViaNonce(session.token);
           }
         }
       }
@@ -3509,10 +3530,12 @@
         // (the other is clearSession()). Session token stays in storage.
         _hmacKey = null;
         _hmacKeySet = false;
-        _directSessionLoad = true;  // Tell gas-session-created to skip iframe reload
+        _directSessionLoad = true;  // Tell gas-auth-ok to re-show iframe and start timers
         _gasAuthOkHandled = false;  // Reset so the new gas-auth-ok from the reloaded iframe is not deduplicated
+        _gasSandboxSource = null;   // Clear stale sandbox reference — new gas-auth-ok will refresh it
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
+        if (gasApp) gasApp.style.visibility = 'hidden';
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           gasApp.style.visibility = 'hidden';

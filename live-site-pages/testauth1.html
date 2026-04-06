@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.91w">
+  <meta name="build-version" content="v03.92w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -326,7 +326,16 @@
     #auth-timers .timer-value.warn { color: #ffc107; }
     #auth-timers .timer-value.critical { color: #ef5350; }
     #auth-timers .timer-value.disabled { color: #666; font-weight: normal; }
+/* ══════════════ */
 /* AUTH END */
+/* ══════════════ */
+
+/* ══════════════ */
+/* PROJECT START */
+/* ══════════════ */
+    .html-layer-hidden { display: none !important; }
+/* ══════════════ */
+/* PROJECT END */
 /* ══════════════ */
   </style>
 </head>
@@ -459,11 +468,6 @@
 <!-- PROJECT START -->
 <!-- ══════════════ -->
   <!-- Live Data UI has been migrated to the GAS layer (doGet HTML output in testauth1.gs) -->
-  <!-- Live Data CSS/HTML migrated to GAS layer (testauth1.gs doGet output) -->
-  <style>
-    /* Live Data styles removed — now in GAS doGet() HTML output */
-    .html-layer-hidden { display: none !important; }
-  </style>
 
   <div id="ld-test-bar" style="position:fixed;bottom:34px;left:8px;z-index:9999;display:flex;align-items:center;gap:8px;">
     <button id="force-heartbeat-btn" style="background:#1a1a2e;color:#ff8c42;border:1px solid #ff8c42;padding:8px 14px;border-radius:8px;font:12px/1 monospace;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Force Heartbeat</button>
@@ -515,10 +519,8 @@
       TOKEN_EXCHANGE_METHOD: 'postMessage',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
-      // HEARTBEAT_INTERVAL: 300000  // ms — how often to check for activity and send heartbeat (5min)
-      HEARTBEAT_INTERVAL: 60000,  // ⚡ TEST VALUE (60s) — uncomment line above and delete this line to restore
-      // DATA_POLL_INTERVAL: 15000  // ms — how often to poll for data (continuous, independent of heartbeat)
-      DATA_POLL_INTERVAL: 15000,  // 15s — continuous lightweight data-only poll
+      HEARTBEAT_INTERVAL: 60000,  // ⚡ TEST VALUE (60s) — production: 300000 (5min)
+      DATA_POLL_INTERVAL: 15000,  // ms — how often to poll GAS for fresh data
       // Single-tab enforcement: only one tab can be active at a time.
       // When enabled, opening the page in a new tab claims the session and
       // shows a "session active elsewhere" overlay on the old tab.
@@ -1248,6 +1250,29 @@
     // Load the GAS iframe via a one-time-use page nonce instead of ?session=TOKEN.
     // This prevents session URL replay — the nonce expires in 60 seconds and is single-use.
     // Flow: load ?action=getNonce → gas-nonce-ready → send session token → gas-nonce-result → load ?page_nonce=NONCE
+    //
+    // WHY THIS EXISTS (v05.59r–v05.70r):
+    // Direct ?session=TOKEN URLs are visible in DevTools Network tab. A user could copy
+    // the URL and replay it in another tab/browser to gain authenticated access without
+    // signing in. The nonce flow prevents this — the nonce is single-use and expires in
+    // 60 seconds, so a copied URL is worthless.
+    //
+    // WHY INITIAL SIGN-IN USES DIRECT ?session= INSTEAD:
+    // GAS CacheService is eventually consistent — a nonce written by generatePageNonce()
+    // may not be readable by validatePageNonce() moments later (cache.get returns null).
+    // This causes sign-in failures. Initial sign-in uses ?session= directly because the
+    // token was just created and the postMessage handshake guard prevents direct URL access.
+    //
+    // DRAWBACKS:
+    // - Adds latency (extra round-trip to GAS for nonce generation)
+    // - CacheService dependency (eventual consistency can cause intermittent failures)
+    // - More complex code path (3-step postMessage handshake)
+    //
+    // FUNDAMENTAL DEFENSE LAYER:
+    // The postMessage handshake guard in GAS blocks direct URL navigation — even with a
+    // valid ?session= URL, opening it in a browser tab shows "Access denied" after 2 seconds.
+    // The nonce flow adds defense-in-depth for the iframe src attribute specifically.
+    //
     // Options:
     //   skipExpectingSession: true to NOT set _expectingSession (needed on page-load
     //     where no prior iframe content exists to send stale gas-needs-auth)
@@ -1275,12 +1300,11 @@
       });
       // Attempt silent sign-in on load
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      _fetchPausedForGIS = true;
       signInClient.requestAccessToken();
     }
 
     function handleTokenResponse(response) {
-      _fetchPausedForGIS = false; // GIS popup closed — resume fetch operations
+
       // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated.
       // GIS may fire the callback for automatic token renewal or when detecting a returning
       // user — these are legitimate but unsolicited, so silently ignore them.
@@ -1341,7 +1365,7 @@
     // Updates SSO indicator to "dismissed" (retry state) and shows auth wall
     // if the session has expired while the popup was open.
     function _onGisPopupDismissed() {
-      _fetchPausedForGIS = false; // GIS popup closed — resume fetch operations
+
       _ssoRefreshDismissed = true;
       _updateSsoIndicator('dismissed');
       var session = loadSession();
@@ -1372,7 +1396,6 @@
       _updateSignInStage('Verifying your identity\u2026');
       _updateSubStep('sub-connecting');
       gasApp.src = baseUrl + '?exchangeToken=' + encodeURIComponent(googleAccessToken);
-      // URL path: transition to processing when iframe starts loading
       gasApp.addEventListener('load', function _urlExchangeLoad() {
         gasApp.removeEventListener('load', _urlExchangeLoad);
         _updateSubStep('sub-processing');
@@ -1420,23 +1443,24 @@
       'gas-signed-out': true,
       'gas-version': true,
       'gas-session-invalid': true,
+      'gas-nonce-ready': true,
+      'gas-nonce-result': true,
+      // PROJECT: testauth1-specific message types
       'gas-admin-sessions-ready': true,
       'gas-admin-sessions-list': true,
       'gas-admin-sessions-error': true,
       'gas-admin-signout-result': true,
       'gas-admin-signout-error': true,
-      'gas-nonce-ready': true,            // Nonce generation listener page ready signal
-      'gas-nonce-result': true,           // Nonce generation result (success/failure)
-      'phase-a-ready': true,              // Phase A: HIPAA listener page ready signal
-      'phase-a-disclosures-result': true, // Phase A: disclosure accounting response
-      'phase-a-export-disclosures-result': true, // Phase A: disclosure export response
-      'phase-a-export-result': true,      // Phase A: data export response
-      'phase-a-amendment-result': true,   // Phase A: amendment request response
-      'phase-a-pending-amendments-result': true, // Phase A: pending amendments list
-      'phase-a-review-result': true,      // Phase A: amendment review response
-      'phase-a-disagreement-result': true, // Phase A: disagreement submission response
-      'phase-a-error': true,              // Phase A: error response
-      'frame-handshake-challenge': true   // Frame handshake (processed before allowlist but listed for completeness)
+      'phase-a-ready': true,
+      'phase-a-disclosures-result': true,
+      'phase-a-export-disclosures-result': true,
+      'phase-a-export-result': true,
+      'phase-a-amendment-result': true,
+      'phase-a-pending-amendments-result': true,
+      'phase-a-review-result': true,
+      'phase-a-disagreement-result': true,
+      'phase-a-error': true,
+      'frame-handshake-challenge': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1473,7 +1497,7 @@
     // 3. Add 'https://api.ipify.org' back to connect-src in the CSP meta tag
     // 4. Uncomment the IP forwarding blocks in the message handler and gas-auth-ok handler
     // 5. Uncomment the clientIp parameter in the heartbeat URL
-    // 6. Re-enable corresponding GAS-side code (see testauth1.gs)
+    // 6. Re-enable corresponding GAS-side code (see your project's .gs file)
     // 7. Obtain a BAA with your IP lookup provider or use a Google Cloud Function proxy
     //
     // var _clientIp = '';  // Client IP for audit logging
@@ -1715,10 +1739,11 @@
         'gas-auth-ok': true,          // Immediate unsigned send fires before signed version
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
+        'gas-nonce-ready': true, 'gas-nonce-result': true,
+        // PROJECT: testauth1-specific signature-exempt message types
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
-        'gas-admin-signout-error': true, 'gas-nonce-ready': true, 'gas-nonce-result': true,
-        // gas-datapoll-state removed — data poll timer now renders on GAS layer
+        'gas-admin-signout-error': true,
         'phase-a-ready': true, 'phase-a-disclosures-result': true,
         'phase-a-export-disclosures-result': true, 'phase-a-export-result': true,
         'phase-a-amendment-result': true, 'phase-a-pending-amendments-result': true,
@@ -1726,7 +1751,7 @@
         'phase-a-access-extension-result': true, 'phase-a-amendment-extension-result': true,
         'phase-a-denial-notice-result': true, 'phase-a-ehr-disclosures-result': true, 'phase-a-error': true,
         'live-data': true, 'gas-write-error': true };
-      // Strip liveData for HMAC verification — it's attached after signing on the GAS side
+      // PROJECT: Strip liveData for HMAC verification — it's attached after signing on the GAS side
       // and nested objects cause JSON.stringify mismatches between GAS V8 and browser engines.
       // Build a stripped copy instead of mutating data so other message listeners can still read it.
       var _hmacData = data;
@@ -1776,8 +1801,6 @@
         }
         return;
       }
-
-
       // ── Nonce generation flow ──
       // Step 1: getNonce listener page is ready — send the session token
       if (data.type === 'gas-nonce-ready' && _pendingNonceToken) {
@@ -1816,8 +1839,6 @@
         }
         return;
       }
-
-
 
       // GAS iframe signals ready for token (postMessage exchange path)
       if (data.type === 'gas-ready-for-token' && _pendingToken) {
@@ -1897,12 +1918,6 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
-          // Uses ?session= directly for initial sign-in because CacheService
-          // is eventually consistent — a page_nonce written in exchangeTokenForSession
-          // may not be readable by validatePageNonce() moments later (cache.get returns null).
-          // This is safe: the token was just created, the URL is only in the iframe's
-          // network request (not the address bar), and OAuth already verified the user.
-          // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
           _updateSignInStage('Loading application\u2026');
           _updateSubStep('sub-downloading');
           var gasApp = document.getElementById('gas-app');
@@ -1910,7 +1925,6 @@
           if (gasApp && baseUrl) {
             _expectingSession = true;
             gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
-            // Track iframe load as sub-step transition
             gasApp.addEventListener('load', function _appLoadSub() {
               gasApp.removeEventListener('load', _appLoadSub);
               _updateSubStep('sub-starting');
@@ -2017,7 +2031,7 @@
           showApp(session.email, null, session.role);
           startCountdownTimers();
           startHeartbeat();
-          // Data poll migrated to GAS layer (ld-init triggers it)
+
           // The server may report needsReauth because the server-side
           // session was close to expiring, but the client just reset its
           // rolling timer and the heartbeat will extend the server session
@@ -2036,7 +2050,7 @@
           showApp(_pendingSessionShow.email, _pendingSessionShow.displayName, _pendingSessionShow.role);
           startCountdownTimers();
           startHeartbeat();
-          // Data poll migrated to GAS layer (ld-init triggers it)
+
           broadcastTabClaim();
           _pendingSessionShow = null;
           _gasAuthOkHandled = true;
@@ -2322,9 +2336,7 @@
     }
 
     // =============================================
-    // SSO — Cross-page authentication via BroadcastChannel
-    // Ephemeral token sharing: no persistent storage, HIPAA-compliant.
-    // Channel: 'sais-sso-auth' (shared across all auth pages on same origin)
+    // AUTH — SSO (Cross-Page Token Sharing)
     // =============================================
 
     if (typeof BroadcastChannel !== 'undefined') {
@@ -2391,11 +2403,10 @@
       // Everything behind the auth wall must be hidden and stopped.
       // High-z-index overlays (gcl-overlay, auth-timers, tab-takeover-wall)
       // would otherwise float above the auth wall and remain interactive.
-      // Close all registered panels
+      // PROJECT: Global sessions panel now lives in GAS layer (admin dropdown)
       _closeAllPanelsExcept(null);
       var gclOverlay = document.getElementById('gcl-overlay');
       if (gclOverlay) gclOverlay.style.display = 'none';
-
       var tabWall = document.getElementById('tab-takeover-wall');
       if (tabWall) { tabWall.style.display = 'none'; _tabSurrendered = false; }
       if (typeof stopCountdownTimers === 'function') stopCountdownTimers();
@@ -2454,7 +2465,6 @@
       var subtitle = document.getElementById('signing-in-subtitle');
       if (checklist) {
         checklist.style.display = '';
-        // Remove ALL .stage-time spans first (parent totals + sub-step times)
         var allTimes = checklist.querySelectorAll('.stage-time');
         for (var k = 0; k < allTimes.length; k++) allTimes[k].remove();
         var items = checklist.getElementsByTagName('li');
@@ -2464,7 +2474,6 @@
       }
       if (subtitle) subtitle.style.display = 'none';
       _updateSignInStage('Contacting Google\u2026');
-      // Start live total ticker on the "Sign-in complete" row
       if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       var _siLastStage = document.getElementById('stage-ready');
       if (_siLastStage) {
@@ -2520,7 +2529,6 @@
         if (!el) continue;
         if (i < targetIdx) {
           if (el.className !== 'stage-done') {
-            // Complete any sub-steps inside this stage before marking it done
             _completeSubStepsForStage(el);
             _setStageTime(el, _stageOrder[i]);
             el.className = 'stage-done';
@@ -2548,7 +2556,6 @@
         }
       }
       _completeAllSubSteps();
-      // Freeze total ticker — span already shows final value from the live tick
       if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       if (_signInStartTime) {
         var lastStage = document.getElementById(_stageOrder[_stageOrder.length - 1]);
@@ -2733,7 +2740,6 @@
         }
       }
       _completeAllSubSteps();
-      // Freeze total ticker
       if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       if (_signOutStartTime) {
         var lastStage = document.getElementById(_soStageOrder[_soStageOrder.length - 1]);
@@ -2762,7 +2768,6 @@
           items[i].className = 'stage-pending';
         }
       }
-      // Start live total ticker on the "Sign-out complete" row
       if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       var _soLastStage = document.getElementById('so-stage-complete');
       if (_soLastStage) {
@@ -2840,17 +2845,16 @@
       _authState = 'authenticated';
       if (email) _ssoUserEmail = email;  // Hold for SSO sharing
       if (window._showGasToggle) _showGasToggle(); // PROJECT: show GAS toggle after auth
-
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
       var emailDisplay = document.getElementById('user-email-display');
-
+      var roleBadge = document.getElementById('user-role-badge');
 
       wall.classList.add('hidden');
       hideAllWarningBanners();
 
       // If DOM clearing destroyed the GAS iframe (about:blank), reload it
-      // via nonce so the app UI reappears.
+      // with the current session token so the app UI reappears.
       if (HTML_CONFIG.ENABLE_DOM_CLEARING_ON_EXPIRY) {
         var gasFrame = document.getElementById('gas-app');
         var session = loadSession();
@@ -2868,8 +2872,18 @@
       }
 
 
+      // Show role badge from parameter or stored session
+      var displayRole = role || getStorage().getItem(ROLE_KEY) || '';
+      if (displayRole && roleBadge) {
+        roleBadge.textContent = displayRole;
+        roleBadge.style.display = 'inline';
+      }
 
-      // Send auth context to GAS UI so it can activate the Live Data app
+      // RBAC UI gating — hide/show elements with data-requires-permission and
+      // data-requires-role attributes based on session storage.
+      applyUIGating();
+
+      // PROJECT: Send auth context to GAS UI so it can activate the Live Data app
       if (_gasSandboxSource) {
         var session = loadSession();
         _gasSandboxSource.postMessage({
@@ -3189,16 +3203,19 @@
           var nextTickIn = (HTML_CONFIG.HEARTBEAT_INTERVAL / 1000) - sinceLastTick;
           if (nextTickIn < 0) nextTickIn = 0;
           var isActive = _lastHeartbeatActivity > (_lastHeartbeatTick - HTML_CONFIG.HEARTBEAT_INTERVAL);
-          // Heartbeat row — shows heartbeat-specific state
           if (_heartbeatInFlight) {
-            heartbeatEl.textContent = '\u25B6 sending...';
+            heartbeatEl.textContent = 'sending...';
+            heartbeatEl.className = 'timer-value warn';
+          } else if (_heartbeatIdle) {
+            heartbeatEl.textContent = formatCountdown(nextTickIn) + ' (idle)';
             heartbeatEl.className = 'timer-value warn';
           } else {
-            var indicator = isActive ? ' \u25B6 ready' : ' \u25C7 idle';
+            // isActive already tells us if the next tick will fire (activity within
+            // the current interval window = what the heartbeat interval checks).
+            var indicator = isActive ? ' \u25B6 ready' : ' (idle)';
             heartbeatEl.textContent = formatCountdown(nextTickIn) + indicator;
-            heartbeatEl.className = 'timer-value';
+            heartbeatEl.className = isActive ? 'timer-value' : 'timer-value warn';
           }
-
         } else if (remaining <= 0 && heartbeatEl) {
           heartbeatEl.textContent = 'expired';
           heartbeatEl.className = 'timer-value critical';
@@ -3233,8 +3250,6 @@
     var _heartbeatInFlight = false;  // prevents overlapping heartbeat requests
     var _heartbeatInFlightTimer = null;  // timeout to auto-clear _heartbeatInFlight if response never arrives
     var _heartbeatIdle = false;      // true when last tick found no activity
-    // Data poll migrated to GAS layer — variables removed
-    var _fetchPausedForGIS = false;    // true while GIS popup is open — suppresses fetch to Google domains (COOP conflict)
     var _expiryWarningShown = false;  // prevents repeated session "expiring soon" banner displays
     var _absoluteWarningShown = false; // prevents repeated absolute "expiring soon" banner displays
 
@@ -3264,21 +3279,12 @@
 
     function _onHeartbeatActivity() {
       _lastHeartbeatActivity = Date.now();
-      if (_heartbeatIdle) {
-        _heartbeatIdle = false;
-      }
+      _heartbeatIdle = false;  // clear idle so display immediately shows ▶ ready
     }
 
-    // Data poll migrated to GAS layer — _startDataPoll, _stopDataPoll, _sendDataPoll removed.
-    // The GAS UI handles its own data polling via google.script.run.getAuthenticatedData().
-
-    // Heartbeat via fetch() — uses doPost(action=heartbeat) to avoid iframe
-    // navigation churn that caused "A listener indicated an asynchronous response"
-    // errors. Token is sent as a URL parameter (same security as the old iframe
-    // approach which also passed the token to the server).
+    // Phase 7 (H-5): postMessage-based heartbeat — token never appears in URL
     function sendHeartbeat() {
       if (_heartbeatInFlight) return;  // don't stack requests
-      if (_fetchPausedForGIS) return;  // don't fetch while GIS popup is open — COOP conflict
       var session = loadSession();
       if (!session.token) return;
 
@@ -3287,6 +3293,8 @@
       if (!gasApp || !baseUrl) return;
 
       _heartbeatInFlight = true;
+      // Safety timeout: if no response arrives within 15s, clear the in-flight
+      // flag so future heartbeats aren't permanently blocked by a dropped response
       if (_heartbeatInFlightTimer) clearTimeout(_heartbeatInFlightTimer);
       _heartbeatInFlightTimer = setTimeout(function() {
         _heartbeatInFlight = false;
@@ -3298,28 +3306,72 @@
         hbEl.className = 'timer-value warn';
       }
 
-      var hbUrl = baseUrl + '?action=heartbeat&token=' + encodeURIComponent(session.token);
-      fetch(hbUrl, { method: 'POST', mode: 'cors', cache: 'no-store' })
-        .then(function(resp) { return resp.json(); })
-        .then(function(result) {
-          _heartbeatInFlight = false;
-          if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
-          if (result) _processVerifiedMessage(result, { source: null, origin: '' });
-        })
-        .catch(function() {
-          _heartbeatInFlight = false;
-          if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
-        });
+      // Use a hidden iframe so the heartbeat doesn't destroy the main GAS app UI
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (!hbFrame) {
+        hbFrame = document.createElement('iframe');
+        hbFrame.id = 'gas-heartbeat';
+        hbFrame.style.cssText = 'display:none;width:0;height:0;border:0';
+        document.body.appendChild(hbFrame);
+      }
+      // Phase 7: Load with action parameter only — NO token in URL
+      hbFrame.src = baseUrl + '?action=heartbeat';
+      // Token is sent via postMessage after the iframe signals ready
+      // (handled by gas-heartbeat-ready message handler below)
     }
 
     function stopHeartbeat() {
       if (_heartbeatInterval) { clearInterval(_heartbeatInterval); _heartbeatInterval = null; }
       if (_heartbeatInFlightTimer) { clearTimeout(_heartbeatInFlightTimer); _heartbeatInFlightTimer = null; }
-      // _stopDataPoll() removed — data poll is now in GAS layer (destroyed with iframe on auth wall)
       _ACTIVITY_EVENTS.forEach(function(evt) {
         document.removeEventListener(evt, _onHeartbeatActivity);
       });
       _heartbeatInFlight = false;
+      var hbFrame = document.getElementById('gas-heartbeat');
+      if (hbFrame) hbFrame.remove();
+    }
+
+    // =============================================
+    // =============================================
+    // Panel registry — mutual exclusion and cleanup
+    // =============================================
+    var _panelRegistry = [];
+    function _registerPanel(panelId, closeHandler) {
+      _panelRegistry.push({ id: panelId, close: closeHandler });
+    }
+    // Close all panels except the one being opened (pass null to close all)
+    function _closeAllPanelsExcept(exceptPanelId) {
+      for (var i = 0; i < _panelRegistry.length; i++) {
+        if (_panelRegistry[i].id !== exceptPanelId) {
+          _panelRegistry[i].close();
+        }
+      }
+    }
+
+    // PROJECT: Panel cooldown — prevents rapid panel switching
+    var _panelCooldownUntil = 0;
+    var _PANEL_COOLDOWN_MS = 1000;
+    var _panelBtnIds = [];
+    var _panelCooldownTimer = null;
+
+    function _isPanelCooldownActive() {
+      return Date.now() < _panelCooldownUntil;
+    }
+
+    function _startPanelCooldown() {
+      _panelCooldownUntil = Date.now() + _PANEL_COOLDOWN_MS;
+      for (var i = 0; i < _panelBtnIds.length; i++) {
+        var btn = document.getElementById(_panelBtnIds[i]);
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed'; }
+      }
+      if (_panelCooldownTimer) clearTimeout(_panelCooldownTimer);
+      _panelCooldownTimer = setTimeout(function() {
+        for (var j = 0; j < _panelBtnIds.length; j++) {
+          var b = document.getElementById(_panelBtnIds[j]);
+          if (b) { b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; }
+        }
+        _panelCooldownTimer = null;
+      }, _PANEL_COOLDOWN_MS);
     }
 
     // =============================================
@@ -3340,7 +3392,6 @@
       // — Immediately close all high-z-index overlays (z-index > signing-out-wall) —
       // These panels sit above the signing-out wall and would remain visible/interactive
       // during the sign-out animation. Close them BEFORE showing the signing-out wall.
-      // Close all panels (admin + Phase A) and reset state via shared manager
       _closeAllPanelsExcept(null);
       var gclOverlay = document.getElementById('gcl-overlay');
       if (gclOverlay) gclOverlay.style.display = 'none';
@@ -3355,14 +3406,11 @@
       if (_signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out', tabId: _tabId });
       }
-
       // PROJECT: Advance to connected apps stage
       _updateSignOutStage('so-stage-apps');
-      // SSO cross-page sign-out — only propagate deliberate sign-outs.
-      // Session expiry ('session-expired', 'absolute-expired') is page-local —
-      // each page has its own independent GAS session and timeout.
-      // Only a user-initiated sign-out (reason === 'manual' or no reason) should
-      // sign out all connected pages.
+      // SSO: broadcast sign-out to other apps (not for session expiry — that's page-local)
+      // Session expiry is page-local — each page has its own independent GAS session and timeout.
+      // Only user-initiated sign-out should sign out all connected pages.
       // When broadcastSSO is false (local-only sign-out), skip the SSO broadcast.
       if (broadcastSSO && _ssoChannel && reason !== 'session-expired' && reason !== 'absolute-expired') {
         try {
@@ -3503,7 +3551,6 @@
         error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      _fetchPausedForGIS = true;
       signInClient.requestAccessToken();
     }
 
@@ -3521,7 +3568,6 @@
         error_callback: _onGisPopupDismissed
       });
       _authNonce = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      _fetchPausedForGIS = true;
       signInClient.requestAccessToken();
     });
 
@@ -3534,57 +3580,6 @@
     document.getElementById('sign-out-all-btn').addEventListener('click', function() {
       performSignOut('manual');
     });
-
-    // =============================================
-    // Panel Mutual Exclusion & Cooldown
-    // =============================================
-    // Only one panel can be open at a time. After opening a panel, a 5-second
-    // cooldown prevents opening another (clicking the same panel's button to
-    // close it is always allowed). Shared across admin sessions and Phase A panels.
-    var _panelCooldownUntil = 0;  // timestamp (ms) when cooldown expires
-    var _PANEL_COOLDOWN_MS = 1000;
-
-    // Registry of all closeable panels: { id, closeHandler }
-    var _panelRegistry = [];
-
-    // All panel toggle button IDs (for cooldown disable/enable)
-    var _panelBtnIds = [];
-    var _panelCooldownTimer = null;
-
-    function _registerPanel(panelId, closeHandler) {
-      _panelRegistry.push({ id: panelId, close: closeHandler });
-    }
-
-    // Close all panels except the one being opened (pass null to close all)
-    function _closeAllPanelsExcept(exceptPanelId) {
-      for (var i = 0; i < _panelRegistry.length; i++) {
-        if (_panelRegistry[i].id !== exceptPanelId) {
-          _panelRegistry[i].close();
-        }
-      }
-    }
-
-    // Check if cooldown is active. Returns true if action should be blocked.
-    function _isPanelCooldownActive() {
-      return Date.now() < _panelCooldownUntil;
-    }
-
-    // Start cooldown: disable all panel buttons, re-enable after timeout
-    function _startPanelCooldown() {
-      _panelCooldownUntil = Date.now() + _PANEL_COOLDOWN_MS;
-      for (var i = 0; i < _panelBtnIds.length; i++) {
-        var btn = document.getElementById(_panelBtnIds[i]);
-        if (btn) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed'; }
-      }
-      if (_panelCooldownTimer) clearTimeout(_panelCooldownTimer);
-      _panelCooldownTimer = setTimeout(function() {
-        for (var j = 0; j < _panelBtnIds.length; j++) {
-          var b = document.getElementById(_panelBtnIds[j]);
-          if (b) { b.disabled = false; b.style.opacity = ''; b.style.cursor = ''; }
-        }
-        _panelCooldownTimer = null;
-      }, _PANEL_COOLDOWN_MS);
-    }
 
     // Re-auth button handler (on absolute warning banner)
     // Stop timers first to prevent performSignOut from firing during the OAuth flow.
@@ -3633,13 +3628,10 @@
         _gasSandboxSource = null;   // Clear stale sandbox reference — new gas-auth-ok will refresh it
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp) gasApp.style.visibility = 'hidden';
-        // Use ?session= directly — the postMessage handshake guard blocks direct
-        // URL access. The nonce flow (loadIframeViaNonce) is unreliable due to
-        // CacheService eventual consistency.
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          _expectingSession = true;
+          gasApp.style.visibility = 'hidden';
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {
@@ -3715,15 +3707,37 @@
     (function() {
       var session = loadSession();
       if (session.token) {
-        // Resume existing session — load GAS iframe with session token directly.
-        // Using ?session= is safe here: the postMessage handshake guard blocks
-        // direct URL access (copied URLs show "Access denied"). The nonce flow
-        // (loadIframeViaNonce) is unreliable for this path due to CacheService
-        // eventual consistency — the nonce written by generatePageNonce() may not
-        // be readable by validatePageNonce() moments later.
+        // With localStorage, stale sessions persist across browser restarts.
+        // Check if the absolute timeout has passed — if so, clear the stale
+        // session immediately instead of showing "Reconnecting" and waiting
+        // for the server round-trip to confirm expiry.
+        var absStart = parseInt(getStorage().getItem(ABSOLUTE_START_KEY) || '0', 10);
+        var sessStart = parseInt(getStorage().getItem(SESSION_START_KEY) || '0', 10);
+        if (absStart && (Date.now() - absStart) / 1000 > ABSOLUTE_SESSION_DURATION) {
+          clearSession();
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+        // Also check rolling session timeout (no heartbeat to extend on page load)
+        if (sessStart && (Date.now() - sessStart) / 1000 > SERVER_SESSION_DURATION) {
+          clearSession();
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+
+        // Resume existing session — load GAS iframe with session token.
+        // Using ?session= directly on page load because CacheService eventual
+        // consistency makes loadIframeViaNonce unreliable here (nonce may not be
+        // readable immediately after being written).
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
+          // Do NOT set _expectingSession here — on page load, there is no prior
+          // iframe content that could send a stale gas-needs-auth. The flag would
+          // cause the REAL gas-needs-auth (from an admin-invalidated session) to be
+          // silently dropped, leaving the user stuck on "Reconnecting...".
+          // _expectingSession is only needed after mid-session iframe navigations
+          // (gas-session-created, Use Here) where prior content may still be loaded.
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
@@ -3745,7 +3759,7 @@
                 prompt: '',  // silent — no user interaction
                 login_hint: session.email || '',
                 callback: function(response) {
-                  _fetchPausedForGIS = false;
+
                   if (!response.error && response.access_token) {
                     _validateSSOTokenEmail(response.access_token, function() {
                       _ssoAccessToken = response.access_token;
@@ -3763,7 +3777,6 @@
                 },
                 error_callback: _onGisPopupDismissed
               });
-              _fetchPausedForGIS = true;
               ssoRefreshClient.requestAccessToken();
             } else if (ssoRetries >= 25) { // 25 × 200ms = 5s
               clearInterval(ssoGisCheck);
@@ -3800,7 +3813,6 @@
         prompt: '',
         login_hint: retrySession.email || '',
         callback: function(response) {
-          _fetchPausedForGIS = false;
           if (!response.error && response.access_token) {
             _validateSSOTokenEmail(response.access_token, function() {
               _ssoAccessToken = response.access_token;
@@ -3816,7 +3828,6 @@
         },
         error_callback: _onGisPopupDismissed
       });
-      _fetchPausedForGIS = true;
       retryClient.requestAccessToken();
     });
 
