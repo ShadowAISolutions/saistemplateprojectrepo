@@ -2498,16 +2498,7 @@ function doGet(e) {
       </style>
     </head>
     <body>
-      <div id="portal-main">
-      <div class="portal-header" id="portal-header-wrap">
-        <img src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt=""
-             onerror="this.style.display='none'">
-        <h1>Program Portal</h1>
-        <div class="portal-subtitle">Central authentication gateway</div>
-        <div class="portal-user-info">${escapeHtml(session.displayName || session.email)} &mdash; ${escapeHtml(session.email)}</div>
-      </div>
       ${isAdmin ? `
-      <!-- PROJECT: Admin badge and panel (only rendered for admin users) -->
       <div id="admin-badge" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">ADMIN &#x25BE;</div>
       <div id="admin-dropdown-gas">
         <button data-admin-panel="sessions">Sessions</button>
@@ -2539,25 +2530,6 @@ function doGet(e) {
       </div>
       ` : ''}
 
-      <div class="portal-toggles">
-        <div class="portal-open-toggle">
-          <label>
-            <span>My apps</span>
-            <input type="checkbox" id="portal-access-toggle">
-            <span class="toggle-track"></span>
-            <span>Show all</span>
-          </label>
-        </div>
-        <div class="portal-open-toggle">
-          <label>
-            <span>Open in new tab</span>
-            <input type="checkbox" id="portal-window-toggle">
-            <span class="toggle-track"></span>
-            <span>New window</span>
-          </label>
-        </div>
-      </div>
-
       <!-- PROJECT START — Add your project-specific content here -->
       <!-- PROJECT END -->
 
@@ -2584,140 +2556,6 @@ function doGet(e) {
             }
           }, 2000);
         }
-
-        // =============================================
-        // PORTAL — Application Registry (with per-user access data)
-        // =============================================
-        var USER_APP_ACCESS = ${userAppAccessJson};
-        var ACL_CONFIGURED = ${Object.keys(userAppAccess).length > 0 ? 'true' : 'false'};
-
-        var PORTAL_APPS = [
-          { name: 'Global Access Control List', url: 'globalacl.html', icon: '🛡', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
-          { name: 'Test Auth 1', url: 'testauth1.html', icon: '🔐', description: 'Authentication testing environment with full security features.', requiresAuth: true },
-          { name: 'GAS Project Creator', url: 'gas-project-creator.html', icon: '⚙️', description: 'Create and configure new Google Apps Script projects.', requiresAuth: false }
-        ];
-
-        // Compute userHasAccess for each app
-        PORTAL_APPS.forEach(function(app) {
-          if (!app.requiresAuth) {
-            app.userHasAccess = true;
-          } else if (!ACL_CONFIGURED) {
-            app.userHasAccess = true;
-          } else {
-            var pageName = app.url.replace(/\\.html$/, '').toLowerCase();
-            app.userHasAccess = USER_APP_ACCESS[pageName] === true;
-          }
-        });
-
-        // =============================================
-        // PORTAL — Open Mode Toggle
-        // =============================================
-        var PORTAL_OPEN_MODE_KEY = 'portal_open_mode';
-        function getOpenInWindow() {
-          try { return localStorage.getItem(PORTAL_OPEN_MODE_KEY) === 'window'; } catch(e) { return false; }
-        }
-        function setOpenMode(val) {
-          try { localStorage.setItem(PORTAL_OPEN_MODE_KEY, val); } catch(e) {}
-        }
-        (function() {
-          var toggle = document.getElementById('portal-window-toggle');
-          toggle.checked = getOpenInWindow();
-          toggle.addEventListener('change', function() {
-            setOpenMode(this.checked ? 'window' : 'tab');
-          });
-        })();
-
-        // =============================================
-        // PORTAL — Access Filter Toggle
-        // =============================================
-        var PORTAL_ACCESS_FILTER_KEY = 'portal_access_filter';
-        function getAccessFilterOn() {
-          try {
-            var val = localStorage.getItem(PORTAL_ACCESS_FILTER_KEY);
-            return val === null ? true : val === '1';
-          } catch(e) { return true; }
-        }
-        function setAccessFilter(on) {
-          try { localStorage.setItem(PORTAL_ACCESS_FILTER_KEY, on ? '1' : '0'); } catch(e) {}
-        }
-
-        function filterApps() {
-          var filterOn = getAccessFilterOn();
-          var authCards = document.querySelectorAll('#portal-apps-auth .portal-app-card');
-          var visibleCount = 0;
-          for (var i = 0; i < authCards.length; i++) {
-            var hasAccess = authCards[i].getAttribute('data-has-access') === 'true';
-            if (filterOn && !hasAccess) {
-              authCards[i].style.display = 'none';
-            } else {
-              authCards[i].style.display = '';
-              authCards[i].className = 'portal-app-card' + (!hasAccess ? ' no-access' : '');
-              visibleCount++;
-            }
-          }
-          var emptyMsg = document.getElementById('portal-empty-auth');
-          emptyMsg.style.display = visibleCount === 0 ? '' : 'none';
-        }
-
-        (function() {
-          var toggle = document.getElementById('portal-access-toggle');
-          toggle.checked = !getAccessFilterOn();
-          toggle.addEventListener('change', function() {
-            setAccessFilter(!this.checked);
-            filterApps();
-          });
-        })();
-
-        // =============================================
-        // PORTAL — Render App Cards (sectioned)
-        // =============================================
-        (function() {
-          var authContainer = document.getElementById('portal-apps-auth');
-          var publicContainer = document.getElementById('portal-apps-public');
-          var embedUrl = '${escapeJs(EMBED_PAGE_URL)}';
-          var baseDir = embedUrl.substring(0, embedUrl.lastIndexOf('/') + 1);
-
-          PORTAL_APPS.sort(function(a, b) {
-            if (a.userHasAccess === b.userHasAccess) return 0;
-            return a.userHasAccess ? -1 : 1;
-          });
-
-          PORTAL_APPS.forEach(function(app) {
-            var card = document.createElement('a');
-            card.className = 'portal-app-card' + (!app.userHasAccess ? ' no-access' : '');
-            card.setAttribute('data-has-access', app.userHasAccess ? 'true' : 'false');
-            var targetUrl = baseDir + app.url;
-            card.href = targetUrl;
-            card.addEventListener('click', function(e) {
-              if (getOpenInWindow()) {
-                e.preventDefault();
-                var w = Math.round(screen.width * 0.8);
-                var h = Math.round(screen.height * 0.8);
-                var left = Math.round((screen.width - w) / 2);
-                var top = Math.round((screen.height - h) / 2);
-                window.open(this.href, '_blank',
-                  'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top
-                  + ',noopener,noreferrer');
-              }
-            });
-            card.target = '_blank';
-            card.rel = 'noopener noreferrer';
-
-            card.innerHTML = '<span class="app-icon">' + app.icon + '</span>'
-              + '<span class="app-name">' + app.name + '</span>'
-              + '<span class="app-desc">' + app.description + '</span>'
-              + '<span class="app-status' + (app.requiresAuth ? ' connected' : '') + '">'
-              + (app.requiresAuth ? '🔒 Auth-enabled' : '🌐 Public') + '</span>';
-
-            if (app.requiresAuth) {
-              authContainer.appendChild(card);
-            } else {
-              publicContainer.appendChild(card);
-            }
-          });
-
-          filterApps();
-        })();
 
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';

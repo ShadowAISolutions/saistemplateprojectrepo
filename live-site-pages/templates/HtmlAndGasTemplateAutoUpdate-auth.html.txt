@@ -1704,8 +1704,18 @@
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-nonce-ready': true, 'gas-nonce-result': true };
+      // Strip liveData for HMAC verification — nested objects cause JSON.stringify mismatches
+      // between GAS V8 and browser engines. Build a stripped copy so other listeners can still read it.
+      var _hmacData = data;
+      if (data.liveData !== undefined) {
+        _hmacData = {};
+        var _dk = Object.keys(data);
+        for (var _di = 0; _di < _dk.length; _di++) {
+          if (_dk[_di] !== 'liveData') _hmacData[_dk[_di]] = data[_dk[_di]];
+        }
+      }
       if (_hmacKey && !_SIG_EXEMPT[data.type]) {
-        _verifyMessageSignature(data).then(function(valid) {
+        _verifyMessageSignature(_hmacData).then(function(valid) {
           if (!valid) {
             _reportSecurityEvent('invalid_signature', {
               type: data.type,

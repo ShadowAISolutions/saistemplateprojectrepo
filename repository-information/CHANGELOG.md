@@ -3,7 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
+
+## [v09.19r] — 2026-04-06 12:43:26 PM EST
+
+> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+
+### Changed
+- Removed ~160 lines of programportal-specific code (portal header, app cards, toggles, registry) that had leaked into the GAS auth template (`gas-minimal-auth-template-code.js.txt`)
+- Added HMAC liveData stripping to HTML auth template and all three auth pages — prevents JSON.stringify mismatches between GAS V8 and browser engines for messages containing nested objects
+- Normalized testauth1.html HMAC comment to match template (removed PROJECT marker since this is now standard template code)
+
+#### `testauth1.html` — v03.94w
+##### Changed
+- Improved message signature verification for nested data
+
+#### `globalacl.html` — v01.84w
+##### Changed
+- Improved message signature verification for nested data
+
+#### `programportal.html` — v01.90w
+##### Changed
+- Improved message signature verification for nested data
 
 ## [v09.18r] — 2026-04-06 12:03:46 PM EST
 

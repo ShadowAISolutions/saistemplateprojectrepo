@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v03.94w] — 2026-04-06 12:43:26 PM EST — v09.19r
+
+### Changed
+- Improved message signature verification for nested data
 
 ## [v03.93w] — 2026-04-05 11:39:42 PM EST — v09.03r
 
