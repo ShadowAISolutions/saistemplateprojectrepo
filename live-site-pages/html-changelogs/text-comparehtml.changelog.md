@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [text-comparehtml.changelog-archive.md](text-comparehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08w] — 2026-04-06 08:10:11 AM EST — v09.04r
+
+### Changed
+- Panel labels updated from "Original" / "Changed" to "Text A" / "Text B" for neutral comparison
+- Stats labels updated from "Added" / "Removed" to "Only in B" / "Only in A"
+- Diff column headers updated to show "unique to A" / "unique to B" instead of "removed" / "added"
 
 ## [v01.07w] — 2026-04-05 10:23:46 PM EST — v09.01r
 

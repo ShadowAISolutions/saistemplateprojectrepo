@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.07w">
+  <meta name="build-version" content="v01.08w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -260,12 +260,12 @@
 
     <div class="input-section">
       <div class="input-col">
-        <label>Original Text <span class="char-count" id="count-left">0 chars, 0 lines</span></label>
-        <textarea id="text-left" placeholder="Paste original text here..."></textarea>
+        <label>Text A <span class="char-count" id="count-left">0 chars, 0 lines</span></label>
+        <textarea id="text-left" placeholder="Paste text A here..."></textarea>
       </div>
       <div class="input-col">
-        <label>Changed Text <span class="char-count" id="count-right">0 chars, 0 lines</span></label>
-        <textarea id="text-right" placeholder="Paste changed text here..."></textarea>
+        <label>Text B <span class="char-count" id="count-right">0 chars, 0 lines</span></label>
+        <textarea id="text-right" placeholder="Paste text B here..."></textarea>
       </div>
     </div>
 
@@ -296,8 +296,8 @@
     <div id="stats-bar" class="stats-bar" style="display:none;">
       <div class="stat stat-total"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total Lines</div></div>
       <div class="stat stat-equal"><div class="stat-value" id="stat-equal">0</div><div class="stat-label">Equal</div></div>
-      <div class="stat stat-added"><div class="stat-value" id="stat-added">0</div><div class="stat-label">Added</div></div>
-      <div class="stat stat-removed"><div class="stat-value" id="stat-removed">0</div><div class="stat-label">Removed</div></div>
+      <div class="stat stat-added"><div class="stat-value" id="stat-added">0</div><div class="stat-label">Only in B</div></div>
+      <div class="stat stat-removed"><div class="stat-value" id="stat-removed">0</div><div class="stat-label">Only in A</div></div>
       <div class="stat stat-modified"><div class="stat-value" id="stat-modified">0</div><div class="stat-label">Modified</div></div>
     </div>
 
@@ -317,11 +317,11 @@
       <div id="diff-output" style="display:none;">
         <div class="diff-view" id="diff-view">
           <div class="diff-col">
-            <div class="diff-col-header header-left">Original (red = removed)</div>
+            <div class="diff-col-header header-left">Text A (red = only in A)</div>
             <div id="diff-left"></div>
           </div>
           <div class="diff-col">
-            <div class="diff-col-header header-right">Changed (blue = added)</div>
+            <div class="diff-col-header header-right">Text B (blue = only in B)</div>
             <div id="diff-right"></div>
           </div>
         </div>
@@ -865,7 +865,7 @@
         output += '# Differences below are in TEMPLATE/shared foundational code only.\n';
         output += '# If no differences appear, the template code is identical.\n\n';
       }
-      output += '--- Original\n+++ Changed\n';
+      output += '--- Text A\n+++ Text B\n';
       for (var h = 0; h < hunks.length; h++) {
         var hunk = hunks[h];
         var lStart = null, lCount = 0, rStart = null, rCount = 0;

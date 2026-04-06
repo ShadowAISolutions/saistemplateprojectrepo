@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 40/100`
+`Sections: 41/100`
 
 ## [Unreleased]
+
+## [v09.04r] — 2026-04-06 08:10:11 AM EST
+
+> **Prompt:** "review the text-compare.html we made, in the screenshot you can see the testauth1 on the left and the globalacl on the right. it doesnt really make sense for the left to be original and the right to be changed, it should be able to show me the differences between the two, and it doesnt make sense that i dont see the project specific code for the globalacl, is the project specific code in the right location in the code?"
+
+### Changed
+- Updated text-compare.html labeling from directional "Original"/"Changed" to neutral "Text A"/"Text B" terminology — the tool now works as a peer comparison tool rather than implying one side is the source of truth
+- Updated stats labels from "Added"/"Removed" to "Only in B"/"Only in A" for neutral language
+- Updated diff headers from "Original (red = removed)"/"Changed (blue = added)" to "Text A (red = only in A)"/"Text B (blue = only in B)"
+- Updated unified diff output header from "--- Original/+++ Changed" to "--- Text A/+++ Text B"
+
+#### `text-compare.html` — v01.08w
+##### Changed
+- Changed panel labels from "Original Text" / "Changed Text" to "Text A" / "Text B"
+- Changed diff headers, stats labels, and copy-diff output to use neutral comparison language
 
 ## [v09.03r] — 2026-04-05 11:39:42 PM EST
 
