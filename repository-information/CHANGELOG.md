@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 43/100`
+`Sections: 44/100`
 
 ## [Unreleased]
+
+## [v09.07r] — 2026-04-06 09:08:47 AM EST
+
+> **Prompt:** "get it to 100% addressing whitespace and code ordering. it should in theory also match the globalacl at the point"
+
+### Changed
+- Achieved 100% non-project template code unification between programportal.html, testauth1.html, and globalacl.html
+
+#### `programportal.html` — v01.89w
+
+##### Fixed
+- Added missing blank line before SSO indicator comment in startCountdownTimers
+- Moved SSO indicator click handler from before "Use Here" to after page load IIFE (matching testauth1/globalacl position)
+- Unified SSO indicator click handler comment text ("when user clicks 'retry'" matching testauth1/globalacl)
 
 ## [v09.06r] — 2026-04-06 08:56:31 AM EST
 
