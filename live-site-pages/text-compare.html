@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -302,9 +302,12 @@
     </div>
 
     <div id="copy-diff-controls" class="copy-diff-controls" style="display:none;">
+      <label style="font-size:13px;color:#888;display:flex;align-items:center;gap:6px;cursor:pointer;" title="Automatically adjusts context per change — shows up to 10 surrounding lines, expanding to fill gaps between nearby changes">
+        <input type="checkbox" id="chk-smart-context" checked> Smart context
+      </label>
       <label style="font-size:13px;color:#888;display:flex;align-items:center;gap:6px;">
         Context lines:
-        <input type="number" id="context-lines" class="context-lines-input" value="3" min="0" max="50">
+        <input type="number" id="context-lines" class="context-lines-input" value="auto" min="0" max="50" readonly title="Smart context is active — this shows the auto-computed value" style="opacity:0.6">
       </label>
       <button class="btn btn-copy-diff" id="btn-copy-diff" title="Copy unified diff to clipboard for AI consumption">Copy Context Diff</button>
     </div>
@@ -771,7 +774,8 @@
     // --- Generate unified diff for clipboard ---
     function generateContextDiff() {
       if (!_lastDiffOps || _lastDiffOps.length === 0) return '';
-      var contextN = parseInt(document.getElementById('context-lines').value) || 3;
+      var smartContext = document.getElementById('chk-smart-context').checked;
+      var MAX_SMART = 10;
       var ops = _lastDiffOps;
 
       // Find indices of all non-equal ops
@@ -783,20 +787,60 @@
 
       // Build hunk ranges with context
       var hunks = [];
-      var hStart = Math.max(0, changeIndices[0] - contextN);
-      var hEnd = Math.min(ops.length - 1, changeIndices[0] + contextN);
-      for (var c = 1; c < changeIndices.length; c++) {
-        var nStart = Math.max(0, changeIndices[c] - contextN);
-        var nEnd = Math.min(ops.length - 1, changeIndices[c] + contextN);
-        if (nStart <= hEnd + 1) {
-          hEnd = nEnd;
-        } else {
-          hunks.push({ start: hStart, end: hEnd });
-          hStart = nStart;
-          hEnd = nEnd;
+      if (smartContext) {
+        // Smart: expand each change to fill gaps between neighbors, capped at MAX_SMART
+        // Find contiguous change groups first
+        var groups = [];
+        var gStart = changeIndices[0], gEnd = changeIndices[0];
+        for (var c = 1; c < changeIndices.length; c++) {
+          if (changeIndices[c] === gEnd + 1) {
+            gEnd = changeIndices[c];
+          } else {
+            groups.push({ first: gStart, last: gEnd });
+            gStart = changeIndices[c];
+            gEnd = changeIndices[c];
+          }
         }
+        groups.push({ first: gStart, last: gEnd });
+
+        // For each group, compute context: expand toward neighbors up to MAX_SMART
+        for (var g = 0; g < groups.length; g++) {
+          var before = MAX_SMART;
+          var after = MAX_SMART;
+          // If previous group is close, expand to fill the gap (merge naturally)
+          if (g > 0) {
+            var gap = groups[g].first - groups[g - 1].last - 1;
+            if (gap <= MAX_SMART * 2) before = gap; // show all lines between groups
+          }
+          var hStart = Math.max(0, groups[g].first - before);
+          var hEnd = Math.min(ops.length - 1, groups[g].last + after);
+          // Merge with previous hunk if overlapping
+          if (hunks.length > 0 && hStart <= hunks[hunks.length - 1].end + 1) {
+            hunks[hunks.length - 1].end = hEnd;
+          } else {
+            hunks.push({ start: hStart, end: hEnd });
+          }
+        }
+        // Show the effective context value in the input so the user can see the auto setting
+        document.getElementById('context-lines').value = MAX_SMART;
+      } else {
+        // Fixed context lines
+        var contextN = parseInt(document.getElementById('context-lines').value) || 3;
+        var hStart = Math.max(0, changeIndices[0] - contextN);
+        var hEnd = Math.min(ops.length - 1, changeIndices[0] + contextN);
+        for (var c = 1; c < changeIndices.length; c++) {
+          var nStart = Math.max(0, changeIndices[c] - contextN);
+          var nEnd = Math.min(ops.length - 1, changeIndices[c] + contextN);
+          if (nStart <= hEnd + 1) {
+            hEnd = nEnd;
+          } else {
+            hunks.push({ start: hStart, end: hEnd });
+            hStart = nStart;
+            hEnd = nEnd;
+          }
+        }
+        hunks.push({ start: hStart, end: hEnd });
       }
-      hunks.push({ start: hStart, end: hEnd });
 
       // Emit unified diff output
       var output = '';
@@ -868,6 +912,20 @@
     }
     document.getElementById('text-left').addEventListener('input', updateCounts);
     document.getElementById('text-right').addEventListener('input', updateCounts);
+
+    // Toggle smart context — switch input between readonly (auto) and editable (manual)
+    document.getElementById('chk-smart-context').addEventListener('change', function() {
+      var input = document.getElementById('context-lines');
+      if (this.checked) {
+        input.readOnly = true;
+        input.title = 'Smart context is active — this shows the auto-computed value';
+        input.style.opacity = '0.6';
+      } else {
+        input.readOnly = false;
+        input.title = '';
+        input.style.opacity = '1';
+      }
+    });
 
     // Toggle hiding equal lines in the visual diff
     document.getElementById('chk-hide-equal').addEventListener('change', function() {

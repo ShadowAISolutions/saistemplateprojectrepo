@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 35/100`
+`Sections: 36/100`
 
 ## [Unreleased]
+
+## [v08.99r] — 2026-04-05 10:13:25 PM EST
+
+> **Prompt:** "yes implement that"
+
+### Changed
+- Replaced fixed context lines input with "Smart context" auto mode on text-compare tool — dynamically expands context per change hunk (up to 10 lines), filling gaps between nearby changes automatically
+- Context lines input now shows the auto-computed value when smart mode is active (read-only, dimmed), and becomes editable when smart mode is unchecked
+
+#### `text-compare.html` — v01.05w
+
+##### Changed
+- Context lines now auto-computed when "Smart context" is checked — shows the effective value in the input so you can see what's being used
+- Unchecking "Smart context" makes the input editable for manual override
 
 ## [v08.98r] — 2026-04-05 10:02:05 PM EST
 
