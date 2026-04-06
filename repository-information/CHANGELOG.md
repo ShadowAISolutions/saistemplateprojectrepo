@@ -3,7 +3,15 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
+
+## [v09.22r] — 2026-04-06 01:09:51 PM EST
+
+> **Prompt:** "continue"
+
+### Changed
+- Added version display (`<h2 id="version">`), user-email display (`<div id="user-email">`), and gas-layer-toggle button + JS to minimal-auth GAS template — these elements were present in all production auth scripts but missing from the minimal template
+- Added `#user-email` CSS to minimal-auth GAS template to match test-auth template
 
 ## [v09.21r] — 2026-04-06 01:03:28 PM EST
 
