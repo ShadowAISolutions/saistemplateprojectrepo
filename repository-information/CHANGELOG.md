@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 33/100`
+`Sections: 34/100`
 
 ## [Unreleased]
+
+## [v08.97r] — 2026-04-05 09:48:10 PM EST
+
+> **Prompt:** "can you have it also have a toggle to hide all rows that are identical on both so i can see just the differences"
+
+### Added
+- "Hide equal lines" toggle on text-compare tool that hides all identical rows in the side-by-side diff view, showing only differences
+
+#### `text-compare.html` — v01.03w
+
+##### Added
+- "Hide equal lines" checkbox that filters the visual diff to show only added, removed, and modified lines
 
 ## [v08.96r] — 2026-04-05 09:44:11 PM EST
 

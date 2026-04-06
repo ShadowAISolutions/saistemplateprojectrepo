@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.02w">
+  <meta name="build-version" content="v01.03w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -218,6 +218,8 @@
       width: 50px; background: #1a1a2e; color: #e0e0e0; border: 1px solid #444;
       border-radius: 6px; padding: 6px 8px; font-size: 13px; text-align: center;
     }
+    .diff-view.hide-equal .diff-line.equal { display: none; }
+    .diff-view.hide-equal .diff-line.empty { display: none; }
     @media (max-width: 768px) {
       .input-section { flex-direction: column; }
       .diff-view { flex-direction: column; }
@@ -275,6 +277,9 @@
       </label>
       <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Strip PROJECT blocks before comparing — only compare TEMPLATE (shared/foundational) code">
         <input type="checkbox" id="chk-template-only"> Template only
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Hide identical lines — show only differences">
+        <input type="checkbox" id="chk-hide-equal"> Hide equal lines
       </label>
     </div>
 
@@ -840,6 +845,8 @@
       document.getElementById('no-results').innerHTML = 'Enter text in both fields and click Compare';
       _lastDiffOps = null;
       _lastTemplateOnly = false;
+      document.getElementById('chk-hide-equal').checked = false;
+      var dv = document.getElementById('diff-view'); if (dv) dv.classList.remove('hide-equal');
       updateCounts();
     });
 
@@ -851,6 +858,15 @@
     }
     document.getElementById('text-left').addEventListener('input', updateCounts);
     document.getElementById('text-right').addEventListener('input', updateCounts);
+
+    // Toggle hiding equal lines in the visual diff
+    document.getElementById('chk-hide-equal').addEventListener('change', function() {
+      var diffView = document.getElementById('diff-view');
+      if (diffView) {
+        if (this.checked) { diffView.classList.add('hide-equal'); }
+        else { diffView.classList.remove('hide-equal'); }
+      }
+    });
 
     // Copy context diff to clipboard
     document.getElementById('btn-copy-diff').addEventListener('click', function() {
