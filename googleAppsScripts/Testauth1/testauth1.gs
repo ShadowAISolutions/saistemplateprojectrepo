@@ -1,4 +1,4 @@
-var VERSION = "v02.55g";
+var VERSION = "v02.56g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2204,7 +2204,6 @@ function doGet(e) {
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
-
   // PROJECT START — testauth1 data poll action handler
   // Data poll action — validates session token then returns cached data inline.
   // Token is passed as URL parameter (not postMessage — Google's nested iframe
@@ -2724,7 +2723,6 @@ function doGet(e) {
   // PROJECT: Admin role detection for conditional admin UI
   var isAdmin = (session.role === 'admin');
   var sessionTokenForAdmin = isAdmin ? sessionToken : '';
-
   // PROJECT START — testauth1 pre-load cached data for live data table
   var initialData = getCachedData();
   var initialDataJSON = initialData ? JSON.stringify(initialData) : 'null';
@@ -4174,6 +4172,7 @@ function doGet(e) {
           }
         })();
         ` : ''}
+
 
       </script>
     </body>
@@ -7878,6 +7877,7 @@ function getRetentionRelevantDate(headers, row) {
   }
   return creationDate || lastInEffectDate || new Date(0);
 }
+
 
 // ══════════════
 // AUTH END

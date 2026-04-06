@@ -1,4 +1,4 @@
-var VERSION = "v01.57g";
+var VERSION = "v01.58g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3051,7 +3051,6 @@ function doGet(e) {
             }
           }, 2000);
         }
-
         // PROJECT START — programportal application registry and toggles
         // =============================================
         // PORTAL — Application Registry (with per-user access data)

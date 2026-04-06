@@ -1,4 +1,4 @@
-var VERSION = "v01.49g";
+var VERSION = "v01.50g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2824,7 +2824,6 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget }))
       .setMimeType(ContentService.MimeType.JSON);
   }
-
   // PROJECT START — globalacl global sessions admin panel
   // Global sessions admin panel — returns page that communicates with listGlobalSessions
   if (action === 'adminGlobalSessions') {
@@ -3546,6 +3545,7 @@ function doGet(e) {
       </div><!-- end #acl-main -->
       <!-- PROJECT END -->
 
+
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.
         // Only runs on the ?session= path. Skipped on the ?page_nonce= path because
@@ -3596,7 +3596,6 @@ function doGet(e) {
         //     _ipXhr.send();
         //   } catch(e) { _clientIp = 'unknown'; }
         // }
-
         // PROJECT START — globalacl custom confirm dialog
         // Custom confirm dialog — returns a Promise that resolves true/false
         var _confirmResolve = null;
@@ -4962,6 +4961,7 @@ function doGet(e) {
           }
         })();
         ` : ''}
+
 
       </script>
     </body>

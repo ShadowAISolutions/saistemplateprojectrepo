@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
+
+## [v01.50g] — 2026-04-06 01:27:02 PM EST — v09.23r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.49g] — 2026-04-06 12:55:06 PM EST — v09.20r
 

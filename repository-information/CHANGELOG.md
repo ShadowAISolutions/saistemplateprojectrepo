@@ -3,7 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 59/100`
+`Sections: 60/100`
+
+## [v09.23r] — 2026-04-06 01:27:02 PM EST
+
+> **Prompt:** "the ~4 cosmetic blank line diffs around PROJECT markers should also match"
+
+### Changed
+- Fixed all remaining blank line inconsistencies around PROJECT markers in testauth1.gs, globalacl.gs, and programportal.gs — stripped non-project code now has zero blank-line diffs against the template
+
+#### `testauth1.gs` — v02.56g
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.50g
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.58g
+##### Changed
+- Minor internal improvements
 
 ## [v09.22r] — 2026-04-06 01:09:51 PM EST
 
