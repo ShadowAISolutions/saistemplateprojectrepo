@@ -467,6 +467,7 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
+  <!-- YOUR PAGE CONTENT HERE -->
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -3785,7 +3786,7 @@
 // ══════════════
 
 // ══════════════
-// PROJECT START
+// PROJECT START — Add your project-specific JavaScript here
 // ══════════════
 
 
