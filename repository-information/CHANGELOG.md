@@ -3,7 +3,48 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
+
+## [v09.25r] — 2026-04-06 03:36:19 PM EST
+
+> **Prompt:** "can you make the gas cleanly separated also, removing orphan components, and considering all components in all projects to be considered template code. so address every issue you mentioned considering"
+
+### Changed
+- Reclassified shared template code: removed `PROJECT: ` prefix from admin role detection, admin panel styles, admin badge, admin panel logic, and sign-in/sign-out checklist markers across all GAS and HTML files — these are template code, not project code
+- Fixed orphan `// PROJECT END` in GAS test-auth template (had 3 ENDs vs 2 STARTs, now 2/2)
+- Wrapped multi-line project-specific code blocks in testauth1.html with proper `// PROJECT START/END` pairs (message types, signature-exempt types, sandbox capture, auth context send, panel cooldown)
+- Wrapped globalacl.html message type whitelist with `// PROJECT START/END` pair
+- Applied same admin marker reclassification to `gas-minimal-auth-template-code.js.txt`
+
+#### `testauth1.html` — v03.96w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.86w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.92w
+
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.57g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.51g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.59g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.24r] — 2026-04-06 01:50:46 PM EST
 

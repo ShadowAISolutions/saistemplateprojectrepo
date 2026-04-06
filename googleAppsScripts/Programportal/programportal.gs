@@ -1,4 +1,4 @@
-var VERSION = "v01.58g";
+var VERSION = "v01.59g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2677,7 +2677,7 @@ function doGet(e) {
   var initialAnnouncementsJSON = initialAnnouncements ? JSON.stringify(initialAnnouncements) : 'null';
   // PROJECT END
 
-  // PROJECT: Admin role detection for conditional admin UI
+  // Admin role detection for conditional admin UI
   var isAdmin = (session.role === 'admin');
   var sessionTokenForAdmin = isAdmin ? sessionToken : '';
 
@@ -2879,7 +2879,7 @@ function doGet(e) {
         .ann-poll-status { margin-left: auto; }
         /* PROJECT END */
         ${isAdmin ? `
-        /* PROJECT: Admin panel styles */
+        /* Admin panel styles */
         #admin-badge { position: fixed; top: 7px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
         #admin-dropdown-gas { display: none; position: fixed; top: 31px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
@@ -2943,7 +2943,7 @@ function doGet(e) {
         <div class="portal-user-info">${escapeHtml(session.displayName || session.email)} &mdash; ${escapeHtml(session.email)}</div>
       </div>
       ${isAdmin ? `
-      <!-- PROJECT: Admin badge and panel (only rendered for admin users) -->
+      <!-- Admin badge and panel (only rendered for admin users) -->
       <div id="admin-badge" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">ADMIN &#x25BE;</div>
       <div id="admin-dropdown-gas">
         <button data-admin-panel="sessions">Sessions</button>
@@ -3778,7 +3778,7 @@ function doGet(e) {
           };
         })();
 
-        // PROJECT: Admin panel logic (only included for admin users)
+        // Admin panel logic (only included for admin users)
         ${isAdmin ? `
         (function() {
           var _adminToken = '${escapeJs(sessionTokenForAdmin)}';

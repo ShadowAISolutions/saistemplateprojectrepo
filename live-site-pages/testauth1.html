@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.95w">
+  <meta name="build-version" content="v03.96w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -196,7 +196,7 @@
       animation: auth-spin 0.8s linear infinite;
     }
     @keyframes auth-spin { to { transform: rotate(360deg); } }
-    /* PROJECT: Sign-in stage checklist */
+    /* Sign-in stage checklist */
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -207,19 +207,19 @@
     .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     .signin-checklist .stage-time-total { font-style: italic; color: #aaa; }
-    /* PROJECT: Sign-in sub-steps */
+    /* Sign-in sub-steps */
     .signin-checklist .sub-steps {
       list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
     }
     .signin-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signin-checklist .sub-steps .stage-time { font-size: 10px; }
-    /* PROJECT: Sign-out sub-steps */
+    /* Sign-out sub-steps */
     .signout-checklist .sub-steps {
       list-style: none; padding: 0 0 0 26px; margin: 2px 0 0 0; display: block; order: 2; flex-basis: 100%;
     }
     .signout-checklist .sub-steps li { font-size: 13px; padding: 2px 0; }
     .signout-checklist .sub-steps .stage-time { font-size: 10px; }
-    /* PROJECT: Sign-out stage checklist */
+    /* Sign-out stage checklist */
     .signout-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signout-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signout-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
@@ -383,7 +383,7 @@
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Signing in&hellip;</h2>
       <div class="auth-spinner"></div>
-      <!-- PROJECT: Sign-in stage checklist -->
+      <!-- Sign-in stage checklist -->
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
         <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server
@@ -409,7 +409,7 @@
   <div id="signing-out-wall">
     <h2>Signing out&hellip;</h2>
     <div class="auth-spinner"></div>
-    <!-- PROJECT: Sign-out stage checklist -->
+    <!-- Sign-out stage checklist -->
     <ul id="signout-checklist" class="signout-checklist">
       <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
       <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
@@ -1443,7 +1443,7 @@
       'gas-session-invalid': true,
       'gas-nonce-ready': true,
       'gas-nonce-result': true,
-      // PROJECT: testauth1-specific message types
+      // PROJECT START — testauth1-specific message types
       'gas-admin-sessions-ready': true,
       'gas-admin-sessions-list': true,
       'gas-admin-sessions-error': true,
@@ -1459,6 +1459,7 @@
       'phase-a-disagreement-result': true,
       'phase-a-error': true,
       'frame-handshake-challenge': true
+      // PROJECT END
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1738,7 +1739,7 @@
         'gas-heartbeat-ready': true, 'gas-heartbeat-expired': true, 'gas-heartbeat-error': true,
         'gas-signout-ready': true, 'gas-security-event-ready': true,
         'gas-nonce-ready': true, 'gas-nonce-result': true,
-        // PROJECT: testauth1-specific signature-exempt message types
+        // PROJECT START — testauth1-specific signature-exempt message types
         'gas-admin-sessions-ready': true, 'gas-admin-sessions-list': true,
         'gas-admin-sessions-error': true, 'gas-admin-signout-result': true,
         'gas-admin-signout-error': true,
@@ -1749,6 +1750,7 @@
         'phase-a-access-extension-result': true, 'phase-a-amendment-extension-result': true,
         'phase-a-denial-notice-result': true, 'phase-a-ehr-disclosures-result': true, 'phase-a-error': true,
         'live-data': true, 'gas-write-error': true };
+        // PROJECT END
       // Strip liveData for HMAC verification — nested objects cause JSON.stringify mismatches
       // between GAS V8 and browser engines. Build a stripped copy so other listeners can still read it.
       var _hmacData = data;
@@ -1980,11 +1982,12 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
-        // PROJECT: Capture the sandbox frame's WindowProxy so we can send messages back to it.
+        // PROJECT START — Capture the sandbox frame's WindowProxy so we can send messages back to it.
         // GAS double-iframe: gasApp.contentWindow is the outer shell (script.google.com),
         // but the listener runs in the inner sandbox (googleusercontent.com).
         // event.source from gas-auth-ok IS the sandbox — store it for write-cell/add-row.
-        if (event.source) _gasSandboxSource = event.source; // PROJECT: testauth1 live data sandbox ref
+        if (event.source) _gasSandboxSource = event.source;
+        // PROJECT END
         // Phase 5: Import messageKey if delivered via gas-auth-ok (the ?session path
         // includes it). This handles "Use Here" reclaim, tab duplicate, and page refresh
         // where gas-session-created is not sent. Only import if no key is set yet.
@@ -2448,7 +2451,7 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = 'none';
       document.getElementById('auth-wall-signing-in').style.display = '';
-      // PROJECT: Reset checklist — show checklist, hide SSO subtitle, clear timers
+      // Reset checklist — show checklist, hide SSO subtitle, clear timers
       _signInStartTime = Date.now();
       _stageStartTimes = {};
       _subStepStartTimes = {};
@@ -2483,7 +2486,7 @@
       }
     }
 
-    // PROJECT: Sign-in stage checklist logic
+    // Sign-in stage checklist logic
     var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
     var _stageStartTimes = {};
     var _stageMap = {
@@ -2562,7 +2565,7 @@
       }
     }
 
-    // PROJECT: Sign-in sub-step tracking
+    // Sign-in sub-step tracking
     var _subStepGroups = {
       'sub-steps-verifying': ['sub-connecting', 'sub-sending', 'sub-processing'],
       'sub-steps-loading': ['sub-downloading', 'sub-starting'],
@@ -2694,7 +2697,7 @@
       if (subSending) subSending.style.display = 'none';
     }
 
-    // PROJECT: Sign-out stage checklist logic
+    // Sign-out stage checklist logic
     var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
     var _soStageStartTimes = {};
 
@@ -2879,7 +2882,7 @@
       // data-requires-role attributes based on session storage.
       applyUIGating();
 
-      // PROJECT: Send auth context to GAS UI so it can activate the Live Data app
+      // PROJECT START — Send auth context to GAS UI so it can activate the Live Data app
       if (_gasSandboxSource) {
         var session = loadSession();
         _gasSandboxSource.postMessage({
@@ -2889,6 +2892,7 @@
           token: session.token
         }, '*');
       }
+      // PROJECT END
     }
 
     /**
@@ -3344,7 +3348,7 @@
       }
     }
 
-    // PROJECT: Panel cooldown — prevents rapid panel switching
+    // PROJECT START — Panel cooldown — prevents rapid panel switching
     var _panelCooldownUntil = 0;
     var _PANEL_COOLDOWN_MS = 1000;
     var _panelBtnIds = [];
@@ -3369,6 +3373,7 @@
         _panelCooldownTimer = null;
       }, _PANEL_COOLDOWN_MS);
     }
+    // PROJECT END
 
     // =============================================
     // AUTH — Sign Out
@@ -3378,7 +3383,7 @@
       _authState = 'signing-out';
       opts = opts || {};
       var broadcastSSO = opts.broadcastSSO !== false; // default true for backwards compat
-      // PROJECT: Reset and start sign-out checklist
+      // Reset and start sign-out checklist
       _resetSignOutChecklist();
       _updateSignOutStage('so-stage-clearing');
       var session = loadSession();
@@ -3395,14 +3400,14 @@
       document.getElementById('tab-takeover-wall').style.display = 'none';
       _tabSurrendered = false;
 
-      // PROJECT: Advance to tabs stage
+      // Advance to tabs stage
       _updateSignOutStage('so-stage-tabs');
       // Notify other tabs (sessionStorage/hipaa mode — BroadcastChannel)
       // For localStorage/standard mode, cross-tab sync happens automatically via the storage event.
       if (_signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out', tabId: _tabId });
       }
-      // PROJECT: Advance to connected apps stage
+      // Advance to connected apps stage
       _updateSignOutStage('so-stage-apps');
       // SSO: broadcast sign-out to other apps (not for session expiry — that's page-local)
       // Session expiry is page-local — each page has its own independent GAS session and timeout.
@@ -3441,7 +3446,7 @@
         // handler already showed auth wall — we still need to hide the overlay).
         if (_authState === 'signing-in' || _authState === 'reconnecting' || _authState === 'authenticated') return;
         _updateSignOutStage('so-stage-complete');
-        _completeAllSignOutStages(); // PROJECT: mark all stages done before hiding
+        _completeAllSignOutStages(); // mark all stages done before hiding
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);
       }
@@ -3456,7 +3461,7 @@
         if (gasApp && baseUrl) {
           var _soToken = session.token;  // capture for closure
           var _soComplete = false;
-          // PROJECT: Advance to server invalidation stage
+          // Advance to server invalidation stage
           _updateSignOutStage('so-stage-server');
           _updateSubStep('sub-so-connecting');
           gasApp.src = baseUrl + '?action=signout';
@@ -3478,7 +3483,7 @@
             if (!event.data || event.data.type !== 'gas-signout-ready') return;
             _soHandled = true;
             window.removeEventListener('message', _soHandler);
-            // PROJECT: Advance to waiting for confirmation stage
+            // Advance to waiting for confirmation stage
             _updateSubStep('sub-so-sending');
             _updateSignOutStage('so-stage-confirm');
             event.source.postMessage({
