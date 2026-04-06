@@ -4,32 +4,39 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 10:29:41 PM EST
-**Repo version:** v09.01r
+**Date:** 2026-04-05 11:42:35 PM EST
+**Repo version:** v09.03r
 
 ### What was done
-- **v08.95r** — Added "Copy Context Diff" button to text-compare tool — generates unified diff format (`--- Original` / `+++ Changed` / `@@ ... @@` headers / `-`/`+` markers) with configurable context lines, optimized for pasting to AI for code consolidation
-- **v08.96r** — Added "Template Only" comparison mode that strips all PROJECT blocks before comparing, showing only TEMPLATE/foundational code differences between pages
-- **v08.97r** — Added "Hide equal lines" toggle that hides all identical rows in the side-by-side diff view
-- **v08.98r** — Split controls into labeled groups ("Before Compare" vs "Display"), added color-coded column headers (red = Original/removed, blue = Changed/added)
-- **v08.99r** — Replaced fixed context lines with "Smart context" auto mode — dynamically expands context per-hunk (up to 10 lines), filling gaps between nearby changes. Shows effective value in the input
-- **v09.00r** — Fixed smart context display to update immediately on compare and toggle, not just after clicking copy
-- **v09.01r** — Changed "Hide equal lines" to checked by default
+- **v09.02r** — Unified shared auth/template code between testauth1.html and globalacl.html. Major changes:
+  - Replaced fetch()-based heartbeat in testauth1 with iframe+postMessage approach (HIPAA-aligned, token never in URL)
+  - Removed `_fetchPausedForGIS` from both files (obsolete with iframe heartbeat)
+  - Added `_gasSandboxSource` to globalacl (shared auth infrastructure)
+  - Restored `loadIframeViaNonce()` in globalacl (session replay protection — documented the 7-attempt history from v05.59r–v05.70r)
+  - Separated project-specific message types from shared `_KNOWN_GAS_MESSAGES` and `_SIG_EXEMPT` using `// PROJECT:` markers
+  - Added stale session checks, `applyUIGating()`, and role badge to testauth1's `showApp()`
+  - Moved panel cooldown to PROJECT section in testauth1
+  - Added `_closeAllPanelsExcept(null)` to globalacl's `showAuthWall()`
+- **v09.03r** — Fixed remaining cosmetic differences (blank lines, comment wording) for 100% shared code parity
 
 ### Where we left off
-- All 7 pushes merged to main via auto-merge workflow
-- Text Compare tool is feature-complete with: side-by-side visual diff, Copy Context Diff export, Template Only mode, Hide equal lines (default on), Smart context, labeled control groups, color-coded headers
-- The tool is designed for comparing two page source codes (e.g. testauth1.html vs globalacl.html) to verify template code is identical and identify template drift
+- Both pushes merged to main via auto-merge workflow
+- Shared (non-project-specific) auth code is now 100% identical between testauth1.html and globalacl.html
+- All project-specific code is clearly separated in `// PROJECT:` marked blocks or inside `<!-- PROJECT START/END -->` sections
+- Remaining expected differences: build-version, title, CLIENT_ID, deployment URL (_e), timer values (test vs prod), sourceDisplayName, PROJECT sections content
 
 ### Key decisions made
-- **Smart context > fixed number** — users shouldn't need to guess a context line number. Smart mode expands each hunk to fill gaps between nearby changes (capped at 10 lines), merging adjacent hunks naturally. Manual override still available by unchecking
-- **Template Only strips PROJECT markers** — uses regex matching `PROJECT\s+START` and `PROJECT\s+END` patterns across CSS, HTML, and JS comment styles
-- **Hide equal lines default on** — when comparing code, differences are what matters. Users can uncheck to see full context
-- **Controls split into Before Compare vs Display** — whitespace/case/template-only affect the comparison algorithm (must be set before clicking Compare), while hide-equal-lines is a live CSS toggle on rendered results
+- **Timer values are project-specific** — testauth1 keeps test values (180s/300s/60s), globalacl keeps production (900/28800/300000). Not shared code
+- **Heartbeat approach: iframe-based** — globalacl's iframe+postMessage approach chosen over testauth1's fetch() approach. Token never appears in URL, no COOP conflicts with GIS popup
+- **`_fetchPausedForGIS` removed from both** — no longer needed with iframe heartbeat (its purpose was guarding fetch() calls to Google domains during GIS popup)
+- **`_gasSandboxSource` is shared auth code** — globalacl needed it added (captures GAS sandbox WindowProxy for postMessage communication)
+- **Nonce loading (`loadIframeViaNonce`) is the shared standard** — restored in globalacl. Direct `?session=` only used for initial sign-in (CacheService eventual consistency) and page-load resume. Added comprehensive documentation explaining the 7-attempt history and tradeoffs
+- **HMAC liveData stripping is testauth1 project-specific** — marked with `// PROJECT:` (only needed for live-data feature)
+- **Panel cooldown is testauth1 project-specific** — simple `_panelRegistry`/`_registerPanel`/`_closeAllPanelsExcept` is shared; cooldown system (`_panelCooldownUntil`, `_isPanelCooldownActive`, `_startPanelCooldown`) moved to PROJECT section
 
 ### Active context
-- Branch: `claude/enhance-text-compare-context-M7kqM`
-- Repo version: v09.01r
+- Branch: `claude/unify-shared-code-L2hYs`
+- Repo version: v09.03r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -37,14 +44,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-05 09:18:03 PM EST
-**Repo version:** v08.94r
+**Date:** 2026-04-05 10:29:41 PM EST
+**Repo version:** v09.01r
 
 ### What was done
-- **v08.93r** — Created new Text Compare tool page (`live-site-pages/text-compare.html`)
-- **v08.94r** — Converted "Incremental Writing" rule to a hard procedural gate with 50-line Write limit
+- **v08.95r–v09.01r** — Enhanced Text Compare tool with Copy Context Diff, Template Only mode, Hide equal lines (default on), Smart context, labeled control groups, color-coded headers
 
 ### Where we left off
-- Text Compare page created and live, Incremental Writing gate implemented
+- Text Compare tool feature-complete, all pushes merged
 
 Developed by: ShadowAISolutions
