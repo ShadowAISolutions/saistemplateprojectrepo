@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 36/100`
+`Sections: 37/100`
 
 ## [Unreleased]
+
+## [v09.00r] — 2026-04-05 10:18:48 PM EST
+
+> **Prompt:** "its only showing me the context lines used in the smart context AFTER i clicked the copy button, can it initially happen and as soon as its toggled"
+
+### Fixed
+- Smart context value now displays immediately when comparison runs and when the toggle is switched, not only after clicking Copy Context Diff
+
+#### `text-compare.html` — v01.06w
+
+##### Fixed
+- Smart context value now shows as soon as comparison results appear and updates immediately when toggling smart context on/off
 
 ## [v08.99r] — 2026-04-05 10:13:25 PM EST
 

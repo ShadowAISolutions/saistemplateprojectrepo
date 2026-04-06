@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -738,6 +738,7 @@
       document.getElementById('stat-modified').textContent = stats.modified;
       document.getElementById('stats-bar').style.display = 'flex';
       document.getElementById('copy-diff-controls').style.display = 'flex';
+      updateSmartContextDisplay();
 
       if (stats.total === stats.equal && stats.total > 0) {
         document.getElementById('diff-left').innerHTML = '';
@@ -769,6 +770,15 @@
         diffLeft.parentElement.scrollTop = diffRight.parentElement.scrollTop;
         syncing = false;
       };
+    }
+
+    // --- Update smart context display value ---
+    function updateSmartContextDisplay() {
+      var input = document.getElementById('context-lines');
+      if (!document.getElementById('chk-smart-context').checked) return;
+      if (!_lastDiffOps || _lastDiffOps.length === 0) { input.value = 'auto'; return; }
+      // Show the max smart context cap so the user knows the effective value
+      input.value = 10;
     }
 
     // --- Generate unified diff for clipboard ---
@@ -821,8 +831,6 @@
             hunks.push({ start: hStart, end: hEnd });
           }
         }
-        // Show the effective context value in the input so the user can see the auto setting
-        document.getElementById('context-lines').value = MAX_SMART;
       } else {
         // Fixed context lines
         var contextN = parseInt(document.getElementById('context-lines').value) || 3;
@@ -920,10 +928,12 @@
         input.readOnly = true;
         input.title = 'Smart context is active — this shows the auto-computed value';
         input.style.opacity = '0.6';
+        updateSmartContextDisplay();
       } else {
         input.readOnly = false;
         input.title = '';
         input.style.opacity = '1';
+        input.value = '3';
       }
     });
 

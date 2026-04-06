@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [text-comparehtml.changelog-archive.md](text-comparehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-04-05 10:18:48 PM EST — v09.00r
+
+### Fixed
+- Smart context value now shows immediately when comparison results appear, not only after clicking copy
 
 ## [v01.05w] — 2026-04-05 10:13:25 PM EST — v08.99r
 
