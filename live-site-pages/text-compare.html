@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.06w">
+  <meta name="build-version" content="v01.07w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -288,7 +288,7 @@
       <div class="control-group">
         <span class="control-group-label">Display</span>
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Hide identical lines — show only differences">
-          <input type="checkbox" id="chk-hide-equal"> Hide equal lines
+          <input type="checkbox" id="chk-hide-equal" checked> Hide equal lines
         </label>
       </div>
     </div>
@@ -756,6 +756,14 @@
         document.getElementById('diff-right').innerHTML = rightHtml;
       }
 
+      // Apply hide-equal if checked
+      var diffView = document.getElementById('diff-view');
+      if (document.getElementById('chk-hide-equal').checked) {
+        diffView.classList.add('hide-equal');
+      } else {
+        diffView.classList.remove('hide-equal');
+      }
+
       // Sync scroll
       var diffLeft = document.getElementById('diff-left');
       var diffRight = document.getElementById('diff-right');
@@ -907,8 +915,8 @@
       document.getElementById('no-results').innerHTML = 'Enter text in both fields and click Compare';
       _lastDiffOps = null;
       _lastTemplateOnly = false;
-      document.getElementById('chk-hide-equal').checked = false;
-      var dv = document.getElementById('diff-view'); if (dv) dv.classList.remove('hide-equal');
+      document.getElementById('chk-hide-equal').checked = true;
+      var dv = document.getElementById('diff-view'); if (dv) dv.classList.add('hide-equal');
       updateCounts();
     });
 

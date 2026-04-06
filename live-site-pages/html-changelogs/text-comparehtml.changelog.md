@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [text-comparehtml.changelog-archive.md](text-comparehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-04-05 10:23:46 PM EST — v09.01r
+
+### Changed
+- Equal lines are now hidden by default — only differences are shown after comparing
 
 ## [v01.06w] — 2026-04-05 10:18:48 PM EST — v09.00r
 

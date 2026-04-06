@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 37/100`
+`Sections: 38/100`
 
 ## [Unreleased]
+
+## [v09.01r] — 2026-04-05 10:23:46 PM EST
+
+> **Prompt:** "have it default hide equal lines"
+
+### Changed
+- "Hide equal lines" is now checked by default on text-compare tool — differences are shown immediately without needing to toggle
+
+#### `text-compare.html` — v01.07w
+
+##### Changed
+- Equal lines are now hidden by default — only differences are shown after comparing
 
 ## [v09.00r] — 2026-04-05 10:18:48 PM EST
 
