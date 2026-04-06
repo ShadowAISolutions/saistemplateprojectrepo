@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 47/100`
+`Sections: 48/100`
 
 ## [Unreleased]
+
+## [v09.11r] — 2026-04-06 10:10:52 AM EST
+
+> **Prompt:** "continue where we left off in SESSION-CONTEXT"
+
+### Changed
+- Added proper `// PROJECT START` / `// PROJECT END` markers around project-specific data operation functions in all 3 auth GAS files — `saveNote` and `processDataPoll` in testauth1.gs, 12 ACL management functions in globalacl.gs, `getUserAppAccess` in programportal.gs
+- Added template example comments to DATA OPERATIONS section header in testauth1.gs and globalacl.gs (matching programportal.gs)
+- Removed duplicate `// AUTH — Page Nonce (postMessage handshake)` section headers from testauth1.gs and globalacl.gs (programportal.gs has just the plain function comment)
+- Fixed extra blank line before HIPAA COMPLIANCE section in testauth1.gs
+- Unified blank line patterns around PROJECT markers for consistent stripping
+
+#### `testauth1.gs` — v02.49g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.44g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.53g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.10r] — 2026-04-06 09:45:41 AM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.52g";
+var VERSION = "v01.53g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1884,6 +1884,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
   return denied;
 }
 
+// PROJECT START — programportal app access lookup
 function getUserAppAccess(email) {
   var accessMap = {};
   if (!email) return accessMap;
@@ -1924,7 +1925,7 @@ function getUserAppAccess(email) {
 
   return accessMap;
 }
-
+// PROJECT END
 // =============================================
 // AUTH — Web App Entry Point (doGet)
 // Toggle-gated: TOKEN_EXCHANGE_METHOD controls token exchange path.

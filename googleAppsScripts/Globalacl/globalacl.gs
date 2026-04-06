@@ -1,4 +1,4 @@
-var VERSION = "v01.43g";
+var VERSION = "v01.44g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1681,10 +1681,18 @@ function validateSessionForData(sessionToken, operationName) {
 }
 
 // =============================================
-// DATA OPERATIONS — Session-gated (ACL Management)
+// DATA OPERATIONS — Session-gated
 // Every function that reads/writes data must call validateSessionForData() first.
+// Add your project-specific data operations here. Example:
+//
+// function saveRecord(sessionToken, recordData) {
+//   var user = validateSessionForData(sessionToken, 'saveRecord');
+//   checkPermission(user, 'write', 'saveRecord');
+//   // ... your data operation here ...
+//   return { success: true, email: user.email };
+// }
 // =============================================
-
+// PROJECT START — globalacl ACL management operations
 /**
  * Load the full ACL data for the management UI.
  * Returns { headers: [...], rows: [[email, role, page1, ...], ...], roles: {role: [perms]} }
@@ -2197,6 +2205,7 @@ function removeACLRole(sessionToken, roleName) {
   dataAuditLog(user.email, 'delete', 'acl_role', roleName, {});
   return { success: true, message: 'Role removed: ' + roleName };
 }
+// PROJECT END
 
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
@@ -2213,9 +2222,6 @@ function invalidateSession(sessionToken) {
   cache.remove("session_" + sessionToken);
 }
 
-// =============================================
-// AUTH — Page Nonce (postMessage handshake)
-// =============================================
 // Generates a one-time-use nonce that binds a validated session to a single page load.
 // Flow: GAS serves handshake page → parent sends session token via postMessage →
 // handshake page calls generatePageNonce() → navigates to ?page_nonce=NONCE →

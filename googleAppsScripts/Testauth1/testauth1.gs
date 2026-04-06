@@ -1,4 +1,4 @@
-var VERSION = "v02.48g";
+var VERSION = "v02.49g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1619,8 +1619,16 @@ function validateSessionForData(sessionToken, operationName) {
 // =============================================
 // DATA OPERATIONS — Session-gated
 // Every function that reads/writes data must call validateSessionForData() first.
+// Add your project-specific data operations here. Example:
+//
+// function saveRecord(sessionToken, recordData) {
+//   var user = validateSessionForData(sessionToken, 'saveRecord');
+//   checkPermission(user, 'write', 'saveRecord');
+//   // ... your data operation here ...
+//   return { success: true, email: user.email };
+// }
 // =============================================
-
+// PROJECT START — testauth1 data operations
 // Phase 3: clientIp parameter removed — to re-enable, change signature to:
 // function saveNote(sessionToken, noteText, clientIp) {
 function saveNote(sessionToken, noteText) {
@@ -1650,6 +1658,7 @@ function saveNote(sessionToken, noteText) {
   });
   return { success: true, email: user.email, note: noteText, role: user.role };
 }
+// PROJECT END
 
 function invalidateSession(sessionToken) {
   if (!sessionToken) return;
@@ -1666,9 +1675,6 @@ function invalidateSession(sessionToken) {
   cache.remove("session_" + sessionToken);
 }
 
-// =============================================
-// AUTH — Page Nonce (postMessage handshake)
-// =============================================
 // Generates a one-time-use nonce that binds a validated session to a single page load.
 // Flow: GAS serves handshake page → parent sends session token via postMessage →
 // handshake page calls generatePageNonce() → navigates to ?page_nonce=NONCE →
@@ -1997,6 +2003,7 @@ function processHeartbeat(token) {
   return signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
 }
 
+// PROJECT START — testauth1 data polling
 // ── Authenticated data poll — lightweight session check + data return ──
 // Called from doGet(action=getData) with token passed as URL parameter.
 // Unlike processHeartbeat(), this does NOT extend the session — it only verifies
@@ -2014,7 +2021,7 @@ function processDataPoll(token) {
   // Session exists — user is authenticated. Return cached data.
   return {type: 'live-data', data: getCachedData()};
 }
-
+// PROJECT END
 // ── Phase 7 (H-6): Server-side sign-out processing ──
 // Called via google.script.run from the signout listener page (action=signout).
 // Token is received via postMessage, NOT URL parameters.
@@ -4417,7 +4424,6 @@ function wrapPhaseAOperation(operationName, sessionToken, operationFn) {
     return { success: false, error: 'INTERNAL_ERROR', message: 'An internal error occurred. Please try again.' };
   }
 }
-
 
 // ═══════════════════════════════════════════════════════
 // HIPAA COMPLIANCE — Phase A: Individual Rights
