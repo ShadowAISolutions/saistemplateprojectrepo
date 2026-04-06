@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 56/100`
+`Sections: 57/100`
+
+## [v09.20r] — 2026-04-06 12:55:06 PM EST
+
+> **Prompt:** "continue"
+
+### Changed
+- Removed unnecessary `// PROJECT START — testauth1 admin panel logic` / `// PROJECT END` wrapper from testauth1.gs — admin panel code is template code with inline `// PROJECT:` marker, matching globalacl and programportal
+- Fixed extra `// ══════════════` separator lines around empty PROJECT block in globalacl.gs to match template format
+- Added `// PROJECT:` markers to `_gasSandboxSource` variable and gas-auth-ok handler extension in testauth1.html for template propagation awareness
+
+#### `testauth1.gs` — v02.54g
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.49g
+##### Changed
+- Minor internal improvements
 
 ## [v09.19r] — 2026-04-06 12:43:26 PM EST
 

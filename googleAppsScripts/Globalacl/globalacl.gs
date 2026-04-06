@@ -1,4 +1,4 @@
-var VERSION = "v01.48g";
+var VERSION = "v01.49g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -299,9 +299,6 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 
 // ══════════════
 // PROJECT START — Add your project-specific functions here
-// ══════════════
-
-// ══════════════
 // PROJECT END
 // ══════════════
 

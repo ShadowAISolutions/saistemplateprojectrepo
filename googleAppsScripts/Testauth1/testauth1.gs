@@ -1,4 +1,4 @@
-var VERSION = "v02.53g";
+var VERSION = "v02.54g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3695,7 +3695,6 @@ function doGet(e) {
         })();
         // PROJECT END
 
-        // PROJECT START — testauth1 admin panel logic
         // PROJECT: Admin panel logic (only included for admin users)
         ${isAdmin ? `
         (function() {
@@ -4174,7 +4173,6 @@ function doGet(e) {
           }
         })();
         ` : ''}
-        // PROJECT END
 
       </script>
     </body>

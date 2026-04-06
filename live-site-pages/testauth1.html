@@ -1243,7 +1243,7 @@
     var _directSessionLoad = false; // true when iframe loaded via nonce for session reclaim (Use Here) — tells gas-auth-ok to re-show iframe
     var _pendingSessionShow = null; // deferred showApp data from gas-session-created — only applied when gas-auth-ok confirms
     var _gasAuthOkHandled = false;  // true after first gas-auth-ok processed — suppresses duplicate
-    var _gasSandboxSource = null;   // WindowProxy of the GAS inner sandbox frame (captured from event.source on gas-auth-ok)
+    var _gasSandboxSource = null;   // PROJECT: WindowProxy of the GAS inner sandbox frame (captured from event.source on gas-auth-ok)
     var _pendingNonceToken = null;  // session token waiting to be sent to getNonce listener
     var _nonceCallback = null;      // callback after nonce is received (optional)
 
@@ -1980,11 +1980,11 @@
       // GAS iframe confirms auth is OK (for returning users)
       if (data.type === 'gas-auth-ok') {
         _expectingSession = false;
-        // Capture the sandbox frame's WindowProxy so we can send messages back to it.
+        // PROJECT: Capture the sandbox frame's WindowProxy so we can send messages back to it.
         // GAS double-iframe: gasApp.contentWindow is the outer shell (script.google.com),
         // but the listener runs in the inner sandbox (googleusercontent.com).
         // event.source from gas-auth-ok IS the sandbox — store it for write-cell/add-row.
-        if (event.source) _gasSandboxSource = event.source;
+        if (event.source) _gasSandboxSource = event.source; // PROJECT: testauth1 live data sandbox ref
         // Phase 5: Import messageKey if delivered via gas-auth-ok (the ?session path
         // includes it). This handles "Use Here" reclaim, tab duplicate, and page refresh
         // where gas-session-created is not sent. Only import if no key is set yet.
