@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
+
+## [v09.27r] — 2026-04-06 07:14:03 PM EST
+
+> **Prompt:** "move the archived test functions from live-site-pages/templates/gas-test-functions-reference.js.txt to repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md as a proper markdown document with code blocks. Delete the .js.txt version."
+
+### Changed
+- Moved archived GAS test functions reference from `live-site-pages/templates/gas-test-functions-reference.js.txt` to `repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md` as a proper markdown document with code blocks
+
+### Removed
+- Deleted `live-site-pages/templates/gas-test-functions-reference.js.txt` (content migrated to archive info)
+
+#### `gas-project-creator.html` — v01.32w
+
+##### Changed
+- Updated internal reference comment to point to new archive location
 
 ## [v09.26r] — 2026-04-06 05:03:52 PM EST
 

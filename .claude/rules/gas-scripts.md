@@ -195,7 +195,7 @@ The GAS templates in `live-site-pages/templates/` are the **single source of tru
 - `gas-minimal-noauth-template-code.js.txt` — no auth (default)
 - `gas-minimal-auth-template-code.js.txt` — with Google auth
 
-A reference file (`gas-test-functions-reference.js.txt`) archives 6 optional test/diagnostic functions (version counting, sound playback, sheet operations, quota display) that can be manually added to projects needing a test admin UI.
+A reference file (`repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md`) archives 6 optional test/diagnostic functions (version counting, sound playback, sheet operations, quota display) that can be manually added to projects needing a test admin UI.
 
 Each template contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
 
