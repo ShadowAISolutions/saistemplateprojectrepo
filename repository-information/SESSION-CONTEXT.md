@@ -4,39 +4,34 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 11:42:35 PM EST
-**Repo version:** v09.03r
+**Date:** 2026-04-06 08:36:49 AM EST
+**Repo version:** v09.05r
 
 ### What was done
-- **v09.02r** — Unified shared auth/template code between testauth1.html and globalacl.html. Major changes:
-  - Replaced fetch()-based heartbeat in testauth1 with iframe+postMessage approach (HIPAA-aligned, token never in URL)
-  - Removed `_fetchPausedForGIS` from both files (obsolete with iframe heartbeat)
-  - Added `_gasSandboxSource` to globalacl (shared auth infrastructure)
-  - Restored `loadIframeViaNonce()` in globalacl (session replay protection — documented the 7-attempt history from v05.59r–v05.70r)
-  - Separated project-specific message types from shared `_KNOWN_GAS_MESSAGES` and `_SIG_EXEMPT` using `// PROJECT:` markers
-  - Added stale session checks, `applyUIGating()`, and role badge to testauth1's `showApp()`
-  - Moved panel cooldown to PROJECT section in testauth1
-  - Added `_closeAllPanelsExcept(null)` to globalacl's `showAuthWall()`
-- **v09.03r** — Fixed remaining cosmetic differences (blank lines, comment wording) for 100% shared code parity
+- **v09.04r** — Updated text-compare.html labels from directional "Original"/"Changed" to neutral "Text A"/"Text B" terminology. Stats labels changed from "Added"/"Removed" to "Only in B"/"Only in A". Diff headers and copy-diff output also updated
+- **v09.05r** — Major structural reorganization of testauth1.gs to match globalacl.gs section ordering:
+  - Moved HIPAA config variables (`BREACH_ALERT_CONFIG`, `HIPAA_RETENTION_CONFIG`, `LEGAL_HOLD_CONFIG`, `INTEGRITY_CONFIG`, `REPRESENTATIVE_CONFIG`, `HIPAA_DEADLINES`) from between AUTH PRESETS and AUTH CONFIG RESOLUTION to after `serverSignOut()`
+  - Moved shared HIPAA utility functions (`generateRequestId`, `formatHipaaTimestamp`, `validateIndividualAccess`, `getOrCreateSheet`, `wrapPhaseAOperation`) to the same location
+  - Moved Phase A functions (disclosure accounting, right of access, amendment, extensions, denial notice) from mid-file to after HIPAA utilities
+  - Added globalacl-style section headers: `HIPAA COMPLIANCE — Configuration`, `HIPAA COMPLIANCE — Shared Utilities`, `HIPAA COMPLIANCE — Phase A/B/C`
+  - Fixed `processHeartbeat()` return from 2-line to 1-line inline return
+  - Marked `evaluateBreachAlert` call as `// PROJECT:` (was `// Phase B:`)
+- Also analyzed testauth1 vs globalacl diffs for both HTML and GAS — confirmed shared code is now structurally aligned
 
 ### Where we left off
 - Both pushes merged to main via auto-merge workflow
-- Shared (non-project-specific) auth code is now 100% identical between testauth1.html and globalacl.html
-- All project-specific code is clearly separated in `// PROJECT:` marked blocks or inside `<!-- PROJECT START/END -->` sections
-- Remaining expected differences: build-version, title, CLIENT_ID, deployment URL (_e), timer values (test vs prod), sourceDisplayName, PROJECT sections content
+- **HTML shared code**: 100% identical between testauth1.html and globalacl.html (non-project code). Only differences are project-specific (CLIENT_ID, deployment URL, message types, PROJECT sections) and intentional test value overrides (HEARTBEAT_INTERVAL, SERVER_SESSION_DURATION, ABSOLUTE_SESSION_DURATION)
+- **GAS shared code**: Section structure now matches between testauth1.gs and globalacl.gs. HIPAA configs and functions are in the same relative position. Remaining differences are all project-specific (live data functions in testauth1, ACL management in globalacl, global session functions in globalacl, test value overrides in testauth1 PRESETS)
 
 ### Key decisions made
-- **Timer values are project-specific** — testauth1 keeps test values (180s/300s/60s), globalacl keeps production (900/28800/300000). Not shared code
-- **Heartbeat approach: iframe-based** — globalacl's iframe+postMessage approach chosen over testauth1's fetch() approach. Token never appears in URL, no COOP conflicts with GIS popup
-- **`_fetchPausedForGIS` removed from both** — no longer needed with iframe heartbeat (its purpose was guarding fetch() calls to Google domains during GIS popup)
-- **`_gasSandboxSource` is shared auth code** — globalacl needed it added (captures GAS sandbox WindowProxy for postMessage communication)
-- **Nonce loading (`loadIframeViaNonce`) is the shared standard** — restored in globalacl. Direct `?session=` only used for initial sign-in (CacheService eventual consistency) and page-load resume. Added comprehensive documentation explaining the 7-attempt history and tradeoffs
-- **HMAC liveData stripping is testauth1 project-specific** — marked with `// PROJECT:` (only needed for live-data feature)
-- **Panel cooldown is testauth1 project-specific** — simple `_panelRegistry`/`_registerPanel`/`_closeAllPanelsExcept` is shared; cooldown system (`_panelCooldownUntil`, `_isPanelCooldownActive`, `_startPanelCooldown`) moved to PROJECT section
+- **globalacl's section structure is canonical** — all HIPAA code grouped after `serverSignOut()` rather than scattered through the file. testauth1 was reorganized to match
+- **Timer/timeout test values stay as-is** — testauth1 keeps its `⚡ TEST VALUE` overrides (short timeouts for testing). These are intentional and project-specific
+- **`evaluateBreachAlert` is project-specific** — relabeled from `// Phase B:` to `// PROJECT:` since globalacl doesn't call it from `processSecurityEvent`
+- **Text compare tool uses neutral labels** — "Text A"/"Text B" instead of "Original"/"Changed" so it works as a peer comparison tool
 
 ### Active context
-- Branch: `claude/unify-shared-code-L2hYs`
-- Repo version: v09.03r
+- Branch: `claude/align-testauth-globalcl-N29gJ`
+- Repo version: v09.05r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -44,13 +39,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-05 10:29:41 PM EST
-**Repo version:** v09.01r
+**Date:** 2026-04-05 11:42:35 PM EST
+**Repo version:** v09.03r
 
 ### What was done
-- **v08.95r–v09.01r** — Enhanced Text Compare tool with Copy Context Diff, Template Only mode, Hide equal lines (default on), Smart context, labeled control groups, color-coded headers
+- **v09.02r–v09.03r** — Unified shared auth/template code between testauth1.html and globalacl.html (iframe heartbeat, message type separation, panel cooldown to PROJECT, cosmetic parity)
 
 ### Where we left off
-- Text Compare tool feature-complete, all pushes merged
+- Shared auth code 100% identical between HTML files, all project-specific code in `// PROJECT:` blocks
 
 Developed by: ShadowAISolutions
