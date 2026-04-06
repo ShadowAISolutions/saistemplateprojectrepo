@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalhtml.changelog-archive.md](programportalhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.88w] — 2026-04-06 08:56:31 AM EST — v09.06r
+
+### Fixed
+- Improved session security for returning users and cross-tab login
 
 ## [v01.87w] — 2026-04-05 06:59:44 PM EST — v08.92r
 

@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-06 08:31:35 AM EST` · Repo version: `v09.05r`
+Last updated: `2026-04-06 08:56:31 AM EST` · Repo version: `v09.06r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -52,7 +52,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/globalacl.html">globalacl.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/globalacl.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Globalacl/globalacl.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/globalaclhtml.changelog.md">v01.82w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog.md">v01.43g</a> | [template] Global ACL page
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/programportal.html">programportal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/programportal.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/programportalhtml.changelog.md">v01.87w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/programportalgs.changelog.md">v01.52g</a> | [template] Program Portal page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/programportal.html">programportal.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/programportal.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/programportalhtml.changelog.md">v01.88w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/programportalgs.changelog.md">v01.52g</a> | [template] Program Portal page
 │   │
 │   <b>│ ─ Standalone Utilities ─────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner5.html">qr-scanner5.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner5.html">🌐</a>  — [template] QR code scanner (native + jsQR fallback)

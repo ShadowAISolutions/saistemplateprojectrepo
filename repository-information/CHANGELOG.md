@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 42/100`
+`Sections: 43/100`
 
 ## [Unreleased]
+
+## [v09.06r] — 2026-04-06 08:56:31 AM EST
+
+> **Prompt:** "yes"
+
+### Changed
+- Unified programportal.html non-project template code to match testauth1.html and globalacl.html
+
+#### `programportal.html` — v01.88w
+
+##### Fixed
+- Restored `loadIframeViaNonce()` in showApp DOM clearing reload and storage event login sync (was incorrectly using direct `?session=` URLs — breaks replay protection)
+- Fixed line-merge bugs in sign-in and sign-out stage checklist logic (comment and `var` declaration merged onto same line)
+- Restored client-side session expiry pre-check on page load (absolute + rolling timeout) to match testauth1/globalacl
+- Restored `_expectingSession` comment in page load session resume
+- Unified "Use Here" tab reclaim handler structure to match testauth1/globalacl
+- Unified comment formatting across ~15 template code areas (SSO section header, heartbeat interval, data poll interval, sign-in checklist, sign-out checklist, auth error comments, performSignOut SSO comments, nonce flow documentation)
 
 ## [v09.05r] — 2026-04-06 08:31:35 AM EST
 

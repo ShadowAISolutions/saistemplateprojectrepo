@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.87w">
+  <meta name="build-version" content="v01.88w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Program Portal</title>
 <!-- ══════════════ -->
@@ -200,11 +200,11 @@
     .signin-checklist { list-style: none; padding: 0; margin: 18px auto 0; max-width: 280px; text-align: left; }
     .signin-checklist li { padding: 4px 0; color: #bbb; font-size: 14px; transition: color 0.3s, opacity 0.3s; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
     .signin-checklist li .chk-icon { width: 18px; text-align: center; flex-shrink: 0; }
-    .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; /* ○ */ }
+    .signin-checklist li.stage-pending .chk-icon::before { content: '\25CB'; }
     .signin-checklist li.stage-active { color: #4285f4; font-weight: 500; }
-    .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; /* ● */ }
+    .signin-checklist li.stage-active .chk-icon::before { content: '\25CF'; color: #4285f4; }
     .signin-checklist li.stage-done { color: #34a853; }
-    .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; /* ✓ */ }
+    .signin-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .signin-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; order: 1; }
     .signin-checklist .stage-time-total { font-style: italic; color: #aaa; }
     /* PROJECT: Sign-in sub-steps */
@@ -502,9 +502,8 @@
       TOKEN_EXCHANGE_METHOD: 'postMessage',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
-      // HEARTBEAT_INTERVAL: 300000,  // ms — how often to check for activity and send heartbeat (5min)
-      HEARTBEAT_INTERVAL: 30000,  // ⚡ TEST VALUE (30s) — uncomment line above and delete this line to restore
-      DATA_POLL_INTERVAL: 15000,  // ms — how often to poll for data (continuous, independent of heartbeat)
+      HEARTBEAT_INTERVAL: 30000,  // ⚡ TEST VALUE (30s) — production: 300000 (5min)
+      DATA_POLL_INTERVAL: 15000,  // ms — how often to poll GAS for fresh data
       // Single-tab enforcement: only one tab can be active at a time.
       // When enabled, opening the page in a new tab claims the session and
       // shows a "session active elsewhere" overlay on the old tab.
@@ -1232,6 +1231,29 @@
     // Load the GAS iframe via a one-time-use page nonce instead of ?session=TOKEN.
     // This prevents session URL replay — the nonce expires in 60 seconds and is single-use.
     // Flow: load ?action=getNonce → gas-nonce-ready → send session token → gas-nonce-result → load ?page_nonce=NONCE
+    //
+    // WHY THIS EXISTS (v05.59r–v05.70r):
+    // Direct ?session=TOKEN URLs are visible in DevTools Network tab. A user could copy
+    // the URL and replay it in another tab/browser to gain authenticated access without
+    // signing in. The nonce flow prevents this — the nonce is single-use and expires in
+    // 60 seconds, so a copied URL is worthless.
+    //
+    // WHY INITIAL SIGN-IN USES DIRECT ?session= INSTEAD:
+    // GAS CacheService is eventually consistent — a nonce written by generatePageNonce()
+    // may not be readable by validatePageNonce() moments later (cache.get returns null).
+    // This causes sign-in failures. Initial sign-in uses ?session= directly because the
+    // token was just created and the postMessage handshake guard prevents direct URL access.
+    //
+    // DRAWBACKS:
+    // - Adds latency (extra round-trip to GAS for nonce generation)
+    // - CacheService dependency (eventual consistency can cause intermittent failures)
+    // - More complex code path (3-step postMessage handshake)
+    //
+    // FUNDAMENTAL DEFENSE LAYER:
+    // The postMessage handshake guard in GAS blocks direct URL navigation — even with a
+    // valid ?session= URL, opening it in a browser tab shows "Access denied" after 2 seconds.
+    // The nonce flow adds defense-in-depth for the iframe src attribute specifically.
+    //
     // Options:
     //   skipExpectingSession: true to NOT set _expectingSession (needed on page-load
     //     where no prior iframe content exists to send stale gas-needs-auth)
@@ -1273,7 +1295,7 @@
       _authNonce = null; // Consume the nonce
 
       if (response.error) {
-        // Silent auth failed or user closed popup — show auth wall
+        // Silent auth failed — show auth wall with interactive sign-in
         _ssoRefreshDismissed = true;
         _updateSsoIndicator('dismissed');
         showAuthWall('Click "Sign In with Google" to continue.');
@@ -1293,8 +1315,6 @@
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
 
-    // SSO indicator — shows SSO token status (off/pending/ready/dismissed)
-    // Gated behind SSO_PROVIDER — no-op on non-SSO pages.
     function _updateSsoIndicator(state) {
       if (!HTML_CONFIG.SSO_PROVIDER) return;
       // Never show SSO badge when auth wall is visible (user is signed out)
@@ -1371,9 +1391,9 @@
       _pendingNonce = Array.from(crypto.getRandomValues(new Uint8Array(16)))
         .map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
       var gasApp = document.getElementById('gas-app');
-      if (!gasApp) { console.warn('[AUTH] gas-app iframe not found'); return; }
+      if (!gasApp) return;
       var baseUrl = gasApp.dataset.baseUrl || '';
-      if (!baseUrl) { console.warn('[AUTH] baseUrl is empty'); return; }
+      if (!baseUrl) return;
 
       // Reload iframe to get a fresh postMessage listener page
       _updateSignInStage('Verifying your identity\u2026');
@@ -1402,8 +1422,8 @@
       'gas-signed-out': true,
       'gas-version': true,
       'gas-session-invalid': true,
-      'gas-nonce-ready': true,            // Nonce generation listener page ready signal
-      'gas-nonce-result': true            // Nonce generation result (success/failure)
+      'gas-nonce-ready': true,
+      'gas-nonce-result': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1840,12 +1860,6 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
-          // Uses ?session= directly for initial sign-in because CacheService
-          // is eventually consistent — a page_nonce written in exchangeTokenForSession
-          // may not be readable by validatePageNonce() moments later (cache.get returns null).
-          // This is safe: the token was just created, the URL is only in the iframe's
-          // network request (not the address bar), and OAuth already verified the user.
-          // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
           _updateSignInStage('Loading application\u2026');
           _updateSubStep('sub-downloading');
           var gasApp = document.getElementById('gas-app');
@@ -2121,12 +2135,7 @@
           _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
-          var gasApp = document.getElementById('gas-app');
-          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-          if (gasApp && baseUrl) {
-            _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
-          }
+          loadIframeViaNonce(session.token);
         }
       }
 
@@ -2262,9 +2271,7 @@
     }
 
     // =============================================
-    // SSO — Cross-page authentication via BroadcastChannel
-    // Ephemeral token sharing: no persistent storage, HIPAA-compliant.
-    // Channel: 'sais-sso-auth' (shared across all auth pages on same origin)
+    // AUTH — SSO (Cross-Page Token Sharing)
     // =============================================
 
     if (typeof BroadcastChannel !== 'undefined') {
@@ -2412,12 +2419,13 @@
       }
     }
 
-    // PROJECT: Sign-in stage checklist logic    var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
-    var _stageStartTimes = {};  // tracks when each stage became active
+    // PROJECT: Sign-in stage checklist logic
+    var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
+    var _stageStartTimes = {};
     var _stageMap = {
       'Contacting Google\u2026': 'stage-contacting',
       'Verifying your identity\u2026': 'stage-verifying',
-      'Sending credentials\u2026': 'stage-verifying',  // maps to verifying (sub-step)
+      'Sending credentials\u2026': 'stage-verifying',
       'Creating your session\u2026': 'stage-creating',
       'Loading application\u2026': 'stage-loading',
       'Sign-in complete': 'stage-ready'
@@ -2622,7 +2630,8 @@
       if (subSending) subSending.style.display = 'none';
     }
 
-    // PROJECT: Sign-out stage checklist logic    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
+    // PROJECT: Sign-out stage checklist logic
+    var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
     var _soStageStartTimes = {};
 
     function _updateSignOutStage(stageId) {
@@ -2783,11 +2792,8 @@
         var session = loadSession();
         if (gasFrame && session.token) {
           var gasBaseUrl = gasFrame.dataset.baseUrl;
-          if (gasBaseUrl) {
-            var gasUrl = gasBaseUrl + '?session=' + encodeURIComponent(session.token);
-            if (gasFrame.src !== gasUrl) {
-              gasFrame.src = gasUrl;
-            }
+          if (gasBaseUrl && (!gasFrame.src || gasFrame.src === 'about:blank')) {
+            loadIframeViaNonce(session.token);
           }
         }
       }
@@ -3021,8 +3027,7 @@
       }
 
       timersEl.style.display = 'flex';
-      // SSO indicator: ready if token held, pending if still acquiring,
-      // off if user dismissed the GIS popup without completing SSO
+      // SSO indicator: ready if token held, pending if still acquiring
       if (_ssoAccessToken) {
         _updateSsoIndicator('ready');
       } else if (!_ssoRefreshDismissed) {
@@ -3139,9 +3144,9 @@
 
     function stopCountdownTimers() {
       if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+      _updateSsoIndicator('off');
       var timersEl = document.getElementById('auth-timers');
       if (timersEl) timersEl.style.display = 'none';
-      _updateSsoIndicator('off');
       var storage = getStorage();
       storage.removeItem(SESSION_START_KEY);
       storage.removeItem(ABSOLUTE_START_KEY);
@@ -3293,14 +3298,11 @@
       if (_signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out', tabId: _tabId });
       }
-
       // PROJECT: Advance to connected apps stage
       _updateSignOutStage('so-stage-apps');
-      // SSO cross-page sign-out — only propagate deliberate sign-outs.
-      // Session expiry ('session-expired', 'absolute-expired') is page-local —
-      // each page has its own independent GAS session and timeout.
-      // Only a user-initiated sign-out (reason === 'manual' or no reason) should
-      // sign out all connected pages.
+      // SSO: broadcast sign-out to other apps (not for session expiry — that's page-local)
+      // Session expiry is page-local — each page has its own independent GAS session and timeout.
+      // Only user-initiated sign-out should sign out all connected pages.
       // When broadcastSSO is false (local-only sign-out), skip the SSO broadcast.
       if (broadcastSSO && _ssoChannel && reason !== 'session-expired' && reason !== 'absolute-expired') {
         try {
@@ -3548,13 +3550,10 @@
         _gasAuthOkHandled = false;  // Reset so the new gas-auth-ok from the reloaded iframe is not deduplicated
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp) gasApp.style.visibility = 'hidden';
-        // Use ?session= directly — the postMessage handshake guard blocks direct
-        // URL access. The nonce flow (loadIframeViaNonce) is unreliable due to
-        // CacheService eventual consistency.
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          _expectingSession = true;
+          gasApp.style.visibility = 'hidden';
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {
@@ -3630,15 +3629,35 @@
     (function() {
       var session = loadSession();
       if (session.token) {
-        // Resume existing session — load GAS iframe with session token directly.
-        // Using ?session= is safe here: the postMessage handshake guard blocks
-        // direct URL access (copied URLs show "Access denied"). The nonce flow
-        // (loadIframeViaNonce) is unreliable for this path due to CacheService
-        // eventual consistency — the nonce written by generatePageNonce() may not
-        // be readable by validatePageNonce() moments later.
+        // With localStorage, stale sessions persist across browser restarts.
+        // Check if the absolute timeout has passed — if so, clear the stale
+        // session immediately instead of showing "Reconnecting" and waiting
+        // for the server round-trip to confirm expiry.
+        var absStart = parseInt(getStorage().getItem(ABSOLUTE_START_KEY) || '0', 10);
+        var sessStart = parseInt(getStorage().getItem(SESSION_START_KEY) || '0', 10);
+        if (absStart && (Date.now() - absStart) / 1000 > ABSOLUTE_SESSION_DURATION) {
+          clearSession();
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          // Fall through to the else block is not needed — we're done
+          return;
+        }
+        // Also check rolling session timeout (no heartbeat to extend on page load)
+        if (sessStart && (Date.now() - sessStart) / 1000 > SERVER_SESSION_DURATION) {
+          clearSession();
+          showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          return;
+        }
+
+        // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
+          // Do NOT set _expectingSession here — on page load, there is no prior
+          // iframe content that could send a stale gas-needs-auth. The flag would
+          // cause the REAL gas-needs-auth (from an admin-invalidated session) to be
+          // silently dropped, leaving the user stuck on "Reconnecting...".
+          // _expectingSession is only needed after mid-session iframe navigations
+          // (gas-session-created, Use Here) where prior content may still be loaded.
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
@@ -3664,11 +3683,12 @@
                   if (!response.error && response.access_token) {
                     _validateSSOTokenEmail(response.access_token, function() {
                       _ssoAccessToken = response.access_token;
-                      console.debug('[SSO] Re-acquired access token during reconnect');
                       _updateSsoIndicator('ready');
+                      console.debug('[SSO] Re-acquired access token during reconnect');
                     }, function() {
                       _ssoRefreshDismissed = true;
                       _updateSsoIndicator('dismissed');
+                      console.warn('[SSO] Token email mismatch during reconnect — token discarded');
                     });
                   } else {
                     _ssoRefreshDismissed = true;
@@ -3684,8 +3704,14 @@
           }, 200);
         }
       } else {
-        // No session — try SSO first, then fall back to auth wall.
-        // If the session expired explicitly, skip SSO and show expiry message.
+        // No session — the iframe IIFE created the element without navigating it
+        // (no src set on auth pages). The auth flow (exchangeViaUrl) will set
+        // the iframe src once Google Sign-In obtains a token.
+
+        // If the session expired before this reload (e.g. auto-refresh after
+        // timeout), show expired message. Otherwise show generic auth wall.
+        // In all cases, wait for the user to click "Sign In with Google" —
+        // never auto-trigger the OAuth popup on page load.
         var sessionWasExpired = sessionStorage.getItem(SESSION_EXPIRED_FLAG);
         sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
         if (sessionWasExpired) {
@@ -3760,7 +3786,7 @@
 // ══════════════
 
 // ══════════════
-// PROJECT START — Add your project-specific JavaScript here
+// PROJECT START
 // ══════════════
 
 
