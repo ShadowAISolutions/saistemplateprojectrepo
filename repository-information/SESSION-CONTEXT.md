@@ -4,31 +4,27 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-06 01:29:58 PM EST
-**Repo version:** v09.23r
+**Date:** 2026-04-06 04:13:30 PM EST
+**Repo version:** v09.25r
 
 ### What was done
-- **v09.19r** — Removed ~160 lines of programportal-specific code (portal header, app cards, toggles, registry) that leaked into the GAS auth template (`gas-minimal-auth-template-code.js.txt`). Added HMAC liveData stripping to HTML auth template and all 3 auth pages (globalacl, programportal, testauth1) — prevents JSON.stringify mismatches between GAS V8 and browser engines for nested objects
-- **v09.20r** — Normalized PROJECT markers: removed unnecessary PROJECT START/END wrapper from testauth1.gs admin panel block, fixed extra separator lines in globalacl.gs, added `// PROJECT:` markers to `_gasSandboxSource` in testauth1.html
-- **v09.21r** — Added ~478 lines of admin panel JS logic (badge toggle, HIPAA tools, data loaders, renderers) to minimal-auth GAS template — was only in test-auth template but all production scripts share it
-- **v09.22r** — Added version display (`<h2 id="version">`), user-email display, gas-layer-toggle button + JS + CSS to minimal-auth GAS template
-- **v09.23r** — Fixed all remaining blank line inconsistencies around PROJECT markers in all 3 GAS scripts — zero blank-line diffs confirmed via automated stripping
+- **v09.24r** — Fixed template consistency: standardized `sourceDisplayName` across all 3 GAS files and both GAS templates, corrected `HEARTBEAT_INTERVAL` comment to 45000ms, added `// PROJECT START` comments to production GAS files matching the template pattern
+- **v09.25r** — Clean PROJECT/TEMPLATE separator markers across 9 files: removed `PROJECT: ` prefix from 20 shared template code markers (admin role detection, admin panel styles/badge/logic, sign-in/sign-out checklist markers), deleted orphan `// PROJECT END` in GAS test-auth template (fixed 2 START / 3 END → 2/2), wrapped 6 multi-line project-specific code blocks with proper `// PROJECT START/END` pairs in testauth1.html and globalacl.html
 
 ### Where we left off
-- **Template consistency: COMPLETE** — all non-project-specific code is now identical across testauth1.gs, globalacl.gs, programportal.gs, and the minimal-auth GAS template
-- **Verified zero blank-line diffs** via automated strip-and-diff: testauth1 (0 blank, 9 content), globalacl (0 blank, 8 content), programportal (0 blank, 4 content) — all content diffs are properly marked PROJECT-specific code
-- **HTML pages** also consistent: globalacl.html and programportal.html have identical non-project template code, testauth1.html has 3 properly `// PROJECT:`-marked additions
-- **Minimal-auth GAS template** is now feature-complete: includes admin panel JS, version display, gas-layer-toggle, HMAC liveData stripping
+- **Template consistency review: COMPLETE** — all PROJECT START/END pairs balanced across every file, zero `PROJECT:` markers remain in templates, all shared code properly classified as template code
+- **Verified**: gas-test-auth template (2/2), testauth1.gs (9/9), globalacl.gs (11/11), programportal.gs (9/9), auth HTML template (3/3), testauth1.html (8/8), globalacl.html (4/4), programportal.html (3/3)
+- All non-project-specific code is identical across testauth1.gs, globalacl.gs, programportal.gs, and the minimal-auth GAS template
+- HTML pages also consistent: all non-project template code identical across auth pages
 
 ### Key decisions made
-- **Portal code removed from template** — ~160 lines of programportal-specific code (portal header, app cards, toggles) didn't belong in the generic auth template; stays only in programportal's PROJECT sections
-- **Admin panel is template code** — the admin badge/dropdown/panel with HIPAA tools is standard template code that all auth pages inherit; programportal's custom layout wraps around it
-- **HMAC liveData stripping promoted to template** — was testauth1-specific workaround, now all pages get it (no-op when liveData absent)
-- **`_gasSandboxSource` stays as PROJECT code** — specific to testauth1's Live Data feature, marked with `// PROJECT:` markers
-- **Blank line pattern**: blanks go AFTER `// PROJECT END`, not before `// PROJECT START`
+- **Admin components are template code** — admin role detection, admin panel styles, admin badge HTML, and admin panel logic were reclassified from `// PROJECT:` to plain template comments — they exist in the GAS templates and are inherited by all auth pages
+- **Sign-in/sign-out checklist is template code** — CSS styles, HTML markup, and JS logic for the auth checklist UI were reclassified from `// PROJECT:` to plain template comments
+- **Multi-line project blocks need START/END pairs** — single-line `// PROJECT:` markers are insufficient for multi-line blocks; wrapped with `// PROJECT START — description` / `// PROJECT END` for clear delimiters
+- **`gas-minimal-auth-template-code.js.txt` included** — fixed 3 admin markers there too for full consistency, even though it wasn't in original 3-project scope
 
 ### Active context
-- Repo version: v09.23r
+- Repo version: v09.25r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -36,13 +32,13 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-06 12:05:11 PM EST
-**Repo version:** v09.18r
+**Date:** 2026-04-06 01:29:58 PM EST
+**Repo version:** v09.23r
 
 ### What was done
-- **v09.16r–v09.18r** — Deep synchronization of non-project-specific GAS code: canonicalized shared functions, comments, handler ordering, CSS baseline, PostMessage handshake guard, PROJECT markers. All 17 shared functions verified character-for-character identical across all 3 files and 4 GAS templates
+- **v09.19r–v09.23r** — Removed ~160 lines of programportal-specific code from GAS auth template, added HMAC liveData stripping to template + all 3 auth pages, normalized PROJECT markers, added ~478 lines of admin panel JS to minimal-auth GAS template, added version/email display + gas-layer-toggle, fixed all blank line inconsistencies around PROJECT markers
 
 ### Where we left off
-- GAS shared code synchronization complete. Template consistency review (HTML + GAS template cleanup) identified as next task (completed in v09.19r–v09.23r session above)
+- Template consistency for GAS scripts complete. HTML + GAS template cleanup identified as next task (completed in v09.24r–v09.25r session above)
 
 Developed by: ShadowAISolutions
