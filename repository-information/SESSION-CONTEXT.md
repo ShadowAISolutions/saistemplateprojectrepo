@@ -4,26 +4,32 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-05 09:18:03 PM EST
-**Repo version:** v08.94r
+**Date:** 2026-04-05 10:29:41 PM EST
+**Repo version:** v09.01r
 
 ### What was done
-- **v08.93r** — Created new Text Compare tool page (`live-site-pages/text-compare.html`) — standalone utility with side-by-side text comparison, LCS-based line-level and character-level diff highlighting, statistics bar (equal/added/removed/modified counts), swap/clear controls, ignore whitespace and case options, synchronized scroll, Ctrl+Enter shortcut. Built from the noauth template with all template infrastructure (version polling, changelog popup, splash screens)
-- **v08.94r** — Converted "Incremental Writing" rule from advisory guidance to a hard procedural gate in `.claude/rules/behavioral-rules.md`. The Write tool now has a mandatory 50-line limit — content >50 lines must use skeleton+Edit approach. Removed contradicting escape hatch from "Large file writes" in Execution Style that said "do not force this if a single Write is simpler"
+- **v08.95r** — Added "Copy Context Diff" button to text-compare tool — generates unified diff format (`--- Original` / `+++ Changed` / `@@ ... @@` headers / `-`/`+` markers) with configurable context lines, optimized for pasting to AI for code consolidation
+- **v08.96r** — Added "Template Only" comparison mode that strips all PROJECT blocks before comparing, showing only TEMPLATE/foundational code differences between pages
+- **v08.97r** — Added "Hide equal lines" toggle that hides all identical rows in the side-by-side diff view
+- **v08.98r** — Split controls into labeled groups ("Before Compare" vs "Display"), added color-coded column headers (red = Original/removed, blue = Changed/added)
+- **v08.99r** — Replaced fixed context lines with "Smart context" auto mode — dynamically expands context per-hunk (up to 10 lines), filling gaps between nearby changes. Shows effective value in the input
+- **v09.00r** — Fixed smart context display to update immediately on compare and toggle, not just after clicking copy
+- **v09.01r** — Changed "Hide equal lines" to checked by default
 
 ### Where we left off
-- Both pushes merged to main via auto-merge workflow
-- Text Compare page is live and functional
-- The Incremental Writing gate is the structural fix for the repeated Write-stalling problem — modeled after the Response Opener gate pattern
+- All 7 pushes merged to main via auto-merge workflow
+- Text Compare tool is feature-complete with: side-by-side visual diff, Copy Context Diff export, Template Only mode, Hide equal lines (default on), Smart context, labeled control groups, color-coded headers
+- The tool is designed for comparing two page source codes (e.g. testauth1.html vs globalacl.html) to verify template code is identical and identify template drift
 
 ### Key decisions made
-- **Hard gate > advice** — the Incremental Writing rule existed in 3 places (behavioral-rules.md, chat-bookends reminder, Execution Style) but was violated because all 3 were advisory. Converting to a procedural gate with a concrete threshold (50 lines) follows the proven pattern from the Response Opener gate
-- **50-line threshold** — conservative limit chosen because Write calls <50 lines complete reliably; above that threshold risk increases with size. The overhead of skeleton+Edit is ~15 seconds vs minutes of stalling
-- **Text Compare uses noauth template** — standalone utility page, no GAS project needed. CSP adjusted to remove frame-src since no iframes are used
+- **Smart context > fixed number** — users shouldn't need to guess a context line number. Smart mode expands each hunk to fill gaps between nearby changes (capped at 10 lines), merging adjacent hunks naturally. Manual override still available by unchecking
+- **Template Only strips PROJECT markers** — uses regex matching `PROJECT\s+START` and `PROJECT\s+END` patterns across CSS, HTML, and JS comment styles
+- **Hide equal lines default on** — when comparing code, differences are what matters. Users can uncheck to see full context
+- **Controls split into Before Compare vs Display** — whitespace/case/template-only affect the comparison algorithm (must be set before clicking Compare), while hide-equal-lines is a live CSS toggle on rendered results
 
 ### Active context
-- Branch: `claude/text-comparison-tool-r6Ijt`
-- Repo version: v08.94r
+- Branch: `claude/enhance-text-compare-context-M7kqM`
+- Repo version: v09.01r
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`
@@ -31,14 +37,14 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Previous Sessions
 
-**Date:** 2026-04-05 07:45:47 PM EST
-**Repo version:** v08.92r
+**Date:** 2026-04-05 09:18:03 PM EST
+**Repo version:** v08.94r
 
 ### What was done
-- **v08.92r** — Implemented 13-step remediation plan harmonizing auth projects with templates: removed 174 lines of dead duplicate Phase B config blocks, updated auth HTML template, added `_updateSubStep()` calls, restored missing handlers in globalacl.html, fixed section ordering
+- **v08.93r** — Created new Text Compare tool page (`live-site-pages/text-compare.html`)
+- **v08.94r** — Converted "Incremental Writing" rule to a hard procedural gate with 50-line Write limit
 
 ### Where we left off
-- All 3 auth projects have consistent section ordering and no duplicate config blocks
-- Template is ahead of (or equal to) projects for common auth flow features
+- Text Compare page created and live, Incremental Writing gate implemented
 
 Developed by: ShadowAISolutions
