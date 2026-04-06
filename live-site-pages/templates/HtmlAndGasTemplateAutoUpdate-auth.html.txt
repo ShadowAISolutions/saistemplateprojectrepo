@@ -503,7 +503,7 @@
       TOKEN_EXCHANGE_METHOD: 'postMessage',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
-      HEARTBEAT_INTERVAL: 300000,  // ms — how often to poll GAS for fresh data (5min)
+      HEARTBEAT_INTERVAL: 300000,  // ms — how often to check for activity and send heartbeat (5min)
       DATA_POLL_INTERVAL: 15000,  // ms — how often to poll GAS for fresh data
       // Single-tab enforcement: only one tab can be active at a time.
       // When enabled, opening the page in a new tab claims the session and

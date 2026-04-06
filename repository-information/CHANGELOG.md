@@ -3,7 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
+
+## [v09.24r] — 2026-04-06 01:50:46 PM EST
+
+> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+
+### Changed
+- Fixed `sourceDisplayName` in all 3 auth HTML pages to use `document.title` instead of hardcoded strings — matches the auth template
+- Normalized `// PROJECT START` comment in all 3 auth HTML pages to include ` — Add your project-specific JavaScript here` suffix — matches the auth template
+- Added missing `<!-- YOUR PAGE CONTENT HERE -->` placeholder comment to programportal.html PROJECT block — matches the auth template
+- Fixed HEARTBEAT_INTERVAL comment in auth template from inaccurate "poll GAS for fresh data" to correct "check for activity and send heartbeat"
+
+#### `testauth1.html` — v03.95w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.85w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.91w
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.23r] — 2026-04-06 01:27:02 PM EST
 
