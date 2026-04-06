@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.03w">
+  <meta name="build-version" content="v01.04w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -156,6 +156,8 @@
     }
     .input-col textarea:focus { border-color: #5b6abf; }
     .controls { display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .control-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 6px 12px; border: 1px solid #333; border-radius: 8px; }
+    .control-group-label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
     .btn {
       padding: 10px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
       cursor: pointer; transition: all 0.2s;
@@ -183,9 +185,11 @@
     .diff-view { display: flex; gap: 0; border: 1px solid #333; border-radius: 8px; overflow: hidden; background: #1a1a2e; }
     .diff-col { flex: 1; overflow-x: auto; }
     .diff-col-header {
-      padding: 8px 12px; font-size: 12px; font-weight: 600; color: #aaa;
+      padding: 8px 12px; font-size: 12px; font-weight: 600;
       background: #22223a; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1;
     }
+    .diff-col-header.header-left { color: #ef5350; }
+    .diff-col-header.header-right { color: #42a5f5; }
     .diff-col:first-child { border-right: 1px solid #333; }
     .diff-line { display: flex; font: 13px/1.6 'Consolas', 'Monaco', 'Courier New', monospace; min-height: 22px; }
     .diff-line-num {
@@ -269,18 +273,24 @@
       <button class="btn btn-primary" id="btn-compare" title="Compare texts">Compare</button>
       <button class="btn btn-swap" id="btn-swap" title="Swap left and right">⇄ Swap</button>
       <button class="btn btn-secondary" id="btn-clear" title="Clear all">Clear</button>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;">
-        <input type="checkbox" id="chk-trim" checked> Ignore leading/trailing whitespace
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;">
-        <input type="checkbox" id="chk-case"> Ignore case
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Strip PROJECT blocks before comparing — only compare TEMPLATE (shared/foundational) code">
-        <input type="checkbox" id="chk-template-only"> Template only
-      </label>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Hide identical lines — show only differences">
-        <input type="checkbox" id="chk-hide-equal"> Hide equal lines
-      </label>
+      <div class="control-group">
+        <span class="control-group-label">Before Compare</span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;">
+          <input type="checkbox" id="chk-trim" checked> Ignore whitespace
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;">
+          <input type="checkbox" id="chk-case"> Ignore case
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Strip PROJECT blocks before comparing — only compare TEMPLATE (shared/foundational) code">
+          <input type="checkbox" id="chk-template-only"> Template only
+        </label>
+      </div>
+      <div class="control-group">
+        <span class="control-group-label">Display</span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Hide identical lines — show only differences">
+          <input type="checkbox" id="chk-hide-equal"> Hide equal lines
+        </label>
+      </div>
     </div>
 
     <div id="stats-bar" class="stats-bar" style="display:none;">
@@ -304,11 +314,11 @@
       <div id="diff-output" style="display:none;">
         <div class="diff-view" id="diff-view">
           <div class="diff-col">
-            <div class="diff-col-header">Original</div>
+            <div class="diff-col-header header-left">Original (red = removed)</div>
             <div id="diff-left"></div>
           </div>
           <div class="diff-col">
-            <div class="diff-col-header">Changed</div>
+            <div class="diff-col-header header-right">Changed (blue = added)</div>
             <div id="diff-right"></div>
           </div>
         </div>

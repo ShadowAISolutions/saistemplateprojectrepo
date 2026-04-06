@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [text-comparehtml.changelog-archive.md](text-comparehtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-04-05 10:02:05 PM EST — v08.98r
+
+### Changed
+- Controls split into labeled groups so it's clear which options must be set before comparing and which work on the fly
+- Column headers now show color coding: red for original/removed side, blue for changed/added side
 
 ## [v01.03w] — 2026-04-05 09:48:10 PM EST — v08.97r
 

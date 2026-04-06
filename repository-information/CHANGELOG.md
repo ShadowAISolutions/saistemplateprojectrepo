@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 34/100`
+`Sections: 35/100`
 
 ## [Unreleased]
+
+## [v08.98r] — 2026-04-05 10:02:05 PM EST
+
+> **Prompt:** "ok make that clear to the user that that will be the case. also the Ignore leading/trailing whitespace Ignore case Template only toggles, do those have to be toggled before the compare button is pressed? if so then have them in a separate labeled section to the hide equal lines toggle"
+
+### Changed
+- Split text-compare controls into labeled groups: "Before Compare" (whitespace, case, template only) and "Display" (hide equal lines) so users know which must be set before clicking Compare
+- Added color-coded column headers: "Original (red = removed)" in red, "Changed (blue = added)" in blue, making the color convention immediately clear
+
+#### `text-compare.html` — v01.04w
+
+##### Changed
+- Controls split into "Before Compare" and "Display" groups with labeled borders
+- Column headers now show color coding: red for original/removed, blue for changed/added
 
 ## [v08.97r] — 2026-04-05 09:48:10 PM EST
 
