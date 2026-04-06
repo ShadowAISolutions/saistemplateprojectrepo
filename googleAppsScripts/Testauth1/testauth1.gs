@@ -1,4 +1,4 @@
-var VERSION = "v02.51g";
+var VERSION = "v02.52g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2953,7 +2953,7 @@ function doGet(e) {
       </div>
       ` : ''}
 
-      <!-- PROJECT: Live Data App (activated via ld-init postMessage from parent) -->
+      <!-- PROJECT START — testauth1 Live Data App UI -->
       <div id="live-data-app">
         <div id="ld-header">
           <div class="left">
@@ -2988,7 +2988,7 @@ function doGet(e) {
         <div id="ld-empty-state">Waiting for data...</div>
       </div>
 
-      <!-- PROJECT: Delete confirmation modal -->
+      <!-- Delete confirmation modal -->
       <div id="ld-delete-modal">
         <div class="modal-box">
           <div class="modal-title">Delete Row</div>
@@ -3000,6 +3000,7 @@ function doGet(e) {
           </div>
         </div>
       </div>
+      <!-- PROJECT END -->
 
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.
@@ -3129,7 +3130,7 @@ function doGet(e) {
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // PROJECT: Live Data App — full UI runs inside GAS sandbox
+        // PROJECT START — testauth1 Live Data App UI logic
         (function() {
           var LD_STALE_THRESHOLD = 60000;
           var _ldPrevDataJSON = null;
@@ -3684,6 +3685,7 @@ function doGet(e) {
             document.body.style.background = _gasLayerVisible ? '' : 'transparent';
           };
         })();
+        // PROJECT END
 
         // PROJECT: Admin panel logic (only included for admin users)
         ${isAdmin ? `
@@ -4164,7 +4166,6 @@ function doGet(e) {
         })();
         ` : ''}
 
-        // PROJECT END
       </script>
     </body>
     </html>

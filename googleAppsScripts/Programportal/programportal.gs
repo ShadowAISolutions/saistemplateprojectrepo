@@ -1,4 +1,4 @@
-var VERSION = "v01.55g";
+var VERSION = "v01.56g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2993,7 +2993,7 @@ function doGet(e) {
         </div>
       </div>
 
-      <!-- PROJECT: Announcements section -->
+      <!-- PROJECT START — programportal content (announcements, app cards, footer) -->
       <div class="portal-section" id="announcements-section" style="display:none">
         <h2 class="portal-section-title announcements-header" id="announcements-header" style="cursor:pointer;">
           <span>📢 Announcements <span class="announcements-badge" id="announcements-badge"></span></span>
@@ -3022,8 +3022,9 @@ function doGet(e) {
       <div class="portal-footer" id="portal-footer">Developed by: ShadowAISolutions</div>
       </div><!-- end #portal-main -->
       <div id="version">${escapeHtml(VERSION)}</div>
-      <!-- PROJECT: GAS layer visibility toggle (matches TestAuth1 pattern — lives inside GAS iframe so it only appears after auth) -->
+      <!-- GAS layer visibility toggle -->
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      <!-- PROJECT END -->
 
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.

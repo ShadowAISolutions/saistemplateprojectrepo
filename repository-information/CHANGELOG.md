@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 50/100`
+`Sections: 51/100`
 
 ## [Unreleased]
+
+## [v09.14r] — 2026-04-06 10:36:57 AM EST
+
+> **Prompt:** "continue"
+
+### Changed
+- Added `<!-- PROJECT START -->` / `<!-- PROJECT END -->` block markers in doGet HTML body for testauth1 (Live Data App + delete modal) and programportal (announcements + app cards + footer + GAS toggle)
+- Converted `// PROJECT: Live Data App` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in testauth1.gs (wrapping ~555 lines of live data table UI logic)
+- Converted `// PROJECT: Global sessions loader` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in globalacl.gs (wrapping ~78 lines of cross-project session management)
+- Removed orphaned `// PROJECT END` before `</script>` in testauth1.gs and globalacl.gs (no matching START — were leftover from original file creation)
+- All 3 GAS files now have balanced PROJECT START/END markers: testauth1 (8 pairs), globalacl (6 pairs), programportal (7 pairs)
+
+#### `testauth1.gs` — v02.52g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.47g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.56g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.13r] — 2026-04-06 10:30:24 AM EST
 

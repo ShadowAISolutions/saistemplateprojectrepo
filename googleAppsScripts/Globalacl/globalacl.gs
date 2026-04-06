@@ -1,4 +1,4 @@
-var VERSION = "v01.46g";
+var VERSION = "v01.47g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -4455,7 +4455,7 @@ function doGet(e) {
             }
           }
 
-          // PROJECT: Global sessions loader (globalacl-only — cross-project session management)
+          // PROJECT START — globalacl Global Sessions cross-project management
           function _loadGlobalSessions() {
             var el = document.getElementById('gsp-session-list');
             if (el) el.innerHTML = '<div class="pa-status">Loading sessions from all projects...</div>';
@@ -4533,6 +4533,7 @@ function doGet(e) {
               });
             }
           }
+          // PROJECT END
 
           // HIPAA data loaders (same as Phase 1 but using google.script.run directly)
           function _loadDisclosures() {
@@ -4902,7 +4903,6 @@ function doGet(e) {
         })();
         ` : ''}
 
-        // PROJECT END
       </script>
     </body>
     </html>
