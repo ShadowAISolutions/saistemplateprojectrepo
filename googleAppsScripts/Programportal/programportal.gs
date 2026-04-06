@@ -1,4 +1,4 @@
-var VERSION = "v01.56g";
+var VERSION = "v01.57g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2933,6 +2933,7 @@ function doGet(e) {
       </style>
     </head>
     <body>
+      <!-- PROJECT START — programportal header and layout -->
       <div id="portal-main">
       <div class="portal-header" id="portal-header-wrap">
         <img src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt=""
@@ -2992,6 +2993,7 @@ function doGet(e) {
           </label>
         </div>
       </div>
+      <!-- PROJECT END -->
 
       <!-- PROJECT START — programportal content (announcements, app cards, footer) -->
       <div class="portal-section" id="announcements-section" style="display:none">
@@ -3050,6 +3052,7 @@ function doGet(e) {
           }, 2000);
         }
 
+        // PROJECT START — programportal application registry and toggles
         // =============================================
         // PORTAL — Application Registry (with per-user access data)
         // =============================================
@@ -3183,6 +3186,7 @@ function doGet(e) {
 
           filterApps();
         })();
+        // PROJECT END
 
         // Session token for data operation validation (Phase 3)
         var _sessionToken = '${escapeJs(sessionToken)}';

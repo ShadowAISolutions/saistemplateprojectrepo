@@ -1,4 +1,4 @@
-var VERSION = "v01.47g";
+var VERSION = "v01.48g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -307,11 +307,13 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 
 // ══════════════
 // CROSS-PROJECT SESSION MANAGEMENT
+// Enables the GlobalACL "Global Sessions" feature to query and manage
+// sessions on this project remotely via UrlFetchApp. The shared secret
+// is read from the "Config" tab of the Master ACL Spreadsheet.
 // ══════════════
 
 /**
  * Check if a row in the Access tab is a metadata row (#NAME, #URL, #AUTH).
- * Metadata rows have '#' as the first character of column A.
  */
 function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
 
@@ -333,7 +335,6 @@ function ensureMetadataRows(sheet) {
  * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
  * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
  * Runs once per execution (cached flag).
- * GlobalACL registers as SELF; other projects register with their deployment URL.
  */
 var _selfRegistered = false;
 function registerSelfProject() {
@@ -360,11 +361,9 @@ function registerSelfProject() {
     if (colIdx === -1) {
       colIdx = headers.length;
       sheet.getRange(1, colIdx + 1).setValue(ACL_PAGE_NAME);
-      // Initialize metadata cells for the new column
       sheet.getRange(2, colIdx + 1).setValue('');
       sheet.getRange(3, colIdx + 1).setValue('');
       sheet.getRange(4, colIdx + 1).setValue(false);
-      // Set FALSE checkboxes for all user rows (row 5 onward)
       var lastRow = sheet.getLastRow();
       if (lastRow > 4) {
         var falseValues = [];
@@ -374,7 +373,7 @@ function registerSelfProject() {
       }
     }
 
-    // Determine this project's URL: GlobalACL uses SELF, others use deployment URL
+    // Determine this project's URL
     var isSelfProject = (ACL_PAGE_NAME === 'globalacl');
     var myUrl = isSelfProject ? 'SELF'
       : (DEPLOYMENT_ID && DEPLOYMENT_ID !== 'YOUR_DEPLOYMENT_ID')
@@ -383,24 +382,20 @@ function registerSelfProject() {
     if (!myUrl) return;
 
     // Write/update metadata rows for this project's column
-    var col = colIdx + 1; // 1-indexed for getRange
-    sheet.getRange(2, col).setValue(TITLE);  // #NAME row
-    sheet.getRange(3, col).setValue(myUrl);  // #URL row
-    sheet.getRange(4, col).setValue(true);   // #AUTH row
+    var col = colIdx + 1;
+    sheet.getRange(2, col).setValue(TITLE);
+    sheet.getRange(3, col).setValue(myUrl);
+    sheet.getRange(4, col).setValue(true);
   } catch (e) {
     Logger.log('registerSelfProject error: ' + e.message);
   }
 }
 
 /**
- * In-memory cache for cross-project admin secret.
+ * Read the cross-project admin secret from Script Properties.
+ * Cached in-memory for the duration of a single GAS execution.
  */
 var _crossProjectSecret = null;
-
-/**
- * Read the cross-project admin secret from Script Properties.
- * Cached in memory for the current execution.
- */
 function getCrossProjectSecret() {
   if (_crossProjectSecret) return _crossProjectSecret;
   try {
@@ -414,9 +409,7 @@ function getCrossProjectSecret() {
 }
 
 /**
- * Validate a cross-project admin request using the shared secret.
- * @param {Object} params — e.parameter from doGet
- * @returns {boolean} — true if secret matches and callerEmail is admin
+ * Validate a cross-project request: shared secret must match and caller must be admin.
  */
 function validateCrossProjectAdmin(params) {
   var secret = (params && params.secret) || '';
@@ -431,11 +424,8 @@ function validateCrossProjectAdmin(params) {
 }
 
 /**
- * Internal variant of listActiveSessions — skips session token validation.
- * Used by the cross-project endpoint (caller already authenticated via shared secret)
- * and by listGlobalSessions for the local project.
- * @param {string} callerEmail — the admin's email (for isSelf comparison)
- * @returns {Array} — active sessions with project label
+ * List active sessions for cross-project aggregation (skips session-token validation).
+ * Called by the cross-project listSessions endpoint after secret+admin validation.
  */
 function listActiveSessionsInternal(callerEmail) {
   var cache = getEpochCache();
@@ -486,6 +476,10 @@ function listActiveSessionsInternal(callerEmail) {
   }
   return activeSessions;
 }
+
+// ══════════════
+// PROJECT START — globalacl cross-project admin functions
+// ══════════════
 
 /**
  * Ensure a cross-project admin secret exists in Script Properties.
@@ -749,6 +743,10 @@ function adminGlobalSignOutUser(sessionToken, targetEmail, targetProject) {
 
   return { success: true, email: targetEmail, results: results };
 }
+
+// ══════════════
+// PROJECT END
+// ══════════════
 
 // ══════════════
 // ADMIN UTILITIES — run from the GAS Editor (select function → Run)
@@ -3271,11 +3269,12 @@ function doGet(e) {
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: sans-serif; }
+        /* PROJECT START — globalacl base styles and ACL table UI */
         .gas-layer-hidden { display: none !important; }
         * { box-sizing: border-box; }
-        html, body { height: 100%; margin: 0; overflow: hidden; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; color: #333; }
-        /* PROJECT START — globalacl ACL table and management UI styles */
+        body { color: #333; }
         #acl-main {
           position: fixed; top: 30px; left: 0; right: 0; bottom: 30px;
           overflow: auto; background: #f5f6fa;
@@ -3408,8 +3407,10 @@ function doGet(e) {
       </style>
     </head>
     <body>
+      <!-- PROJECT START — globalacl version and UI elements -->
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      <!-- PROJECT END -->
       ${isAdmin ? `
       <!-- PROJECT: Admin badge and panel (only rendered for admin users) -->
       <div id="admin-badge" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">ADMIN &#x25BE;</div>
@@ -3443,6 +3444,7 @@ function doGet(e) {
         </div>
       </div>
       ` : ''}
+      <!-- PROJECT START — globalacl ACL management table UI -->
       <div id="acl-main">
       <div id="acl-app">
         <div class="acl-header">
@@ -3545,11 +3547,60 @@ function doGet(e) {
       <!-- Context menu (injected dynamically) -->
       <div class="ctx-menu" id="ctx-menu" style="display:none;"></div>
       </div><!-- end #acl-main -->
+      <!-- PROJECT END -->
 
       <script>
-        // Session token for data operation validation
-        var _sessionToken = '${escapeJs(sessionToken)}';
+        // PostMessage handshake guard: verify we are embedded in the correct parent page.
+        // Only runs on the ?session= path. Skipped on the ?page_nonce= path because
+        // nonces are one-time-use — a copied nonce URL is already useless.
+        var _loadedViaNonce = ${pageNonce ? 'true' : 'false'};
+        if (!_loadedViaNonce) {
+          document.body.style.visibility = 'hidden';
+          var _hsId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+          var _hsOk = false;
+          window.addEventListener('message', function(ev) {
+            if (ev.data && ev.data.type === 'frame-handshake-response' && ev.data.handshakeId === _hsId) {
+              _hsOk = true;
+              document.body.style.visibility = 'visible';
+            }
+          });
+          window.top.postMessage({type: 'frame-handshake-challenge', handshakeId: _hsId}, '${PARENT_ORIGIN}');
+          setTimeout(function() {
+            if (!_hsOk) {
+              document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;color:#666;"><p>Access denied. This application must be accessed through its authorized embedding page.</p></div>';
+              document.body.style.visibility = 'visible';
+            }
+          }, 2000);
+        }
 
+        // Session token for data operation validation (Phase 3)
+        var _sessionToken = '${escapeJs(sessionToken)}';
+        // DJB2→HMAC migration complete: _s() and _mk removed.
+        // All message signing now happens server-side via signAppMessage()
+        // (called through google.script.run — same pattern as Phase 7 heartbeat/signout).
+
+        // Phase 3 (C-3): Client IP collection removed — ipify.org lacks BAA coverage.
+        // To re-enable, uncomment below and set AUTH_CONFIG.ENABLE_IP_LOGGING = true:
+        // var _clientIp = '';
+        // function _valIp(v) {
+        //   if (!v || typeof v !== 'string') return 'unknown';
+        //   var t = v.trim().substring(0, 45);
+        //   if (/^(\\d{1,3}\\.){3}\\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) return t;
+        //   return 'invalid';
+        // }
+        // if (${AUTH_CONFIG.ENABLE_IP_LOGGING}) {
+        //   try {
+        //     var _ipXhr = new XMLHttpRequest();
+        //     _ipXhr.open('GET', 'https://api.ipify.org?format=text', true);
+        //     _ipXhr.timeout = 5000;
+        //     _ipXhr.onload = function() { if (_ipXhr.status === 200) _clientIp = _valIp(_ipXhr.responseText); };
+        //     _ipXhr.onerror = function() { _clientIp = 'unknown'; };
+        //     _ipXhr.ontimeout = function() { _clientIp = 'unknown'; };
+        //     _ipXhr.send();
+        //   } catch(e) { _clientIp = 'unknown'; }
+        // }
+
+        // PROJECT START — globalacl custom confirm dialog
         // Custom confirm dialog — returns a Promise that resolves true/false
         var _confirmResolve = null;
         function showConfirm(title, message, okLabel) {
@@ -3569,20 +3620,17 @@ function doGet(e) {
           document.getElementById('confirm-modal').classList.remove('open');
           if (_confirmResolve) { _confirmResolve(true); _confirmResolve = null; }
         });
+        // PROJECT END
 
         // Notify wrapper that auth is OK — send immediately so the host page
         // can show the app without waiting for the async google.script.run call.
-        // Without this immediate send, page refresh and "Use Here" get stuck on
-        // "Reconnecting..." because google.script.run.signAppMessage() may be slow.
         window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
           needsReauth: ${session.needsReauth || false},
           messageKey: '${escapeJs(appMsgKey)}',
           role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
           permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
 
-        // Also send a signed version via google.script.run (belt-and-suspenders —
-        // if the unsigned one above is processed first, this signed one is a no-op;
-        // if HMAC verification rejects the unsigned one, this signed one succeeds)
+        // Also send a signed version via google.script.run (belt-and-suspenders)
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
@@ -3599,23 +3647,33 @@ function doGet(e) {
           .signAppMessage(_sessionToken, 'gas-auth-ok');
 
         window.addEventListener('message', function(e) {
+          // Phase 3: IP receiver removed — uncomment to re-enable
+          // if (e.data && e.data.type === 'host-client-ip') {
+          //   _clientIp = _valIp(e.data.ip);
+          // }
           if (e.data && e.data.type === 'gas-version-check') {
+            // DJB2→HMAC migration: signed server-side via signAppMessage()
             google.script.run
               .withSuccessHandler(function(signed) {
                 top.postMessage(signed, '${PARENT_ORIGIN}');
               })
-              .withFailureHandler(function() {})
+              .withFailureHandler(function() {
+                // Don't send an unsigned response — the version poll is periodic and will retry.
+                // A missing response is safer than an unsigned one that gets dropped by HMAC verify.
+              })
               .signAppMessage(_sessionToken, 'gas-version');
           }
         });
 
-        // Activity detection for heartbeat
+        // Activity detection — notify host page on user interaction so it can
+        // trigger an immediate heartbeat (catches expired sessions before data loss)
+        // DJB2→HMAC migration: signed server-side via signAppMessage()
         var _lastActivityNotify = 0;
         var _pendingActivity = false;
         function _notifyActivity() {
           var now = Date.now();
-          if (now - _lastActivityNotify < 5000) return;
-          if (_pendingActivity) return;
+          if (now - _lastActivityNotify < 5000) return; // 5s debounce
+          if (_pendingActivity) return; // Prevent stacking server calls
           _lastActivityNotify = now;
           _pendingActivity = true;
           google.script.run
@@ -3623,13 +3681,17 @@ function doGet(e) {
               _pendingActivity = false;
               window.top.postMessage(signed, '${PARENT_ORIGIN}');
             })
-            .withFailureHandler(function() { _pendingActivity = false; })
+            .withFailureHandler(function() {
+              _pendingActivity = false;
+              // Silently drop — next activity event will retry
+            })
             .signAppMessage(_sessionToken, 'gas-user-activity');
         }
         document.addEventListener('keydown', _notifyActivity, true);
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
+        // PROJECT START — globalacl ACL management UI logic
         // ══════════════════════════════════════
         // ACL Management UI Logic
         // ══════════════════════════════════════
@@ -4454,6 +4516,7 @@ function doGet(e) {
               });
             }
           }
+          // PROJECT END
 
           // PROJECT START — globalacl Global Sessions cross-project management
           function _loadGlobalSessions() {

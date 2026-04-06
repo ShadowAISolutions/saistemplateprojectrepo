@@ -3,9 +3,39 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
-## [Unreleased]
+## [v09.16r] — 2026-04-06 11:45:32 AM EST
+
+> **Prompt:** "make all 3 match identically in non project specific code"
+
+### Changed
+- Synchronized non-project-specific (shared template) code across all 3 GAS files (testauth1.gs, globalacl.gs, programportal.gs) to be character-for-character identical using programportal as canonical source
+- Added missing JSDoc comments and cross-project section headers to testauth1.gs and globalacl.gs
+- Canonicalized comment style, verbosity, and inline comment format across all shared functions
+- Reordered doGet action handlers in testauth1.gs to match canonical order (listSessions/setAdminSecret/adminSignOut/getNonce before phaseA)
+- Added missing PostMessage handshake guard to globalacl.gs client-side JS
+- Added missing HMAC migration and Phase 3 IP logging comments to globalacl.gs
+- Wrapped leaked project-specific code in proper PROJECT markers across all 3 files:
+  - testauth1: version display, user-email div, GAS toggle, admin panel JS, CSS overrides
+  - globalacl: cross-project admin functions, ACL management UI logic, custom confirm dialog, version display, ACL table HTML, base CSS overrides
+  - programportal: portal header/layout HTML, portal application registry JS
+- Standardized CSS baseline across all files (overflow: hidden, font-family: sans-serif)
+
+#### `testauth1.gs` — v02.53g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.48g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.57g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.15r] — 2026-04-06 10:42:45 AM EST
 

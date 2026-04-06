@@ -1,4 +1,4 @@
-var VERSION = "v02.52g";
+var VERSION = "v02.53g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -530,6 +530,9 @@ function deleteRow(token, rowIndex) {
 
 // ══════════════
 // CROSS-PROJECT SESSION MANAGEMENT
+// Enables the GlobalACL "Global Sessions" feature to query and manage
+// sessions on this project remotely via UrlFetchApp. The shared secret
+// is read from the "Config" tab of the Master ACL Spreadsheet.
 // ══════════════
 
 /**
@@ -611,6 +614,10 @@ function registerSelfProject() {
   }
 }
 
+/**
+ * Read the cross-project admin secret from Script Properties.
+ * Cached in-memory for the duration of a single GAS execution.
+ */
 var _crossProjectSecret = null;
 function getCrossProjectSecret() {
   if (_crossProjectSecret) return _crossProjectSecret;
@@ -624,6 +631,9 @@ function getCrossProjectSecret() {
   return '';
 }
 
+/**
+ * Validate a cross-project request: shared secret must match and caller must be admin.
+ */
 function validateCrossProjectAdmin(params) {
   var secret = (params && params.secret) || '';
   var callerEmail = (params && params.callerEmail) || '';
@@ -636,6 +646,10 @@ function validateCrossProjectAdmin(params) {
   return { valid: true, email: callerEmail };
 }
 
+/**
+ * List active sessions for cross-project aggregation (skips session-token validation).
+ * Called by the cross-project listSessions endpoint after secret+admin validation.
+ */
 function listActiveSessionsInternal(callerEmail) {
   var cache = getEpochCache();
   var activeSessions = [];
@@ -2066,7 +2080,7 @@ function processSecurityEvent(eventType, details) {
       page: EMBED_PAGE_URL
     });
     // PROJECT: Evaluate breach alert thresholds after logging
-    evaluateBreachAlert(String(eventType).substring(0, 50), seDetails);
+    evaluateBreachAlert(String(eventType).substring(0, 50), seDetails); // PROJECT: breach alert
   } else if (seGlobalCount === 50) {
     cache.put(seGlobalKey, String(seGlobalCount + 1), 300);
     auditLog('security_event_flood', 'system', 'Global rate limit reached', {
@@ -2271,6 +2285,83 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
+  // Cross-project session listing — called by GlobalACL's Global Sessions feature
+  // Returns JSON via ContentService (not HTML). Authenticated by shared secret.
+  if (action === 'listSessions') {
+    var cpParams = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
+    var cpAuth = validateCrossProjectAdmin(cpParams);
+    if (!cpAuth.valid) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth.reason }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var cpSessions = listActiveSessionsInternal(cpAuth.email);
+    return ContentService.createTextOutput(JSON.stringify({ success: true, sessions: cpSessions, project: TITLE }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Cross-project admin secret distribution — called by globalacl's distributeSecret_()
+  if (action === 'setAdminSecret') {
+    var newSecret = (e.parameter && e.parameter.newSecret) || '';
+    var oldSecret = (e.parameter && e.parameter.oldSecret) || '';
+    if (!newSecret) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'missing_secret' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var props = PropertiesService.getScriptProperties();
+    var current = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
+    // Accept if: no current secret (first setup) OR oldSecret matches current
+    if (current && oldSecret !== current) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
+    _crossProjectSecret = null; // clear cache
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
+  if (action === 'adminSignOut') {
+    var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
+    var cpAuth2 = validateCrossProjectAdmin(cpParams2);
+    if (!cpAuth2.valid) {
+      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var cpTarget = (e.parameter && e.parameter.targetEmail) || '';
+    if (cpTarget) {
+      invalidateAllSessions(cpTarget, 'admin_signout');
+    }
+    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // Nonce generation action — returns page that generates a one-time-use page nonce
+  // via google.script.run, replacing the insecure ?session=TOKEN URL pattern.
+  // The parent page loads this, sends the session token via postMessage, and receives
+  // a short-lived nonce to use in ?page_nonce=NONCE for the actual app load.
+  if (action === 'getNonce') {
+    var nonceListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage({type:"gas-nonce-ready"}, PARENT_ORIGIN);'
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data || evt.data.type !== "request-nonce") return;'
+      + '  google.script.run'
+      + '    .withSuccessHandler(function(r) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:r.success, nonce:r.nonce||"", error:r.error||""}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .withFailureHandler(function(e) {'
+      + '      window.top.postMessage({type:"gas-nonce-result", success:false, error:String(e)}, PARENT_ORIGIN);'
+      + '    })'
+      + '    .generatePageNonce(evt.data.sessionToken);'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(nonceListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
   // Phase A — HIPAA Privacy Rule operations listener
   if (action === 'phaseA') {
     var phaseAListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
@@ -2459,57 +2550,6 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Cross-project session listing — called by GlobalACL's Global Sessions feature
-  // Returns JSON via ContentService (not HTML). Authenticated by shared secret.
-  if (action === 'listSessions') {
-    var cpParams = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
-    var cpAuth = validateCrossProjectAdmin(cpParams);
-    if (!cpAuth.valid) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: cpAuth.reason }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    var cpSessions = listActiveSessionsInternal(cpAuth.email);
-    return ContentService.createTextOutput(JSON.stringify({ success: true, sessions: cpSessions, project: TITLE }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // Cross-project admin secret distribution — called by globalacl's distributeSecret_()
-  if (action === 'setAdminSecret') {
-    var newSecret = (e.parameter && e.parameter.newSecret) || '';
-    var oldSecret = (e.parameter && e.parameter.oldSecret) || '';
-    if (!newSecret) {
-      return ContentService.createTextOutput(JSON.stringify({ error: 'missing_secret' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    var props = PropertiesService.getScriptProperties();
-    var current = props.getProperty('CROSS_PROJECT_ADMIN_SECRET') || '';
-    // Accept if: no current secret (first setup) OR oldSecret matches current
-    if (current && oldSecret !== current) {
-      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', newSecret);
-    _crossProjectSecret = null; // clear cache
-    return ContentService.createTextOutput(JSON.stringify({ success: true }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  // Cross-project admin sign-out — called by globalacl's adminGlobalSignOutUser via UrlFetchApp
-  if (action === 'adminSignOut') {
-    var cpParams2 = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
-    var cpAuth2 = validateCrossProjectAdmin(cpParams2);
-    if (!cpAuth2.valid) {
-      return ContentService.createTextOutput(JSON.stringify({ error: 'unauthorized' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    var cpTarget = (e.parameter && e.parameter.targetEmail) || '';
-    if (cpTarget) {
-      invalidateAllSessions(cpTarget, 'admin_signout');
-    }
-    return ContentService.createTextOutput(JSON.stringify({ success: true, email: cpTarget }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-
   // Security event action — returns page that listens for event data via postMessage
   if (action === 'securityEvent') {
     var seListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
@@ -2523,32 +2563,6 @@ function doGet(e) {
       + '});'
       + '</' + 'script></body></html>';
     return HtmlService.createHtmlOutput(seListenerHtml)
-      .setTitle(TITLE)
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-
-  // Nonce generation action — returns page that generates a one-time-use page nonce
-  // via google.script.run, replacing the insecure ?session=TOKEN URL pattern.
-  // The parent page loads this, sends the session token via postMessage, and receives
-  // a short-lived nonce to use in ?page_nonce=NONCE for the actual app load.
-  if (action === 'getNonce') {
-    var nonceListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
-      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      + 'window.top.postMessage({type:"gas-nonce-ready"}, PARENT_ORIGIN);'
-      + 'window.addEventListener("message", function(evt) {'
-      + '  if (evt.origin !== PARENT_ORIGIN) return;'
-      + '  if (!evt.data || evt.data.type !== "request-nonce") return;'
-      + '  google.script.run'
-      + '    .withSuccessHandler(function(r) {'
-      + '      window.top.postMessage({type:"gas-nonce-result", success:r.success, nonce:r.nonce||"", error:r.error||""}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .withFailureHandler(function(e) {'
-      + '      window.top.postMessage({type:"gas-nonce-result", success:false, error:String(e)}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .generatePageNonce(evt.data.sessionToken);'
-      + '});'
-      + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(nonceListenerHtml)
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
@@ -2719,16 +2733,16 @@ function doGet(e) {
   var html = `
     <html>
     <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- PROJECT: testauth1 viewport -->
       <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
-        html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; }
-        .gas-layer-hidden { display: none !important; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: sans-serif; }
+        .gas-layer-hidden { display: none !important; } /* PROJECT: testauth1 gas layer toggle */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: 35px; right: 22px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; }
+        #user-email { position: fixed; top: 35px; right: 22px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; } /* PROJECT: testauth1 user email display */
         /* PROJECT START — testauth1 Live Data App styles */
         #live-data-app {
           position: fixed; top: 30px; left: 0; right: 0; bottom: 30px; z-index: 2;
@@ -2915,11 +2929,13 @@ function doGet(e) {
       </style>
     </head>
     <body>
+      <!-- PROJECT START — testauth1 version and UI elements -->
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
       <!-- GAS toggle moved to HTML layer (testauth1.html) for full iframe hide/show
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
       -->
+      <!-- PROJECT END -->
       ${isAdmin ? `
       <!-- PROJECT: Admin badge and panel (only rendered for admin users) -->
       <div id="admin-badge" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">ADMIN &#x25BE;</div>
@@ -3004,12 +3020,8 @@ function doGet(e) {
 
       <script>
         // PostMessage handshake guard: verify we are embedded in the correct parent page.
-        // Only runs on the ?session= path (initial sign-in). Skipped on the ?page_nonce=
-        // path (refresh, tab reclaim, cross-tab sync) because nonces are one-time-use —
-        // a copied nonce URL is already useless, providing equivalent replay protection.
-        // The old iframe guard (window.parent === window.top) was permanently broken because
-        // GAS wraps content in multiple nested iframes — window.parent is always Google's
-        // wrapper, never window.top, regardless of how the URL is accessed.
+        // Only runs on the ?session= path. Skipped on the ?page_nonce= path because
+        // nonces are one-time-use — a copied nonce URL is already useless.
         var _loadedViaNonce = ${pageNonce ? 'true' : 'false'};
         if (!_loadedViaNonce) {
           document.body.style.visibility = 'hidden';
@@ -3059,17 +3071,13 @@ function doGet(e) {
 
         // Notify wrapper that auth is OK — send immediately so the host page
         // can show the app without waiting for the async google.script.run call.
-        // Without this immediate send, page refresh and "Use Here" get stuck on
-        // "Reconnecting..." because google.script.run.signAppMessage() may be slow.
         window.top.postMessage({type: 'gas-auth-ok', version: '${escapeJs(VERSION)}',
           needsReauth: ${session.needsReauth || false},
           messageKey: '${escapeJs(appMsgKey)}',
           role: '${escapeJs(session.role || RBAC_DEFAULT_ROLE)}',
           permissions: ${JSON.stringify(session.permissions || getRolesFromSpreadsheet()[session.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE])}}, '${PARENT_ORIGIN}');
 
-        // Also send a signed version via google.script.run (belt-and-suspenders —
-        // if the unsigned one above is processed first, this signed one is a no-op;
-        // if HMAC verification rejects the unsigned one, this signed one succeeds)
+        // Also send a signed version via google.script.run (belt-and-suspenders)
         google.script.run
           .withSuccessHandler(function(signed) {
             window.top.postMessage(signed, '${PARENT_ORIGIN}');
@@ -3687,6 +3695,7 @@ function doGet(e) {
         })();
         // PROJECT END
 
+        // PROJECT START — testauth1 admin panel logic
         // PROJECT: Admin panel logic (only included for admin users)
         ${isAdmin ? `
         (function() {
@@ -4165,6 +4174,7 @@ function doGet(e) {
           }
         })();
         ` : ''}
+        // PROJECT END
 
       </script>
     </body>
