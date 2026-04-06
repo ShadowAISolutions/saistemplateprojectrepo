@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v03.92w">
+  <meta name="build-version" content="v03.93w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauth1 Title</title>
 <!-- ══════════════ -->
@@ -1304,7 +1304,6 @@
     }
 
     function handleTokenResponse(response) {
-
       // CSRF check: reject token callbacks that don't correspond to a sign-in we initiated.
       // GIS may fire the callback for automatic token renewal or when detecting a returning
       // user — these are legitimate but unsolicited, so silently ignore them.
@@ -1365,7 +1364,6 @@
     // Updates SSO indicator to "dismissed" (retry state) and shows auth wall
     // if the session has expired while the popup was open.
     function _onGisPopupDismissed() {
-
       _ssoRefreshDismissed = true;
       _updateSsoIndicator('dismissed');
       var session = loadSession();
@@ -1801,6 +1799,7 @@
         }
         return;
       }
+
       // ── Nonce generation flow ──
       // Step 1: getNonce listener page is ready — send the session token
       if (data.type === 'gas-nonce-ready' && _pendingNonceToken) {
@@ -2031,7 +2030,6 @@
           showApp(session.email, null, session.role);
           startCountdownTimers();
           startHeartbeat();
-
           // The server may report needsReauth because the server-side
           // session was close to expiring, but the client just reset its
           // rolling timer and the heartbeat will extend the server session
@@ -2050,7 +2048,6 @@
           showApp(_pendingSessionShow.email, _pendingSessionShow.displayName, _pendingSessionShow.role);
           startCountdownTimers();
           startHeartbeat();
-
           broadcastTabClaim();
           _pendingSessionShow = null;
           _gasAuthOkHandled = true;
@@ -3716,6 +3713,7 @@
         if (absStart && (Date.now() - absStart) / 1000 > ABSOLUTE_SESSION_DURATION) {
           clearSession();
           showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          // Fall through to the else block is not needed — we're done
           return;
         }
         // Also check rolling session timeout (no heartbeat to extend on page load)
@@ -3725,10 +3723,7 @@
           return;
         }
 
-        // Resume existing session — load GAS iframe with session token.
-        // Using ?session= directly on page load because CacheService eventual
-        // consistency makes loadIframeViaNonce unreliable here (nonce may not be
-        // readable immediately after being written).
+        // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
@@ -3759,7 +3754,6 @@
                 prompt: '',  // silent — no user interaction
                 login_hint: session.email || '',
                 callback: function(response) {
-
                   if (!response.error && response.access_token) {
                     _validateSSOTokenEmail(response.access_token, function() {
                       _ssoAccessToken = response.access_token;
@@ -3784,8 +3778,14 @@
           }, 200);
         }
       } else {
-        // No session — try SSO first, then fall back to auth wall.
-        // If the session expired explicitly, skip SSO and show expiry message.
+        // No session — the iframe IIFE created the element without navigating it
+        // (no src set on auth pages). The auth flow (exchangeViaUrl) will set
+        // the iframe src once Google Sign-In obtains a token.
+
+        // If the session expired before this reload (e.g. auto-refresh after
+        // timeout), show expired message. Otherwise show generic auth wall.
+        // In all cases, wait for the user to click "Sign In with Google" —
+        // never auto-trigger the OAuth popup on page load.
         var sessionWasExpired = sessionStorage.getItem(SESSION_EXPIRED_FLAG);
         sessionStorage.removeItem(SESSION_EXPIRED_FLAG);
         if (sessionWasExpired) {

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 39/100`
+`Sections: 40/100`
 
 ## [Unreleased]
+
+## [v09.03r] — 2026-04-05 11:39:42 PM EST
+
+> **Prompt:** "get it to 100%, other than project specific code which should be clearly in a specific separated section"
+
+### Changed
+- Fixed remaining cosmetic differences in shared auth code between testauth1.html and globalacl.html — removed extra blank lines, aligned comment wording, added missing "Fall through" comment — shared code is now 100% identical
+
+#### `testauth1.html` — v03.93w
+##### Changed
+- Minor internal improvements
 
 ## [v09.02r] — 2026-04-05 11:20:04 PM EST
 
