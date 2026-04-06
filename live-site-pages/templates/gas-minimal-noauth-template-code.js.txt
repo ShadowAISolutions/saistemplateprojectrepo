@@ -30,8 +30,8 @@ function doGet() {
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
-        html, body { height: 100%; margin: 0; overflow: auto; }
-        body { font-family: Arial; }
+        html, body { height: 100%; margin: 0; overflow: hidden; }
+        body { font-family: sans-serif; }
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
       </style>
     </head>
