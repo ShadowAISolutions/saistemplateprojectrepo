@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 41/100`
+`Sections: 42/100`
 
 ## [Unreleased]
+
+## [v09.05r] — 2026-04-06 08:31:35 AM EST
+
+> **Prompt:** "if there is identical code, i want them in exactly the same place (relatively)"
+
+### Changed
+- Reorganized testauth1.gs to match globalacl.gs section structure — HIPAA config variables (BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG, HIPAA_DEADLINES) and shared utility functions (generateRequestId, formatHipaaTimestamp, validateIndividualAccess, getOrCreateSheet, wrapPhaseAOperation) moved from mid-file to after serverSignOut(), with globalacl-style section headers (HIPAA COMPLIANCE — Configuration, Shared Utilities, Phase A/B/C)
+- Fixed processHeartbeat() return from 2-line assignment+return to 1-line inline return to match globalacl
+- Marked evaluateBreachAlert call as PROJECT-specific (was labeled Phase B)
+
+#### `testauth1.gs` — v02.48g
+##### Changed
+- Minor internal improvements
 
 ## [v09.04r] — 2026-04-06 08:10:11 AM EST
 
