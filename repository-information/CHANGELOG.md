@@ -3,7 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 62/100`
+`Sections: 63/100`
+
+## [v09.26r] — 2026-04-06 05:03:52 PM EST
+
+> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, cosmetic diffs, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+
+### Changed
+- Added `// PROJECT OVERRIDE:` markers to testauth1.html for HEARTBEAT_INTERVAL test value (60000) and session duration test values (180s/300s) — prevents template propagation from overwriting project-specific test configurations
+- Added `// PROJECT OVERRIDE:` markers to programportal.html for HEARTBEAT_INTERVAL test value (30000) and SSO_PROVIDER (true)
+- Removed "Include Test Features" checkbox and test template logic from gas-project-creator.html — all new projects now use minimal GAS templates only
+- Updated setup-gas-project.sh to remove INCLUDE_TEST support — template selection is now auth/noauth only
+
+### Removed
+- Deleted `gas-test-auth-template-code.js.txt` and `gas-test-noauth-template-code.js.txt` — consolidated into minimal templates to eliminate confusion between 4 template variants
+- Removed test template references from `.claude/rules/gas-scripts.md`, `.claude/rules/html-pages.md`, `REPO-ARCHITECTURE.md`, and `README.md`
+
+### Added
+- Created `gas-test-functions-reference.js.txt` — archived 6 test/diagnostic GAS functions (extended getAppData, getSoundBase64, writeVersionToSheet, readB1FromCacheOrSheet, onEditWriteB1ToCache, fetchGitHubQuotaAndLimits) for future reuse
+
+#### `testauth1.html` — v03.97w
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.93w
+##### Changed
+- Minor internal improvements
+
+#### `gas-project-creator.html` — v01.31w
+##### Changed
+- Simplified project creation workflow
 
 ## [v09.25r] — 2026-04-06 03:36:19 PM EST
 

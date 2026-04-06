@@ -191,16 +191,16 @@ When a `.gs` file is pushed and merged to `main`, the `auto-merge-claude.yml` wo
 
 ## GAS Template Source File
 
-The GAS templates in `live-site-pages/templates/` are the **single source of truth** for GAS project scaffolding. Four variants exist covering the combinations of test features (yes/no) and Google auth (yes/no):
-- `gas-minimal-noauth-template-code.js.txt` — minimal, no auth (default)
-- `gas-minimal-auth-template-code.js.txt` — minimal with Google auth
-- `gas-test-noauth-template-code.js.txt` — full-featured with test UI, no auth
-- `gas-test-auth-template-code.js.txt` — full-featured with test UI and Google auth
+The GAS templates in `live-site-pages/templates/` are the **single source of truth** for GAS project scaffolding. Two variants exist:
+- `gas-minimal-noauth-template-code.js.txt` — no auth (default)
+- `gas-minimal-auth-template-code.js.txt` — with Google auth
 
-Each contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
+A reference file (`gas-test-functions-reference.js.txt`) archives 6 optional test/diagnostic functions (version counting, sound playback, sheet operations, quota display) that can be manually added to projects needing a test admin UI.
 
-1. **Browser "Copy Code.gs" button** — the gas-project-creator page fetches the appropriate template based on checkbox selections and does find-and-replace with the user's config values before copying to clipboard
-2. **Setup script template** — `scripts/setup-gas-project.sh` selects the correct template based on `INCLUDE_TEST` and `INCLUDE_AUTH` config fields, copies it as the starting point for new GAS projects, then substitutes config values via sed
+Each template contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`, etc.) and serves two purposes:
+
+1. **Browser "Copy Code.gs" button** — the gas-project-creator page fetches the appropriate template based on the auth checkbox and does find-and-replace with the user's config values before copying to clipboard
+2. **Setup script template** — `scripts/setup-gas-project.sh` selects the correct template based on `INCLUDE_AUTH` config field, copies it as the starting point for new GAS projects, then substitutes config values via sed
 
 The templates live in `live-site-pages/templates/` because they must be accessible via GitHub Pages `fetch()`, and the setup script can read them from any location in the repo.
 
@@ -280,7 +280,7 @@ function doGet(e) {
 - `// PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
 - **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is. When `// PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **Keep clusters large** — prefer grouping related project-specific code together rather than scattering small project additions throughout the file. When practical, extract project logic into standalone functions in the PROJECT block and call them from template functions with an inline `// PROJECT:` marker
-- **The template source files** (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-noauth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) have empty PROJECT blocks — they define the insertion point but contain no project code themselves
+- **The template source files** (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`) have empty PROJECT blocks — they define the insertion point but contain no project code themselves
 
 ## GAS UI Layout Awareness
 

@@ -67,10 +67,9 @@ graph TB
         subgraph "live-site-pages/templates/ [template]"
             TPL_NOAUTH["[template] HtmlAndGasTemplateAutoUpdate-noauth.html.txt\n(HTML template without auth)"]
             TPL_AUTH["[template] HtmlAndGasTemplateAutoUpdate-auth.html.txt\n(HTML template with Google auth)"]
-            GASTPL_MIN_NOAUTH["[template] gas-minimal-noauth-template-code.js.txt\n(Minimal GAS template)"]
-            GASTPL_MIN_AUTH["[template] gas-minimal-auth-template-code.js.txt\n(Minimal GAS template with auth)"]
-            GASTPL_TEST_NOAUTH["[template] gas-test-noauth-template-code.js.txt\n(Full GAS template with test UI)"]
-            GASTPL_TEST_AUTH["[template] gas-test-auth-template-code.js.txt\n(Full GAS template with test UI &amp; auth)"]
+            GASTPL_MIN_NOAUTH["[template] gas-minimal-noauth-template-code.js.txt\n(GAS template)"]
+            GASTPL_MIN_AUTH["[template] gas-minimal-auth-template-code.js.txt\n(GAS template with auth)"]
+            GASTPL_REF["[template] gas-test-functions-reference.js.txt\n(Archived test functions)"]
         end
 
         subgraph "Project Config [template]"

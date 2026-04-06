@@ -85,7 +85,6 @@ SPREADSHEET_ID="$(parse_json SPREADSHEET_ID 'YOUR_SPREADSHEET_ID')"
 SHEET_NAME="$(parse_json SHEET_NAME 'Live_Sheet')"
 SOUND_FILE_ID="$(parse_json SOUND_FILE_ID '')"
 SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
-INCLUDE_TEST="$(parse_json INCLUDE_TEST 'false')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
 AUTH_PRESET="$(parse_json AUTH_PRESET 'standard')"
@@ -138,13 +137,11 @@ GAS_CL="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog.md"
 GAS_CL_ARCHIVE="live-site-pages/gs-changelogs/${ENV_NAME}gs.changelog-archive.md"
 GAS_SCRIPTS_RULES=".claude/rules/gas-scripts.md"
 
-# ── Template sources (selected by INCLUDE_TEST and INCLUDE_AUTH) ──
+# ── Template sources (selected by INCLUDE_AUTH) ──
 AUTH_SUFFIX="noauth"
 if [ "$INCLUDE_AUTH" = "true" ]; then AUTH_SUFFIX="auth"; fi
-GS_PREFIX="minimal"
-if [ "$INCLUDE_TEST" = "true" ]; then GS_PREFIX="test"; fi
 TPL_HTML="live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-${AUTH_SUFFIX}.html.txt"
-TPL_GS="live-site-pages/templates/gas-${GS_PREFIX}-${AUTH_SUFFIX}-template-code.js.txt"
+TPL_GS="live-site-pages/templates/gas-minimal-${AUTH_SUFFIX}-template-code.js.txt"
 
 # ── Phase 1: Pre-flight Checks ──
 info "Phase 1: Pre-flight checks..."
@@ -622,10 +619,8 @@ if [ -f "$ARCH_FILE" ]; then
         # 3. Add template source edge (auth or noauth based on INCLUDE_AUTH)
         if [ "$INCLUDE_AUTH" = "true" ]; then
             TPL_SOURCE="GASTPL_MIN_AUTH"
-            if [ "$INCLUDE_TEST" = "true" ]; then TPL_SOURCE="GASTPL_TEST_AUTH"; fi
         else
             TPL_SOURCE="GASTPL_MIN_NOAUTH"
-            if [ "$INCLUDE_TEST" = "true" ]; then TPL_SOURCE="GASTPL_TEST_NOAUTH"; fi
         fi
         LAST_TPL_EDGE=$(grep -n 'template source' "$ARCH_FILE" | grep 'setup-gas-project' | tail -1 | cut -d: -f1)
         if [ -n "$LAST_TPL_EDGE" ]; then

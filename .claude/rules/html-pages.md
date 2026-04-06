@@ -136,7 +136,7 @@ Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-v
 
 When any template source file is modified, **propagate the same changes to all existing pages/GAS scripts** in the repo. The template sources are:
 - **HTML templates**: `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt` → propagate to all `.html` pages in `live-site-pages/`. Changes to shared template logic in either variant must be applied to both variants and to all existing pages
-- **GAS templates**: `live-site-pages/templates/gas-minimal-noauth-template-code.js.txt` (default) → propagate to all `.gs` files in `googleAppsScripts/`. Auth variants (`gas-minimal-auth-template-code.js.txt`) and test variants (`gas-test-noauth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) also exist — shared template logic changes must be propagated across all variants
+- **GAS templates**: `live-site-pages/templates/gas-minimal-noauth-template-code.js.txt` (default) and `gas-minimal-auth-template-code.js.txt` (auth variant) → propagate to all `.gs` files in `googleAppsScripts/`. Shared template logic changes must be propagated across both variants
 
 ### What "propagate" means
 - Apply the **same structural/feature change** (the diff) to each existing page or GAS script — do NOT blindly overwrite files. Each page has its own title, config values, deployment IDs, localStorage keys, and page-specific customizations that must be preserved
@@ -165,7 +165,7 @@ When a conflict is detected:
 
 ### Propagation scope
 - **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
-- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from a GAS template. The GAS templates (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`, `gas-test-noauth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`) use `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
+- **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from a GAS template. The GAS templates (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`) use `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
 
 ## Template vs Project Code Separation (HTML)
 

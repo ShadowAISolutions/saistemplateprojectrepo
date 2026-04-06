@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.30w">
+  <meta name="build-version" content="v01.31w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -699,10 +699,7 @@
               <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
             </div>
           </div>
-          <label style="display:flex;align-items:center;gap:6px;margin-top:10px;margin-bottom:10px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
-            <input type="checkbox" id="chk-full-template" style="cursor:pointer;">
-            Include test/diagnostic features <span style="color:#6e7681;">(sound, quotas, sheet embed, buttons &mdash; for verifying Google connections, not production use. Unchecked = minimal: version display + auto-update only)</span>
-          </label>
+          <!-- Test features checkbox removed — test templates consolidated into minimal templates (see gas-test-functions-reference.js.txt for archived test functions) -->
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
         </li>
@@ -1315,13 +1312,11 @@
 
 // ── Copy Code.gs ──
     (function() {
-      // Load all 4 GAS template variants (test/minimal × auth/noauth)
+      // Load GAS template variants (auth/noauth)
       var _gsTemplates = {};
       var _templateFiles = {
         'minimal-noauth': 'templates/gas-minimal-noauth-template-code.js.txt',
-        'minimal-auth':   'templates/gas-minimal-auth-template-code.js.txt',
-        'test-noauth':    'templates/gas-test-noauth-template-code.js.txt',
-        'test-auth':      'templates/gas-test-auth-template-code.js.txt'
+        'minimal-auth':   'templates/gas-minimal-auth-template-code.js.txt'
       };
       Object.keys(_templateFiles).forEach(function(key) {
         fetch(_templateFiles[key])
@@ -1330,9 +1325,8 @@
           .catch(function() {});
       });
       window.copyGsCode = function(btn) {
-        var useFull = document.getElementById('chk-full-template').checked;
         var useAuth = document.getElementById('chk-google-auth').checked;
-        var templateKey = (useFull ? 'test' : 'minimal') + '-' + (useAuth ? 'auth' : 'noauth');
+        var templateKey = 'minimal-' + (useAuth ? 'auth' : 'noauth');
         var source = _gsTemplates[templateKey];
         if (!source) { btn.textContent = 'Loading...'; return; }
         var code = source;
@@ -1549,7 +1543,6 @@
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'YOUR_SHEET_NAME';
       var soundId = document.getElementById('cfg-sound-id').value.trim() || 'YOUR_SOUND_FILE_ID';
       var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'YOUR_SPLASH_LOGO_URL';
-      var includeTest = document.getElementById('chk-full-template').checked;
       var includeAuth = document.getElementById('chk-google-auth').checked;
 
       var json = '{\n'
@@ -1560,7 +1553,6 @@
         + '  "SHEET_NAME": "' + sheetName + '",\n'
         + '  "SOUND_FILE_ID": "' + soundId + '",\n'
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'
-        + '  "INCLUDE_TEST": ' + (includeTest ? 'true' : 'false') + ',\n'
         + '  "INCLUDE_AUTH": ' + (includeAuth ? 'true' : 'false');
       if (includeAuth) {
         var clientId = document.getElementById('cfg-client-id').value.trim() || 'YOUR_CLIENT_ID';

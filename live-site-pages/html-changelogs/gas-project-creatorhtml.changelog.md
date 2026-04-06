@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.31w] — 2026-04-06 05:03:52 PM EST — v09.26r
+
+### Changed
+- Simplified project creation workflow
 
 ## [v01.30w] — 2026-04-05 06:17:39 PM EST — v08.91r
 
