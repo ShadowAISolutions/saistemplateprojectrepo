@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -272,6 +272,9 @@
       </label>
       <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;">
         <input type="checkbox" id="chk-case"> Ignore case
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#888;cursor:pointer;" title="Strip PROJECT blocks before comparing — only compare TEMPLATE (shared/foundational) code">
+        <input type="checkbox" id="chk-template-only"> Template only
       </label>
     </div>
 
@@ -543,6 +546,7 @@
 // ══════════════
 
     var _lastDiffOps = null;
+    var _lastTemplateOnly = false;
 
     // --- LCS-based line diff ---
     function lcs(a, b, eq) {
@@ -594,6 +598,30 @@
       return r;
     }
 
+    // --- Strip PROJECT blocks (keep only TEMPLATE/shared code) ---
+    function stripProjectBlocks(text) {
+      var lines = text.split('\n');
+      var result = [];
+      var inProject = false;
+      var projectStartRe = /PROJECT\s+START/;
+      var projectEndRe = /PROJECT\s+END/;
+      for (var i = 0; i < lines.length; i++) {
+        if (projectStartRe.test(lines[i])) {
+          inProject = true;
+          continue;
+        }
+        if (projectEndRe.test(lines[i])) {
+          inProject = false;
+          continue;
+        }
+        // Also skip the ══════════════ divider lines adjacent to PROJECT markers
+        if (!inProject) {
+          result.push(lines[i]);
+        }
+      }
+      return result.join('\n');
+    }
+
     // --- Main compare function ---
     function compareTexts() {
       var leftText = document.getElementById('text-left').value;
@@ -602,6 +630,12 @@
 
       var trimWs = document.getElementById('chk-trim').checked;
       var ignoreCase = document.getElementById('chk-case').checked;
+      var templateOnly = document.getElementById('chk-template-only').checked;
+
+      if (templateOnly) {
+        leftText = stripProjectBlocks(leftText);
+        rightText = stripProjectBlocks(rightText);
+      }
 
       var leftLines = leftText.split('\n');
       var rightLines = rightText.split('\n');
@@ -648,6 +682,7 @@
 
       // Store for export and render
       _lastDiffOps = merged;
+      _lastTemplateOnly = templateOnly;
       renderDiff(merged);
     }
 
@@ -690,7 +725,10 @@
         document.getElementById('diff-left').innerHTML = '';
         document.getElementById('diff-right').innerHTML = '';
         document.getElementById('diff-output').style.display = 'block';
-        document.getElementById('no-results').innerHTML = '<div class="identical-msg">✓ Texts are identical (' + stats.total + ' lines)</div>';
+        var identicalMsg = _lastTemplateOnly
+          ? '✓ Template code is identical (' + stats.total + ' lines) — only PROJECT blocks differ'
+          : '✓ Texts are identical (' + stats.total + ' lines)';
+        document.getElementById('no-results').innerHTML = '<div class="identical-msg">' + identicalMsg + '</div>';
         document.getElementById('no-results').style.display = 'block';
       } else {
         document.getElementById('no-results').style.display = 'none';
@@ -746,7 +784,13 @@
       hunks.push({ start: hStart, end: hEnd });
 
       // Emit unified diff output
-      var output = '--- Original\n+++ Changed\n';
+      var output = '';
+      if (_lastTemplateOnly) {
+        output += '# Template-Only Comparison (PROJECT blocks stripped)\n';
+        output += '# Differences below are in TEMPLATE/shared foundational code only.\n';
+        output += '# If no differences appear, the template code is identical.\n\n';
+      }
+      output += '--- Original\n+++ Changed\n';
       for (var h = 0; h < hunks.length; h++) {
         var hunk = hunks[h];
         var lStart = null, lCount = 0, rStart = null, rCount = 0;
@@ -795,6 +839,7 @@
       document.getElementById('no-results').style.display = 'block';
       document.getElementById('no-results').innerHTML = 'Enter text in both fields and click Compare';
       _lastDiffOps = null;
+      _lastTemplateOnly = false;
       updateCounts();
     });
 

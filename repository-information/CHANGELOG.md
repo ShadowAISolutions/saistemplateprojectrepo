@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 32/100`
+`Sections: 33/100`
 
 ## [Unreleased]
+
+## [v08.96r] — 2026-04-05 09:44:11 PM EST
+
+> **Prompt:** "for testing, i am comparing the code of live-site-pages/testauth1.html and live-site-pages/globalacl.html , use that context to come up with something useful, in this example my goal is to make it so that we can quickly see whether the foundational code between the two is identical and only the project specific code is different"
+
+### Added
+- "Template Only" comparison mode to text-compare tool that strips PROJECT blocks before comparing, showing only TEMPLATE/foundational code differences
+- Template-specific identical message: "Template code is identical — only PROJECT blocks differ"
+- Template-only header annotation in Copy Context Diff output explaining that PROJECT blocks were stripped
+
+#### `text-compare.html` — v01.02w
+
+##### Added
+- "Template only" toggle that strips project-specific code sections before comparing, so you can verify foundational code is identical across pages
+- Enhanced "identical" message that clarifies when only project-specific sections differ
+- Template-only annotation in exported diff output
 
 ## [v08.95r] — 2026-04-05 09:35:38 PM EST
 
