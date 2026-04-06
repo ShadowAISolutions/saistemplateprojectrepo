@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 49/100`
+`Sections: 50/100`
 
 ## [Unreleased]
+
+## [v09.13r] — 2026-04-06 10:30:24 AM EST
+
+> **Prompt:** "continue with next phase"
+
+### Changed
+- Added proper `/* PROJECT START */` / `/* PROJECT END */` CSS block markers in doGet HTML template for all 3 auth GAS files — wrapping testauth1's Live Data App styles (130 lines), globalacl's ACL table/modal/toolbar styles (75 lines), and programportal's portal layout + announcements styles (186 lines)
+- Fixed misleading phaseA handler comment in programportal.gs and globalacl.gs (was `// Security event action`, now correctly `// Phase A — HIPAA Privacy Rule operations listener`)
+- Added missing `// Security event action` comment before actual securityEvent handler in programportal.gs and globalacl.gs
+- Converted single-line `/* PROJECT: */` CSS annotations to proper block markers with clear start/end boundaries
+
+#### `testauth1.gs` — v02.51g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.46g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.55g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.12r] — 2026-04-06 10:23:27 AM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v02.50g";
+var VERSION = "v02.51g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2729,7 +2729,7 @@ function doGet(e) {
         .gas-layer-hidden { display: none !important; }
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 35px; right: 22px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; }
-        /* PROJECT: Live Data App styles */
+        /* PROJECT START — testauth1 Live Data App styles */
         #live-data-app {
           position: fixed; top: 30px; left: 0; right: 0; bottom: 30px; z-index: 2;
           display: none; flex-direction: column;
@@ -2859,6 +2859,7 @@ function doGet(e) {
           #ld-add-row-bar { flex-direction: column; }
           #ld-add-row-bar input { min-width: 0 !important; width: 100%; }
         }
+        /* PROJECT END */
         ${isAdmin ? `
         /* PROJECT: Admin panel styles */
         #admin-badge { position: fixed; top: 7px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }

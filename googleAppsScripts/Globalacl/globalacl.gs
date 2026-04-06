@@ -1,4 +1,4 @@
-var VERSION = "v01.45g";
+var VERSION = "v01.46g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3275,6 +3275,7 @@ function doGet(e) {
         * { box-sizing: border-box; }
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: 'Segoe UI', Arial, sans-serif; color: #333; }
+        /* PROJECT START — globalacl ACL table and management UI styles */
         #acl-main {
           position: fixed; top: 30px; left: 0; right: 0; bottom: 30px;
           overflow: auto; background: #f5f6fa;
@@ -3350,6 +3351,7 @@ function doGet(e) {
         .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #ccc; border-top-color: #1565c0; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .count-badge { background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         ${isAdmin ? `
         /* PROJECT: Admin panel styles */

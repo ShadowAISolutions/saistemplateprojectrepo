@@ -1,4 +1,4 @@
-var VERSION = "v01.54g";
+var VERSION = "v01.55g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2691,6 +2691,7 @@ function doGet(e) {
       <style>
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
+        /* PROJECT START — programportal layout styles */
         #portal-main {
           position: fixed; top: 30px; left: 0; right: 0; bottom: 30px;
           overflow: auto; display: flex; flex-direction: column; align-items: center;
@@ -2758,8 +2759,9 @@ function doGet(e) {
         }
         .portal-open-toggle input:checked + .toggle-track { background: #66bb6a; }
         .portal-open-toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+        /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        /* PROJECT: Announcements section styles */
+        /* PROJECT START — programportal announcements styles */
         .announcements-header { display: flex; align-items: center; justify-content: space-between; }
         .announcements-badge {
           background: rgba(255,255,255,0.15); border-radius: 10px; padding: 2px 8px;
@@ -2783,7 +2785,7 @@ function doGet(e) {
         .announcement-date { color: rgba(255,255,255,0.35); font-size: 11px; margin-top: 8px; }
         .announcement-card.new-announcement { animation: announcement-flash 1.5s ease-out; }
         @keyframes announcement-flash { 0% { background: rgba(66,165,245,0.25); } 100% { background: rgba(255,255,255,0.06); } }
-        /* PROJECT: Admin controls for announcements */
+        /* Admin controls for announcements */
         .ann-admin-controls { display: flex; gap: 6px; position: absolute; top: 12px; right: 12px; }
         .ann-admin-btn {
           background: rgba(255,255,255,0.1); border: none; border-radius: 6px;
@@ -2875,6 +2877,7 @@ function doGet(e) {
         .ann-poll-dot.polling { background: #d29922; animation: ann-pulse 1s infinite; }
         @keyframes ann-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
         .ann-poll-status { margin-left: auto; }
+        /* PROJECT END */
         ${isAdmin ? `
         /* PROJECT: Admin panel styles */
         #admin-badge { position: fixed; top: 7px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
