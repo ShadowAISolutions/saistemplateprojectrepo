@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 57/100`
+`Sections: 58/100`
+
+## [v09.21r] — 2026-04-06 01:03:28 PM EST
+
+> **Prompt:** "continue"
+
+### Changed
+- Added admin panel JS logic (~478 lines) to minimal-auth GAS template — all production auth scripts share this code but it was missing from the minimal template, forcing manual addition for every new project
+- Fixed blank line inconsistency in testauth1.gs doGet to match template (single → double blank before admin role detection)
+
+#### `testauth1.gs` — v02.55g
+##### Changed
+- Minor internal improvements
 
 ## [v09.20r] — 2026-04-06 12:55:06 PM EST
 

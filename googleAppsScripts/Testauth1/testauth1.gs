@@ -1,4 +1,4 @@
-var VERSION = "v02.54g";
+var VERSION = "v02.55g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2719,6 +2719,7 @@ function doGet(e) {
     var appRaw = appCache.get("session_" + sessionToken);
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
+
 
   // PROJECT: Admin role detection for conditional admin UI
   var isAdmin = (session.role === 'admin');
