@@ -1,4 +1,4 @@
-var VERSION = "v01.53g";
+var VERSION = "v01.54g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2249,7 +2249,6 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // Cross-project admin sign-out — called by GlobalACL to kick a user from this project
   // Cross-project admin secret distribution — called by globalacl's distributeSecret_()
   if (action === 'setAdminSecret') {
     var newSecret = (e.parameter && e.parameter.newSecret) || '';
@@ -2313,7 +2312,7 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Security event action — returns page that listens for event data via postMessage
+  // Phase A — HIPAA Privacy Rule operations listener
   if (action === 'phaseA') {
     var phaseAListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
       + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
@@ -2501,7 +2500,8 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-    if (action === 'securityEvent') {
+  // Security event action — returns page that listens for event data via postMessage
+  if (action === 'securityEvent') {
     var seListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
       + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
       + 'window.top.postMessage({type:"gas-security-event-ready"}, PARENT_ORIGIN);'
@@ -2670,19 +2670,18 @@ function doGet(e) {
     if (appRaw) { appMsgKey = JSON.parse(appRaw).messageKey || ''; }
   } catch(e) {}
 
-  // Look up per-app access for the current user (for the access toggle)
+  // PROJECT START — programportal pre-load app access and announcements
   var userAppAccess = getUserAppAccess(session.email);
   var userAppAccessJson = JSON.stringify(userAppAccess);
-
-  // PROJECT: Load initial announcements for inline rendering (avoids waiting for first poll)
   var initialAnnouncements = getCachedAnnouncements();
   var initialAnnouncementsJSON = initialAnnouncements ? JSON.stringify(initialAnnouncements) : 'null';
+  // PROJECT END
 
   // PROJECT: Admin role detection for conditional admin UI
   var isAdmin = (session.role === 'admin');
   var sessionTokenForAdmin = isAdmin ? sessionToken : '';
 
-  // Session valid — build the portal dashboard UI
+  // Session valid — build the authenticated app UI
   var html = `
     <html>
     <head>

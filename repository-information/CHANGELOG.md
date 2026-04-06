@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 48/100`
+`Sections: 49/100`
 
 ## [Unreleased]
+
+## [v09.12r] — 2026-04-06 10:23:27 AM EST
+
+> **Prompt:** "continue with next phase"
+
+### Changed
+- Unified doGet action handler comments across all 3 auth GAS files — fixed misleading `// Security event action` comment (was labeling phaseA handler), added `// Security event action` comment before actual securityEvent handler in programportal.gs and globalacl.gs, removed misplaced `// Cross-project admin sign-out` comment from programportal.gs setAdminSecret section, unified `// Auto-register` and `// Normal flow:` comments
+- Added `// PROJECT START`/`// PROJECT END` markers around testauth1's `getData` action handler
+- Added `// PROJECT START`/`// PROJECT END` markers around globalacl's `adminGlobalSessions` action handler
+- Marked `ensureCrossProjectSecret()` call in globalacl doGet with `// PROJECT:` annotation
+- Added `// PROJECT START`/`// PROJECT END` markers around project-specific pre-HTML data loading in all 3 files (testauth1: `getCachedData()`, globalacl: `loadACLData()`, programportal: `getUserAppAccess()` + `getCachedAnnouncements()`)
+- Unified `// Session valid` comment before `var html` across all 3 files
+- Removed extra `// Both paths are valid` comment block from testauth1
+
+#### `testauth1.gs` — v02.50g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.45g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.54g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.11r] — 2026-04-06 10:10:52 AM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v02.49g";
+var VERSION = "v02.50g";
 var TITLE = "testauth1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2158,7 +2158,7 @@ function doGet(e) {
   // }
   var clientIp = 'not-collected';
 
-  // Auto-register this project in the cross-project registry
+  // Auto-register this project in the Master ACL Projects sheet
   registerSelfProject();
 
   // ── Phase 7: postMessage-based action routes ──
@@ -2191,6 +2191,7 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
+  // PROJECT START — testauth1 data poll action handler
   // Data poll action — validates session token then returns cached data inline.
   // Token is passed as URL parameter (not postMessage — Google's nested iframe
   // wrapper drops parent→child messages, making the ready/token handshake unreliable).
@@ -2207,6 +2208,7 @@ function doGet(e) {
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
+  // PROJECT END
 
   // Sign-out action — returns page that listens for token via postMessage
   if (action === 'signout') {
@@ -2457,7 +2459,8 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // Cross-project session listing — called by globalacl's listGlobalSessions via UrlFetchApp
+  // Cross-project session listing — called by GlobalACL's Global Sessions feature
+  // Returns JSON via ContentService (not HTML). Authenticated by shared secret.
   if (action === 'listSessions') {
     var cpParams = { secret: (e.parameter && e.parameter.secret) || '', callerEmail: (e.parameter && e.parameter.callerEmail) || '' };
     var cpAuth = validateCrossProjectAdmin(cpParams);
@@ -2683,9 +2686,6 @@ function doGet(e) {
   }
 
   // Normal flow: validate session token (from page_nonce or ?session= parameter)
-  // Both paths are valid: ?session= is used for initial sign-in (from gas-session-created),
-  // ?page_nonce= is used for page refresh, tab reclaim, and cross-tab sync.
-  // The postMessage handshake guard blocks direct URL access.
   var session = validateSession(sessionToken);
 
   if (session.status !== "authorized") {
@@ -2710,9 +2710,12 @@ function doGet(e) {
   var isAdmin = (session.role === 'admin');
   var sessionTokenForAdmin = isAdmin ? sessionToken : '';
 
-  // Session valid — build the app HTML with live data table
+  // PROJECT START — testauth1 pre-load cached data for live data table
   var initialData = getCachedData();
   var initialDataJSON = initialData ? JSON.stringify(initialData) : 'null';
+  // PROJECT END
+
+  // Session valid — build the authenticated app UI
   var html = `
     <html>
     <head>
