@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 45/100`
+`Sections: 46/100`
 
 ## [Unreleased]
+
+## [v09.09r] — 2026-04-06 09:42:41 AM EST
+
+> **Prompt:** "now that the non project specific code between testauth1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
+
+### Changed
+- Rebuilt auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) from the unified programportal.html source — template non-project code now matches all 3 live auth pages exactly
+- Applied placeholder replacements: `TEMPLATE_TITLE`, `YOUR_CLIENT_ID`, empty `var _e`, `v01.00w` initial version, `document.title` for sourceDisplayName, production config defaults (HEARTBEAT_INTERVAL: 300000, SSO_PROVIDER: false)
+- Removed project-specific `_updateReconnectStage('rc-stage-sso')` from template
+- GAS template sync deferred — live GAS files need unification first (same process as HTML)
 
 ## [v09.08r] — 2026-04-06 09:18:24 AM EST
 

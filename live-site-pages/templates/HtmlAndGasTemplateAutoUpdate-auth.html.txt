@@ -239,7 +239,6 @@
     .reconnect-checklist li.stage-done { color: #34a853; }
     .reconnect-checklist li.stage-done .chk-icon::before { content: '\2713'; color: #34a853; }
     .reconnect-checklist .stage-time { font-size: 11px; color: #999; margin-left: auto; font-weight: normal; }
-
     .auth-pulse-dots { display: flex; gap: 8px; justify-content: center; }
     .auth-pulse-dots span {
       width: 10px; height: 10px; border-radius: 50%; background: #999;
@@ -248,7 +247,6 @@
     .auth-pulse-dots span:nth-child(2) { animation-delay: 0.2s; }
     .auth-pulse-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes auth-pulse { 0%,80%,100% { opacity: 0.3; } 40% { opacity: 1; } }
-
     #signing-out-wall {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       z-index: 10002; display: none; align-items: center; justify-content: center;
@@ -335,7 +333,7 @@
 /* ══════════════ */
 /* PROJECT START */
 /* ══════════════ */
-
+    .html-layer-hidden { display: none !important; }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -385,6 +383,7 @@
     <div id="auth-wall-signing-in" style="display:none;text-align:center;">
       <h2 style="color:#666;font-weight:normal;">Signing in&hellip;</h2>
       <div class="auth-spinner"></div>
+      <!-- PROJECT: Sign-in stage checklist -->
       <ul id="signin-checklist" class="signin-checklist">
         <li id="stage-contacting" class="stage-pending"><span class="chk-icon"></span>Requesting sign-in from Google</li>
         <li id="stage-verifying" class="stage-pending"><span class="chk-icon"></span>Exchanging credentials with server
@@ -410,6 +409,7 @@
   <div id="signing-out-wall">
     <h2>Signing out&hellip;</h2>
     <div class="auth-spinner"></div>
+    <!-- PROJECT: Sign-out stage checklist -->
     <ul id="signout-checklist" class="signout-checklist">
       <li id="so-stage-clearing" class="stage-pending"><span class="chk-icon"></span>Clearing local session data</li>
       <li id="so-stage-tabs" class="stage-pending"><span class="chk-icon"></span>Notifying other open tabs</li>
@@ -467,7 +467,6 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- YOUR PAGE CONTENT HERE -->
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -503,8 +502,8 @@
       TOKEN_EXCHANGE_METHOD: 'postMessage',
       // Heartbeat: extends session while user is active (sends heartbeat to GAS server)
       ENABLE_HEARTBEAT: true,
-      HEARTBEAT_INTERVAL: 300000,  // ms — how often to check for activity and send heartbeat (5min)
-      DATA_POLL_INTERVAL: 15000,  // ms — how often to poll for data (continuous, independent of heartbeat)
+      HEARTBEAT_INTERVAL: 300000,  // ms — how often to poll GAS for fresh data (5min)
+      DATA_POLL_INTERVAL: 15000,  // ms — how often to poll GAS for fresh data
       // Single-tab enforcement: only one tab can be active at a time.
       // When enabled, opening the page in a new tab claims the session and
       // shows a "session active elsewhere" overlay on the old tab.
@@ -1232,6 +1231,29 @@
     // Load the GAS iframe via a one-time-use page nonce instead of ?session=TOKEN.
     // This prevents session URL replay — the nonce expires in 60 seconds and is single-use.
     // Flow: load ?action=getNonce → gas-nonce-ready → send session token → gas-nonce-result → load ?page_nonce=NONCE
+    //
+    // WHY THIS EXISTS (v05.59r–v05.70r):
+    // Direct ?session=TOKEN URLs are visible in DevTools Network tab. A user could copy
+    // the URL and replay it in another tab/browser to gain authenticated access without
+    // signing in. The nonce flow prevents this — the nonce is single-use and expires in
+    // 60 seconds, so a copied URL is worthless.
+    //
+    // WHY INITIAL SIGN-IN USES DIRECT ?session= INSTEAD:
+    // GAS CacheService is eventually consistent — a nonce written by generatePageNonce()
+    // may not be readable by validatePageNonce() moments later (cache.get returns null).
+    // This causes sign-in failures. Initial sign-in uses ?session= directly because the
+    // token was just created and the postMessage handshake guard prevents direct URL access.
+    //
+    // DRAWBACKS:
+    // - Adds latency (extra round-trip to GAS for nonce generation)
+    // - CacheService dependency (eventual consistency can cause intermittent failures)
+    // - More complex code path (3-step postMessage handshake)
+    //
+    // FUNDAMENTAL DEFENSE LAYER:
+    // The postMessage handshake guard in GAS blocks direct URL navigation — even with a
+    // valid ?session= URL, opening it in a browser tab shows "Access denied" after 2 seconds.
+    // The nonce flow adds defense-in-depth for the iframe src attribute specifically.
+    //
     // Options:
     //   skipExpectingSession: true to NOT set _expectingSession (needed on page-load
     //     where no prior iframe content exists to send stale gas-needs-auth)
@@ -1293,8 +1315,6 @@
     var _authNonce = null;       // CSRF nonce: set before each requestAccessToken(), consumed in handleTokenResponse()
     var _iframeLoadTime = null;
 
-    // SSO indicator — shows SSO token status (off/pending/ready/dismissed)
-    // Gated behind SSO_PROVIDER — no-op on non-SSO pages.
     function _updateSsoIndicator(state) {
       if (!HTML_CONFIG.SSO_PROVIDER) return;
       // Never show SSO badge when auth wall is visible (user is signed out)
@@ -1402,8 +1422,8 @@
       'gas-signed-out': true,
       'gas-version': true,
       'gas-session-invalid': true,
-      'gas-nonce-ready': true,            // Nonce generation listener page ready signal
-      'gas-nonce-result': true            // Nonce generation result (success/failure)
+      'gas-nonce-ready': true,
+      'gas-nonce-result': true
     };
 
     // Layer 0: Origin validation for incoming postMessages (Phase 2 — C-2/H-2)
@@ -1840,12 +1860,6 @@
           _pendingSessionShow = { email: data.email, displayName: data.displayName, role: data.role };
           // Normal sign-in flow (OAuth) — reload iframe with session token
           // so the app UI loads (first load was the token exchange page).
-          // Uses ?session= directly for initial sign-in because CacheService
-          // is eventually consistent — a page_nonce written in exchangeTokenForSession
-          // may not be readable by validatePageNonce() moments later (cache.get returns null).
-          // This is safe: the token was just created, the URL is only in the iframe's
-          // network request (not the address bar), and OAuth already verified the user.
-          // Other paths (page refresh, tab reclaim) use loadIframeViaNonce() for replay protection.
           _updateSignInStage('Loading application\u2026');
           _updateSubStep('sub-downloading');
           var gasApp = document.getElementById('gas-app');
@@ -2121,12 +2135,7 @@
           _pendingSessionShow = { email: session.email, displayName: null, role: session.role };
           getStorage().setItem(SESSION_START_KEY, String(Date.now()));
           getStorage().setItem(ABSOLUTE_START_KEY, String(Date.now()));
-          var gasApp = document.getElementById('gas-app');
-          var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-          if (gasApp && baseUrl) {
-            _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
-          }
+          loadIframeViaNonce(session.token);
         }
       }
 
@@ -2375,24 +2384,42 @@
       document.getElementById('auth-wall-signin').style.display = 'none';
       document.getElementById('auth-wall-reconnecting').style.display = 'none';
       document.getElementById('auth-wall-signing-in').style.display = '';
-      // Reset checklist — show checklist, hide SSO subtitle, clear timers
+      // PROJECT: Reset checklist — show checklist, hide SSO subtitle, clear timers
+      _signInStartTime = Date.now();
       _stageStartTimes = {};
+      _subStepStartTimes = {};
+      _subStepFrozenTimes = {};
+      _activeSubStepId = null;
+      _activeStageId = null;
+      if (_subStepTickTimer) { clearInterval(_subStepTickTimer); _subStepTickTimer = null; }
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       var checklist = document.getElementById('signin-checklist');
       var subtitle = document.getElementById('signing-in-subtitle');
       if (checklist) {
         checklist.style.display = '';
+        var allTimes = checklist.querySelectorAll('.stage-time');
+        for (var k = 0; k < allTimes.length; k++) allTimes[k].remove();
         var items = checklist.getElementsByTagName('li');
         for (var i = 0; i < items.length; i++) {
           items[i].className = 'stage-pending';
-          var oldTime = items[i].querySelector('.stage-time');
-          if (oldTime) oldTime.remove();
         }
       }
       if (subtitle) subtitle.style.display = 'none';
       _updateSignInStage('Contacting Google\u2026');
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
+      var _siLastStage = document.getElementById('stage-ready');
+      if (_siLastStage) {
+        var _siTotalSpan = document.createElement('span');
+        _siTotalSpan.className = 'stage-time stage-time-total';
+        _siTotalSpan.textContent = '0.0s total';
+        _siLastStage.appendChild(_siTotalSpan);
+        _totalTickTimer = setInterval(function() {
+          if (_signInStartTime) _siTotalSpan.textContent = _formatStageTime(Date.now() - _signInStartTime) + ' total';
+        }, 100);
+      }
     }
 
-    // Sign-in stage checklist logic
+    // PROJECT: Sign-in stage checklist logic
     var _stageOrder = ['stage-contacting', 'stage-verifying', 'stage-creating', 'stage-loading', 'stage-ready'];
     var _stageStartTimes = {};
     var _stageMap = {
@@ -2405,7 +2432,6 @@
     };
 
     function _formatStageTime(ms) {
-      if (ms < 1000) return ms + 'ms';
       return (ms / 1000).toFixed(1) + 's';
     }
 
@@ -2413,16 +2439,66 @@
       var start = _stageStartTimes[stageId] || _soStageStartTimes[stageId] || _rcStageStartTimes[stageId];
       if (!start) return;
       var elapsed = Date.now() - start;
-      var timeSpan = el.querySelector('.stage-time');
+      var timeSpan = el.querySelector(':scope > .stage-time');
       if (!timeSpan) {
         timeSpan = document.createElement('span');
         timeSpan.className = 'stage-time';
+        if (el.querySelector(':scope > .sub-steps')) timeSpan.classList.add('stage-time-total');
         el.appendChild(timeSpan);
       }
-      timeSpan.textContent = _formatStageTime(elapsed);
+      var hasSubSteps = el.querySelector(':scope > .sub-steps');
+      timeSpan.textContent = _formatStageTime(elapsed) + (hasSubSteps ? ' group' : '');
     }
 
-    // Sub-step tracking — granular progress within multi-step stages
+    function _updateSignInStage(text) {
+      var targetId = _stageMap[text];
+      if (!targetId) return;
+      var targetIdx = _stageOrder.indexOf(targetId);
+      if (targetIdx === -1) return;
+      var now = Date.now();
+      for (var i = 0; i < _stageOrder.length; i++) {
+        var el = document.getElementById(_stageOrder[i]);
+        if (!el) continue;
+        if (i < targetIdx) {
+          if (el.className !== 'stage-done') {
+            _completeSubStepsForStage(el);
+            _setStageTime(el, _stageOrder[i]);
+            el.className = 'stage-done';
+          }
+        } else if (i === targetIdx) {
+          el.className = 'stage-active';
+          if (!_stageStartTimes[_stageOrder[i]]) {
+            _stageStartTimes[_stageOrder[i]] = now;
+          }
+          _activeStageId = _stageOrder[i];
+          _startStageTick();
+        } else {
+          el.className = 'stage-pending';
+        }
+      }
+    }
+
+    function _completeAllStages() {
+      for (var i = 0; i < _stageOrder.length; i++) {
+        var el = document.getElementById(_stageOrder[i]);
+        if (!el) continue;
+        if (el.className !== 'stage-done') {
+          _setStageTime(el, _stageOrder[i]);
+          el.className = 'stage-done';
+        }
+      }
+      _completeAllSubSteps();
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
+      if (_signInStartTime) {
+        var lastStage = document.getElementById(_stageOrder[_stageOrder.length - 1]);
+        if (lastStage) {
+          var totalSpan = lastStage.querySelector('.stage-time');
+          if (totalSpan) totalSpan.textContent = _formatStageTime(Date.now() - _signInStartTime) + ' total';
+        }
+      }
+    }
+
+    // PROJECT: Sign-in sub-step tracking
     var _subStepGroups = {
       'sub-steps-verifying': ['sub-connecting', 'sub-sending', 'sub-processing'],
       'sub-steps-loading': ['sub-downloading', 'sub-starting'],
@@ -2434,6 +2510,9 @@
     var _activeSubStepId = null;
     var _stageTickTimer = null;
     var _activeStageId = null;
+    var _signInStartTime = null;
+    var _signOutStartTime = null;
+    var _totalTickTimer = null;
 
     function _updateSubStep(subStepId) {
       var parentUl = null;
@@ -2545,47 +2624,15 @@
       }
     }
 
-    function _updateSignInStage(text) {
-      var targetId = _stageMap[text];
-      if (!targetId) return;
-      var targetIdx = _stageOrder.indexOf(targetId);
-      if (targetIdx === -1) return;
-      var now = Date.now();
-      for (var i = 0; i < _stageOrder.length; i++) {
-        var el = document.getElementById(_stageOrder[i]);
-        if (!el) continue;
-        if (i < targetIdx) {
-          if (el.className !== 'stage-done') {
-            _setStageTime(el, _stageOrder[i]);
-            el.className = 'stage-done';
-          }
-        } else if (i === targetIdx) {
-          el.className = 'stage-active';
-          if (!_stageStartTimes[_stageOrder[i]]) {
-            _stageStartTimes[_stageOrder[i]] = now;
-          }
-        } else {
-          el.className = 'stage-pending';
-        }
-      }
+    // Hide sub-sending on URL path (no postMessage exchange)
+    if (HTML_CONFIG.TOKEN_EXCHANGE_METHOD !== 'postMessage') {
+      var subSending = document.getElementById('sub-sending');
+      if (subSending) subSending.style.display = 'none';
     }
 
-    function _completeAllStages() {
-      for (var i = 0; i < _stageOrder.length; i++) {
-        var el = document.getElementById(_stageOrder[i]);
-        if (!el) continue;
-        if (el.className !== 'stage-done') {
-          _setStageTime(el, _stageOrder[i]);
-          el.className = 'stage-done';
-        }
-      }
-    }
-
-    // Sign-out stage checklist logic
+    // PROJECT: Sign-out stage checklist logic
     var _soStageOrder = ['so-stage-clearing', 'so-stage-tabs', 'so-stage-apps', 'so-stage-server', 'so-stage-confirm', 'so-stage-complete'];
     var _soStageStartTimes = {};
-    var _signOutStartTime = null;
-    var _totalTickTimer = null;
 
     function _updateSignOutStage(stageId) {
       var targetIdx = _soStageOrder.indexOf(stageId);
@@ -2596,6 +2643,7 @@
         if (!el) continue;
         if (i < targetIdx) {
           if (el.className !== 'stage-done') {
+            _completeSubStepsForStage(el);
             _setStageTime(el, _soStageOrder[i]);
             el.className = 'stage-done';
           }
@@ -2604,6 +2652,8 @@
           if (!_soStageStartTimes[_soStageOrder[i]]) {
             _soStageStartTimes[_soStageOrder[i]] = now;
           }
+          _activeStageId = _soStageOrder[i];
+          _startStageTick();
         } else {
           el.className = 'stage-pending';
         }
@@ -2611,12 +2661,23 @@
     }
 
     function _completeAllSignOutStages() {
+      _activeStageId = null;
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       for (var i = 0; i < _soStageOrder.length; i++) {
         var el = document.getElementById(_soStageOrder[i]);
         if (!el) continue;
         if (el.className !== 'stage-done') {
           _setStageTime(el, _soStageOrder[i]);
           el.className = 'stage-done';
+        }
+      }
+      _completeAllSubSteps();
+      if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
+      if (_signOutStartTime) {
+        var lastStage = document.getElementById(_soStageOrder[_soStageOrder.length - 1]);
+        if (lastStage) {
+          var totalSpan = lastStage.querySelector('.stage-time');
+          if (totalSpan) totalSpan.textContent = _formatStageTime(Date.now() - _signOutStartTime) + ' total';
         }
       }
     }
@@ -2639,7 +2700,6 @@
           items[i].className = 'stage-pending';
         }
       }
-      // Start live total ticker on the "Sign-out complete" row
       if (_totalTickTimer) { clearInterval(_totalTickTimer); _totalTickTimer = null; }
       var _soLastStage = document.getElementById('so-stage-complete');
       if (_soLastStage) {
@@ -2677,6 +2737,8 @@
           if (!_rcStageStartTimes[_rcStageOrder[i]]) {
             _rcStageStartTimes[_rcStageOrder[i]] = now;
           }
+          _activeStageId = _rcStageOrder[i];
+          _startStageTick();
         } else {
           el.className = 'stage-pending';
         }
@@ -2684,6 +2746,8 @@
     }
 
     function _completeAllReconnectStages() {
+      _activeStageId = null;
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       for (var i = 0; i < _rcStageOrder.length; i++) {
         var el = document.getElementById(_rcStageOrder[i]);
         if (!el) continue;
@@ -2696,6 +2760,8 @@
 
     function _resetReconnectChecklist() {
       _rcStageStartTimes = {};
+      _activeStageId = null;
+      if (_stageTickTimer) { clearInterval(_stageTickTimer); _stageTickTimer = null; }
       var checklist = document.getElementById('reconnect-checklist');
       if (checklist) {
         var items = checklist.getElementsByTagName('li');
@@ -2710,6 +2776,7 @@
     function showApp(email, displayName, role) {
       _authState = 'authenticated';
       if (email) _ssoUserEmail = email;  // Hold for SSO sharing
+
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');
       var emailDisplay = document.getElementById('user-email-display');
@@ -2725,11 +2792,8 @@
         var session = loadSession();
         if (gasFrame && session.token) {
           var gasBaseUrl = gasFrame.dataset.baseUrl;
-          if (gasBaseUrl) {
-            var gasUrl = gasBaseUrl + '?session=' + encodeURIComponent(session.token);
-            if (gasFrame.src !== gasUrl) {
-              gasFrame.src = gasUrl;
-            }
+          if (gasBaseUrl && (!gasFrame.src || gasFrame.src === 'about:blank')) {
+            loadIframeViaNonce(session.token);
           }
         }
       }
@@ -2964,8 +3028,7 @@
 
       timersEl.style.display = 'flex';
 
-      // SSO indicator: ready if token held, pending if still acquiring,
-      // off if user dismissed the GIS popup without completing SSO
+      // SSO indicator: ready if token held, pending if still acquiring
       if (_ssoAccessToken) {
         _updateSsoIndicator('ready');
       } else if (!_ssoRefreshDismissed) {
@@ -3082,9 +3145,9 @@
 
     function stopCountdownTimers() {
       if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+      _updateSsoIndicator('off');
       var timersEl = document.getElementById('auth-timers');
       if (timersEl) timersEl.style.display = 'none';
-      _updateSsoIndicator('off');
       var storage = getStorage();
       storage.removeItem(SESSION_START_KEY);
       storage.removeItem(ABSOLUTE_START_KEY);
@@ -3188,6 +3251,7 @@
     }
 
     // =============================================
+    // =============================================
     // Panel registry — mutual exclusion and cleanup
     // =============================================
     var _panelRegistry = [];
@@ -3211,6 +3275,7 @@
       _authState = 'signing-out';
       opts = opts || {};
       var broadcastSSO = opts.broadcastSSO !== false; // default true for backwards compat
+      // PROJECT: Reset and start sign-out checklist
       _resetSignOutChecklist();
       _updateSignOutStage('so-stage-clearing');
       var session = loadSession();
@@ -3227,18 +3292,19 @@
       document.getElementById('tab-takeover-wall').style.display = 'none';
       _tabSurrendered = false;
 
+      // PROJECT: Advance to tabs stage
+      _updateSignOutStage('so-stage-tabs');
       // Notify other tabs (sessionStorage/hipaa mode — BroadcastChannel)
       // For localStorage/standard mode, cross-tab sync happens automatically via the storage event.
-      _updateSignOutStage('so-stage-tabs');
       if (_signOutChannel) {
         _signOutChannel.postMessage({ type: 'sign-out', tabId: _tabId });
       }
-      // SSO cross-page sign-out — only propagate deliberate sign-outs.
-      // Session expiry ('session-expired', 'absolute-expired') is page-local —
-      // each page has its own independent GAS session and timeout.
-      // Only a user-initiated sign-out should sign out all connected pages.
-      // When broadcastSSO is false (local-only sign-out), skip the SSO broadcast.
+      // PROJECT: Advance to connected apps stage
       _updateSignOutStage('so-stage-apps');
+      // SSO: broadcast sign-out to other apps (not for session expiry — that's page-local)
+      // Session expiry is page-local — each page has its own independent GAS session and timeout.
+      // Only user-initiated sign-out should sign out all connected pages.
+      // When broadcastSSO is false (local-only sign-out), skip the SSO broadcast.
       if (broadcastSSO && _ssoChannel && reason !== 'session-expired' && reason !== 'absolute-expired') {
         try {
           _ssoChannel.postMessage({
@@ -3272,7 +3338,7 @@
         // handler already showed auth wall — we still need to hide the overlay).
         if (_authState === 'signing-in' || _authState === 'reconnecting' || _authState === 'authenticated') return;
         _updateSignOutStage('so-stage-complete');
-        _completeAllSignOutStages();
+        _completeAllSignOutStages(); // PROJECT: mark all stages done before hiding
         document.getElementById('signing-out-wall').style.display = 'none';
         showAuthWall(message);
       }
@@ -3287,7 +3353,9 @@
         if (gasApp && baseUrl) {
           var _soToken = session.token;  // capture for closure
           var _soComplete = false;
+          // PROJECT: Advance to server invalidation stage
           _updateSignOutStage('so-stage-server');
+          _updateSubStep('sub-so-connecting');
           gasApp.src = baseUrl + '?action=signout';
 
           // Listen for GAS sign-out confirmation (gas-signed-out)
@@ -3307,6 +3375,8 @@
             if (!event.data || event.data.type !== 'gas-signout-ready') return;
             _soHandled = true;
             window.removeEventListener('message', _soHandler);
+            // PROJECT: Advance to waiting for confirmation stage
+            _updateSubStep('sub-so-sending');
             _updateSignOutStage('so-stage-confirm');
             event.source.postMessage({
               type: 'signout-token',
@@ -3404,7 +3474,6 @@
       performSignOut('manual');
     });
 
-
     // Re-auth button handler (on absolute warning banner)
     // Stop timers first to prevent performSignOut from firing during the OAuth flow.
     // Phase 5 (H-3): clearSession() handles HMAC key clearing — no separate nulling needed.
@@ -3451,13 +3520,10 @@
         _gasAuthOkHandled = false;  // Reset so the new gas-auth-ok from the reloaded iframe is not deduplicated
         showReconnecting();
         var gasApp = document.getElementById('gas-app');
-        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp) gasApp.style.visibility = 'hidden';
-        // Use ?session= directly — the postMessage handshake guard blocks direct
-        // URL access. The nonce flow (loadIframeViaNonce) is unreliable due to
-        // CacheService eventual consistency.
+        var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
-          _expectingSession = true;
+          gasApp.style.visibility = 'hidden';
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
       } else {
@@ -3474,6 +3540,9 @@
       }
     });
 
+    // SSO auto-detect: on page load (no existing session), ask other tabs for a token.
+    // If a response arrives within 2 seconds, exchange it with our GAS backend.
+    // If no response, fall back to showing the auth wall (normal sign-in flow).
     function attemptSSOAuth() {
       if (typeof BroadcastChannel === 'undefined' || !_ssoChannel) return false;
 
@@ -3539,6 +3608,7 @@
         if (absStart && (Date.now() - absStart) / 1000 > ABSOLUTE_SESSION_DURATION) {
           clearSession();
           showAuthWall('Session expired. Click "Sign In with Google" to continue.');
+          // Fall through to the else block is not needed — we're done
           return;
         }
         // Also check rolling session timeout (no heartbeat to extend on page load)
@@ -3548,15 +3618,16 @@
           return;
         }
 
-        // Resume existing session — load GAS iframe with session token directly.
-        // Using ?session= is safe here: the postMessage handshake guard blocks
-        // direct URL access (copied URLs show "Access denied"). The nonce flow
-        // (loadIframeViaNonce) is unreliable for this path due to CacheService
-        // eventual consistency — the nonce written by generatePageNonce() may not
-        // be readable by validatePageNonce() moments later.
+        // Resume existing session — load GAS iframe with session token
         var gasApp = document.getElementById('gas-app');
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
+          // Do NOT set _expectingSession here — on page load, there is no prior
+          // iframe content that could send a stale gas-needs-auth. The flag would
+          // cause the REAL gas-needs-auth (from an admin-invalidated session) to be
+          // silently dropped, leaving the user stuck on "Reconnecting...".
+          // _expectingSession is only needed after mid-session iframe navigations
+          // (gas-session-created, Use Here) where prior content may still be loaded.
           gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
@@ -3714,7 +3785,7 @@
 // ══════════════
 
 // ══════════════
-// PROJECT START — Add your project-specific JavaScript here
+// PROJECT START
 // ══════════════
 
 
