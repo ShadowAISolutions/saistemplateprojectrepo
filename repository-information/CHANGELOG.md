@@ -3,7 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
+
+## [v09.28r] — 2026-04-06 07:41:52 PM EST
+
+> **Prompt:** "analyze the gas-project-creator and associated setup-gas-project.sh to see if using it on a new program will create html and gas non project specific (template) code identical to any of the environments we have (testauth1, globalacl, programportal). if not, address whatever is not correctly set up, all projects should foundationally have identical code, except for project specific code."
+
+### Changed
+- Changed noauth GAS template SHEET_NAME default from `"Live_Sheet"` to `"YOUR_SHEET_NAME"` for consistency with auth template
+- Added GITHUB_BRANCH form field to gas-project-creator with hint to use `main` for setup script
+- Added GITHUB_BRANCH substitution in `copyGsCode()` — now replaces template default with form field value
+- Made setup script read GITHUB_BRANCH from config JSON (with `main` default) instead of hardcoding
+- Changed setup script SHEET_NAME default from `'Live_Sheet'` to `'YOUR_SHEET_NAME'` for consistency with templates
+
+### Added
+- Added optional "Copy Embedding Page HTML" button to gas-project-creator — fetches auth/noauth HTML template, substitutes config values (title, deployment URL, CLIENT_ID, logo), copies to clipboard. Minimal styling to indicate it's optional (the setup script handles this automatically)
+
+#### `gas-project-creator.html` — v01.33w
+
+##### Added
+- New option to copy the embedding page HTML with your project settings pre-filled
+- GitHub Branch configuration field
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.27r] — 2026-04-06 07:14:03 PM EST
 

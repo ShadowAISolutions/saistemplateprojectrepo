@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.32w">
+  <meta name="build-version" content="v01.33w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -295,6 +295,21 @@
       transition: all 0.2s;
     }
     .btn-copy-gs:hover { background: #388bfd; }
+    .btn-copy-html {
+      display: block;
+      width: 100%;
+      margin-top: 6px;
+      padding: 5px 10px;
+      background: transparent;
+      border: 1px dashed #30363d;
+      border-radius: 6px;
+      color: #484f58;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-copy-html:hover { border-color: #58a6ff; color: #8b949e; }
+    .btn-copy-html:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
     .config-toast {
       text-align: center;
       font-size: 12px;
@@ -658,6 +673,11 @@
             <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo')" title="Clear">&times;</button></div>
             <span class="field-hint">Logo shown on the GAS splash screen</span>
           </div>
+          <div class="step-input">
+            <label for="cfg-github-branch">GitHub Branch <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-github-branch" placeholder="main" value="main"><button class="field-clear" onclick="clearField('cfg-github-branch')" title="Clear">&times;</button></div>
+            <span class="field-hint">Default branch for GAS self-update pulls. Use <code>main</code> if using setup-gas-project.sh</span>
+          </div>
           <div id="auth-fields" style="margin-top:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
             <div class="step-input" style="margin:0 0 10px;">
@@ -702,6 +722,7 @@
           <!-- Test features checkbox removed — test templates consolidated into minimal templates (see repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md for archived test functions) -->
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
+          <button class="btn-copy-html" id="btn-copy-html" onclick="copyHtmlCode(this)" disabled>Copy Embedding Page HTML <span style="color:#30363d">&mdash; optional, the setup script creates this automatically</span></button>
         </li>
         <li>Run any function from the Apps Script editor to trigger the initial <strong>OAuth authorization</strong> prompt
           <div class="step-note">This ensures the script has all required permissions before the final deployment</div>
@@ -1343,6 +1364,8 @@
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
         if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
         if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
+        var ghBranch = (document.getElementById('cfg-github-branch') || {}).value || 'main';
+        if (ghBranch.trim()) code = code.replace(/var GITHUB_BRANCH\s*=\s*"[^"]*"/, 'var GITHUB_BRANCH = "' + ghBranch.trim() + '"');
         // Auth-specific replacements
         if (useAuth) {
           var preset = (document.getElementById('cfg-auth-preset') || {}).value || 'standard';
@@ -1390,6 +1413,52 @@
         navigator.clipboard.writeText(code).then(function() {
           btn.textContent = 'Copied!';
           setTimeout(function() { btn.textContent = 'Copy Code.gs for GAS'; }, 1500);
+        });
+      };
+    })();
+
+// ── Copy Embedding Page HTML ──
+    (function() {
+      var _htmlTemplates = {};
+      var _htmlTemplateFiles = {
+        'noauth': 'templates/HtmlAndGasTemplateAutoUpdate-noauth.html.txt',
+        'auth':   'templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt'
+      };
+      Object.keys(_htmlTemplateFiles).forEach(function(key) {
+        fetch(_htmlTemplateFiles[key])
+          .then(function(r) { return r.text(); })
+          .then(function(t) { _htmlTemplates[key] = t; })
+          .catch(function() {});
+      });
+      window.copyHtmlCode = function(btn) {
+        var useAuth = document.getElementById('chk-google-auth').checked;
+        var source = _htmlTemplates[useAuth ? 'auth' : 'noauth'];
+        if (!source) { btn.textContent = 'Loading...'; return; }
+        var html = source;
+        var title = (document.getElementById('cfg-title') || {}).value || '';
+        if (title.trim()) html = html.replace(/<title>[^<]*<\/title>/, '<title>' + title.trim().replace(/</g, '&lt;') + '</title>');
+        html = html.replace(/<meta name="build-version" content="[^"]*">/, '<meta name="build-version" content="v01.00w">');
+        var deployId = (document.getElementById('cfg-deployment-id') || {}).value || '';
+        if (deployId.trim() && deployId.trim() !== 'YOUR_DEPLOYMENT_ID') {
+          var fullUrl = 'https://script.google.com/macros/s/' + deployId.trim() + '/exec';
+          var reversed = fullUrl.split('').reverse().join('');
+          var encoded = btoa(reversed);
+          html = html.replace(/var _e = '[^']*';/, "var _e = '" + encoded + "';");
+        } else {
+          html = html.replace(/var _e = '[^']*';/, "var _e = '';");
+        }
+        var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
+        if (splashLogo.trim()) html = html.replace(/var DEVELOPER_LOGO_URL = '[^']*';/, "var DEVELOPER_LOGO_URL = '" + splashLogo.trim() + "';");
+        if (useAuth) {
+          var clientId = (document.getElementById('cfg-client-id') || {}).value || '';
+          if (clientId.trim() && clientId.trim() !== 'YOUR_CLIENT_ID.apps.googleusercontent.com') {
+            html = html.replace(/var CLIENT_ID = '[^']*';/, "var CLIENT_ID = '" + clientId.trim() + "';");
+          }
+        }
+        navigator.clipboard.writeText(html).then(function() {
+          var orig = btn.innerHTML;
+          btn.textContent = 'Copied!';
+          setTimeout(function() { btn.innerHTML = orig; }, 1500);
         });
       };
     })();
@@ -1469,6 +1538,8 @@
       if (applyBtn) applyBtn.disabled = !hasId;
       var gsBtn = document.getElementById('btn-copy-gs');
       if (gsBtn) gsBtn.disabled = !(hasId && hasEnvName && hasClientId);
+      var htmlBtn = document.getElementById('btn-copy-html');
+      if (htmlBtn) htmlBtn.disabled = !(hasId && hasEnvName && hasClientId);
       var configBtn = document.getElementById('btn-copy-config');
       if (configBtn) configBtn.disabled = !(hasId && hasEnvName && hasClientId);
     }

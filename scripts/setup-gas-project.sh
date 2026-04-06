@@ -82,7 +82,7 @@ ENV_NAME="$(parse_json PROJECT_ENVIRONMENT_NAME)"
 TITLE="$(parse_json TITLE 'CHANGE THIS PROJECT TITLE GAS TEMPLATE')"
 DEPLOYMENT_ID="$(parse_json DEPLOYMENT_ID 'YOUR_DEPLOYMENT_ID')"
 SPREADSHEET_ID="$(parse_json SPREADSHEET_ID 'YOUR_SPREADSHEET_ID')"
-SHEET_NAME="$(parse_json SHEET_NAME 'Live_Sheet')"
+SHEET_NAME="$(parse_json SHEET_NAME 'YOUR_SHEET_NAME')"
 SOUND_FILE_ID="$(parse_json SOUND_FILE_ID '')"
 SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
@@ -108,7 +108,7 @@ fi
 REMOTE_URL="$(git remote get-url origin 2>/dev/null || echo '')"
 GITHUB_OWNER="$(echo "$REMOTE_URL" | sed -E 's|.*[:/]([^/]+)/[^/]+(\.git)?$|\1|')"
 GITHUB_REPO="$(echo "$REMOTE_URL" | sed -E 's|.*[:/][^/]+/([^/]+?)(\.git)?$|\1|')"
-GITHUB_BRANCH="main"
+GITHUB_BRANCH="$(parse_json GITHUB_BRANCH 'main')"
 
 # ── Derive project directory name ──
 # Capitalize first letter of each segment separated by _ or -
