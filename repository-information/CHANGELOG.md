@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 51/100`
+`Sections: 52/100`
 
 ## [Unreleased]
+
+## [v09.15r] — 2026-04-06 10:42:45 AM EST
+
+> **Prompt:** "continue"
+
+### Changed
+- Rebuilt GAS auth template (`gas-minimal-auth-template-code.js.txt`) from unified programportal.gs source using copy-and-placeholder approach
+- Template now matches all 3 live auth GAS files exactly in shared code — only 13 diff hunks remain, all expected config placeholders and empty PROJECT blocks
+- Replaced 12 config values with template placeholders: VERSION → `v01.00g`, TITLE → `TEMPLATE_TITLE`, GITHUB_OWNER → `TEMPLATE_GITHUB_OWNER`, GITHUB_REPO → `TEMPLATE_GITHUB_REPO`, FILE_PATH → `TEMPLATE_FILE_PATH`, DEPLOYMENT_ID → `TEMPLATE_DEPLOYMENT_ID`, EMBED_PAGE_URL → `TEMPLATE_EMBED_PAGE_URL`, SPREADSHEET_ID → `YOUR_SPREADSHEET_ID`, SHEET_NAME → `YOUR_SHEET_NAME`, SOUND_FILE_ID → `YOUR_SOUND_FILE_ID`, MASTER_ACL_SPREADSHEET_ID → `YOUR_MASTER_ACL_SPREADSHEET_ID`, ACL_PAGE_NAME → `TEMPLATE_ACL_PAGE_NAME`
+- Stripped all 7 PROJECT blocks to empty placeholders with generic guide descriptions
+- Removed programportal-specific ANNOUNCEMENTS_SHEET_NAME config, `_userRole`/`_userName` JS variables
+- Fixed body CSS to template defaults (`overflow: auto`, `font-family: Arial`)
+- Template reduced from 6,802 → 6,528 lines (cleaner project code stripping)
 
 ## [v09.14r] — 2026-04-06 10:36:57 AM EST
 
