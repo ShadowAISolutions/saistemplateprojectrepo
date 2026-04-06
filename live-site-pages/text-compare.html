@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.00w">
+  <meta name="build-version" content="v01.01w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Text Compare Tool</title>
   <style>
@@ -207,6 +207,17 @@
     .char-mod { background: rgba(255,167,38,0.35); border-radius: 2px; }
     .no-results { text-align: center; padding: 60px 20px; color: #555; font-size: 15px; }
     .identical-msg { text-align: center; padding: 40px 20px; color: #66bb6a; font-size: 16px; font-weight: 600; }
+    .copy-diff-controls {
+      display: flex; gap: 12px; align-items: center; justify-content: center;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .btn-copy-diff { background: #2e7d32; color: #fff; }
+    .btn-copy-diff:hover { background: #388e3c; }
+    .btn-copy-diff.copied { background: #1b5e20; }
+    .context-lines-input {
+      width: 50px; background: #1a1a2e; color: #e0e0e0; border: 1px solid #444;
+      border-radius: 6px; padding: 6px 8px; font-size: 13px; text-align: center;
+    }
     @media (max-width: 768px) {
       .input-section { flex-direction: column; }
       .diff-view { flex-direction: column; }
@@ -270,6 +281,14 @@
       <div class="stat stat-added"><div class="stat-value" id="stat-added">0</div><div class="stat-label">Added</div></div>
       <div class="stat stat-removed"><div class="stat-value" id="stat-removed">0</div><div class="stat-label">Removed</div></div>
       <div class="stat stat-modified"><div class="stat-value" id="stat-modified">0</div><div class="stat-label">Modified</div></div>
+    </div>
+
+    <div id="copy-diff-controls" class="copy-diff-controls" style="display:none;">
+      <label style="font-size:13px;color:#888;display:flex;align-items:center;gap:6px;">
+        Context lines:
+        <input type="number" id="context-lines" class="context-lines-input" value="3" min="0" max="50">
+      </label>
+      <button class="btn btn-copy-diff" id="btn-copy-diff" title="Copy unified diff to clipboard for AI consumption">Copy Context Diff</button>
     </div>
 
     <div class="result-section">
@@ -523,6 +542,8 @@
 // PROJECT START
 // ══════════════
 
+    var _lastDiffOps = null;
+
     // --- LCS-based line diff ---
     function lcs(a, b, eq) {
       var m = a.length, n = b.length;
@@ -625,7 +646,8 @@
         }
       }
 
-      // Render
+      // Store for export and render
+      _lastDiffOps = merged;
       renderDiff(merged);
     }
 
@@ -662,6 +684,7 @@
       document.getElementById('stat-removed').textContent = stats.removed;
       document.getElementById('stat-modified').textContent = stats.modified;
       document.getElementById('stats-bar').style.display = 'flex';
+      document.getElementById('copy-diff-controls').style.display = 'flex';
 
       if (stats.total === stats.equal && stats.total > 0) {
         document.getElementById('diff-left').innerHTML = '';
@@ -692,6 +715,70 @@
       };
     }
 
+    // --- Generate unified diff for clipboard ---
+    function generateContextDiff() {
+      if (!_lastDiffOps || _lastDiffOps.length === 0) return '';
+      var contextN = parseInt(document.getElementById('context-lines').value) || 3;
+      var ops = _lastDiffOps;
+
+      // Find indices of all non-equal ops
+      var changeIndices = [];
+      for (var i = 0; i < ops.length; i++) {
+        if (ops[i].type !== 'equal') changeIndices.push(i);
+      }
+      if (changeIndices.length === 0) return '(No differences found)';
+
+      // Build hunk ranges with context
+      var hunks = [];
+      var hStart = Math.max(0, changeIndices[0] - contextN);
+      var hEnd = Math.min(ops.length - 1, changeIndices[0] + contextN);
+      for (var c = 1; c < changeIndices.length; c++) {
+        var nStart = Math.max(0, changeIndices[c] - contextN);
+        var nEnd = Math.min(ops.length - 1, changeIndices[c] + contextN);
+        if (nStart <= hEnd + 1) {
+          hEnd = nEnd;
+        } else {
+          hunks.push({ start: hStart, end: hEnd });
+          hStart = nStart;
+          hEnd = nEnd;
+        }
+      }
+      hunks.push({ start: hStart, end: hEnd });
+
+      // Emit unified diff output
+      var output = '--- Original\n+++ Changed\n';
+      for (var h = 0; h < hunks.length; h++) {
+        var hunk = hunks[h];
+        var lStart = null, lCount = 0, rStart = null, rCount = 0;
+        for (var i = hunk.start; i <= hunk.end; i++) {
+          var op = ops[i];
+          if (op.type === 'equal' || op.type === 'removed' || op.type === 'modified') {
+            if (lStart === null) lStart = op.leftNum;
+            lCount++;
+          }
+          if (op.type === 'equal' || op.type === 'added' || op.type === 'modified') {
+            if (rStart === null) rStart = op.rightNum;
+            rCount++;
+          }
+        }
+        output += '@@ -' + (lStart || 1) + ',' + lCount + ' +' + (rStart || 1) + ',' + rCount + ' @@\n';
+        for (var i = hunk.start; i <= hunk.end; i++) {
+          var op = ops[i];
+          if (op.type === 'equal') {
+            output += ' ' + op.left + '\n';
+          } else if (op.type === 'removed') {
+            output += '-' + op.left + '\n';
+          } else if (op.type === 'added') {
+            output += '+' + op.right + '\n';
+          } else if (op.type === 'modified') {
+            output += '-' + op.left + '\n';
+            output += '+' + op.right + '\n';
+          }
+        }
+      }
+      return output;
+    }
+
     // --- Event listeners ---
     document.getElementById('btn-compare').addEventListener('click', compareTexts);
     document.getElementById('btn-swap').addEventListener('click', function() {
@@ -703,9 +790,11 @@
       document.getElementById('text-left').value = '';
       document.getElementById('text-right').value = '';
       document.getElementById('stats-bar').style.display = 'none';
+      document.getElementById('copy-diff-controls').style.display = 'none';
       document.getElementById('diff-output').style.display = 'none';
       document.getElementById('no-results').style.display = 'block';
       document.getElementById('no-results').innerHTML = 'Enter text in both fields and click Compare';
+      _lastDiffOps = null;
       updateCounts();
     });
 
@@ -717,6 +806,31 @@
     }
     document.getElementById('text-left').addEventListener('input', updateCounts);
     document.getElementById('text-right').addEventListener('input', updateCounts);
+
+    // Copy context diff to clipboard
+    document.getElementById('btn-copy-diff').addEventListener('click', function() {
+      var diffText = generateContextDiff();
+      if (!diffText) return;
+      var btn = document.getElementById('btn-copy-diff');
+      navigator.clipboard.writeText(diffText).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+      }).catch(function() {
+        var ta = document.createElement('textarea');
+        ta.value = diffText;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() { btn.textContent = 'Copy Context Diff'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
 
     // Compare on Ctrl+Enter
     document.addEventListener('keydown', function(e) {

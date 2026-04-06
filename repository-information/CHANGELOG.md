@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 31/100`
+`Sections: 32/100`
 
 ## [Unreleased]
+
+## [v08.95r] — 2026-04-05 09:35:38 PM EST
+
+> **Prompt:** "the text-compare seems to be working perfectly. ideally it would be able to show enough context so that we can extract the differences between the two texts in the case where i am comparing 2 codes, so i need it to output something that i can then give to you for you to consolidate the two in the parts where i want them identical"
+
+### Added
+- "Copy Context Diff" button on text-compare page that generates a unified-diff-style text output with configurable context lines (default 3), optimized for pasting to AI for code consolidation
+- Configurable context lines input (0–50) to control how many surrounding equal lines appear around each change hunk
+
+#### `text-compare.html` — v01.01w
+
+##### Added
+- "Copy Context Diff" export button with clipboard copy and visual feedback
+- Context lines configuration (default 3 lines of surrounding context per change hunk)
+- Unified diff format output (`--- Original` / `+++ Changed` / `@@ ... @@` headers / `-`/`+` line markers)
 
 ## [v08.94r] — 2026-04-05 09:14:34 PM EST
 

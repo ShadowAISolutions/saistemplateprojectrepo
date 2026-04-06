@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-05 09:14:34 PM EST` · Repo version: `v08.94r`
+Last updated: `2026-04-05 09:35:38 PM EST` · Repo version: `v08.95r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -57,7 +57,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   <b>│ ─ Standalone Utilities ─────────────────────────────────────────────────────</b>
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner5.html">qr-scanner5.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner5.html">🌐</a>  — [template] QR code scanner (native + jsQR fallback)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner6.html">qr-scanner6.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner6.html">🌐</a>  — [template] QR &amp; barcode scanner (native multi-format + jsQR fallback)
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/text-compare.html">text-compare.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/text-compare.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/text-comparehtml.changelog.md">v01.00w</a> · vNoGASg | [template] Text comparison tool with side-by-side diff highlighting
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/text-compare.html">text-compare.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/text-compare.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/text-comparehtml.changelog.md">v01.01w</a> · vNoGASg | [template] Text comparison tool with side-by-side diff highlighting
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>
