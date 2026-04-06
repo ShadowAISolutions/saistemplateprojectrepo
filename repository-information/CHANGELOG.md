@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 44/100`
+`Sections: 45/100`
 
 ## [Unreleased]
+
+## [v09.08r] — 2026-04-06 09:18:24 AM EST
+
+> **Prompt:** "whatever makes them match 100%"
+
+### Changed
+- Removed dead `_gasSandboxSource` code from globalacl.html (declared, set, and cleared but never read — only testauth1 uses it for ld-init postMessage)
+- Removed dead `_closeAllPanelsExcept(null)` call from globalacl.html showAuthWall (no panels registered — call was a no-op)
+- Unified globalacl.html whitespace and comment text to match programportal/testauth1 template code
+
+#### `globalacl.html` — v01.83w
+
+##### Removed
+- Dead `_gasSandboxSource` variable and all references (4 locations)
+- Dead `_closeAllPanelsExcept(null)` call in showAuthWall
+
+##### Fixed
+- Added missing blank line in showApp after `_ssoUserEmail` assignment
+- Removed description from `// PROJECT START` comment to match other pages
 
 ## [v09.07r] — 2026-04-06 09:08:47 AM EST
 
