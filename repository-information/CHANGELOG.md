@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 30/100`
+`Sections: 31/100`
 
 ## [Unreleased]
+
+## [v08.94r] — 2026-04-05 09:14:34 PM EST
+
+> **Prompt:** "even though it is written in the reminder and supposedly in the claude.md , you did not immediately apply the following by default "Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally" . how can we ensure that every single time you will follow this? evaluate why you didnt this time and map out the most consistent way for you to do this moving forward"
+
+### Changed
+- Converted "Incremental Writing" rule from advisory guidance to a hard procedural gate with a strict 50-line Write limit — modeled after the Response Opener gate pattern that solved the same class of compliance failure
+- Removed contradicting escape hatch ("do not force this if a single Write is simpler") from the "Large file writes" Execution Style rule — now points to the Incremental Writing gate
 
 ## [v08.93r] — 2026-04-05 08:40:51 PM EST
 

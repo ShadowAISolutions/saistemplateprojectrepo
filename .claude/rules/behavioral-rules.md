@@ -6,7 +6,7 @@
 - For clear, straightforward requests: **just do it** — make the changes, commit, and push without asking for plan approval
 - Only ask clarifying questions when the request is genuinely ambiguous or has multiple valid interpretations
 - Do not use formal plan-mode approval workflows for routine tasks (version bumps, file moves, feature additions, bug fixes, etc.)
-- **Large file writes** — when creating a new file >500 lines, a single Write tool call can take 30-60+ seconds of wall-clock time during which no visible progress appears to the user, creating the impression of a stall. To mitigate this: (1) **always** output a status message before the Write call that includes a **timestamp** (run `date` first) and a **duration estimate** — e.g. "Writing ~1200-line file [12:15:30 PM EST] — estimated ~30-45 seconds..." so the user knows work is in progress and roughly how long to wait, and (2) when practical, Write a smaller skeleton first then use Edit calls to fill in sections — but do not force this if a single Write is simpler and less error-prone. The same rule applies to **multiple large tool calls** in a batch (e.g. writing 4 files at once) — include the total scope, timestamp, and estimate. For existing files this is a non-issue — Edit calls are already incremental by nature
+- **Large file writes** — when creating a new file >500 lines, a single Write tool call can take 30-60+ seconds of wall-clock time during which no visible progress appears to the user, creating the impression of a stall. To mitigate this: (1) **always** output a status message before the Write call that includes a **timestamp** (run `date` first) and a **duration estimate** — e.g. "Writing ~1200-line file [12:15:30 PM EST] — estimated ~30-45 seconds..." so the user knows work is in progress and roughly how long to wait, and (2) always use the skeleton+Edit approach per the Incremental Writing gate below — never write >50 lines in a single Write call. The same rule applies to **multiple large tool calls** in a batch (e.g. writing 4 files at once) — include the total scope, timestamp, and estimate. For existing files this is a non-issue — Edit calls are already incremental by nature
 
 ## Plan Mode Visibility
 - When using plan mode (`ExitPlanMode`), the plan file is shown in a separate window that **disappears after approval** — the user cannot scroll back to see it in the chat history. To ensure the plan remains visible:
@@ -81,12 +81,25 @@ This rule applies to any future commands that could target a subset of pages —
   4. **Present the strongest option first** — when presenting choices, lead with the most elegant solution. Include alternatives for completeness, but make it clear which one you'd ship
 - **The default depth is maximum depth.** Do not wait for the user to say "think harder" or "be more creative" — that level of rigor should be the baseline for every troubleshooting and design task. Quick tasks (version bumps, timestamp updates, straightforward edits) do not need this treatment — apply it when the problem has genuine design space to explore
 
-## Incremental Writing
-- **Write in small chunks** — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally
-- This applies to all file creation and large edits: new files >100 lines, major rewrites, and any content that could be built section-by-section
-- For new files: use Write for a small skeleton/header, then Edit calls to add each section
-- For existing files: always use Edit calls to modify specific sections rather than rewriting the entire file
-- This rule reinforces the existing "Large file writes" guidance in Execution Style but applies universally — not just to files >500 lines
+## Incremental Writing — Mandatory Write Tool Gate
+
+> **THIS GATE BLOCKS EVERY Write TOOL CALL**
+> It has been violated despite being documented as advice. The violation pattern is: the model reads the rule, writes it as a reminder in the coding plan, and then immediately writes a large file in a single call. Descriptive rules ("don't do this") do not work — only a hard procedural gate works.
+
+**The hard gate — before EVERY Write tool call, in this exact order:**
+
+1. **Step 1: Estimate the content size** — before calling Write, estimate how many lines the content will be. You know the content because you are about to write it.
+2. **Step 2: Size check** — if the content is >50 lines, STOP. Do not call Write with >50 lines of content. Instead:
+   - Write a **skeleton** (≤50 lines) — the file structure with placeholder markers or just the first section
+   - Use **Edit** calls to add each subsequent section, one at a time
+   - Each Edit should add no more than ~100 lines (Edit is safe at larger sizes than Write because it sends only the diff)
+3. **Step 3: If ≤50 lines** — proceed with the Write call normally
+
+**Why 50 lines:** Write calls with <50 lines complete reliably and quickly. Above that threshold, the risk of stalling increases with size, and at ~500+ lines the stall becomes near-certain. The 50-line limit provides a wide safety margin.
+
+**No exceptions.** Not for "simple" files, not for "it's mostly template code," not for "I know the content." The gate applies to every Write call regardless of context. The cost of writing a skeleton + 3-4 Edits is ~15 seconds of overhead. The cost of a stalled Write is minutes of wasted time plus user frustration.
+
+**The self-check:** before every Write tool call, ask yourself: "Is this content >50 lines?" If the answer is yes or uncertain, use the skeleton+Edit approach.
 
 ## Confidence Disclosure
 - When proposing a solution, **explicitly flag the confidence level** — distinguish between behavior you have confirmed (documentation, tested, directly observed) and behavior you have inferred by combining separate facts into an untested conclusion

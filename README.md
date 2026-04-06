@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-05 08:40:51 PM EST` · Repo version: `v08.93r`
+Last updated: `2026-04-05 09:14:34 PM EST` · Repo version: `v08.94r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
