@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.45w] — 2026-04-06 11:11:14 PM EST — v09.40r
+
+### Fixed
+- Disabled dropdown and test button now match the red disabled tint of other fields
 
 ## [v01.44w] — 2026-04-06 11:06:44 PM EST — v09.39r
 

@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
+
+## [v09.40r] — 2026-04-06 11:11:14 PM EST
+
+> **Prompt:** "can the auth preset dropdown be the same red when disabled, and make the optional test gas connection button the same red when disabled"
+
+### Fixed
+- Auth Preset dropdown now shows red disabled tint (`#1e1114`) when disabled — added `!important` to override inline background style
+- Test GAS Connection button now shows red disabled tint instead of green when disabled — separated from the generic disabled rule and given explicit `background: #1e1114`
+
+#### `gas-project-creator.html` — v01.45w
+
+##### Fixed
+- Disabled dropdown and test button now match the red disabled tint of other fields
 
 ## [v09.39r] — 2026-04-06 11:06:44 PM EST
 

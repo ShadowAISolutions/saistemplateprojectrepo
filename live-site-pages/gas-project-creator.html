@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.44w">
+  <meta name="build-version" content="v01.45w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -253,8 +253,14 @@
     }
     .btn-copy:hover { background: #e08b6d; }
     .config-actions button:disabled,
-    .btn-copy-gs:disabled,
+    .btn-copy-gs:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
     .btn-apply:disabled {
+      background: #1e1114 !important;
+      border-color: #30363d !important;
       opacity: 0.4;
       cursor: not-allowed;
       pointer-events: none;
@@ -439,7 +445,7 @@
     .step-input input::placeholder { color: #484f58; }
     .step-input input.field-empty { background: #112a1c; }
     .step-input input:disabled { background: #1e1114; }
-    .step-input select:disabled { background: #1e1114; }
+    .step-input select:disabled { background: #1e1114 !important; }
     .field-clear {
       background: none; border: 1px solid #30363d; border-radius: 6px;
       color: #f85149; cursor: pointer; font-size: 14px; padding: 6px 8px;
