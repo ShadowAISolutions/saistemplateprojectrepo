@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
+
+## [v09.47r] — 2026-04-07 09:43:11 AM EST
+
+> **Prompt:** "instead of having a separate master ACL spreadsheet ID field, the toggle should be moved to next to the spreadsheet ID to modify it if toggled. the ACL sheet name and column name can be moved under that also. the oauth client id can be moved to before the deployment id, and i think it should be required before enabling the deployment id field, the authentication settings fields should be labeled as such"
+
+### Changed
+- Restructured gas-project-creator form layout: OAuth Client ID moved before Deployment ID in its own "Authentication Settings" box, gates Deployment ID when auth is enabled
+- Master ACL section (toggle, ID, sheet name, column name) moved from auth settings box to under Spreadsheet ID — now depends on Spreadsheet ID being filled, not Client ID
+- Auth settings box now only contains Auth Preset and Allowed Domains
+- New dependency cascade: Client ID → Deployment ID → Env Name → project fields → Spreadsheet ID → Master ACL
+
+#### `gas-project-creator.html` — v01.52w
+
+##### Changed
+- OAuth Client ID now appears before Deployment ID and is required to enable it (when auth is checked)
+- Master ACL section moved under Spreadsheet ID for logical grouping
+- Auth settings box simplified to just Auth Preset and Allowed Domains
 
 ## [v09.46r] — 2026-04-07 08:47:47 AM EST
 

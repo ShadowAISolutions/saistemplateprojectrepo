@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.52w] — 2026-04-07 09:43:11 AM EST — v09.47r
+
+### Changed
+- OAuth Client ID now appears before Deployment ID and is required to enable it (when auth is checked)
+- Master ACL section moved under Spreadsheet ID for logical grouping
+- Auth settings box simplified to just Auth Preset and Allowed Domains
 
 ## [v01.51w] — 2026-04-07 08:47:47 AM EST — v09.46r
 

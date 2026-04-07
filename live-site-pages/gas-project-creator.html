@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.51w">
+  <meta name="build-version" content="v01.52w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -645,6 +645,14 @@
         </li>
         <li>Fill in your project values below (paste the Deployment ID from step 9) and copy the configured <code>Code.gs</code>
           <div class="step-note">Paste this code into your Apps Script project, replacing the existing code</div>
+          <div id="auth-client-id-section" style="margin-bottom:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
+            <div class="step-input" style="margin:0;">
+              <label for="cfg-client-id">OAuth Client ID <em style="color:#f85149">(required for auth)</em></label>
+              <div class="input-row"><input type="text" id="cfg-client-id" placeholder="123456789.apps.googleusercontent.com" oninput="updateDeployGate(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-client-id'); updateDeployGate(); updateFieldStates();" title="Clear">&times;</button></div>
+              <span class="field-hint">From Google Cloud Console &rarr; APIs &amp; Services &rarr; Credentials &rarr; OAuth 2.0 Client ID (Web application type)</span>
+            </div>
+          </div>
           <div class="step-input">
             <label for="cfg-deployment-id">Deployment ID <em style="color:#f85149">(required)</em></label>
             <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-deployment-id'); updateDeployGate(); updateFieldStates();" title="Clear">&times;</button></div>
@@ -675,6 +683,30 @@
             <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Tab name in the spreadsheet. Uses &ldquo;Live_Sheet&rdquo; if left blank</span>
           </div>
+          <div id="master-acl-section" style="margin:10px 0;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#58a6ff;margin-bottom:10px;">Master ACL Spreadsheet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6e7681;">(optional &mdash; centralized access control)</span></div>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="chk-is-master-acl" style="cursor:pointer;" onchange="toggleMasterAcl()">
+              This project&rsquo;s spreadsheet is the master ACL <span style="color:#6e7681;">(uses the Spreadsheet ID above as the centralized access control sheet for all projects)</span>
+            </label>
+            <div class="step-input" style="margin:0 0 10px;">
+              <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
+              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..." oninput="toggleAclDetails()"><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id'); toggleAclDetails();" title="Clear">&times;</button></div>
+              <span class="field-hint" id="master-acl-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
+            </div>
+            <div id="acl-detail-fields">
+              <div class="step-input" style="margin:0 0 10px;">
+                <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
+                <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
+                <span class="field-hint">The sheet tab name in the master ACL spreadsheet where authorized emails are listed</span>
+              </div>
+              <div class="step-input" style="margin:0;">
+                <label for="cfg-acl-page-name">ACL Column Name <em>(identifies this page)</em></label>
+                <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
+                <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
+              </div>
+            </div>
+          </div>
           <div class="step-input" id="field-developer-logo">
             <label for="cfg-developer-logo">Developer Logo URL <em>(optional &mdash; defaults to ShadowAISolutions logo)</em></label>
             <div class="input-row"><input type="text" id="cfg-developer-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-developer-logo')" title="Clear">&times;</button></div>
@@ -698,11 +730,6 @@
           <div id="auth-fields" style="margin-top:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
             <div class="step-input" style="margin:0 0 10px;">
-              <label for="cfg-client-id">OAuth Client ID <em style="color:#f85149">(required for auth)</em></label>
-              <div class="input-row"><input type="text" id="cfg-client-id" placeholder="123456789.apps.googleusercontent.com" oninput="updateDeployGate(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-client-id'); updateDeployGate(); updateFieldStates();" title="Clear">&times;</button></div>
-              <span class="field-hint">From Google Cloud Console &rarr; APIs &amp; Services &rarr; Credentials &rarr; OAuth 2.0 Client ID (Web application type)</span>
-            </div>
-            <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-auth-preset">Auth Preset</label>
               <select id="cfg-auth-preset" style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#c9d1d9;font:13px/1.4 'SFMono-Regular',Consolas,monospace;outline:none;">
                 <option value="standard">standard &mdash; 30min sessions, no HMAC, URL token exchange</option>
@@ -710,32 +737,10 @@
               </select>
               <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
             </div>
-            <div class="step-input" style="margin:0 0 10px;">
+            <div class="step-input" style="margin:0;">
               <label for="cfg-allowed-domains">Allowed Domains <em>(optional &mdash; if blank, all Google accounts allowed)</em></label>
               <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
               <span class="field-hint">Comma-separated list of allowed email domains. If blank, any Google account can sign in. Required for HIPAA preset</span>
-            </div>
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#58a6ff;margin:14px 0 10px;">Master ACL Spreadsheet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6e7681;">(optional &mdash; centralized access control)</span></div>
-            <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
-              <input type="checkbox" id="chk-is-master-acl" style="cursor:pointer;" onchange="toggleMasterAcl()">
-              This project&rsquo;s spreadsheet is the master ACL <span style="color:#6e7681;">(uses the Spreadsheet ID above as the centralized access control sheet for all projects)</span>
-            </label>
-            <div class="step-input" style="margin:0 0 10px;">
-              <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
-              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..." oninput="toggleAclDetails()"><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id'); toggleAclDetails();" title="Clear">&times;</button></div>
-              <span class="field-hint" id="master-acl-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
-            </div>
-            <div id="acl-detail-fields">
-              <div class="step-input" style="margin:0 0 10px;">
-                <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
-                <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
-                <span class="field-hint">The sheet tab name in the master ACL spreadsheet where authorized emails are listed</span>
-              </div>
-              <div class="step-input" style="margin:0;">
-                <label for="cfg-acl-page-name">ACL Column Name <em>(identifies this page)</em></label>
-                <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
-                <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
-              </div>
             </div>
           </div>
           <!-- Test features checkbox removed — test templates consolidated into minimal templates (see repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md for archived test functions) -->
@@ -1611,48 +1616,46 @@
       }
     }
     function updateFieldStates() {
-      var hasDeployId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
       var useAuth = document.getElementById('chk-google-auth').checked;
+      var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
+      // When auth is enabled, Deployment ID depends on Client ID
+      var deployDisabled = useAuth && !hasClientId;
+      setFieldDisabled('cfg-deployment-id', deployDisabled, '\u2500\u2500\u2500  Enter OAuth Client ID first  \u2500\u2500\u2500');
+      // Re-read after restore
+      var hasDeployId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
       // Environment Name depends on Deployment ID
       setFieldDisabled('cfg-env-name', !hasDeployId, '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500');
-      // Re-read after restore — setFieldDisabled may have restored a saved value
+      // Re-read after restore
       var hasEnvName = (document.getElementById('cfg-env-name').value || '').trim().length > 0;
-      // Project config fields depend on Environment Name (which itself depends on Deployment ID)
-      var envReason = '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
+      // Project config fields depend on Environment Name
+      var projectDisabled = !hasEnvName || !hasDeployId;
+      var projectReason = !hasDeployId ? '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500' : '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
       var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
-      for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName || !hasDeployId, !hasDeployId ? '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500' : envReason);
-      // Re-read after restore — spreadsheet and client ID may have been restored
+      for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], projectDisabled, projectReason);
+      // Re-read after restore
       var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
-      var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       // Sheet Tab Name also depends on Spreadsheet ID
-      if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
-      // Auth sub-fields depend on Client ID (when auth is enabled)
-      if (useAuth) {
-        var clientReason = '\u2500\u2500\u2500  Enter OAuth Client ID first  \u2500\u2500\u2500';
-        var authSubFields = ['cfg-auth-preset', 'cfg-allowed-domains', 'cfg-master-acl-id'];
-        for (var j = 0; j < authSubFields.length; j++) setFieldDisabled(authSubFields[j], !hasClientId, clientReason);
-        // Master ACL checkbox depends on Client ID
-        var masterAclCheckbox = document.getElementById('chk-is-master-acl');
-        if (masterAclCheckbox) {
-          masterAclCheckbox.disabled = !hasClientId;
-          masterAclCheckbox.parentElement.style.opacity = hasClientId ? '1' : '0.5';
-        }
-        // If client ID is missing, reset master ACL state
-        if (!hasClientId && masterAclCheckbox && masterAclCheckbox.checked) {
-          masterAclCheckbox.checked = false;
-          toggleMasterAcl();
-        }
-      }
-      // Master ACL checkbox also depends on Spreadsheet ID (for auto-fill)
+      if (!projectDisabled && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
+      // Master ACL section depends on Spreadsheet ID
       var masterAclCheckbox = document.getElementById('chk-is-master-acl');
+      var masterAclSection = document.getElementById('master-acl-section');
+      if (masterAclSection) masterAclSection.style.opacity = hasSpreadsheet && !projectDisabled ? '1' : '0.5';
+      setFieldDisabled('cfg-master-acl-id', projectDisabled || !hasSpreadsheet, !hasSpreadsheet ? '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500' : projectReason);
+      if (masterAclCheckbox) {
+        masterAclCheckbox.disabled = projectDisabled || !hasSpreadsheet;
+        masterAclCheckbox.parentElement.style.opacity = (!projectDisabled && hasSpreadsheet) ? '1' : '0.5';
+      }
+      // If spreadsheet was cleared, reset master ACL state
       if (masterAclCheckbox && masterAclCheckbox.checked && !hasSpreadsheet) {
         document.getElementById('cfg-master-acl-id').value = '';
         masterAclCheckbox.checked = false;
         toggleMasterAcl();
       }
-      if (useAuth && hasClientId && !hasSpreadsheet && masterAclCheckbox) {
-        masterAclCheckbox.disabled = true;
-        masterAclCheckbox.parentElement.style.opacity = '0.5';
+      // Auth sub-fields (preset, domains) depend on Client ID
+      if (useAuth) {
+        var clientReason = '\u2500\u2500\u2500  Enter OAuth Client ID first  \u2500\u2500\u2500';
+        var authSubFields = ['cfg-auth-preset', 'cfg-allowed-domains'];
+        for (var j = 0; j < authSubFields.length; j++) setFieldDisabled(authSubFields[j], !hasClientId, clientReason);
       }
       toggleAclDetails();
       updateEmptyClasses();
@@ -1666,12 +1669,15 @@
       var authStepConsent = document.getElementById('auth-step-consent');
       var authStepClient = document.getElementById('auth-step-client');
       if (authFields) authFields.style.display = authChecked ? 'block' : 'none';
+      var authClientSection = document.getElementById('auth-client-id-section');
+      if (authClientSection) authClientSection.style.display = authChecked ? 'block' : 'none';
       var hmacAutoNote = document.getElementById('hmac-auto-note');
       if (hmacAutoNote) hmacAutoNote.style.display = authChecked ? 'inline' : 'none';
       if (authStepLabel) authStepLabel.style.display = authChecked ? '' : 'none';
       if (authStepConsent) authStepConsent.style.display = authChecked ? '' : 'none';
       if (authStepClient) authStepClient.style.display = authChecked ? '' : 'none';
       updateDeployGate();
+      updateFieldStates();
     }
     // Initialize field states on load
     toggleAuthFields();
