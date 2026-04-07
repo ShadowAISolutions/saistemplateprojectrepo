@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.61w">
+  <meta name="build-version" content="v01.62w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1538,9 +1538,10 @@
     }
 
     function syncAclPagePlaceholder() {
-      var envName = (document.getElementById('cfg-env-name') || {}).value || '';
       var aclPageField = document.getElementById('cfg-acl-page-name');
-      if (aclPageField) aclPageField.placeholder = envName.trim() ? 'Defaults to: ' + envName.trim() : 'Auto-filled from Environment Name';
+      if (!aclPageField || aclPageField.disabled) return;
+      var envName = (document.getElementById('cfg-env-name') || {}).value || '';
+      aclPageField.placeholder = envName.trim() ? 'Defaults to: ' + envName.trim() : 'Auto-filled from Environment Name';
     }
 
     function syncMasterAclId() {
@@ -1620,10 +1621,9 @@
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], projectDisabled, projectReason);
       // Re-read after restore
       var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
-      // Fields that depend on Spreadsheet ID
+      // Sheet Tab Name depends on Spreadsheet ID
       var sheetReason = '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500';
-      var sheetDepFields = ['cfg-sheet-name', 'cfg-acl-sheet-name', 'cfg-acl-page-name'];
-      for (var s = 0; s < sheetDepFields.length; s++) setFieldDisabled(sheetDepFields[s], projectDisabled || !hasSpreadsheet, projectDisabled ? projectReason : sheetReason);
+      setFieldDisabled('cfg-sheet-name', projectDisabled || !hasSpreadsheet, projectDisabled ? projectReason : sheetReason);
       // Master ACL toggle and section depend on Spreadsheet ID
       var masterAclCheckbox = document.getElementById('chk-is-master-acl');
       var masterAclSection = document.getElementById('master-acl-section');
@@ -1644,6 +1644,13 @@
         masterAclCheckbox.checked = false;
         toggleMasterAcl();
       }
+      // ACL Sheet Name and ACL Column Name depend on Master ACL Spreadsheet ID being filled
+      var hasMasterAclId = (document.getElementById('cfg-master-acl-id').value || '').trim().length > 0;
+      var aclReason = '\u2500\u2500\u2500  Enter Master ACL Spreadsheet ID first  \u2500\u2500\u2500';
+      var aclDisabled = projectDisabled || !hasSpreadsheet || !hasMasterAclId;
+      var aclDisabledReason = projectDisabled ? projectReason : (!hasSpreadsheet ? sheetReason : aclReason);
+      setFieldDisabled('cfg-acl-sheet-name', aclDisabled, aclDisabledReason);
+      setFieldDisabled('cfg-acl-page-name', aclDisabled, aclDisabledReason);
       // Auth sub-fields (preset, domains) depend on Client ID
       if (useAuth) {
         var clientReason = '\u2500\u2500\u2500  Enter OAuth Client ID first  \u2500\u2500\u2500';

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.62w] — 2026-04-07 10:56:55 AM EST — v09.57r
+
+### Fixed
+- ACL fields now require Master ACL Spreadsheet ID before they can be edited
+- Disabled ACL Column Name no longer misleadingly shows default value hint
 
 ## [v01.61w] — 2026-04-07 10:51:44 AM EST — v09.56r
 

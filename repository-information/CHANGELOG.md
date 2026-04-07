@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
+
+## [v09.57r] — 2026-04-07 10:56:55 AM EST
+
+> **Prompt:** "the acl column name should not mention defaults to if disabled, should also say enter spreadsheet id first instead. also if the master ACL spreadsheet ID is not filled either manually or through the toggle, the ACL sheet name and ACL column name should be disabled"
+
+### Fixed
+- ACL Sheet Name and ACL Column Name now gated behind Master ACL Spreadsheet ID being filled (either manually or via toggle) — show "Enter Master ACL Spreadsheet ID first" when empty
+- ACL Column Name no longer shows "Defaults to:" placeholder when disabled — only shows the default hint when the field is active and editable
+
+#### `gas-project-creator.html` — v01.62w
+
+##### Fixed
+- ACL fields now require Master ACL Spreadsheet ID before they can be edited
+- Disabled ACL Column Name no longer misleadingly shows default value hint
 
 ## [v09.56r] — 2026-04-07 10:51:44 AM EST
 
