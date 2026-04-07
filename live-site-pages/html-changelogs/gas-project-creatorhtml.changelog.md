@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 28/50`
+`Sections: 29/50`
 
 ## [Unreleased]
+
+## [v01.57w] — 2026-04-07 10:28:36 AM EST — v09.52r
+
+### Changed
+- Master ACL toggle moved under Spreadsheet ID with external ACL ID field for non-self ACL projects
+- ACL Sheet Name and Column Name always visible
 
 ## [v01.56w] — 2026-04-07 10:12:59 AM EST — v09.51r
 
