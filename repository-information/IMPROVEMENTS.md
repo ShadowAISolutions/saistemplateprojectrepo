@@ -43,7 +43,7 @@ Ideas and optimizations to explore — no commitment, investigated when time all
 
 ## HTML Page Config Files (html.config.json)
 
-**Context:** GAS projects have a `<page-name>.config.json` that serves as the single source of truth for project-unique variables (`TITLE`, `DEPLOYMENT_ID`, `SPREADSHEET_ID`, `SHEET_NAME`, `SOUND_FILE_ID`). Pre-Commit item #15 syncs these values to the `.gs` code file and the embedding HTML page. The config exists because the same value must appear in multiple files and needs a coordination point.
+**Context:** GAS projects have a `<page-name>.config.json` that serves as the single source of truth for project-unique variables (`TITLE`, `DEPLOYMENT_ID`, `SPREADSHEET_ID`, `SHEET_NAME`). Pre-Commit item #15 syncs these values to the `.gs` code file and the embedding HTML page. The config exists because the same value must appear in multiple files and needs a coordination point.
 
 **Current state of HTML config variables:** Each embedding HTML page has a `// ── CONFIG ──` block with page-local variables:
 - `DEVELOPER_LOGO_URL` — logo shown on splash screens

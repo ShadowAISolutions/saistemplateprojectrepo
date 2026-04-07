@@ -46,7 +46,6 @@ The `.config.json` double extension ensures the config file sorts **after** the 
 | `DEPLOYMENT_ID` | GAS deployment ID (`AKfycb...` string) | `<page-name>.gs` `var DEPLOYMENT_ID`, HTML `var _e` inside GAS IIFE (reverse+base64 encoded) |
 | `SPREADSHEET_ID` | Google Sheets ID for version tracking | `<page-name>.gs` `var SPREADSHEET_ID` |
 | `SHEET_NAME` | Sheet tab name | `<page-name>.gs` `var SHEET_NAME` |
-| `SOUND_FILE_ID` | Google Drive file ID for deploy notification sound | `<page-name>.gs` `var SOUND_FILE_ID` |
 
 ### What is NOT in config.json
 - `VERSION` — auto-bumped by Pre-Commit item #1, lives only in `<page-name>.gs`

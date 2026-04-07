@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
 
 ## [Unreleased]
+
+## [v01.47w] — 2026-04-07 07:57:43 AM EST — v09.42r
+
+### Removed
+- Removed Sound File ID form field (was unused by any live feature)
 
 ## [v01.46w] — 2026-04-06 11:16:59 PM EST — v09.41r
 

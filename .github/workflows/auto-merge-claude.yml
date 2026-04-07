@@ -50,7 +50,6 @@
 #     - SHEET_NAME       : Name of the sheet tab to read/write (e.g. "Live_Sheet")
 #     - GITHUB_TOKEN     : Set in Apps Script: Project Settings → Script Properties
 #                          Key: GITHUB_TOKEN  Value: github_pat_... token
-#     - SOUND_FILE_ID    : Google Drive file ID for the GAS "Test Sound" button (optional)
 #     - EMBED_PAGE_URL   : The GitHub Pages URL where this GAS app is iframed (optional)
 #     - SPLASH_LOGO_URL  : Logo shown on the blue "Code Ready" splash screen (optional)
 #
@@ -70,7 +69,6 @@
 #          var GITHUB_BRANCH  = "main";
 #          var FILE_PATH      = "googleAppsScripts/My New Project/my-new-project.gs";
 #          var DEPLOYMENT_ID  = "your-deployment-id";       // ← from config.json
-#          var SOUND_FILE_ID  = "your-drive-file-id";       // ← from config.json
 #          var EMBED_PAGE_URL = "https://<your-org>.github.io/<your-repo>/your-page.html";
 #          var SPLASH_LOGO_URL = "https://your-logo-url";
 #     5. Bootstrap: manually copy-paste <page-name>.gs into the Apps Script editor and save

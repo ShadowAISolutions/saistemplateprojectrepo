@@ -3,7 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
+
+## [v09.42r] — 2026-04-07 07:57:43 AM EST
+
+> **Prompt:** "in the gas-project-creator , are we actually using the Sound File ID for anything anymore? if not remove it"
+
+### Removed
+- Removed `SOUND_FILE_ID` variable from all GAS templates, live GAS scripts, config.json files, gas-project-creator form, setup script, workflow comments, and documentation — the variable was declared but never referenced after the `testSoundFetch` test function was archived
+
+#### `gas-project-creator.html` — v01.47w
+
+##### Removed
+- Removed Sound File ID form field (was unused by any live feature)
+
+#### `testauth1.gs` — v02.58g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.52g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.60g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.41r] — 2026-04-06 11:16:59 PM EST
 

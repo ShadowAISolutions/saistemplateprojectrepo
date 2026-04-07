@@ -28,8 +28,7 @@ flowchart TB
         F1c["Deployment ID"]
         F1d["Spreadsheet ID"]
         F1e["Sheet Name"]
-        F1f["Sound File ID"]
-        F1 --> F1a & F1b & F1c & F1d & F1e & F1f
+        F1 --> F1a & F1b & F1c & F1d & F1e
     end
 
     subgraph TestConn["Test Connection"]

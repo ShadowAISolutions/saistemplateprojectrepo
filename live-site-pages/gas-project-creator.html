@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.46w">
+  <meta name="build-version" content="v01.47w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -674,11 +674,6 @@
             <label for="cfg-sheet-name">Sheet Tab Name <em>(optional &mdash; defaults to &ldquo;Live_Sheet&rdquo;)</em></label>
             <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Tab name in the spreadsheet. Uses &ldquo;Live_Sheet&rdquo; if left blank</span>
-          </div>
-          <div class="step-input" id="field-sound-id">
-            <label for="cfg-sound-id">Sound File ID <em>(optional &mdash; if blank, no notification sound)</em></label>
-            <div class="input-row"><input type="text" id="cfg-sound-id" placeholder="1bzVp6wp..." value="1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN"><button class="field-clear" onclick="clearField('cfg-sound-id')" title="Clear">&times;</button></div>
-            <span class="field-hint">Google Drive file ID for notification sound. Clear to disable sound</span>
           </div>
           <div class="step-input" id="field-splash-logo">
             <label for="cfg-splash-logo">Splash Logo URL <em>(optional &mdash; defaults to ShadowAISolutions logo)</em></label>
@@ -1370,13 +1365,11 @@
         var deployId = (document.getElementById('cfg-deployment-id') || {}).value || '';
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         var sheetName = (document.getElementById('cfg-sheet-name') || {}).value || '';
-        var soundId = (document.getElementById('cfg-sound-id') || {}).value || '';
         var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
         if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
         if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
         if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
-        if (soundId.trim()) code = code.replace(/var SOUND_FILE_ID\s*=\s*"[^"]*"/, 'var SOUND_FILE_ID = "' + soundId.trim() + '"');
         if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
         var ghBranch = (document.getElementById('cfg-github-branch') || {}).value || 'main';
         if (ghBranch.trim()) code = code.replace(/var GITHUB_BRANCH\s*=\s*"[^"]*"/, 'var GITHUB_BRANCH = "' + ghBranch.trim() + '"');
@@ -1612,7 +1605,7 @@
       var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       // Project config fields depend on Environment Name
       var envReason = '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
-      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-sound-id', 'cfg-splash-logo', 'cfg-github-branch'];
+      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-splash-logo', 'cfg-github-branch'];
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName, envReason);
       // Sheet Tab Name also depends on Spreadsheet ID
       if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
@@ -1773,7 +1766,6 @@
       var deployId = document.getElementById('cfg-deployment-id').value.trim() || 'YOUR_DEPLOYMENT_ID';
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || 'YOUR_SPREADSHEET_ID';
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'YOUR_SHEET_NAME';
-      var soundId = document.getElementById('cfg-sound-id').value.trim() || 'YOUR_SOUND_FILE_ID';
       var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'YOUR_SPLASH_LOGO_URL';
       var includeAuth = document.getElementById('chk-google-auth').checked;
 
@@ -1783,7 +1775,6 @@
         + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
         + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
         + '  "SHEET_NAME": "' + sheetName + '",\n'
-        + '  "SOUND_FILE_ID": "' + soundId + '",\n'
         + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'
         + '  "INCLUDE_AUTH": ' + (includeAuth ? 'true' : 'false');
       if (includeAuth) {

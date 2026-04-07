@@ -83,7 +83,6 @@ TITLE="$(parse_json TITLE 'CHANGE THIS PROJECT TITLE GAS TEMPLATE')"
 DEPLOYMENT_ID="$(parse_json DEPLOYMENT_ID 'YOUR_DEPLOYMENT_ID')"
 SPREADSHEET_ID="$(parse_json SPREADSHEET_ID 'YOUR_SPREADSHEET_ID')"
 SHEET_NAME="$(parse_json SHEET_NAME 'YOUR_SHEET_NAME')"
-SOUND_FILE_ID="$(parse_json SOUND_FILE_ID '')"
 SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
@@ -176,7 +175,6 @@ if [ "$UPDATE_MODE" = true ]; then
   "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
   "SPREADSHEET_ID": "${SPREADSHEET_ID}",
   "SHEET_NAME": "${SHEET_NAME}",
-  "SOUND_FILE_ID": "${SOUND_FILE_ID}",
   "MASTER_ACL_SPREADSHEET_ID": "${MASTER_ACL_SPREADSHEET_ID}",
   "ACL_SHEET_NAME": "${ACL_SHEET_NAME}",
   "ACL_PAGE_NAME": "${ACL_PAGE_NAME}"
@@ -188,8 +186,7 @@ CFGEOF
   "TITLE": "${TITLE}",
   "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
   "SPREADSHEET_ID": "${SPREADSHEET_ID}",
-  "SHEET_NAME": "${SHEET_NAME}",
-  "SOUND_FILE_ID": "${SOUND_FILE_ID}"
+  "SHEET_NAME": "${SHEET_NAME}"
 }
 CFGEOF
         fi
@@ -204,7 +201,6 @@ CFGEOF
             sed -i "s|var SPREADSHEET_ID = .*;|var SPREADSHEET_ID = \"${SPREADSHEET_ID}\";|" "$GAS_FILE"
         fi
         sed -i "s|var SHEET_NAME     = .*;|var SHEET_NAME     = \"${SHEET_NAME}\";|" "$GAS_FILE"
-        sed -i "s|var SOUND_FILE_ID = .*;|var SOUND_FILE_ID = \"${SOUND_FILE_ID}\";|" "$GAS_FILE"
         # Master ACL config (auth projects only)
         if [ "$INCLUDE_AUTH" = "true" ]; then
             if [ "$MASTER_ACL_SPREADSHEET_ID" != "YOUR_MASTER_ACL_SPREADSHEET_ID" ] && [ -n "$MASTER_ACL_SPREADSHEET_ID" ]; then
@@ -305,7 +301,6 @@ if [ -n "$SPREADSHEET_ID" ]; then
     sed -i "s|var SPREADSHEET_ID = .*;|var SPREADSHEET_ID = \"${SPREADSHEET_ID}\";|" "$GAS_FILE"
 fi
 sed -i "s|var SHEET_NAME     = .*;|var SHEET_NAME     = \"${SHEET_NAME}\";|" "$GAS_FILE"
-sed -i "s|var SOUND_FILE_ID = .*;|var SOUND_FILE_ID = \"${SOUND_FILE_ID}\";|" "$GAS_FILE"
 # Set repo-derived variables
 sed -i "s|var GITHUB_OWNER  = .*;|var GITHUB_OWNER  = \"${GITHUB_OWNER}\";|" "$GAS_FILE"
 sed -i "s|var GITHUB_REPO   = .*;|var GITHUB_REPO   = \"${GITHUB_REPO}\";|" "$GAS_FILE"
@@ -357,7 +352,6 @@ if [ "$INCLUDE_AUTH" = "true" ]; then
   "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
   "SPREADSHEET_ID": "${SPREADSHEET_ID}",
   "SHEET_NAME": "${SHEET_NAME}",
-  "SOUND_FILE_ID": "${SOUND_FILE_ID}",
   "MASTER_ACL_SPREADSHEET_ID": "${MASTER_ACL_SPREADSHEET_ID}",
   "ACL_SHEET_NAME": "${ACL_SHEET_NAME}",
   "ACL_PAGE_NAME": "${ACL_PAGE_NAME}"
@@ -369,8 +363,7 @@ else
   "TITLE": "${TITLE}",
   "DEPLOYMENT_ID": "${DEPLOYMENT_ID}",
   "SPREADSHEET_ID": "${SPREADSHEET_ID}",
-  "SHEET_NAME": "${SHEET_NAME}",
-  "SOUND_FILE_ID": "${SOUND_FILE_ID}"
+  "SHEET_NAME": "${SHEET_NAME}"
 }
 CFGEOF
 fi

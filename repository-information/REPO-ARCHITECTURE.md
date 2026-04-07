@@ -494,7 +494,6 @@ classDiagram
         +String DEPLOYMENT_ID
         +String SPREADSHEET_ID
         +String SHEET_NAME
-        +String SOUND_FILE_ID
     }
     class VersionFile {
         +String version

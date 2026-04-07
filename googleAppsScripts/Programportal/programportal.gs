@@ -1,4 +1,4 @@
-var VERSION = "v01.59g";
+var VERSION = "v01.60g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -25,7 +25,6 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 // Spreadsheet ID for project data (the GAS app reads/writes user data here).
 var SPREADSHEET_ID = "13k0t3aYbf1t4K6XFdvEvVWig6bsxRFDRCcxgXgV8428";
 var SHEET_NAME     = "Live_Sheet";
-var SOUND_FILE_ID = "1bzVp6wpTHdJ4BRX8gbtDN73soWpmq1kN";
 var ANNOUNCEMENTS_SHEET_NAME = "Announcements";
 
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
