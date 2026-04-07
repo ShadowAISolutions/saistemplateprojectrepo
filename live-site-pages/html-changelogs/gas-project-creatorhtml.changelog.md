@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.51w] — 2026-04-07 08:47:47 AM EST — v09.46r
+
+### Fixed
+- Fields no longer stay disabled when a parent field is cleared and re-filled
 
 ## [v01.50w] — 2026-04-07 08:41:28 AM EST — v09.45r
 

@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.50w">
+  <meta name="build-version" content="v01.51w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1612,16 +1612,18 @@
     }
     function updateFieldStates() {
       var hasDeployId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
-      var hasEnvName = (document.getElementById('cfg-env-name').value || '').trim().length > 0;
-      var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
       var useAuth = document.getElementById('chk-google-auth').checked;
-      var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       // Environment Name depends on Deployment ID
       setFieldDisabled('cfg-env-name', !hasDeployId, '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500');
+      // Re-read after restore — setFieldDisabled may have restored a saved value
+      var hasEnvName = (document.getElementById('cfg-env-name').value || '').trim().length > 0;
       // Project config fields depend on Environment Name (which itself depends on Deployment ID)
       var envReason = '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
       var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName || !hasDeployId, !hasDeployId ? '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500' : envReason);
+      // Re-read after restore — spreadsheet and client ID may have been restored
+      var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
+      var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       // Sheet Tab Name also depends on Spreadsheet ID
       if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
       // Auth sub-fields depend on Client ID (when auth is enabled)

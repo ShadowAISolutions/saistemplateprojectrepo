@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
+
+## [v09.46r] — 2026-04-07 08:47:47 AM EST
+
+> **Prompt:** "if i add deployment id, add project environment name, then delete deployment id and re ad deployment ID, the fields are disabled even though we still had a project environment name there before, fix this same bug everywhere in the gas-project-creator"
+
+### Fixed
+- Fixed field dependency cascade bug in gas-project-creator: when a parent field was cleared and re-filled, child fields stayed disabled because `updateFieldStates()` read dependent values before `setFieldDisabled()` had a chance to restore them. Now re-reads `hasEnvName`, `hasSpreadsheet`, and `hasClientId` after their fields have been restored, so downstream fields correctly re-enable
+
+#### `gas-project-creator.html` — v01.51w
+
+##### Fixed
+- Fields no longer stay disabled when a parent field is cleared and re-filled
 
 ## [v09.45r] — 2026-04-07 08:41:28 AM EST
 
