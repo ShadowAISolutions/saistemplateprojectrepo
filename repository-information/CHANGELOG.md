@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
+
+## [v09.33r] — 2026-04-06 10:36:51 PM EST
+
+> **Prompt:** "the fields that are blank but available to be edited, have their background be veeery opaque light green, same tone as the dark blue/black, the fields that are disabled have a veeery opaque light red, same dark tone, they should be very subtle"
+
+### Changed
+- Added subtle background color tints to gas-project-creator form fields: empty enabled fields get a very subtle green tint (`#0e1513`), disabled fields get a very subtle red tint (`#140e0e`) — both blend with the dark `#0d1117` base
+- Added `updateEmptyClasses()` function that applies/removes the `.field-empty` CSS class based on field state
+- Added global `input` event listener to keep empty-class state in sync as the user types
+
+#### `gas-project-creator.html` — v01.38w
+
+##### Changed
+- Empty fields now have a very subtle green background tint to indicate they're available
+- Disabled fields now have a very subtle red background tint to indicate they're unavailable
 
 ## [v09.32r] — 2026-04-06 10:30:21 PM EST
 

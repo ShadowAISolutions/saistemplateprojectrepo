@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.37w">
+  <meta name="build-version" content="v01.38w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -437,6 +437,9 @@
     .step-input .input-row input { flex: 1; }
     .step-input input:focus { border-color: #58a6ff; }
     .step-input input::placeholder { color: #484f58; }
+    .step-input input.field-empty { background: #0e1513; }
+    .step-input input:disabled { background: #140e0e; }
+    .step-input select:disabled { background: #140e0e; }
     .field-clear {
       background: none; border: 1px solid #30363d; border-radius: 6px;
       color: #f85149; cursor: pointer; font-size: 14px; padding: 6px 8px;
@@ -1545,6 +1548,16 @@
     }
 
 // ── Field Dependency States ──
+    function updateEmptyClasses() {
+      var inputs = document.querySelectorAll('.step-input input[type="text"]');
+      for (var i = 0; i < inputs.length; i++) {
+        if (!inputs[i].disabled && !inputs[i].value.trim()) {
+          inputs[i].classList.add('field-empty');
+        } else {
+          inputs[i].classList.remove('field-empty');
+        }
+      }
+    }
     function setFieldDisabled(fieldId, disabled) {
       var el = document.getElementById(fieldId);
       if (!el) return;
@@ -1599,6 +1612,7 @@
         masterAclCheckbox.parentElement.style.opacity = '0.5';
       }
       toggleAclDetails();
+      updateEmptyClasses();
     }
 
 // ── Auth Fields Toggle ──
@@ -1620,6 +1634,9 @@
     toggleAuthFields();
     updateFieldStates();
     toggleAclDetails();
+    updateEmptyClasses();
+    // Keep empty class in sync as user types in any field
+    document.addEventListener('input', function(e) { if (e.target.matches('.step-input input[type="text"]')) updateEmptyClasses(); });
 
 // ── Deployment ID Gate ──
     function updateDeployGate() {
