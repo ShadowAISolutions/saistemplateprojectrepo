@@ -3,7 +3,44 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
+
+## [v09.45r] — 2026-04-07 08:41:28 AM EST
+
+> **Prompt:** "make the splash logo URL prefill to https://www.shadowaisolutions.com/SAIS_Logo.png , the splash logo URL defaulting to developer logo, what happens if the developer logo is blank, i think these should not depend on eachother, they should be independent in case i want some to be blank on purpose."
+
+### Changed
+- Made all 3 logo variables fully independent — `SPLASH_LOGO_URL` is now a standalone string value in all templates and pages, no longer a reference to `DEVELOPER_LOGO_URL`
+- Splash Logo URL field in gas-project-creator now prefills with the default SAIS logo URL
+- Updated field hints to clarify all 3 logos are independent of each other
+- Updated `copyHtmlCode()` regex to match the new single-quoted string format for `SPLASH_LOGO_URL`
+- Updated `setup-gas-project.sh` to handle `SPLASH_LOGO_URL` with proper default and consistent substitution pattern
+
+#### `gas-project-creator.html` — v01.50w
+
+##### Changed
+- Splash Logo URL now prefills with the default logo instead of being blank
+- All three logo fields are now described as independent of each other
+
+#### `testauth1.html` — v03.99w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.88w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.95w
+
+##### Changed
+- Minor internal improvements
+
+#### `text-compare.html` — v01.10w
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.44r] — 2026-04-07 08:34:10 AM EST
 

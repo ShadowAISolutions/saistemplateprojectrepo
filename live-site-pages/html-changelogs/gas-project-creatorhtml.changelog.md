@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.50w] — 2026-04-07 08:41:28 AM EST — v09.45r
+
+### Changed
+- Splash Logo URL now prefills with the default logo instead of being blank
+- All three logo fields are now described as independent of each other
 
 ## [v01.49w] — 2026-04-07 08:34:10 AM EST — v09.44r
 

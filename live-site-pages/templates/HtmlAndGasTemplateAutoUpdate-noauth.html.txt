@@ -165,7 +165,7 @@
     // Logo shown on the "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var YOUR_ORG_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
-    var SPLASH_LOGO_URL = DEVELOPER_LOGO_URL;
+    var SPLASH_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
 
     // Auto-refresh: set to false to disable build-version polling
     var AUTO_REFRESH = true;

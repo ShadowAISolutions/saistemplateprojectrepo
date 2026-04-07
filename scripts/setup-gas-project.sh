@@ -85,7 +85,7 @@ SPREADSHEET_ID="$(parse_json SPREADSHEET_ID 'YOUR_SPREADSHEET_ID')"
 SHEET_NAME="$(parse_json SHEET_NAME 'YOUR_SHEET_NAME')"
 DEVELOPER_LOGO_URL="$(parse_json DEVELOPER_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
 YOUR_ORG_LOGO_URL="$(parse_json YOUR_ORG_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
-SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL '')"
+SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
 AUTH_PRESET="$(parse_json AUTH_PRESET 'hipaa')"
@@ -285,8 +285,8 @@ fi
 if [ "$YOUR_ORG_LOGO_URL" != "YOUR_ORG_LOGO_URL" ] && [ -n "$YOUR_ORG_LOGO_URL" ]; then
     sed -i "s|var YOUR_ORG_LOGO_URL = '[^']*';|var YOUR_ORG_LOGO_URL = '${YOUR_ORG_LOGO_URL}';|" "$HTML_PAGE"
 fi
-if [ -n "$SPLASH_LOGO_URL" ]; then
-    sed -i "s|var SPLASH_LOGO_URL = [^;]*;|var SPLASH_LOGO_URL = '${SPLASH_LOGO_URL}';|" "$HTML_PAGE"
+if [ "$SPLASH_LOGO_URL" != "YOUR_SPLASH_LOGO_URL" ] && [ -n "$SPLASH_LOGO_URL" ]; then
+    sed -i "s|var SPLASH_LOGO_URL = '[^']*';|var SPLASH_LOGO_URL = '${SPLASH_LOGO_URL}';|" "$HTML_PAGE"
 fi
 
 # Encode and set var _e (deployment URL)
