@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
+
+## [v09.39r] — 2026-04-06 11:06:44 PM EST
+
+> **Prompt:** "also using the clear X button should show the green again, it currently doesnt on most fields"
+
+### Fixed
+- Fixed clear (X) button not triggering green empty-field tint — `clearField()` now calls `updateEmptyClasses()` after clearing the value
+
+#### `gas-project-creator.html` — v01.44w
+
+##### Fixed
+- Clearing a field now correctly shows the empty-field background tint
 
 ## [v09.38r] — 2026-04-06 11:03:59 PM EST
 

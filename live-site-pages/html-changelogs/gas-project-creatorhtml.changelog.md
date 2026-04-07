@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.44w] — 2026-04-06 11:06:44 PM EST — v09.39r
+
+### Fixed
+- Clearing a field now correctly shows the empty-field background tint
 
 ## [v01.43w] — 2026-04-06 11:03:59 PM EST — v09.38r
 
