@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
+
+## [v09.72r] — 2026-04-07 06:41:25 PM EST
+
+> **Prompt:** "you literally removed the gas layer. and the html toggle is not hiding all of the html, the gas toggle should still be there"
+
+### Fixed
+- Added `qr-scanner-page` to the HTML layer toggle element list — scanner now hides when HTML toggle is clicked, revealing the GAS iframe underneath
+
+#### `inventorymanagement.html` — v01.04w
+
+##### Fixed
+- Scanner now responds to the HTML layer toggle — click HTML to hide scanner and see the app layer
 
 ## [v09.71r] — 2026-04-07 06:34:20 PM EST
 
