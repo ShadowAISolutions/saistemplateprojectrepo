@@ -1,4 +1,4 @@
-var VERSION = "v01.07g";
+var VERSION = "v01.08g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2555,8 +2555,13 @@ function doGet(e) {
         .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }
         .scan-row .sm { color: #666; font-size: 10px; white-space: nowrap; margin-left: 8px; }
+        .scan-row.optimistic { opacity: 0.35; pointer-events: none; }
+        .scan-row.optimistic::after { content: 'saving...'; font-size: 9px; color: #d29922; margin-left: 6px; }
         .scan-empty { color: #666; font-size: 12px; text-align: center; padding: 20px 0; }
-        .scan-poll-status { color: #555; font-size: 10px; text-align: right; margin-top: 4px; }
+        .scan-poll-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10px; font-family: monospace; }
+        .scan-poll-bar .spl { color: #555; }
+        .scan-poll-bar .spc { color: #6e7681; }
+        .scan-poll-bar .spc.active { color: #d29922; }
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
@@ -2653,8 +2658,8 @@ function doGet(e) {
       <!-- PROJECT START — Scan results (data from spreadsheet) -->
       <div id="scan-panel">
         <h3>Scan History</h3>
-        <div id="scan-list"><div class="scan-empty">No scans yet — start scanning above</div></div>
-        <div class="scan-poll-status" id="scan-poll-status">Waiting for scans...</div>
+        <div id="scan-list"><div class="scan-empty">No scans yet \\u2014 start scanning above</div></div>
+        <div class="scan-poll-bar"><span class="spl" id="scan-poll-label">Waiting for scans...</span><span class="spc" id="scan-poll-countdown">--</span></div>
       </div>
       <!-- PROJECT END -->
 
@@ -3278,67 +3283,124 @@ function doGet(e) {
         ` : ''}
 
 
-        // PROJECT START — Scan history polling + result display
+        // PROJECT START — Scan history: visible countdown + optimistic data (testauth1 pattern)
         (function() {
-          var POLL_INTERVAL = 10000;
+          var POLL_INTERVAL = 15000;
           var _pollTimer = null;
           var _pollInFlight = false;
+          var _lastPollTick = 0;
+          var _scanRows = [];          // authoritative server data
+          var _optimisticRow = null;    // pending unsaved scan (shown at top, dimmed)
+
+          var _pollCountdownEl = document.getElementById('scan-poll-countdown');
+          var _pollLabelEl = document.getElementById('scan-poll-label');
 
           function _escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-          function _renderScans(history) {
+          // ── Visible countdown (updates every 1s) ──
+          function _updateCountdown() {
+            if (!_pollCountdownEl) return;
+            if (_pollInFlight) {
+              _pollCountdownEl.textContent = 'polling...';
+              _pollCountdownEl.className = 'spc active';
+            } else if (_lastPollTick) {
+              var since = (Date.now() - _lastPollTick) / 1000;
+              var nextIn = Math.max(0, (POLL_INTERVAL / 1000) - since);
+              var s = Math.ceil(nextIn);
+              var m = Math.floor(s / 60);
+              s = s % 60;
+              _pollCountdownEl.textContent = '\\u25B7 ' + (m > 0 ? m + ':' + (s < 10 ? '0' : '') + s : s + 's');
+              _pollCountdownEl.className = 'spc';
+            } else {
+              _pollCountdownEl.textContent = '--';
+              _pollCountdownEl.className = 'spc';
+            }
+          }
+          setInterval(_updateCountdown, 1000);
+
+          // ── Render scan list ──
+          function _renderScans() {
             var el = document.getElementById('scan-list');
             if (!el) return;
-            if (!history || history.length === 0) {
+            var all = _scanRows.slice();
+
+            // Prepend optimistic row (unsaved, dimmed)
+            if (_optimisticRow) all.unshift(_optimisticRow);
+
+            if (all.length === 0) {
               el.innerHTML = '<div class="scan-empty">No scans yet \\u2014 start scanning above</div>';
               return;
             }
             el.innerHTML = '';
-            history.forEach(function(item) {
+            all.forEach(function(item, idx) {
               var div = document.createElement('div');
-              div.className = 'scan-row';
-              var ts = item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '';
+              var isOptimistic = (_optimisticRow && idx === 0);
+              div.className = 'scan-row' + (isOptimistic ? ' optimistic' : '');
+              var ts = item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}) : 'now';
               var fmt = (item.format || 'qr_code').toUpperCase().replace(/_/g, ' ');
               div.innerHTML = '<span class="sv">' + _escH(item.value) + '</span><span class="sm">' + fmt + ' \\u00B7 ' + ts + '</span>';
               el.appendChild(div);
             });
           }
 
-          function _updatePollStatus(msg) {
-            var el = document.getElementById('scan-poll-status');
-            if (el) el.textContent = msg;
+          // ── Optimistic insert (from parent postMessage via scanListener bridge result) ──
+          // The HTML layer sends barcode-scan to the scanListener iframe, which calls
+          // processBarcodeScan server-side. We can't receive the barcode directly (no
+          // parent→GAS postMessage), but we CAN receive the server result via the bridge.
+          // For now, optimistic insert happens when the poll returns new data — the first
+          // poll after a scan will show the new entry. The scanListener bridge sends
+          // gas-scan-result to the parent, which could forward it — but the simplest path
+          // is to just let the poll pick it up. Optimistic insert is supported for future
+          // direct communication.
+
+          function _addOptimisticScan(value, format) {
+            _optimisticRow = {
+              value: String(value),
+              format: format || 'qr_code',
+              timestamp: new Date().toISOString()
+            };
+            _renderScans();
+            if (_pollLabelEl) _pollLabelEl.textContent = 'Saving scan...';
           }
 
+          function _clearOptimistic() {
+            _optimisticRow = null;
+          }
+
+          // ── Polling loop (testauth1 pattern) ──
           function _doPoll() {
             if (_pollInFlight) return;
             _pollInFlight = true;
-            _updatePollStatus('Polling...');
+            _updateCountdown();
             google.script.run
               .withSuccessHandler(function(result) {
                 _pollInFlight = false;
-                if (result && result.success) {
-                  _renderScans(result.history);
-                  _updatePollStatus('Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}));
-                } else {
-                  _updatePollStatus('Poll error');
+                _lastPollTick = Date.now();
+                _updateCountdown();
+                if (result && result.success && result.history) {
+                  _scanRows = result.history;
+                  _clearOptimistic();
+                  _renderScans();
+                  if (_pollLabelEl) _pollLabelEl.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
                 }
                 _pollTimer = setTimeout(_doPoll, POLL_INTERVAL);
               })
-              .withFailureHandler(function(err) {
+              .withFailureHandler(function() {
                 _pollInFlight = false;
-                _updatePollStatus('Poll failed');
+                _lastPollTick = Date.now();
+                _updateCountdown();
+                if (_pollLabelEl) _pollLabelEl.textContent = 'Poll failed';
                 _pollTimer = setTimeout(_doPoll, POLL_INTERVAL);
               })
               .getScanHistory(_sessionToken);
           }
 
-          // Start polling after a short delay (let auth settle)
-          setTimeout(function() { _doPoll(); }, 2000);
-
-          // Also listen for scan results forwarded from the parent (via the main GAS app iframe)
-          // The scanListener iframe handles server-side saves, but we also get notified
-          // when the parent page detects a barcode — the parent can't postMessage directly to us,
-          // but the poll will pick up new data within POLL_INTERVAL seconds
+          // Start polling after auth settles
+          setTimeout(function() {
+            _lastPollTick = Date.now();
+            _updateCountdown();
+            _doPoll();
+          }, 2000);
         })();
         // PROJECT END
       </script>

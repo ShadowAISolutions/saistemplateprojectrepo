@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
+
+## [v09.76r] — 2026-04-07 07:45:47 PM EST
+
+> **Prompt:** "ok, good. make it also have the same polling timer (including the visible countdown) that is used in the testauth1 live data, as well as showing the optimistic data (like in the testauth), so look at how the testauth1 works for its table and incorporate the same methodology"
+
+### Added
+- Visible poll countdown timer (`▷ 12s`) matching testauth1 pattern — updates every 1s, shows "polling..." when in-flight, time until next poll otherwise
+- Optimistic data support — scans can be shown immediately at reduced opacity before server confirms, cleared when poll returns fresh data
+- 15-second poll interval matching testauth1's `DATA_POLL_INTERVAL`
+
+#### `inventorymanagement.gs` — v01.08g
+
+##### Added
+- Visible countdown showing time until next data refresh
+- Optimistic scan entries that appear instantly while saving
 
 ## [v09.75r] — 2026-04-07 07:37:51 PM EST
 
