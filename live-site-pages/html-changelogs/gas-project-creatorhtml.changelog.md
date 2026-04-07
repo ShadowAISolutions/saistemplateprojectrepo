@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.42w] — 2026-04-06 10:56:44 PM EST — v09.37r
+
+### Fixed
+- ACL Column Name now correctly shows the environment name as its default when enabled
+- Empty ACL fields now show the correct background tint
 
 ## [v01.41w] — 2026-04-06 10:50:41 PM EST — v09.36r
 

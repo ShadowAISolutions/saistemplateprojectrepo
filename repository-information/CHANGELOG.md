@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
+
+## [v09.37r] — 2026-04-06 10:56:44 PM EST
+
+> **Prompt:** "in the scenario where i fill out the environment name before toiggling the master ACL spreadsheet, the ACL Column Name is not auto filling from the environment name, and note that its not green when blank either"
+
+### Fixed
+- Fixed ACL Column Name placeholder not showing "Defaults to: {envName}" after enabling — `syncAclPagePlaceholder()` now called when ACL detail fields transition to active
+- Fixed ACL detail fields not getting green empty-field tint after becoming enabled — `updateEmptyClasses()` now called at end of `toggleAclDetails()`
+
+#### `gas-project-creator.html` — v01.42w
+
+##### Fixed
+- ACL Column Name now correctly shows the environment name as its default when enabled
+- Empty ACL fields now show the correct background tint
 
 ## [v09.36r] — 2026-04-06 10:50:41 PM EST
 
