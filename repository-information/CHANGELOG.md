@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [v09.70r] — 2026-04-07 06:14:22 PM EST
+
+> **Prompt:** "this is what i see" (screenshot showing SCAN button not visible)
+
+### Fixed
+- Fixed SCAN toggle button not appearing — removed `display:none` that relied on a `_showGasToggle` hook that was never called; button now shows by default like the HTML/GAS buttons
+
+#### `inventorymanagement.html` — v01.02w
+
+##### Fixed
+- Scanner toggle button now visible alongside HTML and GAS buttons
 
 ## [v09.69r] — 2026-04-07 05:58:59 PM EST
 

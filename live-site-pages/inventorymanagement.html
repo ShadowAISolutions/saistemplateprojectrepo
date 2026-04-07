@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -496,7 +496,7 @@
     </div>
     <div class="qr-status"><div class="qr-dot" id="qr-dot"></div><span id="qr-status-text">Camera inactive</span></div>
   </div>
-  <button id="qr-scan-toggle" style="display:none;position:fixed;bottom:7px;left:200px;z-index:10005;background:rgba(0,0,0,0.55);color:#00ffcc;border:1px solid rgba(0,255,204,0.3);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">SCAN</button>
+  <button id="qr-scan-toggle" style="position:fixed;bottom:7px;left:200px;z-index:10005;background:rgba(0,0,0,0.55);color:#00ffcc;border:1px solid rgba(0,255,204,0.3);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">SCAN</button>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
@@ -3840,13 +3840,6 @@
   var _qrScanning = false, _qrCooldown = false;
   var _qrUseNative = false, _qrDetector = null, _qrNativeActive = false;
   var _scanListenerSource = null;
-
-  // Show SCAN button after auth (when GAS iframe loads)
-  var _origShowGas = window._showGasToggle;
-  window._showGasToggle = function() {
-    if (_origShowGas) _origShowGas();
-    if (_qrToggleBtn) _qrToggleBtn.style.display = '';
-  };
 
   // Toggle scanner overlay
   _qrToggleBtn.onclick = function() {
