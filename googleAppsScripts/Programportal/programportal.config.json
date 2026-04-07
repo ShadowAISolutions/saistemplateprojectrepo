@@ -6,5 +6,7 @@
   "MASTER_ACL_SPREADSHEET_ID": "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI",
   "ACL_SHEET_NAME": "Access",
   "ACL_PAGE_NAME": "programportal",
+  "PORTAL_ICON": "🏠",
+  "PORTAL_DESCRIPTION": "Central hub for accessing all applications.",
   "ANNOUNCEMENTS_SHEET_NAME": "Announcements"
 }

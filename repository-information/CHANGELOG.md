@@ -3,7 +3,48 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
+
+## [v09.67r] — 2026-04-07 05:02:49 PM EST
+
+> **Prompt:** "plan it but please take into account the pros and cons so i can decide whether we move forward with it"
+
+### Added
+- Dynamic Program Portal — portal app list now reads from the Master ACL spreadsheet metadata rows instead of a hardcoded array. New auth projects automatically appear after their first page load
+- Added `#ICON` (row 5) and `#DESC` (row 6) metadata rows to the Master ACL spreadsheet schema — user data rows shifted from row 5+ to row 7+
+- Added `PORTAL_ICON` and `PORTAL_DESCRIPTION` config variables to all auth GAS scripts and config.json files
+- Added Portal Icon and Portal Description input fields to the GAS Project Creator form
+
+### Changed
+- Updated `ensureMetadataRows()` and `registerSelfProject()` in auth GAS template and all 4 auth .gs files to support 5 metadata rows
+- Updated `getRegisteredProjects()` and `addPageColumn()` in globalacl.gs to read/write the new metadata rows
+- Updated `getUserAppAccess()` in programportal.gs to read user data from row 7+ instead of row 5+
+- Updated `setup-gas-project.sh` to accept and substitute `PORTAL_ICON` and `PORTAL_DESCRIPTION`
+
+#### `gas-project-creator.html` — v01.69w
+
+##### Added
+- Portal Icon and Portal Description fields in the project creator form
+
+#### `programportal.gs` — v01.62g
+
+##### Changed
+- Application list now loads dynamically — new projects appear automatically
+
+#### `globalacl.gs` — v01.55g
+
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.60g
+
+##### Changed
+- Minor internal improvements
+
+#### `inventorymanagement.gs` — v01.02g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.66r] — 2026-04-07 03:20:19 PM EST
 

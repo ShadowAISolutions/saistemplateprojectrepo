@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.68w">
+  <meta name="build-version" content="v01.69w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -718,6 +718,16 @@
             <label for="cfg-acl-page-name">ACL Column Name <em>(optional &mdash; defaults to Environment Name)</em></label>
             <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
             <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
+          </div>
+          <div class="step-input" id="field-portal-icon">
+            <label for="cfg-portal-icon">Portal Icon <em>(optional &mdash; defaults to 📱)</em></label>
+            <div class="input-row"><input type="text" id="cfg-portal-icon" placeholder="📱" maxlength="4"><button class="field-clear" onclick="clearField('cfg-portal-icon')" title="Clear">&times;</button></div>
+            <span class="field-hint">Emoji icon shown on the Program Portal card for this project</span>
+          </div>
+          <div class="step-input" id="field-portal-desc">
+            <label for="cfg-portal-desc">Portal Description <em>(optional &mdash; defaults to &ldquo;Title application.&rdquo;)</em></label>
+            <div class="input-row"><input type="text" id="cfg-portal-desc" placeholder="Auto-generated from Title"><button class="field-clear" onclick="clearField('cfg-portal-desc')" title="Clear">&times;</button></div>
+            <span class="field-hint">Short description shown on the Program Portal card</span>
           </div>
           <div class="step-input" id="field-developer-logo">
             <label for="cfg-developer-logo">Developer Logo URL <em>(optional &mdash; defaults to ShadowAISolutions logo)</em></label>
@@ -1847,6 +1857,10 @@
           json += ',\n  "ACL_PAGE_NAME": "' + aclPageName + '"';
         }
       }
+      var portalIcon = (document.getElementById('cfg-portal-icon') || {}).value || '';
+      var portalDesc = (document.getElementById('cfg-portal-desc') || {}).value || '';
+      if (portalIcon) json += ',\n  "PORTAL_ICON": "' + portalIcon + '"';
+      if (portalDesc) json += ',\n  "PORTAL_DESCRIPTION": "' + portalDesc + '"';
       json += '\n}';
 
       var command = "Set up a new GAS project. Run the script, then commit and push.\n\n"

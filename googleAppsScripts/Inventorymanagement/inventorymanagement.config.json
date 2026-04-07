@@ -5,5 +5,7 @@
   "SHEET_NAME": "Live_Sheet",
   "MASTER_ACL_SPREADSHEET_ID": "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI",
   "ACL_SHEET_NAME": "Access",
-  "ACL_PAGE_NAME": "inventorymanagement"
+  "ACL_PAGE_NAME": "inventorymanagement",
+  "PORTAL_ICON": "📦",
+  "PORTAL_DESCRIPTION": "Inventory Management application."
 }

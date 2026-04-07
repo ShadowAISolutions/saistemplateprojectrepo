@@ -1,4 +1,4 @@
-var VERSION = "v01.61g";
+var VERSION = "v01.62g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -37,6 +37,8 @@ var ANNOUNCEMENTS_SHEET_NAME = "Announcements";
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
 var ACL_SHEET_NAME = "Access";
 var ACL_PAGE_NAME  = "programportal";
+var PORTAL_ICON    = "🏠";
+var PORTAL_DESCRIPTION = "Central hub for accessing all applications.";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
@@ -525,16 +527,22 @@ function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
 function ensureMetadataRows(sheet) {
   var data = sheet.getDataRange().getValues();
   if (data.length < 2 || String(data[1][0]).trim() !== '#NAME') {
-    sheet.insertRowsAfter(1, 3);
+    sheet.insertRowsAfter(1, 5);
     sheet.getRange(2, 1).setValue('#NAME');
     sheet.getRange(3, 1).setValue('#URL');
     sheet.getRange(4, 1).setValue('#AUTH');
+    sheet.getRange(5, 1).setValue('#ICON');
+    sheet.getRange(6, 1).setValue('#DESC');
+  } else if (data.length < 5 || String(data[4][0]).trim() !== '#ICON') {
+    sheet.insertRowsAfter(4, 2);
+    sheet.getRange(5, 1).setValue('#ICON');
+    sheet.getRange(6, 1).setValue('#DESC');
   }
 }
 
 /**
  * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
- * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
+ * Metadata is stored in rows 2-6 (#NAME, #URL, #AUTH, #ICON, #DESC) under the project's page column.
  * Runs once per execution (cached flag).
  */
 var _selfRegistered = false;
@@ -565,12 +573,14 @@ function registerSelfProject() {
       sheet.getRange(2, colIdx + 1).setValue('');
       sheet.getRange(3, colIdx + 1).setValue('');
       sheet.getRange(4, colIdx + 1).setValue(false);
+      sheet.getRange(5, colIdx + 1).setValue('');
+      sheet.getRange(6, colIdx + 1).setValue('');
       var lastRow = sheet.getLastRow();
-      if (lastRow > 4) {
+      if (lastRow > 6) {
         var falseValues = [];
-        for (var f = 0; f < lastRow - 4; f++) falseValues.push([false]);
-        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).setValues(falseValues);
-        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).insertCheckboxes();
+        for (var f = 0; f < lastRow - 6; f++) falseValues.push([false]);
+        sheet.getRange(7, colIdx + 1, lastRow - 6, 1).setValues(falseValues);
+        sheet.getRange(7, colIdx + 1, lastRow - 6, 1).insertCheckboxes();
       }
     }
 
@@ -587,6 +597,8 @@ function registerSelfProject() {
     sheet.getRange(2, col).setValue(TITLE);
     sheet.getRange(3, col).setValue(myUrl);
     sheet.getRange(4, col).setValue(true);
+    sheet.getRange(5, col).setValue(typeof PORTAL_ICON !== 'undefined' ? PORTAL_ICON : '');
+    sheet.getRange(6, col).setValue(typeof PORTAL_DESCRIPTION !== 'undefined' ? PORTAL_DESCRIPTION : '');
   } catch (e) {
     Logger.log('registerSelfProject error: ' + e.message);
   }
@@ -1898,12 +1910,12 @@ function getUserAppAccess(email) {
     if (!sheet) return accessMap;
 
     var data = sheet.getDataRange().getValues();
-    if (data.length < 5) return accessMap;
+    if (data.length < 7) return accessMap;
 
     var headers = data[0];
 
     var userRow = null;
-    for (var r = 4; r < data.length; r++) {
+    for (var r = 6; r < data.length; r++) {
       if (String(data[r][0]).trim().toLowerCase() === lowerEmail) {
         userRow = data[r];
         break;
@@ -1923,6 +1935,55 @@ function getUserAppAccess(email) {
   } catch(e) {}
 
   return accessMap;
+}
+
+/**
+ * Build the portal apps list dynamically from the Master ACL spreadsheet metadata rows.
+ * Reads #NAME, #URL, #AUTH, #ICON, #DESC from each page column.
+ * Non-auth projects (like GAS Project Creator) are appended as hardcoded entries.
+ */
+function getPortalApps() {
+  var apps = [];
+  var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
+  if (hasAcl) {
+    try {
+      var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
+      var sheet = ss.getSheetByName(ACL_SHEET_NAME);
+      if (sheet) {
+        var data = sheet.getRange(1, 1, Math.min(sheet.getLastRow(), 6), sheet.getLastColumn()).getValues();
+        if (data.length >= 6) {
+          var headers = data[0];
+          var names   = data[1];
+          var urls    = data[2];
+          var auths   = data[3];
+          var icons   = data[4];
+          var descs   = data[5];
+          for (var c = 2; c < headers.length; c++) {
+            var pageId = String(headers[c]).trim();
+            if (!pageId) continue;
+            var url = String(urls[c]).trim();
+            var authEnabled = auths[c] === true || String(auths[c]).toUpperCase() === 'TRUE';
+            if (!authEnabled || !url || url.toUpperCase() === 'SELF') continue;
+            var name = String(names[c]).trim() || pageId;
+            var icon = String(icons[c] || '').trim() || '📱';
+            var desc = String(descs[c] || '').trim() || (name + ' application.');
+            apps.push({
+              name: name,
+              url: pageId + '.html',
+              icon: icon,
+              description: desc,
+              requiresAuth: true
+            });
+          }
+        }
+      }
+    } catch(e) {
+      Logger.log('getPortalApps error: ' + e.message);
+    }
+  }
+  // Add non-auth projects that don't register via registerSelfProject
+  apps.push({ name: 'GAS Project Creator', url: 'gas-project-creator.html', icon: '⚙️', description: 'Create and configure new Google Apps Script projects.', requiresAuth: false });
+  return apps;
 }
 // PROJECT END
 // =============================================
@@ -2675,6 +2736,8 @@ function doGet(e) {
   // PROJECT START — programportal pre-load app access and announcements
   var userAppAccess = getUserAppAccess(session.email);
   var userAppAccessJson = JSON.stringify(userAppAccess);
+  var portalApps = getPortalApps();
+  var portalAppsJson = JSON.stringify(portalApps);
   var initialAnnouncements = getCachedAnnouncements();
   var initialAnnouncementsJSON = initialAnnouncements ? JSON.stringify(initialAnnouncements) : 'null';
   // PROJECT END
@@ -3060,11 +3123,7 @@ function doGet(e) {
         var USER_APP_ACCESS = ${userAppAccessJson};
         var ACL_CONFIGURED = ${Object.keys(userAppAccess).length > 0 ? 'true' : 'false'};
 
-        var PORTAL_APPS = [
-          { name: 'Global Access Control List', url: 'globalacl.html', icon: '🛡', description: 'Centralized access control and user management across all projects.', requiresAuth: true },
-          { name: 'Test Auth 1', url: 'testauth1.html', icon: '🔐', description: 'Authentication testing environment with full security features.', requiresAuth: true },
-          { name: 'GAS Project Creator', url: 'gas-project-creator.html', icon: '⚙️', description: 'Create and configure new Google Apps Script projects.', requiresAuth: false }
-        ];
+        var PORTAL_APPS = ${portalAppsJson};
 
         // Compute userHasAccess for each app
         PORTAL_APPS.forEach(function(app) {

@@ -94,6 +94,8 @@ IS_MASTER_ACL="$(parse_json IS_MASTER_ACL 'false')"
 MASTER_ACL_SPREADSHEET_ID="$(parse_json MASTER_ACL_SPREADSHEET_ID 'YOUR_MASTER_ACL_SPREADSHEET_ID')"
 ACL_SHEET_NAME="$(parse_json ACL_SHEET_NAME 'Access')"
 ACL_PAGE_NAME="$(parse_json ACL_PAGE_NAME '')"
+PORTAL_ICON="$(parse_json PORTAL_ICON '📱')"
+PORTAL_DESCRIPTION="$(parse_json PORTAL_DESCRIPTION '')"
 
 # If IS_MASTER_ACL is true and no explicit Master ACL ID, use the project's own Spreadsheet ID
 if [ "$IS_MASTER_ACL" = "true" ] && [ "$MASTER_ACL_SPREADSHEET_ID" = "YOUR_MASTER_ACL_SPREADSHEET_ID" ]; then
@@ -345,6 +347,10 @@ if [ "$INCLUDE_AUTH" = "true" ]; then
     # Default ACL_PAGE_NAME to ENV_NAME if not specified
     ACL_PAGE_NAME="${ACL_PAGE_NAME:-$ENV_NAME}"
     sed -i "s|var ACL_PAGE_NAME  = .*;|var ACL_PAGE_NAME  = \"${ACL_PAGE_NAME}\";|" "$GAS_FILE"
+    # Default PORTAL_DESCRIPTION to TITLE + ' application.' if not specified
+    PORTAL_DESCRIPTION="${PORTAL_DESCRIPTION:-${TITLE} application.}"
+    sed -i "s|var PORTAL_ICON    = .*;|var PORTAL_ICON    = \"${PORTAL_ICON}\";|" "$GAS_FILE"
+    sed -i "s|var PORTAL_DESCRIPTION = .*;|var PORTAL_DESCRIPTION = \"${PORTAL_DESCRIPTION}\";|" "$GAS_FILE"
 fi
 ok "Created $GAS_FILE"
 
@@ -359,7 +365,9 @@ if [ "$INCLUDE_AUTH" = "true" ]; then
   "SHEET_NAME": "${SHEET_NAME}",
   "MASTER_ACL_SPREADSHEET_ID": "${MASTER_ACL_SPREADSHEET_ID}",
   "ACL_SHEET_NAME": "${ACL_SHEET_NAME}",
-  "ACL_PAGE_NAME": "${ACL_PAGE_NAME}"
+  "ACL_PAGE_NAME": "${ACL_PAGE_NAME}",
+  "PORTAL_ICON": "${PORTAL_ICON}",
+  "PORTAL_DESCRIPTION": "${PORTAL_DESCRIPTION}"
 }
 CFGEOF
 else

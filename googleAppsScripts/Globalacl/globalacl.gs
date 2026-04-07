@@ -1,4 +1,4 @@
-var VERSION = "v01.54g";
+var VERSION = "v01.55g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -35,6 +35,8 @@ var SHEET_NAME     = "Live_Sheet";
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
 var ACL_SHEET_NAME = "Access";
 var ACL_PAGE_NAME  = "globalacl";
+var PORTAL_ICON    = "🛡";
+var PORTAL_DESCRIPTION = "Centralized access control and user management across all projects.";
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
@@ -319,16 +321,22 @@ function isMetadataRow(row) { return String(row[0]).trim().charAt(0) === '#'; }
 function ensureMetadataRows(sheet) {
   var data = sheet.getDataRange().getValues();
   if (data.length < 2 || String(data[1][0]).trim() !== '#NAME') {
-    sheet.insertRowsAfter(1, 3);
+    sheet.insertRowsAfter(1, 5);
     sheet.getRange(2, 1).setValue('#NAME');
     sheet.getRange(3, 1).setValue('#URL');
     sheet.getRange(4, 1).setValue('#AUTH');
+    sheet.getRange(5, 1).setValue('#ICON');
+    sheet.getRange(6, 1).setValue('#DESC');
+  } else if (data.length < 5 || String(data[4][0]).trim() !== '#ICON') {
+    sheet.insertRowsAfter(4, 2);
+    sheet.getRange(5, 1).setValue('#ICON');
+    sheet.getRange(6, 1).setValue('#DESC');
   }
 }
 
 /**
  * Auto-register this project in the Access tab metadata rows of the Master ACL Spreadsheet.
- * Metadata is stored in rows 2-4 (#NAME, #URL, #AUTH) under the project's page column.
+ * Metadata is stored in rows 2-6 (#NAME, #URL, #AUTH, #ICON, #DESC) under the project's page column.
  * Runs once per execution (cached flag).
  */
 var _selfRegistered = false;
@@ -359,12 +367,14 @@ function registerSelfProject() {
       sheet.getRange(2, colIdx + 1).setValue('');
       sheet.getRange(3, colIdx + 1).setValue('');
       sheet.getRange(4, colIdx + 1).setValue(false);
+      sheet.getRange(5, colIdx + 1).setValue('');
+      sheet.getRange(6, colIdx + 1).setValue('');
       var lastRow = sheet.getLastRow();
-      if (lastRow > 4) {
+      if (lastRow > 6) {
         var falseValues = [];
-        for (var f = 0; f < lastRow - 4; f++) falseValues.push([false]);
-        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).setValues(falseValues);
-        sheet.getRange(5, colIdx + 1, lastRow - 4, 1).insertCheckboxes();
+        for (var f = 0; f < lastRow - 6; f++) falseValues.push([false]);
+        sheet.getRange(7, colIdx + 1, lastRow - 6, 1).setValues(falseValues);
+        sheet.getRange(7, colIdx + 1, lastRow - 6, 1).insertCheckboxes();
       }
     }
 
@@ -381,6 +391,8 @@ function registerSelfProject() {
     sheet.getRange(2, col).setValue(TITLE);
     sheet.getRange(3, col).setValue(myUrl);
     sheet.getRange(4, col).setValue(true);
+    sheet.getRange(5, col).setValue(typeof PORTAL_ICON !== 'undefined' ? PORTAL_ICON : '');
+    sheet.getRange(6, col).setValue(typeof PORTAL_DESCRIPTION !== 'undefined' ? PORTAL_DESCRIPTION : '');
   } catch (e) {
     Logger.log('registerSelfProject error: ' + e.message);
   }
@@ -591,12 +603,14 @@ function getRegisteredProjects() {
     var ss = SpreadsheetApp.openById(MASTER_ACL_SPREADSHEET_ID);
     var sheet = ss.getSheetByName(ACL_SHEET_NAME);
     if (!sheet) return _registeredProjects;
-    var data = sheet.getRange(1, 1, Math.min(sheet.getLastRow(), 4), sheet.getLastColumn()).getValues();
-    if (data.length < 4) return _registeredProjects;
+    var data = sheet.getRange(1, 1, Math.min(sheet.getLastRow(), 6), sheet.getLastColumn()).getValues();
+    if (data.length < 6) return _registeredProjects;
     var headers = data[0];  // Row 1: column headers
     var names   = data[1];  // Row 2: #NAME
     var urls    = data[2];  // Row 3: #URL
     var auths   = data[3];  // Row 4: #AUTH
+    var icons   = data[4];  // Row 5: #ICON
+    var descs   = data[5];  // Row 6: #DESC
     // Page columns start at index 2 (column C)
     for (var c = 2; c < headers.length; c++) {
       var projectId = String(headers[c]).trim();
@@ -609,7 +623,9 @@ function getRegisteredProjects() {
         url: url,
         isSelf: url.toUpperCase() === 'SELF',
         authEnabled: enabled,
-        projectId: projectId
+        projectId: projectId,
+        icon: String(icons[c] || '').trim(),
+        description: String(descs[c] || '').trim()
       });
     }
   } catch (e) {
@@ -1919,21 +1935,23 @@ function addACLPage(sessionToken, pageName) {
   var nextCol = headers.length + 1;
   sheet.getRange(1, nextCol).setValue(pageName);
 
-  // Initialize metadata cells for the new column (rows 2-4)
+  // Initialize metadata cells for the new column (rows 2-6)
   ensureMetadataRows(sheet);
   sheet.getRange(2, nextCol).setValue('');    // #NAME — empty until project registers
   sheet.getRange(3, nextCol).setValue('');    // #URL  — empty until project registers
   sheet.getRange(4, nextCol).setValue(false); // #AUTH — default off
+  sheet.getRange(5, nextCol).setValue('');    // #ICON — empty until project registers
+  sheet.getRange(6, nextCol).setValue('');    // #DESC — empty until project registers
 
-  // Set FALSE checkboxes for all user rows (row 5 onward)
+  // Set FALSE checkboxes for all user rows (row 7 onward)
   var lastRow = sheet.getLastRow();
-  if (lastRow > 4) {
+  if (lastRow > 6) {
     var falseValues = [];
-    for (var r = 0; r < lastRow - 4; r++) {
+    for (var r = 0; r < lastRow - 6; r++) {
       falseValues.push([false]);
     }
-    sheet.getRange(5, nextCol, lastRow - 4, 1).setValues(falseValues);
-    sheet.getRange(5, nextCol, lastRow - 4, 1).insertCheckboxes();
+    sheet.getRange(7, nextCol, lastRow - 6, 1).setValues(falseValues);
+    sheet.getRange(7, nextCol, lastRow - 6, 1).insertCheckboxes();
   }
 
   dataAuditLog(user.email, 'create', 'acl_page', pageName, {});
