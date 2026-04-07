@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
+
+## [v09.73r] — 2026-04-07 06:51:03 PM EST
+
+> **Prompt:** "the html is covering up the gas layer completely, only keep the camera components there, we dont need the full screen background so that i can still see the gas layer"
+
+### Changed
+- Stripped scanner HTML layer down to camera-only components: viewport, video, canvas, scan line, start button, status bar, torch, engine badge. Removed full-screen background, header, result card, history, upload, toast — GAS layer is now visible behind the camera widget
+- Camera widget uses `pointer-events: none` on the container so clicks pass through to the GAS iframe, with `pointer-events: auto` only on the scanner-container itself
+
+#### `inventorymanagement.html` — v01.05w
+
+##### Changed
+- Camera widget no longer covers the full screen — GAS layer is visible behind it
 
 ## [v09.72r] — 2026-04-07 06:41:25 PM EST
 
