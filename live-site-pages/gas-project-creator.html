@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.59w">
+  <meta name="build-version" content="v01.60w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1562,9 +1562,10 @@
         } else {
           inputs[i].classList.remove('field-empty');
         }
-        // Hide clear button when field is disabled or blank
+        // Hide clear button when field is disabled, blank, or readOnly (auto-filled from another field)
+        var isReadOnly = inputs[i].readOnly;
         var clearBtn = inputs[i].parentElement && inputs[i].parentElement.querySelector('.field-clear');
-        if (clearBtn) clearBtn.style.display = (isDisabled || isEmpty) ? 'none' : '';
+        if (clearBtn) clearBtn.style.display = (isDisabled || isEmpty || isReadOnly) ? 'none' : '';
       }
     }
     var _savedFieldValues = {};

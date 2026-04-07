@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
+
+## [v09.55r] — 2026-04-07 10:45:04 AM EST
+
+> **Prompt:** "in this scenario, the clear X button should not be there since the field pulling from somewhere else, this should apply everywhere in the gas-project-creator for similar situations"
+
+### Fixed
+- Clear (X) button now hidden on readOnly fields (auto-filled from another field) — applied globally via `updateEmptyClasses()` so any current or future readOnly auto-fill field automatically gets this behavior
+
+#### `gas-project-creator.html` — v01.60w
+
+##### Fixed
+- Clear button no longer appears on fields that are auto-filled from another source
 
 ## [v09.54r] — 2026-04-07 10:40:56 AM EST
 
