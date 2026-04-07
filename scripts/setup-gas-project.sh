@@ -87,11 +87,11 @@ SOUND_FILE_ID="$(parse_json SOUND_FILE_ID '')"
 SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
-AUTH_PRESET="$(parse_json AUTH_PRESET 'standard')"
+AUTH_PRESET="$(parse_json AUTH_PRESET 'hipaa')"
 ALLOWED_DOMAINS="$(parse_json ALLOWED_DOMAINS '')"
 IS_MASTER_ACL="$(parse_json IS_MASTER_ACL 'false')"
 MASTER_ACL_SPREADSHEET_ID="$(parse_json MASTER_ACL_SPREADSHEET_ID 'YOUR_MASTER_ACL_SPREADSHEET_ID')"
-ACL_SHEET_NAME="$(parse_json ACL_SHEET_NAME 'ACL')"
+ACL_SHEET_NAME="$(parse_json ACL_SHEET_NAME 'Access')"
 ACL_PAGE_NAME="$(parse_json ACL_PAGE_NAME '')"
 
 # If IS_MASTER_ACL is true and no explicit Master ACL ID, use the project's own Spreadsheet ID
@@ -240,7 +240,7 @@ CFGEOF
 
     # Update auth config in .gs file
     if [ "$INCLUDE_AUTH" = "true" ] && [ -f "$GAS_FILE" ]; then
-        if [ "$AUTH_PRESET" != "standard" ] && [ -n "$AUTH_PRESET" ]; then
+        if [ "$AUTH_PRESET" != "hipaa" ] && [ -n "$AUTH_PRESET" ]; then
             sed -i "s|var ACTIVE_PRESET = '[^']*';|var ACTIVE_PRESET = '${AUTH_PRESET}';|" "$GAS_FILE"
         fi
         if [ -n "$ALLOWED_DOMAINS" ]; then
@@ -321,8 +321,8 @@ sed -i "s|<page-name>\.gs|${ENV_NAME}.gs|g" "$GAS_FILE"
 sed -i "s|<page-name>\.config\.json|${ENV_NAME}.config.json|g" "$GAS_FILE"
 # Auth-specific config substitutions (only for auth templates)
 if [ "$INCLUDE_AUTH" = "true" ]; then
-    if [ "$AUTH_PRESET" != "standard" ] && [ -n "$AUTH_PRESET" ]; then
-        sed -i "s|var ACTIVE_PRESET = 'standard';|var ACTIVE_PRESET = '${AUTH_PRESET}';|" "$GAS_FILE"
+    if [ "$AUTH_PRESET" != "hipaa" ] && [ -n "$AUTH_PRESET" ]; then
+        sed -i "s|var ACTIVE_PRESET = '[^']*';|var ACTIVE_PRESET = '${AUTH_PRESET}';|" "$GAS_FILE"
     fi
     if [ -n "$ALLOWED_DOMAINS" ]; then
         # Convert comma-separated string to JS array format: 'a.com', 'b.com'

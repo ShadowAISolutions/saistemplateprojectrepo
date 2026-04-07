@@ -3,7 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
+
+## [v09.29r] — 2026-04-06 10:02:14 PM EST
+
+> **Prompt:** "change the default sheet name to Access to match what we are already using. also make it more clear what the ACL Page Name means, in reference to identifying this page, i know that its in the description but i need it to be clear by the heading name. also have the ACL Page Name default to whatever the user put in their project environment name (i think thats how we already have it with the other projects, verify if thats true) . any fields that should not be filled when not relevant should be hidden in the gas-project-creator when relevant conditions are met.  also the button "Copy Embedding Page HTML — optional, the setup script creates this automatically" should have the "optional" text as the prefix instead of how it is. the default auth preset should be set to hipaa instead of standard"
+
+### Changed
+- Changed ACL Sheet Name default from `"ACL"` to `"Access"` in gas-project-creator form field, copyGsCode fallback, copyConfig fallback, and setup script — matches what all existing projects use
+- Renamed "ACL Page Name" label to "ACL Column Name (identifies this page)" for clarity
+- Added live placeholder sync on ACL Column Name field — shows "Defaults to: {envName}" as user types Environment Name
+- Hidden ACL Sheet Name and ACL Column Name fields by default — they now appear only when a Master ACL Spreadsheet ID is present (either via checkbox auto-fill or manual entry)
+- Reordered Copy HTML button text to prefix with "Optional" instead of appending it
+- Changed default auth preset from `standard` to `hipaa` in gas-project-creator dropdown and setup script — matches the GAS template's existing default
+- Updated setup script's ACTIVE_PRESET sed condition and pattern to match the new `hipaa` template default
+
+#### `gas-project-creator.html` — v01.34w
+
+##### Changed
+- ACL configuration fields now appear only when relevant
+- Default security preset changed to HIPAA
+- Default ACL sheet name updated to match existing projects
+- Clearer labeling for page identification in ACL settings
 
 ## [v09.28r] — 2026-04-06 07:41:52 PM EST
 

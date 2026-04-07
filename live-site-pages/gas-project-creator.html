@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.33w">
+  <meta name="build-version" content="v01.34w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -645,7 +645,7 @@
           </div>
           <div class="step-input">
             <label for="cfg-env-name">Project Environment Name <em style="color:#f85149">(required)</em></label>
-            <div class="input-row"><input type="text" id="cfg-env-name" placeholder="my-project" oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-env-name')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-env-name" placeholder="my-project" oninput="updateDeployGate(); syncAclPagePlaceholder();"><button class="field-clear" onclick="clearField('cfg-env-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Base name for all project files &mdash; e.g. <code>test</code> creates <code>test.html</code>, <code>test.gs</code>, <code>html-versions/testhtml.version.txt</code>, etc.</span>
           </div>
           <div class="step-input">
@@ -689,7 +689,7 @@
               <label for="cfg-auth-preset">Auth Preset</label>
               <select id="cfg-auth-preset" style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#c9d1d9;font:13px/1.4 'SFMono-Regular',Consolas,monospace;outline:none;">
                 <option value="standard">standard &mdash; 30min sessions, no HMAC, URL token exchange</option>
-                <option value="hipaa">hipaa &mdash; 15min sessions, HMAC, audit log, postMessage exchange</option>
+                <option value="hipaa" selected>hipaa &mdash; 15min sessions, HMAC, audit log, postMessage exchange</option>
               </select>
               <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
             </div>
@@ -705,24 +705,26 @@
             </label>
             <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
-              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..."><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id')" title="Clear">&times;</button></div>
+              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..." oninput="toggleAclDetails()"><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id'); toggleAclDetails();" title="Clear">&times;</button></div>
               <span class="field-hint" id="master-acl-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
             </div>
-            <div class="step-input" style="margin:0 0 10px;">
-              <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
-              <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="ACL" value="ACL"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
-              <span class="field-hint">The sheet tab name in the master ACL spreadsheet where authorized emails are listed</span>
-            </div>
-            <div class="step-input" style="margin:0;">
-              <label for="cfg-acl-page-name">ACL Page Name</label>
-              <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
-              <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
+            <div id="acl-detail-fields" style="display:none;">
+              <div class="step-input" style="margin:0 0 10px;">
+                <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
+                <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
+                <span class="field-hint">The sheet tab name in the master ACL spreadsheet where authorized emails are listed</span>
+              </div>
+              <div class="step-input" style="margin:0;">
+                <label for="cfg-acl-page-name">ACL Column Name <em>(identifies this page)</em></label>
+                <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
+                <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
+              </div>
             </div>
           </div>
           <!-- Test features checkbox removed — test templates consolidated into minimal templates (see repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md for archived test functions) -->
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
           <div class="step-note">In the Apps Script editor, replace all contents of <code>Code.gs</code> with the copied code</div>
-          <button class="btn-copy-html" id="btn-copy-html" onclick="copyHtmlCode(this)" disabled>Copy Embedding Page HTML <span style="color:#30363d">&mdash; optional, the setup script creates this automatically</span></button>
+          <button class="btn-copy-html" id="btn-copy-html" onclick="copyHtmlCode(this)" disabled><span style="color:#30363d">Optional &mdash;</span> Copy Embedding Page HTML <span style="color:#30363d">(the setup script creates this automatically)</span></button>
         </li>
         <li>Run any function from the Apps Script editor to trigger the initial <strong>OAuth authorization</strong> prompt
           <div class="step-note">This ensures the script has all required permissions before the final deployment</div>
@@ -1386,7 +1388,7 @@
             if (projectSheetId.trim()) masterAclId = projectSheetId.trim();
           }
           if (masterAclId.trim()) code = code.replace(/var MASTER_ACL_SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var MASTER_ACL_SPREADSHEET_ID = "' + masterAclId.trim() + '"');
-          var aclSheetName = (document.getElementById('cfg-acl-sheet-name') || {}).value || 'ACL';
+          var aclSheetName = (document.getElementById('cfg-acl-sheet-name') || {}).value || 'Access';
           if (aclSheetName.trim()) code = code.replace(/var ACL_SHEET_NAME\s*=\s*"[^"]*"/, 'var ACL_SHEET_NAME = "' + aclSheetName.trim().replace(/"/g, '\\"') + '"');
           var aclPageName = (document.getElementById('cfg-acl-page-name') || {}).value || '';
           var envNameVal = (document.getElementById('cfg-env-name') || {}).value || '';
@@ -1502,12 +1504,28 @@
         if (clearBtn) clearBtn.style.display = '';
         if (hint) hint.textContent = 'A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet';
       }
+      toggleAclDetails();
+    }
+
+    function toggleAclDetails() {
+      var container = document.getElementById('acl-detail-fields');
+      if (!container) return;
+      var isChecked = document.getElementById('chk-is-master-acl').checked;
+      var hasId = (document.getElementById('cfg-master-acl-id').value || '').trim().length > 0;
+      container.style.display = (isChecked || hasId) ? 'block' : 'none';
+    }
+
+    function syncAclPagePlaceholder() {
+      var envName = (document.getElementById('cfg-env-name') || {}).value || '';
+      var aclPageField = document.getElementById('cfg-acl-page-name');
+      if (aclPageField) aclPageField.placeholder = envName.trim() ? 'Defaults to: ' + envName.trim() : 'Auto-filled from Environment Name';
     }
 
     function syncMasterAclId() {
       if (!document.getElementById('chk-is-master-acl').checked) return;
       var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
       document.getElementById('cfg-master-acl-id').value = sheetId.trim();
+      toggleAclDetails();
     }
 
 // ── Auth Fields Toggle ──
