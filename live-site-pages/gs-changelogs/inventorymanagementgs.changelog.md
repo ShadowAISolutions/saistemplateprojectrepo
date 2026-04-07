@@ -3,10 +3,11 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 0/50`
+`Sections: 1/50`
 
-## [Unreleased]
+## [v01.01g] — 2026-04-07 03:07:14 PM EST — v09.65r
 
-*(No changes yet)*
+### Fixed
+- Sign-in now works on first deployment — setup properties auto-generate on first visit
 
 Developed by: ShadowAISolutions

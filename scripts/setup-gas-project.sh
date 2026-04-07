@@ -819,14 +819,29 @@ if [ -f "$WORKFLOW_FILE" ]; then
         warn "   Without this step, GAS auto-update from GitHub will NOT work."
         MISSING_WORKFLOW_STEP=1
     else
-        # Insert before "- name: Delete branch" (the first occurrence after GAS DEPLOY STEPS)
-        DELETE_LINE=$(grep -n '      - name: Delete branch' "$WORKFLOW_FILE" | head -1 | cut -d: -f1)
-        if [ -n "$DELETE_LINE" ]; then
-            DEPLOY_BLOCK="      - name: Deploy ${PROJECT_DIR}\n        if: steps.guard.outputs.skip != 'true'\n        run: |\n          PRE=\${{ steps.merge.outputs.pre_merge_sha }}\n          git diff --name-only \"\$PRE\" HEAD | grep -q \"googleAppsScripts/${PROJECT_DIR}/${ENV_NAME}.gs\" \&\& \\\\\n          curl -L -X POST \\\\\n            \"https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec\" \\\\\n            -d \"action=deploy\" \\\\\n            --max-time 120 || true\n"
-            sed -i "${DELETE_LINE}i\\${DEPLOY_BLOCK}" "$WORKFLOW_FILE"
+        # Insert before the AHK VERSION FILE UPDATE comment (after last GAS deploy step)
+        AHK_LINE=$(grep -n '# ── AHK VERSION FILE UPDATE ──' "$WORKFLOW_FILE" | head -1 | cut -d: -f1)
+        if [ -n "$AHK_LINE" ]; then
+            # Write the deploy block to a temp file, then use sed to insert it
+            DEPLOY_TMPFILE=$(mktemp)
+            cat > "$DEPLOY_TMPFILE" <<DEPLOY_EOF
+      - name: Deploy ${PROJECT_DIR}
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=\${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "\$PRE" HEAD | grep -q "googleAppsScripts/${PROJECT_DIR}/${ENV_NAME}.gs" && \\
+          curl -L -X POST \\
+            "https://script.google.com/macros/s/${DEPLOYMENT_ID}/exec" \\
+            -d "action=deploy" \\
+            --max-time 120 || true
+
+DEPLOY_EOF
+            # Use sed with r command to insert file contents before the AHK line
+            sed -i "$((AHK_LINE - 1))r ${DEPLOY_TMPFILE}" "$WORKFLOW_FILE"
+            rm -f "$DEPLOY_TMPFILE"
             ok "Added Deploy ${PROJECT_DIR} step to workflow"
         else
-            warn "Could not find 'Delete branch' step in workflow — manual update needed"
+            warn "Could not find AHK VERSION FILE UPDATE marker in workflow — manual update needed"
         fi
     fi
 else

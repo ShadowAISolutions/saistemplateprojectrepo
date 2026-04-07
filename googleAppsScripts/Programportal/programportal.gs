@@ -1,4 +1,4 @@
-var VERSION = "v01.60g";
+var VERSION = "v01.61g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2139,6 +2139,9 @@ function doGet(e) {
   //   clientIp = (/^(\d{1,3}\.){3}\d{1,3}$/.test(t) || /^[0-9a-fA-F:]+$/.test(t)) ? t : 'invalid';
   // }
   var clientIp = 'not-collected';
+
+  // Auto-initialize required Script Properties (HMAC_SECRET, CACHE_EPOCH) on first page load
+  ensureScriptProperties_();
 
   // Auto-register this project in the Master ACL Projects sheet
   registerSelfProject();

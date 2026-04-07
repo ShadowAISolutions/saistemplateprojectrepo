@@ -3,7 +3,38 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v09.65r] — 2026-04-07 03:07:14 PM EST
+
+> **Prompt:** "i did option 1, but it didnt work. check the setup-gas-project.sh , i noticed that you ran into some errors, so fix it there and in our script"
+
+### Fixed
+- Fixed HMAC_SECRET chicken-and-egg bug: `ensureScriptProperties_()` was only called from `pullAndDeployFromGitHub()` (deploy-time), but HMAC is required on first page load for session creation — added call to `doGet()` in the auth GAS template so HMAC_SECRET auto-generates on first visit
+- Fixed `setup-gas-project.sh` Phase 9 workflow deploy step insertion: replaced fragile `sed -i` with multiline `\n` escapes with a temp file + `sed r` approach that reliably inserts the deploy block
+
+### Changed
+- Propagated `ensureScriptProperties_()` doGet fix to all 4 auth GAS scripts (inventorymanagement, testauth1, globalacl, programportal) via template propagation
+
+#### `inventorymanagement.gs` — v01.01g
+
+##### Fixed
+- Sign-in now works on first deployment — setup properties auto-generate on first visit
+
+#### `testauth1.gs` — v02.59g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.53g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.61g
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.64r] — 2026-04-07 02:51:01 PM EST
 

@@ -1894,6 +1894,9 @@ function doGet(e) {
   // }
   var clientIp = 'not-collected';
 
+  // Auto-initialize required Script Properties (HMAC_SECRET, CACHE_EPOCH) on first page load
+  ensureScriptProperties_();
+
   // Auto-register this project in the Master ACL Projects sheet
   registerSelfProject();
 
