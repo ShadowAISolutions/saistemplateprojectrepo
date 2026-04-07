@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
+
+## [v09.38r] — 2026-04-06 11:03:59 PM EST
+
+> **Prompt:** "yes make that change, also when the fields are either disabled or blank, dont have the X button which clears there"
+
+### Changed
+- Changed ACL Column Name label from "(required — identifies this page)" to "(defaults to Environment Name — identifies this page)" when active — reflects that the field auto-fills from Environment Name and is safe to leave blank
+- Clear (X) buttons now hidden when field is disabled or blank — only visible when the field has content that can be cleared
+
+#### `gas-project-creator.html` — v01.43w
+
+##### Changed
+- ACL Column Name label now indicates it defaults to Environment Name
+- Clear buttons hidden on empty or disabled fields
 
 ## [v09.37r] — 2026-04-06 10:56:44 PM EST
 

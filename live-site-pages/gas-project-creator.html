@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.42w">
+  <meta name="build-version" content="v01.43w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1529,7 +1529,7 @@
       var sheetLabel = container.querySelector('label[for="cfg-acl-sheet-name"]');
       if (sheetLabel) sheetLabel.innerHTML = active ? 'ACL Sheet Name <em style="color:#f85149">(required)</em>' : 'ACL Sheet Name';
       var pageLabel = container.querySelector('label[for="cfg-acl-page-name"]');
-      if (pageLabel) pageLabel.innerHTML = active ? 'ACL Column Name <em style="color:#f85149">(required — identifies this page)</em>' : 'ACL Column Name <em>(identifies this page)</em>';
+      if (pageLabel) pageLabel.innerHTML = active ? 'ACL Column Name <em>(defaults to Environment Name — identifies this page)</em>' : 'ACL Column Name <em>(identifies this page)</em>';
       if (active) syncAclPagePlaceholder();
       updateEmptyClasses();
     }
@@ -1551,11 +1551,16 @@
     function updateEmptyClasses() {
       var inputs = document.querySelectorAll('.step-input input[type="text"]');
       for (var i = 0; i < inputs.length; i++) {
-        if (!inputs[i].disabled && !inputs[i].value.trim()) {
+        var isEmpty = !inputs[i].value.trim();
+        var isDisabled = inputs[i].disabled;
+        if (!isDisabled && isEmpty) {
           inputs[i].classList.add('field-empty');
         } else {
           inputs[i].classList.remove('field-empty');
         }
+        // Hide clear button when field is disabled or blank
+        var clearBtn = inputs[i].parentElement && inputs[i].parentElement.querySelector('.field-clear');
+        if (clearBtn) clearBtn.style.display = (isDisabled || isEmpty) ? 'none' : '';
       }
     }
     var _savedFieldValues = {};
