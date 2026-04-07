@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.49w] — 2026-04-07 08:34:10 AM EST — v09.44r
+
+### Changed
+- Environment Name field now requires Deployment ID to be filled before it can be edited
 
 ## [v01.48w] — 2026-04-07 08:26:38 AM EST — v09.43r
 

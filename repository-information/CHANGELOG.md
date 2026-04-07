@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
+
+## [v09.44r] — 2026-04-07 08:34:10 AM EST
+
+> **Prompt:** "make it so that the deployment ID being filled is a requirement for the Project Environment Name to be active"
+
+### Changed
+- Project Environment Name field in gas-project-creator is now disabled until Deployment ID is filled
+- All downstream project config fields cascade: Deployment ID → Environment Name → project fields
+
+#### `gas-project-creator.html` — v01.49w
+
+##### Changed
+- Environment Name field now requires Deployment ID to be filled before it can be edited
+- Deployment ID field changes now trigger field state updates for the full cascade
 
 ## [v09.43r] — 2026-04-07 08:26:38 AM EST
 

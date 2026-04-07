@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.48w">
+  <meta name="build-version" content="v01.49w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -647,7 +647,7 @@
           <div class="step-note">Paste this code into your Apps Script project, replacing the existing code</div>
           <div class="step-input">
             <label for="cfg-deployment-id">Deployment ID <em style="color:#f85149">(required)</em></label>
-            <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate()"><button class="field-clear" onclick="clearField('cfg-deployment-id')" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-deployment-id" placeholder="AKfycbw..." oninput="updateDeployGate(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-deployment-id'); updateDeployGate(); updateFieldStates();" title="Clear">&times;</button></div>
             <span class="field-hint">From Apps Script: Deploy &rarr; Manage deployments &mdash; required before using Test GAS Connection, Copy, or GAS Preview</span>
             <button class="btn-apply" id="btn-apply" onclick="testGasConnection()" disabled style="margin-top:8px">(Optional) Test GAS Connection</button>
             <span class="field-hint" style="margin-top:6px">&#128161; If the GAS preview shows <strong>&ldquo;Script function not found: doGet&rdquo;</strong>, the deployment ID is valid &mdash; proceed with entering your other fields, then copy Code.gs for GAS into the Apps Script editor</span>
@@ -655,7 +655,7 @@
           <div class="deploy-separator">
             <div class="deploy-separator-label">Project Configuration</div>
           </div>
-          <div class="step-input">
+          <div class="step-input" id="field-env-name">
             <label for="cfg-env-name">Project Environment Name <em style="color:#f85149">(required)</em></label>
             <div class="input-row"><input type="text" id="cfg-env-name" placeholder="my-project" oninput="updateDeployGate(); syncAclPagePlaceholder(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-env-name'); updateDeployGate(); syncAclPagePlaceholder(); updateFieldStates();" title="Clear">&times;</button></div>
             <span class="field-hint">Base name for all project files &mdash; e.g. <code>test</code> creates <code>test.html</code>, <code>test.gs</code>, <code>html-versions/testhtml.version.txt</code>, etc.</span>
@@ -1611,14 +1611,17 @@
       }
     }
     function updateFieldStates() {
+      var hasDeployId = (document.getElementById('cfg-deployment-id').value || '').trim().length > 0;
       var hasEnvName = (document.getElementById('cfg-env-name').value || '').trim().length > 0;
       var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
       var useAuth = document.getElementById('chk-google-auth').checked;
       var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
-      // Project config fields depend on Environment Name
+      // Environment Name depends on Deployment ID
+      setFieldDisabled('cfg-env-name', !hasDeployId, '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500');
+      // Project config fields depend on Environment Name (which itself depends on Deployment ID)
       var envReason = '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
       var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
-      for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName, envReason);
+      for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName || !hasDeployId, !hasDeployId ? '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500' : envReason);
       // Sheet Tab Name also depends on Spreadsheet ID
       if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
       // Auth sub-fields depend on Client ID (when auth is enabled)
