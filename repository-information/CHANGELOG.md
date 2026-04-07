@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
+
+## [v09.34r] — 2026-04-06 10:41:18 PM EST
+
+> **Prompt:** "they are too dark, also make it so that if they are disabled have the fields not be prefilled. in fact it should mention what field needs to be filled for that particular field to be activated"
+
+### Changed
+- Lightened field background tints: empty enabled fields from `#0e1513` to `#0f1a16`, disabled fields from `#140e0e` to `#1a0f0f`
+- Disabled fields now clear their prefilled values and show placeholder text explaining what prerequisite is needed (e.g. "Enter Environment Name first", "Enter Spreadsheet ID first", "Enter OAuth Client ID first", "Enter Master ACL Spreadsheet ID first")
+- Values are saved before disabling and restored when the field becomes enabled again
+- Refactored `setFieldDisabled()` to accept a `reason` parameter and manage value save/restore lifecycle
+- Updated `toggleAclDetails()` to use `setFieldDisabled()` for ACL detail fields with reason text
+
+#### `gas-project-creator.html` — v01.39w
+
+##### Changed
+- Disabled fields now show what prerequisite is needed instead of showing prefilled values
+- Background tints lightened for better visibility
 
 ## [v09.33r] — 2026-04-06 10:36:51 PM EST
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.39w] — 2026-04-06 10:41:18 PM EST — v09.34r
+
+### Changed
+- Disabled fields now show what prerequisite is needed instead of showing prefilled values
+- Background tints lightened for better visibility
 
 ## [v01.38w] — 2026-04-06 10:36:51 PM EST — v09.33r
 
