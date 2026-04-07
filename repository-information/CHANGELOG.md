@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v09.62r] — 2026-04-07 11:16:28 AM EST
+
+> **Prompt:** "no, the master acl spreadsheet id when enabled is still not letting me type into it"
+
+### Fixed
+- Master ACL Spreadsheet ID field now accepts user input — `toggleMasterAcl()` now tracks state changes and only overwrites the value on actual toggle transitions (checked↔unchecked), not on repeated calls with the same state
+- Root cause: `updateFieldStates()` called `toggleMasterAcl()` on every input event, and the unchecked branch was overwriting `aclIdField.value` with `_aclValueBeforeToggle` (empty) on every keystroke
+
+#### `gas-project-creator.html` — v01.67w
+
+##### Fixed
+- Master ACL Spreadsheet ID field now properly editable — typing no longer gets overwritten
 
 ## [v09.61r] — 2026-04-07 11:13:35 AM EST
 

@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.66w">
+  <meta name="build-version" content="v01.67w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1501,13 +1501,16 @@
 // ── Master ACL Toggle ──
 
     var _aclValueBeforeToggle = '';
+    var _aclToggleLastState = null;
     function toggleMasterAcl() {
       var isChecked = document.getElementById('chk-is-master-acl').checked;
       var aclIdField = document.getElementById('cfg-master-acl-id');
       if (!aclIdField) return;
+      var stateChanged = (_aclToggleLastState !== isChecked);
+      _aclToggleLastState = isChecked;
       if (isChecked) {
-        // Save current value, auto-fill with Spreadsheet ID, make read-only
-        if (!aclIdField.readOnly) _aclValueBeforeToggle = aclIdField.value.trim();
+        // Save current value on transition, auto-fill with Spreadsheet ID, make read-only
+        if (stateChanged && !aclIdField.readOnly) _aclValueBeforeToggle = aclIdField.value.trim();
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         aclIdField.value = sheetId.trim();
         aclIdField.disabled = false;
@@ -1517,9 +1520,11 @@
         var clearBtn = aclIdField.parentElement.querySelector('.field-clear');
         if (clearBtn) clearBtn.style.display = 'none';
       } else {
-        // Restore previous value, make editable
-        aclIdField.value = _aclValueBeforeToggle;
-        _aclValueBeforeToggle = '';
+        // Restore previous value only on transition, make editable
+        if (stateChanged) {
+          aclIdField.value = _aclValueBeforeToggle;
+          _aclValueBeforeToggle = '';
+        }
         aclIdField.disabled = false;
         aclIdField.readOnly = false;
         aclIdField.style.opacity = '1';
