@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
+
+## [v09.48r] — 2026-04-07 09:47:23 AM EST
+
+> **Prompt:** "the authentication settings should be under the oauth client ID that we just moved up"
+
+### Changed
+- Merged Auth Preset and Allowed Domains into the Authentication Settings box under OAuth Client ID — removed the separate auth-fields box that was further down the form
+- All auth-related fields (Client ID, Auth Preset, Allowed Domains) are now consolidated in one section at the top
+
+#### `gas-project-creator.html` — v01.53w
+
+##### Changed
+- Auth Preset and Allowed Domains moved under OAuth Client ID in the Authentication Settings section
 
 ## [v09.47r] — 2026-04-07 09:43:11 AM EST
 

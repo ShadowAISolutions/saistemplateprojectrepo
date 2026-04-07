@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.52w">
+  <meta name="build-version" content="v01.53w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -647,10 +647,25 @@
           <div class="step-note">Paste this code into your Apps Script project, replacing the existing code</div>
           <div id="auth-client-id-section" style="margin-bottom:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
             <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
-            <div class="step-input" style="margin:0;">
+            <div class="step-input" style="margin:0 0 10px;">
               <label for="cfg-client-id">OAuth Client ID <em style="color:#f85149">(required for auth)</em></label>
               <div class="input-row"><input type="text" id="cfg-client-id" placeholder="123456789.apps.googleusercontent.com" oninput="updateDeployGate(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-client-id'); updateDeployGate(); updateFieldStates();" title="Clear">&times;</button></div>
               <span class="field-hint">From Google Cloud Console &rarr; APIs &amp; Services &rarr; Credentials &rarr; OAuth 2.0 Client ID (Web application type)</span>
+            </div>
+            <div id="auth-sub-fields">
+              <div class="step-input" style="margin:0 0 10px;">
+                <label for="cfg-auth-preset">Auth Preset</label>
+                <select id="cfg-auth-preset" style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#c9d1d9;font:13px/1.4 'SFMono-Regular',Consolas,monospace;outline:none;">
+                  <option value="standard">standard &mdash; 30min sessions, no HMAC, URL token exchange</option>
+                  <option value="hipaa" selected>hipaa &mdash; 15min sessions, HMAC, audit log, postMessage exchange</option>
+                </select>
+                <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
+              </div>
+              <div class="step-input" style="margin:0;">
+                <label for="cfg-allowed-domains">Allowed Domains <em>(optional &mdash; if blank, all Google accounts allowed)</em></label>
+                <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
+                <span class="field-hint">Comma-separated list of allowed email domains. If blank, any Google account can sign in. Required for HIPAA preset</span>
+              </div>
             </div>
           </div>
           <div class="step-input">
@@ -726,22 +741,6 @@
             <label for="cfg-github-branch">GitHub Branch <em>(optional &mdash; defaults to &ldquo;main&rdquo;)</em></label>
             <div class="input-row"><input type="text" id="cfg-github-branch" placeholder="main" value="main"><button class="field-clear" onclick="clearField('cfg-github-branch')" title="Clear">&times;</button></div>
             <span class="field-hint">Default branch for GAS self-update pulls. Uses &ldquo;main&rdquo; if left blank</span>
-          </div>
-          <div id="auth-fields" style="margin-top:10px;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#f0883e;margin-bottom:10px;">Authentication Settings</div>
-            <div class="step-input" style="margin:0 0 10px;">
-              <label for="cfg-auth-preset">Auth Preset</label>
-              <select id="cfg-auth-preset" style="background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px 10px;color:#c9d1d9;font:13px/1.4 'SFMono-Regular',Consolas,monospace;outline:none;">
-                <option value="standard">standard &mdash; 30min sessions, no HMAC, URL token exchange</option>
-                <option value="hipaa" selected>hipaa &mdash; 15min sessions, HMAC, audit log, postMessage exchange</option>
-              </select>
-              <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
-            </div>
-            <div class="step-input" style="margin:0;">
-              <label for="cfg-allowed-domains">Allowed Domains <em>(optional &mdash; if blank, all Google accounts allowed)</em></label>
-              <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
-              <span class="field-hint">Comma-separated list of allowed email domains. If blank, any Google account can sign in. Required for HIPAA preset</span>
-            </div>
           </div>
           <!-- Test features checkbox removed — test templates consolidated into minimal templates (see repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md for archived test functions) -->
           <button class="btn-copy-gs" id="btn-copy-gs" onclick="copyGsCode(this)" disabled>Copy Code.gs for GAS</button>
@@ -1664,13 +1663,11 @@
 // ── Auth Fields Toggle ──
     function toggleAuthFields() {
       var authChecked = document.getElementById('chk-google-auth').checked;
-      var authFields = document.getElementById('auth-fields');
+      var authClientSection = document.getElementById('auth-client-id-section');
+      if (authClientSection) authClientSection.style.display = authChecked ? 'block' : 'none';
       var authStepLabel = document.getElementById('auth-steps-label');
       var authStepConsent = document.getElementById('auth-step-consent');
       var authStepClient = document.getElementById('auth-step-client');
-      if (authFields) authFields.style.display = authChecked ? 'block' : 'none';
-      var authClientSection = document.getElementById('auth-client-id-section');
-      if (authClientSection) authClientSection.style.display = authChecked ? 'block' : 'none';
       var hmacAutoNote = document.getElementById('hmac-auto-note');
       if (hmacAutoNote) hmacAutoNote.style.display = authChecked ? 'inline' : 'none';
       if (authStepLabel) authStepLabel.style.display = authChecked ? '' : 'none';

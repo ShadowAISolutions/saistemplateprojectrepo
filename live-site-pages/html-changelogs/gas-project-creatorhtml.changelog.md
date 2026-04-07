@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 24/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v01.53w] — 2026-04-07 09:47:23 AM EST — v09.48r
+
+### Changed
+- Auth Preset and Allowed Domains moved under OAuth Client ID in the Authentication Settings section
 
 ## [v01.52w] — 2026-04-07 09:43:11 AM EST — v09.47r
 
