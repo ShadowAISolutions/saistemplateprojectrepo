@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v01.64w] — 2026-04-07 11:03:22 AM EST — v09.59r
+
+### Fixed
+- Copy buttons no longer incorrectly show "needs: Environment Name" when Environment Name is filled
 
 ## [v01.63w] — 2026-04-07 11:01:26 AM EST — v09.58r
 

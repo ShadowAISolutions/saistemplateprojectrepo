@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v09.59r] — 2026-04-07 11:03:22 AM EST
+
+> **Prompt:** "actually something else is also going on also, the buttons think that the environment name isnt there, so fix these bugs"
+
+### Fixed
+- Copy buttons (Code.gs, HTML, Config) now correctly detect Environment Name — `updateDeployGate()` is called at the end of `updateFieldStates()` so it reads field values after all save/restore operations complete
+- Root cause: `updateDeployGate()` was called from `oninput` before `updateFieldStates()` had restored the saved env name value
+
+#### `gas-project-creator.html` — v01.64w
+
+##### Fixed
+- Copy buttons no longer incorrectly show "needs: Environment Name" when Environment Name is filled
 
 ## [v09.58r] — 2026-04-07 11:01:26 AM EST
 
