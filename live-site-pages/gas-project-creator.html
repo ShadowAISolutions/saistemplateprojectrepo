@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.39w">
+  <meta name="build-version" content="v01.40w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -437,9 +437,9 @@
     .step-input .input-row input { flex: 1; }
     .step-input input:focus { border-color: #58a6ff; }
     .step-input input::placeholder { color: #484f58; }
-    .step-input input.field-empty { background: #0f1a16; }
-    .step-input input:disabled { background: #1a0f0f; }
-    .step-input select:disabled { background: #1a0f0f; }
+    .step-input input.field-empty { background: #101d18; }
+    .step-input input:disabled { background: #141012; }
+    .step-input select:disabled { background: #141012; }
     .field-clear {
       background: none; border: 1px solid #30363d; border-radius: 6px;
       color: #f85149; cursor: pointer; font-size: 14px; padding: 6px 8px;
@@ -1521,7 +1521,7 @@
       var isChecked = document.getElementById('chk-is-master-acl').checked;
       var hasId = (document.getElementById('cfg-master-acl-id').value || '').trim().length > 0;
       var active = isChecked || hasId;
-      var aclReason = 'Enter Master ACL Spreadsheet ID first';
+      var aclReason = '\u2500\u2500\u2500  Enter Master ACL Spreadsheet ID first  \u2500\u2500\u2500';
       var aclFields = ['cfg-acl-sheet-name', 'cfg-acl-page-name'];
       for (var i = 0; i < aclFields.length; i++) setFieldDisabled(aclFields[i], !active, aclReason);
       container.style.opacity = active ? '1' : '0.5';
@@ -1595,14 +1595,14 @@
       var useAuth = document.getElementById('chk-google-auth').checked;
       var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       // Project config fields depend on Environment Name
-      var envReason = 'Enter Environment Name first';
+      var envReason = '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
       var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-sound-id', 'cfg-splash-logo', 'cfg-github-branch'];
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName, envReason);
       // Sheet Tab Name also depends on Spreadsheet ID
-      if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, 'Enter Spreadsheet ID first');
+      if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
       // Auth sub-fields depend on Client ID (when auth is enabled)
       if (useAuth) {
-        var clientReason = 'Enter OAuth Client ID first';
+        var clientReason = '\u2500\u2500\u2500  Enter OAuth Client ID first  \u2500\u2500\u2500';
         var authSubFields = ['cfg-auth-preset', 'cfg-allowed-domains', 'cfg-master-acl-id'];
         for (var j = 0; j < authSubFields.length; j++) setFieldDisabled(authSubFields[j], !hasClientId, clientReason);
         // Master ACL checkbox depends on Client ID

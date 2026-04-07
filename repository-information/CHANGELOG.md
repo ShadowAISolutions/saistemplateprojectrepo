@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
+
+## [v09.35r] — 2026-04-06 10:46:49 PM EST
+
+> **Prompt:** "the green is close but still too dark, and the red is way off, twice as far so adjust those. also make there be an indent for those which are disabled i.e. ----- Enter Environment Name first------ , also the acl sheet name and acl column name should have the disabled coloring also"
+
+### Changed
+- Adjusted field background tints: green empty `#101d18` (slightly brighter), red disabled `#141012` (much closer to base `#0d1117` — halved the distance)
+- Disabled field placeholders now use box-drawing dashes as visual indent: `───  Enter Environment Name first  ───`
+- ACL Sheet Name and ACL Column Name fields now properly receive disabled background tint via `setFieldDisabled()` in `toggleAclDetails()`
+
+#### `gas-project-creator.html` — v01.40w
+
+##### Changed
+- Adjusted background tint colors for better visibility and subtlety
+- Disabled field placeholder text now visually indented with dashes
 
 ## [v09.34r] — 2026-04-06 10:41:18 PM EST
 
