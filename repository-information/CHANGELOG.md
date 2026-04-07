@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
+
+## [v09.31r] — 2026-04-06 10:25:37 PM EST
+
+> **Prompt:** "in the optional fields that will do something when left blank, write in what it will do/say, i.e. for the Title (Optional) etc . also make it so that the relevant sectiosn that have a required component, make it s othat the other fields are disabled while the required field is empty, i.e. Project Environment Name (required) and OAuth Client ID (required for auth)"
+
+### Changed
+- Updated all optional field labels to describe their default behavior when left blank (Title, Spreadsheet ID, Sheet Tab Name, Sound File ID, Splash Logo, GitHub Branch, Allowed Domains)
+- Updated field hints to describe what happens when the field is empty
+- Project config fields (Title through GitHub Branch) now disabled until Environment Name is filled
+- Auth sub-fields (Auth Preset, Allowed Domains, Master ACL section) now disabled until OAuth Client ID is filled
+- Refactored `updateFieldStates()` to manage the full dependency chain: Environment Name → project fields, Spreadsheet ID → Sheet Tab Name, Client ID → auth sub-fields
+
+#### `gas-project-creator.html` — v01.36w
+
+##### Changed
+- Optional fields now describe their default behavior in the label
+- Form fields disabled until their prerequisite required fields are filled
 
 ## [v09.30r] — 2026-04-06 10:16:16 PM EST
 
