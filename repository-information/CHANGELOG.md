@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
+
+## [v09.36r] — 2026-04-06 10:50:41 PM EST
+
+> **Prompt:** "in section 15, we dont use onEditWriteB1ToCache in any functions anymore so that specific function name can be removed here, i still want this section as a placeholder for any future installable triggers, just that part is not relevant anymore . and the green needs to be lighter, and the red needs to be twice as much increased as you will increase the lightness of the green"
+
+### Changed
+- Removed `onEditWriteB1ToCache` reference from step 15 — now a generic installable trigger placeholder
+- Lightened green empty-field tint from `#101d18` to `#112a1c` (more visible green)
+- Lightened red disabled-field tint from `#141012` to `#1e1114` (2x the green adjustment, more visible warm red)
+
+#### `gas-project-creator.html` — v01.41w
+
+##### Changed
+- Step 15 updated to generic trigger instructions
+- Field background tints adjusted for better visibility
 
 ## [v09.35r] — 2026-04-06 10:46:49 PM EST
 

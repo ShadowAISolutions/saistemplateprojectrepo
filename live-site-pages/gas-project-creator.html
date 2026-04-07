@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.40w">
+  <meta name="build-version" content="v01.41w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -437,9 +437,9 @@
     .step-input .input-row input { flex: 1; }
     .step-input input:focus { border-color: #58a6ff; }
     .step-input input::placeholder { color: #484f58; }
-    .step-input input.field-empty { background: #101d18; }
-    .step-input input:disabled { background: #141012; }
-    .step-input select:disabled { background: #141012; }
+    .step-input input.field-empty { background: #112a1c; }
+    .step-input input:disabled { background: #1e1114; }
+    .step-input select:disabled { background: #1e1114; }
     .field-clear {
       background: none; border: 1px solid #30363d; border-radius: 6px;
       color: #f85149; cursor: pointer; font-size: 14px; padding: 6px 8px;
@@ -737,8 +737,8 @@
           <div class="step-note" style="margin-top:6px"><strong>Why two deploys?</strong> Deploy #1 creates the deployment URL and gives you the Deployment ID. But the code you pasted in step 10 needs that ID to auto-update itself. Deploy #2 pushes the code (now containing the real Deployment ID) to the live deployment with all OAuth permissions granted. After this, all future updates are automatic &mdash; pushes to GitHub trigger the GAS to pull and redeploy itself.</div>
         </li>
         <li class="step-group-label">GAS Triggers</li>
-        <li><em>(Optional)</em> If using an installable trigger for sheet caching:
-          <div class="step-note">Apps Script editor &rarr; Triggers &rarr; + Add Trigger &rarr; Function: <code>onEditWriteB1ToCache</code>, Event source: From spreadsheet, Event type: On edit</div>
+        <li><em>(Optional)</em> If your project uses installable triggers:
+          <div class="step-note">Apps Script editor &rarr; Triggers &rarr; + Add Trigger &rarr; select your function, event source, and event type</div>
         </li>
       </ol>
     </div>
