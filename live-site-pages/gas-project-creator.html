@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.58w">
+  <meta name="build-version" content="v01.59w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1506,17 +1506,21 @@
       var aclIdField = document.getElementById('cfg-master-acl-id');
       if (!aclIdField) return;
       if (isChecked) {
-        _aclValueBeforeToggle = aclIdField.value.trim();
+        // Save current value, auto-fill with Spreadsheet ID, make read-only
+        if (!aclIdField.readOnly) _aclValueBeforeToggle = aclIdField.value.trim();
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         aclIdField.value = sheetId.trim();
+        aclIdField.disabled = false;
         aclIdField.readOnly = true;
         aclIdField.style.opacity = '0.4';
-        aclIdField.placeholder = 'Using Spreadsheet ID above';
+        aclIdField.placeholder = '\u2500\u2500\u2500  Uncheck master ACL toggle to edit  \u2500\u2500\u2500';
         var clearBtn = aclIdField.parentElement.querySelector('.field-clear');
         if (clearBtn) clearBtn.style.display = 'none';
       } else {
+        // Restore previous value, make editable
         aclIdField.value = _aclValueBeforeToggle;
         _aclValueBeforeToggle = '';
+        aclIdField.disabled = false;
         aclIdField.readOnly = false;
         aclIdField.style.opacity = '1';
         aclIdField.placeholder = '1abc2def3ghi...';

@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
+
+## [v09.54r] — 2026-04-07 10:40:56 AM EST
+
+> **Prompt:** "that disabled field should mention what would enable the field like the other disabled fields. but the field should not be disabled if this spreadsheet is not the master acl, i should be able to put what the master acl spreadsheet id is"
+
+### Fixed
+- Master ACL Spreadsheet ID field now shows "Uncheck master ACL toggle to edit" hint when toggle is checked (consistent with other disabled fields)
+- Field is now properly editable when toggle is unchecked — fixed bug where `disabled` attribute from `setFieldDisabled` wasn't cleared by `toggleMasterAcl()`
+
+#### `gas-project-creator.html` — v01.59w
+
+##### Fixed
+- Master ACL Spreadsheet ID field now editable when toggle is unchecked
+- Disabled state shows hint about how to enable it
 
 ## [v09.53r] — 2026-04-07 10:35:23 AM EST
 
