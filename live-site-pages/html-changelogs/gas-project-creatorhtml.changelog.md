@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.63w] — 2026-04-07 11:01:26 AM EST — v09.58r
+
+### Fixed
+- ACL fields no longer show misleading "Enter Deployment ID first" message
 
 ## [v01.62w] — 2026-04-07 10:56:55 AM EST — v09.57r
 

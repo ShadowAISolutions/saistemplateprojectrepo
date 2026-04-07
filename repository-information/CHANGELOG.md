@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v09.58r] — 2026-04-07 11:01:26 AM EST
+
+> **Prompt:** "the acl sheet name and the acl column name are showing to enter deployment ID first but it shouldnt be tied to that, it should be if the master acl spreadsheet ID is set up"
+
+### Fixed
+- ACL Sheet Name and ACL Column Name now gated solely behind Master ACL Spreadsheet ID — no longer inherit the project field cascade reason ("Enter Deployment ID first"), always show "Enter Master ACL Spreadsheet ID first" when that field is empty
+
+#### `gas-project-creator.html` — v01.63w
+
+##### Fixed
+- ACL fields no longer show misleading "Enter Deployment ID first" message
 
 ## [v09.57r] — 2026-04-07 10:56:55 AM EST
 
