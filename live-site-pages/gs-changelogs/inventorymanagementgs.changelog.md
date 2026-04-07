@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
+
+## [v01.07g] — 2026-04-07 07:37:51 PM EST — v09.75r
+
+### Fixed
+- Scan history now appears below the camera area instead of behind it
 
 ## [v01.06g] — 2026-04-07 07:21:09 PM EST — v09.74r
 

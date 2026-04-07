@@ -1,4 +1,4 @@
-var VERSION = "v01.06g";
+var VERSION = "v01.07g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2550,7 +2550,7 @@ function doGet(e) {
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
         /* PROJECT START — Scan results UI */
-        #scan-panel { padding: 16px; font-family: monospace; max-width: 500px; margin: 0 auto; }
+        #scan-panel { padding: 16px; font-family: monospace; max-width: 500px; margin: 0 auto; padding-top: calc(min(100vw, 480px) + 80px); }
         #scan-panel h3 { color: #90caf9; font-size: 13px; margin: 0 0 8px; }
         .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }

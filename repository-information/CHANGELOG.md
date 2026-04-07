@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
+
+## [v09.75r] — 2026-04-07 07:37:51 PM EST
+
+> **Prompt:** "the scan history is hiding behind the camera view, have that appear below the coordinates, i know they are on different layers so you have to analyze their relative coordinates"
+
+### Fixed
+- GAS scan history panel now positioned below the camera widget using `padding-top: calc(min(100vw, 480px) + 80px)` — dynamically matches the camera viewport height (aspect-ratio 1:1 at max 480px) plus padding/status bar
+
+#### `inventorymanagement.gs` — v01.07g
+
+##### Fixed
+- Scan history now appears below the camera area instead of behind it
 
 ## [v09.74r] — 2026-04-07 07:21:09 PM EST
 
