@@ -10214,3 +10214,605 @@ CONFIG"
 
 ### Changed
 - Re-enabled `TEMPLATE_DEPLOY` toggle (`Off` → `On`) to restore GitHub Pages deployment on the template repo
+
+## Archived Sections
+
+## [v09.03r] — 2026-04-05 11:39:42 PM EST
+
+> **Prompt:** "get it to 100%, other than project specific code which should be clearly in a specific separated section"
+
+### Changed
+- Fixed remaining cosmetic differences in shared auth code between testauth1.html and globalacl.html — removed extra blank lines, aligned comment wording, added missing "Fall through" comment — shared code is now 100% identical
+
+#### `testauth1.html` — v03.93w
+##### Changed
+- Minor internal improvements
+
+## [v09.02r] — 2026-04-05 11:20:04 PM EST
+
+> **Prompt:** "the following is the comparison between testauth1 and globalcl, i want their non project specific code to be idential, so address that."
+
+### Changed
+- Unified shared auth/template code between testauth1.html and globalacl.html — non-project-specific code is now identical
+- Replaced fetch()-based heartbeat in testauth1 with iframe+postMessage approach (token never in URL, HIPAA-aligned)
+- Removed `_fetchPausedForGIS` from both files (no longer needed with iframe-based heartbeat)
+- Added `_gasSandboxSource` to globalacl (shared auth infrastructure for GAS sandbox frame communication)
+- Restored `loadIframeViaNonce()` usage in globalacl for cross-tab sync and DOM clearing reload (session replay protection)
+- Added comprehensive documentation to `loadIframeViaNonce()` explaining the 7-attempt history (v05.59r–v05.70r), CacheService limitations, and design tradeoffs
+- Separated project-specific message types from shared `_KNOWN_GAS_MESSAGES` and `_SIG_EXEMPT` with `// PROJECT:` markers in both files
+- Added stale session checks on page load in testauth1 (already in globalacl) — prevents "Reconnecting" for expired sessions
+- Added `applyUIGating()` and role badge display to testauth1's `showApp()` (already in globalacl)
+- Moved panel cooldown system to PROJECT section in testauth1 (shared panel registry kept as template code)
+- Fixed AUTH END CSS comment formatting in testauth1 (added proper separators)
+- Moved `.html-layer-hidden` CSS to PROJECT CSS section in testauth1
+- Standardized SSO section comment header across both files
+- Cleaned up stale comments (data poll migration, CacheService, redundant code annotations)
+- Made IP logging comment generic (`your project's .gs file` instead of page-specific reference)
+- Added `_closeAllPanelsExcept(null)` to globalacl's `showAuthWall()` (was missing)
+
+#### `testauth1.html` — v03.92w
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.82w
+##### Changed
+- Minor internal improvements
+
+## [v09.01r] — 2026-04-05 10:23:46 PM EST
+
+> **Prompt:** "have it default hide equal lines"
+
+### Changed
+- "Hide equal lines" is now checked by default on text-compare tool — differences are shown immediately without needing to toggle
+
+#### `text-compare.html` — v01.07w
+
+##### Changed
+- Equal lines are now hidden by default — only differences are shown after comparing
+
+## [v09.00r] — 2026-04-05 10:18:48 PM EST
+
+> **Prompt:** "its only showing me the context lines used in the smart context AFTER i clicked the copy button, can it initially happen and as soon as its toggled"
+
+### Fixed
+- Smart context value now displays immediately when comparison runs and when the toggle is switched, not only after clicking Copy Context Diff
+
+#### `text-compare.html` — v01.06w
+
+##### Fixed
+- Smart context value now shows as soon as comparison results appear and updates immediately when toggling smart context on/off
+
+## [v08.99r] — 2026-04-05 10:13:25 PM EST
+
+> **Prompt:** "yes implement that"
+
+### Changed
+- Replaced fixed context lines input with "Smart context" auto mode on text-compare tool — dynamically expands context per change hunk (up to 10 lines), filling gaps between nearby changes automatically
+- Context lines input now shows the auto-computed value when smart mode is active (read-only, dimmed), and becomes editable when smart mode is unchecked
+
+#### `text-compare.html` — v01.05w
+
+##### Changed
+- Context lines now auto-computed when "Smart context" is checked — shows the effective value in the input so you can see what's being used
+- Unchecking "Smart context" makes the input editable for manual override
+
+## [v08.98r] — 2026-04-05 10:02:05 PM EST
+
+> **Prompt:** "ok make that clear to the user that that will be the case. also the Ignore leading/trailing whitespace Ignore case Template only toggles, do those have to be toggled before the compare button is pressed? if so then have them in a separate labeled section to the hide equal lines toggle"
+
+### Changed
+- Split text-compare controls into labeled groups: "Before Compare" (whitespace, case, template only) and "Display" (hide equal lines) so users know which must be set before clicking Compare
+- Added color-coded column headers: "Original (red = removed)" in red, "Changed (blue = added)" in blue, making the color convention immediately clear
+
+#### `text-compare.html` — v01.04w
+
+##### Changed
+- Controls split into "Before Compare" and "Display" groups with labeled borders
+- Column headers now show color coding: red for original/removed, blue for changed/added
+
+## [v08.97r] — 2026-04-05 09:48:10 PM EST
+
+> **Prompt:** "can you have it also have a toggle to hide all rows that are identical on both so i can see just the differences"
+
+### Added
+- "Hide equal lines" toggle on text-compare tool that hides all identical rows in the side-by-side diff view, showing only differences
+
+#### `text-compare.html` — v01.03w
+
+##### Added
+- "Hide equal lines" checkbox that filters the visual diff to show only added, removed, and modified lines
+
+## [v08.96r] — 2026-04-05 09:44:11 PM EST
+
+> **Prompt:** "for testing, i am comparing the code of live-site-pages/testauth1.html and live-site-pages/globalacl.html , use that context to come up with something useful, in this example my goal is to make it so that we can quickly see whether the foundational code between the two is identical and only the project specific code is different"
+
+### Added
+- "Template Only" comparison mode to text-compare tool that strips PROJECT blocks before comparing, showing only TEMPLATE/foundational code differences
+- Template-specific identical message: "Template code is identical — only PROJECT blocks differ"
+- Template-only header annotation in Copy Context Diff output explaining that PROJECT blocks were stripped
+
+#### `text-compare.html` — v01.02w
+
+##### Added
+- "Template only" toggle that strips project-specific code sections before comparing, so you can verify foundational code is identical across pages
+- Enhanced "identical" message that clarifies when only project-specific sections differ
+- Template-only annotation in exported diff output
+
+## [v08.95r] — 2026-04-05 09:35:38 PM EST
+
+> **Prompt:** "the text-compare seems to be working perfectly. ideally it would be able to show enough context so that we can extract the differences between the two texts in the case where i am comparing 2 codes, so i need it to output something that i can then give to you for you to consolidate the two in the parts where i want them identical"
+
+### Added
+- "Copy Context Diff" button on text-compare page that generates a unified-diff-style text output with configurable context lines (default 3), optimized for pasting to AI for code consolidation
+- Configurable context lines input (0–50) to control how many surrounding equal lines appear around each change hunk
+
+#### `text-compare.html` — v01.01w
+
+##### Added
+- "Copy Context Diff" export button with clipboard copy and visual feedback
+- Context lines configuration (default 3 lines of surrounding context per change hunk)
+- Unified diff format output (`--- Original` / `+++ Changed` / `@@ ... @@` headers / `-`/`+` line markers)
+
+## [v08.94r] — 2026-04-05 09:14:34 PM EST
+
+> **Prompt:** "even though it is written in the reminder and supposedly in the claude.md , you did not immediately apply the following by default "Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally" . how can we ensure that every single time you will follow this? evaluate why you didnt this time and map out the most consistent way for you to do this moving forward"
+
+### Changed
+- Converted "Incremental Writing" rule from advisory guidance to a hard procedural gate with a strict 50-line Write limit — modeled after the Response Opener gate pattern that solved the same class of compliance failure
+- Removed contradicting escape hatch ("do not force this if a single Write is simpler") from the "Large file writes" Execution Style rule — now points to the Incremental Writing gate
+
+## [v08.93r] — 2026-04-05 08:40:51 PM EST
+
+> **Prompt:** "make an html page which does the same as https://text-compare.com/ , where you can put two different texts in different columns, and it tells the user all the similarities and differences and points out where the differences are."
+
+### Added
+- New Text Compare tool page (`text-compare.html`) — side-by-side text comparison with line-level and character-level diff highlighting, statistics bar (equal/added/removed/modified counts), swap and clear controls, options to ignore whitespace and case, synchronized scroll, and keyboard shortcut (Ctrl+Enter)
+
+## [v08.92r] — 2026-04-05 06:59:44 PM EST
+
+> **Prompt:** "go ahead and get started with your remediation recommendations with emphasis on removing dead code"
+
+### Changed
+- Removed dead duplicate Phase B config blocks (BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG) from globalacl.gs and programportal.gs — pre-template copies were silently overwritten by auth-section copies (174 lines of dead code removed)
+- Updated auth HTML template to match projects: CSS comment cleanup, signout sub-steps reordering, PROJECT block cleanup, `'Almost ready…'` → `'Sign-in complete'` text fix
+- Added `_updateSubStep()` calls to auth HTML template — function definition existed but was never called (dead code until now)
+- Restored missing frame-handshake-challenge handler and nonce message handlers in globalacl.html — nonce variables/function were dead code without the handlers
+- Fixed section ordering in globalacl.gs (ADMIN UTILITIES → CROSS-PROJECT reversed to match template canonical order: CROSS-PROJECT → ADMIN UTILITIES)
+- Moved admin utilities out of testauth1.gs PROJECT section to between CROSS-PROJECT and TEMPLATE START (matching template structure)
+- Fixed `_directSessionLoad` comment in globalacl.html to match template text
+- Fixed entity encoding in programportal.html (`…` → `&hellip;`)
+- Removed `.html-layer-hidden` class from template CSS PROJECT block (project-specific, not template)
+- Added `gas-nonce-ready`, `gas-nonce-result`, `gas-ready-for-token`, `gas-auth-ok` to globalacl.html `_SIG_EXEMPT` allowlist
+
+#### `globalacl.html` — v01.81w
+##### Changed
+- Improved security (added frame verification and session nonce flow)
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.43g
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.87w
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.52g
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.47g
+##### Changed
+- Minor internal improvements
+
+## [v08.91r] — 2026-04-05 06:17:39 PM EST
+
+> **Prompt:** "go ahead and ask me questions as to which options to go with in making it so that they are all identical foundationally other than designated project sections. include in the question an option to skip in case i want to leave them as is for some reason"
+
+### Changed
+- Harmonized three auth projects (testauth1, globalacl, programportal) to match the auth HTML/GAS templates foundationally — all TEMPLATE/AUTH sections now identical, with only PROJECT-designated sections differing
+- Updated `YOUR_ORG_LOGO_URL` template placeholder from `logoipsum.com` to `www.shadowaisolutions.com/SAIS_Logo.png` across all templates and projects
+- Added `gas-layer-toggle` button and `_toggleGasLayer` IIFE to auth HTML template AUTH section — propagated to all three auth projects (previously only testauth1 had it, in PROJECT section)
+- Moved testauth1's `html-layer-toggle` and `gas-layer-toggle` from PROJECT to AUTH section to match template placement
+- Moved programportal's `_validateSSOTokenEmail()` back to template-matching position (was moved earlier for project-specific reasons)
+- Added PROJECT OVERRIDE markers to testauth1 auth presets for test-environment shortened timeouts
+- Added PROJECT OVERRIDE markers to testauth1 `_htmlLayerEls` extra test UI elements
+- Removed "(programportal only)" comment qualifiers from programportal to match template
+- Removed "Data Poll timer removed" comment from testauth1 to match template
+- Updated noauth template CSP `img-src` to include `www.shadowaisolutions.com`
+
+### Fixed
+- Restored `loadIframeViaNonce()` function to globalacl — was completely missing, causing lack of replay protection for iframe loading on page refresh/tab reclaim
+
+#### `testauth1.html` — v03.91w
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.46g
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.80w
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.86w
+##### Changed
+- Minor internal improvements
+
+#### `gas-project-creator.html` — v01.30w
+##### Changed
+- Minor internal improvements
+
+## [v08.90r] — 2026-04-05 05:39:43 PM EST
+
+> **Prompt:** "go ahead and improve it"
+
+### Changed
+- Aligned reconnecting checklist in all three auth projects (testauth1, globalacl, programportal) back to the template's dynamic SSO handling — `_rcStageOrder` is now config-driven via `SSO_PROVIDER` instead of hardcoded per-project
+- Restored `rc-stage-sso` HTML element in testauth1 and globalacl (hidden by default, shown dynamically when `SSO_PROVIDER: true`)
+- Added `style="display:none;"` default to programportal's `rc-stage-sso` element to match template (SSO stage is shown dynamically by `showReconnecting()`)
+- Restored dynamic SSO show/hide logic in `showReconnecting()` across all three projects
+- Removed `// PROJECT:` markers on reconnecting checklist sections (now template-standard, no longer project customizations)
+
+### Fixed
+- Fixed missing `user-select: none` on `.warning-banner` CSS in programportal (was present in template and other projects)
+
+#### `testauth1.html` — v03.90w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.79w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.85w
+
+##### Changed
+- Minor internal improvements
+
+##### Fixed
+- Fixed warning banner text selection behavior
+
+## [v08.89r] — 2026-04-05 05:11:37 PM EST
+
+> **Prompt:** "everything that is currently identical in the other projects i.e. globalacl and program portal as well as the testauth1 should be in the templates"
+
+### Changed
+- Absorbed common auth project code into the HTML auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — all changes were already identical across testauth1, globalacl, and programportal but missing from the template
+- Added `so-stage-complete` sign-out checklist stage (6th stage) to HTML body and JS `_soStageOrder` array
+- Fixed sign-out confirm text: "Waiting for server confirmation" → "Waiting for sign-out confirmation"
+- Reordered sign-in DOM elements: moved subtitle paragraph after checklist (H2 → spinner → checklist → subtitle)
+- Moved CSS `.auth-pulse-dots` definition after all checklist styles (after `.reconnect-checklist`)
+- Expanded `_resetSignOutChecklist` with timer cleanup, sub-step reset, and total ticker on the "Sign-out complete" row
+- Added `_updateSignOutStage('so-stage-complete')` call in `_finalizeSignOut` before completing all stages
+
+## [v08.88r] — 2026-04-05 04:35:19 PM EST
+
+> **Prompt:** "yes continue"
+
+### Changed
+- Fixed HTML auth template checklist text to match testauth1: reconnect final stage → "Session restored", sign-in final stage → "Sign-in complete", JS stage map updated
+- Fixed HTML auth template sign-in subtitle: added margin-top:10px, removed default placeholder text
+- Standardized HTML entities: all auth headings now use `&hellip;` consistently (was mixing Unicode `…` and entity)
+
+## [v08.87r] — 2026-04-05 04:28:54 PM EST
+
+> **Prompt:** "make sure that the templates are also identical, the idea is that if we use the gas-project-creator and associated setup-gas-project.sh , we should have an identical code to the testauth1 except for project specific code. make sure that this is the case"
+
+### Changed
+- Updated GAS auth templates (minimal-auth + test-auth) to match testauth1: unified RBAC to 4 roles with amend, added getData/heartbeat doPost() handlers, improved PROJECT_OVERRIDES comments, standardized placeholder strings
+- Updated HTML auth template to match testauth1: unified CSP headers, removed divergent user-select properties from pills, changed user-pill z-index to 10012, moved html-layer-hidden to PROJECT CSS, added DATA_POLL_INTERVAL, removed ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, added HIPAA comments
+- Updated HTML noauth template: removed divergent user-select properties from pills
+
+### Fixed
+- Fixed validateSessionForData() in both GAS auth templates — now extracts role/permissions from cache when data validation is disabled (prevents silent permission check failures)
+
+## [v08.86r] — 2026-04-05 04:14:37 PM EST
+
+> **Prompt:** "do an analysis of the program portal, testauth1, and globalacl environments to identify every single difference in how they are coded, EXCEPT for project specific code in the gas layer. my goal after your analysis is to make every environment identically coded and organized other than their specific project code"
+
+### Changed
+- Unified CSP headers across all three environments (portal, testauth1, globalacl) — standardized connect-src and font-src directives
+- Unified CSS styling across all environments — standardized z-index values, removed divergent user-select properties, moved html-layer-hidden to consistent location
+- Unified HTML_CONFIG across all environments — added DATA_POLL_INTERVAL, removed divergent ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, standardized HIPAA comments
+- Unified GAS RBAC roles to 4-role structure (admin/clinician/billing/viewer + amend permission) across all environments
+- Added Phase B (breach alerting) and Phase C (retention, legal hold, integrity, representative) configuration blocks to portal and globalacl GAS scripts
+- Added getData and heartbeat doPost() handlers to portal and globalacl GAS scripts (previously testauth1-only)
+- Standardized cache management approach (epoch-bump) across all GAS scripts
+- Standardized placeholder strings and comments across all GAS scripts
+- Added Google OAuth design note to portal and globalacl architecture diagrams
+
+### Fixed
+- Fixed validateSessionForData() in portal and testauth1 — now correctly extracts role/permissions from cache when data validation is disabled (prevents silent permission check failures)
+
+#### `programportal.html` — v01.84w
+
+##### Changed
+- Unified security headers, auth configuration, and UI styling to match across all environments
+
+#### `programportal.gs` — v01.51g
+
+##### Changed
+- Unified RBAC roles, HIPAA compliance configs, and template code to match across all environments
+
+##### Fixed
+- Permission checks now work correctly when data validation is disabled
+
+#### `testauth1.gs` — v02.45g
+
+##### Fixed
+- Permission checks now work correctly when data validation is disabled
+
+#### `globalacl.html` — v01.78w
+
+##### Changed
+- Unified security headers, auth configuration, and UI styling to match across all environments
+
+#### `globalacl.gs` — v01.42g
+
+##### Changed
+- Unified RBAC roles, HIPAA compliance configs, cache management, and template code to match across all environments
+
+##### Fixed
+- Permission checks now work correctly when data validation is disabled
+
+## [v08.85r] — 2026-04-05 03:20:35 PM EST
+
+> **Prompt:** "ok, now these changes we have made to all of these, make them also apply to the templates and associated setup-gas-project.sh for the gas-project-creator"
+
+### Changed
+- Propagated pill and admin badge positioning changes to all 6 template files and gas-project-creator.html
+- HTML templates (noauth + auth): right-side pills `right: 8px` → `right: 22px`, html-layer-toggle `bottom: 8px` → `bottom: 7px`
+- GAS templates (all 4): `#version` `bottom: 8px` → `bottom: 9px`, gas-layer-toggle `bottom: 8px` → `bottom: 7px`
+- GAS auth templates (2): admin badge normalized (dark bg, border, opacity hover, `top: 7px; left: 12px`), dropdown `top: 31px; left: 12px`
+- gas-project-creator.html: version indicator `right: 8px` → `right: 22px`
+- setup-gas-project.sh: no changes needed (copies from templates)
+
+#### `gas-project-creator.html` — v01.29w
+
+##### Changed
+- Version indicator no longer overlaps with the browser scrollbar
+
+## [v08.84r] — 2026-04-05 03:11:35 PM EST
+
+> **Prompt:** "the font color for the gas version in bottom left corner of the program portal is white so we cant see it, should be same color as the other environments, see if theres any more inconsistencies that can be normalized"
+
+### Fixed
+- Fixed programportal.gs `#version` color from `rgba(255,255,255,0.3)` (invisible on white strip) to `#1565c0` (blue, matching testauth1 and globalacl)
+- Fixed programportal.gs `#version` font-size from 11px to 12px (matching other environments)
+
+### Changed
+- Normalized admin badge styling on globalacl.gs and programportal.gs to match testauth1: dark semi-transparent background (`rgba(0,0,0,0.55)`), border, 10px border-radius, opacity hover effect
+- Added `onmouseover`/`onmouseout` opacity handlers to admin badge HTML on both environments
+
+#### `globalacl.gs` — v01.41g
+
+##### Changed
+- Admin button style normalized to match other pages
+
+#### `programportal.gs` — v01.50g
+
+##### Fixed
+- Version label in bottom-left corner now visible (was white on white)
+
+##### Changed
+- Admin button style normalized to match other pages
+
+## [v08.83r] — 2026-04-05 03:06:33 PM EST
+
+> **Prompt:** "idk what you just did but you still dont have padding like we have on the testauth1, im talking about the white space at the top and bottom"
+
+### Changed
+- Added `#acl-main` wrapper to globalacl.gs with `position: fixed; top: 30px; bottom: 30px` — creates white strips at top/bottom matching testauth1's `#live-data-app` pattern
+- Added `#portal-main` wrapper to programportal.gs with same fixed positioning — moves gradient background to inset container, exposing white body strips
+- Body overflow set to `hidden` on both, wrapper handles scrolling
+- Updated gas layer toggle element lists to use new wrapper IDs
+
+#### `globalacl.gs` — v01.40g
+
+##### Changed
+- Page content now has visible top and bottom margins matching other pages
+
+#### `programportal.gs` — v01.49g
+
+##### Changed
+- Page content now has visible top and bottom margins matching other pages
+
+## [v08.82r] — 2026-04-05 03:00:10 PM EST
+
+> **Prompt:** "i want the others to also have the top and bottom padding on the gas layer that the testauth1 has"
+
+### Changed
+- Added 30px top/bottom body padding to globalacl and programportal GAS layers, matching testauth1's layout strips for admin badge and version/toggle elements
+
+#### `globalacl.gs` — v01.39g
+
+##### Changed
+- Added top and bottom padding to match testauth1 layout
+
+#### `programportal.gs` — v01.48g
+
+##### Changed
+- Added top and bottom padding to match testauth1 layout
+
+## [v08.81r] — 2026-04-05 02:52:59 PM EST
+
+> **Prompt:** "ok good. we have made a bunch of changes in the last 2 sessions with the gas and html layer toggles and positioning of pills in testauth1. i want those changes to be propagated to the other environments, i.e. globalacl and programportal"
+
+### Changed
+- Propagated pill positioning and admin badge centering changes from testauth1 to globalacl and programportal
+- All right-side pills shifted from right: 8px to right: 22px on both pages (version indicator, GAS pill, SSO indicator, auth timers, user pill, warning banners)
+- Admin badge centered vertically in top strip (top: 12px → 7px) on both GAS files
+- Admin dropdown position adjusted (top: 36px → 31px) on both GAS files
+- GAS version label centered in bottom strip (bottom: 8px → 9px) on both GAS files
+- HTML/GAS layer toggle buttons centered (bottom: 8px → 7px) on both environments
+
+#### `globalacl.html` — v01.77w
+
+##### Changed
+- Controls no longer overlap with the browser scrollbar
+- Bottom toggle buttons better centered in their area
+
+#### `globalacl.gs` — v01.38g
+
+##### Changed
+- Admin button better centered in the header bar
+- GAS toggle button better centered in its area
+
+#### `programportal.html` — v01.83w
+
+##### Changed
+- Controls no longer overlap with the browser scrollbar
+- Bottom toggle buttons better centered in their area
+
+#### `programportal.gs` — v01.47g
+
+##### Changed
+- Admin button better centered in the header bar
+- GAS toggle button better centered in its area
+
+## [v08.80r] — 2026-04-05 02:42:37 PM EST
+
+> **Prompt:** "as per the screenshot in testauth1, make it so that the admin button is centered vertically in the white area, same of the other elements on the html layer within the white areas, also make it so that the pills on the right side are moved a bit to the left so that when a scollbar appears they are not overlapping it"
+
+### Changed
+- Centered admin badge vertically in the top 30px strip of the GAS layer (top: 12px → 7px)
+- Adjusted admin dropdown position to match badge shift (top: 36px → 31px)
+- Centered HTML/GAS layer toggle buttons vertically in the bottom strip (bottom: 8px → 7px)
+- Moved all right-side pills from right: 8px to right: 22px to prevent scrollbar overlap: version indicator, GAS pill, SSO indicator, auth timers, user pill, and warning banners
+- Moved GAS user-email display from right: 8px to right: 22px for consistency
+
+#### `testauth1.html` — v03.89w
+
+##### Changed
+- Controls no longer overlap with the browser scrollbar
+- Bottom toggle buttons better centered in their area
+
+#### `testauth1.gs` — v02.44g
+
+##### Changed
+- Admin button better centered in the header bar
+- User info positioned to avoid scrollbar overlap
+
+## [v08.79r] — 2026-04-05 01:22:20 PM EST
+
+> **Prompt:** "plan it out in its own document, include all context in particular what we tried and didnt work"
+
+### Added
+- Created `DEFERRED-GAS-IFRAME-PLAN.md` — comprehensive implementation plan documenting the goal of deferring GAS iframe creation until after authentication, what was tried (moving to `showApp()` broke auth, the CORS blocker for `fetch()`-based exchange), and viable alternatives (hidden auth iframe, current toggle-hiding approach)
+
+## [v08.78r] — 2026-04-05 01:10:05 PM EST
+
+> **Prompt:** "unfortunately, now we are getting stuck at requesting sign-in from google" / "wait so if its going to load it anyway, just revert it to how we had it"
+
+### Fixed
+- Reverted deferred GAS iframe creation — restored iframe loading on page load (needed for auth token exchange with GAS backend)
+- GAS toggle button now hidden on sign-in page and shown only after authentication — `showAuthWall()` hides it, `showApp()` shows it
+
+#### `testauth1.html` — v03.88w
+
+##### Fixed
+- Fixed sign-in getting stuck at "Requesting sign-in from Google"
+- GAS toggle button no longer visible on the sign-in page
+
+## [v08.77r] — 2026-04-05 01:03:54 PM EST
+
+> **Prompt:** "yes go ahead, make a note somewhere in case we need to revert"
+
+### Security
+- Deferred GAS iframe creation until after authentication — the iframe is no longer loaded on the sign-in page, preventing unauthenticated users from accessing the GAS deployment URL, app structure, and JavaScript logic via DevTools
+
+#### `testauth1.html` — v03.87w
+
+##### Changed
+- Improved login security — backend connection deferred until after sign-in
+
+## [v08.76r] — 2026-04-05 12:52:45 PM EST
+
+> **Prompt:** "comment out the gas toggle in the gas layer (in case i want to enable it), and add the gas toggle to the html layer, make it so that the new gas toggle on the html layer is shown only when the gas layer exists"
+
+### Changed
+- Moved GAS layer toggle from GAS layer to HTML layer — now hides/shows the entire GAS iframe instead of individual elements within it, enabling true full hide of the GAS layer
+- GAS toggle in GAS layer commented out (preserved for re-enable if needed)
+- HTML-layer GAS toggle only appears when the `#gas-app` iframe exists in the DOM
+
+#### `testauth1.gs` — v02.43g
+
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.html` — v03.86w
+
+##### Added
+- Added GAS layer toggle that fully hides the GAS iframe
+
+## [v08.75r] — 2026-04-05 12:37:59 PM EST
+
+> **Prompt:** "when i said same fond i meant the color too, should go back to the blue it was"
+
+### Fixed
+- Restored admin badge text color to original blue (`#90caf9`) — was incorrectly changed to `#ccc` when matching GAS toggle pill style
+
+#### `testauth1.gs` — v02.42g
+
+##### Fixed
+- Restored admin button text to its original blue color
+
+## [v08.74r] — 2026-04-05 12:34:16 PM EST
+
+> **Prompt:** "the admin font can stay as is but make the pill colors the same as the gas toggle pill by default and on hover, remove the user select none on all pills"
+
+### Changed
+- Updated admin badge pill to match GAS toggle pill styling — dark semi-transparent background with opacity hover effect instead of color-swap hover
+- Removed `user-select: none` from all pill elements (version indicator, GAS pill, SSO indicator, user pill, auth timers, admin badge) so text is selectable with Ctrl+A
+
+#### `testauth1.gs` — v02.41g
+
+##### Changed
+- Admin button now matches the style of other control pills
+
+#### `testauth1.html` — v03.85w
+
+##### Changed
+- Control pills are now text-selectable
+
+## [v08.73r] — 2026-04-05 12:22:23 PM EST
+
+> **Prompt:** "undo your last change, i literally mean the admin dropdown button, when i hover over it, i cant see it anymore might be blending with the white background. theres nothing wrong with the list after i click it."
+
+### Fixed
+- Reverted dropdown `top` change (28px back to 36px) — the dropdown click behavior was not the issue
+- Fixed admin badge colors blending with the white top strip background — changed from light-on-light (`rgba(255,255,255,0.12)` bg, `#90caf9`/`#fff` text) to dark-on-light (`rgba(0,0,0,0.12)` bg, `#1565c0`/`#0d47a1` text) so the badge and its hover state are visible against the white strip
+
+#### `testauth1.gs` — v02.40g
+
+##### Fixed
+- Fixed admin button becoming invisible when hovered — now uses darker colors visible on light backgrounds
+
+## [v08.72r] — 2026-04-05 12:17:33 PM EST
+
+> **Prompt:** "the admin dropdown on hover is disappearing"
+
+### Fixed
+- Fixed admin dropdown disappearing when moving mouse from badge to dropdown — reduced gap between badge and dropdown by moving dropdown from `top: 36px` to `top: 28px`
+
+#### `testauth1.gs` — v02.39g
+
+##### Fixed
+- Fixed admin menu disappearing when trying to select an option
+
+## [v08.71r] — 2026-04-05 12:10:48 PM EST
+
+> **Prompt:** "in the screenshot you can see in testauth1 we have a little strip of space at the bottom for the gas layer, i want a similar strip of space at the top for the gas layer also"
+
+### Changed
+- Added 30px top strip space for the GAS layer in testauth1, mirroring the existing bottom strip — gives GAS UI elements (admin badge, user email) a dedicated top area
+
+#### `testauth1.gs` — v02.38g
+
+##### Changed
+- Adjusted layout spacing to show a control strip at the top of the page
+

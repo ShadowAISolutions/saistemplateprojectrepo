@@ -1,4 +1,4 @@
-var VERSION = "v01.04g";
+var VERSION = "v01.05g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2492,16 +2492,7 @@ function doGet(e) {
       <style>
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
-        /* PROJECT START — QR Scanner result UI styles */
-        #scan-result-panel { padding: 12px; font-family: monospace; }
-        #scan-result-panel .sr-card { background: rgba(0,255,204,0.08); border: 1px solid rgba(0,255,204,0.3); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
-        #scan-result-panel .sr-card.sr-empty { background: rgba(255,255,255,0.03); border-color: #333; color: #888; text-align: center; font-size: 12px; }
-        #scan-result-panel .sr-value { font-size: 14px; color: #00ffcc; word-break: break-all; }
-        #scan-result-panel .sr-meta { font-size: 10px; color: #888; margin-top: 4px; }
-        #scan-result-panel .sr-title { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-        #scan-result-panel .sr-history-item { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 6px 10px; margin-bottom: 4px; cursor: default; font-size: 12px; color: #ccc; }
-        #scan-result-panel .sr-history-item .sr-hval { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        #scan-result-panel .sr-history-item .sr-htime { font-size: 10px; color: #666; }
+        /* PROJECT START — Add your project-specific styles here */
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
@@ -2595,13 +2586,7 @@ function doGet(e) {
       </div>
       ` : ''}
 
-      <!-- PROJECT START — QR Scanner result UI (camera runs on HTML layer) -->
-      <div id="scan-result-panel">
-        <div class="sr-title">Last Scan</div>
-        <div id="sr-last" class="sr-card sr-empty">No scans yet — use the SCAN button on the parent page</div>
-        <div class="sr-title" id="sr-history-title" style="display:none;margin-top:12px">Scan History</div>
-        <div id="sr-history"></div>
-      </div>
+      <!-- PROJECT START — Add your project-specific content here -->
       <!-- PROJECT END -->
 
       <script>
@@ -3224,50 +3209,7 @@ function doGet(e) {
         ` : ''}
 
 
-        // PROJECT START — QR Scanner result display (camera runs on HTML layer)
-        (function() {
-          var _scanHistory = [];
-
-          function _escH(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-          function _renderLastScan(data, format) {
-            var el = document.getElementById('sr-last');
-            if (!el) return;
-            el.className = 'sr-card';
-            el.innerHTML = '<div class="sr-value">' + _escH(data) + '</div>'
-              + '<div class="sr-meta">' + (format || 'QR') + ' &middot; ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + '</div>';
-          }
-
-          function _renderHistory() {
-            var container = document.getElementById('sr-history');
-            var title = document.getElementById('sr-history-title');
-            if (!container || !title) return;
-            if (_scanHistory.length === 0) { title.style.display = 'none'; return; }
-            title.style.display = 'block';
-            container.innerHTML = '';
-            _scanHistory.forEach(function(item) {
-              var div = document.createElement('div');
-              div.className = 'sr-history-item';
-              div.innerHTML = '<div class="sr-hval">' + _escH(item.data) + '</div>'
-                + '<div class="sr-htime">' + (item.format || 'QR') + ' &middot; ' + item.time + '</div>';
-              container.appendChild(div);
-            });
-          }
-
-          // Listen for scan results from the HTML layer (parent page)
-          window.addEventListener('message', function(evt) {
-            if (evt.origin !== PARENT_ORIGIN_LOWER) return;
-            if (!evt.data) return;
-            if (evt.data.type === 'barcode-detected') {
-              var d = evt.data.data || '';
-              var f = evt.data.format || '';
-              _renderLastScan(d, f);
-              _scanHistory.unshift({ data: d, format: f, time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) });
-              if (_scanHistory.length > 10) _scanHistory.pop();
-              _renderHistory();
-            }
-          });
-        })();
+        // PROJECT START — Add your project-specific UI logic here
         // PROJECT END
       </script>
     </body>

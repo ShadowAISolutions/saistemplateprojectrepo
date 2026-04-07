@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.02w">
+  <meta name="build-version" content="v01.03w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -331,24 +331,78 @@
 /* ══════════════ */
 
 /* ══════════════ */
-/* PROJECT START */
+/* PROJECT START — QR Scanner (camera on HTML layer, results bridge to GAS) */
 /* ══════════════ */
     .html-layer-hidden { display: none !important; }
-    /* ── QR Camera Bridge (minimal — camera must run on HTML layer) ── */
-    #qr-camera-overlay { position: fixed; inset: 0; z-index: 2; background: #0a0a0f; display: none; flex-direction: column; align-items: center; }
-    #qr-camera-overlay .qr-viewport { position: relative; width: 100%; max-width: 480px; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; margin: 18px 16px; border: 1px solid #1e1e2e; }
-    #qr-camera-overlay video { width: 100%; height: 100%; object-fit: cover; display: block; }
-    #qr-camera-overlay canvas { display: none; }
-    #qr-camera-overlay .qr-scan-line { position: absolute; left: 14px; right: 14px; height: 2px; background: linear-gradient(90deg, transparent, rgba(0,255,204,0.7), transparent); top: 14px; z-index: 9; animation: qrScanAnim 2s ease-in-out infinite; box-shadow: 0 0 8px #00ffcc; }
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap');
+    #qr-scanner-page { position: fixed; inset: 0; z-index: 2; background: #0a0a0f; color: #e8e8f0; font-family: 'DM Sans', sans-serif; display: flex; flex-direction: column; align-items: center; overflow-y: auto; overflow-x: hidden; }
+    #qr-scanner-page .qr-header { width: 100%; padding: 16px 20px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1e1e2e; background: #12121a; flex-shrink: 0; }
+    #qr-scanner-page .qr-logo { width: 28px; height: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+    #qr-scanner-page .qr-logo-cell { background: #00ffcc; border-radius: 2px; }
+    #qr-scanner-page .qr-logo-cell:nth-child(4) { background: #7c3aed; }
+    #qr-scanner-page .qr-header h1 { font-family: 'Space Mono', monospace; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em; color: #00ffcc; margin: 0; }
+    #qr-scanner-page .qr-scan-count { font-size: 0.7rem; color: #555570; margin-left: auto; font-family: 'Space Mono', monospace; }
+    #qr-scanner-page .scanner-container { width: 100%; max-width: 480px; padding: 18px 16px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    #qr-scanner-page .viewport-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid #1e1e2e; }
+    #qr-scanner-page .viewport-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #qr-scanner-page canvas { display: none; }
+    #qr-scanner-page .corner { position: absolute; width: 28px; height: 28px; z-index: 10; pointer-events: none; }
+    #qr-scanner-page .corner::before, #qr-scanner-page .corner::after { content: ''; position: absolute; background: #00ffcc; border-radius: 2px; }
+    #qr-scanner-page .corner::before { width: 100%; height: 3px; top: 0; left: 0; }
+    #qr-scanner-page .corner::after { width: 3px; height: 100%; top: 0; left: 0; }
+    #qr-scanner-page .corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
+    #qr-scanner-page .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+    #qr-scanner-page .corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
+    #qr-scanner-page .corner.tl { top: 14px; left: 14px; }
+    #qr-scanner-page .scan-line { position: absolute; left: 14px; right: 14px; height: 2px; background: linear-gradient(90deg, transparent, rgba(0,255,204,0.7), transparent); top: 14px; z-index: 9; animation: qrScanAnim 2s ease-in-out infinite; box-shadow: 0 0 8px #00ffcc; border-radius: 2px; }
     @keyframes qrScanAnim { 0%{top:14px;opacity:1} 48%{top:calc(100% - 18px);opacity:1} 50%{top:calc(100% - 18px);opacity:0} 52%{top:14px;opacity:0} 54%{opacity:1} 100%{top:calc(100% - 18px);opacity:1} }
-    #qr-camera-overlay .qr-status { font: 12px/1 monospace; color: #555; padding: 8px 16px; display: flex; align-items: center; gap: 8px; width: 100%; max-width: 480px; }
-    #qr-camera-overlay .qr-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; }
-    #qr-camera-overlay .qr-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; }
-    #qr-camera-overlay .qr-dot.error { background: #ff4466; }
-    #qr-camera-overlay .qr-start-overlay { position: absolute; inset: 0; background: rgba(10,10,15,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 20; }
-    #qr-camera-overlay .qr-start-overlay p { font: 13px/1.5 sans-serif; color: #555; text-align: center; padding: 0 20px; }
-    #qr-camera-overlay .qr-start-btn { padding: 11px 26px; border-radius: 10px; background: #00ffcc; color: #0a0a0f; border: none; font: bold 13px/1 monospace; cursor: pointer; }
-    #qr-camera-overlay .qr-close-btn { position: absolute; top: 12px; right: 16px; z-index: 25; background: rgba(255,255,255,0.1); border: 1px solid #333; color: #ccc; font: 18px/1 monospace; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    #qr-scanner-page .scan-line.paused { animation-play-state: paused; opacity: 0; }
+    #qr-scanner-page .found-flash { position: absolute; inset: 0; background: rgba(0,255,204,0.15); z-index: 8; opacity: 0; border-radius: 16px; pointer-events: none; }
+    @keyframes qrFlashFade { 0%{opacity:1} 100%{opacity:0} }
+    #qr-scanner-page .found-flash.active { animation: qrFlashFade 0.5s forwards; }
+    #qr-scanner-page .start-screen { position: absolute; inset: 0; background: rgba(10,10,15,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 20; border-radius: 16px; backdrop-filter: blur(4px); }
+    #qr-scanner-page .start-screen .big-icon { font-size: 2.4rem; animation: qrBounce 2s ease-in-out infinite; }
+    @keyframes qrBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    #qr-scanner-page .start-screen p { font-size: 0.82rem; color: #555570; text-align: center; padding: 0 20px; line-height: 1.5; }
+    #qr-scanner-page .start-btn { padding: 11px 26px; border-radius: 10px; background: #00ffcc; color: #0a0a0f; border: none; font-family: 'Space Mono', monospace; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; }
+    #qr-scanner-page .engine-badge { position: absolute; bottom: 10px; left: 10px; font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 3px 7px; border-radius: 20px; background: rgba(0,0,0,0.6); color: #555570; z-index: 15; border: 1px solid #1e1e2e; }
+    #qr-scanner-page .engine-badge.native { color: #00ffcc; border-color: #00ffcc; }
+    #qr-scanner-page .torch-btn { position: absolute; bottom: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #555570; font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: all 0.2s; padding: 0; line-height: 1; }
+    #qr-scanner-page .torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
+    #qr-scanner-page .status-bar { display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 0.68rem; color: #555570; padding: 0 2px; }
+    #qr-scanner-page .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555570; flex-shrink: 0; transition: background 0.3s; }
+    #qr-scanner-page .status-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; animation: qrPulse 1.5s ease-in-out infinite; }
+    #qr-scanner-page .status-dot.found { background: #00ffcc; box-shadow: 0 0 8px #00ffcc; animation: none; }
+    #qr-scanner-page .status-dot.error { background: #ff4466; animation: none; }
+    @keyframes qrPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    #qr-scanner-page .result-card { background: #12121a; border: 1px solid #1e1e2e; border-radius: 14px; overflow: hidden; transition: border-color 0.3s; }
+    #qr-scanner-page .result-card.has-result { border-color: #00ffcc; }
+    #qr-scanner-page .result-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid #1e1e2e; }
+    #qr-scanner-page .result-label { font-family: 'Space Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: #555570; text-transform: uppercase; }
+    #qr-scanner-page .result-type-badge { font-family: 'Space Mono', monospace; font-size: 0.58rem; padding: 2px 8px; border-radius: 20px; background: transparent; border: 1px solid #555570; color: #555570; }
+    #qr-scanner-page .result-format-badge { font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 2px 7px; border-radius: 20px; background: rgba(124,58,237,0.1); border: 1px solid #7c3aed; color: #7c3aed; }
+    #qr-scanner-page .result-body { padding: 14px 16px; min-height: 72px; display: flex; flex-direction: column; gap: 12px; }
+    #qr-scanner-page .result-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: #e8e8f0; word-break: break-all; white-space: pre-wrap; }
+    #qr-scanner-page .result-text.empty { color: #555570; font-size: 0.73rem; }
+    #qr-scanner-page .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    #qr-scanner-page .action-btn { flex: 1; min-width: 80px; padding: 9px 12px; border-radius: 8px; border: 1px solid #1e1e2e; background: transparent; color: #e8e8f0; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    #qr-scanner-page .action-btn.primary { background: #00ffcc; color: #0a0a0f; border-color: #00ffcc; }
+    #qr-scanner-page .action-btn.secondary { border-color: #00ffcc; color: #00ffcc; }
+    #qr-scanner-page .upload-row { display: flex; gap: 8px; }
+    #qr-scanner-page .upload-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px dashed #1e1e2e; background: transparent; color: #555570; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; text-align: center; transition: border-color 0.2s; }
+    #qr-scanner-page #qr-file-input { display: none; }
+    #qr-scanner-page .capability-notice { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #555570; padding: 4px 10px; background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.2); border-radius: 8px; text-align: center; }
+    #qr-scanner-page .history-section { display: flex; flex-direction: column; gap: 10px; }
+    #qr-scanner-page .history-title { font-family: 'Space Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: #555570; text-transform: uppercase; padding: 0 2px; }
+    #qr-scanner-page .history-list { display: flex; flex-direction: column; gap: 6px; }
+    #qr-scanner-page .history-item { background: #12121a; border: 1px solid #1e1e2e; border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: border-color 0.2s; }
+    #qr-scanner-page .history-item:active { border-color: #00ffcc; }
+    #qr-scanner-page .history-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; background: #1e1e2e; flex-shrink: 0; }
+    #qr-scanner-page .history-content { flex: 1; overflow: hidden; }
+    #qr-scanner-page .history-text { font-size: 0.76rem; font-family: 'Space Mono', monospace; color: #e8e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #qr-scanner-page .history-time { font-size: 0.6rem; color: #555570; margin-top: 2px; }
+    #qr-scanner-page .qr-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #00ffcc; color: #0a0a0f; font-family: 'Space Mono', monospace; font-size: 0.72rem; padding: 8px 18px; border-radius: 30px; opacity: 0; transition: all 0.3s; z-index: 100; pointer-events: none; white-space: nowrap; }
+    #qr-scanner-page .qr-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -480,23 +534,62 @@
 <!-- ══════════════ -->
 
 <!-- ══════════════ -->
-<!-- PROJECT START -->
+<!-- PROJECT START — QR Scanner (camera on HTML layer, GAS iframe in background for Sheets) -->
 <!-- ══════════════ -->
-  <!-- QR Camera Bridge — minimal camera overlay (camera must run on HTML layer) -->
-  <div id="qr-camera-overlay">
-    <button class="qr-close-btn" id="qr-close-btn">&times;</button>
-    <div class="qr-viewport">
-      <video id="qr-video" autoplay playsinline muted></video>
-      <canvas id="qr-proc-canvas"></canvas>
-      <div class="qr-scan-line" id="qr-scan-line"></div>
-      <div class="qr-start-overlay" id="qr-start-screen">
-        <p>Tap below to start scanning</p>
-        <button class="qr-start-btn" id="qr-start-btn">START CAMERA</button>
+  <div id="qr-scanner-page">
+    <div class="qr-header">
+      <div class="qr-logo"><div class="qr-logo-cell"></div><div class="qr-logo-cell"></div><div class="qr-logo-cell"></div><div class="qr-logo-cell"></div></div>
+      <h1>QR &amp; BARCODE</h1>
+      <span class="qr-scan-count" id="qr-scan-count">0 scanned</span>
+    </div>
+    <div class="scanner-container">
+      <div class="viewport-wrapper" id="qr-viewport">
+        <video id="qr-video" autoplay playsinline muted></video>
+        <canvas id="qr-proc-canvas"></canvas>
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="scan-line" id="qr-scan-line"></div>
+        <div class="found-flash" id="qr-found-flash"></div>
+        <button class="torch-btn" id="qr-torch-btn">&#128294;</button>
+        <div class="engine-badge" id="qr-engine-badge">detecting engine...</div>
+        <div class="start-screen" id="qr-start-screen">
+          <div class="big-icon">&#128247;</div>
+          <p>Tap below to start scanning.<br>Supports QR codes and barcodes when native engine is available.</p>
+          <button class="start-btn" id="qr-start-btn">START CAMERA</button>
+        </div>
+      </div>
+      <div class="status-bar">
+        <div class="status-dot" id="qr-status-dot"></div>
+        <span id="qr-status-text">Camera inactive</span>
+      </div>
+      <div class="result-card" id="qr-result-card">
+        <div class="result-header">
+          <span class="result-label">Last Scan</span>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span class="result-format-badge" id="qr-result-format" style="display:none"></span>
+            <span class="result-type-badge" id="qr-result-type">&#8212;</span>
+          </div>
+        </div>
+        <div class="result-body">
+          <div class="result-text empty" id="qr-result-text">Point your camera at a QR code or barcode...</div>
+          <div class="action-row" id="qr-action-row" style="display:none">
+            <button class="action-btn secondary" id="qr-copy-btn">&#10148; Copy</button>
+            <button class="action-btn primary" id="qr-open-btn">&#8599; Open</button>
+          </div>
+        </div>
+      </div>
+      <div class="upload-row">
+        <label class="upload-btn" for="qr-file-input">&#128444; Scan from image / gallery</label>
+        <input type="file" id="qr-file-input" accept="image/*">
+      </div>
+      <div class="capability-notice" id="qr-capability-notice" style="display:none">&#9888; JS engine active — QR codes only. Use Chrome/Edge for barcode support.</div>
+      <div class="history-section" id="qr-history-section" style="display:none">
+        <div class="history-title">Scan History</div>
+        <div class="history-list" id="qr-history-list"></div>
       </div>
     </div>
-    <div class="qr-status"><div class="qr-dot" id="qr-dot"></div><span id="qr-status-text">Camera inactive</span></div>
+    <div class="qr-toast" id="qr-toast"></div>
   </div>
-  <button id="qr-scan-toggle" style="position:fixed;bottom:7px;left:200px;z-index:10005;background:rgba(0,0,0,0.55);color:#00ffcc;border:1px solid rgba(0,255,204,0.3);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">SCAN</button>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
@@ -3826,168 +3919,250 @@
 // ══════════════
 
 // ══════════════
-// PROJECT START — QR Camera Bridge (minimal — camera must run on HTML layer)
+// PROJECT START — QR & Barcode Scanner (camera on HTML layer, GAS bridge for Sheets)
 // ══════════════
 (function() {
-  var _qrOverlay = document.getElementById('qr-camera-overlay');
-  var _qrVideo = document.getElementById('qr-video');
-  var _qrCanvas = document.getElementById('qr-proc-canvas');
-  var _qrCtx = _qrCanvas.getContext('2d', {willReadFrequently: true});
-  var _qrDot = document.getElementById('qr-dot');
-  var _qrStatusText = document.getElementById('qr-status-text');
-  var _qrStartScreen = document.getElementById('qr-start-screen');
-  var _qrToggleBtn = document.getElementById('qr-scan-toggle');
-  var _qrScanning = false, _qrCooldown = false;
-  var _qrUseNative = false, _qrDetector = null, _qrNativeActive = false;
+  // ─── DOM refs ───
+  var video = document.getElementById('qr-video');
+  var procCanvas = document.getElementById('qr-proc-canvas');
+  var ctx = procCanvas.getContext('2d', {willReadFrequently: true});
+  var statusDot = document.getElementById('qr-status-dot');
+  var statusText = document.getElementById('qr-status-text');
+  var resultCard = document.getElementById('qr-result-card');
+  var resultText = document.getElementById('qr-result-text');
+  var resultType = document.getElementById('qr-result-type');
+  var actionRow = document.getElementById('qr-action-row');
+  var openBtn = document.getElementById('qr-open-btn');
+  var foundFlash = document.getElementById('qr-found-flash');
+  var scanLine = document.getElementById('qr-scan-line');
+  var historySection = document.getElementById('qr-history-section');
+  var historyList = document.getElementById('qr-history-list');
+  var scanCountEl = document.getElementById('qr-scan-count');
+  var engineBadge = document.getElementById('qr-engine-badge');
+  var toast = document.getElementById('qr-toast');
+  var resultFormat = document.getElementById('qr-result-format');
+  var capNotice = document.getElementById('qr-capability-notice');
+  var torchBtn = document.getElementById('qr-torch-btn');
+
+  // ─── State ───
+  var scanning = false, scanCount = 0, historyItems = [], cooldown = false;
+  var useNative = false, barcodeDetector = null, nativeLoopActive = false;
+  var torchOn = false, torchSupported = false;
   var _scanListenerSource = null;
 
-  // Toggle scanner overlay
-  _qrToggleBtn.onclick = function() {
-    if (_qrOverlay.style.display === 'flex') {
-      _qrOverlay.style.display = 'none';
-      _stopCamera();
-    } else {
-      _qrOverlay.style.display = 'flex';
-    }
-  };
-  document.getElementById('qr-close-btn').onclick = function() {
-    _qrOverlay.style.display = 'none';
-    _stopCamera();
-  };
-
-  function _stopCamera() {
-    _qrScanning = false;
-    if (_qrVideo.srcObject) {
-      _qrVideo.srcObject.getTracks().forEach(function(t) { t.stop(); });
-      _qrVideo.srcObject = null;
-    }
-    _qrStartScreen.style.display = 'flex';
-    _qrDot.className = 'qr-dot';
-    _qrStatusText.textContent = 'Camera inactive';
+  // ─── Engine detection ───
+  function detectEngine() {
+    if ('BarcodeDetector' in window) {
+      BarcodeDetector.getSupportedFormats().then(function(fmts) {
+        if (fmts.indexOf('qr_code') !== -1) {
+          useNative = true;
+          var desired = ['aztec','codabar','code_128','code_39','code_93','data_matrix','ean_13','ean_8','itf','pdf417','qr_code','upc_a','upc_e'];
+          var supported = desired.filter(function(f) { return fmts.indexOf(f) !== -1; });
+          barcodeDetector = new BarcodeDetector({formats: supported});
+          engineBadge.textContent = 'NATIVE \u00B7 QR+BARCODE';
+          engineBadge.classList.add('native');
+        } else { setJsQREngine(); }
+      }).catch(function() { setJsQREngine(); });
+    } else { setJsQREngine(); }
   }
-
-  // Engine detection
-  if ('BarcodeDetector' in window) {
-    BarcodeDetector.getSupportedFormats().then(function(fmts) {
-      if (fmts.indexOf('qr_code') !== -1) {
-        _qrUseNative = true;
-        var desired = ['aztec','codabar','code_128','code_39','code_93','data_matrix','ean_13','ean_8','itf','pdf417','qr_code','upc_a','upc_e'];
-        _qrDetector = new BarcodeDetector({formats: desired.filter(function(f) { return fmts.indexOf(f) !== -1; })});
-      }
-    }).catch(function() {});
+  function setJsQREngine() {
+    useNative = false;
+    engineBadge.textContent = 'JS \u00B7 QR ONLY';
+    capNotice.style.display = 'block';
   }
+  detectEngine();
 
-  // Start camera
+  // ─── Camera start ───
   document.getElementById('qr-start-btn').onclick = async function() {
     try {
       var stream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: {exact:'environment'}, width:{ideal:1280}, height:{ideal:720} } });
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:'environment'},width:{ideal:1280},height:{ideal:720}}});
       } catch(e) {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} } });
+        stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
       }
-      _qrVideo.srcObject = stream;
-      await new Promise(function(r) { _qrVideo.onloadedmetadata = function() { _qrVideo.play().then(r).catch(r); }; });
-      _qrStartScreen.style.display = 'none';
-      _qrScanning = true;
-      _qrDot.className = 'qr-dot active';
-      _qrStatusText.textContent = 'Scanning' + (_qrUseNative ? ' (native)' : ' (jsQR)') + '...';
-      if (_qrUseNative) { _qrNativeActive = true; _nativeTick(); }
-      else { requestAnimationFrame(_jsQRTick); }
+      video.srcObject = stream;
+      await new Promise(function(res) { video.onloadedmetadata = function() { video.play().then(res).catch(res); }; });
+      document.getElementById('qr-start-screen').style.display = 'none';
+      setStatus('active', 'Scanning' + (useNative ? ' (native \u00B7 all formats)' : ' (jsQR \u00B7 QR only)') + '...');
+      scanning = true;
+      try {
+        var track = stream.getVideoTracks()[0];
+        var caps = track.getCapabilities ? track.getCapabilities() : {};
+        if (caps.torch) { torchSupported = true; torchBtn.style.display = 'flex'; }
+      } catch(e) {}
+      if (useNative) { startNativeLoop(); } else { requestAnimationFrame(jsQRTick); }
     } catch(e) {
-      _qrDot.className = 'qr-dot error';
-      _qrStatusText.textContent = 'Camera error: ' + e.message;
+      setStatus('error', 'Camera error: ' + e.message);
+      showToast('Camera denied \u2014 use image upload below');
     }
   };
 
-  // Native detection loop
-  async function _nativeTick() {
-    if (!_qrScanning) { _qrNativeActive = false; return; }
-    if (!_qrCooldown && _qrVideo.readyState >= 2) {
+  // ─── Native BarcodeDetector loop ───
+  function startNativeLoop() {
+    if (nativeLoopActive) return;
+    nativeLoopActive = true; nativeTick();
+  }
+  async function nativeTick() {
+    if (!scanning) { nativeLoopActive = false; return; }
+    if (!cooldown && video.readyState >= 2) {
       try {
-        var codes = await _qrDetector.detect(_qrVideo);
-        if (codes.length > 0 && codes[0].rawValue) _onDetected(codes[0].rawValue, codes[0].format);
+        var barcodes = await barcodeDetector.detect(video);
+        if (barcodes.length > 0 && barcodes[0].rawValue) onFound(barcodes[0].rawValue, barcodes[0].format);
       } catch(e) {}
     }
-    setTimeout(_nativeTick, 200);
+    setTimeout(nativeTick, 200);
   }
 
-  // jsQR fallback loop
-  function _jsQRTick() {
-    if (!_qrScanning) return;
-    if (!_qrCooldown && _qrVideo.readyState >= 2 && _qrVideo.videoWidth > 0) {
-      _qrCanvas.width = _qrVideo.videoWidth;
-      _qrCanvas.height = _qrVideo.videoHeight;
-      _qrCtx.drawImage(_qrVideo, 0, 0);
-      var imgData = _qrCtx.getImageData(0, 0, _qrCanvas.width, _qrCanvas.height);
+  // ─── jsQR loop ───
+  function jsQRTick() {
+    if (!scanning) return;
+    if (!cooldown && video.readyState >= 2 && video.videoWidth > 0) {
+      procCanvas.width = video.videoWidth; procCanvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+      var imageData = ctx.getImageData(0, 0, procCanvas.width, procCanvas.height);
       if (typeof jsQR !== 'undefined') {
-        var code = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'attemptBoth'});
-        if (code && code.data) _onDetected(code.data, 'qr_code');
+        var code = jsQR(imageData.data, imageData.width, imageData.height, {inversionAttempts:'attemptBoth'});
+        if (code && code.data) onFound(code.data);
       }
     }
-    requestAnimationFrame(_jsQRTick);
+    requestAnimationFrame(jsQRTick);
   }
 
-  // When a barcode/QR is detected — send to GAS via listener iframe
-  function _onDetected(value, format) {
-    if (_qrCooldown) return;
-    _qrCooldown = true;
-    setTimeout(function() { _qrCooldown = false; }, 2000);
+  // ─── Scan from image file ───
+  document.getElementById('qr-file-input').onchange = function(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var img = new Image();
+    img.onload = async function() {
+      if (useNative && barcodeDetector) {
+        try {
+          var barcodes = await barcodeDetector.detect(img);
+          if (barcodes.length > 0 && barcodes[0].rawValue) { onFound(barcodes[0].rawValue, barcodes[0].format); event.target.value = ''; return; }
+        } catch(e) {}
+      }
+      var c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+      var cx = c.getContext('2d'); cx.drawImage(img, 0, 0);
+      var id = cx.getImageData(0, 0, c.width, c.height);
+      if (typeof jsQR !== 'undefined') {
+        var code = jsQR(id.data, id.width, id.height, {inversionAttempts:'attemptBoth'});
+        if (code && code.data) onFound(code.data);
+        else showToast('No QR code or barcode found in image');
+      }
+      event.target.value = '';
+    };
+    img.src = URL.createObjectURL(file);
+  };
+
+  // ─── On found ───
+  function onFound(data, format) {
+    if (cooldown) return;
+    cooldown = true; setTimeout(function() { cooldown = false; }, 2000);
+    foundFlash.classList.remove('active'); void foundFlash.offsetWidth; foundFlash.classList.add('active');
+    scanLine.classList.add('paused'); setTimeout(function() { scanLine.classList.remove('paused'); }, 500);
     if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-    _qrDot.className = 'qr-dot active';
-    _qrStatusText.textContent = 'Found: ' + (format || 'QR').toUpperCase().replace(/_/g,' ');
-    setTimeout(function() {
-      _qrDot.className = 'qr-dot active';
-      _qrStatusText.textContent = 'Scanning' + (_qrUseNative ? ' (native)' : ' (jsQR)') + '...';
-    }, 1800);
-
-    // Send to scan listener iframe (if ready) and to the GAS main iframe
+    var type = classify(data, format);
+    scanCount++; scanCountEl.textContent = scanCount + ' scanned';
+    resultCard.classList.add('has-result');
+    resultText.classList.remove('empty'); resultText.textContent = data;
+    resultType.className = 'result-type-badge ' + type.id; resultType.textContent = type.label;
+    actionRow.style.display = 'flex';
+    if (format) { resultFormat.textContent = formatLabel(format); resultFormat.style.display = 'inline'; }
+    else { resultFormat.textContent = 'QR CODE'; resultFormat.style.display = 'inline'; }
+    openBtn.textContent = type.id === 'url' ? '\u2197 Open URL' : type.id === 'email' ? '\u2709 Email' : type.id === 'phone' ? '\uD83D\uDCDE Call' : type.id === 'sms' ? '\uD83D\uDCAC SMS' : type.id === 'wifi' ? '\uD83D\uDCCB Details' : '\u2315 Copy';
+    setStatus('found', 'Found \u2714 ' + (format ? formatLabel(format) : 'QR') + ' \u00B7 ' + type.label);
+    setTimeout(function() { setStatus('active', 'Scanning' + (useNative ? ' (native \u00B7 all formats)' : ' (jsQR \u00B7 QR only)') + '...'); }, 1800);
+    addToHistory(data, type, format);
+    // Send to GAS listener iframe for server-side processing (future Sheets integration)
     if (_scanListenerSource) {
-      _scanListenerSource.postMessage({ type: 'barcode-scan', value: value, format: format || 'qr_code' }, '*');
+      _scanListenerSource.postMessage({type:'barcode-scan', value:data, format:format||'qr_code'}, '*');
     }
-    // Also notify main GAS iframe directly for result UI
-    var gasFrame = document.getElementById('gas-app');
-    if (gasFrame && gasFrame.contentWindow) {
-      // Use the known pattern: post to the GAS iframe's content window
-      // The GAS sandbox listens for 'barcode-detected' via its PROJECT JS
-    }
-    // Broadcast to any listening GAS frames via window.postMessage
-    // The GAS iframe's PROJECT JS listens on window.addEventListener('message')
-    // but since we can't reliably postMessage INTO GAS, we use the scanListener iframe bridge
   }
 
-  // Listen for scan listener iframe readiness and results
+  // ─── Classify ───
+  function classify(data, format) {
+    if (/^https?:\/\//i.test(data)) return {id:'url',label:'URL'};
+    if (/^mailto:/i.test(data)) return {id:'email',label:'EMAIL'};
+    if (/^tel:/i.test(data)) return {id:'phone',label:'PHONE'};
+    if (/^smsto?:/i.test(data)) return {id:'sms',label:'SMS'};
+    if (/^WIFI:/i.test(data)) return {id:'wifi',label:'WIFI'};
+    if (format && format !== 'qr_code') {
+      if (/^[0-9]{12,13}$/.test(data)) return {id:'text',label:'PRODUCT'};
+      if (/^[0-9]{8}$/.test(data)) return {id:'text',label:'PRODUCT'};
+      if (/^[0-9]+$/.test(data)) return {id:'text',label:'NUMERIC'};
+      return {id:'text',label:'BARCODE'};
+    }
+    return {id:'text',label:'TEXT'};
+  }
+  function formatLabel(fmt) {
+    var labels = {'aztec':'AZTEC','codabar':'CODABAR','code_128':'CODE 128','code_39':'CODE 39','code_93':'CODE 93','data_matrix':'DATA MATRIX','ean_13':'EAN-13','ean_8':'EAN-8','itf':'ITF','pdf417':'PDF417','qr_code':'QR CODE','upc_a':'UPC-A','upc_e':'UPC-E'};
+    return labels[fmt] || fmt.toUpperCase().replace(/_/g, ' ');
+  }
+
+  // ─── Torch toggle ───
+  torchBtn.onclick = function() {
+    if (!torchSupported || !video.srcObject) return;
+    var track = video.srcObject.getVideoTracks()[0]; if (!track) return;
+    torchOn = !torchOn;
+    track.applyConstraints({advanced:[{torch:torchOn}]})
+      .then(function() { torchBtn.classList.toggle('on', torchOn); showToast(torchOn ? 'Light on' : 'Light off'); })
+      .catch(function() { torchOn = false; torchBtn.classList.remove('on'); showToast('Torch not available'); });
+  };
+
+  // ─── Helpers ───
+  function setStatus(state, msg) { statusDot.className = 'status-dot ' + state; statusText.textContent = msg; }
+  function copyResult() {
+    var text = resultText.textContent;
+    if (!text || resultText.classList.contains('empty')) return;
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function() { showToast('Copied!'); }).catch(function() { fallbackCopy(text); });
+    else fallbackCopy(text);
+  }
+  function fallbackCopy(text) { var el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); showToast('Copied!'); }
+  function openResult() {
+    var text = resultText.textContent;
+    if (!text || resultText.classList.contains('empty')) return;
+    var type = classify(text);
+    if (['url','email','phone','sms'].indexOf(type.id) !== -1) window.open(text, '_blank');
+    else copyResult();
+  }
+  function addToHistory(data, type, format) {
+    var icons = {url:'\uD83D\uDD17',email:'\u2709\uFE0F',phone:'\uD83D\uDCDE',sms:'\uD83D\uDCAC',wifi:'\uD83D\uDCF6',text:'\uD83D\uDCC4'};
+    historyItems.unshift({data:data, type:type, format:format, time:new Date()});
+    if (historyItems.length > 10) historyItems.pop();
+    historySection.style.display = 'flex'; historyList.innerHTML = '';
+    historyItems.forEach(function(item) {
+      var el = document.createElement('div'); el.className = 'history-item';
+      var ts = item.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      var fmtStr = item.format ? ' \u00B7 ' + formatLabel(item.format) : '';
+      el.innerHTML = '<div class="history-icon">' + (icons[item.type.id]||'\uD83D\uDCC4') + '</div><div class="history-content"><div class="history-text">' + escHtml(item.data) + '</div><div class="history-time">' + item.type.label + fmtStr + ' \u00B7 ' + ts + '</div></div>';
+      el.onclick = function() { resultText.textContent = item.data; resultText.classList.remove('empty'); resultType.className = 'result-type-badge ' + item.type.id; resultType.textContent = item.type.label; if(item.format){resultFormat.textContent=formatLabel(item.format);resultFormat.style.display='inline';}else{resultFormat.textContent='QR CODE';resultFormat.style.display='inline';} resultCard.classList.add('has-result'); actionRow.style.display='flex'; window.scrollTo({top:0,behavior:'smooth'}); };
+      historyList.appendChild(el);
+    });
+  }
+  function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); setTimeout(function() { toast.classList.remove('show'); }, 2000); }
+
+  // ─── Event bindings ───
+  document.getElementById('qr-copy-btn').onclick = copyResult;
+  document.getElementById('qr-open-btn').onclick = openResult;
+
+  // ─── GAS Listener Iframe Bridge (for future Sheets integration) ───
   window.addEventListener('message', function(evt) {
     if (!evt.data) return;
-    if (evt.data.type === 'gas-scan-listener-ready') {
-      _scanListenerSource = evt.source;
-    }
-    if (evt.data.type === 'gas-scan-result') {
-      // Future: handle processed inventory data from GAS server
-    }
-    if (evt.data.type === 'gas-scan-error') {
-      console.error('Scan processing error:', evt.data.error);
-    }
+    if (evt.data.type === 'gas-scan-listener-ready') _scanListenerSource = evt.source;
+    if (evt.data.type === 'gas-scan-result') { /* Future: handle inventory lookup results */ }
+    if (evt.data.type === 'gas-scan-error') console.error('Scan error:', evt.data.error);
   });
-
-  // Create the scan listener iframe using the GAS base URL from gasApp.dataset.baseUrl
-  function _createScanListener() {
-    var gasApp = document.getElementById('gas-app');
-    var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
-    if (!baseUrl || document.getElementById('gas-scan-listener')) return;
-    var sf = document.createElement('iframe');
-    sf.id = 'gas-scan-listener';
-    sf.style.cssText = 'display:none;width:0;height:0;border:0';
-    sf.src = baseUrl + '?action=scanListener';
-    document.body.appendChild(sf);
-  }
-
-  // Poll for gasApp readiness — it's created dynamically by the template JS
   var _slInterval = setInterval(function() {
     var gasApp = document.getElementById('gas-app');
     if (gasApp && gasApp.dataset.baseUrl) {
       clearInterval(_slInterval);
-      _createScanListener();
+      if (!document.getElementById('gas-scan-listener')) {
+        var sf = document.createElement('iframe');
+        sf.id = 'gas-scan-listener'; sf.style.cssText = 'display:none;width:0;height:0;border:0';
+        sf.src = gasApp.dataset.baseUrl + '?action=scanListener';
+        document.body.appendChild(sf);
+      }
     }
   }, 500);
 })();

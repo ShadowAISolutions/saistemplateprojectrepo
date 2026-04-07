@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
+
+## [v01.05g] — 2026-04-07 06:34:20 PM EST — v09.71r
+
+### Changed
+- Scanner result display moved to embedding page — GAS iframe now handles auth and admin only
 
 ## [v01.04g] — 2026-04-07 05:58:59 PM EST — v09.69r
 
