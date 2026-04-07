@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.65w">
+  <meta name="build-version" content="v01.66w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1643,7 +1643,9 @@
       if (projectDisabled || !hasSpreadsheet) {
         setFieldDisabled('cfg-master-acl-id', true, projectDisabled ? projectReason : sheetReason);
       } else {
-        // Re-apply toggle state (checked = readOnly with auto-fill, unchecked = editable)
+        // First restore the field via setFieldDisabled (clears the disabled state + restores saved value)
+        setFieldDisabled('cfg-master-acl-id', false, '');
+        // Then re-apply toggle state (checked = readOnly with auto-fill, unchecked = editable)
         toggleMasterAcl();
       }
       // If spreadsheet was cleared, uncheck master ACL

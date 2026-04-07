@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v09.61r] — 2026-04-07 11:13:35 AM EST
+
+> **Prompt:** "ok the toggle is properly showing the acl sheet name and acl column name fields as enabled, but when the toggle is off, its not letting me type into the master acl spreadsheet id field"
+
+### Fixed
+- Master ACL Spreadsheet ID field now editable when toggle is unchecked — added `setFieldDisabled('cfg-master-acl-id', false)` before `toggleMasterAcl()` to properly restore the field from its disabled state (clears the `disabled` attribute and restores saved value)
+
+#### `gas-project-creator.html` — v01.66w
+
+##### Fixed
+- Master ACL Spreadsheet ID field now accepts input when toggle is unchecked
 
 ## [v09.60r] — 2026-04-07 11:08:00 AM EST
 
