@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2455,6 +2455,91 @@ function doGet(e) {
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
         /* PROJECT START — Add your project-specific styles here */
+        /* ── QR Scanner Styles ── */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap');
+        :root {
+          --qr-bg: #0a0a0f; --qr-surface: #12121a; --qr-border: #1e1e2e;
+          --qr-accent: #00ffcc; --qr-text: #e8e8f0; --qr-muted: #555570; --qr-error: #ff4466;
+        }
+        body { background: var(--qr-bg); color: var(--qr-text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; overflow-y: auto; }
+        .qr-header { width: 100%; padding: 16px 20px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--qr-border); background: var(--qr-surface); }
+        .qr-logo { width: 28px; height: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+        .qr-logo-cell { background: var(--qr-accent); border-radius: 2px; }
+        .qr-logo-cell:nth-child(4) { background: #7c3aed; }
+        .qr-header h1 { font-family: 'Space Mono', monospace; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em; color: var(--qr-accent); margin: 0; }
+        #qr-scan-count { font-size: 0.7rem; color: var(--qr-muted); margin-left: auto; font-family: 'Space Mono', monospace; }
+        .scanner-container { width: 100%; max-width: 480px; padding: 18px 16px; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+        .viewport-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid var(--qr-border); }
+        .viewport-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        canvas#qr-proc-canvas { display: none; }
+        .qr-corner { position: absolute; width: 28px; height: 28px; z-index: 10; pointer-events: none; }
+        .qr-corner::before, .qr-corner::after { content: ''; position: absolute; background: var(--qr-accent); border-radius: 2px; }
+        .qr-corner::before { width: 100%; height: 3px; top: 0; left: 0; }
+        .qr-corner::after  { width: 3px; height: 100%; top: 0; left: 0; }
+        .qr-corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
+        .qr-corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+        .qr-corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
+        .qr-corner.tl { top: 14px; left: 14px; }
+        .qr-scan-line { position: absolute; left: 14px; right: 14px; height: 2px; background: linear-gradient(90deg, transparent, rgba(0,255,204,0.7), transparent); top: 14px; z-index: 9; animation: qrScanMove 2s ease-in-out infinite; box-shadow: 0 0 8px var(--qr-accent); border-radius: 2px; }
+        @keyframes qrScanMove { 0%{top:14px;opacity:1} 48%{top:calc(100% - 18px);opacity:1} 50%{top:calc(100% - 18px);opacity:0} 52%{top:14px;opacity:0} 54%{opacity:1} 100%{top:calc(100% - 18px);opacity:1} }
+        .qr-scan-line.paused { animation-play-state: paused; opacity: 0; }
+        .qr-found-flash { position: absolute; inset: 0; background: rgba(0,255,204,0.15); z-index: 8; opacity: 0; border-radius: 16px; pointer-events: none; }
+        @keyframes qrFlashFade { 0%{opacity:1} 100%{opacity:0} }
+        .qr-found-flash.active { animation: qrFlashFade 0.5s forwards; }
+        #qr-start-screen { position: absolute; inset: 0; background: rgba(10,10,15,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 20; border-radius: 16px; backdrop-filter: blur(4px); }
+        #qr-start-screen .big-icon { font-size: 2.4rem; animation: qrBounce 2s ease-in-out infinite; }
+        @keyframes qrBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        #qr-start-screen p { font-size: 0.82rem; color: var(--qr-muted); text-align: center; padding: 0 20px; line-height: 1.5; }
+        .qr-start-btn { padding: 11px 26px; border-radius: 10px; background: var(--qr-accent); color: var(--qr-bg); border: none; font-family: 'Space Mono', monospace; font-size: 0.78rem; font-weight: 700; cursor: pointer; letter-spacing: 0.05em; }
+        .qr-start-btn:active { transform: scale(0.96); }
+        .qr-engine-badge { position: absolute; bottom: 10px; left: 10px; font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 3px 7px; border-radius: 20px; background: rgba(0,0,0,0.6); color: var(--qr-muted); z-index: 15; border: 1px solid var(--qr-border); }
+        .qr-engine-badge.native { color: var(--qr-accent); border-color: var(--qr-accent); }
+        .qr-torch-btn { position: absolute; bottom: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--qr-border); background: rgba(0,0,0,0.6); color: var(--qr-muted); font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: all 0.2s; padding: 0; line-height: 1; }
+        .qr-torch-btn:active { transform: scale(0.9); }
+        .qr-torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
+        .qr-status-bar { display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--qr-muted); padding: 0 2px; }
+        .qr-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--qr-muted); flex-shrink: 0; transition: background 0.3s; }
+        .qr-status-dot.active { background: var(--qr-accent); box-shadow: 0 0 6px var(--qr-accent); animation: qrPulse 1.5s ease-in-out infinite; }
+        .qr-status-dot.found  { background: var(--qr-accent); box-shadow: 0 0 8px var(--qr-accent); animation: none; }
+        .qr-status-dot.error  { background: var(--qr-error); animation: none; }
+        @keyframes qrPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .qr-result-card { background: var(--qr-surface); border: 1px solid var(--qr-border); border-radius: 14px; overflow: hidden; transition: border-color 0.3s; }
+        .qr-result-card.has-result { border-color: var(--qr-accent); }
+        .qr-result-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid var(--qr-border); }
+        .qr-result-label { font-family: 'Space Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: var(--qr-muted); text-transform: uppercase; }
+        .qr-result-type-badge { font-family: 'Space Mono', monospace; font-size: 0.58rem; padding: 2px 8px; border-radius: 20px; background: transparent; border: 1px solid var(--qr-muted); color: var(--qr-muted); }
+        .qr-result-type-badge.url   { border-color:#3b82f6;color:#3b82f6 }
+        .qr-result-type-badge.text  { border-color:var(--qr-accent);color:var(--qr-accent) }
+        .qr-result-type-badge.wifi  { border-color:#f59e0b;color:#f59e0b }
+        .qr-result-type-badge.email { border-color:#ec4899;color:#ec4899 }
+        .qr-result-type-badge.phone { border-color:#10b981;color:#10b981 }
+        .qr-result-type-badge.sms   { border-color:#8b5cf6;color:#8b5cf6 }
+        .qr-result-format-badge { font-family: 'Space Mono', monospace; font-size: 0.55rem; padding: 2px 7px; border-radius: 20px; background: rgba(124,58,237,0.1); border: 1px solid #7c3aed; color: #7c3aed; }
+        .qr-capability-notice { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--qr-muted); padding: 4px 10px; background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.2); border-radius: 8px; text-align: center; }
+        .qr-result-body { padding: 14px 16px; min-height: 72px; display: flex; flex-direction: column; gap: 12px; }
+        .qr-result-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--qr-text); word-break: break-all; white-space: pre-wrap; }
+        .qr-result-text.empty { color: var(--qr-muted); font-size: 0.73rem; }
+        .qr-action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .qr-action-btn { flex: 1; min-width: 80px; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--qr-border); background: transparent; color: var(--qr-text); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .qr-action-btn:active { transform: scale(0.96); }
+        .qr-action-btn.primary { background: var(--qr-accent); color: #0a0a0f; border-color: var(--qr-accent); }
+        .qr-action-btn.secondary { border-color: var(--qr-accent); color: var(--qr-accent); }
+        .qr-upload-row { display: flex; gap: 8px; }
+        .qr-upload-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px dashed var(--qr-border); background: transparent; color: var(--qr-muted); font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; text-align: center; transition: border-color 0.2s; letter-spacing: 0.04em; }
+        .qr-upload-btn:active { border-color: var(--qr-accent); color: var(--qr-accent); }
+        #qr-file-input { display: none; }
+        .qr-history-section { display: flex; flex-direction: column; gap: 10px; }
+        .qr-history-title { font-family: 'Space Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: var(--qr-muted); text-transform: uppercase; padding: 0 2px; }
+        .qr-history-list { display: flex; flex-direction: column; gap: 6px; }
+        .qr-history-item { background: var(--qr-surface); border: 1px solid var(--qr-border); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: border-color 0.2s; animation: qrSlideIn 0.25s ease; }
+        @keyframes qrSlideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+        .qr-history-item:active { border-color: var(--qr-accent); }
+        .qr-history-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; background: var(--qr-border); flex-shrink: 0; }
+        .qr-history-content { flex: 1; overflow: hidden; }
+        .qr-history-text { font-size: 0.76rem; font-family: 'Space Mono', monospace; color: var(--qr-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .qr-history-time { font-size: 0.6rem; color: var(--qr-muted); margin-top: 2px; }
+        .qr-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--qr-accent); color: var(--qr-bg); font-family: 'Space Mono', monospace; font-size: 0.72rem; padding: 8px 18px; border-radius: 30px; opacity: 0; transition: all 0.3s; z-index: 100; pointer-events: none; white-space: nowrap; }
+        .qr-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
@@ -2549,6 +2634,64 @@ function doGet(e) {
       ` : ''}
 
       <!-- PROJECT START — Add your project-specific content here -->
+      <div class="qr-header">
+        <div class="qr-logo">
+          <div class="qr-logo-cell"></div><div class="qr-logo-cell"></div>
+          <div class="qr-logo-cell"></div><div class="qr-logo-cell"></div>
+        </div>
+        <h1>QR &amp; BARCODE</h1>
+        <span id="qr-scan-count">0 scanned</span>
+      </div>
+      <div class="scanner-container">
+        <div class="viewport-wrapper" id="qr-viewport">
+          <video id="qr-video" autoplay playsinline muted></video>
+          <canvas id="qr-proc-canvas"></canvas>
+          <div class="qr-corner tl"></div><div class="qr-corner tr"></div>
+          <div class="qr-corner bl"></div><div class="qr-corner br"></div>
+          <div class="qr-scan-line" id="qr-scan-line"></div>
+          <div class="qr-found-flash" id="qr-found-flash"></div>
+          <button class="qr-torch-btn" id="qr-torch-btn">&#128294;</button>
+          <div class="qr-engine-badge" id="qr-engine-badge">detecting engine...</div>
+          <div id="qr-start-screen">
+            <div class="big-icon">&#128247;</div>
+            <p>Tap below to start scanning.<br>Supports QR codes and barcodes when native engine is available.</p>
+            <button class="qr-start-btn" id="qr-start-btn">START CAMERA</button>
+          </div>
+        </div>
+        <div class="qr-status-bar">
+          <div class="qr-status-dot" id="qr-status-dot"></div>
+          <span id="qr-status-text">Camera inactive</span>
+        </div>
+        <div class="qr-result-card" id="qr-result-card">
+          <div class="qr-result-header">
+            <span class="qr-result-label">Last Scan</span>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <span class="qr-result-format-badge" id="qr-result-format" style="display:none"></span>
+              <span class="qr-result-type-badge" id="qr-result-type">&#8212;</span>
+            </div>
+          </div>
+          <div class="qr-result-body">
+            <div class="qr-result-text empty" id="qr-result-text">Point your camera at a QR code or barcode...</div>
+            <div class="qr-action-row" id="qr-action-row" style="display:none">
+              <button class="qr-action-btn secondary" id="qr-copy-btn">&#10148; Copy</button>
+              <button class="qr-action-btn primary" id="qr-open-btn">&#8599; Open</button>
+            </div>
+          </div>
+        </div>
+        <div class="qr-upload-row">
+          <label class="qr-upload-btn" for="qr-file-input">&#128444; Scan from image / gallery</label>
+          <input type="file" id="qr-file-input" accept="image/*">
+        </div>
+        <div class="qr-capability-notice" id="qr-capability-notice" style="display:none">
+          &#9888; JS engine active — QR codes only. Use Chrome/Edge for barcode support.
+        </div>
+        <div class="qr-history-section" id="qr-history-section" style="display:none">
+          <div class="qr-history-title">Scan History</div>
+          <div class="qr-history-list" id="qr-history-list"></div>
+        </div>
+      </div>
+      <div class="qr-toast" id="qr-toast"></div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"><\/script>
       <!-- PROJECT END -->
 
       <script>
@@ -3171,7 +3314,355 @@ function doGet(e) {
         ` : ''}
 
 
-        // PROJECT START — Add your project-specific UI logic here
+        // PROJECT START — QR & Barcode Scanner UI logic
+        (function() {
+          // ─── DOM refs ───────────────────────────────────────────────────
+          var qrVideo       = document.getElementById('qr-video');
+          var qrProcCanvas  = document.getElementById('qr-proc-canvas');
+          var qrCtx         = qrProcCanvas.getContext('2d', {willReadFrequently: true});
+          var qrStatusDot   = document.getElementById('qr-status-dot');
+          var qrStatusText  = document.getElementById('qr-status-text');
+          var qrResultCard  = document.getElementById('qr-result-card');
+          var qrResultText  = document.getElementById('qr-result-text');
+          var qrResultType  = document.getElementById('qr-result-type');
+          var qrActionRow   = document.getElementById('qr-action-row');
+          var qrOpenBtn     = document.getElementById('qr-open-btn');
+          var qrCopyBtn     = document.getElementById('qr-copy-btn');
+          var qrFoundFlash  = document.getElementById('qr-found-flash');
+          var qrScanLine    = document.getElementById('qr-scan-line');
+          var qrHistSect    = document.getElementById('qr-history-section');
+          var qrHistList    = document.getElementById('qr-history-list');
+          var qrScanCountEl = document.getElementById('qr-scan-count');
+          var qrEngineBadge = document.getElementById('qr-engine-badge');
+          var qrToast       = document.getElementById('qr-toast');
+          var qrResultFmt   = document.getElementById('qr-result-format');
+          var qrCapNotice   = document.getElementById('qr-capability-notice');
+          var qrTorchBtn    = document.getElementById('qr-torch-btn');
+          var qrFileInput   = document.getElementById('qr-file-input');
+          var qrStartBtn    = document.getElementById('qr-start-btn');
+
+          // ─── State ──────────────────────────────────────────────────────
+          var qrScanning = false;
+          var qrScanCount = 0;
+          var qrHistoryItems = [];
+          var qrCooldown = false;
+          var qrUseNative = false;
+          var qrBarcodeDetector = null;
+          var qrNativeLoopActive = false;
+          var qrTorchOn = false;
+          var qrTorchSupported = false;
+
+          // ─── Engine detection ────────────────────────────────────────────
+          function qrDetectEngine() {
+            if ('BarcodeDetector' in window) {
+              BarcodeDetector.getSupportedFormats().then(function(fmts) {
+                if (fmts.indexOf('qr_code') !== -1) {
+                  qrUseNative = true;
+                  var desired = ['aztec','codabar','code_128','code_39','code_93','data_matrix','ean_13','ean_8','itf','pdf417','qr_code','upc_a','upc_e'];
+                  var supported = desired.filter(function(f) { return fmts.indexOf(f) !== -1; });
+                  qrBarcodeDetector = new BarcodeDetector({formats: supported});
+                  qrEngineBadge.textContent = 'NATIVE \\u00B7 QR+BARCODE';
+                  qrEngineBadge.classList.add('native');
+                } else {
+                  qrSetJsQREngine();
+                }
+              }).catch(function() { qrSetJsQREngine(); });
+            } else {
+              qrSetJsQREngine();
+            }
+          }
+
+          function qrSetJsQREngine() {
+            qrUseNative = false;
+            qrEngineBadge.textContent = 'JS \\u00B7 QR ONLY';
+            qrCapNotice.style.display = 'block';
+          }
+
+          qrDetectEngine();
+
+          // ─── Camera start ────────────────────────────────────────────────
+          async function qrStartCamera() {
+            try {
+              var stream;
+              try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                  video: { facingMode: {exact: 'environment'}, width: {ideal: 1280}, height: {ideal: 720} }
+                });
+              } catch(e) {
+                stream = await navigator.mediaDevices.getUserMedia({
+                  video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} }
+                });
+              }
+              qrVideo.srcObject = stream;
+              await new Promise(function(res) {
+                qrVideo.onloadedmetadata = function() { qrVideo.play().then(res).catch(res); };
+              });
+              document.getElementById('qr-start-screen').style.display = 'none';
+              qrSetStatus('active', 'Scanning' + (qrUseNative ? ' (native \\u00B7 all formats)' : ' (jsQR \\u00B7 QR only)') + '...');
+              qrScanning = true;
+              try {
+                var track = stream.getVideoTracks()[0];
+                var caps = track.getCapabilities ? track.getCapabilities() : {};
+                if (caps.torch) {
+                  qrTorchSupported = true;
+                  qrTorchBtn.style.display = 'flex';
+                }
+              } catch(e) {}
+              if (qrUseNative) {
+                qrStartNativeLoop();
+              } else {
+                requestAnimationFrame(qrJsQRTick);
+              }
+            } catch(e) {
+              qrSetStatus('error', 'Camera error: ' + e.message);
+              qrShowToast('Camera denied — use image upload below');
+            }
+          }
+
+          // ─── Native BarcodeDetector loop ─────────────────────────────────
+          function qrStartNativeLoop() {
+            if (qrNativeLoopActive) return;
+            qrNativeLoopActive = true;
+            qrNativeTick();
+          }
+
+          async function qrNativeTick() {
+            if (!qrScanning) { qrNativeLoopActive = false; return; }
+            if (!qrCooldown && qrVideo.readyState >= 2) {
+              try {
+                var barcodes = await qrBarcodeDetector.detect(qrVideo);
+                if (barcodes.length > 0 && barcodes[0].rawValue) {
+                  qrOnFound(barcodes[0].rawValue, barcodes[0].format);
+                }
+              } catch(e) {}
+            }
+            setTimeout(qrNativeTick, 200);
+          }
+
+          // ─── jsQR loop ───────────────────────────────────────────────────
+          function qrJsQRTick() {
+            if (!qrScanning) return;
+            if (!qrCooldown && qrVideo.readyState >= 2 && qrVideo.videoWidth > 0) {
+              qrProcCanvas.width  = qrVideo.videoWidth;
+              qrProcCanvas.height = qrVideo.videoHeight;
+              qrCtx.drawImage(qrVideo, 0, 0);
+              var imageData = qrCtx.getImageData(0, 0, qrProcCanvas.width, qrProcCanvas.height);
+              if (typeof jsQR !== 'undefined') {
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                  inversionAttempts: 'attemptBoth'
+                });
+                if (code && code.data) {
+                  qrOnFound(code.data);
+                }
+              }
+            }
+            requestAnimationFrame(qrJsQRTick);
+          }
+
+          // ─── Scan from image file ─────────────────────────────────────────
+          function qrScanFromFile(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            var img = new Image();
+            img.onload = async function() {
+              if (qrUseNative && qrBarcodeDetector) {
+                try {
+                  var barcodes = await qrBarcodeDetector.detect(img);
+                  if (barcodes.length > 0 && barcodes[0].rawValue) {
+                    qrOnFound(barcodes[0].rawValue, barcodes[0].format);
+                    event.target.value = '';
+                    return;
+                  }
+                } catch(e) {}
+              }
+              var c = document.createElement('canvas');
+              c.width = img.width; c.height = img.height;
+              var cx = c.getContext('2d');
+              cx.drawImage(img, 0, 0);
+              var id = cx.getImageData(0, 0, c.width, c.height);
+              if (typeof jsQR !== 'undefined') {
+                var code = jsQR(id.data, id.width, id.height, {inversionAttempts: 'attemptBoth'});
+                if (code && code.data) {
+                  qrOnFound(code.data);
+                } else {
+                  qrShowToast('No QR code or barcode found in image');
+                }
+              } else {
+                qrShowToast('QR scanning library not loaded');
+              }
+              event.target.value = '';
+            };
+            img.src = URL.createObjectURL(file);
+          }
+
+          // ─── On found ────────────────────────────────────────────────────
+          function qrOnFound(data, format) {
+            if (qrCooldown) return;
+            qrCooldown = true;
+            setTimeout(function() { qrCooldown = false; }, 2000);
+            qrFoundFlash.classList.remove('active');
+            void qrFoundFlash.offsetWidth;
+            qrFoundFlash.classList.add('active');
+            qrScanLine.classList.add('paused');
+            setTimeout(function() { qrScanLine.classList.remove('paused'); }, 500);
+            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            var type = qrClassify(data, format);
+            qrScanCount++;
+            qrScanCountEl.textContent = qrScanCount + ' scanned';
+            qrResultCard.classList.add('has-result');
+            qrResultText.classList.remove('empty');
+            qrResultText.textContent = data;
+            qrResultType.className = 'qr-result-type-badge ' + type.id;
+            qrResultType.textContent = type.label;
+            qrActionRow.style.display = 'flex';
+            if (format) {
+              qrResultFmt.textContent = qrFormatLabel(format);
+              qrResultFmt.style.display = 'inline';
+            } else {
+              qrResultFmt.textContent = 'QR CODE';
+              qrResultFmt.style.display = 'inline';
+            }
+            qrOpenBtn.textContent =
+              type.id === 'url'   ? '\\u2197 Open URL' :
+              type.id === 'email' ? '\\u2709 Email'    :
+              type.id === 'phone' ? '\\uD83D\\uDCDE Call'  :
+              type.id === 'sms'   ? '\\uD83D\\uDCAC SMS'   :
+              type.id === 'wifi'  ? '\\uD83D\\uDCCB Details' : '\\u2315 Copy';
+            qrSetStatus('found', 'Found \\u2714 ' + (format ? qrFormatLabel(format) : 'QR') + ' \\u00B7 ' + type.label);
+            setTimeout(function() {
+              qrSetStatus('active', 'Scanning' + (qrUseNative ? ' (native \\u00B7 all formats)' : ' (jsQR \\u00B7 QR only)') + '...');
+            }, 1800);
+            qrAddToHistory(data, type, format);
+          }
+
+          // ─── Classify ────────────────────────────────────────────────────
+          function qrClassify(data, format) {
+            if (/^https?:\\/\\//i.test(data))  return {id:'url',   label:'URL'};
+            if (/^mailto:/i.test(data))       return {id:'email', label:'EMAIL'};
+            if (/^tel:/i.test(data))          return {id:'phone', label:'PHONE'};
+            if (/^smsto?:/i.test(data))       return {id:'sms',   label:'SMS'};
+            if (/^WIFI:/i.test(data))         return {id:'wifi',  label:'WIFI'};
+            if (format && format !== 'qr_code') {
+              if (/^[0-9]{12,13}$/.test(data)) return {id:'text', label:'PRODUCT'};
+              if (/^[0-9]{8}$/.test(data))     return {id:'text', label:'PRODUCT'};
+              if (/^[0-9]+$/.test(data))       return {id:'text', label:'NUMERIC'};
+              return {id:'text', label:'BARCODE'};
+            }
+            return {id:'text', label:'TEXT'};
+          }
+
+          // ─── Format label ────────────────────────────────────────────────
+          function qrFormatLabel(fmt) {
+            var labels = {
+              'aztec':'AZTEC','codabar':'CODABAR','code_128':'CODE 128',
+              'code_39':'CODE 39','code_93':'CODE 93','data_matrix':'DATA MATRIX',
+              'ean_13':'EAN-13','ean_8':'EAN-8','itf':'ITF','pdf417':'PDF417',
+              'qr_code':'QR CODE','upc_a':'UPC-A','upc_e':'UPC-E'
+            };
+            return labels[fmt] || fmt.toUpperCase().replace(/_/g, ' ');
+          }
+
+          // ─── Torch toggle ────────────────────────────────────────────────
+          function qrToggleTorch() {
+            if (!qrTorchSupported || !qrVideo.srcObject) return;
+            var track = qrVideo.srcObject.getVideoTracks()[0];
+            if (!track) return;
+            qrTorchOn = !qrTorchOn;
+            track.applyConstraints({ advanced: [{ torch: qrTorchOn }] })
+              .then(function() {
+                qrTorchBtn.classList.toggle('on', qrTorchOn);
+                qrShowToast(qrTorchOn ? 'Light on' : 'Light off');
+              })
+              .catch(function() {
+                qrTorchOn = false;
+                qrTorchBtn.classList.remove('on');
+                qrShowToast('Torch not available');
+              });
+          }
+
+          // ─── Helpers ─────────────────────────────────────────────────────
+          function qrSetStatus(state, msg) {
+            qrStatusDot.className = 'qr-status-dot ' + state;
+            qrStatusText.textContent = msg;
+          }
+
+          function qrCopyResult() {
+            var text = qrResultText.textContent;
+            if (!text || qrResultText.classList.contains('empty')) return;
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(text).then(function() { qrShowToast('Copied!'); }).catch(function() { qrFallbackCopy(text); });
+            } else { qrFallbackCopy(text); }
+          }
+
+          function qrFallbackCopy(text) {
+            var el = document.createElement('textarea');
+            el.value = text; document.body.appendChild(el); el.select();
+            document.execCommand('copy'); document.body.removeChild(el);
+            qrShowToast('Copied!');
+          }
+
+          function qrOpenResult() {
+            var text = qrResultText.textContent;
+            if (!text || qrResultText.classList.contains('empty')) return;
+            var type = qrClassify(text);
+            if (['url','email','phone','sms'].indexOf(type.id) !== -1) window.open(text, '_blank');
+            else qrCopyResult();
+          }
+
+          function qrAddToHistory(data, type, format) {
+            var icons = {url:'\\uD83D\\uDD17',email:'\\u2709\\uFE0F',phone:'\\uD83D\\uDCDE',sms:'\\uD83D\\uDCAC',wifi:'\\uD83D\\uDCF6',text:'\\uD83D\\uDCC4'};
+            qrHistoryItems.unshift({data:data, type:type, format:format, time:new Date()});
+            if (qrHistoryItems.length > 10) qrHistoryItems.pop();
+            qrHistSect.style.display = 'flex';
+            qrHistList.innerHTML = '';
+            qrHistoryItems.forEach(function(item) {
+              var el = document.createElement('div');
+              el.className = 'qr-history-item';
+              var ts = item.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+              var fmtStr = item.format ? ' \\u00B7 ' + qrFormatLabel(item.format) : '';
+              el.innerHTML =
+                '<div class="qr-history-icon">' + (icons[item.type.id]||'\\uD83D\\uDCC4') + '</div>' +
+                '<div class="qr-history-content">' +
+                  '<div class="qr-history-text">' + qrEscHtml(item.data) + '</div>' +
+                  '<div class="qr-history-time">' + item.type.label + fmtStr + ' \\u00B7 ' + ts + '</div>' +
+                '</div>';
+              el.onclick = function() {
+                qrResultText.textContent = item.data;
+                qrResultText.classList.remove('empty');
+                qrResultType.className = 'qr-result-type-badge ' + item.type.id;
+                qrResultType.textContent = item.type.label;
+                if (item.format) {
+                  qrResultFmt.textContent = qrFormatLabel(item.format);
+                  qrResultFmt.style.display = 'inline';
+                } else {
+                  qrResultFmt.textContent = 'QR CODE';
+                  qrResultFmt.style.display = 'inline';
+                }
+                qrResultCard.classList.add('has-result');
+                qrActionRow.style.display = 'flex';
+                window.scrollTo({top:0, behavior:'smooth'});
+              };
+              qrHistList.appendChild(el);
+            });
+          }
+
+          function qrEscHtml(str) {
+            return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+          }
+
+          function qrShowToast(msg) {
+            qrToast.textContent = msg;
+            qrToast.classList.add('show');
+            setTimeout(function() { qrToast.classList.remove('show'); }, 2000);
+          }
+
+          // ─── Event bindings ──────────────────────────────────────────────
+          qrStartBtn.addEventListener('click', qrStartCamera);
+          qrTorchBtn.addEventListener('click', qrToggleTorch);
+          qrCopyBtn.addEventListener('click', qrCopyResult);
+          qrOpenBtn.addEventListener('click', qrOpenResult);
+          qrFileInput.addEventListener('change', qrScanFromFile);
+        })();
         // PROJECT END
       </script>
     </body>

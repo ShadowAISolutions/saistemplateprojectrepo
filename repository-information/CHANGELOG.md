@@ -3,7 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v09.68r] — 2026-04-07 05:24:49 PM EST
+
+> **Prompt:** "properly put the qr-scanner6 into the inventory gas"
+
+### Added
+- Integrated QR & Barcode scanner into the Inventory Management GAS app — camera-based scanning with native BarcodeDetector and jsQR fallback, image upload scanning, torch toggle, scan history, and type classification (URL, email, phone, SMS, WiFi, text, product, barcode)
+
+#### `inventorymanagement.gs` — v01.03g
+
+##### Added
+- Built-in QR code and barcode scanner with camera support
+- Image upload scanning from gallery
+- Flashlight toggle for low-light scanning
+- Scan history with up to 10 recent scans
+- Auto-detection of scan type (URL, email, phone, WiFi, product code)
 
 ## [v09.67r] — 2026-04-07 05:02:49 PM EST
 
