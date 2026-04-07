@@ -3,7 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v09.69r] — 2026-04-07 05:58:59 PM EST
+
+> **Prompt:** "properly put the qr-scanner6 into the inventory gas" → "getting camera error" → plan mode: minimal HTML layer via listener iframe bridge
+
+### Added
+- QR/barcode scanner architecture using listener iframe bridge pattern — camera runs on HTML layer (bare minimum: video, canvas, detection loop), scan results sent to GAS via `action=scanListener` postMessage bridge, result UI and history rendered on GAS layer
+- `processBarcodeScan()` server-side function in inventory management GAS (placeholder — returns scanned data, future: Sheets lookup)
+- `action=scanListener` handler in GAS `doGet()` — lightweight listener page following the established heartbeat/signout pattern
+- SCAN toggle button on HTML layer for opening/closing camera overlay
+- CSP updates for `media-src` (camera streams) and `script-src` (jsQR CDN)
+
+### Changed
+- Moved scanner from GAS iframe (where camera was blocked by sandbox) to split architecture: camera bridge on HTML layer, result display on GAS layer
+
+#### `inventorymanagement.html` — v01.01w
+
+##### Added
+- Camera scanner overlay with QR/barcode detection
+
+#### `inventorymanagement.gs` — v01.04g
+
+##### Added
+- Scan result display panel with history
+- Barcode scan processing endpoint
+
+##### Changed
+- Removed non-functional camera code from GAS iframe (sandbox blocks getUserMedia)
 
 ## [v09.68r] — 2026-04-07 05:24:49 PM EST
 

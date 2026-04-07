@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="no-referrer">
   <!-- CSP: CURRENT (unsafe-inline) — Remove this tag when enabling hash-based CSP below -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <!-- CSP: HARDENED (hash-based) — Phase 8: Uncomment this tag and replace HASH_HERE after running: bash scripts/compute-csp-hash.sh
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.00w">
+  <meta name="build-version" content="v01.01w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -334,6 +334,21 @@
 /* PROJECT START */
 /* ══════════════ */
     .html-layer-hidden { display: none !important; }
+    /* ── QR Camera Bridge (minimal — camera must run on HTML layer) ── */
+    #qr-camera-overlay { position: fixed; inset: 0; z-index: 2; background: #0a0a0f; display: none; flex-direction: column; align-items: center; }
+    #qr-camera-overlay .qr-viewport { position: relative; width: 100%; max-width: 480px; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; margin: 18px 16px; border: 1px solid #1e1e2e; }
+    #qr-camera-overlay video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #qr-camera-overlay canvas { display: none; }
+    #qr-camera-overlay .qr-scan-line { position: absolute; left: 14px; right: 14px; height: 2px; background: linear-gradient(90deg, transparent, rgba(0,255,204,0.7), transparent); top: 14px; z-index: 9; animation: qrScanAnim 2s ease-in-out infinite; box-shadow: 0 0 8px #00ffcc; }
+    @keyframes qrScanAnim { 0%{top:14px;opacity:1} 48%{top:calc(100% - 18px);opacity:1} 50%{top:calc(100% - 18px);opacity:0} 52%{top:14px;opacity:0} 54%{opacity:1} 100%{top:calc(100% - 18px);opacity:1} }
+    #qr-camera-overlay .qr-status { font: 12px/1 monospace; color: #555; padding: 8px 16px; display: flex; align-items: center; gap: 8px; width: 100%; max-width: 480px; }
+    #qr-camera-overlay .qr-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; }
+    #qr-camera-overlay .qr-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; }
+    #qr-camera-overlay .qr-dot.error { background: #ff4466; }
+    #qr-camera-overlay .qr-start-overlay { position: absolute; inset: 0; background: rgba(10,10,15,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 20; }
+    #qr-camera-overlay .qr-start-overlay p { font: 13px/1.5 sans-serif; color: #555; text-align: center; padding: 0 20px; }
+    #qr-camera-overlay .qr-start-btn { padding: 11px 26px; border-radius: 10px; background: #00ffcc; color: #0a0a0f; border: none; font: bold 13px/1 monospace; cursor: pointer; }
+    #qr-camera-overlay .qr-close-btn { position: absolute; top: 12px; right: 16px; z-index: 25; background: rgba(255,255,255,0.1); border: 1px solid #333; color: #ccc; font: 18px/1 monospace; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -467,7 +482,22 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- YOUR PAGE CONTENT HERE -->
+  <!-- QR Camera Bridge — minimal camera overlay (camera must run on HTML layer) -->
+  <div id="qr-camera-overlay">
+    <button class="qr-close-btn" id="qr-close-btn">&times;</button>
+    <div class="qr-viewport">
+      <video id="qr-video" autoplay playsinline muted></video>
+      <canvas id="qr-proc-canvas"></canvas>
+      <div class="qr-scan-line" id="qr-scan-line"></div>
+      <div class="qr-start-overlay" id="qr-start-screen">
+        <p>Tap below to start scanning</p>
+        <button class="qr-start-btn" id="qr-start-btn">START CAMERA</button>
+      </div>
+    </div>
+    <div class="qr-status"><div class="qr-dot" id="qr-dot"></div><span id="qr-status-text">Camera inactive</span></div>
+  </div>
+  <button id="qr-scan-toggle" style="display:none;position:fixed;bottom:7px;left:200px;z-index:10005;background:rgba(0,0,0,0.55);color:#00ffcc;border:1px solid rgba(0,255,204,0.3);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">SCAN</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -3796,10 +3826,179 @@
 // ══════════════
 
 // ══════════════
-// PROJECT START — Add your project-specific JavaScript here
+// PROJECT START — QR Camera Bridge (minimal — camera must run on HTML layer)
 // ══════════════
+(function() {
+  var _qrOverlay = document.getElementById('qr-camera-overlay');
+  var _qrVideo = document.getElementById('qr-video');
+  var _qrCanvas = document.getElementById('qr-proc-canvas');
+  var _qrCtx = _qrCanvas.getContext('2d', {willReadFrequently: true});
+  var _qrDot = document.getElementById('qr-dot');
+  var _qrStatusText = document.getElementById('qr-status-text');
+  var _qrStartScreen = document.getElementById('qr-start-screen');
+  var _qrToggleBtn = document.getElementById('qr-scan-toggle');
+  var _qrScanning = false, _qrCooldown = false;
+  var _qrUseNative = false, _qrDetector = null, _qrNativeActive = false;
+  var _scanListenerSource = null;
 
+  // Show SCAN button after auth (when GAS iframe loads)
+  var _origShowGas = window._showGasToggle;
+  window._showGasToggle = function() {
+    if (_origShowGas) _origShowGas();
+    if (_qrToggleBtn) _qrToggleBtn.style.display = '';
+  };
 
+  // Toggle scanner overlay
+  _qrToggleBtn.onclick = function() {
+    if (_qrOverlay.style.display === 'flex') {
+      _qrOverlay.style.display = 'none';
+      _stopCamera();
+    } else {
+      _qrOverlay.style.display = 'flex';
+    }
+  };
+  document.getElementById('qr-close-btn').onclick = function() {
+    _qrOverlay.style.display = 'none';
+    _stopCamera();
+  };
+
+  function _stopCamera() {
+    _qrScanning = false;
+    if (_qrVideo.srcObject) {
+      _qrVideo.srcObject.getTracks().forEach(function(t) { t.stop(); });
+      _qrVideo.srcObject = null;
+    }
+    _qrStartScreen.style.display = 'flex';
+    _qrDot.className = 'qr-dot';
+    _qrStatusText.textContent = 'Camera inactive';
+  }
+
+  // Engine detection
+  if ('BarcodeDetector' in window) {
+    BarcodeDetector.getSupportedFormats().then(function(fmts) {
+      if (fmts.indexOf('qr_code') !== -1) {
+        _qrUseNative = true;
+        var desired = ['aztec','codabar','code_128','code_39','code_93','data_matrix','ean_13','ean_8','itf','pdf417','qr_code','upc_a','upc_e'];
+        _qrDetector = new BarcodeDetector({formats: desired.filter(function(f) { return fmts.indexOf(f) !== -1; })});
+      }
+    }).catch(function() {});
+  }
+
+  // Start camera
+  document.getElementById('qr-start-btn').onclick = async function() {
+    try {
+      var stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: {exact:'environment'}, width:{ideal:1280}, height:{ideal:720} } });
+      } catch(e) {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} } });
+      }
+      _qrVideo.srcObject = stream;
+      await new Promise(function(r) { _qrVideo.onloadedmetadata = function() { _qrVideo.play().then(r).catch(r); }; });
+      _qrStartScreen.style.display = 'none';
+      _qrScanning = true;
+      _qrDot.className = 'qr-dot active';
+      _qrStatusText.textContent = 'Scanning' + (_qrUseNative ? ' (native)' : ' (jsQR)') + '...';
+      if (_qrUseNative) { _qrNativeActive = true; _nativeTick(); }
+      else { requestAnimationFrame(_jsQRTick); }
+    } catch(e) {
+      _qrDot.className = 'qr-dot error';
+      _qrStatusText.textContent = 'Camera error: ' + e.message;
+    }
+  };
+
+  // Native detection loop
+  async function _nativeTick() {
+    if (!_qrScanning) { _qrNativeActive = false; return; }
+    if (!_qrCooldown && _qrVideo.readyState >= 2) {
+      try {
+        var codes = await _qrDetector.detect(_qrVideo);
+        if (codes.length > 0 && codes[0].rawValue) _onDetected(codes[0].rawValue, codes[0].format);
+      } catch(e) {}
+    }
+    setTimeout(_nativeTick, 200);
+  }
+
+  // jsQR fallback loop
+  function _jsQRTick() {
+    if (!_qrScanning) return;
+    if (!_qrCooldown && _qrVideo.readyState >= 2 && _qrVideo.videoWidth > 0) {
+      _qrCanvas.width = _qrVideo.videoWidth;
+      _qrCanvas.height = _qrVideo.videoHeight;
+      _qrCtx.drawImage(_qrVideo, 0, 0);
+      var imgData = _qrCtx.getImageData(0, 0, _qrCanvas.width, _qrCanvas.height);
+      if (typeof jsQR !== 'undefined') {
+        var code = jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'attemptBoth'});
+        if (code && code.data) _onDetected(code.data, 'qr_code');
+      }
+    }
+    requestAnimationFrame(_jsQRTick);
+  }
+
+  // When a barcode/QR is detected — send to GAS via listener iframe
+  function _onDetected(value, format) {
+    if (_qrCooldown) return;
+    _qrCooldown = true;
+    setTimeout(function() { _qrCooldown = false; }, 2000);
+    if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+    _qrDot.className = 'qr-dot active';
+    _qrStatusText.textContent = 'Found: ' + (format || 'QR').toUpperCase().replace(/_/g,' ');
+    setTimeout(function() {
+      _qrDot.className = 'qr-dot active';
+      _qrStatusText.textContent = 'Scanning' + (_qrUseNative ? ' (native)' : ' (jsQR)') + '...';
+    }, 1800);
+
+    // Send to scan listener iframe (if ready) and to the GAS main iframe
+    if (_scanListenerSource) {
+      _scanListenerSource.postMessage({ type: 'barcode-scan', value: value, format: format || 'qr_code' }, '*');
+    }
+    // Also notify main GAS iframe directly for result UI
+    var gasFrame = document.getElementById('gas-app');
+    if (gasFrame && gasFrame.contentWindow) {
+      // Use the known pattern: post to the GAS iframe's content window
+      // The GAS sandbox listens for 'barcode-detected' via its PROJECT JS
+    }
+    // Broadcast to any listening GAS frames via window.postMessage
+    // The GAS iframe's PROJECT JS listens on window.addEventListener('message')
+    // but since we can't reliably postMessage INTO GAS, we use the scanListener iframe bridge
+  }
+
+  // Listen for scan listener iframe readiness and results
+  window.addEventListener('message', function(evt) {
+    if (!evt.data) return;
+    if (evt.data.type === 'gas-scan-listener-ready') {
+      _scanListenerSource = evt.source;
+    }
+    if (evt.data.type === 'gas-scan-result') {
+      // Future: handle processed inventory data from GAS server
+    }
+    if (evt.data.type === 'gas-scan-error') {
+      console.error('Scan processing error:', evt.data.error);
+    }
+  });
+
+  // Create the scan listener iframe using the GAS base URL from gasApp.dataset.baseUrl
+  function _createScanListener() {
+    var gasApp = document.getElementById('gas-app');
+    var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
+    if (!baseUrl || document.getElementById('gas-scan-listener')) return;
+    var sf = document.createElement('iframe');
+    sf.id = 'gas-scan-listener';
+    sf.style.cssText = 'display:none;width:0;height:0;border:0';
+    sf.src = baseUrl + '?action=scanListener';
+    document.body.appendChild(sf);
+  }
+
+  // Poll for gasApp readiness — it's created dynamically by the template JS
+  var _slInterval = setInterval(function() {
+    var gasApp = document.getElementById('gas-app');
+    if (gasApp && gasApp.dataset.baseUrl) {
+      clearInterval(_slInterval);
+      _createScanListener();
+    }
+  }, 500);
+})();
+// ══════════════
 // PROJECT END
 // ══════════════
   </script>
