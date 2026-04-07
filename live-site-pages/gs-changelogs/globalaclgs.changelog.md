@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [globalaclgs.changelog-archive.md](globalaclgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
+
+## [v01.54g] — 2026-04-07 03:20:19 PM EST — v09.66r
+
+### Fixed
+- Admin session management now works for newly added projects without manual secret setup
 
 ## [v01.53g] — 2026-04-07 03:07:14 PM EST — v09.65r
 

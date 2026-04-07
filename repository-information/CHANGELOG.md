@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v09.66r] — 2026-04-07 03:20:19 PM EST
+
+> **Prompt:** "im signing into the global acl manager but its not auto propagating figure out why and make it happen moving forward"
+
+### Fixed
+- Fixed cross-project admin secret not distributing to newly registered projects — `ensureCrossProjectSecret()` in GlobalACL now detects when the registered auth-project count changes (via cache comparison) and re-distributes the existing secret to all projects, so new projects automatically receive it on the next GlobalACL page load
+
+#### `globalacl.gs` — v01.54g
+
+##### Fixed
+- Admin session management now works for newly added projects without manual secret setup
 
 ## [v09.65r] — 2026-04-07 03:07:14 PM EST
 

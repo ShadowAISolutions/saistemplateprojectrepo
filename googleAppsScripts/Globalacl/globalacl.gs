@@ -1,4 +1,4 @@
-var VERSION = "v01.53g";
+var VERSION = "v01.54g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -485,16 +485,31 @@ function ensureCrossProjectSecret() {
   try {
     var props = PropertiesService.getScriptProperties();
     var existing = props.getProperty('CROSS_PROJECT_ADMIN_SECRET');
-    if (existing) return;
-    // Generate a random 64-character secret
-    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var secret = '';
-    for (var j = 0; j < 64; j++) {
-      secret += chars.charAt(Math.floor(Math.random() * chars.length));
+    if (!existing) {
+      // First time — generate a random 64-character secret
+      var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      var secret = '';
+      for (var j = 0; j < 64; j++) {
+        secret += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      props.setProperty('CROSS_PROJECT_ADMIN_SECRET', secret);
+      distributeSecret_(secret, '');
+      return;
     }
-    props.setProperty('CROSS_PROJECT_ADMIN_SECRET', secret);
-    // Push to all registered projects
-    distributeSecret_(secret, '');
+    // Secret exists — check if new projects need it.
+    // Compare current registered auth-project count against cached count.
+    // If count changed, a new project registered and needs the secret.
+    var cache = getEpochCache();
+    var cachedCount = cache.get('cross_project_dist_count') || '0';
+    var projects = getRegisteredProjects();
+    var authCount = 0;
+    for (var i = 0; i < projects.length; i++) {
+      if (!projects[i].isSelf && projects[i].authEnabled) authCount++;
+    }
+    if (String(authCount) !== cachedCount) {
+      distributeSecret_(existing, existing);
+      cache.put('cross_project_dist_count', String(authCount), 21600);
+    }
   } catch (e) {
     Logger.log('ensureCrossProjectSecret error: ' + e.message);
   }
