@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
 
 ## [Unreleased]
+
+## [v01.55w] — 2026-04-07 10:01:45 AM EST — v09.50r
+
+### Changed
+- Allowed Domains now prefills with "All" meaning any Google account can sign in
 
 ## [v01.54w] — 2026-04-07 09:55:58 AM EST — v09.49r
 

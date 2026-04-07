@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v09.50r] — 2026-04-07 10:01:45 AM EST
+
+> **Prompt:** "the Allowed Domains should be prefilled to say "All" , and that should be equivalent to any google account can sign in."
+
+### Changed
+- Allowed Domains field in gas-project-creator now prefills with "All" — treated as no domain restriction (any Google account can sign in)
+- `copyGsCode()` and `copyConfig()` skip domain restriction when value is "All"
+
+#### `gas-project-creator.html` — v01.55w
+
+##### Changed
+- Allowed Domains now prefills with "All" meaning any Google account can sign in
 
 ## [v09.49r] — 2026-04-07 09:55:58 AM EST
 

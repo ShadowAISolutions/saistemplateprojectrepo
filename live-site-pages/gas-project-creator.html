@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.54w">
+  <meta name="build-version" content="v01.55w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -662,9 +662,9 @@
                 <span class="field-hint">Controls session duration, security features, and token exchange method. See 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md for details</span>
               </div>
               <div class="step-input" style="margin:0;">
-                <label for="cfg-allowed-domains">Allowed Domains <em>(optional &mdash; if blank, all Google accounts allowed)</em></label>
-                <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
-                <span class="field-hint">Comma-separated list of allowed email domains. If blank, any Google account can sign in. Required for HIPAA preset</span>
+                <label for="cfg-allowed-domains">Allowed Domains <em>(optional &mdash; &ldquo;All&rdquo; = any Google account)</em></label>
+                <div class="input-row"><input type="text" id="cfg-allowed-domains" placeholder="yourdomain.com, otherdomain.org" value="All"><button class="field-clear" onclick="clearField('cfg-allowed-domains')" title="Clear">&times;</button></div>
+                <span class="field-hint">&ldquo;All&rdquo; allows any Google account. Enter comma-separated domains to restrict (e.g. yourdomain.com, otherdomain.org)</span>
               </div>
             </div>
           </div>
@@ -1384,7 +1384,7 @@
           var preset = (document.getElementById('cfg-auth-preset') || {}).value || 'standard';
           code = code.replace(/var ACTIVE_PRESET\s*=\s*'[^']*'/, "var ACTIVE_PRESET = '" + preset + "'");
           var domains = (document.getElementById('cfg-allowed-domains') || {}).value || '';
-          if (domains.trim()) {
+          if (domains.trim() && domains.trim().toLowerCase() !== 'all') {
             var domainList = domains.split(',').map(function(d) { return "'" + d.trim() + "'"; }).join(', ');
             code = code.replace(/ALLOWED_DOMAINS:\s*\[\]/g, 'ALLOWED_DOMAINS: [' + domainList + ']');
             // Also enable domain restriction in all presets
@@ -1767,6 +1767,7 @@
         var clientId = document.getElementById('cfg-client-id').value.trim() || 'YOUR_CLIENT_ID';
         var authPreset = document.getElementById('cfg-auth-preset').value || 'standard';
         var allowedDomains = document.getElementById('cfg-allowed-domains').value.trim() || '';
+        if (allowedDomains.toLowerCase() === 'all') allowedDomains = '';
         json += ',\n  "CLIENT_ID": "' + clientId + '"'
           + ',\n  "AUTH_PRESET": "' + authPreset + '"';
         if (allowedDomains) {
