@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.60w">
+  <meta name="build-version" content="v01.61w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1616,12 +1616,14 @@
       // Project config fields depend on Environment Name
       var projectDisabled = !hasEnvName || !hasDeployId;
       var projectReason = !hasDeployId ? '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500' : '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
-      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-acl-sheet-name', 'cfg-acl-page-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
+      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], projectDisabled, projectReason);
       // Re-read after restore
       var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
-      // Sheet Tab Name also depends on Spreadsheet ID
-      if (!projectDisabled && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
+      // Fields that depend on Spreadsheet ID
+      var sheetReason = '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500';
+      var sheetDepFields = ['cfg-sheet-name', 'cfg-acl-sheet-name', 'cfg-acl-page-name'];
+      for (var s = 0; s < sheetDepFields.length; s++) setFieldDisabled(sheetDepFields[s], projectDisabled || !hasSpreadsheet, projectDisabled ? projectReason : sheetReason);
       // Master ACL toggle and section depend on Spreadsheet ID
       var masterAclCheckbox = document.getElementById('chk-is-master-acl');
       var masterAclSection = document.getElementById('master-acl-section');
@@ -1630,9 +1632,9 @@
         masterAclCheckbox.disabled = projectDisabled || !hasSpreadsheet;
         masterAclCheckbox.parentElement.style.opacity = (!projectDisabled && hasSpreadsheet) ? '1' : '0.5';
       }
-      // Master ACL ID field: disabled when project disabled, otherwise managed by toggleMasterAcl
+      // Master ACL ID field: disabled when no Spreadsheet ID, otherwise managed by toggleMasterAcl
       if (projectDisabled || !hasSpreadsheet) {
-        setFieldDisabled('cfg-master-acl-id', true, projectReason);
+        setFieldDisabled('cfg-master-acl-id', true, projectDisabled ? projectReason : sheetReason);
       } else {
         // Re-apply toggle state (checked = readOnly with auto-fill, unchecked = editable)
         toggleMasterAcl();

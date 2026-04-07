@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [v09.56r] — 2026-04-07 10:51:44 AM EST
+
+> **Prompt:** "the allowed domains should also default to all if blank. the acl sheet name and acl column name fields should be disabled if there is no spreadsheet id, same for the master acl spreadsheet id, it shouldnt refer to the entering environment name first"
+
+### Fixed
+- ACL Sheet Name, ACL Column Name, and Master ACL Spreadsheet ID now show "Enter Spreadsheet ID first" when Spreadsheet ID is empty (was incorrectly showing "Enter Environment Name first")
+- Moved ACL fields out of the generic project fields group into a Spreadsheet ID-dependent group
+- Blank Allowed Domains already treated as "All" (no domain restriction) — both blank and "All" skip domain restriction in copyGsCode and copyConfig
+
+#### `gas-project-creator.html` — v01.61w
+
+##### Fixed
+- ACL and Master ACL fields now correctly reference Spreadsheet ID as their dependency
 
 ## [v09.55r] — 2026-04-07 10:45:04 AM EST
 

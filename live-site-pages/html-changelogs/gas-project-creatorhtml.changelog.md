@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.61w] — 2026-04-07 10:51:44 AM EST — v09.56r
+
+### Fixed
+- ACL and Master ACL fields now correctly reference Spreadsheet ID as their dependency
 
 ## [v01.60w] — 2026-04-07 10:45:04 AM EST — v09.55r
 
