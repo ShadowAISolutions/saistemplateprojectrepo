@@ -47,6 +47,7 @@ graph TB
             GLOBALACL_PAGE["[template] globalacl.html\n(Global ACL)"]
             PROGRAMPORTAL_PAGE["[template] programportal.html\n(Program Portal)"]
             TEXTCOMPARE_PAGE["[template] text-compare.html\n(Text Compare Tool)"]
+            INVENTORYMANAGEMENT_PAGE["[template] inventorymanagement.html\n(Inventory Management)"]
         end
 
         subgraph "Google Apps Scripts [template]"
@@ -93,6 +94,7 @@ graph TB
             CSP_HASH["[template] scripts/compute-csp-hash.sh\n(CSP SHA-256 hash computation)"]
             GAS_GLOBALACL["[template] globalacl.gs"]
             GAS_PROGRAMPORTAL["[template] programportal.gs"]
+            GAS_INVENTORYMANAGEMENT["[template] inventorymanagement.gs"]
             INIT_SCRIPT -.->|"auto-detects org/repo\nreplaces 22 files"| CLAUDE_MD
         end
     end
@@ -100,18 +102,22 @@ graph TB
     TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTH1_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| GLOBALACL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| PROGRAMPORTAL_PAGE
+    TPL_AUTH -.->|"copy to create\nnew auth pages"| INVENTORYMANAGEMENT_PAGE
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_GLOBALACL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_PROGRAMPORTAL
+    GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INVENTORYMANAGEMENT
     TESTAUTH1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTH1
     LIVE -.->|"serves"| GASTPL_PAGE
     LIVE -.->|"serves"| TESTAUTH1_PAGE
     LIVE -.->|"serves"| GLOBALACL_PAGE
     LIVE -.->|"serves"| PROGRAMPORTAL_PAGE
     LIVE -.->|"serves"| TEXTCOMPARE_PAGE
+    LIVE -.->|"serves"| INVENTORYMANAGEMENT_PAGE
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
     GAS_DEPLOY -.->|"triggers self-update"| GAS_GLOBALACL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_PROGRAMPORTAL
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_INVENTORYMANAGEMENT
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| GASTPL_PAGE
@@ -119,6 +125,7 @@ graph TB
     HTML_VERS -.->|"version polling"| GLOBALACL_PAGE
     HTML_VERS -.->|"version polling"| PROGRAMPORTAL_PAGE
     HTML_VERS -.->|"version polling"| TEXTCOMPARE_PAGE
+    HTML_VERS -.->|"version polling"| INVENTORYMANAGEMENT_PAGE
     TPL_NOAUTH -.->|"copy to create\nnew noauth pages"| TEXTCOMPARE_PAGE
 
     style DEV fill:#4a90d9,color:#fff
@@ -332,6 +339,7 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
 | Global ACL | [`repository-information/diagrams/globalacl-diagram.md`](diagrams/globalacl-diagram.md) |
 | Program Portal | [`repository-information/diagrams/programportal-diagram.md`](diagrams/programportal-diagram.md) |
+| Inventory Management | [`repository-information/diagrams/inventorymanagement-diagram.md`](diagrams/inventorymanagement-diagram.md) |
 
 ## 4. Git Graph — Branching Strategy
 
@@ -524,6 +532,7 @@ classDiagram
     HTMLPage "1" --> "0..1" GASScript : embeds via iframe
     GLOBALACL_PAGE -.->|"embeds via iframe"| GAS_GLOBALACL
     PROGRAMPORTAL_PAGE -.->|"embeds via iframe"| GAS_PROGRAMPORTAL
+    INVENTORYMANAGEMENT_PAGE -.->|"embeds via iframe"| GAS_INVENTORYMANAGEMENT
     HTMLPage "1" --> "1" Changelog : html changelog
     HTMLPage "1" --> "1" EnvironmentDiagram : internals documented in
     GASScript "1" --> "1" VersionFile : gs.version.txt

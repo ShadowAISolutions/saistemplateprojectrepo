@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-07 11:22:39 AM EST` · Repo version: `v09.63r`
+Last updated: `2026-04-07 02:51:01 PM EST` · Repo version: `v09.64r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -59,6 +59,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner6.html">qr-scanner6.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner6.html">🌐</a>  — [template] QR &amp; barcode scanner (native multi-format + jsQR fallback)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/text-compare.html">text-compare.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/text-compare.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/text-comparehtml.changelog.md">v01.10w</a> · vNoGASg | [template] Text comparison tool with side-by-side diff highlighting
 │   │
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/inventorymanagement.html">inventorymanagement.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Inventorymanagement/inventorymanagement.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md">v01.00w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/inventorymanagementgs.changelog.md">v01.00g</a> | [template] Inventory Management page
+│   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>
 │   │
@@ -73,11 +75,13 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/gas-project-creatorhtml.version.txt">gas-project-creatorhtml.version.txt</a> — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/testauth1html.version.txt">testauth1html.version.txt</a>          — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/globalaclhtml.version.txt">globalaclhtml.version.txt</a>          — [template]
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/programportalhtml.version.txt">programportalhtml.version.txt</a>          — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/programportalhtml.version.txt">programportalhtml.version.txt</a>          — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-versions/inventorymanagementhtml.version.txt">inventorymanagementhtml.version.txt</a>          — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-versions">gs-versions/</a>             — [template] GAS version files for GAS version pill polling
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/testauth1gs.version.txt">testauth1gs.version.txt</a>            — [template]
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/globalaclgs.version.txt">globalaclgs.version.txt</a>            — [template]
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/programportalgs.version.txt">programportalgs.version.txt</a>            — [template]
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/programportalgs.version.txt">programportalgs.version.txt</a>            — [template]
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-versions/inventorymanagementgs.version.txt">inventorymanagementgs.version.txt</a>            — [template]
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/ahk-versions">ahk-versions/</a>            — [template] AHK version files for auto-update polling
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-versions/autoupdateahk.version.txt">autoupdateahk.version.txt</a>                      — [template] Version for AutoUpdate.ahk
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/ahk-versions/combined-inventory-and-interceptahk.version.txt">combined-inventory-and-interceptahk.version.txt</a> — [template] Version for inventory app
@@ -94,14 +98,18 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/globalaclhtml.changelog.md">globalaclhtml.changelog.md</a>             — [template] Globalacl page changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/globalaclhtml.changelog-archive.md">globalaclhtml.changelog-archive.md</a>     — [template] Older sections (rotated)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/programportalhtml.changelog.md">programportalhtml.changelog.md</a>             — [template] Programportal page changelog
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/programportalhtml.changelog-archive.md">programportalhtml.changelog-archive.md</a>     — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/programportalhtml.changelog-archive.md">programportalhtml.changelog-archive.md</a>     — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md">inventorymanagementhtml.changelog.md</a>             — [template] Inventorymanagement page changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/inventorymanagementhtml.changelog-archive.md">inventorymanagementhtml.changelog-archive.md</a>     — [template] Older sections (rotated)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/gs-changelogs">gs-changelogs/</a>           — [template] GAS changelogs (source of truth + deployed)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog.md">testauth1gs.changelog.md</a>               — [template] Testauth1 GAS changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/testauth1gs.changelog-archive.md">testauth1gs.changelog-archive.md</a>       — [template] Older sections (rotated)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog.md">globalaclgs.changelog.md</a>               — [template] Globalacl GAS changelog
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/globalaclgs.changelog-archive.md">globalaclgs.changelog-archive.md</a>       — [template] Older sections (rotated)
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/programportalgs.changelog.md">programportalgs.changelog.md</a>               — [template] Programportal GAS changelog
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/programportalgs.changelog-archive.md">programportalgs.changelog-archive.md</a>       — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/programportalgs.changelog-archive.md">programportalgs.changelog-archive.md</a>       — [template] Older sections (rotated)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/inventorymanagementgs.changelog.md">inventorymanagementgs.changelog.md</a>               — [template] Inventorymanagement GAS changelog
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/inventorymanagementgs.changelog-archive.md">inventorymanagementgs.changelog-archive.md</a>       — [template] Older sections (rotated)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/images">images/</a>                  — Test images and visual assets
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/images/barcode-test-sheet.png">barcode-test-sheet.png</a>  — Test sheet with all 13 BarcodeDetector formats for scanner testing
 │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/live-site-pages/sounds">sounds/</a>                 — [template] Audio feedback files
@@ -113,9 +121,12 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Testauth1">Testauth1/</a>             — [template] GAS for live-site-pages/testauth1.html
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.gs">testauth1.gs</a>              — [template] Self-updating GAS web app (auth)
 │   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Testauth1/testauth1.config.json">testauth1.config.json</a>     — [template] Project config (source of truth)
-│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Programportal">Programportal/</a>     — [template] GAS for live-site-pages/programportal.html
-│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.gs">programportal.gs</a>              — [template] Self-updating GAS web app (auth)
-│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.config.json">programportal.config.json</a>     — [template] Project config (source of truth)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Programportal">Programportal/</a>     — [template] GAS for live-site-pages/programportal.html
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.gs">programportal.gs</a>              — [template] Self-updating GAS web app (auth)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Programportal/programportal.config.json">programportal.config.json</a>     — [template] Project config (source of truth)
+│   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/googleAppsScripts/Inventorymanagement">Inventorymanagement/</a>     — [template] GAS for live-site-pages/inventorymanagement.html
+│       ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Inventorymanagement/inventorymanagement.gs">inventorymanagement.gs</a>              — [template] Self-updating GAS web app (auth)
+│       └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Inventorymanagement/inventorymanagement.config.json">inventorymanagement.config.json</a>     — [template] Project config (source of truth)
 │
 <b>─── AutoHotkey ───────────────────────────────────────────────────────────────</b>
 ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/autoHotkey">autoHotkey/</a>                — [template] AutoHotkey v2 scripts
@@ -155,7 +166,8 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/tree/main/repository-information/diagrams">diagrams/</a>               — [template] Per-page architecture diagrams
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/gas-project-creator-diagram.md">gas-project-creator-diagram.md</a> — [template] GAS Project Creator user flow
 │   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/testauth1-diagram.md">testauth1-diagram.md</a>         — [template] Testauth1 page GAS integration sequence (auth)
-│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/programportal-diagram.md">programportal-diagram.md</a>  — [template] Program Portal page GAS integration sequence (auth)
+│   │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/programportal-diagram.md">programportal-diagram.md</a>  — [template] Program Portal page GAS integration sequence (auth)
+│   │   └── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/diagrams/inventorymanagement-diagram.md">inventorymanagement-diagram.md</a>  — [template] Inventory Management page GAS integration sequence (auth)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG.md">CHANGELOG.md</a>            — [template] Version history
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CHANGELOG-archive.md">CHANGELOG-archive.md</a>    — [template] Older changelog sections (rotated from CHANGELOG.md)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/repository-information/CODING-GUIDELINES.md">CODING-GUIDELINES.md</a>    — [template] Domain-specific coding knowledge

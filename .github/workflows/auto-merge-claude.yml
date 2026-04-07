@@ -353,6 +353,16 @@ jobs:
             -d "action=deploy" \
             --max-time 120 || true
 
+      - name: Deploy Inventorymanagement
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          PRE=${{ steps.merge.outputs.pre_merge_sha }}
+          git diff --name-only "$PRE" HEAD | grep -q "googleAppsScripts/Inventorymanagement/inventorymanagement.gs" && \
+          curl -L -X POST \
+            "https://script.google.com/macros/s/AKfycby0Eh2XhbibpLptNk94g8GAoIwgfzQ7ozRz6YBKfyXyXBYyANZJjCuYdFzi4_WIKYbKBw/exec" \
+            -d "action=deploy" \
+            --max-time 120 || true
+
       # ── AHK VERSION FILE UPDATE ──
       # When .ahk files change, update per-file version files in live-site-pages/ahk-versions/
       # so the AHK auto-updater can poll via GitHub Pages (CDN, works on private repos).

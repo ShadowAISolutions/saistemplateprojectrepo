@@ -77,6 +77,71 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v08.70r] — 2026-04-04 10:13:01 PM EST — [e00e1cd8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e00e1cd897dbea0c26a4454155f54188baee82ba)
+
+> **Prompt:** "in tests folder, add a defensive-security folder, and add something we can use to test defensive security"
+
+### Added
+- Created `tests/defensive-security/` folder with `test_01_csp_headers_validation.py` — Playwright-based defensive security test that validates CSP meta tags, required directives, Referrer-Policy, auth wall presence/absence, external script source whitelisting, and inline event handler detection across all deployed pages
+
+## [v08.69r] — 2026-04-04 09:58:18 PM EST — [c381af29](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c381af29d5f094ef9f6c33f90b7fa6acead454a7)
+
+> **Prompt:** "in live-site-pages add a "images" folder, and move the barcode-test-sheet.png which is currently in the root to that new images folder"
+
+### Changed
+- Moved `barcode-test-sheet.png` from repo root to new `live-site-pages/images/` folder — now accessible via GitHub Pages
+- Added `images/` directory with file entry to README tree
+
+## [v08.68r] — 2026-04-04 09:42:26 PM EST — [d0c0c64e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d0c0c64e58e317d01461c4943326defff8c2fc1e)
+
+> **Prompt:** "in the (No public-site pages yet) , mention the index.html goes here"
+
+### Changed
+- Updated Public Website placeholder in README tree to mention index.html goes there
+
+## [v08.67r] — 2026-04-04 09:37:16 PM EST — [ce518e82](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ce518e82876d60d5dff1238102c47772052626cf)
+
+> **Prompt:** "remove the index environment completely, in the project structure leave the public website divider but have it say (No public-site pages yet)"
+
+### Removed
+- Completely removed the index environment — deleted index.html, Index/ GAS directory, all version/changelog files, and index-diagram.md
+- Removed index.html from programportal.gs navigation menu (bumped v01.45g → v01.46g)
+- Removed Index from GAS Projects table in gas-scripts.md
+- Removed INDEX/GAS_INDEX nodes and all edges from REPO-ARCHITECTURE.md flowchart diagram
+- Updated README tree: replaced index.html entry with "(No public-site pages yet)" placeholder under Public Website divider
+- Updated gas-project-creator-diagram.md, html-pages.md, and gas-scripts.md to remove index-specific references
+
+#### `programportal.gs` — v01.46g
+##### Changed
+- Removed Website (index.html) entry from the project navigation menu
+
+## [v08.66r] — 2026-04-04 09:25:47 PM EST — [100e66c2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/100e66c224e495443261a43ddf4b1304dc2b1b80)
+
+> **Prompt:** "in the repository-information , move all the .md files in that folder into a sub folder called "archive info" except for the following which should remain there. repository.version.txt, readme-qr-code.png, TOKEN-BUDGETS.md, TODO.md, SUPPORT.md, SKILLS-REFERENCE.md, SESSION-CONTEXT.md, REPO-ARCHITECTURE.md, REMINDERS.md, KNOWN-CONSTRAINTS-AND-FIXES.md, IMPROVEMENTS.md, HIPAA-CODING-REQUIREMENTS.md, GOVERNANCE.md, FUTURE-CONSIDERATIONS.md, DATA-POLL-ARCHITECTURE.md, CODING-GUIDELINES.md, CHANGELOG.md, CHANGELOG-archive.md"
+
+### Changed
+- Moved 33 archive/plan .md files from `repository-information/` into new `repository-information/archive info/` subfolder to declutter the directory — kept 16 actively-used .md files in place
+- Updated README tree structure with `archive info/` subtree and corrected all GitHub URLs
+- Updated cross-reference in HIPAA-CODING-REQUIREMENTS.md and tests/offensive-security/GAS-HIPAA-COMPLIANCE-ANALYSIS.md to reflect new paths
+
+## [v08.65r] — 2026-04-04 09:10:16 PM EST — [bbc3d6d3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bbc3d6d334ab62a7375dadd68025f2861c7d00d5)
+
+> **Prompt:** "completely remove the testenvironment, rndlivedata, and open-all environments"
+
+### Removed
+- Completely removed three environments: testenvironment, rndlivedata, and open-all — deleted 22+ files (HTML pages, GAS scripts, configs, version files, changelogs, diagrams) and cleaned all references from workflow, documentation, and navigation
+
+#### `programportal.gs` — v01.45g
+##### Changed
+- Removed Test Environment entry from the project navigation menu
+
+## [v08.64r] — 2026-04-04 08:46:47 PM EST — [a261c9ef](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a261c9efc339232cb91649dc93713fdc6abc83eb)
+
+> **Prompt:** "go ahead and archive all of our changelogs for all projects, so they should all end up 0/50 or 0/100 ,etc."
+
+### Changed
+- Archived all 484 version sections across 15 changelogs (repo, 8 HTML page, 6 GAS) to their respective archive files with SHA enrichment — all changelogs now at 0 sections
+
 ## [v08.63r] — 2026-04-04 08:41:44 PM EST — [dd6e65f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dd6e65fa)
 
 > **Prompt:** "in our repo, in the 🚩🚩CODING PLAN🚩🚩 after showing the prompt i send you, have a line which says the following, which is a reminder to you to follow it as part of the prompt, also add it to your claude.md so that it applies to every single action that you perform. "Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally""

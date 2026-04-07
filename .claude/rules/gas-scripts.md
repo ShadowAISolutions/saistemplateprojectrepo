@@ -103,6 +103,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | Testauth1 | `googleAppsScripts/Testauth1/testauth1.gs` | `googleAppsScripts/Testauth1/testauth1.config.json` | `live-site-pages/testauth1.html` |
 | Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 | Programportal | `googleAppsScripts/Programportal/programportal.gs` | `googleAppsScripts/Programportal/programportal.config.json` | `live-site-pages/programportal.html` |
+| Inventorymanagement | `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` | `googleAppsScripts/Inventorymanagement/inventorymanagement.config.json` | `live-site-pages/inventorymanagement.html` |
 
 ## GAS Architecture Overview
 
