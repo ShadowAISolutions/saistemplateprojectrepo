@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.35w] — 2026-04-06 10:16:16 PM EST — v09.30r
+
+### Changed
+- Form fields now show as disabled when their prerequisites are not met, rather than being hidden
+- Sheet name field pre-filled with default value
+- ACL fields become required when Master ACL is configured
 
 ## [v01.34w] — 2026-04-06 10:02:14 PM EST — v09.29r
 

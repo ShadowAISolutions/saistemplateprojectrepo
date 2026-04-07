@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.34w">
+  <meta name="build-version" content="v01.35w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -655,12 +655,12 @@
           </div>
           <div class="step-input">
             <label for="cfg-spreadsheet-id">Spreadsheet ID <em>(optional)</em></label>
-            <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..." oninput="syncMasterAclId()"><button class="field-clear" onclick="clearField('cfg-spreadsheet-id'); syncMasterAclId();" title="Clear">&times;</button></div>
+            <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..." oninput="syncMasterAclId(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-spreadsheet-id'); syncMasterAclId(); updateFieldStates();" title="Clear">&times;</button></div>
             <span class="field-hint">Google Sheets ID for version tracking</span>
           </div>
           <div class="step-input">
-            <label for="cfg-sheet-name">Sheet Name <em>(optional)</em></label>
-            <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
+            <label for="cfg-sheet-name">Sheet Tab Name <em>(optional)</em></label>
+            <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Tab name in the spreadsheet</span>
           </div>
           <div class="step-input">
@@ -708,7 +708,7 @@
               <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..." oninput="toggleAclDetails()"><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id'); toggleAclDetails();" title="Clear">&times;</button></div>
               <span class="field-hint" id="master-acl-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
             </div>
-            <div id="acl-detail-fields" style="display:none;">
+            <div id="acl-detail-fields">
               <div class="step-input" style="margin:0 0 10px;">
                 <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
                 <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
@@ -1512,7 +1512,18 @@
       if (!container) return;
       var isChecked = document.getElementById('chk-is-master-acl').checked;
       var hasId = (document.getElementById('cfg-master-acl-id').value || '').trim().length > 0;
-      container.style.display = (isChecked || hasId) ? 'block' : 'none';
+      var active = isChecked || hasId;
+      var inputs = container.querySelectorAll('input');
+      for (var i = 0; i < inputs.length; i++) {
+        inputs[i].disabled = !active;
+        inputs[i].style.opacity = active ? '1' : '0.4';
+      }
+      container.style.opacity = active ? '1' : '0.5';
+      // Update labels to show required when ACL is active
+      var sheetLabel = container.querySelector('label[for="cfg-acl-sheet-name"]');
+      if (sheetLabel) sheetLabel.innerHTML = active ? 'ACL Sheet Name <em style="color:#f85149">(required)</em>' : 'ACL Sheet Name';
+      var pageLabel = container.querySelector('label[for="cfg-acl-page-name"]');
+      if (pageLabel) pageLabel.innerHTML = active ? 'ACL Column Name <em style="color:#f85149">(required — identifies this page)</em>' : 'ACL Column Name <em>(identifies this page)</em>';
     }
 
     function syncAclPagePlaceholder() {
@@ -1525,6 +1536,32 @@
       if (!document.getElementById('chk-is-master-acl').checked) return;
       var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
       document.getElementById('cfg-master-acl-id').value = sheetId.trim();
+      toggleAclDetails();
+    }
+
+// ── Field Dependency States ──
+    function updateFieldStates() {
+      var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
+      // Sheet Tab Name depends on Spreadsheet ID
+      var sheetNameInput = document.getElementById('cfg-sheet-name');
+      if (sheetNameInput) {
+        sheetNameInput.disabled = !hasSpreadsheet;
+        sheetNameInput.style.opacity = hasSpreadsheet ? '1' : '0.4';
+      }
+      // Master ACL checkbox and ID field depend on Spreadsheet ID (for "is master" auto-fill)
+      var masterAclCheckbox = document.getElementById('chk-is-master-acl');
+      if (masterAclCheckbox) {
+        masterAclCheckbox.disabled = !hasSpreadsheet;
+        masterAclCheckbox.parentElement.style.opacity = hasSpreadsheet ? '1' : '0.5';
+      }
+      // Master ACL ID field: disabled when no spreadsheet AND checkbox is checked (can't auto-fill from nothing)
+      // But always enabled for manual entry when checkbox is unchecked
+      var aclIdField = document.getElementById('cfg-master-acl-id');
+      if (aclIdField && masterAclCheckbox && masterAclCheckbox.checked && !hasSpreadsheet) {
+        aclIdField.value = '';
+        masterAclCheckbox.checked = false;
+        toggleMasterAcl();
+      }
       toggleAclDetails();
     }
 
@@ -1543,8 +1580,10 @@
       if (authStepClient) authStepClient.style.display = authChecked ? '' : 'none';
       updateDeployGate();
     }
-    // Initialize auth fields visibility on load
+    // Initialize field states on load
     toggleAuthFields();
+    updateFieldStates();
+    toggleAclDetails();
 
 // ── Deployment ID Gate ──
     function updateDeployGate() {

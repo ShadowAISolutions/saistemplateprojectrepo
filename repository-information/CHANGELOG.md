@@ -3,7 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
+
+## [v09.30r] — 2026-04-06 10:16:16 PM EST
+
+> **Prompt:** "make the sheet name also prefill itself as Live_Sheet, change the Sheet Name (optional) to mention that its referring to the tab. make it so that if master ACL spreadsheet ID is field, not only does it show the extra 2 fields, but those now become required. also if the spreadsheet ID is not entered, the other fields which depend on that should not be shown either, i.e. the sheet name, authentication settings, etc. actually instead of hiding all of these fields if not relevant, just make the fields inactive so that we can see that something is missing before filling them out. if they will never be relevant no matter what, for example when not using google authentication then you can hide them"
+
+### Changed
+- Pre-filled Sheet Tab Name with `Live_Sheet` default value and renamed label from "Sheet Name (optional)" to "Sheet Tab Name (optional)"
+- ACL Sheet Name and ACL Column Name fields now become required (with red label) when Master ACL Spreadsheet ID is filled
+- ACL detail fields now show as disabled/inactive instead of hidden when no Master ACL ID is present — visible but grayed out to indicate a prerequisite is missing
+- Sheet Tab Name field becomes disabled when Spreadsheet ID is empty — signals the dependency
+- Master ACL checkbox becomes disabled when no Spreadsheet ID is entered (can't auto-fill from nothing)
+- Added `updateFieldStates()` function to manage dependent field disabled states based on Spreadsheet ID presence
+
+#### `gas-project-creator.html` — v01.35w
+
+##### Changed
+- Form fields now show as disabled when their prerequisites are not met, rather than being hidden
+- Sheet name field pre-filled with default value
+- ACL fields become required when Master ACL is configured
 
 ## [v09.29r] — 2026-04-06 10:02:14 PM EST
 
