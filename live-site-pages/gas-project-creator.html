@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.67w">
+  <meta name="build-version" content="v01.68w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1687,6 +1687,13 @@
       if (authStepLabel) authStepLabel.style.display = authChecked ? '' : 'none';
       if (authStepConsent) authStepConsent.style.display = authChecked ? '' : 'none';
       if (authStepClient) authStepClient.style.display = authChecked ? '' : 'none';
+      // Hide auth-only fields when auth is off
+      var masterAclSection = document.getElementById('master-acl-section');
+      if (masterAclSection) masterAclSection.style.display = authChecked ? '' : 'none';
+      var aclSheetField = document.getElementById('field-acl-sheet-name');
+      if (aclSheetField) aclSheetField.style.display = authChecked ? '' : 'none';
+      var aclPageField = document.getElementById('field-acl-page-name');
+      if (aclPageField) aclPageField.style.display = authChecked ? '' : 'none';
       updateDeployGate();
       updateFieldStates();
     }

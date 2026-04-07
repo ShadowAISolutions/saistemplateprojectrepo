@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
 
 ## [Unreleased]
+
+## [v01.68w] — 2026-04-07 11:22:39 AM EST — v09.63r
+
+### Changed
+- Master ACL, ACL Sheet Name, and ACL Column Name hidden when auth is disabled
 
 ## [v01.67w] — 2026-04-07 11:16:28 AM EST — v09.62r
 

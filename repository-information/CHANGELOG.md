@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [v09.63r] — 2026-04-07 11:22:39 AM EST
+
+> **Prompt:** "good. now, if we are not including google authentication (toggle at the top is off), then the fields related to authentication should not be there, i.e. the master acl spreadsheet id, etc. verify that we wouldnt need those fields in this scenario"
+
+### Changed
+- Auth-only fields (Master ACL section, ACL Sheet Name, ACL Column Name) now hidden when "Include Google Authentication" toggle is off — verified against the noauth GAS template which has none of these variables
+
+#### `gas-project-creator.html` — v01.68w
+
+##### Changed
+- Master ACL, ACL Sheet Name, and ACL Column Name hidden when auth is disabled
 
 ## [v09.62r] — 2026-04-07 11:16:28 AM EST
 
