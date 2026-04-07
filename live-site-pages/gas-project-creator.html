@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.53w">
+  <meta name="build-version" content="v01.54w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -698,22 +698,16 @@
             <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Tab name in the spreadsheet. Uses &ldquo;Live_Sheet&rdquo; if left blank</span>
           </div>
-          <div id="master-acl-section" style="margin:10px 0;padding:12px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
-            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#58a6ff;margin-bottom:10px;">Master ACL Spreadsheet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#6e7681;">(optional &mdash; centralized access control)</span></div>
-            <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+          <div id="master-acl-section" style="margin:6px 0 10px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
               <input type="checkbox" id="chk-is-master-acl" style="cursor:pointer;" onchange="toggleMasterAcl()">
-              This project&rsquo;s spreadsheet is the master ACL <span style="color:#6e7681;">(uses the Spreadsheet ID above as the centralized access control sheet for all projects)</span>
+              This spreadsheet is the master ACL <span style="color:#6e7681;">(centralized access control for all projects)</span>
             </label>
-            <div class="step-input" style="margin:0 0 10px;">
-              <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
-              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..." oninput="toggleAclDetails()"><button class="field-clear" id="btn-clear-master-acl" onclick="clearField('cfg-master-acl-id'); toggleAclDetails();" title="Clear">&times;</button></div>
-              <span class="field-hint" id="master-acl-hint">A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet</span>
-            </div>
-            <div id="acl-detail-fields">
+            <div id="acl-detail-fields" style="margin-top:10px;padding:10px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
               <div class="step-input" style="margin:0 0 10px;">
                 <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
                 <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
-                <span class="field-hint">The sheet tab name in the master ACL spreadsheet where authorized emails are listed</span>
+                <span class="field-hint">The sheet tab in the spreadsheet where authorized emails are listed</span>
               </div>
               <div class="step-input" style="margin:0;">
                 <label for="cfg-acl-page-name">ACL Column Name <em>(identifies this page)</em></label>
@@ -1396,15 +1390,12 @@
             // Also enable domain restriction in all presets
             code = code.replace(/ENABLE_DOMAIN_RESTRICTION:\s*false/g, 'ENABLE_DOMAIN_RESTRICTION: true');
           }
-          // Master ACL spreadsheet config
+          // Master ACL — when toggled, use the project's Spreadsheet ID as the master ACL
           var isMasterAcl = document.getElementById('chk-is-master-acl').checked;
-          var masterAclId = (document.getElementById('cfg-master-acl-id') || {}).value || '';
-          if (isMasterAcl && !masterAclId.trim()) {
-            // When "is master ACL" is checked but no explicit ID, use the project's own spreadsheet ID
+          if (isMasterAcl) {
             var projectSheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
-            if (projectSheetId.trim()) masterAclId = projectSheetId.trim();
+            if (projectSheetId.trim()) code = code.replace(/var MASTER_ACL_SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var MASTER_ACL_SPREADSHEET_ID = "' + projectSheetId.trim() + '"');
           }
-          if (masterAclId.trim()) code = code.replace(/var MASTER_ACL_SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var MASTER_ACL_SPREADSHEET_ID = "' + masterAclId.trim() + '"');
           var aclSheetName = (document.getElementById('cfg-acl-sheet-name') || {}).value || 'Access';
           if (aclSheetName.trim()) code = code.replace(/var ACL_SHEET_NAME\s*=\s*"[^"]*"/, 'var ACL_SHEET_NAME = "' + aclSheetName.trim().replace(/"/g, '\\"') + '"');
           var aclPageName = (document.getElementById('cfg-acl-page-name') || {}).value || '';
@@ -1505,31 +1496,8 @@
     }
 
 // ── Master ACL Toggle ──
-    var _aclValueBeforeToggle = '';
+
     function toggleMasterAcl() {
-      var isChecked = document.getElementById('chk-is-master-acl').checked;
-      var aclIdField = document.getElementById('cfg-master-acl-id');
-      var clearBtn = document.getElementById('btn-clear-master-acl');
-      var hint = document.getElementById('master-acl-hint');
-      if (isChecked) {
-        _aclValueBeforeToggle = aclIdField.value.trim();
-        var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
-        aclIdField.value = sheetId.trim();
-        aclIdField.readOnly = true;
-        aclIdField.style.opacity = '0.6';
-        aclIdField.placeholder = 'Auto-filled from Spreadsheet ID above';
-        if (clearBtn) clearBtn.style.display = 'none';
-        if (hint) hint.textContent = 'Auto-filled from the Spreadsheet ID above \u2014 this project\u2019s spreadsheet will serve as the master ACL for all projects';
-      } else {
-        // Restore the value the user had before toggling (empty if they hadn't entered anything)
-        aclIdField.value = _aclValueBeforeToggle;
-        _aclValueBeforeToggle = '';
-        aclIdField.readOnly = false;
-        aclIdField.style.opacity = '1';
-        aclIdField.placeholder = '1abc2def3ghi...';
-        if (clearBtn) clearBtn.style.display = '';
-        if (hint) hint.textContent = 'A single spreadsheet that controls access to all GAS-powered pages. Row 1 = headers (Email, page1, page2, ...), rows 2+ = email + TRUE/FALSE per page. Leave blank to use the legacy editor/viewer sharing-list check on the data spreadsheet';
-      }
       toggleAclDetails();
     }
 
@@ -1537,18 +1505,15 @@
       var container = document.getElementById('acl-detail-fields');
       if (!container) return;
       var isChecked = document.getElementById('chk-is-master-acl').checked;
-      var hasId = (document.getElementById('cfg-master-acl-id').value || '').trim().length > 0;
-      var active = isChecked || hasId;
-      var aclReason = '\u2500\u2500\u2500  Enter Master ACL Spreadsheet ID first  \u2500\u2500\u2500';
+      container.style.display = isChecked ? 'block' : 'none';
       var aclFields = ['cfg-acl-sheet-name', 'cfg-acl-page-name'];
-      for (var i = 0; i < aclFields.length; i++) setFieldDisabled(aclFields[i], !active, aclReason);
-      container.style.opacity = active ? '1' : '0.5';
+      for (var i = 0; i < aclFields.length; i++) setFieldDisabled(aclFields[i], !isChecked, '');
       // Update labels to show required when ACL is active
       var sheetLabel = container.querySelector('label[for="cfg-acl-sheet-name"]');
-      if (sheetLabel) sheetLabel.innerHTML = active ? 'ACL Sheet Name <em style="color:#f85149">(required)</em>' : 'ACL Sheet Name';
+      if (sheetLabel) sheetLabel.innerHTML = isChecked ? 'ACL Sheet Name <em style="color:#f85149">(required)</em>' : 'ACL Sheet Name';
       var pageLabel = container.querySelector('label[for="cfg-acl-page-name"]');
-      if (pageLabel) pageLabel.innerHTML = active ? 'ACL Column Name <em>(defaults to Environment Name — identifies this page)</em>' : 'ACL Column Name <em>(identifies this page)</em>';
-      if (active) syncAclPagePlaceholder();
+      if (pageLabel) pageLabel.innerHTML = isChecked ? 'ACL Column Name <em>(defaults to Environment Name — identifies this page)</em>' : 'ACL Column Name <em>(identifies this page)</em>';
+      if (isChecked) syncAclPagePlaceholder();
       updateEmptyClasses();
     }
 
@@ -1559,9 +1524,7 @@
     }
 
     function syncMasterAclId() {
-      if (!document.getElementById('chk-is-master-acl').checked) return;
-      var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
-      document.getElementById('cfg-master-acl-id').value = sheetId.trim();
+      // No-op — master ACL ID is now the Spreadsheet ID itself (no separate field)
       toggleAclDetails();
     }
 
@@ -1637,16 +1600,15 @@
       if (!projectDisabled && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
       // Master ACL section depends on Spreadsheet ID
       var masterAclCheckbox = document.getElementById('chk-is-master-acl');
+      // Master ACL toggle depends on Spreadsheet ID
       var masterAclSection = document.getElementById('master-acl-section');
       if (masterAclSection) masterAclSection.style.opacity = hasSpreadsheet && !projectDisabled ? '1' : '0.5';
-      setFieldDisabled('cfg-master-acl-id', projectDisabled || !hasSpreadsheet, !hasSpreadsheet ? '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500' : projectReason);
       if (masterAclCheckbox) {
         masterAclCheckbox.disabled = projectDisabled || !hasSpreadsheet;
         masterAclCheckbox.parentElement.style.opacity = (!projectDisabled && hasSpreadsheet) ? '1' : '0.5';
       }
-      // If spreadsheet was cleared, reset master ACL state
+      // If spreadsheet was cleared, uncheck master ACL
       if (masterAclCheckbox && masterAclCheckbox.checked && !hasSpreadsheet) {
-        document.getElementById('cfg-master-acl-id').value = '';
         masterAclCheckbox.checked = false;
         toggleMasterAcl();
       }
@@ -1811,18 +1773,15 @@
           json += ',\n  "ALLOWED_DOMAINS": "' + allowedDomains + '"';
         }
         var isMasterAcl = document.getElementById('chk-is-master-acl').checked;
-        var masterAclId = document.getElementById('cfg-master-acl-id').value.trim() || '';
-        var aclSheetName = document.getElementById('cfg-acl-sheet-name').value.trim() || 'ACL';
-        var aclPageName = document.getElementById('cfg-acl-page-name').value.trim() || '';
         if (isMasterAcl) {
           json += ',\n  "IS_MASTER_ACL": true';
-        }
-        if (masterAclId) {
-          json += ',\n  "MASTER_ACL_SPREADSHEET_ID": "' + masterAclId + '"';
-        }
-        json += ',\n  "ACL_SHEET_NAME": "' + aclSheetName + '"';
-        if (aclPageName) {
-          json += ',\n  "ACL_PAGE_NAME": "' + aclPageName + '"';
+          json += ',\n  "MASTER_ACL_SPREADSHEET_ID": "' + sheetId + '"';
+          var aclSheetName = document.getElementById('cfg-acl-sheet-name').value.trim() || 'Access';
+          var aclPageName = document.getElementById('cfg-acl-page-name').value.trim() || '';
+          json += ',\n  "ACL_SHEET_NAME": "' + aclSheetName + '"';
+          if (aclPageName) {
+            json += ',\n  "ACL_PAGE_NAME": "' + aclPageName + '"';
+          }
         }
       }
       json += '\n}';

@@ -3,7 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
+
+## [v09.49r] — 2026-04-07 09:55:58 AM EST
+
+> **Prompt:** "the master acl spreadsheet id field is still there, i want it removed, i just want it consolidated with the spreadsheet ID, so the toggle should be moved next to the spreadsheet ID"
+
+### Changed
+- Removed the separate Master ACL Spreadsheet ID field — when the "master ACL" toggle is checked, the project's Spreadsheet ID is used directly as the master ACL
+- Moved the master ACL toggle to sit directly under Spreadsheet ID field
+- ACL detail fields (Sheet Name, Column Name) now show/hide based on toggle state instead of depending on a separate ID field
+- Simplified `toggleMasterAcl()`, `toggleAclDetails()`, `copyGsCode()`, and `copyConfig()` to use Spreadsheet ID directly
+
+#### `gas-project-creator.html` — v01.54w
+
+##### Changed
+- Master ACL toggle moved next to Spreadsheet ID — no separate ACL spreadsheet ID field
+- ACL details appear inline when toggle is checked
 
 ## [v09.48r] — 2026-04-07 09:47:23 AM EST
 
