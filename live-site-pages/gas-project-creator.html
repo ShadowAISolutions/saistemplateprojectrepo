@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.55w">
+  <meta name="build-version" content="v01.56w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -688,6 +688,12 @@
             <div class="input-row"><input type="text" id="cfg-title" placeholder="My GAS Project"><button class="field-clear" onclick="clearField('cfg-title')" title="Clear">&times;</button></div>
             <span class="field-hint">Shown in browser tab and GAS UI. If blank, uses a generic placeholder title</span>
           </div>
+          <div id="master-acl-section" style="margin:6px 0 10px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
+              <input type="checkbox" id="chk-is-master-acl" style="cursor:pointer;" onchange="toggleMasterAcl()">
+              This spreadsheet is the master ACL <span style="color:#6e7681;">(centralized access control for all projects)</span>
+            </label>
+          </div>
           <div class="step-input" id="field-spreadsheet-id">
             <label for="cfg-spreadsheet-id">Spreadsheet ID <em>(optional &mdash; if blank, no sheet tracking)</em></label>
             <div class="input-row"><input type="text" id="cfg-spreadsheet-id" placeholder="1abc2def3ghi..." oninput="syncMasterAclId(); updateFieldStates();"><button class="field-clear" onclick="clearField('cfg-spreadsheet-id'); syncMasterAclId(); updateFieldStates();" title="Clear">&times;</button></div>
@@ -698,22 +704,16 @@
             <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Tab name in the spreadsheet. Uses &ldquo;Live_Sheet&rdquo; if left blank</span>
           </div>
-          <div id="master-acl-section" style="margin:6px 0 10px;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#8b949e;cursor:pointer;user-select:none;">
-              <input type="checkbox" id="chk-is-master-acl" style="cursor:pointer;" onchange="toggleMasterAcl()">
-              This spreadsheet is the master ACL <span style="color:#6e7681;">(centralized access control for all projects)</span>
-            </label>
-            <div id="acl-detail-fields" style="margin-top:10px;padding:10px;border:1px solid #30363d;border-radius:6px;background:#0d1117;">
-              <div class="step-input" style="margin:0 0 10px;">
-                <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
-                <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
-                <span class="field-hint">The sheet tab in the spreadsheet where authorized emails are listed</span>
-              </div>
-              <div class="step-input" style="margin:0;">
-                <label for="cfg-acl-page-name">ACL Column Name <em>(identifies this page)</em></label>
-                <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
-                <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
-              </div>
+          <div id="acl-detail-fields" style="padding:10px;border:1px solid #30363d;border-radius:6px;background:#0d1117;margin-bottom:10px;">
+            <div class="step-input" style="margin:0 0 10px;">
+              <label for="cfg-acl-sheet-name">ACL Sheet Name</label>
+              <div class="input-row"><input type="text" id="cfg-acl-sheet-name" placeholder="Access" value="Access"><button class="field-clear" onclick="clearField('cfg-acl-sheet-name')" title="Clear">&times;</button></div>
+              <span class="field-hint">The sheet tab in the spreadsheet where authorized emails are listed</span>
+            </div>
+            <div class="step-input" style="margin:0;">
+              <label for="cfg-acl-page-name">ACL Column Name <em>(identifies this page)</em></label>
+              <div class="input-row"><input type="text" id="cfg-acl-page-name" placeholder="Auto-filled from Environment Name"><button class="field-clear" onclick="clearField('cfg-acl-page-name')" title="Clear">&times;</button></div>
+              <span class="field-hint">The column header in the ACL sheet that identifies this page. Defaults to the Environment Name if left blank</span>
             </div>
           </div>
           <div class="step-input" id="field-developer-logo">
