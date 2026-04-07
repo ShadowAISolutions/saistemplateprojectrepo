@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
+
+## [v09.53r] — 2026-04-07 10:35:23 AM EST
+
+> **Prompt:** "actually instead of hiding the master acl spreadsheet id field, have it disabled if the checkmark is pressed."
+
+### Changed
+- Master ACL Spreadsheet ID field now stays visible but becomes disabled/readOnly when toggle is checked (auto-fills with Spreadsheet ID), instead of hiding
+- Restores the user's previous value when unchecked
+- `syncMasterAclId()` keeps the ACL ID field synced with Spreadsheet ID while toggle is checked
+
+#### `gas-project-creator.html` — v01.58w
+
+##### Changed
+- Master ACL Spreadsheet ID field disables with auto-fill instead of hiding when toggle is checked
 
 ## [v09.52r] — 2026-04-07 10:28:36 AM EST
 

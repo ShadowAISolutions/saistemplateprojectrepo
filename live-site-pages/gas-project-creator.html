@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.57w">
+  <meta name="build-version" content="v01.58w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1500,10 +1500,29 @@
 
 // ── Master ACL Toggle ──
 
+    var _aclValueBeforeToggle = '';
     function toggleMasterAcl() {
       var isChecked = document.getElementById('chk-is-master-acl').checked;
-      var externalField = document.getElementById('external-acl-id-field');
-      if (externalField) externalField.style.display = isChecked ? 'none' : 'block';
+      var aclIdField = document.getElementById('cfg-master-acl-id');
+      if (!aclIdField) return;
+      if (isChecked) {
+        _aclValueBeforeToggle = aclIdField.value.trim();
+        var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
+        aclIdField.value = sheetId.trim();
+        aclIdField.readOnly = true;
+        aclIdField.style.opacity = '0.4';
+        aclIdField.placeholder = 'Using Spreadsheet ID above';
+        var clearBtn = aclIdField.parentElement.querySelector('.field-clear');
+        if (clearBtn) clearBtn.style.display = 'none';
+      } else {
+        aclIdField.value = _aclValueBeforeToggle;
+        _aclValueBeforeToggle = '';
+        aclIdField.readOnly = false;
+        aclIdField.style.opacity = '1';
+        aclIdField.placeholder = '1abc2def3ghi...';
+        var clearBtn = aclIdField.parentElement.querySelector('.field-clear');
+        if (clearBtn) clearBtn.style.display = '';
+      }
       syncAclPagePlaceholder();
       updateEmptyClasses();
     }
@@ -1521,8 +1540,11 @@
     }
 
     function syncMasterAclId() {
-      // No-op — master ACL ID is now the Spreadsheet ID itself (no separate field)
-      toggleAclDetails();
+      // When toggle is checked, keep the ACL ID field in sync with Spreadsheet ID
+      if (!document.getElementById('chk-is-master-acl').checked) return;
+      var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
+      var aclIdField = document.getElementById('cfg-master-acl-id');
+      if (aclIdField) aclIdField.value = sheetId.trim();
     }
 
 // ── Field Dependency States ──
@@ -1589,7 +1611,7 @@
       // Project config fields depend on Environment Name
       var projectDisabled = !hasEnvName || !hasDeployId;
       var projectReason = !hasDeployId ? '\u2500\u2500\u2500  Enter Deployment ID first  \u2500\u2500\u2500' : '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
-      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-master-acl-id', 'cfg-acl-sheet-name', 'cfg-acl-page-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
+      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-acl-sheet-name', 'cfg-acl-page-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], projectDisabled, projectReason);
       // Re-read after restore
       var hasSpreadsheet = (document.getElementById('cfg-spreadsheet-id').value || '').trim().length > 0;
@@ -1603,10 +1625,12 @@
         masterAclCheckbox.disabled = projectDisabled || !hasSpreadsheet;
         masterAclCheckbox.parentElement.style.opacity = (!projectDisabled && hasSpreadsheet) ? '1' : '0.5';
       }
-      // External ACL ID field depends on toggle being unchecked
-      if (!projectDisabled && hasSpreadsheet) {
-        var isChecked = masterAclCheckbox && masterAclCheckbox.checked;
-        setFieldDisabled('cfg-master-acl-id', isChecked, '');
+      // Master ACL ID field: disabled when project disabled, otherwise managed by toggleMasterAcl
+      if (projectDisabled || !hasSpreadsheet) {
+        setFieldDisabled('cfg-master-acl-id', true, projectReason);
+      } else {
+        // Re-apply toggle state (checked = readOnly with auto-fill, unchecked = editable)
+        toggleMasterAcl();
       }
       // If spreadsheet was cleared, uncheck master ACL
       if (masterAclCheckbox && masterAclCheckbox.checked && !hasSpreadsheet) {
