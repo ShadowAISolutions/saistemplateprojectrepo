@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
+
+## [v09.41r] — 2026-04-06 11:16:59 PM EST
+
+> **Prompt:** "make the copy code.gs for Gas and the Copy Config For Claude buttons the same red when they are disabled, and have the text mention which fields are missing to enable,, still need to know what the button name is so maybe separate missing and name with --"
+
+### Changed
+- Copy Code.gs, Copy HTML, and Copy Config buttons now show red disabled tint (`#1e1114`) when disabled
+- Disabled buttons now show which fields are missing: e.g. "Copy Code.gs for GAS ── needs: Deployment ID, Environment Name"
+- Button text reverts to normal label when all required fields are filled
+
+#### `gas-project-creator.html` — v01.46w
+
+##### Changed
+- Action buttons now show which fields are needed before they can be used
+- Disabled buttons use the same red tint as other disabled elements
 
 ## [v09.40r] — 2026-04-06 11:11:14 PM EST
 

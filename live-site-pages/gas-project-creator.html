@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.45w">
+  <meta name="build-version" content="v01.46w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -253,8 +253,11 @@
     }
     .btn-copy:hover { background: #e08b6d; }
     .config-actions button:disabled,
-    .btn-copy-gs:disabled {
-      opacity: 0.4;
+    .btn-copy-gs:disabled,
+    .btn-copy-html:disabled {
+      background: #1e1114 !important;
+      border-color: #30363d !important;
+      opacity: 0.5;
       cursor: not-allowed;
       pointer-events: none;
     }
@@ -1676,12 +1679,30 @@
       var hasClientId = !useAuth || (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       var applyBtn = document.getElementById('btn-apply');
       if (applyBtn) applyBtn.disabled = !hasId;
+      // Build missing fields list for button text
+      var missing = [];
+      if (!hasId) missing.push('Deployment ID');
+      if (!hasEnvName) missing.push('Environment Name');
+      if (useAuth && !hasClientId) missing.push('OAuth Client ID');
+      var allReady = missing.length === 0;
+      var missingText = missing.length ? ' \u2500\u2500 needs: ' + missing.join(', ') : '';
       var gsBtn = document.getElementById('btn-copy-gs');
-      if (gsBtn) gsBtn.disabled = !(hasId && hasEnvName && hasClientId);
+      if (gsBtn) {
+        gsBtn.disabled = !allReady;
+        gsBtn.textContent = allReady ? 'Copy Code.gs for GAS' : 'Copy Code.gs for GAS' + missingText;
+      }
       var htmlBtn = document.getElementById('btn-copy-html');
-      if (htmlBtn) htmlBtn.disabled = !(hasId && hasEnvName && hasClientId);
+      if (htmlBtn) {
+        htmlBtn.disabled = !allReady;
+        htmlBtn.innerHTML = allReady
+          ? '<span style="color:#30363d">Optional \u2014</span> Copy Embedding Page HTML <span style="color:#30363d">(the setup script creates this automatically)</span>'
+          : '<span style="color:#30363d">Optional \u2014</span> Copy Embedding Page HTML' + missingText;
+      }
       var configBtn = document.getElementById('btn-copy-config');
-      if (configBtn) configBtn.disabled = !(hasId && hasEnvName && hasClientId);
+      if (configBtn) {
+        configBtn.disabled = !allReady;
+        configBtn.textContent = allReady ? 'Copy Config for Claude' : 'Copy Config for Claude' + missingText;
+      }
     }
 
 // ── Test GAS Connection (bottom panel) ──

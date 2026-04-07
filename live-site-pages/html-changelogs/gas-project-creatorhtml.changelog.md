@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.46w] — 2026-04-06 11:16:59 PM EST — v09.41r
+
+### Changed
+- Action buttons now show which fields are needed before they can be used
+- Disabled buttons use the same red tint as other disabled elements
 
 ## [v01.45w] — 2026-04-06 11:11:14 PM EST — v09.40r
 
