@@ -51,7 +51,6 @@
 #     - GITHUB_TOKEN     : Set in Apps Script: Project Settings → Script Properties
 #                          Key: GITHUB_TOKEN  Value: github_pat_... token
 #     - EMBED_PAGE_URL   : The GitHub Pages URL where this GAS app is iframed (optional)
-#     - SPLASH_LOGO_URL  : Logo shown on the blue "Code Ready" splash screen (optional)
 #
 #   Steps:
 #     1. Create a folder in googleAppsScripts/ (e.g. "My New Project")
@@ -70,7 +69,6 @@
 #          var FILE_PATH      = "googleAppsScripts/My New Project/my-new-project.gs";
 #          var DEPLOYMENT_ID  = "your-deployment-id";       // ← from config.json
 #          var EMBED_PAGE_URL = "https://<your-org>.github.io/<your-repo>/your-page.html";
-#          var SPLASH_LOGO_URL = "https://your-logo-url";
 #     5. Bootstrap: manually copy-paste <page-name>.gs into the Apps Script editor and save
 #        (first deploy must be manual — doPost can't deploy itself before it exists)
 #     6. Add a new step in this workflow BEFORE "Delete branch", using this template:

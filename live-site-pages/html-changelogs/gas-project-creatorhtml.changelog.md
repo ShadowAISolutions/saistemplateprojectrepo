@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.48w] — 2026-04-07 08:26:38 AM EST — v09.43r
+
+### Changed
+- Logo configuration now has 3 separate fields: Developer Logo, Org Logo, and Splash Logo
+- Splash Logo defaults to Developer Logo when left blank
 
 ## [v01.47w] — 2026-04-07 07:57:43 AM EST — v09.42r
 

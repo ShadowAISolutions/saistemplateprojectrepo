@@ -3,7 +3,46 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
+
+## [v09.43r] — 2026-04-07 08:26:38 AM EST
+
+> **Prompt:** "i guess we should have a field for each logo, developer, org, and splash"
+
+### Changed
+- Renamed `LOGO_URL` → `SPLASH_LOGO_URL` in all HTML templates and 5 live pages — the runtime pointer used by splash screens now has a descriptive name
+- Restructured gas-project-creator logo fields: replaced single "Splash Logo URL" field with 3 separate fields (Developer Logo, Org Logo, Splash Logo)
+- Updated `copyHtmlCode()` to substitute all 3 logo variables in HTML templates
+- Removed dead `SPLASH_LOGO_URL` substitution from `copyGsCode()` (logo variables don't exist in GAS templates)
+- Updated `setup-gas-project.sh` to parse and apply `DEVELOPER_LOGO_URL`, `YOUR_ORG_LOGO_URL`, and `SPLASH_LOGO_URL` separately
+- Removed stale `SPLASH_LOGO_URL` references from workflow comments (not a GAS variable)
+- Updated CLAUDE.md, gas-scripts.md, and IMPROVEMENTS.md documentation references
+
+#### `gas-project-creator.html` — v01.48w
+
+##### Changed
+- Logo configuration now has 3 separate fields: Developer Logo, Org Logo, and Splash Logo
+- Splash Logo defaults to Developer Logo when left blank
+
+#### `testauth1.html` — v03.98w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.87w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.94w
+
+##### Changed
+- Minor internal improvements
+
+#### `text-compare.html` — v01.09w
+
+##### Changed
+- Minor internal improvements
 
 ## [v09.42r] — 2026-04-07 07:57:43 AM EST
 

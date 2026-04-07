@@ -50,7 +50,7 @@ The `.config.json` double extension ensures the config file sorts **after** the 
 ### What is NOT in config.json
 - `VERSION` — auto-bumped by Pre-Commit item #1, lives only in `<page-name>.gs`
 - `GITHUB_OWNER`, `GITHUB_REPO`, `FILE_PATH` — derived from repo structure, managed by init script
-- `EMBED_PAGE_URL`, `SPLASH_LOGO_URL` — repo-wide settings, managed by init script
+- `EMBED_PAGE_URL` — repo-wide setting, managed by init script
 - `GITHUB_BRANCH` — always `main`
 
 ### Obfuscated deployment URL (var _e inside GAS IIFE)

@@ -165,7 +165,7 @@
     // Logo shown on the "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var YOUR_ORG_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
-    var LOGO_URL = DEVELOPER_LOGO_URL;
+    var SPLASH_LOGO_URL = DEVELOPER_LOGO_URL;
 
     // Auto-refresh: set to false to disable build-version polling
     var AUTO_REFRESH = true;
@@ -182,9 +182,9 @@
 // ══════════════
 
     // Set splash logo from config variable
-    document.getElementById('splash-logo').src = LOGO_URL;
-    document.getElementById('splash-code-logo').src = LOGO_URL;
-    document.getElementById('maintenance-logo').src = LOGO_URL;
+    document.getElementById('splash-logo').src = SPLASH_LOGO_URL;
+    document.getElementById('splash-code-logo').src = SPLASH_LOGO_URL;
+    document.getElementById('maintenance-logo').src = SPLASH_LOGO_URL;
 
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {

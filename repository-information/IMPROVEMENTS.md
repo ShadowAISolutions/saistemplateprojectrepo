@@ -48,7 +48,7 @@ Ideas and optimizations to explore — no commitment, investigated when time all
 **Current state of HTML config variables:** Each embedding HTML page has a `// ── CONFIG ──` block with page-local variables:
 - `DEVELOPER_LOGO_URL` — logo shown on splash screens
 - `YOUR_ORG_LOGO_URL` — org logo URL
-- `LOGO_URL` — which logo to actually use (points to one of the above)
+- `SPLASH_LOGO_URL` — which logo to actually display on splash screens (defaults to `DEVELOPER_LOGO_URL`)
 - `AUTO_REFRESH` — enable/disable build-version polling
 - `SHOW_WEB_VERSION` — show/hide the version indicator pill
 

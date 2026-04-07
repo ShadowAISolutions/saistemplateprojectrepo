@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.47w">
+  <meta name="build-version" content="v01.48w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -675,10 +675,20 @@
             <div class="input-row"><input type="text" id="cfg-sheet-name" placeholder="Live_Sheet" value="Live_Sheet"><button class="field-clear" onclick="clearField('cfg-sheet-name')" title="Clear">&times;</button></div>
             <span class="field-hint">Tab name in the spreadsheet. Uses &ldquo;Live_Sheet&rdquo; if left blank</span>
           </div>
+          <div class="step-input" id="field-developer-logo">
+            <label for="cfg-developer-logo">Developer Logo URL <em>(optional &mdash; defaults to ShadowAISolutions logo)</em></label>
+            <div class="input-row"><input type="text" id="cfg-developer-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-developer-logo')" title="Clear">&times;</button></div>
+            <span class="field-hint">Developer branding logo. Used as the splash logo if no separate splash logo is set</span>
+          </div>
+          <div class="step-input" id="field-org-logo">
+            <label for="cfg-org-logo">Org Logo URL <em>(optional &mdash; defaults to ShadowAISolutions logo)</em></label>
+            <div class="input-row"><input type="text" id="cfg-org-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-org-logo')" title="Clear">&times;</button></div>
+            <span class="field-hint">Organization branding logo. Replace with your org&rsquo;s logo after forking</span>
+          </div>
           <div class="step-input" id="field-splash-logo">
-            <label for="cfg-splash-logo">Splash Logo URL <em>(optional &mdash; defaults to ShadowAISolutions logo)</em></label>
-            <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png" value="https://www.shadowaisolutions.com/SAIS_Logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo')" title="Clear">&times;</button></div>
-            <span class="field-hint">Logo shown on the GAS splash screen. Uses the default SAIS logo if left blank</span>
+            <label for="cfg-splash-logo">Splash Logo URL <em>(optional &mdash; defaults to Developer Logo)</em></label>
+            <div class="input-row"><input type="text" id="cfg-splash-logo" placeholder="https://yoursite.com/logo.png"><button class="field-clear" onclick="clearField('cfg-splash-logo')" title="Clear">&times;</button></div>
+            <span class="field-hint">Logo shown on splash screens. If blank, uses Developer Logo URL above</span>
           </div>
           <div class="step-input" id="field-github-branch">
             <label for="cfg-github-branch">GitHub Branch <em>(optional &mdash; defaults to &ldquo;main&rdquo;)</em></label>
@@ -766,7 +776,7 @@
     // Logo shown on the "Website Ready" splash screen
     var DEVELOPER_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
     var YOUR_ORG_LOGO_URL = 'https://www.shadowaisolutions.com/SAIS_Logo.png';
-    var LOGO_URL = DEVELOPER_LOGO_URL;
+    var SPLASH_LOGO_URL = DEVELOPER_LOGO_URL;
 
     // Auto-refresh: set to false to disable build-version polling
     var AUTO_REFRESH = true;
@@ -783,9 +793,9 @@
 // ══════════════
 
     // Set splash logo from config variable
-    document.getElementById('splash-logo').src = LOGO_URL;
-    document.getElementById('splash-code-logo').src = LOGO_URL;
-    document.getElementById('maintenance-logo').src = LOGO_URL;
+    document.getElementById('splash-logo').src = SPLASH_LOGO_URL;
+    document.getElementById('splash-code-logo').src = SPLASH_LOGO_URL;
+    document.getElementById('maintenance-logo').src = SPLASH_LOGO_URL;
 
     // Hidden maintenance bypass — triple-click the second wrench to dismiss
     (function() {
@@ -1365,12 +1375,10 @@
         var deployId = (document.getElementById('cfg-deployment-id') || {}).value || '';
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         var sheetName = (document.getElementById('cfg-sheet-name') || {}).value || '';
-        var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
         if (title.trim()) code = code.replace(/var TITLE\s*=\s*"[^"]*"/, 'var TITLE = "' + title.trim().replace(/"/g, '\\"') + '"');
         if (deployId.trim()) code = code.replace(/var DEPLOYMENT_ID\s*=\s*"[^"]*"/, 'var DEPLOYMENT_ID = "' + deployId.trim() + '"');
         if (sheetId.trim()) code = code.replace(/var SPREADSHEET_ID\s*=\s*"[^"]*"/, 'var SPREADSHEET_ID = "' + sheetId.trim() + '"');
         if (sheetName.trim()) code = code.replace(/var SHEET_NAME\s*=\s*"[^"]*"/, 'var SHEET_NAME     = "' + sheetName.trim().replace(/"/g, '\\"') + '"');
-        if (splashLogo.trim()) code = code.replace(/var SPLASH_LOGO_URL\s*=\s*"[^"]*"/, 'var SPLASH_LOGO_URL = "' + splashLogo.trim() + '"');
         var ghBranch = (document.getElementById('cfg-github-branch') || {}).value || 'main';
         if (ghBranch.trim()) code = code.replace(/var GITHUB_BRANCH\s*=\s*"[^"]*"/, 'var GITHUB_BRANCH = "' + ghBranch.trim() + '"');
         // Auth-specific replacements
@@ -1454,8 +1462,12 @@
         } else {
           html = html.replace(/var _e = '[^']*';/, "var _e = '';");
         }
+        var devLogo = (document.getElementById('cfg-developer-logo') || {}).value || '';
+        var orgLogo = (document.getElementById('cfg-org-logo') || {}).value || '';
         var splashLogo = (document.getElementById('cfg-splash-logo') || {}).value || '';
-        if (splashLogo.trim()) html = html.replace(/var DEVELOPER_LOGO_URL = '[^']*';/, "var DEVELOPER_LOGO_URL = '" + splashLogo.trim() + "';");
+        if (devLogo.trim()) html = html.replace(/var DEVELOPER_LOGO_URL = '[^']*';/, "var DEVELOPER_LOGO_URL = '" + devLogo.trim() + "';");
+        if (orgLogo.trim()) html = html.replace(/var YOUR_ORG_LOGO_URL = '[^']*';/, "var YOUR_ORG_LOGO_URL = '" + orgLogo.trim() + "';");
+        if (splashLogo.trim()) html = html.replace(/var SPLASH_LOGO_URL = [^;]*;/, "var SPLASH_LOGO_URL = '" + splashLogo.trim() + "';");
         if (useAuth) {
           var clientId = (document.getElementById('cfg-client-id') || {}).value || '';
           if (clientId.trim() && clientId.trim() !== 'YOUR_CLIENT_ID.apps.googleusercontent.com') {
@@ -1605,7 +1617,7 @@
       var hasClientId = (document.getElementById('cfg-client-id').value || '').trim().length > 0;
       // Project config fields depend on Environment Name
       var envReason = '\u2500\u2500\u2500  Enter Environment Name first  \u2500\u2500\u2500';
-      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-splash-logo', 'cfg-github-branch'];
+      var projectFields = ['cfg-title', 'cfg-spreadsheet-id', 'cfg-sheet-name', 'cfg-developer-logo', 'cfg-org-logo', 'cfg-splash-logo', 'cfg-github-branch'];
       for (var i = 0; i < projectFields.length; i++) setFieldDisabled(projectFields[i], !hasEnvName, envReason);
       // Sheet Tab Name also depends on Spreadsheet ID
       if (hasEnvName && !hasSpreadsheet) setFieldDisabled('cfg-sheet-name', true, '\u2500\u2500\u2500  Enter Spreadsheet ID first  \u2500\u2500\u2500');
@@ -1766,7 +1778,9 @@
       var deployId = document.getElementById('cfg-deployment-id').value.trim() || 'YOUR_DEPLOYMENT_ID';
       var sheetId = document.getElementById('cfg-spreadsheet-id').value.trim() || 'YOUR_SPREADSHEET_ID';
       var sheetName = document.getElementById('cfg-sheet-name').value.trim() || 'YOUR_SHEET_NAME';
-      var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || 'YOUR_SPLASH_LOGO_URL';
+      var devLogo = document.getElementById('cfg-developer-logo').value.trim() || 'YOUR_DEVELOPER_LOGO_URL';
+      var orgLogo = document.getElementById('cfg-org-logo').value.trim() || 'YOUR_ORG_LOGO_URL';
+      var splashLogo = document.getElementById('cfg-splash-logo').value.trim() || '';
       var includeAuth = document.getElementById('chk-google-auth').checked;
 
       var json = '{\n'
@@ -1775,7 +1789,9 @@
         + '  "DEPLOYMENT_ID": "' + deployId + '",\n'
         + '  "SPREADSHEET_ID": "' + sheetId + '",\n'
         + '  "SHEET_NAME": "' + sheetName + '",\n'
-        + '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n'
+        + '  "DEVELOPER_LOGO_URL": "' + devLogo + '",\n'
+        + '  "YOUR_ORG_LOGO_URL": "' + orgLogo + '",\n'
+        + (splashLogo ? '  "SPLASH_LOGO_URL": "' + splashLogo + '",\n' : '')
         + '  "INCLUDE_AUTH": ' + (includeAuth ? 'true' : 'false');
       if (includeAuth) {
         var clientId = document.getElementById('cfg-client-id').value.trim() || 'YOUR_CLIENT_ID';

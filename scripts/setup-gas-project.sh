@@ -83,7 +83,9 @@ TITLE="$(parse_json TITLE 'CHANGE THIS PROJECT TITLE GAS TEMPLATE')"
 DEPLOYMENT_ID="$(parse_json DEPLOYMENT_ID 'YOUR_DEPLOYMENT_ID')"
 SPREADSHEET_ID="$(parse_json SPREADSHEET_ID 'YOUR_SPREADSHEET_ID')"
 SHEET_NAME="$(parse_json SHEET_NAME 'YOUR_SHEET_NAME')"
-SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
+DEVELOPER_LOGO_URL="$(parse_json DEVELOPER_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
+YOUR_ORG_LOGO_URL="$(parse_json YOUR_ORG_LOGO_URL 'https://www.shadowaisolutions.com/SAIS_Logo.png')"
+SPLASH_LOGO_URL="$(parse_json SPLASH_LOGO_URL '')"
 INCLUDE_AUTH="$(parse_json INCLUDE_AUTH 'false')"
 CLIENT_ID="$(parse_json CLIENT_ID 'YOUR_CLIENT_ID.apps.googleusercontent.com')"
 AUTH_PRESET="$(parse_json AUTH_PRESET 'hipaa')"
@@ -276,9 +278,15 @@ sed -i "s|<title>.*</title>|<title>${TITLE}</title>|" "$HTML_PAGE"
 # Set meta build-version (should already be v01.00w from template, but ensure)
 sed -i 's|<meta name="build-version" content="[^"]*">|<meta name="build-version" content="v01.00w">|' "$HTML_PAGE"
 
-# Update splash logo URL if provided and different from default
-if [ "$SPLASH_LOGO_URL" != "YOUR_SPLASH_LOGO_URL" ] && [ -n "$SPLASH_LOGO_URL" ]; then
-    sed -i "s|var DEVELOPER_LOGO_URL = '[^']*';|var DEVELOPER_LOGO_URL = '${SPLASH_LOGO_URL}';|" "$HTML_PAGE"
+# Update logo URLs if provided and different from defaults
+if [ "$DEVELOPER_LOGO_URL" != "YOUR_DEVELOPER_LOGO_URL" ] && [ -n "$DEVELOPER_LOGO_URL" ]; then
+    sed -i "s|var DEVELOPER_LOGO_URL = '[^']*';|var DEVELOPER_LOGO_URL = '${DEVELOPER_LOGO_URL}';|" "$HTML_PAGE"
+fi
+if [ "$YOUR_ORG_LOGO_URL" != "YOUR_ORG_LOGO_URL" ] && [ -n "$YOUR_ORG_LOGO_URL" ]; then
+    sed -i "s|var YOUR_ORG_LOGO_URL = '[^']*';|var YOUR_ORG_LOGO_URL = '${YOUR_ORG_LOGO_URL}';|" "$HTML_PAGE"
+fi
+if [ -n "$SPLASH_LOGO_URL" ]; then
+    sed -i "s|var SPLASH_LOGO_URL = [^;]*;|var SPLASH_LOGO_URL = '${SPLASH_LOGO_URL}';|" "$HTML_PAGE"
 fi
 
 # Encode and set var _e (deployment URL)
@@ -308,9 +316,6 @@ sed -i "s|var GITHUB_BRANCH = .*;|var GITHUB_BRANCH = \"${GITHUB_BRANCH}\";|" "$
 sed -i "s|var FILE_PATH     = .*;|var FILE_PATH     = \"${GAS_FILE}\";|" "$GAS_FILE"
 EMBED_URL="https://${GITHUB_OWNER}.github.io/${GITHUB_REPO}/${ENV_NAME}.html"
 sed -i "s|var EMBED_PAGE_URL = .*;|var EMBED_PAGE_URL = \"${EMBED_URL}\";|" "$GAS_FILE"
-if [ "$SPLASH_LOGO_URL" != "YOUR_SPLASH_LOGO_URL" ] && [ -n "$SPLASH_LOGO_URL" ]; then
-    sed -i "s|var SPLASH_LOGO_URL = .*;|var SPLASH_LOGO_URL = \"${SPLASH_LOGO_URL}\";|" "$GAS_FILE"
-fi
 # Fix template comment references: <page-name>.gs/.config.json → {env_name}.gs/.config.json
 sed -i "s|<page-name>\.gs|${ENV_NAME}.gs|g" "$GAS_FILE"
 sed -i "s|<page-name>\.config\.json|${ENV_NAME}.config.json|g" "$GAS_FILE"
