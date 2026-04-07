@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [gas-project-creatorhtml.changelog-archive.md](gas-project-creatorhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
 
 ## [Unreleased]
+
+## [v01.37w] — 2026-04-06 10:30:21 PM EST — v09.32r
+
+### Fixed
+- Master ACL toggle no longer leaves the project spreadsheet ID in the field after unchecking
 
 ## [v01.36w] — 2026-04-06 10:25:37 PM EST — v09.31r
 

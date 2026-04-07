@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.36w">
+  <meta name="build-version" content="v01.37w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -1484,12 +1484,14 @@
     }
 
 // ── Master ACL Toggle ──
+    var _aclValueBeforeToggle = '';
     function toggleMasterAcl() {
       var isChecked = document.getElementById('chk-is-master-acl').checked;
       var aclIdField = document.getElementById('cfg-master-acl-id');
       var clearBtn = document.getElementById('btn-clear-master-acl');
       var hint = document.getElementById('master-acl-hint');
       if (isChecked) {
+        _aclValueBeforeToggle = aclIdField.value.trim();
         var sheetId = (document.getElementById('cfg-spreadsheet-id') || {}).value || '';
         aclIdField.value = sheetId.trim();
         aclIdField.readOnly = true;
@@ -1498,6 +1500,9 @@
         if (clearBtn) clearBtn.style.display = 'none';
         if (hint) hint.textContent = 'Auto-filled from the Spreadsheet ID above \u2014 this project\u2019s spreadsheet will serve as the master ACL for all projects';
       } else {
+        // Restore the value the user had before toggling (empty if they hadn't entered anything)
+        aclIdField.value = _aclValueBeforeToggle;
+        _aclValueBeforeToggle = '';
         aclIdField.readOnly = false;
         aclIdField.style.opacity = '1';
         aclIdField.placeholder = '1abc2def3ghi...';

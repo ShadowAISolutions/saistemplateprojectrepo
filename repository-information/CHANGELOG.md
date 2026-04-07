@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
+
+## [v09.32r] — 2026-04-06 10:30:21 PM EST
+
+> **Prompt:** "the master acl spreadsheet toggle when active then removed is showing the projects spreadsheet as the master ACL, it should be removing what was put in the field if the toggle is removed, unless the user had already personally put information there before they toggled, but it shouldnt hold onto the spreadsheet ID above"
+
+### Fixed
+- Fixed Master ACL toggle retaining the project's Spreadsheet ID after unchecking — now saves the user's pre-toggle value and restores it on uncheck (empty if they hadn't entered anything, their custom ID if they had)
+
+#### `gas-project-creator.html` — v01.37w
+
+##### Fixed
+- Master ACL toggle no longer leaves the project spreadsheet ID in the field after unchecking
 
 ## [v09.31r] — 2026-04-06 10:25:37 PM EST
 
