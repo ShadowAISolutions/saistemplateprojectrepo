@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
+
+## [v09.60r] — 2026-04-07 11:08:00 AM EST
+
+> **Prompt:** "the acl sheet name and acl column name fields are not properly being enabled after the master acl spreadsheet id is set"
+
+### Fixed
+- ACL Sheet Name and ACL Column Name now properly enable when Master ACL Spreadsheet ID is filled — added `oninput="updateFieldStates()"` to the Master ACL ID field and added ACL field re-evaluation in `toggleMasterAcl()`
+- Root cause: the Master ACL ID input had no `oninput` handler to trigger field state updates, and the toggle didn't re-evaluate ACL field states after auto-filling the ID
+
+#### `gas-project-creator.html` — v01.65w
+
+##### Fixed
+- ACL fields now enable when Master ACL Spreadsheet ID is set (manually or via toggle)
 
 ## [v09.59r] — 2026-04-07 11:03:22 AM EST
 

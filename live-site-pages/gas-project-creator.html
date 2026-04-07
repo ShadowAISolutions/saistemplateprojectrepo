@@ -6,7 +6,7 @@
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-src https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://logoipsum.com https://www.shadowaisolutions.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.64w">
+  <meta name="build-version" content="v01.65w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>GAS Project Creator</title>
   <style>
@@ -700,7 +700,7 @@
             </label>
             <div id="external-acl-id-field" class="step-input" style="margin:10px 0 0;">
               <label for="cfg-master-acl-id">Master ACL Spreadsheet ID</label>
-              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..."><button class="field-clear" onclick="clearField('cfg-master-acl-id')" title="Clear">&times;</button></div>
+              <div class="input-row"><input type="text" id="cfg-master-acl-id" placeholder="1abc2def3ghi..." oninput="updateFieldStates()"><button class="field-clear" onclick="clearField('cfg-master-acl-id'); updateFieldStates();" title="Clear">&times;</button></div>
               <span class="field-hint">ID of an external spreadsheet that serves as the master ACL. Leave blank if not using centralized access control</span>
             </div>
           </div>
@@ -1528,6 +1528,13 @@
         if (clearBtn) clearBtn.style.display = '';
       }
       syncAclPagePlaceholder();
+      updateEmptyClasses();
+      // Re-evaluate ACL field states based on whether Master ACL ID is now filled
+      var hasMasterAclId = (document.getElementById('cfg-master-acl-id').value || '').trim().length > 0;
+      var aclReason = '\u2500\u2500\u2500  Enter Master ACL Spreadsheet ID first  \u2500\u2500\u2500';
+      setFieldDisabled('cfg-acl-sheet-name', !hasMasterAclId, aclReason);
+      setFieldDisabled('cfg-acl-page-name', !hasMasterAclId, aclReason);
+      if (hasMasterAclId) syncAclPagePlaceholder();
       updateEmptyClasses();
     }
 
