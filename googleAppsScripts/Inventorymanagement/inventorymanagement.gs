@@ -1,4 +1,4 @@
-var VERSION = "v01.05g";
+var VERSION = "v01.06g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -300,17 +300,74 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 // PROJECT START — QR/Barcode scanner server-side processing
 /**
- * Process a barcode scan from the HTML layer camera bridge.
- * Placeholder — returns the scanned data. Future: inventory lookup in Sheets.
+ * Process a barcode scan: save to spreadsheet, refresh cache, return updated history.
+ * Called via google.script.run from the scanListener iframe bridge.
  */
 function processBarcodeScan(value, format) {
   if (!value) return { success: false, error: 'empty_scan' };
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('Scans');
+  if (!sheet) {
+    sheet = ss.insertSheet('Scans');
+    sheet.appendRow(['Timestamp', 'Value', 'Format']);
+    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
+  }
+  var ts = new Date();
+  sheet.insertRowAfter(1);
+  sheet.getRange(2, 1, 1, 3).setValues([[ts, String(value).substring(0, 500), format || 'qr_code']]);
+  // Refresh cache
+  _refreshScanCache(sheet);
   return {
     success: true,
     value: String(value).substring(0, 500),
     format: format || 'qr_code',
-    timestamp: new Date().toISOString()
+    timestamp: ts.toISOString(),
+    history: _getCachedScans()
   };
+}
+
+/**
+ * Get scan history for polling — lightweight, reads from cache.
+ */
+function getScanHistory(token) {
+  if (!token) return { success: false, error: 'no_token' };
+  var session = validateSession(token);
+  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
+  return { success: true, history: _getCachedScans() };
+}
+
+function _refreshScanCache(sheet) {
+  if (!sheet) {
+    try {
+      sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Scans');
+    } catch(e) { return; }
+  }
+  if (!sheet) return;
+  var data = sheet.getDataRange().getValues();
+  var rows = [];
+  for (var i = 1; i < Math.min(data.length, 51); i++) {
+    rows.push({
+      timestamp: data[i][0] ? new Date(data[i][0]).toISOString() : '',
+      value: String(data[i][1] || ''),
+      format: String(data[i][2] || 'qr_code')
+    });
+  }
+  var cache = getEpochCache();
+  cache.put('scan_history', JSON.stringify(rows), 21600);
+}
+
+function _getCachedScans() {
+  var cache = getEpochCache();
+  var raw = cache.get('scan_history');
+  if (raw) {
+    try { return JSON.parse(raw); } catch(e) {}
+  }
+  _refreshScanCache(null);
+  raw = cache.get('scan_history');
+  if (raw) {
+    try { return JSON.parse(raw); } catch(e) {}
+  }
+  return [];
 }
 // PROJECT END
 // ══════════════
@@ -2492,7 +2549,14 @@ function doGet(e) {
       <style>
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
-        /* PROJECT START — Add your project-specific styles here */
+        /* PROJECT START — Scan results UI */
+        #scan-panel { padding: 16px; font-family: monospace; max-width: 500px; margin: 0 auto; }
+        #scan-panel h3 { color: #90caf9; font-size: 13px; margin: 0 0 8px; }
+        .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }
+        .scan-row .sm { color: #666; font-size: 10px; white-space: nowrap; margin-left: 8px; }
+        .scan-empty { color: #666; font-size: 12px; text-align: center; padding: 20px 0; }
+        .scan-poll-status { color: #555; font-size: 10px; text-align: right; margin-top: 4px; }
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
@@ -2586,7 +2650,12 @@ function doGet(e) {
       </div>
       ` : ''}
 
-      <!-- PROJECT START — Add your project-specific content here -->
+      <!-- PROJECT START — Scan results (data from spreadsheet) -->
+      <div id="scan-panel">
+        <h3>Scan History</h3>
+        <div id="scan-list"><div class="scan-empty">No scans yet — start scanning above</div></div>
+        <div class="scan-poll-status" id="scan-poll-status">Waiting for scans...</div>
+      </div>
       <!-- PROJECT END -->
 
       <script>
@@ -3209,7 +3278,68 @@ function doGet(e) {
         ` : ''}
 
 
-        // PROJECT START — Add your project-specific UI logic here
+        // PROJECT START — Scan history polling + result display
+        (function() {
+          var POLL_INTERVAL = 10000;
+          var _pollTimer = null;
+          var _pollInFlight = false;
+
+          function _escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+          function _renderScans(history) {
+            var el = document.getElementById('scan-list');
+            if (!el) return;
+            if (!history || history.length === 0) {
+              el.innerHTML = '<div class="scan-empty">No scans yet \\u2014 start scanning above</div>';
+              return;
+            }
+            el.innerHTML = '';
+            history.forEach(function(item) {
+              var div = document.createElement('div');
+              div.className = 'scan-row';
+              var ts = item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '';
+              var fmt = (item.format || 'qr_code').toUpperCase().replace(/_/g, ' ');
+              div.innerHTML = '<span class="sv">' + _escH(item.value) + '</span><span class="sm">' + fmt + ' \\u00B7 ' + ts + '</span>';
+              el.appendChild(div);
+            });
+          }
+
+          function _updatePollStatus(msg) {
+            var el = document.getElementById('scan-poll-status');
+            if (el) el.textContent = msg;
+          }
+
+          function _doPoll() {
+            if (_pollInFlight) return;
+            _pollInFlight = true;
+            _updatePollStatus('Polling...');
+            google.script.run
+              .withSuccessHandler(function(result) {
+                _pollInFlight = false;
+                if (result && result.success) {
+                  _renderScans(result.history);
+                  _updatePollStatus('Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+                } else {
+                  _updatePollStatus('Poll error');
+                }
+                _pollTimer = setTimeout(_doPoll, POLL_INTERVAL);
+              })
+              .withFailureHandler(function(err) {
+                _pollInFlight = false;
+                _updatePollStatus('Poll failed');
+                _pollTimer = setTimeout(_doPoll, POLL_INTERVAL);
+              })
+              .getScanHistory(_sessionToken);
+          }
+
+          // Start polling after a short delay (let auth settle)
+          setTimeout(function() { _doPoll(); }, 2000);
+
+          // Also listen for scan results forwarded from the parent (via the main GAS app iframe)
+          // The scanListener iframe handles server-side saves, but we also get notified
+          // when the parent page detects a barcode — the parent can't postMessage directly to us,
+          // but the poll will pick up new data within POLL_INTERVAL seconds
+        })();
         // PROJECT END
       </script>
     </body>

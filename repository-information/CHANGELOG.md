@@ -3,7 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
+
+## [v09.74r] — 2026-04-07 07:21:09 PM EST
+
+> **Prompt:** "clicking on the flashlight button is turning on but its not turning off when i click it again. on the gas layer below the relative scanning scanning html area, make something to test our scanning app so that things are saved in the spreadsheet and we can see it. use the testauth1 with the live data as the method, polling and all"
+
+### Fixed
+- Fixed torch toggle not turning off — simplified constraint application to avoid race condition in async promise chain
+
+### Added
+- Scan results saved to "Scans" sheet in the project spreadsheet (auto-creates sheet with headers on first scan)
+- GAS-side scan history UI with 10-second polling (testauth1 live data pattern) — shows timestamp, value, and format for each scan
+- `getScanHistory(token)` server function for authenticated polling
+- Server-side scan cache with self-healing (`_refreshScanCache` / `_getCachedScans`) — avoids repeated spreadsheet reads
+
+#### `inventorymanagement.html` — v01.06w
+
+##### Fixed
+- Flashlight toggle now properly turns off when tapped again
+
+#### `inventorymanagement.gs` — v01.06g
+
+##### Added
+- Scan history visible below the camera — shows saved scans with live updates
 
 ## [v09.73r] — 2026-04-07 06:51:03 PM EST
 
