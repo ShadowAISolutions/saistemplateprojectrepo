@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
+
+## [v01.21w] — 2026-04-08 11:40:06 AM EST — v09.96r
+
+### Fixed
+- Inventory operations (add, edit, delete, stock changes) now complete correctly and update the display
+- Data loading and automatic polling now populate the inventory and history tables
 
 ## [v01.20w] — 2026-04-08 11:27:51 AM EST — v09.95r
 

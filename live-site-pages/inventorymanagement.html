@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.20w">
+  <meta name="build-version" content="v01.21w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4255,21 +4255,37 @@
     if (!evt.data || !evt.data.type) return;
     var t = evt.data.type;
     if (t === 'inventory-bridge-ready') { _bridgeReady = true; _flushPending(); return; }
-    // Route responses to the correct handler
-    if (t === 'inventory-data-result' || t === 'inventory-data-error' ||
-        t === 'inventory-poll-result' || t === 'inventory-poll-error' ||
-        t === 'inventory-op-result' || t === 'inventory-op-error' ||
-        t === 'scan-history-result' || t === 'scan-history-error' ||
-        t === 'scan-delete-result' || t === 'scan-delete-error') {
-      // Find and call the most recent handler for this type
-      var baseType = t.replace(/-result$/, '').replace(/-error$/, '');
-      var isError = t.indexOf('-error') !== -1;
-      if (_callHandlers[baseType]) {
-        var h = _callHandlers[baseType];
-        delete _callHandlers[baseType];
+
+    // Static mapping: response base type → request type (handler key)
+    var _staticMap = {
+      'inventory-data': 'inventory-get-data',
+      'inventory-poll': 'inventory-poll',
+      'scan-history': 'scan-get-history',
+      'scan-delete': 'scan-delete-row'
+    };
+
+    var isError = t.indexOf('-error') !== -1;
+
+    // Inventory CRUD ops return generic 'inventory-op-result' with an 'op' field
+    if (t === 'inventory-op-result' || t === 'inventory-op-error') {
+      var handlerKey = 'inventory-' + (evt.data.op || '');
+      if (_callHandlers[handlerKey]) {
+        var h = _callHandlers[handlerKey];
+        delete _callHandlers[handlerKey];
         if (isError) { if (h.reject) h.reject(evt.data); }
         else { if (h.resolve) h.resolve(evt.data); }
       }
+      return;
+    }
+
+    // All other response types use static mapping
+    var baseType = t.replace(/-result$/, '').replace(/-error$/, '');
+    var handlerKey = _staticMap[baseType] || baseType;
+    if (_callHandlers[handlerKey]) {
+      var h = _callHandlers[handlerKey];
+      delete _callHandlers[handlerKey];
+      if (isError) { if (h.reject) h.reject(evt.data); }
+      else { if (h.resolve) h.resolve(evt.data); }
     }
   });
 

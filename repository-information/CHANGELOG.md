@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
+
+## [v09.96r] — 2026-04-08 11:40:06 AM EST
+
+> **Prompt:** "on the add new item window, i enter the item name and click add item, but it stays on that window, and even then it seems to be trying to add it to the spreadsheet, but its not showing anything in the inventory, history, or raw scans"
+
+### Fixed
+- PostMessage bridge handler routing: handlers were stored under request type (`inventory-add-new`) but looked up under response base type (`inventory-op`) — Promises never resolved
+- CRUD operations (add-new, add-stock, sub-stock, edit, delete) now use `op` field from `inventory-op-result` to reconstruct correct handler key
+- Data/poll/scan responses now use static mapping table to match response base types to request handler keys
+
+#### `inventorymanagement.html` — v01.21w
+
+##### Fixed
+- Inventory operations (add, edit, delete, stock changes) now complete correctly and update the display
+- Data loading and automatic polling now populate the inventory and history tables
 
 ## [v09.95r] — 2026-04-08 11:27:51 AM EST
 
