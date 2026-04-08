@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v10.10r] — 2026-04-08 05:09:34 PM EST
+
+> **Prompt:** "in inventorymanagement, change TEMPLATE_TITLE to Inventory Management .  also make it so that the user can still add the same item to the database with the add to inventory button, but only once per scan"
+
+### Changed
+- Set page `<title>` to "Inventory Management" (was `TEMPLATE_TITLE` placeholder)
+- Changed duplicate-scan add logic: "Add to Inventory" button now allows adding the same barcode/QR data multiple times, but only once per scan — re-scanning or clicking a history item resets the add opportunity
+
+#### `inventorymanagement.html` — v01.08w
+
+##### Changed
+- Page title now shows "Inventory Management" in browser tabs
+- You can now add the same item to inventory multiple times — each scan gives one add opportunity instead of permanently hiding the button after the first add
 
 ## [v10.09r] — 2026-04-08 02:38:26 PM EST
 

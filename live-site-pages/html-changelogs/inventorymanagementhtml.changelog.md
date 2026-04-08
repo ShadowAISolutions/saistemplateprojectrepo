@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08w] — 2026-04-08 05:09:34 PM EST — v10.10r
+
+### Changed
+- Page title now shows "Inventory Management" in browser tabs
+- You can now add the same item to inventory multiple times — each scan gives one add opportunity instead of permanently hiding the button after the first add
 
 ## [v01.07w] — 2026-04-08 02:38:26 PM EST — v10.09r
 

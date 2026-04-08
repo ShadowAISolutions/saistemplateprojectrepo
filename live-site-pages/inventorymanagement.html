@@ -10,9 +10,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.07w">
+  <meta name="build-version" content="v01.08w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <title>TEMPLATE_TITLE</title>
+  <title>Inventory Management</title>
 <!-- ══════════════ -->
 <!-- AUTH START -->
 <!-- ══════════════ -->
@@ -4126,7 +4126,7 @@ var _qrTorchSupported= false;
 var _qrLastScanData  = null;
 var _qrLastScanFormat= null;
 var _qrLastScanType  = null;
-var _qrAddedScans    = {};  // tracks data values already added to inventory
+var _qrCurrentScanAdded = false;  // tracks whether current scan was already added (resets each scan)
 
 // ─── QR Scanner — Engine detection ──────────────────────────────
 function detectQrEngine() {
@@ -4282,6 +4282,7 @@ function _onQrFound(data, format) {
   _qrLastScanData   = data;
   _qrLastScanFormat = format ? _formatQrLabel(format) : 'QR_CODE';
   _qrLastScanType   = type.label;
+  _qrCurrentScanAdded = false;  // reset per-scan add flag — allow one add per scan
 
   // Update result card
   _qrResultCard.classList.add('has-result');
@@ -4290,9 +4291,9 @@ function _onQrFound(data, format) {
   _qrResultType.className = 'qr-result-type-badge ' + type.id;
   _qrResultType.textContent = type.label;
   _qrActionRow.style.display = 'flex';
-  // Show/hide add button based on whether this scan was already added
+  // Show add button — new scan always gets one add opportunity
   var addBtn = document.getElementById('qr-add-btn');
-  if (addBtn) addBtn.style.display = _qrAddedScans[data] ? 'none' : '';
+  if (addBtn) addBtn.style.display = '';
   if (format) {
     _qrResultFormat.textContent = _formatQrLabel(format);
     _qrResultFormat.style.display = 'inline';
@@ -4399,6 +4400,7 @@ function _addQrToHistory(data, type, format) {
       _qrLastScanData = item.data;
       _qrLastScanFormat = item.format ? _formatQrLabel(item.format) : 'QR_CODE';
       _qrLastScanType = item.type.label;
+      _qrCurrentScanAdded = false;  // treat history click as a new scan opportunity
       _qrResultText.textContent = item.data;
       _qrResultText.classList.remove('empty');
       _qrResultType.className = 'qr-result-type-badge ' + item.type.id;
@@ -4408,7 +4410,7 @@ function _addQrToHistory(data, type, format) {
       _qrResultCard.classList.add('has-result');
       _qrActionRow.style.display = 'flex';
       var ab = document.getElementById('qr-add-btn');
-      if (ab) ab.style.display = _qrAddedScans[item.data] ? 'none' : '';
+      if (ab) ab.style.display = '';
     };
     _qrHistList.appendChild(el);
   });
@@ -4434,6 +4436,7 @@ function _getQrGasBaseUrl() {
 
 function addQrEntryToSheet() {
   if (!_qrLastScanData) { showQrToast('No scan data', 'error'); return; }
+  if (_qrCurrentScanAdded) { showQrToast('Already added this scan', 'info'); return; }
   var session = loadSession();
   if (!session || !session.token) { showQrToast('Not authenticated', 'error'); return; }
   var baseUrl = _getQrGasBaseUrl();
@@ -4455,7 +4458,7 @@ function addQrEntryToSheet() {
   .then(function(r) { return r.json(); })
   .then(function(result) {
     if (result.success) {
-      _qrAddedScans[_qrLastScanData] = true;
+      _qrCurrentScanAdded = true;
       if (addBtn) addBtn.style.display = 'none';
       showQrToast('Added to inventory!', 'success');
       _doDataPoll(); // immediate poll to show new entry
@@ -4538,11 +4541,6 @@ function fetchQrEntries() {
     if (result.success && result.entries) {
       _lastDataTs = Date.now();
       _renderQrEntriesTable(result.entries);
-      result.entries.forEach(function(e) { if (e.data) _qrAddedScans[e.data] = true; });
-      var addBtn = document.getElementById('qr-add-btn');
-      if (addBtn && _qrLastScanData) {
-        addBtn.style.display = _qrAddedScans[_qrLastScanData] ? 'none' : '';
-      }
     }
     _updatePollDisplay();
   })
