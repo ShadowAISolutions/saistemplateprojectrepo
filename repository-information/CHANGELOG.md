@@ -3,7 +3,42 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
+
+## [v09.92r] — 2026-04-08 10:23:28 AM EST
+
+> **Prompt:** "for the inventorymanagement, adjust the UI so that there is a proper user friendly Mobile and Desktop mode. the screenshot shows what it currently looks like."
+
+### Added
+- Responsive CSS media queries for desktop (≥768px) side-by-side layout: scanner on left, inventory panel on right
+- Responsive CSS media queries for mobile (<768px) stacked layout with touch-friendly controls
+- Desktop GAS iframe positioning to shift right of scanner area
+- Horizontal table scrolling on mobile for wide tables (History view)
+
+### Changed
+- Desktop: scanner reduced to 360px square, inventory panel fills remaining width with larger fonts and spacing
+- Mobile: mode buttons with min-height 44px for touch targets, modal inputs with 16px font to prevent iOS zoom
+- Admin/user position elements adapted for desktop layout (removed fragile calc-based positioning on desktop)
+
+#### `inventorymanagement.html` — v01.17w
+
+##### Added
+- Desktop media query: scanner aligned left with 360px max-width and square aspect ratio
+- Mobile media query: full-width scanner with 4:3 aspect ratio
+- GAS iframe responsive positioning via CSS `!important` override
+
+##### Changed
+- Scanner container responsive behavior split between mobile and desktop breakpoints
+
+#### `inventorymanagement.gs` — v01.16g
+
+##### Added
+- Desktop media query: expanded inventory panel with larger fonts, spacing, and table dimensions
+- Mobile media query: touch-friendly buttons, horizontal table scroll, optimized modal inputs
+
+##### Changed
+- Inventory container gets top padding on mobile to clear scanner viewport
+- Table wrapper gains horizontal scroll for better mobile usability
 
 ## [v09.91r] — 2026-04-08 09:54:43 AM EST
 

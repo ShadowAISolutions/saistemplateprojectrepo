@@ -3,7 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
+
+## [v01.16g] — 2026-04-08 10:23:28 AM EST — v09.92r
+
+### Added
+- Desktop mode: wider inventory panel with larger text, spacious table cells, and expanded buttons
+- Mobile mode: touch-friendly buttons, horizontal table scrolling, and optimized input fields
+
+### Changed
+- Improved layout positioning for user info and admin controls across screen sizes
 
 ## [v01.15g] — 2026-04-08 09:54:43 AM EST — v09.91r
 

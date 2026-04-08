@@ -3,7 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
+
+## [v01.17w] — 2026-04-08 10:23:28 AM EST — v09.92r
+
+### Added
+- Side-by-side layout on desktop: scanner on the left, inventory panel on the right
+- Responsive mobile layout with touch-friendly buttons and scrollable tables
+
+### Changed
+- Improved button sizes and font readability across all screen sizes
 
 ## [v01.16w] — 2026-04-08 09:54:43 AM EST — v09.91r
 

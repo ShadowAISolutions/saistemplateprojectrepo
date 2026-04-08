@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2817,7 +2817,7 @@ function doGet(e) {
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
         /* PROJECT START — Scan results UI */
-        #scan-panel { padding: 0; font-family: monospace; box-sizing: border-box; }
+        #scan-panel { padding: 0; font-family: monospace; box-sizing: border-box; width: 100%; }
         #scan-panel h3 { color: #90caf9; font-size: 13px; margin: 0 0 8px; }
         .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }
@@ -2845,7 +2845,7 @@ function doGet(e) {
         #scan-delete-modal .btn-delete { background: #da3633; color: #fff; }
         #scan-delete-modal .btn-delete:hover { background: #f85149; }
         /* ── Inventory Management UI ── */
-        #inv-container { padding: 8px 12px; max-width: 520px; margin: 0 auto; box-sizing: border-box; font-family: monospace; overflow-y: auto; max-height: calc(100vh - 40px); }
+        #inv-container { padding: 8px 12px; max-width: 520px; margin: 0 auto; box-sizing: border-box; font-family: monospace; overflow-y: auto; max-height: calc(100vh - 40px); padding-top: calc(min(100vw, 480px) * 0.75 + 70px); }
         #inv-mode-banner { width: 100%; text-align: center; padding: 8px 0; font-weight: bold; font-size: 14px; color: #fff; border-radius: 6px; margin-bottom: 8px; transition: background 0.3s; }
         .inv-mode-row { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
         .inv-mode-btn { flex: 1; min-width: 90px; padding: 8px 4px; border: 2px solid #555; border-radius: 6px; background: #1a1b26; color: #aaa; font: 12px/1.2 monospace; cursor: pointer; text-align: center; transition: all 0.2s; }
@@ -2866,7 +2866,7 @@ function doGet(e) {
         #inv-status.success { color: #66bb6a; }
         #inv-status.error { color: #ef5350; }
         #inv-status.info { color: #d29922; }
-        .inv-table-wrap { max-height: 300px; overflow-y: auto; border: 1px solid #333; border-radius: 6px; margin-bottom: 6px; }
+        .inv-table-wrap { max-height: 300px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #333; border-radius: 6px; margin-bottom: 6px; }
         .inv-table { width: 100%; border-collapse: collapse; font-size: 11px; }
         .inv-table th { position: sticky; top: 0; background: #1a1b26; color: #90caf9; padding: 6px 8px; text-align: left; border-bottom: 1px solid #444; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .inv-table th:hover { color: #fff; }
@@ -2896,6 +2896,43 @@ function doGet(e) {
         .inv-modal .btn-save { background: #238636; color: #fff; }
         .inv-modal .btn-save:hover { background: #2ea043; }
         .inv-modal .modal-error { color: #ef5350; font-size: 11px; margin-top: 6px; display: none; }
+
+        /* ── Responsive: Desktop (≥768px) — inventory panel fills right side ── */
+        @media (min-width: 768px) {
+          #inv-container { max-width: 100%; padding: 16px 24px; padding-top: 16px; max-height: 100vh; }
+          #inv-mode-banner { font-size: 16px; padding: 10px 0; }
+          .inv-mode-btn { padding: 12px 8px; font-size: 14px; min-width: 120px; }
+          .inv-table { font-size: 13px; }
+          .inv-table th { padding: 8px 12px; font-size: 13px; }
+          .inv-table td { padding: 8px 12px; max-width: 220px; }
+          .inv-table-wrap { max-height: 55vh; }
+          .inv-view-btn { padding: 8px 16px; font-size: 13px; }
+          .inv-action-btn { padding: 8px 16px; font-size: 13px; }
+          #inv-status { font-size: 13px; padding: 6px 0; }
+          .inv-adv-row { font-size: 13px; }
+          .inv-adv-row input[type=number] { font-size: 13px; width: 70px; }
+          .inv-summary { font-size: 12px; }
+          .inv-poll-bar { font-size: 12px; }
+          .inv-modal .modal-box { max-width: 460px; }
+          #user-email { top: 8px; left: 8px; font-size: 12px; }
+          #admin-badge { top: 28px; left: 8px; }
+          #admin-dropdown-gas { top: 50px; left: 8px; }
+          #admin-panel { top: 60px; left: 8px; width: calc(100% - 16px); max-width: 600px; }
+          .scan-row .sv { font-size: 13px; }
+          .scan-row .sm { font-size: 11px; }
+        }
+
+        /* ── Responsive: Mobile (<768px) — stacked, touch-friendly ── */
+        @media (max-width: 767px) {
+          .inv-mode-btn { min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+          .inv-action-btn { min-height: 38px; font-size: 12px; padding: 6px 12px; }
+          .inv-view-btn { min-height: 36px; font-size: 12px; padding: 6px 12px; }
+          .inv-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          .inv-table { min-width: 420px; }
+          .inv-table td { font-size: 11px; }
+          .inv-modal .modal-box { max-width: 95%; padding: 18px; }
+          .inv-modal .modal-field input { font-size: 16px; padding: 10px; }
+        }
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: calc(min(100vw, 480px) * 0.75 + 42px); left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
