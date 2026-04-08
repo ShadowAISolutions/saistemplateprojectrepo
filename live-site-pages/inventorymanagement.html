@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.06w">
+  <meta name="build-version" content="v01.07w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>TEMPLATE_TITLE</title>
 <!-- ══════════════ -->
@@ -489,18 +489,23 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .qr-entries-title { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: #555570; text-transform: uppercase; }
-    .qr-entries-refresh {
-      padding: 4px 10px; border-radius: 6px; border: 1px solid #1e1e2e;
-      background: transparent; color: #555570; font-family: 'Space Mono', monospace;
-      font-size: 0.58rem; cursor: pointer;
+    .qr-conn-status {
+      display: flex; align-items: center; gap: 6px; padding: 3px 10px;
+      background: rgba(0,0,0,0.3); border-radius: 20px; font-size: 0.65rem;
+      font-family: 'Space Mono', monospace; color: #6e7681;
     }
-    .qr-entries-refresh:hover { border-color: #00ffcc; color: #00ffcc; }
-    .qr-poll-countdown {
-      font-family: 'Space Mono', monospace; font-size: 0.58rem;
-      color: #555570; min-width: 52px; text-align: center;
+    .qr-conn-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #888;
+      transition: background 0.3s; flex-shrink: 0;
     }
-    .qr-poll-countdown.active { color: #00ffcc; }
-    .qr-poll-countdown.fetching { color: #f59e0b; }
+    .qr-conn-dot.live { background: #3fb950; }
+    .qr-conn-dot.updating { background: #d29922; animation: qrConnPulse 0.6s infinite alternate; }
+    .qr-conn-dot.disconnected { background: #f85149; }
+    @keyframes qrConnPulse { from { opacity: 1; } to { opacity: 0.4; } }
+    .qr-conn-label { white-space: nowrap; }
+    .qr-conn-divider { color: #444; margin: 0 1px; }
+    .qr-conn-countdown { font-size: 0.62rem; color: #6e7681; min-width: 18px; text-align: right; }
+    .qr-conn-age { font-size: 0.62rem; color: #6e7681; min-width: 18px; }
     .qr-entries-table {
       width: 100%; border-collapse: collapse; font-size: 0.68rem;
       font-family: 'Space Mono', monospace;
@@ -730,9 +735,14 @@
       <!-- Inventory entries from spreadsheet -->
       <div class="qr-entries-section" id="qr-entries-section">
         <div class="qr-entries-header">
-          <span class="qr-entries-title">Recent Inventory Entries</span>
-          <span class="qr-poll-countdown" id="qr-poll-countdown">--</span>
-          <button class="qr-entries-refresh" onclick="_doDataPoll()">&#8635; Refresh</button>
+          <span class="qr-entries-title">Live Data</span>
+          <div class="qr-conn-status">
+            <div class="qr-conn-dot" id="qr-conn-dot"></div>
+            <span class="qr-conn-label" id="qr-conn-label">Connecting...</span>
+            <span class="qr-conn-age" id="qr-conn-age"></span>
+            <span class="qr-conn-divider">|</span>
+            <span class="qr-conn-countdown" id="qr-conn-countdown">--</span>
+          </div>
         </div>
         <div id="qr-entries-body">
           <div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>
@@ -4463,41 +4473,48 @@ function addQrEntryToSheet() {
 // ─── QR Scanner — Data Polling ──────────────────────────────────
 var _dataPollTimer = null;
 var _dataPollInFlight = false;
-var _dataPollCountdown = 0;
-var _dataPollCountdownTimer = null;
-var _pollCountdownEl = document.getElementById('qr-poll-countdown');
+var _lastDataPollTick = 0;
+var _lastDataTs = 0;
+var _pollDisplayTimer = null;
+var _qrConnDot = document.getElementById('qr-conn-dot');
+var _qrConnLabel = document.getElementById('qr-conn-label');
+var _qrConnAge = document.getElementById('qr-conn-age');
+var _qrConnCountdown = document.getElementById('qr-conn-countdown');
 
-function _updatePollCountdown() {
-  if (!_pollCountdownEl) return;
+function _updatePollDisplay() {
+  // Connection status: age of data
+  if (_lastDataTs > 0) {
+    var age = Math.round((Date.now() - _lastDataTs) / 1000);
+    if (_qrConnDot) _qrConnDot.className = 'qr-conn-dot live';
+    if (_qrConnLabel) _qrConnLabel.textContent = 'Live';
+    if (_qrConnAge) _qrConnAge.textContent = age + 's';
+  }
+  // Poll countdown
   if (_dataPollInFlight) {
-    _pollCountdownEl.textContent = 'polling...';
-    _pollCountdownEl.className = 'qr-poll-countdown fetching';
-  } else if (_dataPollCountdown > 0) {
-    var s = _dataPollCountdown;
-    var display = s >= 60 ? Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60) : s + 's';
-    _pollCountdownEl.textContent = '\u26A1 ' + display;
-    _pollCountdownEl.className = 'qr-poll-countdown' + (s <= 5 ? ' active' : '');
+    if (_qrConnDot) _qrConnDot.className = 'qr-conn-dot updating';
+    if (_qrConnLabel) _qrConnLabel.textContent = 'Updating...';
+    if (_qrConnCountdown) _qrConnCountdown.textContent = '';
+  } else if (_lastDataPollTick) {
+    var since = (Date.now() - _lastDataPollTick) / 1000;
+    var nextIn = Math.max(0, ((HTML_CONFIG.DATA_POLL_INTERVAL || 15000) / 1000) - since);
+    var s = Math.ceil(nextIn);
+    if (_qrConnCountdown) _qrConnCountdown.textContent = '\u25B7 ' + s + 's';
   } else {
-    _pollCountdownEl.textContent = '--';
-    _pollCountdownEl.className = 'qr-poll-countdown';
+    if (_qrConnCountdown) _qrConnCountdown.textContent = '--';
   }
 }
 
-function _startPollCountdown() {
-  _dataPollCountdown = Math.round((HTML_CONFIG.DATA_POLL_INTERVAL || 15000) / 1000);
-  if (_dataPollCountdownTimer) clearInterval(_dataPollCountdownTimer);
-  _dataPollCountdownTimer = setInterval(function() {
-    _dataPollCountdown--;
-    if (_dataPollCountdown <= 0) { clearInterval(_dataPollCountdownTimer); _dataPollCountdownTimer = null; }
-    _updatePollCountdown();
-  }, 1000);
-  _updatePollCountdown();
+function _startPollDisplay() {
+  if (_pollDisplayTimer) clearInterval(_pollDisplayTimer);
+  _pollDisplayTimer = setInterval(_updatePollDisplay, 1000);
 }
 
-function _stopPollCountdown() {
-  if (_dataPollCountdownTimer) { clearInterval(_dataPollCountdownTimer); _dataPollCountdownTimer = null; }
-  _dataPollCountdown = 0;
-  _updatePollCountdown();
+function _stopPollDisplay() {
+  if (_pollDisplayTimer) { clearInterval(_pollDisplayTimer); _pollDisplayTimer = null; }
+  if (_qrConnDot) _qrConnDot.className = 'qr-conn-dot';
+  if (_qrConnLabel) _qrConnLabel.textContent = 'Offline';
+  if (_qrConnAge) _qrConnAge.textContent = '';
+  if (_qrConnCountdown) _qrConnCountdown.textContent = '--';
 }
 
 function fetchQrEntries() {
@@ -4508,7 +4525,7 @@ function fetchQrEntries() {
   if (!baseUrl) return;
 
   _dataPollInFlight = true;
-  _updatePollCountdown();
+  _updatePollDisplay();
   fetch(baseUrl + '?action=getQrEntries', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -4517,36 +4534,37 @@ function fetchQrEntries() {
   .then(function(r) { return r.json(); })
   .then(function(result) {
     _dataPollInFlight = false;
+    _lastDataPollTick = Date.now();
     if (result.success && result.entries) {
+      _lastDataTs = Date.now();
       _renderQrEntriesTable(result.entries);
-      // Cross-reference server entries against local added tracking
       result.entries.forEach(function(e) { if (e.data) _qrAddedScans[e.data] = true; });
-      // Update add button visibility for current scan
       var addBtn = document.getElementById('qr-add-btn');
       if (addBtn && _qrLastScanData) {
         addBtn.style.display = _qrAddedScans[_qrLastScanData] ? 'none' : '';
       }
     }
+    _updatePollDisplay();
   })
-  .catch(function() { _dataPollInFlight = false; _updatePollCountdown(); });
+  .catch(function() { _dataPollInFlight = false; _lastDataPollTick = Date.now(); _updatePollDisplay(); });
 }
 
 function _doDataPoll() {
   fetchQrEntries();
-  _startPollCountdown();
   _dataPollTimer = setTimeout(_doDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL || 15000);
 }
 
 function _startDataPoll() {
   _stopDataPoll();
+  _lastDataPollTick = Date.now();
+  _startPollDisplay();
   fetchQrEntries(); // immediate first poll
-  _startPollCountdown();
   _dataPollTimer = setTimeout(_doDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL || 15000);
 }
 
 function _stopDataPoll() {
   if (_dataPollTimer) { clearTimeout(_dataPollTimer); _dataPollTimer = null; }
-  _stopPollCountdown();
+  _stopPollDisplay();
 }
 
 function _renderQrEntriesTable(entries) {

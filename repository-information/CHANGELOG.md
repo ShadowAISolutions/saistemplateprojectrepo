@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v10.09r] — 2026-04-08 02:38:26 PM EST
+
+> **Prompt:** "i was referring to the countdown in the testauth1 polling which im showing in the screenshot"
+
+### Changed
+- Replaced simple countdown timer with testauth1-style connection status badge: `Live Data ● Live 2s | ▸ 14s`
+- Badge shows: green dot + "Live" + data age + divider + poll countdown (matching testauth1's `ld-conn-status` pattern)
+- Amber pulsing dot + "Updating..." during fetch, gray "Offline" when stopped
+
+#### `inventorymanagement.html` — v01.07w
+
+##### Changed
+- Entries header now shows testauth1-style live connection status badge
+- Displays data freshness age and poll countdown in a rounded pill
 
 ## [v10.08r] — 2026-04-08 02:33:08 PM EST
 
