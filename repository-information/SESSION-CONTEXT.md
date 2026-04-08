@@ -4,50 +4,47 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-08 10:09:00 AM EST
-**Repo version:** v09.91r
+**Date:** 2026-04-08 11:52:00 AM EST
+**Repo version:** v09.97r
 
 ### What was done
-- **Designed and implemented inventory management system (v09.91r)** — full AHK feature parity Phases 1+2, incorporating all elements from `autoHotkey/Combined Inventory and Intercept.ahk`
-- **Phase 1 — Backend**: Added inventory CRUD functions to `inventorymanagement.gs` PROJECT block (line ~1786): `addNewItem`, `addStock`, `subtractStock`, `editItem`, `getInventoryData`, `pollInventoryData`. Auto-creates `Inventory` and `InventoryHistory` sheets. Full caching via `getEpochCache()` with `inventory_data`, `inventory_history`, `inventory_last_modified` keys. Every operation logs to InventoryHistory (action types: NEW, ADD, SUB, EDIT)
-- **Phase 2 — Frontend UI**: Added inventory management UI inside the GAS session page HTML (in doGet): mode banner (color-coded: green=new, blue=add, orange=subtract), 3 mode buttons, 3 togglable list views (Inventory table with sortable columns, History table, Raw Scans), custom modals (Add New Item, Edit Item, Delete Item), status bar with auto-fade, advanced qty toggle for custom +N/-N adjustments, 15s inventory data polling, parent-to-GAS scan bridge via postMessage
-- **Parent HTML change**: Added `inventory-scan` postMessage forwarding in `onFound()` function of `inventorymanagement.html` (line ~3999) to send camera barcode scans to the GAS session iframe
+- **Responsive UI modes (v09.92r)** — Added desktop (side-by-side) and mobile (stacked) layouts for scanner + inventory
+- **Major architecture migration (v09.93r)** — Moved entire inventory UI (CSS, HTML, JS) from GAS iframe to HTML layer. GAS iframe now operates as a hidden backend bridge only — receives postMessage, calls `google.script.run`, returns results via postMessage
+- **PostMessage bridge** — Created `_gasCall()` Promise-based RPC helper on HTML side. GAS bridge routes 9 operation types: `inventory-get-data`, `inventory-poll`, `inventory-add-new`, `inventory-add-stock`, `inventory-sub-stock`, `inventory-edit`, `inventory-delete`, `scan-get-history`, `scan-delete-row`
+- **Layout fixes (v09.94r-v09.95r)** — Fixed mobile overlap (scanner changed from `position: fixed` to `position: relative`), wired HTML toggle to hide/show inventory panel, removed `display: none` gate so panel is always visible
+- **Handler routing fixes (v09.96r-v09.97r)** — Fixed postMessage response→handler mapping. Rewrote from key-based lookup to matcher-based callback system. CRUD ops use `op` field from `inventory-op-result` to match; data/poll/scan use static response→request type mapping
 
 ### Where we left off
-- Phases 1+2 pushed and auto-merging. The GAS webhook will deploy the new backend functions
-- **Still needed (Phase 3)**: Google Drive image support for item/user photos — requires adding `drive.file` OAuth scope, `uploadInventoryImage()` GAS function, CSP update for `drive.google.com` and `lh3.googleusercontent.com`
-- **Still needed (Phase 4)**: Column sorting/filtering polish, audio feedback (scan confirmation tone), RBAC gating for inventory operations, responsive mobile layout, error handling for concurrent edits
+- **CRITICAL BUG — CRUD operations still not resolving.** The "Add New Item" modal stays open after clicking "Add Item". The GAS server receives the call and adds to the spreadsheet, but the HTML `.then()` handler never fires (Promise never resolves). The matcher-based callback rewrite (v09.97r) was the latest attempt but user reports it still doesn't work
+- **Root cause is unknown** — the code traces correctly on paper: `_gasCall` stores matcher → `_sendToGas` sends to `gas-app` iframe → GAS bridge calls `addNewItem()` → success handler sends `{type: 'inventory-op-result', op: 'add-new', result: r}` back to parent → HTML listener should find matching callback. But the Promise never resolves in practice
+- **Debugging needed** — next session should add `console.log` statements to: (1) the GAS bridge's `_respond` function to confirm messages are being sent, (2) the HTML message listener to confirm messages arrive and what their content is, (3) the matcher loop to see if callbacks are found. Alternatively, use the webapp-testing skill with Playwright to capture browser console output
+- **Possible causes to investigate**: (a) the GAS bridge's `window.top.postMessage(msg, _PARENT_ORIGIN)` might be blocked by the GAS sandbox — unlike the template's existing bridge iframes which use string-concatenated HTML, the inventory bridge is in the main `doGet()` session page which may have different sandbox restrictions; (b) the `_PARENT_ORIGIN` variable might resolve incorrectly in the template literal context; (c) `google.script.run` success handler might swallow errors silently; (d) the message might arrive but `_activeCallbacks` array might be empty by the time it does (race condition)
 
 ### Key decisions made
-- **Google OAuth only** — no badge-based user identification (InventoryUsers sheet omitted). Google email is the sole user identity for all inventory operations
-- **Google Drive links for images** (deferred to Phase 3) — full-size photos stored via `DriveApp.createFile(blob)`, shareable URLs in Sheets
-- **Phases 1+2 first** — backend + frontend UI delivered this session; images and polish in follow-up sessions
-- **Both qty modes** — default +1/-1 quick scan with "Advanced" toggle that reveals a quantity input field for custom adjustments
-- **Delete = set qty to 0** — preserves the barcode entry for future re-stocking rather than removing the sheet row
-- **Inventory UI inside GAS session page** — not on parent HTML. All ops require auth tokens, `google.script.run` only available inside GAS iframe
-- **Scan flow**: Parent HTML (camera) → postMessage `{type:'inventory-scan'}` → GAS session page → `google.script.run` (server-side CRUD)
+- **UI on HTML layer, backend on GAS** — scanner and inventory share the same JS scope. No more postMessage for scan handling (`onFound()` calls `_handleInventoryScan()` directly)
+- **Matcher-based callback system** — replaced key-based `_callHandlers` map with `_activeCallbacks` array of `{match, resolve, reject}` objects. Each call registers a matcher function that checks response type + op field
+- **GAS bridge in doGet() session page** — the bridge code is inside the `doGet()` HTML template literal, running in the `gas-app` iframe. Uses `_respond()` helper that builds `{type, ...payload}` and sends via `window.top.postMessage(msg, _PARENT_ORIGIN)`
 
 ### Active context
-- Branch: claude/design-inventory-system-E7wUy (pushed, auto-merging)
-- Repo version: v09.91r
-- inventorymanagement.html: v01.16w, inventorymanagement.gs: v01.15g
-- Plan file: `/root/.claude/plans/temporal-sparking-wind.md` (full design plan with all 4 phases)
+- Branch: claude/responsive-ui-modes-bNxqC
+- Repo version: v09.97r
+- inventorymanagement.html: v01.22w, inventorymanagement.gs: v01.17g
+- Plan file: `/root/.claude/plans/moonlit-gathering-walrus.md` (bridge routing fix plan)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 
 ## Previous Sessions
 
-**Date:** 2026-04-07 10:52:00 PM EST
-**Repo version:** v09.90r
+**Date:** 2026-04-08 10:09:00 AM EST
+**Repo version:** v09.91r
 
 ### What was done
-- **Fixed GAS toggle not hiding admin dropdown and scan history (v09.87r)** — root cause: parent page's GAS toggle button was never shown. Fix: added `_showGasToggle()` call, expanded GAS-side `_gasLayerEls` array
-- **Fixed templates for future projects (v09.88r)** — propagated to globalacl and programportal
-- **Show Global ACL in Program Portal (v09.89r)** — removed `SELF` exclusion from `getPortalApps()`
-- **Exclude Program Portal from its own app list (v09.90r)** — added self-exclusion using `selfPageId`
+- **Designed and implemented inventory management system (v09.91r)** — full AHK feature parity Phases 1+2
+- **Phase 1 — Backend**: Inventory CRUD functions in `inventorymanagement.gs`
+- **Phase 2 — Frontend UI**: Inventory UI inside GAS session page (later migrated to HTML layer this session)
 
 ### Where we left off
-- All changes pushed. GAS deployment needed for the changes to take effect
+- Inventory system implemented, responsive UI migration started next session
 
 Developed by: ShadowAISolutions
