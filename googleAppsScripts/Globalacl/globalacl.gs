@@ -1,4 +1,4 @@
-var VERSION = "v01.55g";
+var VERSION = "v01.56g";
 var TITLE = "Global ACL";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3439,7 +3439,9 @@ function doGet(e) {
     <body>
       <!-- PROJECT START — globalacl version and UI elements -->
       <h2 id="version">${escapeHtml(VERSION)}</h2>
+      <!-- GAS toggle moved to HTML layer (globalacl.html) for full iframe hide/show
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      -->
       <!-- PROJECT END -->
       ${isAdmin ? `
       <!-- Admin badge and panel (only rendered for admin users) -->

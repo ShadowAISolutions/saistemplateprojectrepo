@@ -3,7 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
+
+## [v09.88r] — 2026-04-07 10:16:45 PM EST
+
+> **Prompt:** "ok great that fixed it. i noticed that it wasnt hiding the admin dropdown all the way since i first created this project meaning that there is something not properly set up on the templates or setup-gas-project.sh or gas-project-creator . can you review them to see if we can fix it so that future projects properly have it set up"
+
+### Fixed
+- Root cause: the auth HTML template's `showApp()` never called `_showGasToggle()`, and the GAS auth template had an active duplicate toggle button inside the iframe with an incomplete `_gasLayerEls` list. Fixed all three issues in both templates so future projects are set up correctly
+- Propagated the fixes to all existing auth pages (globalacl.html, programportal.html) and their GAS scripts (globalacl.gs, programportal.gs)
+
+#### `globalacl.html` — v01.89w
+
+##### Fixed
+- Added `_showGasToggle()` call to `showApp()` so parent page's GAS toggle button is visible after auth
+
+#### `globalacl.gs` — v01.56g
+
+##### Fixed
+- Commented out duplicate GAS toggle button inside iframe — parent page's button handles the toggle
+
+#### `programportal.html` — v01.96w
+
+##### Fixed
+- Added `_showGasToggle()` call to `showApp()` so parent page's GAS toggle button is visible after auth
+
+#### `programportal.gs` — v01.63g
+
+##### Fixed
+- Commented out duplicate GAS toggle button inside iframe — parent page's button handles the toggle
 
 ## [v09.87r] — 2026-04-07 10:08:31 PM EST
 

@@ -2787,6 +2787,7 @@
     function showApp(email, displayName, role) {
       _authState = 'authenticated';
       if (email) _ssoUserEmail = email;  // Hold for SSO sharing
+      if (window._showGasToggle) _showGasToggle();
 
       var wall = document.getElementById('auth-wall');
       var userPill = document.getElementById('user-pill');

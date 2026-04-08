@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
+
+## [v01.63g] — 2026-04-07 10:16:45 PM EST — v09.88r
+
+### Fixed
+- GAS layer toggle now hides all controls when toggled off
 
 ## [v01.62g] — 2026-04-07 05:02:49 PM EST — v09.67r
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.62g";
+var VERSION = "v01.63g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -3089,8 +3089,9 @@ function doGet(e) {
       <div class="portal-footer" id="portal-footer">Developed by: ShadowAISolutions</div>
       </div><!-- end #portal-main -->
       <div id="version">${escapeHtml(VERSION)}</div>
-      <!-- GAS layer visibility toggle -->
+      <!-- GAS toggle moved to HTML layer (programportal.html) for full iframe hide/show
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      -->
       <!-- PROJECT END -->
 
       <script>
