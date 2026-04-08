@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v10.11r] — 2026-04-08 05:16:10 PM EST
+
+> **Prompt:** "after scanning, then using add to inventory, the button says adding... then goes away, but then when i scan again the button appears and says ..adding immediately"
+
+### Fixed
+- Fixed "Add to Inventory" button showing stale "...adding" text and disabled state after a new scan — button text and enabled state now reset on every new scan and history click
+
+#### `inventorymanagement.html` — v01.09w
+
+##### Fixed
+- "Add to Inventory" button no longer appears stuck in "adding..." state after scanning a new item
 
 ## [v10.10r] — 2026-04-08 05:09:34 PM EST
 

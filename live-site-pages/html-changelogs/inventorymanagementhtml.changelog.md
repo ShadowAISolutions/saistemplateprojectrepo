@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
 
 ## [Unreleased]
+
+## [v01.09w] — 2026-04-08 05:16:10 PM EST — v10.11r
+
+### Fixed
+- "Add to Inventory" button no longer appears stuck in "adding..." state after scanning a new item
 
 ## [v01.08w] — 2026-04-08 05:09:34 PM EST — v10.10r
 
