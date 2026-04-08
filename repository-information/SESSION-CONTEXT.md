@@ -4,44 +4,48 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-08 12:50:00 PM EST
-**Repo version:** v10.01r
+**Date:** 2026-04-08 01:12:00 PM EST
+**Repo version:** v10.02r
 
 ### What was done
-- **Add New Item UX overhaul (v09.98r / v01.23w)** — Removed `readonly` from barcode field, added "Add Manually" button, added barcode validation, auto-offer new item when scanning unknown barcode in ADD/SUB mode
-- **Bridge fix: evt.source (v09.99r / v01.24w)** — Discovered `gasApp.contentWindow.postMessage()` targets Google's outer shell frame, not the inner GAS sandbox. Fixed `_sendToGas()` to use `_gasBridgeSource` captured from `evt.source` of `inventory-bridge-ready`
-- **Desktop interactivity fix (v10.00r / v01.25w)** — Added `pointer-events: none` to GAS iframe (it has no visible UI). Added robust bridge with `gasApp.contentWindow` fallback + opportunistic `evt.source` capture from any inventory/scan message
-- **Desktop click-through + allowlist fix (v10.01r / v01.26w)** — Added opaque `background: #0d1117` to `#inv-panel` desktop CSS (fixed click passthrough on transparent fixed element). Added all 11 inventory/scan bridge message types to `_KNOWN_GAS_MESSAGES` allowlist (stopped `_reportSecurityEvent` from flooding page with hidden iframes per unknown message)
+- **Reset inventorymanagement to original template state (v10.02r)** — User decided to start the inventory management project over from scratch. Reset both `inventorymanagement.html` (v01.26w → v01.00w) and `inventorymanagement.gs` (v01.17g → v01.00g) to the auth template defaults by regenerating from `HtmlAndGasTemplateAutoUpdate-auth.html.txt` and `gas-minimal-auth-template-code.js.txt` with config values injected
+- Cleared all 4 inventory changelog files (HTML changelog, HTML archive, GAS changelog, GAS archive) to empty initial state
+- Deleted `inventorymanagement-diagram.md` per-environment diagram
+- Preserved real deployment IDs in `inventorymanagement.config.json` (DEPLOYMENT_ID, SPREADSHEET_ID, MASTER_ACL_SPREADSHEET_ID, CLIENT_ID)
+- Preserved AHK files as-is (user chose to keep them untouched)
+- Updated README.md tree with v01.00w/v01.00g versions, removed diagram tree entry
+- Removed inventory diagram table row from REPO-ARCHITECTURE.md
 
 ### Where we left off
-- **STILL NOT WORKING ON DESKTOP** — user reports buttons are hoverable but clicking does nothing, "Waiting for connection..." persists. The v10.01r fixes (background + allowlist) have just been pushed but user hasn't confirmed if they resolved the issue yet
-- **Mobile (Android Chrome) works fine** — all features functional on phone
-- **Root causes addressed so far**: (1) `gasApp.contentWindow` vs `evt.source` — fixed, (2) `pointer-events` on GAS iframe — fixed, (3) no background on desktop panel — fixed, (4) missing allowlist entries — fixed
-- **If still broken after v10.01r**, the next debugging step should be **Playwright browser testing** (webapp-testing skill) to capture actual browser console output and see: (a) whether `inventory-bridge-ready` message arrives at the HTML listener, (b) whether `_bridgeReady` gets set, (c) whether `_gasBridgeSource` is non-null, (d) whether `_sendToGas` successfully posts messages. The issue may be Chrome-specific compositor behavior with nested fixed-position iframes, or the GAS doGet() HTML's handshake guard (line 2936) destroying the inventory bridge before it sends `inventory-bridge-ready`
+- **Inventorymanagement is now a clean template slate** — ready for rebuilding from scratch
+- The page is live at `ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html` and will show the standard template auth page (Google Sign-In → empty page with version indicator)
+- The GAS backend is still connected to the same deployment ID and spreadsheet — when rebuilt, it can reconnect to the existing Google Sheets data
+- The AHK desktop companion (`Combined Inventory and Intercept.ahk`) still exists but will fail to communicate with the GAS backend since the inventory endpoints no longer exist
 
 ### Key decisions made
-- **evt.source pattern** — all GAS communication must use `event.source` captured from incoming messages, not `gasApp.contentWindow`. This is documented at line 2061 of inventorymanagement.html
-- **GAS iframe is pointer-events:none** — the iframe is a backend communication channel only, no visible UI to click
-- **Allowlist must include all project message types** — `_KNOWN_GAS_MESSAGES` at line 1672 needs entries for every postMessage type used by project-specific bridges
-- **Desktop panel needs opaque background** — `position: fixed` elements overlapping iframes need explicit backgrounds to create proper hit targets in Chrome's compositor
+- **Full reset, not partial** — user wanted to start completely from scratch, not preserve any custom code
+- **Keep real IDs** — DEPLOYMENT_ID, SPREADSHEET_ID, MASTER_ACL_SPREADSHEET_ID, and CLIENT_ID are preserved so the rebuilt project can reconnect to the same GAS deployment and Google Sheets without re-creating infrastructure
+- **Keep AHK files** — user chose to keep the desktop barcode scanning component untouched
+- **Delete diagram** — the per-environment diagram will be recreated during the rebuild
+- **No version bumps on reset** — the HTML/GAS files were reset to v01.00w/v01.00g (not bumped from current versions)
 
 ### Active context
-- Branch: claude/fix-inventory-new-items-4U4jn
-- Repo version: v10.01r
-- inventorymanagement.html: v01.26w, inventorymanagement.gs: v01.17g (GAS not modified this session)
+- Branch: claude/reset-inventory-management-eFAkn
+- Repo version: v10.02r
+- inventorymanagement.html: v01.00w (template state), inventorymanagement.gs: v01.00g (template state)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 
 ## Previous Sessions
 
-**Date:** 2026-04-08 11:52:00 AM EST
-**Repo version:** v09.97r
+**Date:** 2026-04-08 12:50:00 PM EST
+**Repo version:** v10.01r
 
 ### What was done
-- Responsive UI modes, major architecture migration (UI to HTML layer), PostMessage bridge, layout fixes, handler routing fixes (v09.92r-v09.97r)
+- Desktop click-through + allowlist fixes, bridge fixes, Add New Item UX overhaul, pointer-events fix (v09.98r-v10.01r)
 
 ### Where we left off
-- CRUD operations not resolving — Add New Item modal staying open. Led to this session's fixes
+- Desktop still not confirmed working — led to user deciding to reset and rebuild from scratch
 
 Developed by: ShadowAISolutions
