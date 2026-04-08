@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.24w">
+  <meta name="build-version" content="v01.25w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -1075,7 +1075,7 @@
       // cr34t3 1fr4m3
       var f = document.createElement(atob('aWZyYW1l'));
       f.id = 'gas-app';
-      f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
+      f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;pointer-events:none;';
       f.dataset.baseUrl = _u;
       document.body.appendChild(f);
     })();
@@ -4261,6 +4261,12 @@
     var t = evt.data.type;
     if (t === 'inventory-bridge-ready') { _gasBridgeSource = evt.source; _bridgeReady = true; _flushPending(); return; }
 
+    // Capture evt.source from any inventory bridge response (in case bridge-ready was missed)
+    if (!_gasBridgeSource && evt.source && (t.indexOf('inventory-') === 0 || t.indexOf('scan-') === 0)) {
+      _gasBridgeSource = evt.source;
+      if (!_bridgeReady) { _bridgeReady = true; _flushPending(); }
+    }
+
     // Check all active callbacks for a match
     var isError = t.indexOf('-error') !== -1;
     for (var i = 0; i < _activeCallbacks.length; i++) {
@@ -4289,7 +4295,15 @@
   }
 
   function _sendToGas(type, data, resolve, reject) {
-    if (!_gasBridgeSource) { if (reject) reject({error:'GAS bridge not ready'}); return; }
+    // Use _gasBridgeSource (event.source from GAS sandbox) when available.
+    // Fallback to gasApp.contentWindow for environments where the GAS sandbox === contentWindow
+    // (e.g. mobile browsers with single-frame GAS architecture).
+    var target = _gasBridgeSource;
+    if (!target) {
+      var gasApp = document.getElementById('gas-app');
+      target = gasApp && gasApp.contentWindow;
+    }
+    if (!target) { if (reject) reject({error:'GAS bridge not ready'}); return; }
 
     // Create a matcher function based on the request type
     var matchFn;
@@ -4310,7 +4324,7 @@
     _activeCallbacks.push({match: matchFn, resolve: resolve, reject: reject});
     var msg = {type: type};
     if (data) { for (var k in data) { if (data.hasOwnProperty(k)) msg[k] = data[k]; } }
-    _gasBridgeSource.postMessage(msg, '*');
+    target.postMessage(msg, '*');
   }
 
   function _gasCall(type, data) {

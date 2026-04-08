@@ -3,7 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
+
+## [v10.00r] — 2026-04-08 12:35:49 PM EST
+
+> **Prompt:** "fix it, but keep in mind that the PC is not showing the results of the inventory, and its still not letting me interact even if i toggle the gas layer"
+
+### Fixed
+- Added `pointer-events: none` to the `gas-app` iframe — the full-viewport GAS iframe was intercepting all mouse clicks on desktop, preventing interaction with the inventory panel buttons. The iframe has no visible UI and is used only for `postMessage`/`google.script.run` communication
+- Made bridge `_sendToGas()` robust with fallback: uses `_gasBridgeSource` (evt.source from GAS sandbox) as primary, falls back to `gasApp.contentWindow` for mobile browsers where the GAS sandbox IS the contentWindow
+- Added opportunistic `evt.source` capture from ANY inventory/scan bridge response message — if `inventory-bridge-ready` was missed (timing, race condition), the bridge self-heals on the first response received
+
+#### `inventorymanagement.html` — v01.25w
+
+##### Fixed
+- All buttons (Add Manually, New Item, Add Stock, Subtract, Edit, Delete) are now clickable on desktop
+- Inventory data and history now load on desktop (bridge connection was failing silently)
 
 ## [v09.99r] — 2026-04-08 12:21:51 PM EST
 
