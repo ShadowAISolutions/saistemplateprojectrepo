@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
+
+## [v09.86r] — 2026-04-07 09:40:18 PM EST
+
+> **Prompt:** "it is still not hiding, do a much deeper analysis so that its properly hidden just like the other elements are without any mechanism we werent already using"
+
+### Fixed
+- Root cause found: the GAS toggle used `style.display = 'none'` to hide the iframe, but the auth flow's reconnect/reshow code (line 2042) resets `style.visibility = ''` after auth events — undoing the toggle. Fix: switched to using `.classList.add('html-layer-hidden')` which applies `display: none !important` via CSS class — the same mechanism the HTML toggle uses. The `!important` defeats any inline style override from the auth flow
+
+#### `inventorymanagement.html` — v01.14w
+
+##### Fixed
+- GAS toggle now reliably hides all GAS content using the same CSS class mechanism as the HTML toggle
 
 ## [v09.85r] — 2026-04-07 09:34:43 PM EST
 

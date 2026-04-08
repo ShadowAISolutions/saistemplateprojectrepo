@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
+
+## [v01.14w] — 2026-04-07 09:40:18 PM EST — v09.86r
+
+### Fixed
+- GAS layer toggle now reliably hides all app content including admin controls and scan history
 
 ## [v01.13w] — 2026-04-07 09:34:43 PM EST — v09.85r
 
