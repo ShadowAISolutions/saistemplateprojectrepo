@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.05w">
+  <meta name="build-version" content="v01.06w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>TEMPLATE_TITLE</title>
 <!-- ══════════════ -->
@@ -495,6 +495,12 @@
       font-size: 0.58rem; cursor: pointer;
     }
     .qr-entries-refresh:hover { border-color: #00ffcc; color: #00ffcc; }
+    .qr-poll-countdown {
+      font-family: 'Space Mono', monospace; font-size: 0.58rem;
+      color: #555570; min-width: 52px; text-align: center;
+    }
+    .qr-poll-countdown.active { color: #00ffcc; }
+    .qr-poll-countdown.fetching { color: #f59e0b; }
     .qr-entries-table {
       width: 100%; border-collapse: collapse; font-size: 0.68rem;
       font-family: 'Space Mono', monospace;
@@ -725,6 +731,7 @@
       <div class="qr-entries-section" id="qr-entries-section">
         <div class="qr-entries-header">
           <span class="qr-entries-title">Recent Inventory Entries</span>
+          <span class="qr-poll-countdown" id="qr-poll-countdown">--</span>
           <button class="qr-entries-refresh" onclick="_doDataPoll()">&#8635; Refresh</button>
         </div>
         <div id="qr-entries-body">
@@ -4456,6 +4463,42 @@ function addQrEntryToSheet() {
 // ─── QR Scanner — Data Polling ──────────────────────────────────
 var _dataPollTimer = null;
 var _dataPollInFlight = false;
+var _dataPollCountdown = 0;
+var _dataPollCountdownTimer = null;
+var _pollCountdownEl = document.getElementById('qr-poll-countdown');
+
+function _updatePollCountdown() {
+  if (!_pollCountdownEl) return;
+  if (_dataPollInFlight) {
+    _pollCountdownEl.textContent = 'polling...';
+    _pollCountdownEl.className = 'qr-poll-countdown fetching';
+  } else if (_dataPollCountdown > 0) {
+    var s = _dataPollCountdown;
+    var display = s >= 60 ? Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60) : s + 's';
+    _pollCountdownEl.textContent = '\u26A1 ' + display;
+    _pollCountdownEl.className = 'qr-poll-countdown' + (s <= 5 ? ' active' : '');
+  } else {
+    _pollCountdownEl.textContent = '--';
+    _pollCountdownEl.className = 'qr-poll-countdown';
+  }
+}
+
+function _startPollCountdown() {
+  _dataPollCountdown = Math.round((HTML_CONFIG.DATA_POLL_INTERVAL || 15000) / 1000);
+  if (_dataPollCountdownTimer) clearInterval(_dataPollCountdownTimer);
+  _dataPollCountdownTimer = setInterval(function() {
+    _dataPollCountdown--;
+    if (_dataPollCountdown <= 0) { clearInterval(_dataPollCountdownTimer); _dataPollCountdownTimer = null; }
+    _updatePollCountdown();
+  }, 1000);
+  _updatePollCountdown();
+}
+
+function _stopPollCountdown() {
+  if (_dataPollCountdownTimer) { clearInterval(_dataPollCountdownTimer); _dataPollCountdownTimer = null; }
+  _dataPollCountdown = 0;
+  _updatePollCountdown();
+}
 
 function fetchQrEntries() {
   if (_dataPollInFlight) return;
@@ -4465,6 +4508,7 @@ function fetchQrEntries() {
   if (!baseUrl) return;
 
   _dataPollInFlight = true;
+  _updatePollCountdown();
   fetch(baseUrl + '?action=getQrEntries', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -4484,22 +4528,25 @@ function fetchQrEntries() {
       }
     }
   })
-  .catch(function() { _dataPollInFlight = false; });
+  .catch(function() { _dataPollInFlight = false; _updatePollCountdown(); });
 }
 
 function _doDataPoll() {
   fetchQrEntries();
+  _startPollCountdown();
   _dataPollTimer = setTimeout(_doDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL || 15000);
 }
 
 function _startDataPoll() {
   _stopDataPoll();
   fetchQrEntries(); // immediate first poll
+  _startPollCountdown();
   _dataPollTimer = setTimeout(_doDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL || 15000);
 }
 
 function _stopDataPoll() {
   if (_dataPollTimer) { clearTimeout(_dataPollTimer); _dataPollTimer = null; }
+  _stopPollCountdown();
 }
 
 function _renderQrEntriesTable(entries) {

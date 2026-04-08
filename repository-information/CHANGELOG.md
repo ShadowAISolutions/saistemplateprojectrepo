@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
 
 ## [Unreleased]
+
+## [v10.08r] — 2026-04-08 02:33:08 PM EST
+
+> **Prompt:** "make the poll countdown timer visible on the inventorymanagement similar to how it shows it in the testauth1"
+
+### Added
+- Visible poll countdown timer in the inventory entries header — shows seconds until next refresh (`⚡ 12s`), turns cyan in last 5 seconds, shows `polling...` in amber during fetch
+
+#### `inventorymanagement.html` — v01.06w
+
+##### Added
+- Poll countdown display between entries title and refresh button
+- Countdown timer with `_startPollCountdown()` / `_stopPollCountdown()` / `_updatePollCountdown()` functions
+- Visual states: `--` (idle), `⚡ Xs` (counting), `polling...` (fetching)
 
 ## [v10.07r] — 2026-04-08 02:26:55 PM EST
 
