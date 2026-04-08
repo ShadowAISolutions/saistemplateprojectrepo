@@ -3,7 +3,13 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
+
+## [v01.26w] — 2026-04-08 12:49:24 PM EST — v10.01r
+
+### Fixed
+- All buttons now respond to clicks on desktop (not just hover)
+- Inventory data and history now load on desktop
 
 ## [v01.25w] — 2026-04-08 12:35:49 PM EST — v10.00r
 

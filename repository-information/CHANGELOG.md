@@ -3,7 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
+
+## [v10.01r] — 2026-04-08 12:49:24 PM EST
+
+> **Prompt:** "remember session but still not working"
+
+### Fixed
+- Added opaque `background: #0d1117` to `#inv-panel` desktop CSS — the fixed-position panel had no background, causing desktop Chrome's compositor to pass clicks through to the GAS iframe below despite correct z-index stacking
+- Added all 11 inventory/scan bridge message types to `_KNOWN_GAS_MESSAGES` security allowlist — every bridge message was triggering `_reportSecurityEvent('unknown_message_type')` which created hidden iframes per message, flooding the page and disrupting bridge communication on desktop
+
+#### `inventorymanagement.html` — v01.26w
+
+##### Fixed
+- All buttons now respond to clicks on desktop (not just hover)
+- Inventory data and history now load on desktop
 
 ## [v10.00r] — 2026-04-08 12:35:49 PM EST
 
