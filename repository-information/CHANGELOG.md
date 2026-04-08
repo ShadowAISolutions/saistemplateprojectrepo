@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v10.15r] — 2026-04-08 05:48:21 PM EST
+
+> **Prompt:** "can you make it so that the user if they already gave permissions on page load auto starts the camera without needing them to start the camera, if not given permissions yet then yes then the user can use the start camera"
+
+### Added
+- Camera auto-starts on panel open if permission was previously granted — uses Permissions API to check, falls back to showing START CAMERA button on unsupported browsers
+
+#### `inventorymanagement.html` — v01.13w
+
+##### Added
+- Camera now starts automatically when you open the scanner if you've already granted camera permission — no need to tap START CAMERA each time
 
 ## [v10.14r] — 2026-04-08 05:42:46 PM EST
 

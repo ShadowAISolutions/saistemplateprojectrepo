@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-04-08 05:48:21 PM EST — v10.15r
+
+### Added
+- Camera now starts automatically when you open the scanner if you've already granted camera permission — no need to tap START CAMERA each time
 
 ## [v01.12w] — 2026-04-08 05:42:46 PM EST — v10.14r
 
