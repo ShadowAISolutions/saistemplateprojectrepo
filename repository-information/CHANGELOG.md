@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v10.13r] — 2026-04-08 05:32:36 PM EST
+
+> **Prompt:** "the parts you changed are good. the data table at the bottom is also being cut off the sides as per the screenshot"
+
+### Fixed
+- Fixed Live Data entries table being cut off on the right side on mobile — table now scrolls horizontally within its container
+
+#### `inventorymanagement.html` — v01.11w
+
+##### Fixed
+- Data table no longer gets cut off on smaller screens — you can now swipe to see all columns
 
 ## [v10.12r] — 2026-04-08 05:26:14 PM EST
 

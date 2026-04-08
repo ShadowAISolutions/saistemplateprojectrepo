@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-04-08 05:32:36 PM EST — v10.13r
+
+### Fixed
+- Data table no longer gets cut off on smaller screens — you can now swipe to see all columns
 
 ## [v01.10w] — 2026-04-08 05:26:14 PM EST — v10.12r
 
