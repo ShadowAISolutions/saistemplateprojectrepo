@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
+
+## [v09.99r] — 2026-04-08 12:21:51 PM EST
+
+> **Prompt:** "fix it"
+
+### Fixed
+- Inventory bridge `_sendToGas()` used `gasApp.contentWindow.postMessage()` which targets Google's outer shell frame, not the inner GAS sandbox where the inventory bridge listener runs — messages never reached `google.script.run`, so CRUD Promises never resolved and modals never closed
+- Replaced with `_gasBridgeSource.postMessage()` using `event.source` captured from `inventory-bridge-ready`, matching the constraint documented at line 2061 and the pattern used by all other working GAS communication in the codebase
+
+#### `inventorymanagement.html` — v01.24w
+
+##### Fixed
+- Add item, edit, delete, and stock changes now complete and close their windows correctly
 
 ## [v09.98r] — 2026-04-08 12:12:41 PM EST
 
