@@ -1,4 +1,4 @@
-var VERSION = "v01.01g";
+var VERSION = "v01.02g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -310,7 +310,13 @@ function processAddQrEntry(token, data, format, type) {
 
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) return { success: false, error: 'Sheet not found' };
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+  }
+  // Auto-create header row if sheet is empty or missing headers
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Timestamp', 'Data', 'Format', 'Type', 'User', 'Source']);
+  }
 
   sheet.appendRow([
     new Date(),
@@ -336,8 +342,8 @@ function processGetQrEntries(token, limit) {
   if (!sheet) return { success: true, entries: [] };
 
   var allData = sheet.getDataRange().getValues();
-  // Filter rows where column F (index 5) is 'QR_SCAN'
-  var qrRows = allData.filter(function(row) { return row[5] === 'QR_SCAN'; });
+  // Skip header row (index 0), filter rows where column F (index 5) is 'QR_SCAN'
+  var qrRows = allData.slice(1).filter(function(row) { return row[5] === 'QR_SCAN'; });
   var maxRows = Math.min(limit || 20, qrRows.length);
   var recent = qrRows.slice(qrRows.length - maxRows).reverse();
 

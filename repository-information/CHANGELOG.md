@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v10.06r] — 2026-04-08 02:08:12 PM EST
+
+> **Prompt:** "auto make the tab for the data, including the header row. also the add to inventory button should go away if the user has already added it to the inventory"
+
+### Changed
+- GAS auto-creates the spreadsheet sheet and header row (Timestamp, Data, Format, Type, User, Source) if missing
+- "Add to Inventory" button hides after a scan has been successfully added
+- Clicking a history item that was already added no longer shows the add button
+
+### Fixed
+- `processGetQrEntries` now skips the header row when reading spreadsheet data
+
+#### `inventorymanagement.html` — v01.04w
+
+##### Changed
+- "Add to Inventory" button disappears after successfully adding a scan
+- Previously added scans show no add button when revisited from history
+
+#### `inventorymanagement.gs` — v01.02g
+
+##### Added
+- Auto-creates spreadsheet tab and header row on first scan entry
+- Skips header row when reading entries
 
 ## [v10.05r] — 2026-04-08 02:00:07 PM EST
 

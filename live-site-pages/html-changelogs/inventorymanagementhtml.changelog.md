@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-04-08 02:08:12 PM EST — v10.06r
+
+### Changed
+- "Add to Inventory" button disappears after a scan has been successfully added
+- Previously added scans no longer show the add button when revisited from history
 
 ## [v01.03w] — 2026-04-08 02:00:07 PM EST — v10.05r
 
