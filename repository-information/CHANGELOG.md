@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v10.12r] — 2026-04-08 05:26:14 PM EST
+
+> **Prompt:** "the screenshot shows my view on my phone. make it so that the camera has padding to left and right, and not take up so much space overall. note that some parts of the screen are being cut off, so adjust everything to make it visually clear and user friendly on both mobile and pc"
+
+### Changed
+- Improved mobile layout: reduced camera viewport from 1:1 to 4:3 aspect ratio with 260px max-height (mobile), added 40px top padding to scanner header so it clears the user-pill/sign-out bar
+- Added `viewport-fit=cover` to viewport meta tag for safe-area support on notched phones
+- Tightened spacing (gaps, padding) throughout scanner panel for better mobile density
+- Added desktop media query (≥600px) restoring larger camera viewport (360px) and wider padding
+
+#### `inventorymanagement.html` — v01.10w
+
+##### Changed
+- Scanner camera preview is now more compact on mobile, showing more of the page below it
+- Scanner header is no longer hidden behind the sign-out bar
+- Improved spacing and layout for both mobile and desktop screens
 
 ## [v10.11r] — 2026-04-08 05:16:10 PM EST
 

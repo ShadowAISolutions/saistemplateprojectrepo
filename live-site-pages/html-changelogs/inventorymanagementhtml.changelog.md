@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10w] — 2026-04-08 05:26:14 PM EST — v10.12r
+
+### Changed
+- Scanner camera preview is now more compact on mobile, showing more of the page below it
+- Scanner header is no longer hidden behind the sign-out bar
+- Improved spacing and layout for both mobile and desktop screens
 
 ## [v01.09w] — 2026-04-08 05:16:10 PM EST — v10.11r
 
