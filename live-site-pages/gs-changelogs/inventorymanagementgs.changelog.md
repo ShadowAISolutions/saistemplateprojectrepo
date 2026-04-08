@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
+
+## [v01.09g] — 2026-04-07 08:08:27 PM EST — v09.78r
+
+### Added
+- Delete button on each scan entry to remove it from the spreadsheet
 
 ## [v01.08g] — 2026-04-07 07:45:47 PM EST — v09.76r
 

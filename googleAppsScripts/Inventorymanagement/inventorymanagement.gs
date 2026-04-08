@@ -1,4 +1,4 @@
-var VERSION = "v01.08g";
+var VERSION = "v01.09g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -368,6 +368,29 @@ function _getCachedScans() {
     try { return JSON.parse(raw); } catch(e) {}
   }
   return [];
+}
+
+/**
+ * Delete a scan row by its sheet row index (1-based, header is row 1).
+ * Called via google.script.run from the GAS iframe.
+ */
+function deleteScanRow(token, sheetRowIndex) {
+  if (!token) return { success: false, error: 'no_token' };
+  var session = validateSession(token);
+  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
+  var idx = parseInt(sheetRowIndex, 10);
+  if (!idx || idx < 2) return { success: false, error: 'invalid_row' };
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Scans');
+    if (!sheet) return { success: false, error: 'no_sheet' };
+    if (idx > sheet.getLastRow()) return { success: false, error: 'row_not_found' };
+    sheet.deleteRow(idx);
+    _refreshScanCache(sheet);
+    return { success: true, history: _getCachedScans() };
+  } catch(e) {
+    return { success: false, error: String(e) };
+  }
 }
 // PROJECT END
 // ══════════════
@@ -2555,6 +2578,9 @@ function doGet(e) {
         .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }
         .scan-row .sm { color: #666; font-size: 10px; white-space: nowrap; margin-left: 8px; }
+        .scan-row .sd { background: none; border: 1px solid #555; color: #888; font: 11px/1 monospace; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 6px; transition: all 0.15s; }
+        .scan-row .sd:hover { border-color: #ef5350; color: #ef5350; }
+        .scan-row.deleting { opacity: 0.3; pointer-events: none; }
         .scan-row.optimistic { opacity: 0.35; pointer-events: none; }
         .scan-row.optimistic::after { content: 'saving...'; font-size: 9px; color: #d29922; margin-left: 6px; }
         .scan-empty { color: #666; font-size: 12px; text-align: center; padding: 20px 0; }
@@ -3318,15 +3344,12 @@ function doGet(e) {
           }
           setInterval(_updateCountdown, 1000);
 
-          // ── Render scan list ──
+          // ── Render scan list with delete buttons ──
           function _renderScans() {
             var el = document.getElementById('scan-list');
             if (!el) return;
             var all = _scanRows.slice();
-
-            // Prepend optimistic row (unsaved, dimmed)
             if (_optimisticRow) all.unshift(_optimisticRow);
-
             if (all.length === 0) {
               el.innerHTML = '<div class="scan-empty">No scans yet \\u2014 start scanning above</div>';
               return;
@@ -3339,6 +3362,34 @@ function doGet(e) {
               var ts = item.timestamp ? new Date(item.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}) : 'now';
               var fmt = (item.format || 'qr_code').toUpperCase().replace(/_/g, ' ');
               div.innerHTML = '<span class="sv">' + _escH(item.value) + '</span><span class="sm">' + fmt + ' \\u00B7 ' + ts + '</span>';
+              if (!isOptimistic) {
+                var delBtn = document.createElement('button');
+                delBtn.className = 'sd';
+                delBtn.textContent = '\\u2715';
+                delBtn.title = 'Delete this scan';
+                // Sheet row = data index + 2 (row 1 = header, data at row 2+)
+                var sheetRow = (_optimisticRow ? idx : idx + 1) + 1;
+                (function(rowDiv, ri) {
+                  delBtn.onclick = function() {
+                    rowDiv.classList.add('deleting');
+                    google.script.run
+                      .withSuccessHandler(function(result) {
+                        if (result && result.success && result.history) {
+                          _scanRows = result.history;
+                          _renderScans();
+                          if (_pollLabelEl) _pollLabelEl.textContent = 'Deleted \\u2714';
+                        } else {
+                          rowDiv.classList.remove('deleting');
+                        }
+                      })
+                      .withFailureHandler(function() {
+                        rowDiv.classList.remove('deleting');
+                      })
+                      .deleteScanRow(_sessionToken, ri);
+                  };
+                })(div, sheetRow);
+                div.appendChild(delBtn);
+              }
               el.appendChild(div);
             });
           }
