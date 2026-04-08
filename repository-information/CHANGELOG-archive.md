@@ -77,6 +77,678 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v09.41r] — 2026-04-06 11:16:59 PM EST — [4904c138](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4904c138c5eb03ea47e97b0a3ebfb25af95a3a6c)
+
+> **Prompt:** "make the copy code.gs for Gas and the Copy Config For Claude buttons the same red when they are disabled, and have the text mention which fields are missing to enable,, still need to know what the button name is so maybe separate missing and name with --"
+
+### Changed
+- Copy Code.gs, Copy HTML, and Copy Config buttons now show red disabled tint (`#1e1114`) when disabled
+- Disabled buttons now show which fields are missing: e.g. "Copy Code.gs for GAS ── needs: Deployment ID, Environment Name"
+- Button text reverts to normal label when all required fields are filled
+
+#### `gas-project-creator.html` — v01.46w
+
+##### Changed
+- Action buttons now show which fields are needed before they can be used
+- Disabled buttons use the same red tint as other disabled elements
+
+## [v09.40r] — 2026-04-06 11:11:14 PM EST — [71b78e86](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/71b78e86a4f6ddfe881e6a8edddfad9bd8158be2)
+
+> **Prompt:** "can the auth preset dropdown be the same red when disabled, and make the optional test gas connection button the same red when disabled"
+
+### Fixed
+- Auth Preset dropdown now shows red disabled tint (`#1e1114`) when disabled — added `!important` to override inline background style
+- Test GAS Connection button now shows red disabled tint instead of green when disabled — separated from the generic disabled rule and given explicit `background: #1e1114`
+
+#### `gas-project-creator.html` — v01.45w
+
+##### Fixed
+- Disabled dropdown and test button now match the red disabled tint of other fields
+
+## [v09.39r] — 2026-04-06 11:06:44 PM EST — [8f1c9c71](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8f1c9c711a185933705ea5b74bab4a624a752e57)
+
+> **Prompt:** "also using the clear X button should show the green again, it currently doesnt on most fields"
+
+### Fixed
+- Fixed clear (X) button not triggering green empty-field tint — `clearField()` now calls `updateEmptyClasses()` after clearing the value
+
+#### `gas-project-creator.html` — v01.44w
+
+##### Fixed
+- Clearing a field now correctly shows the empty-field background tint
+
+## [v09.38r] — 2026-04-06 11:03:59 PM EST — [ed86678c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ed86678c245b96c14128bde2173f687ae0417822)
+
+> **Prompt:** "yes make that change, also when the fields are either disabled or blank, dont have the X button which clears there"
+
+### Changed
+- Changed ACL Column Name label from "(required — identifies this page)" to "(defaults to Environment Name — identifies this page)" when active — reflects that the field auto-fills from Environment Name and is safe to leave blank
+- Clear (X) buttons now hidden when field is disabled or blank — only visible when the field has content that can be cleared
+
+#### `gas-project-creator.html` — v01.43w
+
+##### Changed
+- ACL Column Name label now indicates it defaults to Environment Name
+- Clear buttons hidden on empty or disabled fields
+
+## [v09.37r] — 2026-04-06 10:56:44 PM EST — [fa3c770d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fa3c770d10ff04261695624c9a5ea0351f1b729e)
+
+> **Prompt:** "in the scenario where i fill out the environment name before toiggling the master ACL spreadsheet, the ACL Column Name is not auto filling from the environment name, and note that its not green when blank either"
+
+### Fixed
+- Fixed ACL Column Name placeholder not showing "Defaults to: {envName}" after enabling — `syncAclPagePlaceholder()` now called when ACL detail fields transition to active
+- Fixed ACL detail fields not getting green empty-field tint after becoming enabled — `updateEmptyClasses()` now called at end of `toggleAclDetails()`
+
+#### `gas-project-creator.html` — v01.42w
+
+##### Fixed
+- ACL Column Name now correctly shows the environment name as its default when enabled
+- Empty ACL fields now show the correct background tint
+
+## [v09.36r] — 2026-04-06 10:50:41 PM EST — [c9af8e4c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c9af8e4c5ac8c3915d08f320755fa3c723be1d76)
+
+> **Prompt:** "in section 15, we dont use onEditWriteB1ToCache in any functions anymore so that specific function name can be removed here, i still want this section as a placeholder for any future installable triggers, just that part is not relevant anymore . and the green needs to be lighter, and the red needs to be twice as much increased as you will increase the lightness of the green"
+
+### Changed
+- Removed `onEditWriteB1ToCache` reference from step 15 — now a generic installable trigger placeholder
+- Lightened green empty-field tint from `#101d18` to `#112a1c` (more visible green)
+- Lightened red disabled-field tint from `#141012` to `#1e1114` (2x the green adjustment, more visible warm red)
+
+#### `gas-project-creator.html` — v01.41w
+
+##### Changed
+- Step 15 updated to generic trigger instructions
+- Field background tints adjusted for better visibility
+
+## [v09.35r] — 2026-04-06 10:46:49 PM EST — [f3920e60](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f3920e60692b8e98d949ff402998a802e9fb654e)
+
+> **Prompt:** "the green is close but still too dark, and the red is way off, twice as far so adjust those. also make there be an indent for those which are disabled i.e. ----- Enter Environment Name first------ , also the acl sheet name and acl column name should have the disabled coloring also"
+
+### Changed
+- Adjusted field background tints: green empty `#101d18` (slightly brighter), red disabled `#141012` (much closer to base `#0d1117` — halved the distance)
+- Disabled field placeholders now use box-drawing dashes as visual indent: `───  Enter Environment Name first  ───`
+- ACL Sheet Name and ACL Column Name fields now properly receive disabled background tint via `setFieldDisabled()` in `toggleAclDetails()`
+
+#### `gas-project-creator.html` — v01.40w
+
+##### Changed
+- Adjusted background tint colors for better visibility and subtlety
+- Disabled field placeholder text now visually indented with dashes
+
+## [v09.34r] — 2026-04-06 10:41:18 PM EST — [e19cd332](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e19cd332f0dd970a5f5aafe73decde1de384e600)
+
+> **Prompt:** "they are too dark, also make it so that if they are disabled have the fields not be prefilled. in fact it should mention what field needs to be filled for that particular field to be activated"
+
+### Changed
+- Lightened field background tints: empty enabled fields from `#0e1513` to `#0f1a16`, disabled fields from `#140e0e` to `#1a0f0f`
+- Disabled fields now clear their prefilled values and show placeholder text explaining what prerequisite is needed (e.g. "Enter Environment Name first", "Enter Spreadsheet ID first", "Enter OAuth Client ID first", "Enter Master ACL Spreadsheet ID first")
+- Values are saved before disabling and restored when the field becomes enabled again
+- Refactored `setFieldDisabled()` to accept a `reason` parameter and manage value save/restore lifecycle
+- Updated `toggleAclDetails()` to use `setFieldDisabled()` for ACL detail fields with reason text
+
+#### `gas-project-creator.html` — v01.39w
+
+##### Changed
+- Disabled fields now show what prerequisite is needed instead of showing prefilled values
+- Background tints lightened for better visibility
+
+## [v09.33r] — 2026-04-06 10:36:51 PM EST — [cb9385de](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cb9385def3ba58ce1cc3c6e19afe951e63356047)
+
+> **Prompt:** "the fields that are blank but available to be edited, have their background be veeery opaque light green, same tone as the dark blue/black, the fields that are disabled have a veeery opaque light red, same dark tone, they should be very subtle"
+
+### Changed
+- Added subtle background color tints to gas-project-creator form fields: empty enabled fields get a very subtle green tint (`#0e1513`), disabled fields get a very subtle red tint (`#140e0e`) — both blend with the dark `#0d1117` base
+- Added `updateEmptyClasses()` function that applies/removes the `.field-empty` CSS class based on field state
+- Added global `input` event listener to keep empty-class state in sync as the user types
+
+#### `gas-project-creator.html` — v01.38w
+
+##### Changed
+- Empty fields now have a very subtle green background tint to indicate they're available
+- Disabled fields now have a very subtle red background tint to indicate they're unavailable
+
+## [v09.32r] — 2026-04-06 10:30:21 PM EST — [6ebb2807](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6ebb2807f39ffee2f00102aceda49205f6111b0d)
+
+> **Prompt:** "the master acl spreadsheet toggle when active then removed is showing the projects spreadsheet as the master ACL, it should be removing what was put in the field if the toggle is removed, unless the user had already personally put information there before they toggled, but it shouldnt hold onto the spreadsheet ID above"
+
+### Fixed
+- Fixed Master ACL toggle retaining the project's Spreadsheet ID after unchecking — now saves the user's pre-toggle value and restores it on uncheck (empty if they hadn't entered anything, their custom ID if they had)
+
+#### `gas-project-creator.html` — v01.37w
+
+##### Fixed
+- Master ACL toggle no longer leaves the project spreadsheet ID in the field after unchecking
+
+## [v09.31r] — 2026-04-06 10:25:37 PM EST — [dcae05c6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/dcae05c6ab8dad9f8c51991be6b9cf41c93b0f61)
+
+> **Prompt:** "in the optional fields that will do something when left blank, write in what it will do/say, i.e. for the Title (Optional) etc . also make it so that the relevant sectiosn that have a required component, make it s othat the other fields are disabled while the required field is empty, i.e. Project Environment Name (required) and OAuth Client ID (required for auth)"
+
+### Changed
+- Updated all optional field labels to describe their default behavior when left blank (Title, Spreadsheet ID, Sheet Tab Name, Sound File ID, Splash Logo, GitHub Branch, Allowed Domains)
+- Updated field hints to describe what happens when the field is empty
+- Project config fields (Title through GitHub Branch) now disabled until Environment Name is filled
+- Auth sub-fields (Auth Preset, Allowed Domains, Master ACL section) now disabled until OAuth Client ID is filled
+- Refactored `updateFieldStates()` to manage the full dependency chain: Environment Name → project fields, Spreadsheet ID → Sheet Tab Name, Client ID → auth sub-fields
+
+#### `gas-project-creator.html` — v01.36w
+
+##### Changed
+- Optional fields now describe their default behavior in the label
+- Form fields disabled until their prerequisite required fields are filled
+
+## [v09.30r] — 2026-04-06 10:16:16 PM EST — [c3fa9c97](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c3fa9c9762840d887624ef20303e53a01903215a)
+
+> **Prompt:** "make the sheet name also prefill itself as Live_Sheet, change the Sheet Name (optional) to mention that its referring to the tab. make it so that if master ACL spreadsheet ID is field, not only does it show the extra 2 fields, but those now become required. also if the spreadsheet ID is not entered, the other fields which depend on that should not be shown either, i.e. the sheet name, authentication settings, etc. actually instead of hiding all of these fields if not relevant, just make the fields inactive so that we can see that something is missing before filling them out. if they will never be relevant no matter what, for example when not using google authentication then you can hide them"
+
+### Changed
+- Pre-filled Sheet Tab Name with `Live_Sheet` default value and renamed label from "Sheet Name (optional)" to "Sheet Tab Name (optional)"
+- ACL Sheet Name and ACL Column Name fields now become required (with red label) when Master ACL Spreadsheet ID is filled
+- ACL detail fields now show as disabled/inactive instead of hidden when no Master ACL ID is present — visible but grayed out to indicate a prerequisite is missing
+- Sheet Tab Name field becomes disabled when Spreadsheet ID is empty — signals the dependency
+- Master ACL checkbox becomes disabled when no Spreadsheet ID is entered (can't auto-fill from nothing)
+- Added `updateFieldStates()` function to manage dependent field disabled states based on Spreadsheet ID presence
+
+#### `gas-project-creator.html` — v01.35w
+
+##### Changed
+- Form fields now show as disabled when their prerequisites are not met, rather than being hidden
+- Sheet name field pre-filled with default value
+- ACL fields become required when Master ACL is configured
+
+## [v09.29r] — 2026-04-06 10:02:14 PM EST — [d57c4cd7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d57c4cd7958702d0e809b5e4d1537b73b341bed0)
+
+> **Prompt:** "change the default sheet name to Access to match what we are already using. also make it more clear what the ACL Page Name means, in reference to identifying this page, i know that its in the description but i need it to be clear by the heading name. also have the ACL Page Name default to whatever the user put in their project environment name (i think thats how we already have it with the other projects, verify if thats true) . any fields that should not be filled when not relevant should be hidden in the gas-project-creator when relevant conditions are met.  also the button "Copy Embedding Page HTML — optional, the setup script creates this automatically" should have the "optional" text as the prefix instead of how it is. the default auth preset should be set to hipaa instead of standard"
+
+### Changed
+- Changed ACL Sheet Name default from `"ACL"` to `"Access"` in gas-project-creator form field, copyGsCode fallback, copyConfig fallback, and setup script — matches what all existing projects use
+- Renamed "ACL Page Name" label to "ACL Column Name (identifies this page)" for clarity
+- Added live placeholder sync on ACL Column Name field — shows "Defaults to: {envName}" as user types Environment Name
+- Hidden ACL Sheet Name and ACL Column Name fields by default — they now appear only when a Master ACL Spreadsheet ID is present (either via checkbox auto-fill or manual entry)
+- Reordered Copy HTML button text to prefix with "Optional" instead of appending it
+- Changed default auth preset from `standard` to `hipaa` in gas-project-creator dropdown and setup script — matches the GAS template's existing default
+- Updated setup script's ACTIVE_PRESET sed condition and pattern to match the new `hipaa` template default
+
+#### `gas-project-creator.html` — v01.34w
+
+##### Changed
+- ACL configuration fields now appear only when relevant
+- Default security preset changed to HIPAA
+- Default ACL sheet name updated to match existing projects
+- Clearer labeling for page identification in ACL settings
+
+## [v09.28r] — 2026-04-06 07:41:52 PM EST — [e8608381](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e8608381ce8a3e58ca34b207ca9041331308c2c5)
+
+> **Prompt:** "analyze the gas-project-creator and associated setup-gas-project.sh to see if using it on a new program will create html and gas non project specific (template) code identical to any of the environments we have (testauth1, globalacl, programportal). if not, address whatever is not correctly set up, all projects should foundationally have identical code, except for project specific code."
+
+### Changed
+- Changed noauth GAS template SHEET_NAME default from `"Live_Sheet"` to `"YOUR_SHEET_NAME"` for consistency with auth template
+- Added GITHUB_BRANCH form field to gas-project-creator with hint to use `main` for setup script
+- Added GITHUB_BRANCH substitution in `copyGsCode()` — now replaces template default with form field value
+- Made setup script read GITHUB_BRANCH from config JSON (with `main` default) instead of hardcoding
+- Changed setup script SHEET_NAME default from `'Live_Sheet'` to `'YOUR_SHEET_NAME'` for consistency with templates
+
+### Added
+- Added optional "Copy Embedding Page HTML" button to gas-project-creator — fetches auth/noauth HTML template, substitutes config values (title, deployment URL, CLIENT_ID, logo), copies to clipboard. Minimal styling to indicate it's optional (the setup script handles this automatically)
+
+#### `gas-project-creator.html` — v01.33w
+
+##### Added
+- New option to copy the embedding page HTML with your project settings pre-filled
+- GitHub Branch configuration field
+
+##### Changed
+- Minor internal improvements
+
+## [v09.27r] — 2026-04-06 07:14:03 PM EST — [42746ea1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/42746ea12b49abc3db959fb0458b0b8a12b182ef)
+
+> **Prompt:** "move the archived test functions from live-site-pages/templates/gas-test-functions-reference.js.txt to repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md as a proper markdown document with code blocks. Delete the .js.txt version."
+
+### Changed
+- Moved archived GAS test functions reference from `live-site-pages/templates/gas-test-functions-reference.js.txt` to `repository-information/archive info/GAS-TEST-FUNCTIONS-REFERENCE.md` as a proper markdown document with code blocks
+
+### Removed
+- Deleted `live-site-pages/templates/gas-test-functions-reference.js.txt` (content migrated to archive info)
+
+#### `gas-project-creator.html` — v01.32w
+
+##### Changed
+- Updated internal reference comment to point to new archive location
+
+## [v09.26r] — 2026-04-06 05:03:52 PM EST — [ae57f85e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ae57f85e04edd02512a39c5aa71122995468c98a)
+
+> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, cosmetic diffs, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+
+### Changed
+- Added `// PROJECT OVERRIDE:` markers to testauth1.html for HEARTBEAT_INTERVAL test value (60000) and session duration test values (180s/300s) — prevents template propagation from overwriting project-specific test configurations
+- Added `// PROJECT OVERRIDE:` markers to programportal.html for HEARTBEAT_INTERVAL test value (30000) and SSO_PROVIDER (true)
+- Removed "Include Test Features" checkbox and test template logic from gas-project-creator.html — all new projects now use minimal GAS templates only
+- Updated setup-gas-project.sh to remove INCLUDE_TEST support — template selection is now auth/noauth only
+
+### Removed
+- Deleted `gas-test-auth-template-code.js.txt` and `gas-test-noauth-template-code.js.txt` — consolidated into minimal templates to eliminate confusion between 4 template variants
+- Removed test template references from `.claude/rules/gas-scripts.md`, `.claude/rules/html-pages.md`, `REPO-ARCHITECTURE.md`, and `README.md`
+
+### Added
+- Created `gas-test-functions-reference.js.txt` — archived 6 test/diagnostic GAS functions (extended getAppData, getSoundBase64, writeVersionToSheet, readB1FromCacheOrSheet, onEditWriteB1ToCache, fetchGitHubQuotaAndLimits) for future reuse
+
+#### `testauth1.html` — v03.97w
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.93w
+##### Changed
+- Minor internal improvements
+
+#### `gas-project-creator.html` — v01.31w
+##### Changed
+- Simplified project creation workflow
+
+## [v09.25r] — 2026-04-06 03:36:19 PM EST — [e1df91c6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e1df91c6392d874e2d64cf6a919dfed332ec6c71)
+
+> **Prompt:** "can you make the gas cleanly separated also, removing orphan components, and considering all components in all projects to be considered template code. so address every issue you mentioned considering"
+
+### Changed
+- Reclassified shared template code: removed `PROJECT: ` prefix from admin role detection, admin panel styles, admin badge, admin panel logic, and sign-in/sign-out checklist markers across all GAS and HTML files — these are template code, not project code
+- Fixed orphan `// PROJECT END` in GAS test-auth template (had 3 ENDs vs 2 STARTs, now 2/2)
+- Wrapped multi-line project-specific code blocks in testauth1.html with proper `// PROJECT START/END` pairs (message types, signature-exempt types, sandbox capture, auth context send, panel cooldown)
+- Wrapped globalacl.html message type whitelist with `// PROJECT START/END` pair
+- Applied same admin marker reclassification to `gas-minimal-auth-template-code.js.txt`
+
+#### `testauth1.html` — v03.96w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.86w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.92w
+
+##### Changed
+- Minor internal improvements
+
+#### `testauth1.gs` — v02.57g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.51g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.59g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.24r] — 2026-04-06 01:50:46 PM EST — [f9dac72d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f9dac72d92c6ad0c39ba97939b9cf85684f532fd)
+
+> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+
+### Changed
+- Fixed `sourceDisplayName` in all 3 auth HTML pages to use `document.title` instead of hardcoded strings — matches the auth template
+- Normalized `// PROJECT START` comment in all 3 auth HTML pages to include ` — Add your project-specific JavaScript here` suffix — matches the auth template
+- Added missing `<!-- YOUR PAGE CONTENT HERE -->` placeholder comment to programportal.html PROJECT block — matches the auth template
+- Fixed HEARTBEAT_INTERVAL comment in auth template from inaccurate "poll GAS for fresh data" to correct "check for activity and send heartbeat"
+
+#### `testauth1.html` — v03.95w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.85w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.91w
+
+##### Changed
+- Minor internal improvements
+
+## [v09.23r] — 2026-04-06 01:27:02 PM EST — [f4bf4e4e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f4bf4e4eca66b020b194ae26d05ee540d0616225)
+
+> **Prompt:** "the ~4 cosmetic blank line diffs around PROJECT markers should also match"
+
+### Changed
+- Fixed all remaining blank line inconsistencies around PROJECT markers in testauth1.gs, globalacl.gs, and programportal.gs — stripped non-project code now has zero blank-line diffs against the template
+
+#### `testauth1.gs` — v02.56g
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.50g
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.58g
+##### Changed
+- Minor internal improvements
+
+## [v09.22r] — 2026-04-06 01:09:51 PM EST — [d08e5543](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d08e55433916d96b12bcfddbef4ecb2ed8f52401)
+
+> **Prompt:** "continue"
+
+### Changed
+- Added version display (`<h2 id="version">`), user-email display (`<div id="user-email">`), and gas-layer-toggle button + JS to minimal-auth GAS template — these elements were present in all production auth scripts but missing from the minimal template
+- Added `#user-email` CSS to minimal-auth GAS template to match test-auth template
+
+## [v09.21r] — 2026-04-06 01:03:28 PM EST — [615905d9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/615905d97ae3fe63ccb9e70731e2ceabd5472181)
+
+> **Prompt:** "continue"
+
+### Changed
+- Added admin panel JS logic (~478 lines) to minimal-auth GAS template — all production auth scripts share this code but it was missing from the minimal template, forcing manual addition for every new project
+- Fixed blank line inconsistency in testauth1.gs doGet to match template (single → double blank before admin role detection)
+
+#### `testauth1.gs` — v02.55g
+##### Changed
+- Minor internal improvements
+
+## [v09.20r] — 2026-04-06 12:55:06 PM EST — [564efcd1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/564efcd1a66387568b97be38a6413849407ed46f)
+
+> **Prompt:** "continue"
+
+### Changed
+- Removed unnecessary `// PROJECT START — testauth1 admin panel logic` / `// PROJECT END` wrapper from testauth1.gs — admin panel code is template code with inline `// PROJECT:` marker, matching globalacl and programportal
+- Fixed extra `// ══════════════` separator lines around empty PROJECT block in globalacl.gs to match template format
+- Added `// PROJECT:` markers to `_gasSandboxSource` variable and gas-auth-ok handler extension in testauth1.html for template propagation awareness
+
+#### `testauth1.gs` — v02.54g
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.49g
+##### Changed
+- Minor internal improvements
+
+## [v09.19r] — 2026-04-06 12:43:26 PM EST — [4b3f70f1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b3f70f1944736c180b63d7be3d512e0bbb4a848)
+
+> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+
+### Changed
+- Removed ~160 lines of programportal-specific code (portal header, app cards, toggles, registry) that had leaked into the GAS auth template (`gas-minimal-auth-template-code.js.txt`)
+- Added HMAC liveData stripping to HTML auth template and all three auth pages — prevents JSON.stringify mismatches between GAS V8 and browser engines for messages containing nested objects
+- Normalized testauth1.html HMAC comment to match template (removed PROJECT marker since this is now standard template code)
+
+#### `testauth1.html` — v03.94w
+##### Changed
+- Improved message signature verification for nested data
+
+#### `globalacl.html` — v01.84w
+##### Changed
+- Improved message signature verification for nested data
+
+#### `programportal.html` — v01.90w
+##### Changed
+- Improved message signature verification for nested data
+
+## [v09.18r] — 2026-04-06 12:03:46 PM EST — [1b544c5c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1b544c5c7c1135943483d7fd62c80dc520474604)
+
+> **Prompt:** "yes"
+
+### Changed
+- Fixed CSS baseline in both noauth GAS templates: `overflow: auto` → `overflow: hidden`, `font-family: Arial` → `font-family: sans-serif`
+
+## [v09.17r] — 2026-04-06 11:56:31 AM EST — [4dfb6186](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4dfb6186a18a3537b9debabf26d27ed9daaa88e5)
+
+> **Prompt:** "now apply the same to the templates"
+
+### Changed
+- Synchronized GAS auth template files to match canonical programportal.gs shared code
+- Fixed CSS baseline in both auth templates: `overflow: auto` → `overflow: hidden`, `font-family: Arial` → `font-family: sans-serif`
+- Fixed action handler ordering in `gas-test-auth-template-code.js.txt`: moved `getNonce` before `phaseA` to match canonical order
+- Replaced simplified `listActiveSessionsInternal()` in test-auth template with the canonical spreadsheet-based implementation
+
+## [v09.16r] — 2026-04-06 11:45:32 AM EST — [af116fb6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/af116fb6fc601ff7c6a8d54624b9eee271fdb4de)
+
+> **Prompt:** "make all 3 match identically in non project specific code"
+
+### Changed
+- Synchronized non-project-specific (shared template) code across all 3 GAS files (testauth1.gs, globalacl.gs, programportal.gs) to be character-for-character identical using programportal as canonical source
+- Added missing JSDoc comments and cross-project section headers to testauth1.gs and globalacl.gs
+- Canonicalized comment style, verbosity, and inline comment format across all shared functions
+- Reordered doGet action handlers in testauth1.gs to match canonical order (listSessions/setAdminSecret/adminSignOut/getNonce before phaseA)
+- Added missing PostMessage handshake guard to globalacl.gs client-side JS
+- Added missing HMAC migration and Phase 3 IP logging comments to globalacl.gs
+- Wrapped leaked project-specific code in proper PROJECT markers across all 3 files:
+  - testauth1: version display, user-email div, GAS toggle, admin panel JS, CSS overrides
+  - globalacl: cross-project admin functions, ACL management UI logic, custom confirm dialog, version display, ACL table HTML, base CSS overrides
+  - programportal: portal header/layout HTML, portal application registry JS
+- Standardized CSS baseline across all files (overflow: hidden, font-family: sans-serif)
+
+#### `testauth1.gs` — v02.53g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.48g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.57g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.15r] — 2026-04-06 10:42:45 AM EST — [1ed80658](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1ed806581816455c0e062455ef93fe856164d1f8)
+
+> **Prompt:** "continue"
+
+### Changed
+- Rebuilt GAS auth template (`gas-minimal-auth-template-code.js.txt`) from unified programportal.gs source using copy-and-placeholder approach
+- Template now matches all 3 live auth GAS files exactly in shared code — only 13 diff hunks remain, all expected config placeholders and empty PROJECT blocks
+- Replaced 12 config values with template placeholders: VERSION → `v01.00g`, TITLE → `TEMPLATE_TITLE`, GITHUB_OWNER → `TEMPLATE_GITHUB_OWNER`, GITHUB_REPO → `TEMPLATE_GITHUB_REPO`, FILE_PATH → `TEMPLATE_FILE_PATH`, DEPLOYMENT_ID → `TEMPLATE_DEPLOYMENT_ID`, EMBED_PAGE_URL → `TEMPLATE_EMBED_PAGE_URL`, SPREADSHEET_ID → `YOUR_SPREADSHEET_ID`, SHEET_NAME → `YOUR_SHEET_NAME`, SOUND_FILE_ID → `YOUR_SOUND_FILE_ID`, MASTER_ACL_SPREADSHEET_ID → `YOUR_MASTER_ACL_SPREADSHEET_ID`, ACL_PAGE_NAME → `TEMPLATE_ACL_PAGE_NAME`
+- Stripped all 7 PROJECT blocks to empty placeholders with generic guide descriptions
+- Removed programportal-specific ANNOUNCEMENTS_SHEET_NAME config, `_userRole`/`_userName` JS variables
+- Fixed body CSS to template defaults (`overflow: auto`, `font-family: Arial`)
+- Template reduced from 6,802 → 6,528 lines (cleaner project code stripping)
+
+## [v09.14r] — 2026-04-06 10:36:57 AM EST — [1e06c325](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1e06c325ecf8284e0f7c1ad591a968dae552cb26)
+
+> **Prompt:** "continue"
+
+### Changed
+- Added `<!-- PROJECT START -->` / `<!-- PROJECT END -->` block markers in doGet HTML body for testauth1 (Live Data App + delete modal) and programportal (announcements + app cards + footer + GAS toggle)
+- Converted `// PROJECT: Live Data App` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in testauth1.gs (wrapping ~555 lines of live data table UI logic)
+- Converted `// PROJECT: Global sessions loader` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in globalacl.gs (wrapping ~78 lines of cross-project session management)
+- Removed orphaned `// PROJECT END` before `</script>` in testauth1.gs and globalacl.gs (no matching START — were leftover from original file creation)
+- All 3 GAS files now have balanced PROJECT START/END markers: testauth1 (8 pairs), globalacl (6 pairs), programportal (7 pairs)
+
+#### `testauth1.gs` — v02.52g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.47g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.56g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.13r] — 2026-04-06 10:30:24 AM EST — [bb63b797](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bb63b797220a0f7d64accdb7eadeffac2806c52a)
+
+> **Prompt:** "continue with next phase"
+
+### Changed
+- Added proper `/* PROJECT START */` / `/* PROJECT END */` CSS block markers in doGet HTML template for all 3 auth GAS files — wrapping testauth1's Live Data App styles (130 lines), globalacl's ACL table/modal/toolbar styles (75 lines), and programportal's portal layout + announcements styles (186 lines)
+- Fixed misleading phaseA handler comment in programportal.gs and globalacl.gs (was `// Security event action`, now correctly `// Phase A — HIPAA Privacy Rule operations listener`)
+- Added missing `// Security event action` comment before actual securityEvent handler in programportal.gs and globalacl.gs
+- Converted single-line `/* PROJECT: */` CSS annotations to proper block markers with clear start/end boundaries
+
+#### `testauth1.gs` — v02.51g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.46g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.55g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.12r] — 2026-04-06 10:23:27 AM EST — [a7cd28ae](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a7cd28ae2fb0f604155bde8c1b61a24b79c293d3)
+
+> **Prompt:** "continue with next phase"
+
+### Changed
+- Unified doGet action handler comments across all 3 auth GAS files — fixed misleading `// Security event action` comment (was labeling phaseA handler), added `// Security event action` comment before actual securityEvent handler in programportal.gs and globalacl.gs, removed misplaced `// Cross-project admin sign-out` comment from programportal.gs setAdminSecret section, unified `// Auto-register` and `// Normal flow:` comments
+- Added `// PROJECT START`/`// PROJECT END` markers around testauth1's `getData` action handler
+- Added `// PROJECT START`/`// PROJECT END` markers around globalacl's `adminGlobalSessions` action handler
+- Marked `ensureCrossProjectSecret()` call in globalacl doGet with `// PROJECT:` annotation
+- Added `// PROJECT START`/`// PROJECT END` markers around project-specific pre-HTML data loading in all 3 files (testauth1: `getCachedData()`, globalacl: `loadACLData()`, programportal: `getUserAppAccess()` + `getCachedAnnouncements()`)
+- Unified `// Session valid` comment before `var html` across all 3 files
+- Removed extra `// Both paths are valid` comment block from testauth1
+
+#### `testauth1.gs` — v02.50g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.45g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.54g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.11r] — 2026-04-06 10:10:52 AM EST — [88d8e91b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/88d8e91bb17ff37caec1b4c4b10cdac1b3ae957c)
+
+> **Prompt:** "continue where we left off in SESSION-CONTEXT"
+
+### Changed
+- Added proper `// PROJECT START` / `// PROJECT END` markers around project-specific data operation functions in all 3 auth GAS files — `saveNote` and `processDataPoll` in testauth1.gs, 12 ACL management functions in globalacl.gs, `getUserAppAccess` in programportal.gs
+- Added template example comments to DATA OPERATIONS section header in testauth1.gs and globalacl.gs (matching programportal.gs)
+- Removed duplicate `// AUTH — Page Nonce (postMessage handshake)` section headers from testauth1.gs and globalacl.gs (programportal.gs has just the plain function comment)
+- Fixed extra blank line before HIPAA COMPLIANCE section in testauth1.gs
+- Unified blank line patterns around PROJECT markers for consistent stripping
+
+#### `testauth1.gs` — v02.49g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.44g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.53g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.10r] — 2026-04-06 09:45:41 AM EST — [faef8437](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/faef84372336758ac6e3998ce2d29ebd2dac0f17)
+
+> **Prompt:** "now that the non project specific code between testauth1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
+
+### Changed
+- Added `<!-- YOUR PAGE CONTENT HERE -->` placeholder back to auth template's HTML PROJECT block
+- Added description suffix to `// PROJECT START` JS comment in auth template
+
+## [v09.09r] — 2026-04-06 09:42:41 AM EST — [40bb782c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/40bb782c9ca2bd3c4f4f2de5735b923234e91450)
+
+> **Prompt:** "now that the non project specific code between testauth1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
+
+### Changed
+- Rebuilt auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) from the unified programportal.html source — template non-project code now matches all 3 live auth pages exactly
+- Applied placeholder replacements: `TEMPLATE_TITLE`, `YOUR_CLIENT_ID`, empty `var _e`, `v01.00w` initial version, `document.title` for sourceDisplayName, production config defaults (HEARTBEAT_INTERVAL: 300000, SSO_PROVIDER: false)
+- Removed project-specific `_updateReconnectStage('rc-stage-sso')` from template
+- GAS template sync deferred — live GAS files need unification first (same process as HTML)
+
+## [v09.08r] — 2026-04-06 09:18:24 AM EST — [f89dec48](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f89dec48b5250db63a362b95b63a0ef85ff9335f)
+
+> **Prompt:** "whatever makes them match 100%"
+
+### Changed
+- Removed dead `_gasSandboxSource` code from globalacl.html (declared, set, and cleared but never read — only testauth1 uses it for ld-init postMessage)
+- Removed dead `_closeAllPanelsExcept(null)` call from globalacl.html showAuthWall (no panels registered — call was a no-op)
+- Unified globalacl.html whitespace and comment text to match programportal/testauth1 template code
+
+#### `globalacl.html` — v01.83w
+
+##### Removed
+- Dead `_gasSandboxSource` variable and all references (4 locations)
+- Dead `_closeAllPanelsExcept(null)` call in showAuthWall
+
+##### Fixed
+- Added missing blank line in showApp after `_ssoUserEmail` assignment
+- Removed description from `// PROJECT START` comment to match other pages
+
+## [v09.07r] — 2026-04-06 09:08:47 AM EST — [5f803afd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5f803afd7e1892169b6238e29ed16872308effe3)
+
+> **Prompt:** "get it to 100% addressing whitespace and code ordering. it should in theory also match the globalacl at the point"
+
+### Changed
+- Achieved 100% non-project template code unification between programportal.html, testauth1.html, and globalacl.html
+
+#### `programportal.html` — v01.89w
+
+##### Fixed
+- Added missing blank line before SSO indicator comment in startCountdownTimers
+- Moved SSO indicator click handler from before "Use Here" to after page load IIFE (matching testauth1/globalacl position)
+- Unified SSO indicator click handler comment text ("when user clicks 'retry'" matching testauth1/globalacl)
+
+## [v09.06r] — 2026-04-06 08:56:31 AM EST — [de49f375](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/de49f3758ab085e025a589c465e7c79f5b05f870)
+
+> **Prompt:** "yes"
+
+### Changed
+- Unified programportal.html non-project template code to match testauth1.html and globalacl.html
+
+#### `programportal.html` — v01.88w
+
+##### Fixed
+- Restored `loadIframeViaNonce()` in showApp DOM clearing reload and storage event login sync (was incorrectly using direct `?session=` URLs — breaks replay protection)
+- Fixed line-merge bugs in sign-in and sign-out stage checklist logic (comment and `var` declaration merged onto same line)
+- Restored client-side session expiry pre-check on page load (absolute + rolling timeout) to match testauth1/globalacl
+- Restored `_expectingSession` comment in page load session resume
+- Unified "Use Here" tab reclaim handler structure to match testauth1/globalacl
+- Unified comment formatting across ~15 template code areas (SSO section header, heartbeat interval, data poll interval, sign-in checklist, sign-out checklist, auth error comments, performSignOut SSO comments, nonce flow documentation)
+
+## [v09.05r] — 2026-04-06 08:31:35 AM EST — [3165d00e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3165d00e8a36a6a98303815a0014ab0cfff0df03)
+
+> **Prompt:** "if there is identical code, i want them in exactly the same place (relatively)"
+
+### Changed
+- Reorganized testauth1.gs to match globalacl.gs section structure — HIPAA config variables (BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG, HIPAA_DEADLINES) and shared utility functions (generateRequestId, formatHipaaTimestamp, validateIndividualAccess, getOrCreateSheet, wrapPhaseAOperation) moved from mid-file to after serverSignOut(), with globalacl-style section headers (HIPAA COMPLIANCE — Configuration, Shared Utilities, Phase A/B/C)
+- Fixed processHeartbeat() return from 2-line assignment+return to 1-line inline return to match globalacl
+- Marked evaluateBreachAlert call as PROJECT-specific (was labeled Phase B)
+
+#### `testauth1.gs` — v02.48g
+##### Changed
+- Minor internal improvements
+
+## [v09.04r] — 2026-04-06 08:10:11 AM EST — [ad53f43d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ad53f43d8b71ab145430de5ccdbda089fb0607bd)
+
+> **Prompt:** "review the text-compare.html we made, in the screenshot you can see the testauth1 on the left and the globalacl on the right. it doesnt really make sense for the left to be original and the right to be changed, it should be able to show me the differences between the two, and it doesnt make sense that i dont see the project specific code for the globalacl, is the project specific code in the right location in the code?"
+
+### Changed
+- Updated text-compare.html labeling from directional "Original"/"Changed" to neutral "Text A"/"Text B" terminology — the tool now works as a peer comparison tool rather than implying one side is the source of truth
+- Updated stats labels from "Added"/"Removed" to "Only in B"/"Only in A" for neutral language
+- Updated diff headers from "Original (red = removed)"/"Changed (blue = added)" to "Text A (red = only in A)"/"Text B (blue = only in B)"
+- Updated unified diff output header from "--- Original/+++ Changed" to "--- Text A/+++ Text B"
+
+#### `text-compare.html` — v01.08w
+##### Changed
+- Changed panel labels from "Original Text" / "Changed Text" to "Text A" / "Text B"
+- Changed diff headers, stats labels, and copy-diff output to use neutral comparison language
+
 ## [v08.70r] — 2026-04-04 10:13:01 PM EST — [e00e1cd8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e00e1cd897dbea0c26a4454155f54188baee82ba)
 
 > **Prompt:** "in tests folder, add a defensive-security folder, and add something we can use to test defensive security"

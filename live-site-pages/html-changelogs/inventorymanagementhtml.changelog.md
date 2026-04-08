@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 1/50`
+`Sections: 2/50`
 
 ## [Unreleased]
+
+## [v01.02w] — 2026-04-08 01:41:18 PM EST — v10.04r
+
+### Fixed
+- QR scanner panel now correctly hides when using the HTML layer toggle
+- Camera automatically stops when the scanner is hidden
 
 ## [v01.01w] — 2026-04-08 01:35:13 PM EST — v10.03r
 
