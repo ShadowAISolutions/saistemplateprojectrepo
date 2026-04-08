@@ -3,7 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
+
+## [v09.91r] — 2026-04-08 09:54:43 AM EST
+
+> **Prompt:** "for the inventorymanagement, design a system that incorporates all of the elements that are used in the autoHotkey/Combined Inventory and Intercept.ahk , ask clarifying questions if necessary"
+
+### Added
+- Full inventory management system with item CRUD, stock tracking, and semantic history/audit trail
+- Three scan modes (New Item, Add Stock, Subtract Stock) with color-coded mode banner
+- Three togglable list views (Inventory, History, Raw Scans) with sortable columns
+- Custom HTML modals for Add New Item, Edit Item, and Delete Item operations
+- Advanced quantity toggle for custom +N/-N stock adjustments (default +1/-1 per scan)
+- 15-second inventory data polling for multi-user sync with optimistic UI updates
+- Status bar with auto-fade feedback messages for all operations
+- Parent-to-GAS scan bridge for forwarding camera barcode scans to inventory mode handler
+
+#### `inventorymanagement.gs` — v01.15g
+
+##### Added
+- Inventory backend: auto-creating Inventory and InventoryHistory sheets
+- CRUD functions: addNewItem, addStock, subtractStock, editItem with validation and history logging
+- Cached data retrieval: getInventoryData, pollInventoryData with CacheService optimization
+- Full inventory management UI in GAS session page (modes, list views, modals, status bar)
+
+#### `inventorymanagement.html` — v01.16w
+
+##### Added
+- Scan forwarding to GAS session iframe for inventory processing via postMessage
 
 ## [v09.90r] — 2026-04-07 10:31:24 PM EST
 

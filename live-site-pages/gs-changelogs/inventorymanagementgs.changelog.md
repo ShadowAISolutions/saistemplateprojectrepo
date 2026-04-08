@@ -3,7 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
+
+## [v01.15g] — 2026-04-08 09:54:43 AM EST — v09.91r
+
+### Added
+- Full inventory management system with item tracking, stock adjustments, and activity history
+- Three scan modes: Add New Item, Add to Stock, and Subtract from Stock with color-coded display
+- Inventory, History, and Raw Scans views with sortable columns
+- Edit and delete items directly from the inventory list
+- Advanced mode for custom quantity adjustments (default is quick +1/-1 per scan)
+- Automatic background sync every 15 seconds for multi-user environments
+- Real-time status messages for all inventory operations
 
 ## [v01.14g] — 2026-04-07 10:08:31 PM EST — v09.87r
 

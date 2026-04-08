@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
+
+## [v01.16w] — 2026-04-08 09:54:43 AM EST — v09.91r
+
+### Added
+- Barcode scans from the camera are now forwarded to the inventory management system for processing
 
 ## [v01.15w] — 2026-04-07 10:08:31 PM EST — v09.87r
 
