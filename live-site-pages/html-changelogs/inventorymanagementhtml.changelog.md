@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
+
+## [v01.20w] — 2026-04-08 11:27:51 AM EST — v09.95r
+
+### Fixed
+- Inventory panel now appears immediately on desktop instead of waiting for background connection
 
 ## [v01.19w] — 2026-04-08 11:19:58 AM EST — v09.94r
 

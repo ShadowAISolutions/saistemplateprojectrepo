@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
+
+## [v09.95r] — 2026-04-08 11:27:51 AM EST
+
+> **Prompt:** "its looking pretty good on my phone, but in the desktop browser, i dont see the new UI for some reason (shown in screenshot)"
+
+### Fixed
+- Inventory panel no longer hidden behind `display: none` gate — shows immediately on page load instead of waiting for bridge-ready message that could arrive before listener was registered
+- Removed `_showInvPanel()` activation function and `.active` class dependency — panel is always visible, data populates when bridge connects
+
+#### `inventorymanagement.html` — v01.20w
+
+##### Fixed
+- Inventory panel now appears immediately on desktop instead of waiting for background connection
 
 ## [v09.94r] — 2026-04-08 11:19:58 AM EST
 
