@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
+
+## [v09.85r] — 2026-04-07 09:34:43 PM EST
+
+> **Prompt:** "idk what you are doing but as per the screenshot, when toggling both toggles, i still see the admin dropdown and scan history, they shouldnt be visible"
+
+### Fixed
+- Added `visibility: hidden` alongside `display: none` on the GAS iframe toggle — belt-and-suspenders approach to ensure the GAS layer content (admin dropdown, scan history) is fully hidden when the GAS toggle is off
+
+#### `inventorymanagement.html` — v01.13w
+
+##### Fixed
+- GAS layer toggle now also sets visibility:hidden for more reliable hiding
 
 ## [v09.84r] — 2026-04-07 09:22:12 PM EST
 
