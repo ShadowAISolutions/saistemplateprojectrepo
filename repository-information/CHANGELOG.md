@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
+
+## [v09.98r] — 2026-04-08 12:12:41 PM EST
+
+> **Prompt:** "i think we need to remake the inventorymanagement. the camera works, and its even writing to the spreadsheet when i scan, but its not properly working with adding new item. come up with a plan to get everything working. you can take inspiration with how the data is updated in the table with the testauth1 project and also inspiration from the original qr-scanner6"
+
+### Fixed
+- Made barcode field editable in Add New Item modal — removed `readonly` attribute, added placeholder text
+- Added client-side barcode validation to `_invSaveNew()` — catches empty barcode before GAS call
+- Auto-offer "Add New Item" when scanning unknown barcode in ADD or SUB mode — instead of error message, opens modal with scanned barcode pre-filled
+
+### Added
+- "Add Manually" button in inventory action row — opens Add New Item modal with empty editable barcode field for manual entry without camera
+- `_invManualAdd()` function for opening new item modal independently of scan mode
+
+#### `inventorymanagement.html` — v01.23w
+
+##### Fixed
+- You can now type a barcode manually when adding new items instead of requiring a camera scan
+- Scanning an unknown barcode while adding or removing stock now opens the new item form automatically
+
+##### Added
+- New "Add Manually" button for adding items without scanning
 
 ## [v09.97r] — 2026-04-08 11:49:43 AM EST
 

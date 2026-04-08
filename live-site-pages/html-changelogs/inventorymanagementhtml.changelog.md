@@ -3,7 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
+
+## [v01.23w] — 2026-04-08 12:12:41 PM EST — v09.98r
+
+### Fixed
+- You can now type a barcode manually when adding new items instead of requiring a camera scan
+- Scanning an unknown barcode while adding or removing stock now opens the new item form automatically
+
+### Added
+- New "Add Manually" button for adding items without scanning
 
 ## [v01.22w] — 2026-04-08 11:49:43 AM EST — v09.97r
 

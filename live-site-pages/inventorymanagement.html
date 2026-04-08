@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.22w">
+  <meta name="build-version" content="v01.23w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -649,6 +649,7 @@
         <span id="inv-adv-qty-wrap" style="display:none;">Qty: <input type="number" id="inv-adv-qty" min="1" value="1" step="1"></span>
       </div>
       <div class="inv-action-row">
+        <button class="inv-action-btn" id="inv-btn-manual-add" onclick="window._invManualAdd()">&#x2795; Add Manually</button>
         <button class="inv-action-btn" id="inv-btn-edit" onclick="window._invShowEditModal()" disabled>&#x270F; Edit Item</button>
         <button class="inv-action-btn" id="inv-btn-delete" onclick="window._invConfirmDelete()" disabled>&#x2716; Delete Item</button>
       </div>
@@ -693,7 +694,7 @@
   <div class="inv-modal" id="inv-modal-new">
     <div class="modal-box">
       <div class="modal-title">&#x2795; Add New Item</div>
-      <div class="modal-field"><label>Barcode</label><input id="inv-new-barcode" readonly></div>
+      <div class="modal-field"><label>Barcode</label><input id="inv-new-barcode" placeholder="Scan or type barcode"></div>
       <div class="modal-field"><label>Item Name</label><input id="inv-new-name" placeholder="Enter item name"></div>
       <div class="modal-field"><label>Initial Quantity</label><input id="inv-new-qty" type="number" min="0" value="1"></div>
       <div class="modal-error" id="inv-new-error"></div>
@@ -4474,7 +4475,16 @@
       _gasCall('inventory-add-stock', {barcode: barcode, qty: qty}).then(function(resp) {
         var r = resp.result;
         if (r && r.success) { _invData = r.inventory || _invData; _renderInventory(); _setStatus('success', '\u2714 Added ' + qty + ' to ' + (r.itemName || barcode) + ' (now ' + r.newQty + ')'); }
-        else { _setStatus('error', '\u2716 ' + (r ? r.error : 'Failed') + (r && r.error === 'item_not_found' ? ' \u2014 try New Item mode' : '')); }
+        else if (r && r.error === 'item_not_found') {
+          _setStatus('info', 'Item not found \u2014 opening Add New Item...');
+          document.getElementById('inv-new-barcode').value = barcode;
+          document.getElementById('inv-new-name').value = '';
+          document.getElementById('inv-new-qty').value = String(qty);
+          document.getElementById('inv-new-error').style.display = 'none';
+          document.getElementById('inv-modal-new').classList.add('active');
+          setTimeout(function() { document.getElementById('inv-new-name').focus(); }, 100);
+        }
+        else { _setStatus('error', '\u2716 ' + (r ? r.error : 'Failed')); }
       }).catch(function(e) { _setStatus('error', '\u2716 Error: ' + (e.error || e)); });
     } else if (_invMode === 'sub') {
       var qty = _getAdvQty();
@@ -4482,9 +4492,28 @@
       _gasCall('inventory-sub-stock', {barcode: barcode, qty: qty}).then(function(resp) {
         var r = resp.result;
         if (r && r.success) { _invData = r.inventory || _invData; _renderInventory(); _setStatus('success', '\u2714 Removed ' + qty + ' from ' + (r.itemName || barcode) + ' (now ' + r.newQty + ')'); }
-        else { var msg = r ? r.error : 'Failed'; if (r && r.error === 'insufficient_qty') msg = 'Only ' + r.currentQty + ' in stock'; if (r && r.error === 'item_not_found') msg += ' \u2014 item not found'; _setStatus('error', '\u2716 ' + msg); }
+        else if (r && r.error === 'item_not_found') {
+          _setStatus('info', 'Item not found \u2014 opening Add New Item...');
+          document.getElementById('inv-new-barcode').value = barcode;
+          document.getElementById('inv-new-name').value = '';
+          document.getElementById('inv-new-qty').value = '1';
+          document.getElementById('inv-new-error').style.display = 'none';
+          document.getElementById('inv-modal-new').classList.add('active');
+          setTimeout(function() { document.getElementById('inv-new-name').focus(); }, 100);
+        }
+        else { var msg = r ? r.error : 'Failed'; if (r && r.error === 'insufficient_qty') msg = 'Only ' + r.currentQty + ' in stock'; _setStatus('error', '\u2716 ' + msg); }
       }).catch(function(e) { _setStatus('error', '\u2716 Error: ' + (e.error || e)); });
     }
+  };
+
+  // ── Modal: Add Manually (open new-item modal with empty editable barcode) ──
+  window._invManualAdd = function() {
+    document.getElementById('inv-new-barcode').value = '';
+    document.getElementById('inv-new-name').value = '';
+    document.getElementById('inv-new-qty').value = '1';
+    document.getElementById('inv-new-error').style.display = 'none';
+    document.getElementById('inv-modal-new').classList.add('active');
+    setTimeout(function() { document.getElementById('inv-new-barcode').focus(); }, 100);
   };
 
   // ── Modal: Save New Item ──
@@ -4493,6 +4522,7 @@
     var name = document.getElementById('inv-new-name').value.trim();
     var qty = parseInt(document.getElementById('inv-new-qty').value, 10);
     var errEl = document.getElementById('inv-new-error');
+    if (!barcode) { errEl.textContent = 'Barcode is required'; errEl.style.display = 'block'; return; }
     if (!name) { errEl.textContent = 'Item name is required'; errEl.style.display = 'block'; return; }
     if (isNaN(qty) || qty < 0) { errEl.textContent = 'Quantity must be 0 or more'; errEl.style.display = 'block'; return; }
     errEl.style.display = 'none';
