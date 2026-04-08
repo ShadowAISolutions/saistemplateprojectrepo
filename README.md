@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-07 07:45:47 PM EST` · Repo version: `v09.76r`
+Last updated: `2026-04-07 08:03:52 PM EST` · Repo version: `v09.77r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -59,7 +59,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/qr-scanner6.html">qr-scanner6.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/qr-scanner6.html">🌐</a>  — [template] QR &amp; barcode scanner (native multi-format + jsQR fallback)
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/text-compare.html">text-compare.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/text-compare.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/text-comparehtml.changelog.md">v01.10w</a> · vNoGASg | [template] Text comparison tool with side-by-side diff highlighting
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/inventorymanagement.html">inventorymanagement.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Inventorymanagement/inventorymanagement.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md">v01.06w · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/inventorymanagementgs.changelog.md">v01.08g</a> | [template] Inventory Management page
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/inventorymanagement.html">inventorymanagement.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Inventorymanagement/inventorymanagement.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md">v01.07w · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/inventorymanagementgs.changelog.md">v01.08g</a> | [template] Inventory Management page
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>

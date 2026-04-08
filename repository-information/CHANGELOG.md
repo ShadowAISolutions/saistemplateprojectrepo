@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
+
+## [v09.77r] — 2026-04-07 08:03:52 PM EST
+
+> **Prompt:** "the optimistic doesnt seem to be working probably because the html and gas are on different layers, is there a way for there to be optimistic rows visible instantly between the layers before the data polling takes over"
+
+### Added
+- Optimistic "last scan" notification on the HTML layer — shows scanned value instantly below the camera viewport with a slide-up animation, changes from "saving..." to "✔ saved" when the GAS bridge confirms, auto-fades after 20 seconds
+
+#### `inventorymanagement.html` — v01.07w
+
+##### Added
+- Instant scan result feedback below the camera — appears immediately when a barcode is detected, before the GAS poll picks it up
 
 ## [v09.76r] — 2026-04-07 07:45:47 PM EST
 
