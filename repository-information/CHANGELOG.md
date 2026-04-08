@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
+
+## [v09.83r] — 2026-04-07 09:00:16 PM EST
+
+> **Prompt:** "revert the last change, the part about the thing scanned fading out after the poll updates the information can stay though"
+
+### Removed
+- Reverted HTML-layer instant history list (`#qr-live-history`) — scan history updates only via the GAS 15s poll. The optimistic "saving..." → "✔ saved" notification on the HTML layer remains
+
+#### `inventorymanagement.html` — v01.12w
+
+##### Removed
+- Instant scan history list on the HTML layer (reverted per user request)
 
 ## [v09.82r] — 2026-04-07 08:55:52 PM EST
 

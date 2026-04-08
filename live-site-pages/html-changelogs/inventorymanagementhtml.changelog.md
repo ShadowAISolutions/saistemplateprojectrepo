@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
+
+## [v01.12w] — 2026-04-07 09:00:16 PM EST — v09.83r
+
+### Removed
+- Removed extra scan list that appeared below the camera after each scan
 
 ## [v01.11w] — 2026-04-07 08:55:52 PM EST — v09.82r
 
