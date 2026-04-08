@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
+
+## [v09.81r] — 2026-04-07 08:29:42 PM EST
+
+> **Prompt:** "the left and right side still dont have padding"
+
+### Fixed
+- Increased side padding on both HTML scanner-container (12px → 16px + `box-sizing: border-box`) and GAS scan-panel (14px → 16px + `box-sizing: border-box` + matched `max-width: 480px` to scanner) so content doesn't touch screen edges on mobile
+
+#### `inventorymanagement.html` — v01.10w
+
+##### Fixed
+- Camera area and scan result notification now have visible side margins on mobile
+
+#### `inventorymanagement.gs` — v01.12g
+
+##### Fixed
+- Scan history rows now have visible side margins on mobile
 
 ## [v09.80r] — 2026-04-07 08:25:37 PM EST
 

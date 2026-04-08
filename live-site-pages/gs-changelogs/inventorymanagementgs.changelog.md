@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
+
+## [v01.12g] — 2026-04-07 08:29:42 PM EST — v09.81r
+
+### Fixed
+- Scan history rows now have visible side margins on mobile
 
 ## [v01.11g] — 2026-04-07 08:25:37 PM EST — v09.80r
 
