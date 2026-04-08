@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
+
+## [v09.90r] — 2026-04-07 10:31:24 PM EST
+
+> **Prompt:** "the program portal itself can be excluded since we are already in it, so how do you suggest we do that" / "yes"
+
+### Changed
+- `getPortalApps()` now skips the portal's own page (derived from `EMBED_PAGE_URL`) so it doesn't show a card linking to itself
+
+#### `programportal.gs` — v01.65g
+
+##### Changed
+- Portal no longer shows a card for itself — the current app is excluded from the app list
 
 ## [v09.89r] — 2026-04-07 10:24:49 PM EST
 

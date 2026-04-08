@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [programportalgs.changelog-archive.md](programportalgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
+
+## [v01.65g] — 2026-04-07 10:31:24 PM EST — v09.90r
+
+### Changed
+- Portal no longer shows a card for itself
 
 ## [v01.64g] — 2026-04-07 10:24:49 PM EST — v09.89r
 

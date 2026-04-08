@@ -1,4 +1,4 @@
-var VERSION = "v01.64g";
+var VERSION = "v01.65g";
 var TITLE = "Program Portal";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -1944,6 +1944,7 @@ function getUserAppAccess(email) {
  */
 function getPortalApps() {
   var apps = [];
+  var selfPageId = EMBED_PAGE_URL.replace(/^.*\//, '').replace(/\.html$/, '');
   var hasAcl = MASTER_ACL_SPREADSHEET_ID && MASTER_ACL_SPREADSHEET_ID !== "YOUR_MASTER_ACL_SPREADSHEET_ID";
   if (hasAcl) {
     try {
@@ -1963,7 +1964,7 @@ function getPortalApps() {
             if (!pageId) continue;
             var url = String(urls[c]).trim();
             var authEnabled = auths[c] === true || String(auths[c]).toUpperCase() === 'TRUE';
-            if (!authEnabled) continue;
+            if (!authEnabled || pageId === selfPageId) continue;
             var name = String(names[c]).trim() || pageId;
             var icon = String(icons[c] || '').trim() || '📱';
             var desc = String(descs[c] || '').trim() || (name + ' application.');
