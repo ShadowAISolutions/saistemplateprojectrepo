@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
+
+## [v01.09w] — 2026-04-07 08:25:37 PM EST — v09.80r
+
+### Changed
+- Scan result notification now has spacing so it doesn't overlap the scan history
 
 ## [v01.08w] — 2026-04-07 08:14:16 PM EST — v09.79r
 

@@ -3,7 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
+
+## [v09.80r] — 2026-04-07 08:25:37 PM EST
+
+> **Prompt:** "this is what it looks like now, i want it to not go off the edges on the left and right either, just a little padding. also the delete buttons should have a confirmation in the same way the testauth1 handles it. the optimistic needs more room as its overlapping as shown in screenshot"
+
+### Changed
+- Added horizontal padding (14px) to scan-panel so rows don't touch screen edges on mobile
+- Delete button now shows a confirmation modal (testauth1 pattern) with a preview of the scan value before deleting — prevents accidental deletion
+- Optimistic "last scan" element gets bottom margin so it doesn't overlap with the GAS "Scan History" title below. GAS scan-panel padding-top increased by 40px for more breathing room
+
+#### `inventorymanagement.html` — v01.09w
+
+##### Changed
+- Scan result notification now has spacing so it doesn't overlap scan history below
+
+#### `inventorymanagement.gs` — v01.11g
+
+##### Added
+- Delete confirmation dialog — tap the ✕ button to see a preview before confirming deletion
+
+##### Changed
+- Scan entries have proper side margins on mobile screens
 
 ## [v09.79r] — 2026-04-07 08:14:16 PM EST
 

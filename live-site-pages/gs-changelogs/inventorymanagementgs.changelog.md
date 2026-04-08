@@ -3,7 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
+
+## [v01.11g] — 2026-04-07 08:25:37 PM EST — v09.80r
+
+### Added
+- Delete confirmation dialog before removing a scan entry
+
+### Changed
+- Scan entries have proper side margins on mobile screens
 
 ## [v01.10g] — 2026-04-07 08:14:16 PM EST — v09.79r
 

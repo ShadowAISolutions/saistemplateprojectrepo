@@ -1,4 +1,4 @@
-var VERSION = "v01.10g";
+var VERSION = "v01.11g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2573,7 +2573,7 @@ function doGet(e) {
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
         /* PROJECT START — Scan results UI */
-        #scan-panel { padding: 16px; font-family: monospace; max-width: 500px; margin: 0 auto; padding-top: calc(min(100vw, 480px) * 0.75 + 50px); }
+        #scan-panel { padding: 16px 14px; font-family: monospace; max-width: 500px; margin: 0 auto; padding-top: calc(min(100vw, 480px) * 0.75 + 90px); }
         #scan-panel h3 { color: #90caf9; font-size: 13px; margin: 0 0 8px; }
         .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }
@@ -2588,6 +2588,18 @@ function doGet(e) {
         .scan-poll-bar .spl { color: #555; }
         .scan-poll-bar .spc { color: #6e7681; }
         .scan-poll-bar .spc.active { color: #d29922; }
+        #scan-delete-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+        #scan-delete-modal.active { display: flex; }
+        #scan-delete-modal .modal-box { background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px; padding: 24px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        #scan-delete-modal .modal-title { font-size: 16px; font-weight: 700; color: #f85149; margin-bottom: 8px; }
+        #scan-delete-modal .modal-msg { font-size: 13px; color: #c9d1d9; margin-bottom: 8px; line-height: 1.5; }
+        #scan-delete-modal .modal-preview { font-size: 12px; color: #8b949e; background: #0f1117; border-radius: 6px; padding: 8px 12px; margin-bottom: 16px; word-break: break-word; }
+        #scan-delete-modal .modal-btns { display: flex; gap: 12px; justify-content: center; }
+        #scan-delete-modal .modal-btns button { padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; min-width: 90px; }
+        #scan-delete-modal .btn-cancel { background: #30363d; color: #c9d1d9; }
+        #scan-delete-modal .btn-cancel:hover { background: #3d444d; }
+        #scan-delete-modal .btn-delete { background: #da3633; color: #fff; }
+        #scan-delete-modal .btn-delete:hover { background: #f85149; }
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
         #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
@@ -2686,6 +2698,17 @@ function doGet(e) {
         <h3>Scan History</h3>
         <div id="scan-list"><div class="scan-empty">No scans yet \\u2014 start scanning above</div></div>
         <div class="scan-poll-bar"><span class="spl" id="scan-poll-label">Waiting for scans...</span><span class="spc" id="scan-poll-countdown">--</span></div>
+      </div>
+      <div id="scan-delete-modal">
+        <div class="modal-box">
+          <div class="modal-title">Delete Scan</div>
+          <div class="modal-msg">Are you sure you want to delete this scan?</div>
+          <div class="modal-preview" id="scan-delete-preview"></div>
+          <div class="modal-btns">
+            <button class="btn-cancel" id="scan-delete-cancel">Cancel</button>
+            <button class="btn-delete" id="scan-delete-confirm">Delete</button>
+          </div>
+        </div>
       </div>
       <!-- PROJECT END -->
 
@@ -3369,28 +3392,51 @@ function doGet(e) {
                 delBtn.title = 'Delete this scan';
                 // Sheet row = data index + 2 (row 1 = header, data at row 2+)
                 var sheetRow = (_optimisticRow ? idx : idx + 1) + 1;
-                (function(rowDiv, ri) {
+                (function(rowDiv, ri, val, fmtStr, tsStr) {
                   delBtn.onclick = function() {
-                    rowDiv.classList.add('deleting');
-                    google.script.run
-                      .withSuccessHandler(function(result) {
-                        if (result && result.success && result.history) {
-                          _scanRows = result.history;
-                          _renderScans();
-                          if (_pollLabelEl) _pollLabelEl.textContent = 'Deleted \\u2714';
-                        } else {
-                          rowDiv.classList.remove('deleting');
-                        }
-                      })
-                      .withFailureHandler(function() {
-                        rowDiv.classList.remove('deleting');
-                      })
-                      .deleteScanRow(_sessionToken, ri);
+                    _showDeleteModal(rowDiv, ri, val + ' \\u2022 ' + fmtStr + ' \\u2022 ' + tsStr);
                   };
-                })(div, sheetRow);
+                })(div, sheetRow, item.value, fmt, ts);
                 div.appendChild(delBtn);
               }
               el.appendChild(div);
+            });
+          }
+
+          // ── Delete confirmation modal (testauth1 pattern) ──
+          var _deletePending = null;
+          function _showDeleteModal(rowDiv, sheetRow, previewText) {
+            if (_deletePending) return;
+            var modal = document.getElementById('scan-delete-modal');
+            var preview = document.getElementById('scan-delete-preview');
+            var cancelBtn = document.getElementById('scan-delete-cancel');
+            var confirmBtn = document.getElementById('scan-delete-confirm');
+            preview.textContent = previewText;
+            modal.classList.add('active');
+            var newCancel = cancelBtn.cloneNode(true);
+            var newConfirm = confirmBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+            function closeModal() { modal.classList.remove('active'); }
+            newCancel.addEventListener('click', closeModal);
+            newConfirm.addEventListener('click', function() {
+              closeModal();
+              rowDiv.classList.add('deleting');
+              _deletePending = sheetRow;
+              google.script.run
+                .withSuccessHandler(function(result) {
+                  _deletePending = null;
+                  if (result && result.success && result.history) {
+                    _scanRows = result.history;
+                    _renderScans();
+                    if (_pollLabelEl) _pollLabelEl.textContent = 'Deleted \\u2714';
+                  } else { rowDiv.classList.remove('deleting'); }
+                })
+                .withFailureHandler(function() {
+                  _deletePending = null;
+                  rowDiv.classList.remove('deleting');
+                })
+                .deleteScanRow(_sessionToken, sheetRow);
             });
           }
 
