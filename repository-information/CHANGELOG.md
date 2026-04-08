@@ -3,7 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
+
+## [v09.94r] — 2026-04-08 11:19:58 AM EST
+
+> **Prompt:** "im seeing a jumbled mess, and the html toggle is not hiding the code you moved over, the camera is properly being hidden by the toggle"
+
+### Fixed
+- Scanner page changed from `position: fixed` to `position: relative` on mobile so it flows naturally above the inventory panel
+- Desktop: scanner is fixed-left (380px), inventory panel fills remaining right side
+- Mobile: scanner and inventory stack vertically with proper z-index layering (no overlap)
+- Added `'inv-panel'` to `_htmlLayerEls` array so the HTML layer toggle hides/shows the inventory panel
+
+#### `inventorymanagement.html` — v01.19w
+
+##### Fixed
+- Scanner and inventory controls no longer overlap on mobile — they stack vertically with scanner on top
+- Desktop layout properly separates scanner (left) and inventory (right) without overlap
+- HTML layer toggle now also hides/shows the inventory panel
 
 ## [v09.93r] — 2026-04-08 11:07:48 AM EST
 

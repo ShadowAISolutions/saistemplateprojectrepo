@@ -3,7 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
+
+## [v01.19w] — 2026-04-08 11:19:58 AM EST — v09.94r
+
+### Fixed
+- Scanner and inventory controls no longer overlap on mobile — they stack vertically with scanner on top
+- Desktop layout properly separates scanner (left) and inventory (right) without overlap
+- HTML layer toggle now also hides/shows the inventory panel
 
 ## [v01.18w] — 2026-04-08 11:07:48 AM EST — v09.93r
 
