@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v10.14r] — 2026-04-08 05:42:46 PM EST
+
+> **Prompt:** "the following is happening mostly on mobile. when i switch tabs/applications on mobile and i come back to the scanner, the camera shows a still frame of the last thing seen on the camera before i switched tabs/applications, with no method to get the camera to activate again other than refreshing the page. how do you suggest we address that"
+
+### Added
+- Camera auto-resume on mobile tab/app switch via `visibilitychange` listener — camera stops cleanly when page is hidden and auto-restarts when returning, with graceful fallback if camera permission was revoked
+
+#### `inventorymanagement.html` — v01.12w
+
+##### Added
+- Camera now automatically resumes when you switch back to the scanner from another tab or app — no more frozen frames or page refreshes needed
 
 ## [v10.13r] — 2026-04-08 05:32:36 PM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-04-08 05:42:46 PM EST — v10.14r
+
+### Added
+- Camera now automatically resumes when you switch back to the scanner from another tab or app — no more frozen frames or page refreshes needed
 
 ## [v01.11w] — 2026-04-08 05:32:36 PM EST — v10.13r
 
