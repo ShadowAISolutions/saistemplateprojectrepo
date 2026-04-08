@@ -4,47 +4,50 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-07 10:52:00 PM EST
-**Repo version:** v09.90r
+**Date:** 2026-04-08 10:09:00 AM EST
+**Repo version:** v09.91r
 
 ### What was done
-- **Fixed GAS toggle not hiding admin dropdown and scan history (v09.87r)** — root cause: the parent page's GAS toggle button was never shown (`_showGasToggle()` was missing from `showApp()`), so the user was clicking the GAS iframe's internal toggle button which only hid 3 elements (`version`, `user-email`, `main-content`). Fix: added `_showGasToggle()` call, reverted to inline `style.display` approach (matching testauth1), expanded GAS-side `_gasLayerEls` array, commented out iframe's duplicate toggle button
-- **Fixed templates for future projects (v09.88r)** — the same bugs existed in the auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) and GAS auth template (`gas-minimal-auth-template-code.js.txt`). Fixed both templates and propagated to globalacl and programportal (both HTML and GAS)
-- **Show Global ACL in Program Portal (v09.89r)** — `getPortalApps()` was skipping the globalacl column because its `#URL` was `SELF`. Removed the `SELF` exclusion since the card URL is built from `pageId + '.html'`, not from `#URL`
-- **Exclude Program Portal from its own app list (v09.90r)** — added self-exclusion using `selfPageId` derived from `EMBED_PAGE_URL`
+- **Designed and implemented inventory management system (v09.91r)** — full AHK feature parity Phases 1+2, incorporating all elements from `autoHotkey/Combined Inventory and Intercept.ahk`
+- **Phase 1 — Backend**: Added inventory CRUD functions to `inventorymanagement.gs` PROJECT block (line ~1786): `addNewItem`, `addStock`, `subtractStock`, `editItem`, `getInventoryData`, `pollInventoryData`. Auto-creates `Inventory` and `InventoryHistory` sheets. Full caching via `getEpochCache()` with `inventory_data`, `inventory_history`, `inventory_last_modified` keys. Every operation logs to InventoryHistory (action types: NEW, ADD, SUB, EDIT)
+- **Phase 2 — Frontend UI**: Added inventory management UI inside the GAS session page HTML (in doGet): mode banner (color-coded: green=new, blue=add, orange=subtract), 3 mode buttons, 3 togglable list views (Inventory table with sortable columns, History table, Raw Scans), custom modals (Add New Item, Edit Item, Delete Item), status bar with auto-fade, advanced qty toggle for custom +N/-N adjustments, 15s inventory data polling, parent-to-GAS scan bridge via postMessage
+- **Parent HTML change**: Added `inventory-scan` postMessage forwarding in `onFound()` function of `inventorymanagement.html` (line ~3999) to send camera barcode scans to the GAS session iframe
 
 ### Where we left off
-- All changes pushed and auto-merging. GAS deployment still needs to happen (push .gs files via webhook) for the GAS-side changes to take effect on globalacl.gs, programportal.gs, and inventorymanagement.gs
-- The scan-to-sheet pipeline (inventorymanagement) still needs GAS deployment for the `action=scanListener` handler and `processBarcodeScan()` to work
+- Phases 1+2 pushed and auto-merging. The GAS webhook will deploy the new backend functions
+- **Still needed (Phase 3)**: Google Drive image support for item/user photos — requires adding `drive.file` OAuth scope, `uploadInventoryImage()` GAS function, CSP update for `drive.google.com` and `lh3.googleusercontent.com`
+- **Still needed (Phase 4)**: Column sorting/filtering polish, audio feedback (scan confirmation tone), RBAC gating for inventory operations, responsive mobile layout, error handling for concurrent edits
 
 ### Key decisions made
-- The GAS toggle on the parent page should hide the entire `#gas-app` iframe (using `style.display = 'none'`), not individual elements inside it — this is the testauth1 pattern that works reliably
-- The GAS iframe should NOT have its own toggle button (commented out) — the parent page's button handles it
-- The GAS-side `_gasLayerEls` array should include admin elements as a fallback, but the primary mechanism is hiding the entire iframe from the parent
-- `getPortalApps()` skips only `!authEnabled` columns and the portal's own page — `SELF` URL is no longer an exclusion criterion
-- testauth1 is the reference implementation for how GAS toggle should work
+- **Google OAuth only** — no badge-based user identification (InventoryUsers sheet omitted). Google email is the sole user identity for all inventory operations
+- **Google Drive links for images** (deferred to Phase 3) — full-size photos stored via `DriveApp.createFile(blob)`, shareable URLs in Sheets
+- **Phases 1+2 first** — backend + frontend UI delivered this session; images and polish in follow-up sessions
+- **Both qty modes** — default +1/-1 quick scan with "Advanced" toggle that reveals a quantity input field for custom adjustments
+- **Delete = set qty to 0** — preserves the barcode entry for future re-stocking rather than removing the sheet row
+- **Inventory UI inside GAS session page** — not on parent HTML. All ops require auth tokens, `google.script.run` only available inside GAS iframe
+- **Scan flow**: Parent HTML (camera) → postMessage `{type:'inventory-scan'}` → GAS session page → `google.script.run` (server-side CRUD)
 
 ### Active context
-- Branch: claude/fix-gas-toggle-hiding-xqbUA (pushed, auto-merging)
-- Repo version: v09.90r
-- inventorymanagement.html: v01.15w, inventorymanagement.gs: v01.14g
-- globalacl.html: v01.89w, globalacl.gs: v01.56g
-- programportal.html: v01.96w, programportal.gs: v01.65g
+- Branch: claude/design-inventory-system-E7wUy (pushed, auto-merging)
+- Repo version: v09.91r
+- inventorymanagement.html: v01.16w, inventorymanagement.gs: v01.15g
+- Plan file: `/root/.claude/plans/temporal-sparking-wind.md` (full design plan with all 4 phases)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 
 ## Previous Sessions
 
-**Date:** 2026-04-07 09:43:00 PM EST
-**Repo version:** v09.86r
+**Date:** 2026-04-07 10:52:00 PM EST
+**Repo version:** v09.90r
 
 ### What was done
-- **QR Scanner + Inventory Management integration (v09.68r–v09.86r)** — added QR/barcode scanning to the inventory management page, split across HTML and GAS layers
-- Deep research confirmed camera (`getUserMedia`) is blocked in GAS iframes (Google's sandbox, no workaround as of 2026). Discovered the **listener iframe bridge pattern** already in the codebase (heartbeat, signout, admin sessions) for parent→GAS communication
-- **Architecture**: Camera (HTML layer, bare minimum) → detects barcode → sends via scanListener iframe bridge → `processBarcodeScan()` saves to "Scans" sheet → GAS layer polls every 15s with visible countdown for scan history display
+- **Fixed GAS toggle not hiding admin dropdown and scan history (v09.87r)** — root cause: parent page's GAS toggle button was never shown. Fix: added `_showGasToggle()` call, expanded GAS-side `_gasLayerEls` array
+- **Fixed templates for future projects (v09.88r)** — propagated to globalacl and programportal
+- **Show Global ACL in Program Portal (v09.89r)** — removed `SELF` exclusion from `getPortalApps()`
+- **Exclude Program Portal from its own app list (v09.90r)** — added self-exclusion using `selfPageId`
 
 ### Where we left off
-- GAS toggle still not hiding properly — fixed in the next session (v09.87r–v09.88r)
+- All changes pushed. GAS deployment needed for the changes to take effect
 
 Developed by: ShadowAISolutions
