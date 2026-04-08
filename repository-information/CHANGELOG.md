@@ -3,7 +3,41 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
+
+## [v09.93r] — 2026-04-08 11:07:48 AM EST
+
+> **Prompt:** "unfortunately the modes arent properly being tracked between the html and gas layer it seems like its having a hard time moving data between the layers, what do you think we should do?"
+
+### Changed
+- Moved entire inventory management UI from GAS iframe to HTML layer — eliminates cross-layer state sync issues
+- GAS iframe now operates as a hidden backend bridge only (receives postMessage, calls google.script.run, returns results)
+- Scanner's `onFound()` now calls `_handleInventoryScan()` directly — no postMessage needed for scan handling
+- All inventory operations (CRUD, polling) use `_gasCall()` Promise-based bridge through hidden GAS iframe
+- Responsive layout now uses parent viewport media queries correctly (no more iframe breakpoint mismatch)
+
+#### `inventorymanagement.html` — v01.18w
+
+##### Added
+- Full inventory UI: mode buttons, tables, modals, status bar, view toggles, polling
+- `_gasCall()` Promise-based bridge for all server-side operations through hidden GAS iframe
+- Responsive desktop (side-by-side) and mobile (stacked) layouts using real viewport media queries
+- Direct scan-to-inventory handler — scanner calls `_handleInventoryScan()` in same JS scope
+
+##### Removed
+- `inventory-scan` postMessage to GAS iframe (replaced by direct function call)
+- `#gas-app` CSS repositioning (GAS iframe stays hidden/background)
+
+#### `inventorymanagement.gs` — v01.17g
+
+##### Changed
+- Stripped all inventory UI HTML, CSS, and JS from GAS session page
+- Added inventory bridge message router (routes 9 operation types: get-data, poll, add-new, add-stock, sub-stock, edit, delete, scan-get-history, scan-delete-row)
+
+##### Removed
+- Inventory container HTML, modals, tables, mode buttons, scan panel
+- All inventory CSS (mode styles, table styles, modal styles, responsive media queries)
+- All inventory JS functions (mode switching, rendering, polling, modal handlers)
 
 ## [v09.92r] — 2026-04-08 10:23:28 AM EST
 

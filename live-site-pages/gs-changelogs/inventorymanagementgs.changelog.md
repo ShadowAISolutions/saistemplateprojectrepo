@@ -3,7 +3,13 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
+
+## [v01.17g] — 2026-04-08 11:07:48 AM EST — v09.93r
+
+### Changed
+- Inventory interface moved to the main page for a faster, more integrated experience
+- Backend now operates as a lightweight bridge for data operations
 
 ## [v01.16g] — 2026-04-08 10:23:28 AM EST — v09.92r
 

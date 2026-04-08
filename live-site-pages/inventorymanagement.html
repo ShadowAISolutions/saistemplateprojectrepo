@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdnjs.cloudflare.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self' blob: mediastream:; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.17w">
+  <meta name="build-version" content="v01.18w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -380,13 +380,99 @@
       #qr-scanner-page { align-items: flex-start; padding-left: 16px; padding-top: 8px; }
       #qr-scanner-page .scanner-container { max-width: 360px; }
       #qr-scanner-page .viewport-wrapper { aspect-ratio: 1/1; }
-      #gas-app { left: 392px !important; width: calc(100% - 392px) !important; }
+      /* GAS iframe stays hidden — inventory UI is now on this layer */
     }
 
     /* ── Responsive: Mobile (<768px) — stacked layout, scanner on top ── */
     @media (max-width: 767px) {
       #qr-scanner-page .scanner-container { max-width: 100%; }
       #qr-scanner-page .viewport-wrapper { aspect-ratio: 4/3; }
+    }
+
+    /* ── Inventory Management UI (moved from GAS layer) ── */
+    #inv-panel { display: none; font-family: 'Space Mono', monospace; color: #e8e8f0; }
+    #inv-panel.active { display: block; }
+    #inv-container { padding: 8px 12px; box-sizing: border-box; overflow-y: auto; }
+    #inv-mode-banner { width: 100%; text-align: center; padding: 8px 0; font-weight: bold; font-size: 14px; color: #fff; border-radius: 6px; margin-bottom: 8px; transition: background 0.3s; }
+    .inv-mode-row { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+    .inv-mode-btn { flex: 1; min-width: 90px; padding: 8px 4px; border: 2px solid #555; border-radius: 6px; background: #1a1b26; color: #aaa; font: 12px/1.2 'Space Mono', monospace; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .inv-mode-btn.active-new { border-color: #00AA00; background: rgba(0,170,0,0.15); color: #00CC00; }
+    .inv-mode-btn.active-add { border-color: #0066CC; background: rgba(0,102,204,0.15); color: #66AAFF; }
+    .inv-mode-btn.active-sub { border-color: #CC6600; background: rgba(204,102,0,0.15); color: #FF9933; }
+    .inv-adv-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 11px; color: #888; }
+    .inv-adv-row label { cursor: pointer; }
+    .inv-adv-row input[type=number] { width: 60px; background: rgba(255,255,255,0.08); border: 1px solid #555; color: #eee; padding: 4px 6px; border-radius: 4px; font: 12px 'Space Mono', monospace; }
+    .inv-view-row { display: flex; gap: 4px; margin-bottom: 6px; }
+    .inv-view-btn { padding: 5px 10px; border: 1px solid #555; border-radius: 4px; background: none; color: #90caf9; font: 11px/1 'Space Mono', monospace; cursor: pointer; transition: all 0.15s; }
+    .inv-view-btn.active { background: rgba(144,202,249,0.15); border-color: #90caf9; color: #fff; }
+    .inv-action-row { display: flex; gap: 6px; margin-bottom: 6px; }
+    .inv-action-btn { padding: 5px 10px; border: 1px solid #555; border-radius: 4px; background: none; color: #ccc; font: 11px/1 'Space Mono', monospace; cursor: pointer; }
+    .inv-action-btn:hover { border-color: #90caf9; color: #90caf9; }
+    .inv-action-btn:disabled { opacity: 0.3; cursor: default; }
+    #inv-status { font-size: 11px; color: #888; padding: 4px 0; min-height: 18px; transition: color 0.3s; }
+    #inv-status.success { color: #66bb6a; }
+    #inv-status.error { color: #ef5350; }
+    #inv-status.info { color: #d29922; }
+    .inv-table-wrap { max-height: 300px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid #333; border-radius: 6px; margin-bottom: 6px; }
+    .inv-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .inv-table th { position: sticky; top: 0; background: #1a1b26; color: #90caf9; padding: 6px 8px; text-align: left; border-bottom: 1px solid #444; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .inv-table th:hover { color: #fff; }
+    .inv-table td { padding: 5px 8px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    .inv-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+    .inv-table tr:hover { background: rgba(144,202,249,0.08); cursor: pointer; }
+    .inv-table tr.selected { background: rgba(144,202,249,0.18); }
+    .inv-table .qty-cell { text-align: right; font-weight: 600; }
+    .inv-table .action-new { color: #00CC00; }
+    .inv-table .action-add { color: #66AAFF; }
+    .inv-table .action-sub { color: #FF9933; }
+    .inv-table .action-edit { color: #BB66FF; }
+    .inv-summary { font-size: 10px; color: #666; padding: 2px 0; }
+    .inv-poll-bar { display: flex; justify-content: space-between; font-size: 10px; color: #555; margin-top: 2px; font-family: 'Space Mono', monospace; }
+    .inv-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10001; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+    .inv-modal.active { display: flex; }
+    .inv-modal .modal-box { background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px; padding: 24px; max-width: 380px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .inv-modal .modal-title { font-size: 15px; font-weight: 700; color: #90caf9; margin-bottom: 12px; }
+    .inv-modal .modal-field { margin-bottom: 10px; }
+    .inv-modal .modal-field label { display: block; color: #aaa; font-size: 11px; margin-bottom: 3px; }
+    .inv-modal .modal-field input { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555; color: #eee; padding: 8px; border-radius: 4px; font: 13px 'Space Mono', monospace; box-sizing: border-box; }
+    .inv-modal .modal-field input:read-only { opacity: 0.5; }
+    .inv-modal .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+    .inv-modal .modal-btns button { padding: 8px 18px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; }
+    .inv-modal .btn-cancel { background: #30363d; color: #c9d1d9; }
+    .inv-modal .btn-save { background: #238636; color: #fff; }
+    .inv-modal .btn-save:hover { background: #2ea043; }
+    .inv-modal .modal-error { color: #ef5350; font-size: 11px; margin-top: 6px; display: none; }
+    .scan-row { background: rgba(255,255,255,0.04); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .scan-row .sv { color: #00ffcc; font-size: 12px; word-break: break-all; flex: 1; }
+    .scan-row .sm { color: #666; font-size: 10px; white-space: nowrap; margin-left: 8px; }
+    .scan-row .sd { background: none; border: 1px solid #555; color: #888; font: 11px/1 monospace; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 6px; transition: all 0.15s; }
+    .scan-row .sd:hover { border-color: #ef5350; color: #ef5350; }
+    .scan-row.deleting { opacity: 0.3; pointer-events: none; }
+    .scan-empty { color: #666; font-size: 12px; text-align: center; padding: 20px 0; }
+
+    /* ── Responsive: Inventory Desktop ── */
+    @media (min-width: 768px) {
+      #inv-panel { position: fixed; top: 0; right: 0; width: calc(100% - 392px); height: 100vh; overflow-y: auto; z-index: 2; }
+      #inv-container { max-width: 100%; padding: 16px 24px; max-height: 100vh; }
+      #inv-mode-banner { font-size: 16px; padding: 10px 0; }
+      .inv-mode-btn { padding: 12px 8px; font-size: 14px; min-width: 120px; }
+      .inv-table { font-size: 13px; }
+      .inv-table th { padding: 8px 12px; }
+      .inv-table td { padding: 8px 12px; max-width: 220px; }
+      .inv-table-wrap { max-height: 55vh; }
+      .inv-view-btn { padding: 8px 16px; font-size: 13px; }
+      .inv-action-btn { padding: 8px 16px; font-size: 13px; }
+      #inv-status { font-size: 13px; }
+    }
+    /* ── Responsive: Inventory Mobile ── */
+    @media (max-width: 767px) {
+      #inv-panel { position: relative; z-index: 2; pointer-events: auto; }
+      .inv-mode-btn { min-height: 44px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+      .inv-action-btn { min-height: 38px; font-size: 12px; padding: 6px 12px; }
+      .inv-view-btn { min-height: 36px; font-size: 12px; padding: 6px 12px; }
+      .inv-table { min-width: 420px; }
+      .inv-modal .modal-box { max-width: 95%; padding: 18px; }
+      .inv-modal .modal-field input { font-size: 16px; padding: 10px; }
     }
 /* ══════════════ */
 /* PROJECT END */
@@ -549,6 +635,100 @@
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+
+  <!-- Inventory Management Panel (UI moved from GAS layer) -->
+  <div id="inv-panel">
+    <div id="inv-container">
+      <div id="inv-mode-banner" style="background:#333;">Select a mode to begin</div>
+      <div class="inv-mode-row">
+        <button class="inv-mode-btn" id="inv-btn-new" onclick="window._invSetMode('new')">&#x2795; New Item</button>
+        <button class="inv-mode-btn" id="inv-btn-add" onclick="window._invSetMode('add')">&#x2B06; Add Stock</button>
+        <button class="inv-mode-btn" id="inv-btn-sub" onclick="window._invSetMode('sub')">&#x2B07; Subtract</button>
+      </div>
+      <div class="inv-adv-row" id="inv-adv-row" style="display:none;">
+        <label><input type="checkbox" id="inv-adv-toggle" onchange="window._invToggleAdv()"> Advanced</label>
+        <span id="inv-adv-qty-wrap" style="display:none;">Qty: <input type="number" id="inv-adv-qty" min="1" value="1" step="1"></span>
+      </div>
+      <div class="inv-action-row">
+        <button class="inv-action-btn" id="inv-btn-edit" onclick="window._invShowEditModal()" disabled>&#x270F; Edit Item</button>
+        <button class="inv-action-btn" id="inv-btn-delete" onclick="window._invConfirmDelete()" disabled>&#x2716; Delete Item</button>
+      </div>
+      <div id="inv-status">Ready &#x2014; select a mode and scan a barcode</div>
+      <div class="inv-view-row">
+        <button class="inv-view-btn active" id="inv-view-inventory" onclick="window._invSetView('inventory')">Inventory</button>
+        <button class="inv-view-btn" id="inv-view-history" onclick="window._invSetView('history')">History</button>
+        <button class="inv-view-btn" id="inv-view-scans" onclick="window._invSetView('scans')">Raw Scans</button>
+      </div>
+      <div id="inv-list-inventory">
+        <div class="inv-table-wrap">
+          <table class="inv-table">
+            <thead><tr><th onclick="window._invSort('barcode')">Barcode</th><th onclick="window._invSort('name')">Name</th><th onclick="window._invSort('qty')">Qty</th><th onclick="window._invSort('lastUpdated')">Updated</th><th onclick="window._invSort('lastUser')">User</th></tr></thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+        <div class="inv-summary" id="inv-summary"></div>
+      </div>
+      <div id="inv-list-history" style="display:none;">
+        <div class="inv-table-wrap">
+          <table class="inv-table">
+            <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Barcode</th><th>Item</th><th>&#x0394; Qty</th><th>New Qty</th></tr></thead>
+            <tbody id="inv-htbody"></tbody>
+          </table>
+        </div>
+        <div class="inv-summary" id="inv-hsummary"></div>
+      </div>
+      <div id="inv-list-scans" style="display:none;">
+        <div id="scan-panel">
+          <h3 style="color:#90caf9;font-size:13px;margin:0 0 8px;">Scan History</h3>
+          <div id="scan-list"><div class="scan-empty">No scans yet &#x2014; start scanning above</div></div>
+        </div>
+      </div>
+      <div class="inv-poll-bar">
+        <span id="inv-poll-label">Waiting for connection...</span>
+        <span id="inv-poll-countdown">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inventory Modals -->
+  <div class="inv-modal" id="inv-modal-new">
+    <div class="modal-box">
+      <div class="modal-title">&#x2795; Add New Item</div>
+      <div class="modal-field"><label>Barcode</label><input id="inv-new-barcode" readonly></div>
+      <div class="modal-field"><label>Item Name</label><input id="inv-new-name" placeholder="Enter item name"></div>
+      <div class="modal-field"><label>Initial Quantity</label><input id="inv-new-qty" type="number" min="0" value="1"></div>
+      <div class="modal-error" id="inv-new-error"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="window._invCloseModal('new')">Cancel</button>
+        <button class="btn-save" onclick="window._invSaveNew()">Add Item</button>
+      </div>
+    </div>
+  </div>
+  <div class="inv-modal" id="inv-modal-edit">
+    <div class="modal-box">
+      <div class="modal-title">&#x270F; Edit Item</div>
+      <div class="modal-field"><label>Barcode</label><input id="inv-edit-barcode" readonly></div>
+      <div class="modal-field"><label>Item Name</label><input id="inv-edit-name"></div>
+      <div class="modal-field"><label>Quantity</label><input id="inv-edit-qty" type="number" min="0"></div>
+      <div class="modal-error" id="inv-edit-error"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="window._invCloseModal('edit')">Cancel</button>
+        <button class="btn-save" onclick="window._invSaveEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+  <div class="inv-modal" id="inv-modal-delete">
+    <div class="modal-box">
+      <div class="modal-title" style="color:#ef5350;">&#x2716; Delete Item</div>
+      <div class="modal-field"><label>Barcode</label><input id="inv-del-barcode" readonly></div>
+      <div class="modal-field"><label>Item Name</label><input id="inv-del-name" readonly></div>
+      <div class="modal-error" id="inv-del-error"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="window._invCloseModal('delete')">Cancel</button>
+        <button class="btn-save" style="background:#da3633;" onclick="window._invConfirmDeleteExec()">Delete</button>
+      </div>
+    </div>
+  </div>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -4011,10 +4191,9 @@
     if (_scanListenerSource) {
       _scanListenerSource.postMessage({type:'barcode-scan', value:data, format:format||'qr_code'}, '*');
     }
-    // PROJECT: Forward scan to GAS session iframe for inventory processing
-    var gasApp = document.getElementById('gas-app');
-    if (gasApp && gasApp.contentWindow) {
-      gasApp.contentWindow.postMessage({type:'inventory-scan', value:data, format:format||'qr_code'}, '*');
+    // PROJECT: Forward scan directly to inventory handler (same JS scope — no postMessage needed)
+    if (typeof window._handleInventoryScan === 'function') {
+      window._handleInventoryScan(data);
     }
   }
 
@@ -4061,6 +4240,382 @@
 })();
 // ══════════════
 // PROJECT END
+// ══════════════
+
+// ══════════════
+// PROJECT START — Inventory Management System (HTML layer, GAS bridge for backend)
+// ══════════════
+(function() {
+  // ── GAS Bridge: postMessage-based RPC to hidden GAS iframe ──
+  var _bridgeReady = false;
+  var _pendingCalls = [];
+  var _callHandlers = {};
+  var _callId = 0;
+
+  window.addEventListener('message', function(evt) {
+    if (!evt.data || !evt.data.type) return;
+    var t = evt.data.type;
+    if (t === 'inventory-bridge-ready') { _bridgeReady = true; _flushPending(); return; }
+    // Route responses to the correct handler
+    if (t === 'inventory-data-result' || t === 'inventory-data-error' ||
+        t === 'inventory-poll-result' || t === 'inventory-poll-error' ||
+        t === 'inventory-op-result' || t === 'inventory-op-error' ||
+        t === 'scan-history-result' || t === 'scan-history-error' ||
+        t === 'scan-delete-result' || t === 'scan-delete-error') {
+      // Find and call the most recent handler for this type
+      var baseType = t.replace(/-result$/, '').replace(/-error$/, '');
+      var isError = t.indexOf('-error') !== -1;
+      if (_callHandlers[baseType]) {
+        var h = _callHandlers[baseType];
+        delete _callHandlers[baseType];
+        if (isError) { if (h.reject) h.reject(evt.data); }
+        else { if (h.resolve) h.resolve(evt.data); }
+      }
+    }
+  });
+
+  function _flushPending() {
+    while (_pendingCalls.length > 0) {
+      var c = _pendingCalls.shift();
+      _sendToGas(c.type, c.data, c.resolve, c.reject);
+    }
+  }
+
+  function _sendToGas(type, data, resolve, reject) {
+    var gasApp = document.getElementById('gas-app');
+    if (!gasApp || !gasApp.contentWindow) { if (reject) reject({error:'GAS iframe not ready'}); return; }
+    var baseType = type.replace('inventory-', '').replace('scan-', 'scan-');
+    // Map message type to response base for handler routing
+    var respBase = type;
+    _callHandlers[respBase] = {resolve: resolve, reject: reject};
+    var msg = {type: type};
+    if (data) { for (var k in data) { if (data.hasOwnProperty(k)) msg[k] = data[k]; } }
+    gasApp.contentWindow.postMessage(msg, '*');
+  }
+
+  function _gasCall(type, data) {
+    return new Promise(function(resolve, reject) {
+      if (!_bridgeReady) {
+        _pendingCalls.push({type: type, data: data, resolve: resolve, reject: reject});
+      } else {
+        _sendToGas(type, data, resolve, reject);
+      }
+    });
+  }
+
+  // ── State ──
+  var _invMode = null;
+  var _invData = [];
+  var _invHistory = [];
+  var _invSelected = null;
+  var _invView = 'inventory';
+  var _invSortCol = 'name';
+  var _invSortAsc = true;
+  var _invLastModified = null;
+  var _invPollTimer = null;
+  var _invPollInFlight = false;
+  var _invLastPollTick = 0;
+  var POLL_IV = 15000;
+
+  var _modeColors = { 'new': '#00AA00', 'add': '#0066CC', 'sub': '#CC6600' };
+  var _modeLabels = { 'new': '\u2795 NEW ITEM MODE', 'add': '\u2B06 ADD STOCK MODE', 'sub': '\u2B07 SUBTRACT STOCK MODE' };
+  var _modeCss = { 'new': 'active-new', 'add': 'active-add', 'sub': 'active-sub' };
+
+  function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ── Show panel when bridge is ready ──
+  function _showInvPanel() {
+    var p = document.getElementById('inv-panel');
+    if (p) p.classList.add('active');
+  }
+
+  // ── Status bar ──
+  var _statusFadeTimer = null;
+  function _setStatus(type, msg) {
+    var el = document.getElementById('inv-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = type ? ('inv-status ' + type) : '';
+    if (_statusFadeTimer) clearTimeout(_statusFadeTimer);
+    if (type) { _statusFadeTimer = setTimeout(function() { el.className = ''; }, 8000); }
+  }
+
+  // ── Mode switching ──
+  window._invSetMode = function(mode) {
+    _invMode = (_invMode === mode) ? null : mode;
+    var banner = document.getElementById('inv-mode-banner');
+    var advRow = document.getElementById('inv-adv-row');
+    ['new','add','sub'].forEach(function(m) {
+      var btn = document.getElementById('inv-btn-' + m);
+      if (btn) btn.className = 'inv-mode-btn' + (_invMode === m ? ' ' + _modeCss[m] : '');
+    });
+    if (_invMode) {
+      banner.textContent = _modeLabels[_invMode];
+      banner.style.background = _modeColors[_invMode];
+      advRow.style.display = (_invMode === 'add' || _invMode === 'sub') ? 'flex' : 'none';
+      _setStatus('info', 'Mode: ' + _modeLabels[_invMode] + ' \u2014 scan a barcode');
+    } else {
+      banner.textContent = 'Select a mode to begin';
+      banner.style.background = '#333';
+      advRow.style.display = 'none';
+      _setStatus('', 'Ready \u2014 select a mode and scan a barcode');
+    }
+  };
+
+  // ── Advanced qty ──
+  window._invToggleAdv = function() {
+    var checked = document.getElementById('inv-adv-toggle').checked;
+    document.getElementById('inv-adv-qty-wrap').style.display = checked ? 'inline' : 'none';
+    if (!checked) document.getElementById('inv-adv-qty').value = '1';
+  };
+  function _getAdvQty() {
+    var toggle = document.getElementById('inv-adv-toggle');
+    if (toggle && toggle.checked) {
+      var v = parseInt(document.getElementById('inv-adv-qty').value, 10);
+      return (isNaN(v) || v < 1) ? 1 : v;
+    }
+    return 1;
+  }
+
+  // ── View switching ──
+  window._invSetView = function(view) {
+    _invView = view;
+    ['inventory','history','scans'].forEach(function(v) {
+      var el = document.getElementById('inv-list-' + v);
+      var btn = document.getElementById('inv-view-' + v);
+      if (el) el.style.display = (v === view) ? '' : 'none';
+      if (btn) btn.className = 'inv-view-btn' + (v === view ? ' active' : '');
+    });
+  };
+
+  // ── Sorting ──
+  window._invSort = function(col) {
+    if (_invSortCol === col) _invSortAsc = !_invSortAsc;
+    else { _invSortCol = col; _invSortAsc = true; }
+    _renderInventory();
+  };
+
+  // ── Render inventory table ──
+  function _renderInventory() {
+    var tbody = document.getElementById('inv-tbody');
+    var summary = document.getElementById('inv-summary');
+    if (!tbody) return;
+    var sorted = _invData.slice().sort(function(a, b) {
+      var va = a[_invSortCol], vb = b[_invSortCol];
+      if (_invSortCol === 'qty') { va = parseInt(va,10)||0; vb = parseInt(vb,10)||0; }
+      else { va = String(va||'').toLowerCase(); vb = String(vb||'').toLowerCase(); }
+      return (va < vb ? -1 : va > vb ? 1 : 0) * (_invSortAsc ? 1 : -1);
+    });
+    var totalQty = 0;
+    tbody.innerHTML = '';
+    sorted.forEach(function(item) {
+      totalQty += item.qty;
+      var tr = document.createElement('tr');
+      if (_invSelected === item.barcode) tr.className = 'selected';
+      tr.onclick = function() { _invSelectItem(item.barcode); };
+      var ts = item.lastUpdated ? new Date(item.lastUpdated).toLocaleString([], {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+      var user = (item.lastUser || '').replace(/@.*/, '');
+      tr.innerHTML = '<td>' + _esc(item.barcode) + '</td><td>' + _esc(item.name) + '</td><td class="qty-cell">' + item.qty + '</td><td>' + _esc(ts) + '</td><td>' + _esc(user) + '</td>';
+      tbody.appendChild(tr);
+    });
+    if (summary) summary.textContent = sorted.length + ' items \u00B7 ' + totalQty + ' total qty';
+  }
+
+  // ── Render history table ──
+  function _renderHistory() {
+    var tbody = document.getElementById('inv-htbody');
+    var summary = document.getElementById('inv-hsummary');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    _invHistory.forEach(function(h) {
+      var tr = document.createElement('tr');
+      var ts = h.timestamp ? new Date(h.timestamp).toLocaleString([], {month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '';
+      var user = (h.userName || h.userEmail || '').replace(/@.*/, '');
+      var actionClass = 'action-' + (h.action || '').toLowerCase();
+      var qtyStr = h.qtyChange > 0 ? '+' + h.qtyChange : String(h.qtyChange);
+      tr.innerHTML = '<td>' + _esc(ts) + '</td><td>' + _esc(user) + '</td><td class="' + actionClass + '">' + _esc(h.action) + '</td><td>' + _esc(h.barcode) + '</td><td>' + _esc(h.itemName) + '</td><td class="qty-cell">' + qtyStr + '</td><td class="qty-cell">' + h.newQty + '</td>';
+      tbody.appendChild(tr);
+    });
+    if (summary) summary.textContent = _invHistory.length + ' history entries';
+  }
+
+  // ── Item selection ──
+  function _invSelectItem(barcode) {
+    _invSelected = (_invSelected === barcode) ? null : barcode;
+    _renderInventory();
+    document.getElementById('inv-btn-edit').disabled = !_invSelected;
+    document.getElementById('inv-btn-delete').disabled = !_invSelected;
+  }
+
+  // ── Scan handler (called directly from camera onFound) ──
+  window._handleInventoryScan = function(value) {
+    if (!_invMode) { _setStatus('error', 'Select a mode first, then scan'); return; }
+    var barcode = String(value).trim();
+    if (!barcode) return;
+    if (_invMode === 'new') {
+      document.getElementById('inv-new-barcode').value = barcode;
+      document.getElementById('inv-new-name').value = '';
+      document.getElementById('inv-new-qty').value = '1';
+      document.getElementById('inv-new-error').style.display = 'none';
+      document.getElementById('inv-modal-new').classList.add('active');
+      setTimeout(function() { document.getElementById('inv-new-name').focus(); }, 100);
+    } else if (_invMode === 'add') {
+      var qty = _getAdvQty();
+      _setStatus('info', 'Adding ' + qty + ' to ' + barcode + '...');
+      _gasCall('inventory-add-stock', {barcode: barcode, qty: qty}).then(function(resp) {
+        var r = resp.result;
+        if (r && r.success) { _invData = r.inventory || _invData; _renderInventory(); _setStatus('success', '\u2714 Added ' + qty + ' to ' + (r.itemName || barcode) + ' (now ' + r.newQty + ')'); }
+        else { _setStatus('error', '\u2716 ' + (r ? r.error : 'Failed') + (r && r.error === 'item_not_found' ? ' \u2014 try New Item mode' : '')); }
+      }).catch(function(e) { _setStatus('error', '\u2716 Error: ' + (e.error || e)); });
+    } else if (_invMode === 'sub') {
+      var qty = _getAdvQty();
+      _setStatus('info', 'Subtracting ' + qty + ' from ' + barcode + '...');
+      _gasCall('inventory-sub-stock', {barcode: barcode, qty: qty}).then(function(resp) {
+        var r = resp.result;
+        if (r && r.success) { _invData = r.inventory || _invData; _renderInventory(); _setStatus('success', '\u2714 Removed ' + qty + ' from ' + (r.itemName || barcode) + ' (now ' + r.newQty + ')'); }
+        else { var msg = r ? r.error : 'Failed'; if (r && r.error === 'insufficient_qty') msg = 'Only ' + r.currentQty + ' in stock'; if (r && r.error === 'item_not_found') msg += ' \u2014 item not found'; _setStatus('error', '\u2716 ' + msg); }
+      }).catch(function(e) { _setStatus('error', '\u2716 Error: ' + (e.error || e)); });
+    }
+  };
+
+  // ── Modal: Save New Item ──
+  window._invSaveNew = function() {
+    var barcode = document.getElementById('inv-new-barcode').value.trim();
+    var name = document.getElementById('inv-new-name').value.trim();
+    var qty = parseInt(document.getElementById('inv-new-qty').value, 10);
+    var errEl = document.getElementById('inv-new-error');
+    if (!name) { errEl.textContent = 'Item name is required'; errEl.style.display = 'block'; return; }
+    if (isNaN(qty) || qty < 0) { errEl.textContent = 'Quantity must be 0 or more'; errEl.style.display = 'block'; return; }
+    errEl.style.display = 'none';
+    _setStatus('info', 'Adding new item ' + barcode + '...');
+    _gasCall('inventory-add-new', {barcode: barcode, name: name, qty: qty}).then(function(resp) {
+      var r = resp.result;
+      if (r && r.success) { _invCloseModal('new'); _invData = r.inventory || _invData; _renderInventory(); _setStatus('success', '\u2714 New item added: ' + name + ' (qty ' + qty + ')'); }
+      else { var msg = r ? r.error : 'Failed'; if (r && r.error === 'duplicate_barcode') msg = 'Barcode already exists (' + (r.existingName || '') + ')'; errEl.textContent = msg; errEl.style.display = 'block'; }
+    }).catch(function(e) { errEl.textContent = String(e.error || e); errEl.style.display = 'block'; });
+  };
+
+  // ── Modal: Edit Item ──
+  window._invShowEditModal = function() {
+    if (!_invSelected) return;
+    var item = _invData.find(function(i) { return i.barcode === _invSelected; });
+    if (!item) return;
+    document.getElementById('inv-edit-barcode').value = item.barcode;
+    document.getElementById('inv-edit-name').value = item.name;
+    document.getElementById('inv-edit-qty').value = item.qty;
+    document.getElementById('inv-edit-error').style.display = 'none';
+    document.getElementById('inv-modal-edit').classList.add('active');
+    setTimeout(function() { document.getElementById('inv-edit-name').focus(); }, 100);
+  };
+  window._invSaveEdit = function() {
+    var barcode = document.getElementById('inv-edit-barcode').value.trim();
+    var name = document.getElementById('inv-edit-name').value.trim();
+    var qty = parseInt(document.getElementById('inv-edit-qty').value, 10);
+    var errEl = document.getElementById('inv-edit-error');
+    if (!name) { errEl.textContent = 'Item name is required'; errEl.style.display = 'block'; return; }
+    if (isNaN(qty) || qty < 0) { errEl.textContent = 'Quantity must be 0 or more'; errEl.style.display = 'block'; return; }
+    errEl.style.display = 'none';
+    _setStatus('info', 'Saving changes...');
+    _gasCall('inventory-edit', {barcode: barcode, name: name, qty: qty}).then(function(resp) {
+      var r = resp.result;
+      if (r && r.success) { _invCloseModal('edit'); _invData = r.inventory || _invData; _renderInventory(); _setStatus(r.noChange ? 'info' : 'success', r.noChange ? 'No changes made' : '\u2714 Updated: ' + (r.newName || barcode)); }
+      else { errEl.textContent = r ? r.error : 'Failed'; errEl.style.display = 'block'; }
+    }).catch(function(e) { errEl.textContent = String(e.error || e); errEl.style.display = 'block'; });
+  };
+
+  // ── Modal: Delete ──
+  window._invConfirmDelete = function() {
+    if (!_invSelected) return;
+    var item = _invData.find(function(i) { return i.barcode === _invSelected; });
+    if (!item) return;
+    document.getElementById('inv-del-barcode').value = item.barcode;
+    document.getElementById('inv-del-name').value = item.name;
+    document.getElementById('inv-del-error').style.display = 'none';
+    document.getElementById('inv-modal-delete').classList.add('active');
+  };
+  window._invConfirmDeleteExec = function() {
+    var barcode = document.getElementById('inv-del-barcode').value.trim();
+    var errEl = document.getElementById('inv-del-error');
+    _setStatus('info', 'Deleting item...');
+    _gasCall('inventory-delete', {barcode: barcode}).then(function(resp) {
+      var r = resp.result;
+      if (r && r.success) { _invCloseModal('delete'); _invData = r.inventory || _invData; _invSelected = null; _renderInventory(); document.getElementById('inv-btn-edit').disabled = true; document.getElementById('inv-btn-delete').disabled = true; _setStatus('success', '\u2714 Item quantity set to 0'); }
+      else { errEl.textContent = r ? r.error : 'Failed'; errEl.style.display = 'block'; }
+    }).catch(function(e) { errEl.textContent = String(e.error || e); errEl.style.display = 'block'; });
+  };
+
+  // ── Close modals ──
+  window._invCloseModal = function(name) {
+    var el = document.getElementById('inv-modal-' + name);
+    if (el) el.classList.remove('active');
+  };
+
+  // ── Inventory polling (15s) ──
+  var _invPollCountdown = document.getElementById('inv-poll-countdown');
+  var _invPollLabel = document.getElementById('inv-poll-label');
+
+  function _invUpdateCountdown() {
+    if (!_invPollCountdown) return;
+    if (_invPollInFlight) { _invPollCountdown.textContent = 'polling...'; }
+    else if (_invLastPollTick) {
+      var since = (Date.now() - _invLastPollTick) / 1000;
+      var s = Math.ceil(Math.max(0, (POLL_IV / 1000) - since));
+      _invPollCountdown.textContent = '\u25B7 ' + s + 's';
+    }
+  }
+  setInterval(_invUpdateCountdown, 1000);
+
+  function _invDoPoll() {
+    if (_invPollInFlight) return;
+    _invPollInFlight = true;
+    _invUpdateCountdown();
+    _gasCall('inventory-poll', {clientTimestamp: _invLastModified}).then(function(resp) {
+      _invPollInFlight = false; _invLastPollTick = Date.now(); _invUpdateCountdown();
+      var r = resp.data;
+      if (r && r.success) {
+        if (r.changed !== false) {
+          if (r.inventory) { _invData = r.inventory; _renderInventory(); }
+          if (r.history) { _invHistory = r.history; _renderHistory(); }
+          if (r.lastModified) _invLastModified = r.lastModified;
+          if (_invPollLabel) _invPollLabel.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        } else {
+          if (_invPollLabel) _invPollLabel.textContent = 'No changes ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        }
+      }
+      _invPollTimer = setTimeout(_invDoPoll, POLL_IV);
+    }).catch(function() {
+      _invPollInFlight = false; _invLastPollTick = Date.now(); _invUpdateCountdown();
+      if (_invPollLabel) _invPollLabel.textContent = 'Poll failed';
+      _invPollTimer = setTimeout(_invDoPoll, POLL_IV);
+    });
+  }
+
+  // ── Initial load (wait for bridge) ──
+  function _invInitialLoad() {
+    if (!_bridgeReady) { setTimeout(_invInitialLoad, 500); return; }
+    _showInvPanel();
+    _invLastPollTick = Date.now();
+    _gasCall('inventory-get-data', {}).then(function(resp) {
+      _invPollInFlight = false; _invLastPollTick = Date.now();
+      var r = resp.data;
+      if (r && r.success) {
+        _invData = r.inventory || [];
+        _invHistory = r.history || [];
+        _renderInventory();
+        _renderHistory();
+        if (_invPollLabel) _invPollLabel.textContent = 'Loaded ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      }
+      _invPollTimer = setTimeout(_invDoPoll, POLL_IV);
+    }).catch(function() {
+      _invPollInFlight = false; _invLastPollTick = Date.now();
+      if (_invPollLabel) _invPollLabel.textContent = 'Load failed';
+      _invPollTimer = setTimeout(_invDoPoll, POLL_IV);
+    });
+  }
+  setTimeout(_invInitialLoad, 3000);
+})();
+// ══════════════
+// PROJECT END — Inventory Management System
 // ══════════════
   </script>
 </body>

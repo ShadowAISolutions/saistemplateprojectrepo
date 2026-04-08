@@ -3,7 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
+
+## [v01.18w] — 2026-04-08 11:07:48 AM EST — v09.93r
+
+### Changed
+- Inventory controls now appear directly on the page alongside the scanner for instant feedback
+- Desktop layout shows scanner and inventory side-by-side; mobile stacks them vertically
+- Scan results now show mode-aware feedback (e.g. "Added 1 to Widget" instead of generic "saved")
 
 ## [v01.17w] — 2026-04-08 10:23:28 AM EST — v09.92r
 
