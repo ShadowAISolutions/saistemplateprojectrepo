@@ -3,7 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
+
+## [v09.79r] — 2026-04-07 08:14:16 PM EST
+
+> **Prompt:** "this is what it looks like on my phone, make the camera area much more compact so we have more space"
+
+### Changed
+- Made camera viewport more compact on mobile — changed aspect ratio from 1:1 (square) to 4:3 (landscape), reduced padding from 18px to 8px, tighter gap between elements. Gives ~25% more vertical space for scan history below
+- Updated GAS scan-panel padding-top to match the new smaller camera height (`min(100vw,480px) * 0.75 + 50px`)
+
+#### `inventorymanagement.html` — v01.08w
+
+##### Changed
+- Camera viewport is now more compact with a 4:3 aspect ratio
+
+#### `inventorymanagement.gs` — v01.10g
+
+##### Changed
+- Scan history position adjusted for the smaller camera area
 
 ## [v09.78r] — 2026-04-07 08:08:27 PM EST
 

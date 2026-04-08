@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
+
+## [v01.08w] — 2026-04-07 08:14:16 PM EST — v09.79r
+
+### Changed
+- Camera viewport is now more compact — more space for scan history on mobile
 
 ## [v01.07w] — 2026-04-07 08:03:52 PM EST — v09.77r
 
