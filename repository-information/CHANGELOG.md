@@ -3,7 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
+
+## [v09.87r] — 2026-04-07 10:08:31 PM EST
+
+> **Prompt:** "last session we were trying to see why the gas toggle in the inventorymanagement was not hiding the admin dropdown and the scan history. it is properly hiding the gas version number and signed in username. take your time to analyze why those are properly hidden but the admin dropdown and the scan history are not hidden"
+
+### Fixed
+- Root cause found: the parent page's GAS toggle button was never shown (`_showGasToggle()` was missing from `showApp()`), so the user was clicking the GAS iframe's internal toggle button which only hid 3 elements (`version`, `user-email`, `main-content`) — missing admin badge, admin dropdown, and scan panel. Fix: added `_showGasToggle()` call to `showApp()` (matching testauth1), reverted parent toggle to inline `style.display` approach, expanded GAS-side element list, and commented out the iframe's duplicate toggle button
+
+#### `inventorymanagement.html` — v01.15w
+
+##### Fixed
+- GAS toggle now properly hides all GAS content by showing the parent page's toggle button after auth — clicking it hides the entire GAS iframe
+
+#### `inventorymanagement.gs` — v01.14g
+
+##### Fixed
+- GAS-side toggle element list expanded to include admin badge, admin dropdown, admin panel overlay, scan panel, and scan delete modal
+- Iframe's duplicate GAS toggle button commented out — parent page's button handles the toggle
 
 ## [v09.86r] — 2026-04-07 09:40:18 PM EST
 

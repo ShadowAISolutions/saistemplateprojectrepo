@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -2660,7 +2660,9 @@ function doGet(e) {
     <body>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
+      <!-- GAS toggle moved to HTML layer (inventorymanagement.html) for full iframe hide/show
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+      -->
       ${isAdmin ? `
       <div id="admin-badge" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">ADMIN &#x25BE;</div>
       <div id="admin-dropdown-gas">
@@ -2835,7 +2837,7 @@ function doGet(e) {
         // GAS layer visibility toggle
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['version', 'user-email', 'main-content'];
+          var _gasLayerEls = ['version', 'user-email', 'main-content', 'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay', 'scan-panel', 'scan-delete-modal'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');

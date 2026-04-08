@@ -3,7 +3,12 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
+
+## [v01.14g] — 2026-04-07 10:08:31 PM EST — v09.87r
+
+### Fixed
+- GAS layer toggle now hides all controls (admin menu, scan history) when toggled off
 
 ## [v01.13g] — 2026-04-07 09:22:12 PM EST — v09.84r
 
