@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
+
+## [v01.22w] — 2026-04-08 11:49:43 AM EST — v09.97r
+
+### Fixed
+- Add item, edit, delete, and stock operations now work reliably and close their modals when complete
 
 ## [v01.21w] — 2026-04-08 11:40:06 AM EST — v09.96r
 

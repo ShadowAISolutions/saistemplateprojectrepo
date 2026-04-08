@@ -3,7 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
+
+## [v09.97r] — 2026-04-08 11:49:43 AM EST
+
+> **Prompt:** "still getting stuck on the add new item window, i click add item but it doesnt close the window when i do"
+
+### Fixed
+- Rewrote bridge callback system to use matcher functions instead of key-based lookup — each call registers a matcher that checks both response type and op field, eliminating key mismatch entirely
+- CRUD ops match on `inventory-op-result` + `op` field (e.g. `op === 'add-new'`); data/poll/scan ops match via static response→request type mapping
+
+#### `inventorymanagement.html` — v01.22w
+
+##### Fixed
+- Add item, edit, delete, and stock operations now work reliably and close their modals when complete
 
 ## [v09.96r] — 2026-04-08 11:40:06 AM EST
 
