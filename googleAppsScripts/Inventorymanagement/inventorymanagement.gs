@@ -1,4 +1,4 @@
-var VERSION = "v01.17g";
+var VERSION = "v01.00g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -298,100 +298,7 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 
 // ══════════════
-// PROJECT START — QR/Barcode scanner server-side processing
-/**
- * Process a barcode scan: save to spreadsheet, refresh cache, return updated history.
- * Called via google.script.run from the scanListener iframe bridge.
- */
-function processBarcodeScan(value, format) {
-  if (!value) return { success: false, error: 'empty_scan' };
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName('Scans');
-  if (!sheet) {
-    sheet = ss.insertSheet('Scans');
-    sheet.appendRow(['Timestamp', 'Value', 'Format']);
-    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
-  }
-  var ts = new Date();
-  sheet.insertRowAfter(1);
-  sheet.getRange(2, 1, 1, 3).setValues([[ts, String(value).substring(0, 500), format || 'qr_code']]);
-  // Refresh cache
-  _refreshScanCache(sheet);
-  return {
-    success: true,
-    value: String(value).substring(0, 500),
-    format: format || 'qr_code',
-    timestamp: ts.toISOString(),
-    history: _getCachedScans()
-  };
-}
-
-/**
- * Get scan history for polling — lightweight, reads from cache.
- */
-function getScanHistory(token) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  return { success: true, history: _getCachedScans() };
-}
-
-function _refreshScanCache(sheet) {
-  if (!sheet) {
-    try {
-      sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Scans');
-    } catch(e) { return; }
-  }
-  if (!sheet) return;
-  var data = sheet.getDataRange().getValues();
-  var rows = [];
-  for (var i = 1; i < Math.min(data.length, 51); i++) {
-    rows.push({
-      timestamp: data[i][0] ? new Date(data[i][0]).toISOString() : '',
-      value: String(data[i][1] || ''),
-      format: String(data[i][2] || 'qr_code')
-    });
-  }
-  var cache = getEpochCache();
-  cache.put('scan_history', JSON.stringify(rows), 21600);
-}
-
-function _getCachedScans() {
-  var cache = getEpochCache();
-  var raw = cache.get('scan_history');
-  if (raw) {
-    try { return JSON.parse(raw); } catch(e) {}
-  }
-  _refreshScanCache(null);
-  raw = cache.get('scan_history');
-  if (raw) {
-    try { return JSON.parse(raw); } catch(e) {}
-  }
-  return [];
-}
-
-/**
- * Delete a scan row by its sheet row index (1-based, header is row 1).
- * Called via google.script.run from the GAS iframe.
- */
-function deleteScanRow(token, sheetRowIndex) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  var idx = parseInt(sheetRowIndex, 10);
-  if (!idx || idx < 2) return { success: false, error: 'invalid_row' };
-  try {
-    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    var sheet = ss.getSheetByName('Scans');
-    if (!sheet) return { success: false, error: 'no_sheet' };
-    if (idx > sheet.getLastRow()) return { success: false, error: 'row_not_found' };
-    sheet.deleteRow(idx);
-    _refreshScanCache(sheet);
-    return { success: true, history: _getCachedScans() };
-  } catch(e) {
-    return { success: false, error: String(e) };
-  }
-}
+// PROJECT START — Add your project-specific code here
 // PROJECT END
 // ══════════════
 
@@ -1783,251 +1690,7 @@ function checkSpreadsheetAccess(email, opt_ss) {
   return denied;
 }
 
-// PROJECT START — Inventory Management System (AHK feature parity)
-
-// ── Sheet auto-creation helpers ──
-function _ensureInventorySheet() {
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName('Inventory');
-  if (!sheet) {
-    sheet = ss.insertSheet('Inventory');
-    sheet.appendRow(['Barcode', 'ItemName', 'Quantity', 'LastUpdated', 'LastUser', 'ImageURL']);
-    sheet.getRange(1, 1, 1, 6).setFontWeight('bold');
-  }
-  return sheet;
-}
-
-function _ensureHistorySheet() {
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName('InventoryHistory');
-  if (!sheet) {
-    sheet = ss.insertSheet('InventoryHistory');
-    sheet.appendRow(['Timestamp', 'UserEmail', 'UserName', 'Action', 'Barcode', 'ItemName', 'QtyChange', 'NewQty']);
-    sheet.getRange(1, 1, 1, 8).setFontWeight('bold');
-  }
-  return sheet;
-}
-
-// ── Cache helpers (same pattern as _refreshScanCache) ──
-function _refreshInventoryCache(sheet) {
-  if (!sheet) {
-    try { sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Inventory'); } catch(e) { return; }
-  }
-  if (!sheet || sheet.getLastRow() < 2) {
-    var cache = getEpochCache();
-    cache.put('inventory_data', JSON.stringify([]), 21600);
-    cache.put('inventory_last_modified', String(Date.now()), 21600);
-    return;
-  }
-  var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 6).getValues();
-  var items = [];
-  for (var i = 0; i < data.length; i++) {
-    if (!data[i][0]) continue;
-    items.push({
-      barcode: String(data[i][0]),
-      name: String(data[i][1] || ''),
-      qty: parseInt(data[i][2], 10) || 0,
-      lastUpdated: data[i][3] ? new Date(data[i][3]).toISOString() : '',
-      lastUser: String(data[i][4] || ''),
-      imageUrl: String(data[i][5] || ''),
-      row: i + 2
-    });
-  }
-  var cache = getEpochCache();
-  cache.put('inventory_data', JSON.stringify(items), 21600);
-  cache.put('inventory_last_modified', String(Date.now()), 21600);
-}
-
-function _getCachedInventory() {
-  var cache = getEpochCache();
-  var raw = cache.get('inventory_data');
-  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
-  _refreshInventoryCache(null);
-  raw = cache.get('inventory_data');
-  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
-  return [];
-}
-
-function _refreshHistoryCache(sheet) {
-  if (!sheet) {
-    try { sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('InventoryHistory'); } catch(e) { return; }
-  }
-  if (!sheet || sheet.getLastRow() < 2) {
-    var cache = getEpochCache();
-    cache.put('inventory_history', JSON.stringify([]), 21600);
-    return;
-  }
-  var lastRow = sheet.getLastRow();
-  var startRow = Math.max(2, lastRow - 99);
-  var numRows = lastRow - startRow + 1;
-  var data = sheet.getRange(startRow, 1, numRows, 8).getValues();
-  var entries = [];
-  for (var i = data.length - 1; i >= 0; i--) {
-    entries.push({
-      timestamp: data[i][0] ? new Date(data[i][0]).toISOString() : '',
-      userEmail: String(data[i][1] || ''),
-      userName: String(data[i][2] || ''),
-      action: String(data[i][3] || ''),
-      barcode: String(data[i][4] || ''),
-      itemName: String(data[i][5] || ''),
-      qtyChange: parseInt(data[i][6], 10) || 0,
-      newQty: parseInt(data[i][7], 10) || 0
-    });
-  }
-  var cache = getEpochCache();
-  cache.put('inventory_history', JSON.stringify(entries), 21600);
-}
-
-function _getCachedHistory() {
-  var cache = getEpochCache();
-  var raw = cache.get('inventory_history');
-  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
-  _refreshHistoryCache(null);
-  raw = cache.get('inventory_history');
-  if (raw) { try { return JSON.parse(raw); } catch(e) {} }
-  return [];
-}
-
-function _logInventoryHistory(sheet, email, displayName, action, barcode, itemName, qtyChange, newQty) {
-  if (!sheet) sheet = _ensureHistorySheet();
-  var ts = new Date();
-  sheet.appendRow([ts, email, displayName, action, barcode, itemName, qtyChange, newQty]);
-  _refreshHistoryCache(sheet);
-}
-
-// ── Find an inventory item by barcode ──
-function _findItemByBarcode(sheet, barcode) {
-  if (!sheet || sheet.getLastRow() < 2) return null;
-  var data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 6).getValues();
-  for (var i = 0; i < data.length; i++) {
-    if (String(data[i][0]) === barcode) {
-      return { row: i + 2, barcode: String(data[i][0]), name: String(data[i][1] || ''), qty: parseInt(data[i][2], 10) || 0, imageUrl: String(data[i][5] || '') };
-    }
-  }
-  return null;
-}
-
-// ── CRUD Operations ──
-
-/**
- * Get all inventory items (cached).
- */
-function getInventoryData(token) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  return { success: true, inventory: _getCachedInventory(), history: _getCachedHistory() };
-}
-
-/**
- * Add a new item to inventory. Validates barcode uniqueness.
- */
-function addNewItem(token, barcode, name, qty) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  if (!barcode || !name) return { success: false, error: 'missing_fields' };
-  var q = parseInt(qty, 10);
-  if (isNaN(q) || q < 0) return { success: false, error: 'invalid_qty' };
-  var sheet = _ensureInventorySheet();
-  var existing = _findItemByBarcode(sheet, String(barcode));
-  if (existing) return { success: false, error: 'duplicate_barcode', existingName: existing.name };
-  var ts = new Date();
-  var email = session.email || '';
-  var displayName = session.displayName || email;
-  sheet.appendRow([String(barcode), String(name), q, ts, email, '']);
-  _refreshInventoryCache(sheet);
-  _logInventoryHistory(null, email, displayName, 'NEW', String(barcode), String(name), q, q);
-  return { success: true, inventory: _getCachedInventory() };
-}
-
-/**
- * Add stock to an existing item. qty defaults to 1.
- */
-function addStock(token, barcode, qty) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  if (!barcode) return { success: false, error: 'no_barcode' };
-  var addQty = parseInt(qty, 10);
-  if (isNaN(addQty) || addQty < 1) addQty = 1;
-  var sheet = _ensureInventorySheet();
-  var item = _findItemByBarcode(sheet, String(barcode));
-  if (!item) return { success: false, error: 'item_not_found' };
-  var newQty = item.qty + addQty;
-  var ts = new Date();
-  var email = session.email || '';
-  var displayName = session.displayName || email;
-  sheet.getRange(item.row, 3, 1, 3).setValues([[newQty, ts, email]]);
-  _refreshInventoryCache(sheet);
-  _logInventoryHistory(null, email, displayName, 'ADD', item.barcode, item.name, addQty, newQty);
-  return { success: true, inventory: _getCachedInventory(), itemName: item.name, oldQty: item.qty, newQty: newQty };
-}
-
-/**
- * Subtract stock from an existing item. qty defaults to 1. Cannot go below 0.
- */
-function subtractStock(token, barcode, qty) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  if (!barcode) return { success: false, error: 'no_barcode' };
-  var subQty = parseInt(qty, 10);
-  if (isNaN(subQty) || subQty < 1) subQty = 1;
-  var sheet = _ensureInventorySheet();
-  var item = _findItemByBarcode(sheet, String(barcode));
-  if (!item) return { success: false, error: 'item_not_found' };
-  if (item.qty < subQty) return { success: false, error: 'insufficient_qty', currentQty: item.qty };
-  var newQty = item.qty - subQty;
-  var ts = new Date();
-  var email = session.email || '';
-  var displayName = session.displayName || email;
-  sheet.getRange(item.row, 3, 1, 3).setValues([[newQty, ts, email]]);
-  _refreshInventoryCache(sheet);
-  _logInventoryHistory(null, email, displayName, 'SUB', item.barcode, item.name, -subQty, newQty);
-  return { success: true, inventory: _getCachedInventory(), itemName: item.name, oldQty: item.qty, newQty: newQty };
-}
-
-/**
- * Edit an existing item's name and/or quantity.
- */
-function editItem(token, barcode, newName, newQty) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  if (!barcode) return { success: false, error: 'no_barcode' };
-  var sheet = _ensureInventorySheet();
-  var item = _findItemByBarcode(sheet, String(barcode));
-  if (!item) return { success: false, error: 'item_not_found' };
-  var updatedName = (newName !== undefined && newName !== null && String(newName).trim() !== '') ? String(newName).trim() : item.name;
-  var updatedQty = (newQty !== undefined && newQty !== null) ? parseInt(newQty, 10) : item.qty;
-  if (isNaN(updatedQty) || updatedQty < 0) return { success: false, error: 'invalid_qty' };
-  if (updatedName === item.name && updatedQty === item.qty) return { success: true, inventory: _getCachedInventory(), noChange: true };
-  var ts = new Date();
-  var email = session.email || '';
-  var displayName = session.displayName || email;
-  var qtyChange = updatedQty - item.qty;
-  sheet.getRange(item.row, 2, 1, 4).setValues([[updatedName, updatedQty, ts, email]]);
-  _refreshInventoryCache(sheet);
-  _logInventoryHistory(null, email, displayName, 'EDIT', item.barcode, updatedName, qtyChange, updatedQty);
-  return { success: true, inventory: _getCachedInventory(), oldName: item.name, oldQty: item.qty, newName: updatedName, newQty: updatedQty };
-}
-
-/**
- * Polling endpoint — returns inventory data if changed since client's last timestamp.
- */
-function pollInventoryData(token, clientTimestamp) {
-  if (!token) return { success: false, error: 'no_token' };
-  var session = validateSession(token);
-  if (session.status !== 'authorized') return { success: false, error: 'unauthorized' };
-  var cache = getEpochCache();
-  var serverTs = cache.get('inventory_last_modified');
-  if (serverTs && clientTimestamp && parseInt(serverTs, 10) <= parseInt(clientTimestamp, 10)) {
-    return { success: true, changed: false };
-  }
-  return { success: true, changed: true, inventory: _getCachedInventory(), history: _getCachedHistory(), lastModified: serverTs || String(Date.now()) };
-}
-
+// PROJECT START — Add your project-specific code here
 // PROJECT END
 // =============================================
 // AUTH — Web App Entry Point (doGet)
@@ -2623,31 +2286,6 @@ function doGet(e) {
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 
-  // QR/Barcode scan listener — receives decoded scan data from the HTML layer's camera bridge
-  // Camera runs on the parent page (HTML layer) because GAS iframe sandbox blocks getUserMedia.
-  // This listener receives barcode strings via postMessage and calls processBarcodeScan() server-side.
-  if (action === 'scanListener') {
-    var scanListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
-      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
-      + 'window.top.postMessage({type:"gas-scan-listener-ready"}, PARENT_ORIGIN);'
-      + 'window.addEventListener("message", function(evt) {'
-      + '  if (evt.origin !== PARENT_ORIGIN) return;'
-      + '  if (!evt.data || evt.data.type !== "barcode-scan") return;'
-      + '  google.script.run'
-      + '    .withSuccessHandler(function(r) {'
-      + '      window.top.postMessage({type:"gas-scan-result", result:r}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .withFailureHandler(function(e) {'
-      + '      window.top.postMessage({type:"gas-scan-error", error:String(e)}, PARENT_ORIGIN);'
-      + '    })'
-      + '    .processBarcodeScan(evt.data.value, evt.data.format);'
-      + '});'
-      + '</' + 'script></body></html>';
-    return HtmlService.createHtmlOutput(scanListenerHtml)
-      .setTitle(TITLE)
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-  }
-
   // Security event reporting — client-side defense layers report blocked attacks
   // Phase 7: URL-parameter path kept for backwards compatibility during migration
   var securityEvent = (e && e.parameter && e.parameter.securityEvent) || '';
@@ -2816,18 +2454,18 @@ function doGet(e) {
       <style>
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
-        /* PROJECT START — Inventory bridge (UI moved to HTML layer) */
+        /* PROJECT START — Add your project-specific styles here */
         /* PROJECT END */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: calc(min(100vw, 480px) * 0.75 + 42px); left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
+        #user-email { position: fixed; top: 8px; left: 8px; z-index: 9999; color: #666; font-size: 11px; font-family: monospace; opacity: 0.7; }
         ${isAdmin ? `
         /* Admin panel styles */
-        #admin-badge { position: fixed; top: calc(min(100vw, 480px) * 0.75 + 60px); left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-        #admin-dropdown-gas { display: none; position: fixed; top: calc(min(100vw, 480px) * 0.75 + 82px); left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        #admin-badge { position: fixed; top: 7px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        #admin-dropdown-gas { display: none; position: fixed; top: 31px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
         #admin-dropdown-gas button:hover { background: rgba(144,202,249,0.1); color: #fff; }
         #admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; background: rgba(0,0,0,0.6); }
-        #admin-panel { position: fixed; top: calc(min(100vw, 480px) * 0.75 + 100px); left: 8px; z-index: 201; background: rgba(20,20,30,0.98); color: #ccc; border: 1px solid #444; border-radius: 8px; font: 12px/1.4 monospace; width: 480px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        #admin-panel { position: fixed; top: 40px; left: 8px; z-index: 201; background: rgba(20,20,30,0.98); color: #ccc; border: 1px solid #444; border-radius: 8px; font: 12px/1.4 monospace; width: 480px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
         #admin-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #444; flex-shrink: 0; }
         #admin-panel-header .admin-title { color: #90caf9; font-weight: bold; font-size: 13px; }
         #admin-panel-close { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0 4px; }
@@ -2877,7 +2515,7 @@ function doGet(e) {
     <body>
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
-      <!-- GAS toggle moved to HTML layer (inventorymanagement.html) for full iframe hide/show
+      <!-- GAS toggle moved to HTML layer for full iframe hide/show
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:7px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
       -->
       ${isAdmin ? `
@@ -2912,9 +2550,7 @@ function doGet(e) {
       </div>
       ` : ''}
 
-      <!-- PROJECT START — Inventory bridge (UI moved to HTML layer) -->
-      <!-- Inventory UI has been moved to the HTML embedding page.
-           This GAS page serves as a headless backend bridge only. -->
+      <!-- PROJECT START — Add your project-specific content here -->
       <!-- PROJECT END -->
 
       <script>
@@ -3040,7 +2676,7 @@ function doGet(e) {
         // GAS layer visibility toggle
         (function() {
           var _gasLayerVisible = true;
-          var _gasLayerEls = ['version', 'user-email', 'main-content', 'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay', 'scan-panel', 'scan-delete-modal'];
+          var _gasLayerEls = ['version', 'user-email', 'main-content', 'admin-badge', 'admin-dropdown-gas', 'admin-panel-overlay'];
           window._toggleGasLayer = function() {
             _gasLayerVisible = !_gasLayerVisible;
             var btn = document.getElementById('gas-layer-toggle');
@@ -3537,77 +3173,8 @@ function doGet(e) {
         ` : ''}
 
 
-        // PROJECT START — Inventory bridge (UI on HTML layer, server calls routed here)
-        (function() {
-          var _PARENT_ORIGIN = '${PARENT_ORIGIN}';
-          function _respond(type, payload) {
-            var msg = {type: type};
-            for (var k in payload) { if (payload.hasOwnProperty(k)) msg[k] = payload[k]; }
-            window.top.postMessage(msg, _PARENT_ORIGIN);
-          }
-          window.addEventListener('message', function(evt) {
-            if (!evt.data || !evt.data.type) return;
-            var d = evt.data;
-            if (d.type === 'inventory-get-data') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-data-result', {data: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-data-error', {error: String(e)}); })
-                .getInventoryData(_sessionToken);
-            }
-            if (d.type === 'inventory-poll') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-poll-result', {data: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-poll-error', {error: String(e)}); })
-                .pollInventoryData(_sessionToken, d.clientTimestamp || null);
-            }
-            if (d.type === 'inventory-add-new') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-op-result', {op:'add-new', result: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-op-error', {op:'add-new', error: String(e)}); })
-                .addNewItem(_sessionToken, d.barcode, d.name, d.qty);
-            }
-            if (d.type === 'inventory-add-stock') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-op-result', {op:'add-stock', result: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-op-error', {op:'add-stock', error: String(e)}); })
-                .addStock(_sessionToken, d.barcode, d.qty);
-            }
-            if (d.type === 'inventory-sub-stock') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-op-result', {op:'sub-stock', result: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-op-error', {op:'sub-stock', error: String(e)}); })
-                .subtractStock(_sessionToken, d.barcode, d.qty);
-            }
-            if (d.type === 'inventory-edit') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-op-result', {op:'edit', result: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-op-error', {op:'edit', error: String(e)}); })
-                .editItem(_sessionToken, d.barcode, d.name, d.qty);
-            }
-            if (d.type === 'inventory-delete') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('inventory-op-result', {op:'delete', result: r}); })
-                .withFailureHandler(function(e) { _respond('inventory-op-error', {op:'delete', error: String(e)}); })
-                .editItem(_sessionToken, d.barcode, null, 0);
-            }
-            if (d.type === 'scan-get-history') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('scan-history-result', {data: r}); })
-                .withFailureHandler(function(e) { _respond('scan-history-error', {error: String(e)}); })
-                .getScanHistory(_sessionToken);
-            }
-            if (d.type === 'scan-delete-row') {
-              google.script.run
-                .withSuccessHandler(function(r) { _respond('scan-delete-result', {data: r}); })
-                .withFailureHandler(function(e) { _respond('scan-delete-error', {error: String(e)}); })
-                .deleteScanRow(_sessionToken, d.sheetRow);
-            }
-          });
-          _respond('inventory-bridge-ready', {});
-        })();
-        // PROJECT END — Inventory bridge
-
-        // (Old inventory UI JS and scan history JS removed — all UI logic now on HTML layer)
+        // PROJECT START — Add your project-specific UI logic here
+        // PROJECT END
       </script>
     </body>
     </html>

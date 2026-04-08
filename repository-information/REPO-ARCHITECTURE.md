@@ -339,7 +339,7 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
 | Global ACL | [`repository-information/diagrams/globalacl-diagram.md`](diagrams/globalacl-diagram.md) |
 | Program Portal | [`repository-information/diagrams/programportal-diagram.md`](diagrams/programportal-diagram.md) |
-| Inventory Management | [`repository-information/diagrams/inventorymanagement-diagram.md`](diagrams/inventorymanagement-diagram.md) |
+
 
 ## 4. Git Graph — Branching Strategy
 

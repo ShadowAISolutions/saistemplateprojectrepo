@@ -3,7 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
+
+## [v10.02r] — 2026-04-08 01:09:15 PM EST
+
+> **Prompt:** "reset the inventorymanagement to the state it was originally when it was first created, so that we can start making the project again from scratch"
+
+### Changed
+- Reset inventorymanagement project to original template state for rebuilding from scratch
+
+#### `inventorymanagement.html` — v01.00w
+
+##### Changed
+- Reset to template defaults — all custom inventory UI removed
+
+#### `inventorymanagement.gs` — v01.00g
+
+##### Changed
+- Reset to template defaults — all custom inventory backend code removed
+
+### Removed
+- Deleted `inventorymanagement-diagram.md` per-environment diagram (will be recreated during rebuild)
 
 ## [v10.01r] — 2026-04-08 12:49:24 PM EST
 
