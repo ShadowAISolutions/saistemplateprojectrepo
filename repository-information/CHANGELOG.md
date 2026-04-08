@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v10.07r] — 2026-04-08 02:26:55 PM EST
+
+> **Prompt:** "ok good. now how the live data is handled, look at the testauth1 environment to see how that is handled, so that we can see updates by polling intervals and apply that to the inventorymanagement"
+
+### Added
+- Live data polling for inventory entries — auto-refreshes every 15 seconds using existing `DATA_POLL_INTERVAL` config
+- Polling loop with in-flight guard to prevent concurrent fetches
+- Server entries cross-referenced with local scan tracking to auto-hide add button for already-added items
+
+### Changed
+- Entries table now auto-populates on panel open and updates continuously
+- Refresh button triggers immediate poll instead of standalone fetch
+- `addQrEntryToSheet` success handler triggers immediate poll for instant feedback
+
+#### `inventorymanagement.html` — v01.05w
+
+##### Added
+- Automatic data polling every 15 seconds for live inventory updates
+- Entries from the spreadsheet now sync the "Add to Inventory" button state
 
 ## [v10.06r] — 2026-04-08 02:08:12 PM EST
 

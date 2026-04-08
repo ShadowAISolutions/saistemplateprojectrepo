@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.04w">
+  <meta name="build-version" content="v01.05w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>TEMPLATE_TITLE</title>
 <!-- ══════════════ -->
@@ -725,7 +725,7 @@
       <div class="qr-entries-section" id="qr-entries-section">
         <div class="qr-entries-header">
           <span class="qr-entries-title">Recent Inventory Entries</span>
-          <button class="qr-entries-refresh" onclick="fetchQrEntries()">&#8635; Refresh</button>
+          <button class="qr-entries-refresh" onclick="_doDataPoll()">&#8635; Refresh</button>
         </div>
         <div id="qr-entries-body">
           <div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>
@@ -4400,12 +4400,13 @@ function _addQrToHistory(data, type, format) {
 // ─── QR Scanner — Panel show/hide ───────────────────────────────
 function showQrPanel() {
   _qrPanel.style.display = 'flex';
-  fetchQrEntries();
+  _startDataPoll();
 }
 
 function hideQrPanel() {
   _qrPanel.style.display = 'none';
   stopQrCamera();
+  _stopDataPoll();
 }
 
 // ─── QR Scanner — GAS Communication ────────────────────────────
@@ -4440,7 +4441,7 @@ function addQrEntryToSheet() {
       _qrAddedScans[_qrLastScanData] = true;
       if (addBtn) addBtn.style.display = 'none';
       showQrToast('Added to inventory!', 'success');
-      fetchQrEntries();
+      _doDataPoll(); // immediate poll to show new entry
     } else {
       if (addBtn) { addBtn.disabled = false; addBtn.textContent = '\u271A Add to Inventory'; }
       showQrToast(result.error || 'Failed to add entry', 'error');
@@ -4452,22 +4453,53 @@ function addQrEntryToSheet() {
   });
 }
 
+// ─── QR Scanner — Data Polling ──────────────────────────────────
+var _dataPollTimer = null;
+var _dataPollInFlight = false;
+
 function fetchQrEntries() {
+  if (_dataPollInFlight) return;
   var session = loadSession();
   if (!session || !session.token) return;
   var baseUrl = _getQrGasBaseUrl();
   if (!baseUrl) return;
 
+  _dataPollInFlight = true;
   fetch(baseUrl + '?action=getQrEntries', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ token: session.token, limit: 20 })
+    body: JSON.stringify({ token: session.token, limit: 50 })
   })
   .then(function(r) { return r.json(); })
   .then(function(result) {
-    if (result.success && result.entries) { _renderQrEntriesTable(result.entries); }
+    _dataPollInFlight = false;
+    if (result.success && result.entries) {
+      _renderQrEntriesTable(result.entries);
+      // Cross-reference server entries against local added tracking
+      result.entries.forEach(function(e) { if (e.data) _qrAddedScans[e.data] = true; });
+      // Update add button visibility for current scan
+      var addBtn = document.getElementById('qr-add-btn');
+      if (addBtn && _qrLastScanData) {
+        addBtn.style.display = _qrAddedScans[_qrLastScanData] ? 'none' : '';
+      }
+    }
   })
-  .catch(function() { /* silent fail on fetch */ });
+  .catch(function() { _dataPollInFlight = false; });
+}
+
+function _doDataPoll() {
+  fetchQrEntries();
+  _dataPollTimer = setTimeout(_doDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL || 15000);
+}
+
+function _startDataPoll() {
+  _stopDataPoll();
+  fetchQrEntries(); // immediate first poll
+  _dataPollTimer = setTimeout(_doDataPoll, HTML_CONFIG.DATA_POLL_INTERVAL || 15000);
+}
+
+function _stopDataPoll() {
+  if (_dataPollTimer) { clearTimeout(_dataPollTimer); _dataPollTimer = null; }
 }
 
 function _renderQrEntriesTable(entries) {
