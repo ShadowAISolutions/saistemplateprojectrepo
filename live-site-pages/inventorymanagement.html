@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.02w">
+  <meta name="build-version" content="v01.03w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>TEMPLATE_TITLE</title>
 <!-- ══════════════ -->
@@ -335,28 +335,14 @@
 /* ══════════════ */
     .html-layer-hidden { display: none !important; }
 
-    /* ─── QR Scanner Panel ─── */
-    .qr-toggle-btn {
-      position: fixed; bottom: 20px; left: 20px; z-index: 50;
-      width: 52px; height: 52px; border-radius: 50%;
-      background: #00ffcc; color: #0a0a0f; border: none;
-      font-size: 1.5rem; cursor: pointer; display: flex;
-      align-items: center; justify-content: center;
-      box-shadow: 0 2px 12px rgba(0,255,204,0.3);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .qr-toggle-btn:active { transform: scale(0.92); }
-    .qr-toggle-btn:hover { box-shadow: 0 4px 20px rgba(0,255,204,0.5); }
-
+    /* ─── QR Scanner Panel (full-screen main interface) ─── */
     .qr-panel {
-      position: fixed; top: 0; right: 0; width: 420px; max-width: 100vw;
+      position: fixed; top: 0; left: 0; width: 100vw;
       height: 100vh; z-index: 55; background: #0a0a0f;
-      border-left: 1px solid #1e1e2e; display: flex; flex-direction: column;
-      transform: translateX(0); transition: transform 0.3s ease;
+      display: none; flex-direction: column;
       overflow-y: auto; overflow-x: hidden;
       font-family: 'DM Sans', sans-serif; color: #e8e8f0;
     }
-    .qr-panel.hidden { transform: translateX(100%); pointer-events: none; }
 
     .qr-panel-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -367,14 +353,7 @@
       font-family: 'Space Mono', monospace; font-size: 0.9rem;
       font-weight: 700; letter-spacing: 0.05em; color: #00ffcc;
     }
-    .qr-panel-close {
-      width: 32px; height: 32px; border-radius: 8px; border: 1px solid #1e1e2e;
-      background: transparent; color: #e8e8f0; font-size: 1.1rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .qr-panel-close:hover { border-color: #00ffcc; color: #00ffcc; }
-
-    .qr-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+    .qr-panel-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; flex: 1; max-width: 480px; margin: 0 auto; width: 100%; }
 
     .qr-viewport-wrapper {
       position: relative; width: 100%; aspect-ratio: 1/1;
@@ -683,15 +662,11 @@
 <!-- PROJECT START -->
 <!-- ══════════════ -->
 
-  <!-- QR Scanner toggle button (bottom-left, visible only when authenticated) -->
-  <button class="qr-toggle-btn" id="qr-toggle-btn" onclick="toggleQrPanel()" style="display:none" title="QR Scanner">&#128247;</button>
-
-  <!-- QR Scanner side panel -->
-  <div class="qr-panel hidden" id="qr-panel">
+  <!-- QR Scanner — full-screen main interface (shown after authentication) -->
+  <div class="qr-panel" id="qr-panel">
     <div class="qr-panel-header">
       <span class="qr-panel-title">QR &amp; BARCODE SCANNER</span>
       <span class="qr-scan-count" id="qr-scan-count">0 scanned</span>
-      <button class="qr-panel-close" onclick="toggleQrPanel()">&times;</button>
     </div>
     <div class="qr-panel-body">
       <!-- Video viewport -->
@@ -2648,11 +2623,7 @@
       if (tabWall) { tabWall.style.display = 'none'; _tabSurrendered = false; }
       if (typeof stopCountdownTimers === 'function') stopCountdownTimers();
       // PROJECT: hide QR scanner panel and stop camera on auth wall
-      var qrPanelEl = document.getElementById('qr-panel');
-      if (qrPanelEl) qrPanelEl.classList.add('hidden');
-      if (typeof stopQrCamera === 'function') stopQrCamera();
-      var qrBtn = document.getElementById('qr-toggle-btn');
-      if (qrBtn) qrBtn.style.display = 'none';
+      if (typeof hideQrPanel === 'function') hideQrPanel();
 
       // Always show sign-in UI (not reconnecting/signing-in) when showAuthWall is called
       signinEl.style.display = '';
@@ -4046,7 +4017,7 @@
       var _htmlLayerEls = ['user-pill', 'version-indicator', 'gas-pill', 'auth-timers',
         'sso-indicator', 'changelog-overlay', 'gcl-overlay', 'session-warning-banner',
         'absolute-warning-banner',
-        'qr-toggle-btn', 'qr-panel', 'qr-toast']; // PROJECT: QR scanner elements
+        'qr-panel', 'qr-toast']; // PROJECT: QR scanner elements
       window._toggleHtmlLayer = function() {
         _htmlLayerVisible = !_htmlLayerVisible;
         var btn = document.getElementById('html-layer-toggle');
@@ -4065,6 +4036,7 @@
         }
         // PROJECT: stop QR camera when HTML layer is hidden
         if (!_htmlLayerVisible && typeof stopQrCamera === 'function') stopQrCamera();
+        if (_htmlLayerVisible && typeof showQrPanel === 'function') showQrPanel();
       };
     })();
 
@@ -4123,7 +4095,6 @@ var _qrEngineBadge = document.getElementById('qr-engine-badge');
 var _qrTorchBtn    = document.getElementById('qr-torch-btn');
 var _qrToastEl     = document.getElementById('qr-toast');
 var _qrPanel       = document.getElementById('qr-panel');
-var _qrToggleBtn   = document.getElementById('qr-toggle-btn');
 
 // ─── QR Scanner — State ─────────────────────────────────────────
 var _qrScanning      = false;
@@ -4420,16 +4391,15 @@ function _addQrToHistory(data, type, format) {
   });
 }
 
-// ─── QR Scanner — Panel toggle ──────────────────────────────────
-function toggleQrPanel() {
-  var isHidden = _qrPanel.classList.contains('hidden');
-  if (isHidden) {
-    _qrPanel.classList.remove('hidden');
-    fetchQrEntries(); // load entries when panel opens
-  } else {
-    _qrPanel.classList.add('hidden');
-    stopQrCamera();
-  }
+// ─── QR Scanner — Panel show/hide ───────────────────────────────
+function showQrPanel() {
+  _qrPanel.style.display = 'flex';
+  fetchQrEntries();
+}
+
+function hideQrPanel() {
+  _qrPanel.style.display = 'none';
+  stopQrCamera();
 }
 
 // ─── QR Scanner — GAS Communication ────────────────────────────
@@ -4508,16 +4478,16 @@ function _renderQrEntriesTable(entries) {
   body.innerHTML = html;
 }
 
-// Show QR toggle button once authenticated (auth-ok fires after successful sign-in)
+// Show QR scanner panel once authenticated (auth-ok fires after successful sign-in)
 window.addEventListener('message', function(ev) {
-  if (ev.data && ev.data.type === 'gas-auth-ok' && _qrToggleBtn) {
-    _qrToggleBtn.style.display = 'flex';
+  if (ev.data && ev.data.type === 'gas-auth-ok') {
+    showQrPanel();
   }
 });
 // Also show on page load if already authenticated
 (function() {
   var s = loadSession();
-  if (s && s.token) { _qrToggleBtn.style.display = 'flex'; }
+  if (s && s.token) { showQrPanel(); }
 })();
 
 // PROJECT END

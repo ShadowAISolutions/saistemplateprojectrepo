@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v10.05r] — 2026-04-08 02:00:07 PM EST
+
+> **Prompt:** "since the scanner is the interface that i want the user to use, make it take up the full screen in stead of requiring the button to make it show"
+
+### Changed
+- Made QR scanner the full-screen main interface of the inventory management page
+- Scanner auto-shows after authentication (no toggle button needed)
+- Removed side-panel slide-in behavior — scanner now fills the entire viewport
+- Content centered with 480px max-width for readability on large screens
+
+#### `inventorymanagement.html` — v01.03w
+
+##### Changed
+- Scanner now takes up the full screen as the main interface
+- No longer requires a button tap to open — appears automatically after sign-in
+
+##### Removed
+- Toggle button and close button (scanner is always visible when authenticated)
 
 ## [v10.04r] — 2026-04-08 01:41:18 PM EST
 
