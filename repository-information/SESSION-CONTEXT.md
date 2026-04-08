@@ -4,47 +4,44 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-08 11:52:00 AM EST
-**Repo version:** v09.97r
+**Date:** 2026-04-08 12:50:00 PM EST
+**Repo version:** v10.01r
 
 ### What was done
-- **Responsive UI modes (v09.92r)** — Added desktop (side-by-side) and mobile (stacked) layouts for scanner + inventory
-- **Major architecture migration (v09.93r)** — Moved entire inventory UI (CSS, HTML, JS) from GAS iframe to HTML layer. GAS iframe now operates as a hidden backend bridge only — receives postMessage, calls `google.script.run`, returns results via postMessage
-- **PostMessage bridge** — Created `_gasCall()` Promise-based RPC helper on HTML side. GAS bridge routes 9 operation types: `inventory-get-data`, `inventory-poll`, `inventory-add-new`, `inventory-add-stock`, `inventory-sub-stock`, `inventory-edit`, `inventory-delete`, `scan-get-history`, `scan-delete-row`
-- **Layout fixes (v09.94r-v09.95r)** — Fixed mobile overlap (scanner changed from `position: fixed` to `position: relative`), wired HTML toggle to hide/show inventory panel, removed `display: none` gate so panel is always visible
-- **Handler routing fixes (v09.96r-v09.97r)** — Fixed postMessage response→handler mapping. Rewrote from key-based lookup to matcher-based callback system. CRUD ops use `op` field from `inventory-op-result` to match; data/poll/scan use static response→request type mapping
+- **Add New Item UX overhaul (v09.98r / v01.23w)** — Removed `readonly` from barcode field, added "Add Manually" button, added barcode validation, auto-offer new item when scanning unknown barcode in ADD/SUB mode
+- **Bridge fix: evt.source (v09.99r / v01.24w)** — Discovered `gasApp.contentWindow.postMessage()` targets Google's outer shell frame, not the inner GAS sandbox. Fixed `_sendToGas()` to use `_gasBridgeSource` captured from `evt.source` of `inventory-bridge-ready`
+- **Desktop interactivity fix (v10.00r / v01.25w)** — Added `pointer-events: none` to GAS iframe (it has no visible UI). Added robust bridge with `gasApp.contentWindow` fallback + opportunistic `evt.source` capture from any inventory/scan message
+- **Desktop click-through + allowlist fix (v10.01r / v01.26w)** — Added opaque `background: #0d1117` to `#inv-panel` desktop CSS (fixed click passthrough on transparent fixed element). Added all 11 inventory/scan bridge message types to `_KNOWN_GAS_MESSAGES` allowlist (stopped `_reportSecurityEvent` from flooding page with hidden iframes per unknown message)
 
 ### Where we left off
-- **CRITICAL BUG — CRUD operations still not resolving.** The "Add New Item" modal stays open after clicking "Add Item". The GAS server receives the call and adds to the spreadsheet, but the HTML `.then()` handler never fires (Promise never resolves). The matcher-based callback rewrite (v09.97r) was the latest attempt but user reports it still doesn't work
-- **Root cause is unknown** — the code traces correctly on paper: `_gasCall` stores matcher → `_sendToGas` sends to `gas-app` iframe → GAS bridge calls `addNewItem()` → success handler sends `{type: 'inventory-op-result', op: 'add-new', result: r}` back to parent → HTML listener should find matching callback. But the Promise never resolves in practice
-- **Debugging needed** — next session should add `console.log` statements to: (1) the GAS bridge's `_respond` function to confirm messages are being sent, (2) the HTML message listener to confirm messages arrive and what their content is, (3) the matcher loop to see if callbacks are found. Alternatively, use the webapp-testing skill with Playwright to capture browser console output
-- **Possible causes to investigate**: (a) the GAS bridge's `window.top.postMessage(msg, _PARENT_ORIGIN)` might be blocked by the GAS sandbox — unlike the template's existing bridge iframes which use string-concatenated HTML, the inventory bridge is in the main `doGet()` session page which may have different sandbox restrictions; (b) the `_PARENT_ORIGIN` variable might resolve incorrectly in the template literal context; (c) `google.script.run` success handler might swallow errors silently; (d) the message might arrive but `_activeCallbacks` array might be empty by the time it does (race condition)
+- **STILL NOT WORKING ON DESKTOP** — user reports buttons are hoverable but clicking does nothing, "Waiting for connection..." persists. The v10.01r fixes (background + allowlist) have just been pushed but user hasn't confirmed if they resolved the issue yet
+- **Mobile (Android Chrome) works fine** — all features functional on phone
+- **Root causes addressed so far**: (1) `gasApp.contentWindow` vs `evt.source` — fixed, (2) `pointer-events` on GAS iframe — fixed, (3) no background on desktop panel — fixed, (4) missing allowlist entries — fixed
+- **If still broken after v10.01r**, the next debugging step should be **Playwright browser testing** (webapp-testing skill) to capture actual browser console output and see: (a) whether `inventory-bridge-ready` message arrives at the HTML listener, (b) whether `_bridgeReady` gets set, (c) whether `_gasBridgeSource` is non-null, (d) whether `_sendToGas` successfully posts messages. The issue may be Chrome-specific compositor behavior with nested fixed-position iframes, or the GAS doGet() HTML's handshake guard (line 2936) destroying the inventory bridge before it sends `inventory-bridge-ready`
 
 ### Key decisions made
-- **UI on HTML layer, backend on GAS** — scanner and inventory share the same JS scope. No more postMessage for scan handling (`onFound()` calls `_handleInventoryScan()` directly)
-- **Matcher-based callback system** — replaced key-based `_callHandlers` map with `_activeCallbacks` array of `{match, resolve, reject}` objects. Each call registers a matcher function that checks response type + op field
-- **GAS bridge in doGet() session page** — the bridge code is inside the `doGet()` HTML template literal, running in the `gas-app` iframe. Uses `_respond()` helper that builds `{type, ...payload}` and sends via `window.top.postMessage(msg, _PARENT_ORIGIN)`
+- **evt.source pattern** — all GAS communication must use `event.source` captured from incoming messages, not `gasApp.contentWindow`. This is documented at line 2061 of inventorymanagement.html
+- **GAS iframe is pointer-events:none** — the iframe is a backend communication channel only, no visible UI to click
+- **Allowlist must include all project message types** — `_KNOWN_GAS_MESSAGES` at line 1672 needs entries for every postMessage type used by project-specific bridges
+- **Desktop panel needs opaque background** — `position: fixed` elements overlapping iframes need explicit backgrounds to create proper hit targets in Chrome's compositor
 
 ### Active context
-- Branch: claude/responsive-ui-modes-bNxqC
-- Repo version: v09.97r
-- inventorymanagement.html: v01.22w, inventorymanagement.gs: v01.17g
-- Plan file: `/root/.claude/plans/moonlit-gathering-walrus.md` (bridge routing fix plan)
+- Branch: claude/fix-inventory-new-items-4U4jn
+- Repo version: v10.01r
+- inventorymanagement.html: v01.26w, inventorymanagement.gs: v01.17g (GAS not modified this session)
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 
 ## Previous Sessions
 
-**Date:** 2026-04-08 10:09:00 AM EST
-**Repo version:** v09.91r
+**Date:** 2026-04-08 11:52:00 AM EST
+**Repo version:** v09.97r
 
 ### What was done
-- **Designed and implemented inventory management system (v09.91r)** — full AHK feature parity Phases 1+2
-- **Phase 1 — Backend**: Inventory CRUD functions in `inventorymanagement.gs`
-- **Phase 2 — Frontend UI**: Inventory UI inside GAS session page (later migrated to HTML layer this session)
+- Responsive UI modes, major architecture migration (UI to HTML layer), PostMessage bridge, layout fixes, handler routing fixes (v09.92r-v09.97r)
 
 ### Where we left off
-- Inventory system implemented, responsive UI migration started next session
+- CRUD operations not resolving — Add New Item modal staying open. Led to this session's fixes
 
 Developed by: ShadowAISolutions
