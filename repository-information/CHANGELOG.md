@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
+
+## [v09.82r] — 2026-04-07 08:55:52 PM EST
+
+> **Prompt:** "is there a way to update the live data upon scanning the new information rather than waiting for the poll countdown to refresh it"
+
+### Added
+- Instant scan history update on the HTML layer — when `processBarcodeScan()` returns the updated history via the scanListener bridge, the parent renders it immediately below the camera (no need to wait for the 15s GAS poll). The GAS poll still runs for authoritative sync
+
+#### `inventorymanagement.html` — v01.11w
+
+##### Added
+- Scan history appears instantly after each scan — no more waiting for the polling countdown
 
 ## [v09.81r] — 2026-04-07 08:29:42 PM EST
 

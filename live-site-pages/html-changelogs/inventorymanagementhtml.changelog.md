@@ -3,7 +3,12 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
+
+## [v01.11w] — 2026-04-07 08:55:52 PM EST — v09.82r
+
+### Added
+- Scan history appears instantly after each scan without waiting for the polling timer
 
 ## [v01.10w] — 2026-04-07 08:29:42 PM EST — v09.81r
 
