@@ -3,7 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
+
+## [v09.84r] — 2026-04-07 09:22:12 PM EST
+
+> **Prompt:** "the admin dropdown and scan history are not properly set up to interact with their cooresponding toggles, fix that"
+
+### Fixed
+- Repositioned GAS iframe's admin badge, admin dropdown, admin panel, and user email to appear below the HTML-layer camera widget — they were hidden behind the camera (position: fixed with small top values). Now use `calc(min(100vw, 480px) * 0.75 + Npx)` to stay below the camera area
+
+#### `inventorymanagement.gs` — v01.13g
+
+##### Fixed
+- Admin controls and scan history now visible below the camera area instead of hidden behind it
 
 ## [v09.83r] — 2026-04-07 09:00:16 PM EST
 
