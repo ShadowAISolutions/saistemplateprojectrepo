@@ -4,48 +4,48 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-08 01:12:00 PM EST
-**Repo version:** v10.02r
+**Date:** 2026-04-08 02:46:00 PM EST
+**Repo version:** v10.09r
 
 ### What was done
-- **Reset inventorymanagement to original template state (v10.02r)** — User decided to start the inventory management project over from scratch. Reset both `inventorymanagement.html` (v01.26w → v01.00w) and `inventorymanagement.gs` (v01.17g → v01.00g) to the auth template defaults by regenerating from `HtmlAndGasTemplateAutoUpdate-auth.html.txt` and `gas-minimal-auth-template-code.js.txt` with config values injected
-- Cleared all 4 inventory changelog files (HTML changelog, HTML archive, GAS changelog, GAS archive) to empty initial state
-- Deleted `inventorymanagement-diagram.md` per-environment diagram
-- Preserved real deployment IDs in `inventorymanagement.config.json` (DEPLOYMENT_ID, SPREADSHEET_ID, MASTER_ACL_SPREADSHEET_ID, CLIENT_ID)
-- Preserved AHK files as-is (user chose to keep them untouched)
-- Updated README.md tree with v01.00w/v01.00g versions, removed diagram tree entry
-- Removed inventory diagram table row from REPO-ARCHITECTURE.md
+- **Integrated QR scanner into inventory management HTML layer (v10.03r–v10.09r)** — Camera can't open in the GAS iframe sandbox, so the entire QR/barcode scanner from `qr-scanner6.html` was adapted into the inventorymanagement.html PROJECT sections (CSS, HTML body, JS). Uses jsQR (fallback) + native BarcodeDetector API
+- **GAS backend for spreadsheet writes (v10.03r)** — Added `processAddQrEntry()` and `processGetQrEntries()` in the inventorymanagement.gs PROJECT section. Routes via `doPost(action=addQrEntry)` and `doPost(action=getQrEntries)` with `// PROJECT:` markers in TEMPLATE territory. Auto-creates Live_Sheet tab + header row (Timestamp, Data, Format, Type, User, Source) on first entry
+- **HTML layer toggle integration (v10.04r)** — QR panel and toast added to `_htmlLayerEls` so they hide/show with the HTML toggle. Camera stops when layer is hidden
+- **Full-screen scanner as main interface (v10.05r)** — Removed toggle button and close button. Scanner panel now fills viewport (`100vw × 100vh`) with centered 480px content. Auto-shows after authentication
+- **"Add to Inventory" button smart hiding (v10.06r)** — Tracks which scans have been added via `_qrAddedScans` object. Button hides after successful add and stays hidden when revisiting from history. Server entries cross-referenced on poll to mark previously-added items
+- **Live data polling (v10.07r)** — Entries table auto-refreshes every 15 seconds using `DATA_POLL_INTERVAL` config. Polling loop with in-flight guard, starts on panel show, stops on hide. Immediate poll after adding a scan
+- **Testauth1-style connection status badge (v10.08r–v10.09r)** — Replaced simple countdown with `Live Data ● Live 2s | ▸ 14s` badge matching testauth1's `ld-conn-status` pattern. Green dot = live, amber pulsing = updating, gray = offline. Shows data freshness age + poll countdown
 
 ### Where we left off
-- **Inventorymanagement is now a clean template slate** — ready for rebuilding from scratch
-- The page is live at `ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html` and will show the standard template auth page (Google Sign-In → empty page with version indicator)
-- The GAS backend is still connected to the same deployment ID and spreadsheet — when rebuilt, it can reconnect to the existing Google Sheets data
-- The AHK desktop companion (`Combined Inventory and Intercept.ahk`) still exists but will fail to communicate with the GAS backend since the inventory endpoints no longer exist
+- **Inventory management QR scanner is fully functional** — scan → add to spreadsheet → live polling → entries table
+- The page is live at `ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html`
+- The GAS backend connects to spreadsheet ID `1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg` with sheet `Live_Sheet`
+- All scanner code lives in PROJECT sections of HTML + GAS — template propagation safe
 
 ### Key decisions made
-- **Full reset, not partial** — user wanted to start completely from scratch, not preserve any custom code
-- **Keep real IDs** — DEPLOYMENT_ID, SPREADSHEET_ID, MASTER_ACL_SPREADSHEET_ID, and CLIENT_ID are preserved so the rebuilt project can reconnect to the same GAS deployment and Google Sheets without re-creating infrastructure
-- **Keep AHK files** — user chose to keep the desktop barcode scanning component untouched
-- **Delete diagram** — the per-environment diagram will be recreated during the rebuild
-- **No version bumps on reset** — the HTML/GAS files were reset to v01.00w/v01.00g (not bumped from current versions)
+- **All UI in HTML layer** — camera access requires getUserMedia which is blocked in GAS iframe sandbox. All scanner UI, scanning logic, and GAS communication (via fetch POST) lives in the HTML layer
+- **Full-screen scanner** — user wanted the scanner as the main interface, not behind a toggle button
+- **fetch() to doPost for GAS communication** — cleaner than iframe/postMessage for data operations. Uses existing `doPost(action=...)` pattern with session token auth
+- **Polling over manual refresh** — 15-second auto-poll with testauth1-style status badge for live feel
+- **No GAS changes for polling** — existing `doPost(action=getQrEntries)` endpoint is sufficient; polling is purely an HTML-layer timer wrapping the existing fetch
 
 ### Active context
-- Branch: claude/reset-inventory-management-eFAkn
-- Repo version: v10.02r
-- inventorymanagement.html: v01.00w (template state), inventorymanagement.gs: v01.00g (template state)
+- Branch: claude/integrate-qr-scanner-Ki4Ic
+- Repo version: v10.09r
+- inventorymanagement.html: v01.07w, inventorymanagement.gs: v01.02g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 
 ## Previous Sessions
 
-**Date:** 2026-04-08 12:50:00 PM EST
-**Repo version:** v10.01r
+**Date:** 2026-04-08 01:12:00 PM EST
+**Repo version:** v10.02r
 
 ### What was done
-- Desktop click-through + allowlist fixes, bridge fixes, Add New Item UX overhaul, pointer-events fix (v09.98r-v10.01r)
+- Reset inventorymanagement to original template state for rebuilding from scratch
 
 ### Where we left off
-- Desktop still not confirmed working — led to user deciding to reset and rebuild from scratch
+- Inventorymanagement was a clean template slate — ready for rebuilding
 
 Developed by: ShadowAISolutions
