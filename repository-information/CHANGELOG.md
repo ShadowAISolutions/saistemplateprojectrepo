@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v10.16r] — 2026-04-08 05:54:04 PM EST
+
+> **Prompt:** "similar to the flashlight toggle button, have a toggle to turn off the camera"
+
+### Added
+- Camera on/off toggle button in the scanner viewport (circular button next to the flashlight toggle) — turns camera off without leaving the scanner panel, tap again to restart
+
+#### `inventorymanagement.html` — v01.14w
+
+##### Added
+- Camera toggle button next to the flashlight — tap to turn camera off (turns red), tap again to restart
 
 ## [v10.15r] — 2026-04-08 05:48:21 PM EST
 

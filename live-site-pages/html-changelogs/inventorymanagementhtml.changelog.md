@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-04-08 05:54:04 PM EST — v10.16r
+
+### Added
+- Camera toggle button next to the flashlight — tap to turn camera off (turns red), tap again to restart
 
 ## [v01.13w] — 2026-04-08 05:48:21 PM EST — v10.15r
 
