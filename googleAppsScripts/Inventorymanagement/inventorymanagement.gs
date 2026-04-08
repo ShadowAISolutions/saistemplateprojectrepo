@@ -1,4 +1,4 @@
-var VERSION = "v01.00g";
+var VERSION = "v01.01g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -299,6 +299,62 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 
 // ══════════════
 // PROJECT START — Add your project-specific code here
+
+/**
+ * Process a QR scan entry — appends a row to the data spreadsheet.
+ * Called from HTML layer via doPost(action=addQrEntry).
+ */
+function processAddQrEntry(token, data, format, type) {
+  var session = validateSessionForData(token, 'addQrEntry');
+  // session is guaranteed valid here (throws if invalid)
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return { success: false, error: 'Sheet not found' };
+
+  sheet.appendRow([
+    new Date(),
+    data || '',
+    format || 'UNKNOWN',
+    type || 'TEXT',
+    session.email || 'unknown',
+    'QR_SCAN'
+  ]);
+
+  return { success: true };
+}
+
+/**
+ * Retrieve recent QR scan entries from the spreadsheet.
+ * Called from HTML layer via doPost(action=getQrEntries).
+ */
+function processGetQrEntries(token, limit) {
+  var session = validateSessionForData(token, 'getQrEntries');
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return { success: true, entries: [] };
+
+  var allData = sheet.getDataRange().getValues();
+  // Filter rows where column F (index 5) is 'QR_SCAN'
+  var qrRows = allData.filter(function(row) { return row[5] === 'QR_SCAN'; });
+  var maxRows = Math.min(limit || 20, qrRows.length);
+  var recent = qrRows.slice(qrRows.length - maxRows).reverse();
+
+  return {
+    success: true,
+    entries: recent.map(function(row) {
+      return {
+        timestamp: row[0] ? new Date(row[0]).toISOString() : '',
+        data: String(row[1] || ''),
+        format: String(row[2] || ''),
+        type: String(row[3] || ''),
+        user: String(row[4] || '')
+      };
+    })
+  };
+}
+
 // PROJECT END
 // ══════════════
 
@@ -755,6 +811,30 @@ function doPost(e) {
     var hbResult = processHeartbeat(hbToken);
     return ContentService.createTextOutput(JSON.stringify(hbResult))
       .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // PROJECT: QR scanner inventory entry management
+  if (action === "addQrEntry") {
+    try {
+      var aqBody = JSON.parse(e.postData.contents);
+      var aqResult = processAddQrEntry(aqBody.token, aqBody.data, aqBody.format, aqBody.type);
+      return ContentService.createTextOutput(JSON.stringify(aqResult))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (aqErr) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: aqErr.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  if (action === "getQrEntries") {
+    try {
+      var gqBody = JSON.parse(e.postData.contents);
+      var gqResult = processGetQrEntries(gqBody.token, gqBody.limit);
+      return ContentService.createTextOutput(JSON.stringify(gqResult))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (gqErr) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: gqErr.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
   }
 
   return ContentService.createTextOutput("Unknown action");

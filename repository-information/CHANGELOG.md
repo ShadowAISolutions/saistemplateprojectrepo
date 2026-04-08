@@ -3,7 +3,43 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
+
+## [Unreleased]
+
+## [v10.03r] — 2026-04-08 01:35:13 PM EST
+
+> **Prompt:** "incorporate the qr-scanner6.html into the html layer of the inventorymanagement (we seem to have to do this because we cant open the camera on the gas layer) , but prepare it so that scanning adds entries to the spreadsheet and the results can be visible on the html layer"
+
+### Added
+- Integrated QR code and barcode scanner into the inventory management HTML layer using jsQR (fallback) and native BarcodeDetector API
+- Added `processAddQrEntry()` and `processGetQrEntries()` GAS backend handlers for spreadsheet reads/writes
+- Added `doPost(action=addQrEntry)` and `doPost(action=getQrEntries)` routing in GAS
+- QR scanner panel with camera viewport, scan line animation, torch control, and engine detection badge
+- Scan result card with type classification (URL, EMAIL, PHONE, PRODUCT, TEXT, etc.) and format detection
+- "Add to Inventory" button that writes scanned data to the spreadsheet via authenticated fetch to GAS
+- Scan history (last 10 scans) with clickable items to restore to result card
+- Recent inventory entries table fetched from spreadsheet with refresh capability
+- Image upload fallback for scanning QR codes from gallery
+- Auth-wall cleanup: QR panel hidden and camera stopped on sign-out/session expiry
+
+#### `inventorymanagement.html` — v01.01w
+
+##### Added
+- QR scanner side panel in PROJECT CSS/HTML/JS sections
+- jsQR CDN script dependency
+- Camera access via getUserMedia with rear-facing preference
+- Native BarcodeDetector support with 13 barcode formats
+- Floating toggle button (bottom-left) visible only when authenticated
+- GAS communication via fetch POST to doPost endpoints
+- Auth-wall cleanup with `// PROJECT:` marker in showAuthWall()
+
+#### `inventorymanagement.gs` — v01.01g
+
+##### Added
+- `processAddQrEntry()` — validates session and appends QR scan row to spreadsheet
+- `processGetQrEntries()` — validates session and retrieves recent QR_SCAN entries
+- doPost routing for `addQrEntry` and `getQrEntries` actions with `// PROJECT:` markers
 
 ## [v10.02r] — 2026-04-08 01:09:15 PM EST
 
