@@ -465,7 +465,7 @@ After all subagents complete, compile the results into a single report:
 ## Visual Test Command
 If the user says **"visual test"** (or similar: "test it", "screenshot it", "verify it visually", "take a screenshot", "show me what it looks like", "playwright test"):
 
-Run a Playwright-based visual verification of one or more HTML pages. This command can target specific pages or all pages. It opens each page in a headless Chromium browser, simulates the signed-in state, and takes screenshots that Claude reads and visually inspects.
+Run a Playwright-based visual verification of one or more HTML pages and their GAS-served UI. This command can target specific pages or all pages. It opens each page in a headless Chromium browser, simulates the signed-in state, and takes screenshots that Claude reads and visually inspects. GAS scripts (`.gs` files) are included because `doGet()` serves HTML and most user-facing UI is written inside GAS files — when a `.gs` file is modified, the visual test opens its embedding HTML page.
 
 ### Procedure
 
@@ -547,6 +547,7 @@ Path-scoped rules files — loaded automatically when working on matching files.
 | Private Repo Compatibility | `.claude/rules/html-pages.md` | #19 |
 | Template Source Propagation | `.claude/rules/html-pages.md` | #20 |
 | Visual Verification After UI Changes | `.claude/rules/html-pages.md` | — |
+| Visual Verification After GAS UI Changes | `.claude/rules/gas-scripts.md` | — |
 
 ---
 > **--- END OF REFERENCE FILES ---**

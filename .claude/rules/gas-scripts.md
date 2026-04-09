@@ -291,4 +291,12 @@ GAS UI elements (iframe panels, toggle buttons, status indicators, overlays) are
 - **Test mental layout** — before finalizing CSS for any new fixed-position GAS UI element, mentally walk through all existing fixed elements on the page and verify no visual or interactive overlap occurs at any viewport size
 - This rule applies automatically to all GAS UI changes — the developer does not need to explicitly request layout-awareness each time
 
+## Visual Verification After GAS UI Changes
+
+GAS scripts are a **primary trigger** for visual verification because `doGet()` serves the HTML shell and most user-facing UI is written inside `.gs` files. When a `.gs` file change includes HTML, CSS, or any visible UI output, run a Playwright visual test on the **embedding page** before committing.
+
+*Full rule and procedure: see `.claude/rules/html-pages.md` — section "Visual Verification After UI Changes". The rule applies equally to `.html` and `.gs` file changes.*
+
+*On-demand command: see CLAUDE.md — "Visual Test Command"*
+
 Developed by: ShadowAISolutions

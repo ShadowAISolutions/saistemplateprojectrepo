@@ -3,9 +3,19 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 57/100`
+`Sections: 58/100`
 
 ## [Unreleased]
+
+## [v10.48r] — 2026-04-09 05:08:09 PM EST
+
+> **Prompt:** "it should also apply to gas files also because we are mainly writing our html inside of the gas files"
+
+### Changed
+- Visual verification rule now covers GAS scripts (`.gs` files) — `doGet()` serves HTML and most user-facing UI is written inside `.gs` files, so they are a primary trigger for visual testing
+- Added "Visual Verification After GAS UI Changes" section to `.claude/rules/gas-scripts.md` with cross-reference to the full rule in `html-pages.md`
+- Updated Visual Test Command in CLAUDE.md to mention GAS files as primary targets
+- Updated trigger list in `html-pages.md` to include `.gs` file scenarios (doGet HTML output, getAppData UI content, admin panels, data tables)
 
 ## [v10.47r] — 2026-04-09 05:04:47 PM EST
 

@@ -342,28 +342,34 @@ When `showAuthWall()` is called (whether from sign-out, session expiry, or any o
 
 ## Visual Verification After UI Changes
 
-**After making any visual/UI change to an HTML page** (new elements, modals, overlays, CSS styling, layout changes, z-index adjustments), run a Playwright visual verification **before committing**. This catches layout bugs, z-index issues, and rendering problems before they reach the deployed site.
+**After making any visual/UI change to an HTML page or a GAS script that serves HTML** (new elements, modals, overlays, CSS styling, layout changes, z-index adjustments), run a Playwright visual verification **before committing**. This catches layout bugs, z-index issues, and rendering problems before they reach the deployed site.
+
+GAS scripts are a primary trigger because `doGet()` serves the HTML shell and `getAppData()` returns content that populates the UI — most of the user-facing HTML is written inside `.gs` files, not in the embedding HTML pages.
 
 ### When this triggers
-- Adding or modifying modals, popups, overlays, panels, or floating UI elements
+- Adding or modifying modals, popups, overlays, panels, or floating UI elements — in **either** `.html` or `.gs` files
 - Changing CSS that affects layout, positioning, or visibility (z-index, display, position, flex, grid)
 - Adding new HTML sections or restructuring existing DOM
 - Modifying splash screens, auth walls, or full-screen overlays
+- Modifying `doGet()` HTML output or `getAppData()` UI content in a `.gs` file
+- Modifying GAS-served UI elements (admin panels, data tables, forms, status indicators) in a `.gs` file
 - Any change where "does this look right?" is a relevant question
 
 ### When this does NOT trigger
-- Non-visual changes: JavaScript logic, variable renaming, config values, version bumps
+- Non-visual changes: JavaScript logic-only, variable renaming, config values, version bumps
 - Documentation-only changes: CHANGELOG, README, markdown files
-- GAS script changes (`.gs` files) — unless they affect the embedding page's visible UI
+- GAS script changes that are purely server-side logic (data processing, API calls, sheet operations) with no HTML/CSS/UI output
 - Template variable or metadata changes
 
 ### What to do
-1. Write a Python Playwright script that opens the modified page in a headless Chromium browser
-2. Simulate the authenticated state (hide auth wall, activate the app) if the page requires sign-in
-3. Activate the specific UI element that was changed (show the modal, open the panel, trigger the overlay)
-4. Take a screenshot to `/tmp/visual-test-<page>.png`
-5. **Read the screenshot** and visually verify the change looks correct
-6. If the verification reveals a problem, fix it before committing — do not commit broken UI
+1. **Determine the target page** — if the change was to an `.html` file, open that file. If the change was to a `.gs` file, look up its **embedding page** from the GAS Projects table in `.claude/rules/gas-scripts.md` and open that HTML page instead (GAS-served HTML is rendered inside the embedding page's iframe/context)
+2. Write a Python Playwright script that opens the target page in a headless Chromium browser
+3. Simulate the authenticated state (hide auth wall, activate the app) if the page requires sign-in
+4. For GAS UI changes: inject the modified HTML/CSS into the page DOM to simulate what `doGet()` or `getAppData()` would render — since the real GAS backend isn't available in local testing
+5. Activate the specific UI element that was changed (show the modal, open the panel, trigger the overlay)
+6. Take a screenshot to `/tmp/visual-test-<page>.png`
+7. **Read the screenshot** and visually verify the change looks correct
+8. If the verification reveals a problem, fix it before committing — do not commit broken UI
 
 ### Viewport
 - Use `390×844` (mobile) for pages that primarily target mobile users (e.g. pages with QR scanner, touch-focused UIs)
