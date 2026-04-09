@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v10.23r] — 2026-04-08 10:02:33 PM EST
+
+> **Prompt:** "you overwrote the columns i told you to use for the inventory tab, what you had as columns in the activity tab was fine, and the column headers should be showing there. the inventory tab should have columns Barcode, Item Name, Quantity, Last Updated, Last User. i will wire up the missing columns later"
+
+### Fixed
+- Restored correct Inventory tab columns (Barcode, Item Name, Quantity, Last Updated, Last User) — were incorrectly overwritten with Activity tab columns in the previous change
+
+#### `inventorymanagement.html` — v01.20w
+
+##### Fixed
+- Inventory tab now shows the correct columns: Barcode, Item Name, Quantity, Last Updated, Last User
 
 ## [v10.22r] — 2026-04-08 09:56:50 PM EST
 

@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20w] — 2026-04-08 10:02:33 PM EST — v10.23r
+
+### Fixed
+- Inventory tab now shows the correct columns: Barcode, Item Name, Quantity, Last Updated, Last User
 
 ## [v01.19w] — 2026-04-08 09:56:50 PM EST — v10.22r
 
