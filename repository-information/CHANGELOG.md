@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v10.25r] — 2026-04-09 08:20:11 AM EST
+
+> **Prompt:** "in the inventorymanagement, make it so that the user can add items manually to the inventory"
+
+### Added
+- Manual item entry form on inventory management page — users can now add items without scanning by entering barcode/ID, item name, and quantity via a collapsible form
+
+#### `inventorymanagement.html` — v01.22w
+
+##### Added
+- "Add Item Manually" toggle button below the image upload row
+- Collapsible manual entry form with barcode/ID, item name, and quantity fields
+- `addManualEntryToSheet()` function that sends manual entries to the same GAS backend endpoint
+- Form validation requiring at least a barcode or item name, and quantity ≥ 1
+- Form auto-clears after successful submission with immediate data poll refresh
 
 ## [v10.24r] — 2026-04-08 10:41:24 PM EST
 

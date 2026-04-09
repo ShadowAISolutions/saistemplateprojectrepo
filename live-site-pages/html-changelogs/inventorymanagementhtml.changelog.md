@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.22w] — 2026-04-09 08:20:11 AM EST — v10.25r
+
+### Added
+- New "Add Item Manually" option to enter inventory items without scanning — fill in barcode/ID, item name, and quantity directly
 
 ## [v01.21w] — 2026-04-08 10:41:24 PM EST — v10.24r
 

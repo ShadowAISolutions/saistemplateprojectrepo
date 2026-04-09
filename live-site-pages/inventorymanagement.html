@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.21w">
+  <meta name="build-version" content="v01.22w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -568,6 +568,47 @@
     .qr-upload-btn:active { border-color: #00ffcc; color: #00ffcc; }
     .qr-file-input { display: none; }
 
+    /* ─── Manual Add Form ─── */
+    .qr-manual-toggle-row { display: flex; }
+    .qr-manual-toggle-btn {
+      flex: 1; padding: 8px; border-radius: 8px; border: 1px dashed #1e1e2e;
+      background: transparent; color: #555570; font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; cursor: pointer; text-align: center; transition: all 0.2s;
+    }
+    .qr-manual-toggle-btn:hover { border-color: #00ffcc; color: #00ffcc; }
+    .qr-manual-toggle-btn.active { border-color: #00ffcc; color: #00ffcc; border-style: solid; }
+    .qr-manual-form {
+      display: none; flex-direction: column; gap: 8px;
+      background: #12121a; border: 1px solid #1e1e2e; border-radius: 12px;
+      padding: 12px 14px; animation: qrSlideIn 0.25s ease;
+    }
+    .qr-manual-form.visible { display: flex; }
+    .qr-manual-form-title {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.1em; color: #00ffcc; text-transform: uppercase; margin-bottom: 2px;
+    }
+    .qr-manual-field { display: flex; flex-direction: column; gap: 3px; }
+    .qr-manual-label {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem;
+      letter-spacing: 0.05em; color: #555570; text-transform: uppercase;
+    }
+    .qr-manual-input {
+      padding: 8px 10px; border-radius: 8px; border: 1px solid #1e1e2e;
+      background: #0a0a0f; color: #e8e8f0; font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem; outline: none; transition: border-color 0.2s;
+    }
+    .qr-manual-input:focus { border-color: #00ffcc; }
+    .qr-manual-input::placeholder { color: #333348; }
+    .qr-manual-submit {
+      padding: 10px; border-radius: 8px; border: none;
+      background: #10b981; color: #fff; font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .qr-manual-submit:hover { background: #059669; }
+    .qr-manual-submit:active { transform: scale(0.97); }
+    .qr-manual-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
     /* Desktop: allow larger camera viewport */
     @media (min-width: 600px) {
       .qr-viewport-wrapper { max-height: 360px; }
@@ -760,6 +801,29 @@
       <div class="qr-upload-row">
         <label class="qr-upload-btn" for="qr-file-input">&#128444; Scan from image</label>
         <input type="file" class="qr-file-input" id="qr-file-input" accept="image/*" onchange="scanQrFromFile(event)">
+      </div>
+
+      <!-- Manual add toggle -->
+      <div class="qr-manual-toggle-row">
+        <button class="qr-manual-toggle-btn" id="qr-manual-toggle" onclick="toggleManualAddForm()">&#9998; Add Item Manually</button>
+      </div>
+
+      <!-- Manual add form -->
+      <div class="qr-manual-form" id="qr-manual-form">
+        <div class="qr-manual-form-title">Manual Item Entry</div>
+        <div class="qr-manual-field">
+          <label class="qr-manual-label" for="qr-manual-barcode">Barcode / ID</label>
+          <input class="qr-manual-input" id="qr-manual-barcode" type="text" placeholder="Enter barcode or item ID" autocomplete="off">
+        </div>
+        <div class="qr-manual-field">
+          <label class="qr-manual-label" for="qr-manual-name">Item Name</label>
+          <input class="qr-manual-input" id="qr-manual-name" type="text" placeholder="Enter item name" autocomplete="off">
+        </div>
+        <div class="qr-manual-field">
+          <label class="qr-manual-label" for="qr-manual-qty">Quantity</label>
+          <input class="qr-manual-input" id="qr-manual-qty" type="number" min="1" value="1" placeholder="1">
+        </div>
+        <button class="qr-manual-submit" id="qr-manual-submit" onclick="addManualEntryToSheet()">&#10010; Add to Inventory</button>
       </div>
 
       <!-- Inventory entries from spreadsheet -->
@@ -4574,6 +4638,72 @@ function addQrEntryToSheet() {
   .catch(function() {
     if (addBtn) { addBtn.disabled = false; addBtn.textContent = '\u271A Add to Inventory'; }
     showQrToast('Network error', 'error');
+  });
+}
+
+// ─── Manual Item Entry ─────────────────────────────────────────
+function toggleManualAddForm() {
+  var form = document.getElementById('qr-manual-form');
+  var btn = document.getElementById('qr-manual-toggle');
+  if (!form || !btn) return;
+  var isVisible = form.classList.contains('visible');
+  if (isVisible) {
+    form.classList.remove('visible');
+    btn.classList.remove('active');
+    btn.textContent = '\u270E Add Item Manually';
+  } else {
+    form.classList.add('visible');
+    btn.classList.add('active');
+    btn.textContent = '\u2716 Close Manual Entry';
+  }
+}
+
+function addManualEntryToSheet() {
+  var barcodeInput = document.getElementById('qr-manual-barcode');
+  var nameInput = document.getElementById('qr-manual-name');
+  var qtyInput = document.getElementById('qr-manual-qty');
+  var submitBtn = document.getElementById('qr-manual-submit');
+
+  var barcode = (barcodeInput.value || '').trim();
+  var itemName = (nameInput.value || '').trim();
+  var quantity = parseInt(qtyInput.value, 10);
+
+  if (!barcode && !itemName) { showQrToast('Enter a barcode or item name', 'error'); return; }
+  if (isNaN(quantity) || quantity < 1) { showQrToast('Quantity must be at least 1', 'error'); return; }
+
+  var session = loadSession();
+  if (!session || !session.token) { showQrToast('Not authenticated', 'error'); return; }
+  var baseUrl = _getQrGasBaseUrl();
+  if (!baseUrl) { showQrToast('GAS not configured', 'error'); return; }
+
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '...adding'; }
+
+  fetch(baseUrl + '?action=addQrEntry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      token: session.token,
+      barcode: barcode,
+      itemName: itemName,
+      quantity: quantity
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    if (result.success) {
+      showQrToast('Item added to inventory!', 'success');
+      barcodeInput.value = '';
+      nameInput.value = '';
+      qtyInput.value = '1';
+      _doDataPoll(); // immediate poll to show new entry
+    } else {
+      showQrToast(result.error || 'Failed to add item', 'error');
+    }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '\u271A Add to Inventory'; }
+  })
+  .catch(function() {
+    showQrToast('Network error', 'error');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '\u271A Add to Inventory'; }
   });
 }
 
