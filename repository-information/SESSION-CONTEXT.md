@@ -4,48 +4,49 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-09 04:37:51 PM EST
+**Repo version:** v10.44r
+
+### What was done
+- **Added QR/barcode camera scanner to testauthhtml1 (v10.41r, v01.10w)** — Ported the camera viewport from qr-scanner6.html into the top of the Live Data app. Uses native BarcodeDetector API only (no external dependencies). Includes viewport with corner decorations, scan line animation, flash effect, torch/flashlight toggle, engine badge, start screen overlay, and status bar. Camera section only visible when user has write permissions
+- **Improved unsupported-browser messaging (v10.42r, v01.11w)** — BarcodeDetector is NOT available on Chrome desktop — only Chrome Android. Updated the "not supported" state to clearly say "QR scanning requires Chrome on Android" with a grayed-out "Not available on this device" button
+- **Added smart scan dialog (v10.43r, v01.12w) — THEN REVERTED** — Added barcode lookup in the table, new-item dialog (prompts for Item Name + Quantity), and quantity-update dialog for existing items. Developer asked to undo this change
+- **Reverted smart scan dialog (v10.44r, v01.13w)** — Restored the simple scan-to-add-row behavior where scanning puts data into the Barcode input and clicks Add Row
+- **CHANGELOG archive rotation** — Rotated 49 sections from 2026-04-07 date group to CHANGELOG-archive.md with full SHA enrichment (was at 101/100, now 54/100)
+
+### Where we left off
+- QR camera scanner is live on testauthhtml1 but only works on Chrome Android (native BarcodeDetector). Desktop Chrome shows "Not available on this device"
+- The developer chose "no third-party code at all" for the QR scanner — no jsQR CDN, no locally-hosted libraries. This means desktop scanning is not supported
+- The smart scan dialog (barcode lookup, new item prompts, quantity update) was built and then reverted — the code is in git history (v10.43r) if the developer wants to re-add it later
+- **STALE CACHE PROBLEM STILL ACTIVE** — from prior session, not addressed this session
+- **Admin panel JS still not wired up** — from prior session, not addressed this session
+
+### Key decisions made
+- No external dependencies for QR scanner — native BarcodeDetector API only
+- No third-party libraries at all (not even locally-hosted jsQR)
+- Smart scan dialog reverted per developer request — simple scan-to-add-row restored
+- Camera section gated by `_ldCanEdit` (same as add-row bar)
+
+### Active context
+- Branch: claude/add-qr-scanner-camera-fITUZ
+- Repo version: v10.44r
+- testauthhtml1.html: v01.13w, testauthhtml1.gs: v01.03g
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- **Key files**: `live-site-pages/testauthhtml1.html` (HTML layer with QR scanner + live data app), `googleAppsScripts/Testauthhtml1/testauthhtml1.gs` (GAS backend), `live-site-pages/qr-scanner6.html` (source reference for camera code)
+- **Open issues**: stale CacheService data (from prior session), admin panel JS not wired up
+
+## Previous Sessions
+
 **Date:** 2026-04-09 02:40:24 PM EST
 **Repo version:** v10.40r
 
 ### What was done
-- **Added live-data-app to HTML layer toggle (v10.36r)** — The HTML toggle button wasn't hiding/showing the Live Data App. Added `'live-data-app'` to `_htmlLayerEls` in the PROJECT OVERRIDE section
-- **Re-added GAS version pill and changelog popup (v10.37r)** — GAS pill, gcl-overlay, GAS version polling IIFE, GAS changelog popup, and "Code Ready" splash were removed during the prior session's GAS→HTML migration. Restored all CSS (~53 lines), HTML elements, and JS (~160 lines) from the auth template since the GAS layer is still needed as a backend
-- **Fixed immediate data load on startup (v10.38r)** — `_startGasDataPoll()` was scheduling the first `_doDataPoll()` after a 15-second `setTimeout(DATA_POLL_INTERVAL)`. Changed to call `_doDataPoll()` immediately so data appears on login instead of after waiting
-- **Updated add-row bar to 6 columns (v10.39r)** — Changed from 4 generic "Column N" inputs to 6 inputs with placeholders: Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User. Updated JS `inputs` array to reference all 6
-- **Auto-create Live_Sheet with correct headers (v10.40r)** — `refreshDataCache()` had `if (!sheet) return` which silently exited without clearing the stale 6-hour CacheService entry when the sheet tab was deleted. Added auto-creation with the 6-column headers and cache clearing
-- **Researched quota comparison** — testauthhtml1 vs testauthgas1 server-side quota is identical (same GAS functions). Transport differs: testauthhtml1 uses `google.script.run` via postMessage RPC (faster), testauthgas1 uses `fetch()` HTTP to deployment URL (slower)
+- Added live-data-app to HTML layer toggle, re-added GAS pill/changelog, fixed immediate data load, updated add-row bar to 6 columns, auto-create Live_Sheet with headers
+- Researched quota comparison: testauthhtml1 vs testauthgas1 identical server-side
 
 ### Where we left off
-- **STALE CACHE PROBLEM STILL ACTIVE** — the auto-create fix in `refreshDataCache()` only runs on cache **miss**, but the old 6-hour cache entry from before the sheet deletion is still valid. `getCachedData()` keeps returning stale data without ever calling `refreshDataCache()`. The developer sees old columns (Timestamp, Column B, Column C, Serial) with old data despite deleting the Live_Sheet tab
-- **Proposed fix not yet implemented**: make `processDataPoll()` always call `refreshDataCache()` instead of `getCachedData()`, so every 15-second poll reads fresh from the spreadsheet. This eliminates the stale cache problem at the cost of one spreadsheet read per poll (acceptable for a test app). The developer was comparing quota usage before deciding
-- **Same bug exists in testauthgas1** — identical `refreshDataCache()` / `getCachedData()` code, same 6-hour stale cache vulnerability. Not triggered yet because that sheet tab hasn't been deleted
-- **Admin panel JS still not wired up** — HTML elements present but no JS logic
-
-### Key decisions made
-- GAS pill restored — the GAS layer is still needed as a backend RPC worker even though the visual UI was migrated to HTML
-- 6-column schema chosen: Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User
-- Data poll fires immediately on auth (not after 15s delay)
-
-### Active context
-- Branch: claude/identify-table-layer-R16kV
-- Repo version: v10.40r
-- testauthhtml1.html: v01.09w, testauthhtml1.gs: v01.03g
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-- **Key files**: `live-site-pages/testauthhtml1.html` (HTML layer with migrated UI), `googleAppsScripts/Testauthhtml1/testauthhtml1.gs` (GAS with worker route + data functions)
-- **Open issue**: stale CacheService data — need to decide whether to force `refreshDataCache()` on every poll or implement a smarter cache-invalidation approach
-
-## Previous Sessions
-
-**Date:** 2026-04-09 01:17:45 PM EST
-**Repo version:** v10.35r
-
-### What was done
-- Migrated testauthhtml1 GAS layer to HTML layer (v10.32r–v10.35r) — visual UI moved to HTML, hidden 0×0 worker iframe as RPC bridge
-- Fixed script crash from null SSO indicator, fixed RPC bridge target (`_gasSandboxSource`)
-
-### Where we left off
-- Data was not loading — RPC bridge fix was the last change pushed
+- Stale CacheService problem still active, admin panel JS not wired up
 
 Developed by: ShadowAISolutions
