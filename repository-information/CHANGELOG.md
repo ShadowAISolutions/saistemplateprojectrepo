@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v10.55r] — 2026-04-09 07:08:19 PM EST
+
+> **Prompt:** "update the html toggle for all the updated html UI"
+
+### Fixed
+- Added inventory UI elements (`live-data-app`, `admin-badge`, `admin-dropdown-gas`, `admin-panel-overlay`, `gas-version-display`, `gas-user-email`) to the HTML layer toggle list so they correctly hide/show with the HTML toggle button
+
+#### `inventorymanagement.html` — v01.02w
+##### Fixed
+- HTML toggle now correctly includes all inventory interface elements
 
 ## [v10.54r] — 2026-04-09 07:00:50 PM EST
 
