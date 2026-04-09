@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 58/100`
+`Sections: 59/100`
 
 ## [Unreleased]
+
+## [v10.49r] — 2026-04-09 05:24:29 PM EST
+
+> **Prompt:** "for the testauthhtml1 , make the scanned item (QR code) UI where we add the information and then add row include the last updated time and the last user"
+
+### Changed
+- Scan confirmation modal now auto-fills "Last Updated" with the current timestamp and "Last User" with the signed-in user's email when a barcode is scanned
+- Add-row bar auto-fills "Last Updated" and "Last User" fields when activated, when headers arrive from GAS data, and after each successful row addition
+
+#### `testauthhtml1.html` — v01.16w
+
+##### Changed
+- Scan confirmation dialog and add-row bar now auto-populate "Last Updated" (current time) and "Last User" (signed-in email)
 
 ## [v10.48r] — 2026-04-09 05:08:09 PM EST
 

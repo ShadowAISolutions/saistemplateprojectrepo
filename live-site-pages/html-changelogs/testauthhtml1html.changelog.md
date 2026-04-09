@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v01.16w] — 2026-04-09 05:24:29 PM EST — v10.49r
+
+### Changed
+- Scanned item confirmation and add-row bar now auto-fill "Last Updated" with the current time and "Last User" with your email
 
 ## [v01.15w] — 2026-04-09 04:54:57 PM EST — v10.46r
 
