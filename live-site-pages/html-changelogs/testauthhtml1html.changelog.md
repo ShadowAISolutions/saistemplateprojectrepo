@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-04-09 04:44:43 PM EST — v10.45r
+
+### Changed
+- Scanning now shows a confirmation screen before adding — review and edit item details, then confirm or cancel
 
 ## [v01.13w] — 2026-04-09 04:34:01 PM EST — v10.44r
 

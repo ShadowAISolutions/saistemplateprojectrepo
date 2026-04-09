@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.13w">
+  <meta name="build-version" content="v01.14w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauthhtml1 Title</title>
 <!-- ══════════════ -->
@@ -427,6 +427,49 @@
     #ld-delete-modal .btn-cancel:hover { background: #3d444d; }
     #ld-delete-modal .btn-delete { background: #da3633; color: #fff; }
     #ld-delete-modal .btn-delete:hover { background: #f85149; }
+
+    /* ── Scan Confirmation Modal ── */
+    #ld-scan-confirm-modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 10001; background: rgba(0,0,0,0.6);
+      align-items: center; justify-content: center;
+    }
+    #ld-scan-confirm-modal.active { display: flex; }
+    #ld-scan-confirm-modal .modal-box {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+      padding: 24px; max-width: 380px; width: 90%; text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    #ld-scan-confirm-modal .modal-title { font-size: 16px; font-weight: 700; color: #58a6ff; margin-bottom: 4px; }
+    #ld-scan-confirm-modal .modal-subtitle { font-size: 12px; color: #8b949e; margin-bottom: 12px; }
+    #ld-scan-confirm-modal .scan-data-table {
+      width: 100%; border-collapse: collapse; margin-bottom: 16px; text-align: left;
+    }
+    #ld-scan-confirm-modal .scan-data-table td {
+      padding: 6px 10px; font-size: 13px; border-bottom: 1px solid #21262d;
+    }
+    #ld-scan-confirm-modal .scan-data-table td:first-child {
+      color: #8b949e; font-weight: 600; white-space: nowrap; width: 1%;
+    }
+    #ld-scan-confirm-modal .scan-data-table td:last-child {
+      color: #c9d1d9; font-family: monospace; word-break: break-all;
+    }
+    #ld-scan-confirm-modal .scan-data-table input.scan-edit-input {
+      width: 100%; padding: 4px 8px; font: 13px/1.2 monospace; background: #0f1117;
+      color: #c9d1d9; border: 1px solid #2a2b3d; border-radius: 4px; outline: none;
+      box-sizing: border-box;
+    }
+    #ld-scan-confirm-modal .scan-data-table input.scan-edit-input:focus { border-color: #58a6ff; }
+    #ld-scan-confirm-modal .modal-btns { display: flex; gap: 12px; justify-content: center; }
+    #ld-scan-confirm-modal .modal-btns button {
+      padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none; min-width: 90px;
+    }
+    #ld-scan-confirm-modal .btn-cancel { background: #30363d; color: #c9d1d9; }
+    #ld-scan-confirm-modal .btn-cancel:hover { background: #3d444d; }
+    #ld-scan-confirm-modal .btn-confirm { background: #238636; color: #fff; }
+    #ld-scan-confirm-modal .btn-confirm:hover { background: #2ea043; }
+
     @media (max-width: 600px) {
       #ld-header { padding: 10px 12px; }
       #ld-dashboard-grid { grid-template-columns: 1fr; }
@@ -755,6 +798,21 @@
       <div class="modal-btns">
         <button class="btn-cancel" id="ld-delete-cancel">Cancel</button>
         <button class="btn-delete" id="ld-delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scan confirmation modal -->
+  <div id="ld-scan-confirm-modal">
+    <div class="modal-box">
+      <div class="modal-title">Scanned Item</div>
+      <div class="modal-subtitle" id="ld-scan-format-label"></div>
+      <table class="scan-data-table">
+        <tbody id="ld-scan-confirm-body"></tbody>
+      </table>
+      <div class="modal-btns">
+        <button class="btn-cancel" id="ld-scan-cancel">Cancel</button>
+        <button class="btn-confirm" id="ld-scan-confirm">Add Row</button>
       </div>
     </div>
   </div>
@@ -2722,6 +2780,9 @@
       if (gasVerEl) gasVerEl.style.display = 'none';
       var gasEmailEl = document.getElementById('gas-user-email');
       if (gasEmailEl) gasEmailEl.style.display = 'none';
+      // PROJECT: Dismiss scan confirmation modal if open
+      var scanModal = document.getElementById('ld-scan-confirm-modal');
+      if (scanModal) scanModal.classList.remove('active');
 
       // Always show sign-in UI (not reconnecting/signing-in) when showAuthWall is called
       signinEl.style.display = '';
@@ -5895,7 +5956,7 @@
         setTimeout(qrNativeTick, 200); // 5fps
       }
 
-      // When a code is found — put into Barcode input and trigger Add Row
+      // When a code is found — show confirmation modal before adding
       function qrOnFound(data, format) {
         if (qrCooldown) return;
         qrCooldown = true;
@@ -5915,23 +5976,95 @@
         // Haptic feedback
         if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
 
-        // Put scanned data into the Barcode input (column 2)
-        var barcodeInput = document.getElementById('ld-add-col2');
-        if (barcodeInput) {
-          barcodeInput.value = data;
-          barcodeInput.dispatchEvent(new Event('input'));
-        }
-
-        // Click the Add Row button (triggers the full add-row flow)
-        var addBtn = document.getElementById('ld-add-row-btn');
-        if (addBtn && !addBtn.disabled) {
-          addBtn.click();
-        }
-
         qrSetStatus('found', 'Found \u2714 ' + (format ? format.replace('_', ' ').toUpperCase() : 'QR'));
-        setTimeout(function() {
+
+        // Show scan confirmation modal
+        _showScanConfirmModal(data, format);
+      }
+
+      // Scan confirmation modal logic
+      function _showScanConfirmModal(scannedData, scannedFormat) {
+        var modal = document.getElementById('ld-scan-confirm-modal');
+        var tbody = document.getElementById('ld-scan-confirm-body');
+        var formatLabel = document.getElementById('ld-scan-format-label');
+        if (!modal || !tbody) return;
+
+        // Show format in subtitle
+        if (formatLabel) {
+          formatLabel.textContent = scannedFormat ? scannedFormat.replace('_', ' ').toUpperCase() : 'QR CODE';
+        }
+
+        // Build rows: one per visible column, with the scanned data pre-filled in Barcode
+        var headers = _ldHeaders.length > 0 ? _ldHeaders : ['Timestamp', 'Barcode', 'Item Name', 'Quantity', 'Last Updated', 'Last User'];
+        var visibleCount = headers.length;
+        tbody.innerHTML = '';
+        var editInputs = [];
+        for (var i = 0; i < visibleCount; i++) {
+          var tr = document.createElement('tr');
+          var tdLabel = document.createElement('td');
+          tdLabel.textContent = headers[i];
+          var tdValue = document.createElement('td');
+          var inp = document.createElement('input');
+          inp.type = 'text';
+          inp.className = 'scan-edit-input';
+          inp.placeholder = headers[i];
+          // Pre-fill Barcode column with scanned data
+          if (headers[i] && headers[i].toLowerCase() === 'barcode') {
+            inp.value = scannedData;
+          }
+          editInputs.push(inp);
+          tdValue.appendChild(inp);
+          tr.appendChild(tdLabel);
+          tr.appendChild(tdValue);
+          tbody.appendChild(tr);
+        }
+
+        modal.classList.add('active');
+
+        // Focus the first empty input (skip barcode since it's pre-filled)
+        for (var j = 0; j < editInputs.length; j++) {
+          if (!editInputs[j].value) {
+            editInputs[j].focus();
+            break;
+          }
+        }
+
+        // Confirm handler — populate inputs and trigger add row
+        function onConfirm() {
+          cleanup();
+          // Fill the add-row bar inputs with the modal values
+          for (var k = 0; k < editInputs.length; k++) {
+            var colInput = document.getElementById('ld-add-col' + (k + 1));
+            if (colInput) {
+              colInput.value = editInputs[k].value;
+              colInput.dispatchEvent(new Event('input'));
+            }
+          }
+          // Click the Add Row button
+          var addBtn = document.getElementById('ld-add-row-btn');
+          if (addBtn && !addBtn.disabled) {
+            addBtn.click();
+          }
+          // Resume scanning status
           qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
-        }, 1800);
+        }
+
+        // Cancel handler — discard and resume scanning
+        function onCancel() {
+          cleanup();
+          qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
+        }
+
+        function cleanup() {
+          modal.classList.remove('active');
+          confirmBtn.removeEventListener('click', onConfirm);
+          cancelBtn.removeEventListener('click', onCancel);
+        }
+
+        var confirmBtn = document.getElementById('ld-scan-confirm');
+        var cancelBtn = document.getElementById('ld-scan-cancel');
+        if (confirmBtn) confirmBtn.addEventListener('click', onConfirm);
+        if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
       }
 
       // Torch toggle

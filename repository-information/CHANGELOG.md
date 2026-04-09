@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 54/100`
+`Sections: 55/100`
 
 ## [Unreleased]
+
+## [v10.45r] — 2026-04-09 04:44:43 PM EST
+
+> **Prompt:** "in the testauthhtml1, after an item is scanned, instead of immediately adding it to the table, show a gui to show the data that is going to be entered, and let the user confirm or cancel the entry"
+
+### Changed
+- QR scanner now shows a confirmation modal after scanning instead of immediately adding to the table — user can review/edit all fields and confirm or cancel
+
+#### `testauthhtml1.html` — v01.14w
+
+##### Changed
+- Scan confirmation dialog with editable fields shown after each scan
 
 ## [v10.44r] — 2026-04-09 04:34:01 PM EST
 
