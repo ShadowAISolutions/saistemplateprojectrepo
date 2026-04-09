@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v10.54r] — 2026-04-09 07:00:50 PM EST
+
+> **Prompt:** "verify that you properly copied everything, it says waiting for data and stuck on updating"
+
+### Fixed
+- Fixed inventory management data polling stuck on "Updating..." by replacing the standard GAS session page with the worker RPC bridge (PROJECT OVERRIDE in doGet's session route). Without this, the nonce-based iframe load returned the old GAS UI template instead of the RPC bridge, so `gasCall()` postMessages never reached `google.script.run` and data polling never got responses
+
+#### `inventorymanagement.gs` — v01.02g
+##### Fixed
+- Fixed data loading — app now connects to the spreadsheet correctly
 
 ## [v10.53r] — 2026-04-09 06:46:36 PM EST
 
