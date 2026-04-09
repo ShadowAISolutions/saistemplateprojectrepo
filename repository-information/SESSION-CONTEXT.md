@@ -4,39 +4,42 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
-**Date:** 2026-04-09 11:03:05 AM EST
-**Repo version:** v10.30r
+**Date:** 2026-04-09 11:56:06 AM EST
+**Repo version:** v10.31r
 
 ### What was done
-- **Renamed testauth1 → testauthgas1 (v10.29r)** — Full environment rename across entire repo: 17 files/directories renamed via `git mv`, 67 files content-updated (testauth1→testauthgas1, Testauth1→Testauthgas1, TESTAUTH1→TESTAUTHGAS1). HTML page, GAS script, config, version files, changelogs, diagrams, workflow deploy steps, rules files, README tree, REPO-ARCHITECTURE.md, archive docs, test files, backup files all updated. Version bumps: HTML v03.99w→v04.00w, GAS v02.60g→v02.61g.
-- **Created testauthhtml1 environment (v10.30r)** — Identical copy of testauthgas1 with all references renamed to testauthhtml1. Created: HTML page, GAS script + config, version files (v01.00w, v01.00g), changelogs + archives, diagram, workflow deploy step, GAS Projects table entry, README tree entries, REPO-ARCHITECTURE.md nodes/edges.
+- **Configured testauthhtml1 with its own GAS deployment (v10.31r)** — Updated DEPLOYMENT_ID (`AKfycbzPUkD3W7y3oGRRMKVt8Vl3ohGg_57SouUHKbbtYhtK7Ran-0SS4vVvft6_GR2YIRqDSg`) and SPREADSHEET_ID (`1x_1aG2H1x8JfDbq6-uY8Hdz6PvzIeZLFFEw4vNe4oes`) across config.json, .gs, .html (encoded `var _e`), and workflow deploy step webhook URL
+- **Investigated nested HTML/iframe security** — Researched and confirmed the iframe embedding architecture is secure for HIPAA: browser same-origin policy isolates GAS iframe, `PARENT_ORIGIN` blocks postMessage to wrong pages, frame handshake guard blocks direct URL access, Google OAuth CLIENT_ID is origin-locked. A copied HTML page on another domain is a dead shell
+- **Diagnosed stale data from old spreadsheet** — GAS CacheService was serving cached data from the old testauthgas1 spreadsheet (6-hour TTL on `'livedata_' + SHEET_NAME`). Writes went to the correct new spreadsheet (direct `SpreadsheetApp.openById()`), but reads returned stale cache. Resolved after an edit triggered `refreshDataCache()` on the new spreadsheet
+- **Identified bootstrap problem with copied GAS projects** — When a GAS project is copied from another, the running code's `FILE_PATH` points to the source project's `.gs` file. The auto-deploy webhook pulls that file instead of the new one, perpetuating old config. Fix: manual paste of correct code into Apps Script editor (one-time bootstrap)
 
 ### Where we left off
-- Both environment operations complete and merged to main (v10.29r, v10.30r)
-- testauthhtml1 currently shares the same `DEPLOYMENT_ID` and `SPREADSHEET_ID` as testauthgas1 — needs separate GAS deployment and spreadsheet for independent operation
+- testauthhtml1 is fully configured with its own deployment and spreadsheet, working correctly
+- Developer confirmed edits go to the correct spreadsheet; stale reads resolved after cache refresh
 
 ### Key decisions made
-- **New environment starts at v01.00w/v01.00g** — fresh environment, not inheriting testauthgas1's version history
-- **Shared config values** — testauthhtml1 was created as a true copy including DEPLOYMENT_ID and SPREADSHEET_ID from testauthgas1. Developer will need to set up separate GAS deployment for independent backend
+- **Separate GAS deployments per page** — each page needs its own DEPLOYMENT_ID for proper ACL enforcement, audit trails, and session isolation (shared deployment means shared CacheService, shared ACL column, shared audit logs)
+- **CacheService stale data is a known bootstrap issue** — when switching SPREADSHEET_ID, the 6-hour cache TTL can serve old data. Any edit to the new spreadsheet triggers `refreshDataCache()` and self-heals
 
 ### Active context
-- Branch: claude/rename-testauth-environment-GOJR3
-- Repo version: v10.30r
+- Branch: claude/debug-nested-html-loading-4tT5O
+- Repo version: v10.31r
 - testauthgas1.html: v04.00w, testauthgas1.gs: v02.61g
-- testauthhtml1.html: v01.00w, testauthhtml1.gs: v01.00g
+- testauthhtml1.html: v01.01w, testauthhtml1.gs: v01.01g
 - TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
 - No active reminders
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 
 ## Previous Sessions
 
-**Date:** 2026-04-09 10:42:17 AM EST
-**Repo version:** v10.28r
+**Date:** 2026-04-09 11:03:05 AM EST
+**Repo version:** v10.30r
 
 ### What was done
-- Inventory management: manual item entry, optimistic data rendering, barcode upsert + history logging, single GAS call fix (v10.25r–v10.28r)
+- Renamed testauth1 → testauthgas1 (v10.29r) — full environment rename across 17 files/directories, 67 content updates
+- Created testauthhtml1 environment (v10.30r) — identical copy of testauthgas1 with all references renamed
 
 ### Where we left off
-- Inventory management feature-complete for current scope. GAS sign-in slowness observed (infrastructure-side, not our code)
+- Both environment operations merged to main. testauthhtml1 needed separate GAS deployment (resolved in next session)
 
 Developed by: ShadowAISolutions
