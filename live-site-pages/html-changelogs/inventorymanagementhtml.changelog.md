@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-04-08 09:41:36 PM EST — v10.20r
+
+### Changed
+- Inventory tab is now the default view when opening the page
+- Inventory tab shows columns: Barcode, Item Name, Quantity, Last Updated, Last User
+- History tab shows columns: Timestamp, User, Action, Barcode, Item Name, Quantity Change, New Quantity
 
 ## [v01.16w] — 2026-04-08 09:35:30 PM EST — v10.19r
 

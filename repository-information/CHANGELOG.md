@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v10.20r] — 2026-04-08 09:41:36 PM EST
+
+> **Prompt:** "the default tab that opens will be the inventory. make the columns in the inventory be Barcode, Item Name, Quantity, Last Updated, Last User. in history tab make the columns be Timestamp, User, Action, Barcode, Item Name, Quantity Change, New Quantity"
+
+### Changed
+- Default active tab changed from Activity to Inventory on the inventory management page
+- Inventory tab now has table structure with columns: Barcode, Item Name, Quantity, Last Updated, Last User
+- History tab now has table structure with columns: Timestamp, User, Action, Barcode, Item Name, Quantity Change, New Quantity
+
+#### `inventorymanagement.html` — v01.17w
+
+##### Changed
+- Default tab is now Inventory instead of Activity
+- Inventory tab shows a table with Barcode, Item Name, Quantity, Last Updated, Last User columns
+- History tab shows a table with Timestamp, User, Action, Barcode, Item Name, Quantity Change, New Quantity columns
 
 ## [v10.19r] — 2026-04-08 09:35:30 PM EST
 
