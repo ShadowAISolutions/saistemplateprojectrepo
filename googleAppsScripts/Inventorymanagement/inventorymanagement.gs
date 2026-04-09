@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -451,13 +451,59 @@ function addRow(token, valuesJSON) {
     return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
   }
 
-  sheet.appendRow(values);
+  // Check for existing barcode to prevent duplicate rows
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0] || [];
+  var barcodeCol = -1;
+  var qtyCol = -1;
+  var lastUpdatedCol = -1;
+  var lastUserCol = -1;
+  for (var h = 0; h < headers.length; h++) {
+    var hLower = String(headers[h]).toLowerCase().trim();
+    if (hLower === 'barcode') barcodeCol = h;
+    else if (hLower === 'quantity') qtyCol = h;
+    else if (hLower === 'last updated') lastUpdatedCol = h;
+    else if (hLower === 'last user') lastUserCol = h;
+  }
+
+  var scannedBarcode = (barcodeCol >= 0 && values[barcodeCol]) ? String(values[barcodeCol]).trim() : '';
+  var existingRowIndex = -1;
+
+  if (scannedBarcode && barcodeCol >= 0) {
+    for (var r = 1; r < data.length; r++) {
+      if (String(data[r][barcodeCol]).trim().toLowerCase() === scannedBarcode.toLowerCase()) {
+        existingRowIndex = r;
+        break;
+      }
+    }
+  }
+
+  var actionType;
+  if (existingRowIndex >= 0 && qtyCol >= 0) {
+    // Duplicate barcode found — update existing row quantity
+    var sheetRow = existingRowIndex + 1; // +1 because getValues() is 0-indexed but getRange() is 1-indexed
+    var existingQty = parseFloat(data[existingRowIndex][qtyCol]) || 0;
+    var deltaQty = parseFloat(values[qtyCol]) || 0;
+    var newQty = existingQty + deltaQty;
+    sheet.getRange(sheetRow, qtyCol + 1).setValue(newQty);
+    if (lastUpdatedCol >= 0 && values[lastUpdatedCol]) {
+      sheet.getRange(sheetRow, lastUpdatedCol + 1).setValue(values[lastUpdatedCol]);
+    }
+    if (lastUserCol >= 0 && values[lastUserCol]) {
+      sheet.getRange(sheetRow, lastUserCol + 1).setValue(values[lastUserCol]);
+    }
+    actionType = 'update_quantity';
+  } else {
+    // New barcode — append as new row
+    sheet.appendRow(values);
+    actionType = 'add_row';
+  }
 
   // Refresh cache immediately for instant feedback
   refreshDataCache();
 
-  auditLog('data_write', user.email, 'add_row', {
-    cols: values.length, sheet: SHEET_NAME
+  auditLog('data_write', user.email, actionType, {
+    cols: values.length, sheet: SHEET_NAME, barcode: scannedBarcode
   });
 
   var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');

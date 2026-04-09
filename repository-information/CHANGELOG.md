@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v10.56r] — 2026-04-09 07:46:26 PM EST
+
+> **Prompt:** "in the inventorymanagement, when making a new entry when scanning, have it check to see if the barcode being scanned is already in our data. if so, then the quantity should increase/decrease the quantity of the row, instead of making new row. if the barcode is new, then it can be a new row"
+
+### Changed
+- Inventory management barcode scanning now checks for existing barcodes before creating new rows — duplicate barcodes update the existing row's quantity instead of appending a new row
+- Scan confirmation modal shows "Existing Item" title with current quantity info when a duplicate barcode is detected, pre-fills Item Name and Timestamp from existing row, and defaults quantity to 1 for quick increment
+- GAS backend `addRow()` performs authoritative duplicate barcode check against the spreadsheet to handle concurrent users correctly
+
+#### `inventorymanagement.html` — v01.03w
+##### Changed
+- Scan modal now detects existing barcodes and shows current quantity with item name pre-filled
+
+#### `inventorymanagement.gs` — v01.03g
+##### Changed
+- Add row now checks for duplicate barcodes and updates existing row quantity instead of creating duplicates
 
 ## [v10.55r] — 2026-04-09 07:08:19 PM EST
 
