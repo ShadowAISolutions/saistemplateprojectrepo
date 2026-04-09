@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v10.34r] — 2026-04-09 01:09:33 PM EST
+
+> **Prompt:** "data is not loading"
+
+### Fixed
+- Script crash caused by null SSO indicator element reference — the SSO indicator HTML was removed during GAS→HTML migration but the `addEventListener` call at line 3848 wasn't null-checked, causing a `TypeError: Cannot read properties of null` that halted all subsequent JS (including Live Data App IIFE, HTML layer toggle, and RPC response handler)
+- Added `gas-rpc-result`, `gas-rpc-error`, `gas-worker-ready` to the postMessage allowlist and signature-exempt list to prevent false security event logging
+
+#### `testauthhtml1.html` — v01.04w
+##### Fixed
+- Data now loads correctly after signing in
 
 ## [v10.33r] — 2026-04-09 01:04:10 PM EST
 
