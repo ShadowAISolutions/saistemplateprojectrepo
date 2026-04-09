@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v10.37r] — 2026-04-09 01:38:06 PM EST
+
+> **Prompt:** "since we still need the gas layer, the gas version pill should be re-added"
+
+### Added
+- Re-added GAS version pill (`#gas-pill`) with countdown dot, version polling via `gs.version.txt`, and "Code Ready" splash on GAS update
+- Re-added GAS changelog popup (`#gcl-overlay`) with click-to-view on the GAS pill
+- Re-added all associated CSS for `#gas-pill`, `#gcl-overlay`, `#gcl-popup`, `#gcl-header`, `#gcl-body`
+
+#### `testauthhtml1.html` — v01.07w
+##### Added
+- GAS version indicator pill restored — shows current GAS version with auto-refresh polling
+- GAS changelog popup restored — click the GAS pill to view changelog
 
 ## [v10.36r] — 2026-04-09 01:29:29 PM EST
 

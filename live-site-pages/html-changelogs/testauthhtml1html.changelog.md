@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-04-09 01:38:06 PM EST — v10.37r
+
+### Added
+- GAS version indicator restored — shows current backend version with auto-refresh
+- GAS changelog popup restored — tap the GAS version pill to view changes
 
 ## [v01.06w] — 2026-04-09 01:29:29 PM EST — v10.36r
 

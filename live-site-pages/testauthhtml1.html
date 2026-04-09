@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.06w">
+  <meta name="build-version" content="v01.07w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauthhtml1 Title</title>
 <!-- ══════════════ -->
@@ -90,7 +90,60 @@
     #version-indicator .dot.found    { background: #66bb6a; }
     #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
-    /* PROJECT OVERRIDE: gas-pill, gcl-overlay, sso-indicator CSS removed — GAS layer migrated to HTML */
+    /* PROJECT OVERRIDE: sso-indicator CSS removed — GAS layer migrated to HTML */
+    #gas-pill {
+      position: fixed; bottom: 34px; right: 22px; z-index: 10003;
+      display: none; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
+      border-radius: 12px; font: 11px/1 monospace;
+      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
+    }
+    #gas-pill:hover { background: rgba(0,0,0,0.75); }
+    #gas-pill .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #888; transition: background 0.3s ease;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 6px; line-height: 1; color: #fff;
+    }
+    #gas-pill .dot.checking { background: #42a5f5; animation: pulse 0.6s infinite alternate; }
+    #gas-pill .dot.counting { background: #888; }
+    #gas-pill .dot.found    { background: #66bb6a; }
+    #gas-pill .dot.error    { background: #ef5350; }
+    #gcl-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
+      align-items: center; justify-content: center;
+    }
+    #gcl-popup {
+      background: #1a1a2e; color: #e0e0e0; border-radius: 12px;
+      max-width: 480px; width: 90%; max-height: 70vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #gcl-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #gcl-title { font: bold 16px/1 sans-serif; color: #fff; }
+    #gcl-close {
+      background: none; border: none; color: #888; font-size: 24px;
+      cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    #gcl-close:hover { color: #fff; }
+    #gcl-body {
+      padding: 16px 20px; overflow-y: auto; font: 13px/1.5 sans-serif;
+    }
+    #gcl-body h3 {
+      font-size: 14px; color: #7c8bff; margin: 16px 0 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;
+    }
+    #gcl-body h3:first-child { margin-top: 0; }
+    #gcl-body h4 {
+      font-size: 12px; color: #a0a0a0; margin: 10px 0 4px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
+    #gcl-body li { margin-bottom: 4px; }
 /* ══════════════ */
 /* TEMPLATE END */
 /* ══════════════ */
@@ -446,7 +499,9 @@
   <div id="splash-code" class="splash"><div class="splash-title">Code Ready</div><img id="splash-code-logo" src="" alt=""></div>
   <div id="splash-maintenance" class="splash"><div class="splash-title">🔧This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">🔧</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
 
-  <!-- GAS pill, GAS changelog overlay, and SSO indicator removed — GAS layer migrated to HTML -->
+  <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
+  <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
+  <!-- PROJECT OVERRIDE: SSO indicator removed — GAS layer migrated to HTML -->
 <!-- ══════════════ -->
 <!-- TEMPLATE END -->
 <!-- ══════════════ -->
@@ -1030,10 +1085,172 @@
       return tmp.innerHTML;
     }
 
-    // PROJECT OVERRIDE START: GAS version polling and GAS changelog popup removed
-    // GAS visual layer migrated to HTML layer — no GAS pill, no GAS changelog overlay,
-    // no GAS version file polling. The GAS version is now shown via gas-auth-ok data.
-    // PROJECT OVERRIDE END
+    // GAS auto-refresh: poll <pagename>gs.version.txt for GAS version changes
+    // Also drives the GAS version pill (bottom-right, left of HTML pill) with countdown dot
+    (function() {
+      var GAS_POLL_INTERVAL = 10000;
+      var GAS_INITIAL_DELAY = 15000;
+      if (!AUTO_REFRESH) return;
+
+      var basePath = window.location.href.split('?')[0].split('#')[0];
+      var pageName = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
+      if (!pageName) pageName = 'index';
+      var gasVersionUrl = basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-versions/' + pageName + 'gs.version.txt';
+
+      var currentGasVersion = null;
+      var pill = document.getElementById('gas-pill');
+      var pillLabel = document.getElementById('gas-pill-label');
+      var dot = pill ? pill.querySelector('.dot') : null;
+      var countdownSeconds = 0;
+      var countdownTimer = null;
+
+      function startCountdown(interval) {
+        countdownSeconds = (interval || GAS_POLL_INTERVAL) / 1000;
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(function() {
+          countdownSeconds--;
+          if (countdownSeconds <= 0) {
+            clearInterval(countdownTimer);
+            if (dot) { dot.textContent = ''; dot.className = 'dot'; }
+          } else if (countdownSeconds <= 5) {
+            if (dot) { dot.textContent = countdownSeconds; dot.className = 'dot counting'; }
+          }
+        }, 1000);
+      }
+
+      function checkGasUpdate() {
+        if (countdownTimer) clearInterval(countdownTimer);
+        if (dot) { dot.textContent = ''; dot.className = 'dot checking'; }
+        fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
+          .then(function(res) { return res.text(); })
+          .then(function(v) {
+            var fetched = v.trim();
+            var gParts = fetched.split('|');
+            var gasVer = (gParts.length >= 2 && gParts[1]) ? gParts[1] : fetched;
+            if (!currentGasVersion) {
+              currentGasVersion = fetched;
+              if (pill) { pill.style.display = 'flex'; }
+              if (pillLabel) pillLabel.textContent = 'GAS ' + gasVer;
+            } else if (fetched !== currentGasVersion) {
+              // GAS version changed on GitHub — reload immediately
+              if (dot) dot.className = 'dot found';
+              if (pillLabel) pillLabel.textContent = 'GAS updated — reloading...';
+              sessionStorage.setItem('gas-pending-sound', '1');
+              setTimeout(function() { window.location.reload(); }, 1500);
+              return;
+            }
+            if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
+            // Anti-sync: if GAS poll fired within 3s of HTML poll, add 5s delay to re-establish gap
+            var _gasPollDelay = GAS_POLL_INTERVAL;
+            if (window._htmlPollTime && Math.abs(Date.now() - window._htmlPollTime) < 3000) {
+              _gasPollDelay += 5000;
+            }
+            startCountdown(_gasPollDelay);
+            setTimeout(checkGasUpdate, _gasPollDelay);
+          })
+          .catch(function() {
+            if (dot) {
+              dot.className = 'dot error';
+              setTimeout(function() { dot.className = 'dot'; }, 2000);
+            }
+            startCountdown();
+            setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
+          });
+      }
+
+      // Fetch version immediately — only show GAS pill and start polling if gs.version.txt exists
+      // This allows the HTML+GAS template to work as a pure HTML page with no GAS project
+      fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
+        .then(function(res) {
+          if (!res.ok) throw new Error('no gs.version.txt');
+          return res.text();
+        })
+        .then(function(v) {
+          currentGasVersion = v.trim();
+          var gInitParts = currentGasVersion.split('|');
+          var gasInitVer = (gInitParts.length >= 2 && gInitParts[1]) ? gInitParts[1] : currentGasVersion;
+          if (pillLabel) pillLabel.textContent = 'GAS ' + gasInitVer;
+          if (pill) pill.style.display = 'flex';
+          startCountdown(GAS_INITIAL_DELAY);
+          setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);
+        })
+        .catch(function() { /* no gs.version.txt — GAS pill stays hidden, no polling */ });
+
+      // GAS changelog popup — click pill to view GAS changelog
+      var gclOverlay = document.getElementById('gcl-overlay');
+      var gclBody = document.getElementById('gcl-body');
+      var gclCache = null;
+
+      if (pill) {
+        if (SHOW_CHANGELOG) {
+          pill.addEventListener('click', function(e) {
+            e.stopPropagation();
+            gclOverlay.style.display = 'flex';
+            if (!gclCache) fetchGasChangelog();
+          });
+        } else {
+          pill.style.cursor = 'default';
+        }
+      }
+
+      document.getElementById('gcl-close').addEventListener('click', function() { gclOverlay.style.display = 'none'; });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && gclOverlay.style.display === 'flex') gclOverlay.style.display = 'none'; });
+
+      function getGasChangelogUrl() {
+        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-changelogs/' + pageName + 'gs.changelog.md';
+      }
+
+      function parseGasChangelog(md) {
+        var lines = md.split('\n');
+        var html = '';
+        var inList = false;
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i];
+          if (line.match(/^# /) || line.match(/^`Sections:/) || line.match(/^All notable/)
+              || line.match(/^Format follows/) || line.match(/^Developed by:/)) continue;
+          if (line.match(/^## \[Unreleased\]/)) continue;
+          if (line.match(/^## \[/)) {
+            if (inList) { html += '</ul>'; inList = false; }
+            var m = line.match(/^## \[(v[\d.]+g)\].*?— (.+)/);
+            if (m) html += '<h3>' + m[1] + ' &mdash; ' + m[2] + '</h3>';
+            continue;
+          }
+          if (line.match(/^### /)) {
+            if (inList) { html += '</ul>'; inList = false; }
+            html += '<h4>' + line.substring(4) + '</h4>';
+            continue;
+          }
+          if (line.match(/^- /)) {
+            if (!inList) { html += '<ul>'; inList = true; }
+            html += '<li>' + line.substring(2) + '</li>';
+            continue;
+          }
+        }
+        if (inList) html += '</ul>';
+        return html || '<p style="color:#888">No changelog entries yet.</p>';
+      }
+
+      function fetchGasChangelog() {
+        gclBody.innerHTML = '<p style="color:#888">Loading changelog\u2026</p>';
+        fetch(getGasChangelogUrl())
+          .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
+          .then(function(md) {
+            gclCache = sanitizeChangelogHtml(parseGasChangelog(md));
+            gclBody.innerHTML = gclCache;
+            var titleEl = document.getElementById('gcl-title');
+            if (titleEl && currentGasVersion) titleEl.textContent = 'GAS Changelog \u2014 ' + currentGasVersion.replace(/\|/g, '');
+          })
+          .catch(function() {
+            gclBody.innerHTML = '<p style="color:#888">Could not load changelog.</p>';
+          });
+      }
+    })();
+
+    // After reload: show green "Code Ready" splash + play Code Ready sound if GAS update pending
+    if (sessionStorage.getItem('gas-pending-sound')) {
+      sessionStorage.removeItem('gas-pending-sound');
+      showUpdateSplash('splash-code', 'code-sound-data', 'sounds/Code_Ready_Voice_1.mp3');
+    }
 
     // Changelog popup — click version indicator to view page changelog
     (function() {
