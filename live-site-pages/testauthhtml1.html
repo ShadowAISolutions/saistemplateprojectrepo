@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.11w">
+  <meta name="build-version" content="v01.12w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauthhtml1 Title</title>
 <!-- ══════════════ -->
@@ -523,6 +523,37 @@
     .qr-status-dot.found { background: #00ffcc; box-shadow: 0 0 8px #00ffcc; animation: none; }
     .qr-status-dot.error { background: #ff4466; animation: none; }
     @keyframes qrPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* QR Scan Dialog */
+    #qr-scan-dialog {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 10000; background: rgba(0,0,0,0.6);
+      align-items: center; justify-content: center;
+    }
+    #qr-scan-dialog.active { display: flex; }
+    #qr-scan-dialog .modal-box {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+      padding: 24px; max-width: 360px; width: 90%; text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    #qr-scan-dialog .modal-title { font-size: 16px; font-weight: 700; color: #00ffcc; margin-bottom: 8px; }
+    #qr-scan-dialog .modal-msg { font-size: 13px; color: #c9d1d9; margin-bottom: 12px; line-height: 1.5; }
+    #qr-scan-dialog .modal-barcode { font-size: 12px; color: #00ffcc; background: #0f1117; border-radius: 6px; padding: 6px 12px; margin-bottom: 12px; word-break: break-all; font-family: monospace; }
+    #qr-scan-dialog .modal-inputs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    #qr-scan-dialog .modal-inputs input {
+      padding: 8px 12px; font: 13px/1.2 monospace; background: #0f1117; color: #c9d1d9;
+      border: 1px solid #2a2b3d; border-radius: 6px; outline: none; text-align: center;
+    }
+    #qr-scan-dialog .modal-inputs input:focus { border-color: #58a6ff; }
+    #qr-scan-dialog .modal-btns { display: flex; gap: 12px; justify-content: center; }
+    #qr-scan-dialog .modal-btns button {
+      padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none; min-width: 90px;
+    }
+    #qr-scan-dialog .btn-cancel { background: #30363d; color: #c9d1d9; }
+    #qr-scan-dialog .btn-cancel:hover { background: #3d444d; }
+    #qr-scan-dialog .btn-confirm { background: #238636; color: #fff; }
+    #qr-scan-dialog .btn-confirm:hover { background: #2ea043; }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -755,6 +786,20 @@
       <div class="modal-btns">
         <button class="btn-cancel" id="ld-delete-cancel">Cancel</button>
         <button class="btn-delete" id="ld-delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Scan Dialog (new item / update quantity) -->
+  <div id="qr-scan-dialog">
+    <div class="modal-box">
+      <div class="modal-title" id="qr-dialog-title">New Item</div>
+      <div class="modal-barcode" id="qr-dialog-barcode"></div>
+      <div class="modal-msg" id="qr-dialog-msg"></div>
+      <div class="modal-inputs" id="qr-dialog-inputs"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" id="qr-dialog-cancel">Cancel</button>
+        <button class="btn-confirm" id="qr-dialog-confirm">Add</button>
       </div>
     </div>
   </div>
@@ -5895,7 +5940,7 @@
         setTimeout(qrNativeTick, 200); // 5fps
       }
 
-      // When a code is found — put into Barcode input and trigger Add Row
+      // When a code is found — check table, show dialog
       function qrOnFound(data, format) {
         if (qrCooldown) return;
         qrCooldown = true;
@@ -5907,31 +5952,190 @@
           void qrFoundFlash.offsetWidth;
           qrFoundFlash.classList.add('active');
         }
-        // Pause scan line briefly
         if (qrScanLine) {
           qrScanLine.classList.add('paused');
           setTimeout(function() { qrScanLine.classList.remove('paused'); }, 500);
         }
-        // Haptic feedback
         if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
 
-        // Put scanned data into the Barcode input (column 2)
-        var barcodeInput = document.getElementById('ld-add-col2');
-        if (barcodeInput) {
-          barcodeInput.value = data;
-          barcodeInput.dispatchEvent(new Event('input'));
-        }
-
-        // Click the Add Row button (triggers the full add-row flow)
-        var addBtn = document.getElementById('ld-add-row-btn');
-        if (addBtn && !addBtn.disabled) {
-          addBtn.click();
-        }
-
         qrSetStatus('found', 'Found \u2714 ' + (format ? format.replace('_', ' ').toUpperCase() : 'QR'));
+
+        // Find the barcode column index (look for "Barcode" header)
+        var barcodeCol = -1;
+        var qtyCol = -1;
+        var nameCol = -1;
+        for (var hi = 0; hi < _ldHeaders.length; hi++) {
+          var h = _ldHeaders[hi].toLowerCase();
+          if (h === 'barcode') barcodeCol = hi;
+          if (h === 'quantity') qtyCol = hi;
+          if (h === 'item name') nameCol = hi;
+        }
+        if (barcodeCol === -1) barcodeCol = 1; // fallback to column index 1
+        if (qtyCol === -1) qtyCol = 3;
+        if (nameCol === -1) nameCol = 2;
+
+        // Check if barcode already exists in the table
+        var existingRow = -1;
+        for (var ri = 0; ri < _ldRows.length; ri++) {
+          if (_ldRows[ri][barcodeCol] === data) { existingRow = ri; break; }
+        }
+
+        if (existingRow === -1) {
+          qrShowNewItemDialog(data, nameCol, qtyCol, barcodeCol);
+        } else {
+          var currentQty = parseInt(_ldRows[existingRow][qtyCol], 10) || 0;
+          var itemName = _ldRows[existingRow][nameCol] || data;
+          qrShowUpdateQtyDialog(data, existingRow, currentQty, itemName, qtyCol);
+        }
+      }
+
+      function qrGetTimestamp() {
+        var d = new Date();
+        return d.toLocaleString('en-US', { timeZone: 'America/New_York' });
+      }
+
+      function qrGetUserEmail() {
+        var el = document.getElementById('gas-user-email');
+        return el ? el.textContent.trim() : '';
+      }
+
+      // Dialog: New item — ask for Item Name and Quantity
+      function qrShowNewItemDialog(barcode, nameCol, qtyCol, barcodeCol) {
+        var dialog = document.getElementById('qr-scan-dialog');
+        var title = document.getElementById('qr-dialog-title');
+        var barcodeEl = document.getElementById('qr-dialog-barcode');
+        var msg = document.getElementById('qr-dialog-msg');
+        var inputsDiv = document.getElementById('qr-dialog-inputs');
+        var confirmBtn = document.getElementById('qr-dialog-confirm');
+        var cancelBtn = document.getElementById('qr-dialog-cancel');
+
+        title.textContent = 'New Item';
+        barcodeEl.textContent = barcode;
+        msg.textContent = 'This barcode is not in the table. Enter the item details:';
+        confirmBtn.textContent = 'Add Item';
+        inputsDiv.innerHTML = '<input id="qr-input-name" type="text" placeholder="Item Name" autofocus>' +
+                              '<input id="qr-input-qty" type="number" placeholder="Quantity" min="1" value="1">';
+        dialog.classList.add('active');
         setTimeout(function() {
-          qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
-        }, 1800);
+          var nameInput = document.getElementById('qr-input-name');
+          if (nameInput) nameInput.focus();
+        }, 50);
+
+        function cleanup() {
+          dialog.classList.remove('active');
+          confirmBtn.removeEventListener('click', onConfirm);
+          cancelBtn.removeEventListener('click', onCancel);
+          setTimeout(function() {
+            qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
+          }, 500);
+        }
+        function onCancel() { cleanup(); }
+        function onConfirm() {
+          var name = (document.getElementById('qr-input-name').value || '').trim();
+          var qty = (document.getElementById('qr-input-qty').value || '1').trim();
+          if (!name) { document.getElementById('qr-input-name').focus(); return; }
+          cleanup();
+
+          // Build full row: Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User
+          var now = qrGetTimestamp();
+          var email = qrGetUserEmail();
+          var values = [];
+          for (var i = 0; i < _ldHeaders.length; i++) values.push('');
+          values[0] = now;          // Timestamp
+          values[barcodeCol] = barcode;
+          values[nameCol] = name;
+          values[qtyCol] = qty;
+          if (_ldHeaders.length > 4) values[4] = now;   // Last Updated
+          if (_ldHeaders.length > 5) values[5] = email;  // Last User
+
+          // Use the same add-row flow
+          var inputs = [];
+          for (var j = 0; j < 6; j++) inputs.push(document.getElementById('ld-add-col' + (j + 1)));
+          for (var k = 0; k < values.length && k < inputs.length; k++) {
+            if (inputs[k]) inputs[k].value = values[k];
+          }
+          if (inputs[0]) inputs[0].dispatchEvent(new Event('input'));
+          var addBtn = document.getElementById('ld-add-row-btn');
+          if (addBtn && !addBtn.disabled) addBtn.click();
+        }
+        confirmBtn.addEventListener('click', onConfirm);
+        cancelBtn.addEventListener('click', onCancel);
+        // Enter key submits
+        inputsDiv.addEventListener('keydown', function handler(e) {
+          if (e.key === 'Enter') { onConfirm(); inputsDiv.removeEventListener('keydown', handler); }
+          if (e.key === 'Escape') { onCancel(); inputsDiv.removeEventListener('keydown', handler); }
+        });
+      }
+
+      // Dialog: Existing item — ask how many to add/remove
+      function qrShowUpdateQtyDialog(barcode, rowIndex, currentQty, itemName, qtyCol) {
+        var dialog = document.getElementById('qr-scan-dialog');
+        var title = document.getElementById('qr-dialog-title');
+        var barcodeEl = document.getElementById('qr-dialog-barcode');
+        var msg = document.getElementById('qr-dialog-msg');
+        var inputsDiv = document.getElementById('qr-dialog-inputs');
+        var confirmBtn = document.getElementById('qr-dialog-confirm');
+        var cancelBtn = document.getElementById('qr-dialog-cancel');
+
+        title.textContent = 'Update Quantity';
+        barcodeEl.textContent = barcode;
+        msg.textContent = itemName + ' \u2014 Current qty: ' + currentQty;
+        confirmBtn.textContent = 'Update';
+        inputsDiv.innerHTML = '<input id="qr-input-adjust" type="number" placeholder="e.g. 5 or -3" autofocus>';
+        dialog.classList.add('active');
+        setTimeout(function() {
+          var adj = document.getElementById('qr-input-adjust');
+          if (adj) adj.focus();
+        }, 50);
+
+        function cleanup() {
+          dialog.classList.remove('active');
+          confirmBtn.removeEventListener('click', onConfirm);
+          cancelBtn.removeEventListener('click', onCancel);
+          setTimeout(function() {
+            qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
+          }, 500);
+        }
+        function onCancel() { cleanup(); }
+        function onConfirm() {
+          var adjustVal = parseInt(document.getElementById('qr-input-adjust').value, 10);
+          if (isNaN(adjustVal) || adjustVal === 0) { document.getElementById('qr-input-adjust').focus(); return; }
+          cleanup();
+
+          var newQty = currentQty + adjustVal;
+          if (newQty < 0) newQty = 0;
+
+          // Update quantity via writeCell
+          _ldRows[rowIndex][qtyCol] = String(newQty);
+          ldRenderTableView({});
+          ldRenderDashboardView({});
+          gasCall('writeCell', [_sessionToken, rowIndex, qtyCol, String(newQty)], function(result) {
+            if (result && result.liveData) _handleLiveData(result.liveData);
+          }, function(err) {
+            _ldRows[rowIndex][qtyCol] = String(currentQty);
+            ldRenderTableView({});
+            ldRenderDashboardView({});
+            console.error('Qty update failed:', err);
+          });
+
+          // Also update Last Updated and Last User
+          var now = qrGetTimestamp();
+          var email = qrGetUserEmail();
+          if (_ldHeaders.length > 4) {
+            _ldRows[rowIndex][4] = now;
+            gasCall('writeCell', [_sessionToken, rowIndex, 4, now], function(){}, function(){});
+          }
+          if (_ldHeaders.length > 5) {
+            _ldRows[rowIndex][5] = email;
+            gasCall('writeCell', [_sessionToken, rowIndex, 5, email], function(){}, function(){});
+          }
+        }
+        confirmBtn.addEventListener('click', onConfirm);
+        cancelBtn.addEventListener('click', onCancel);
+        inputsDiv.addEventListener('keydown', function handler(e) {
+          if (e.key === 'Enter') { onConfirm(); inputsDiv.removeEventListener('keydown', handler); }
+          if (e.key === 'Escape') { onCancel(); inputsDiv.removeEventListener('keydown', handler); }
+        });
       }
 
       // Torch toggle

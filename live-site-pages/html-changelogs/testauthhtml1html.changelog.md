@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-04-09 04:26:39 PM EST — v10.43r
+
+### Changed
+- Scanning a new barcode now prompts for item name and quantity before adding to the table
+- Scanning an existing barcode shows current quantity and lets you add or remove stock
+- Timestamp, last updated, and last user are automatically filled on all scan actions
 
 ## [v01.11w] — 2026-04-09 03:03:37 PM EST — v10.42r
 

@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 52/100`
+`Sections: 53/100`
 
 ## [Unreleased]
+
+## [v10.43r] — 2026-04-09 04:26:39 PM EST
+
+> **Prompt:** "make it so that when the user scans an item it first checks to see if the barcode is already on the table. if it is not, then it asks the user what the item name is and the quantity; the timestamp, last updated, and last user should automatically be added to the table. if it is already in the table, then it asks how many to add or remove from that entry in the table."
+
+### Changed
+- QR scanner now checks if scanned barcode already exists in the table before adding
+- New items: prompts for Item Name and Quantity via custom dialog, auto-fills Timestamp, Last Updated, and Last User
+- Existing items: prompts how many to add or remove from current quantity, updates the row via `writeCell` RPC
+- Also auto-updates Last Updated and Last User columns when adjusting quantity on existing items
+
+#### `testauthhtml1.html` — v01.12w
+
+##### Changed
+- Scanning a new barcode now prompts for item name and quantity before adding
+- Scanning an existing barcode shows current quantity and lets you add or remove stock
+- Timestamp, last updated, and last user are auto-filled on all scan actions
 
 ## [v10.42r] — 2026-04-09 03:03:37 PM EST
 
