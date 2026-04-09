@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 4/50`
+`Sections: 5/50`
 
 ## [Unreleased]
+
+## [v01.05g] — 2026-04-09 09:47:10 AM EST — v10.27r
+
+### Changed
+- Adding items with the same barcode now increases quantity on the existing entry instead of creating duplicates
+
+### Added
+- Change history tracking — every add, restock, and delete is logged with full details
+- History data retrieval for the History tab
 
 ## [v01.04g] — 2026-04-09 09:33:59 AM EST — v10.26r
 

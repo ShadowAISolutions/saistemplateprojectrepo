@@ -3,9 +3,43 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v10.27r] — 2026-04-09 09:47:10 AM EST
+
+> **Prompt:** "make it so that one a barcode is added to the inventory, scanning it/adding the same one interacts with the quantity, not make a new entry. but each change should be logged in the history (different tab), for timestamp, user, action, barcode, item name, quantity change, and new quantity."
+
+### Changed
+- GAS `processAddQrEntry` now performs upsert: if barcode already exists, adds to existing quantity instead of creating a duplicate row
+- GAS `processAddQrEntry` returns `action` ('Add' or 'Restock') and `newQuantity` so the frontend can show appropriate feedback
+- Optimistic add on HTML now checks `_inventoryEntries` for existing barcode and updates quantity in-place (upsert) instead of always appending
+
+### Added
+- History logging: every add, restock, and delete writes a row to a `History` sheet (Timestamp, User, Action, Barcode, Item Name, Qty Change, New Qty)
+- GAS `processGetQrHistory` endpoint to fetch recent history entries
+- GAS `doPost` handler for `action=getQrHistory`
+- GAS `processDeleteQrEntry` now logs deletion to the History sheet before removing the row
+- HTML data poll now fetches both inventory and history in parallel, rendering the History tab with real server data
+- GAS `_logHistory` helper function for consistent history logging across add/restock/delete
+
+#### `inventorymanagement.html` — v01.24w
+
+##### Changed
+- Adding a scanned barcode that already exists now increases the existing item's quantity instead of creating a duplicate
+- Toast message changes to "Restocked!" when updating an existing item
+- History tab now shows real data from the server (was previously empty/placeholder)
+
+#### `inventorymanagement.gs` — v01.05g
+
+##### Changed
+- Adding items with the same barcode now increases quantity on the existing entry instead of creating duplicates
+- Item name is preserved from the first entry; updated only if the existing name was blank
+
+##### Added
+- Change history tracking — every add, restock, and delete is logged with timestamp, user, action, and quantity details
+- History data retrieval endpoint for the History tab
 
 ## [v10.26r] — 2026-04-09 09:33:59 AM EST
 

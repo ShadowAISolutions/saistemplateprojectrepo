@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.24w] — 2026-04-09 09:47:10 AM EST — v10.27r
+
+### Changed
+- Scanning or adding a barcode that already exists now increases the quantity of the existing item instead of creating a duplicate
+- Toast shows "Restocked!" when updating an existing item's quantity
+
+### Added
+- History tab now displays a real-time log of all inventory changes — who did what, when, and how it affected quantities
 
 ## [v01.23w] — 2026-04-09 09:33:59 AM EST — v10.26r
 

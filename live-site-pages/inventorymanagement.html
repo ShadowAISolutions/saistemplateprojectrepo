@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.23w">
+  <meta name="build-version" content="v01.24w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4682,13 +4682,26 @@ function addQrEntryToSheet() {
   var addBtn = document.getElementById('qr-add-btn');
   if (addBtn) { addBtn.disabled = true; addBtn.textContent = '...adding'; }
 
-  // Optimistic: insert into local array immediately
-  var optimisticEntry = {
-    barcode: _qrLastScanData, itemName: '', quantity: 1,
-    lastUpdated: new Date().toISOString(), lastUser: session.email || 'unknown'
-  };
-  _inventoryEntries.push(optimisticEntry);
-  _addEntryPendingIndex = _inventoryEntries.length - 1;
+  // Optimistic upsert: find existing barcode or add new
+  var _optExistingIdx = -1;
+  var _optOldQty = 0;
+  for (var oi = 0; oi < _inventoryEntries.length; oi++) {
+    if (_inventoryEntries[oi].barcode === _qrLastScanData) { _optExistingIdx = oi; break; }
+  }
+  if (_optExistingIdx >= 0) {
+    _optOldQty = Number(_inventoryEntries[_optExistingIdx].quantity) || 0;
+    _inventoryEntries[_optExistingIdx].quantity = _optOldQty + 1;
+    _inventoryEntries[_optExistingIdx].lastUpdated = new Date().toISOString();
+    _inventoryEntries[_optExistingIdx].lastUser = session.email || 'unknown';
+    _addEntryPendingIndex = _optExistingIdx;
+  } else {
+    var optimisticEntry = {
+      barcode: _qrLastScanData, itemName: '', quantity: 1,
+      lastUpdated: new Date().toISOString(), lastUser: session.email || 'unknown'
+    };
+    _inventoryEntries.push(optimisticEntry);
+    _addEntryPendingIndex = _inventoryEntries.length - 1;
+  }
   _addEntryPending = true;
   _renderQrEntriesTable({});
 
@@ -4709,10 +4722,15 @@ function addQrEntryToSheet() {
     if (result.success) {
       _qrCurrentScanAdded = true;
       if (addBtn) addBtn.style.display = 'none';
-      showQrToast('Added to inventory!', 'success');
-      _doDataPoll(); // poll reconciles optimistic with server data
+      showQrToast(result.action === 'Restock' ? 'Restocked!' : 'Added to inventory!', 'success');
+      _doDataPoll();
     } else {
-      _inventoryEntries.pop();
+      // Rollback optimistic change
+      if (_optExistingIdx >= 0) {
+        _inventoryEntries[_optExistingIdx].quantity = _optOldQty;
+      } else {
+        _inventoryEntries.pop();
+      }
       _renderQrEntriesTable({});
       if (addBtn) { addBtn.disabled = false; addBtn.textContent = '\u271A Add to Inventory'; }
       showQrToast(result.error || 'Failed to add entry', 'error');
@@ -4721,7 +4739,11 @@ function addQrEntryToSheet() {
   .catch(function() {
     _addEntryPending = false;
     _addEntryPendingIndex = undefined;
-    _inventoryEntries.pop();
+    if (_optExistingIdx >= 0) {
+      _inventoryEntries[_optExistingIdx].quantity = _optOldQty;
+    } else {
+      _inventoryEntries.pop();
+    }
     _renderQrEntriesTable({});
     if (addBtn) { addBtn.disabled = false; addBtn.textContent = '\u271A Add to Inventory'; }
     showQrToast('Network error', 'error');
@@ -4765,13 +4787,26 @@ function addManualEntryToSheet() {
 
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '...adding'; }
 
-  // Optimistic: insert into local array immediately
-  var optimisticEntry = {
-    barcode: barcode, itemName: itemName, quantity: quantity,
-    lastUpdated: new Date().toISOString(), lastUser: session.email || 'unknown'
-  };
-  _inventoryEntries.push(optimisticEntry);
-  _addEntryPendingIndex = _inventoryEntries.length - 1;
+  // Optimistic upsert: find existing barcode or add new
+  var _mOptExistIdx = -1;
+  var _mOptOldQty = 0;
+  for (var mi = 0; mi < _inventoryEntries.length; mi++) {
+    if (barcode && _inventoryEntries[mi].barcode === barcode) { _mOptExistIdx = mi; break; }
+  }
+  if (_mOptExistIdx >= 0) {
+    _mOptOldQty = Number(_inventoryEntries[_mOptExistIdx].quantity) || 0;
+    _inventoryEntries[_mOptExistIdx].quantity = _mOptOldQty + quantity;
+    if (itemName && !_inventoryEntries[_mOptExistIdx].itemName) _inventoryEntries[_mOptExistIdx].itemName = itemName;
+    _inventoryEntries[_mOptExistIdx].lastUpdated = new Date().toISOString();
+    _inventoryEntries[_mOptExistIdx].lastUser = session.email || 'unknown';
+    _addEntryPendingIndex = _mOptExistIdx;
+  } else {
+    _inventoryEntries.push({
+      barcode: barcode, itemName: itemName, quantity: quantity,
+      lastUpdated: new Date().toISOString(), lastUser: session.email || 'unknown'
+    });
+    _addEntryPendingIndex = _inventoryEntries.length - 1;
+  }
   _addEntryPending = true;
   _renderQrEntriesTable({});
 
@@ -4795,10 +4830,11 @@ function addManualEntryToSheet() {
     _addEntryPending = false;
     _addEntryPendingIndex = undefined;
     if (result.success) {
-      showQrToast('Item added to inventory!', 'success');
+      showQrToast(result.action === 'Restock' ? 'Restocked!' : 'Item added!', 'success');
       _doDataPoll();
     } else {
-      _inventoryEntries.pop();
+      if (_mOptExistIdx >= 0) { _inventoryEntries[_mOptExistIdx].quantity = _mOptOldQty; }
+      else { _inventoryEntries.pop(); }
       _renderQrEntriesTable({});
       showQrToast(result.error || 'Failed to add item', 'error');
     }
@@ -4807,7 +4843,8 @@ function addManualEntryToSheet() {
   .catch(function() {
     _addEntryPending = false;
     _addEntryPendingIndex = undefined;
-    _inventoryEntries.pop();
+    if (_mOptExistIdx >= 0) { _inventoryEntries[_mOptExistIdx].quantity = _mOptOldQty; }
+    else { _inventoryEntries.pop(); }
     _renderQrEntriesTable({});
     showQrToast('Network error', 'error');
     if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '\u271A Add to Inventory'; }
@@ -4870,18 +4907,32 @@ function fetchQrEntries() {
 
   _dataPollInFlight = true;
   _updatePollDisplay();
-  fetch(baseUrl + '?action=getQrEntries', {
+
+  // Fetch both inventory and history in parallel
+  var invPromise = fetch(baseUrl + '?action=getQrEntries', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ token: session.token, limit: 50 })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(result) {
+  }).then(function(r) { return r.json(); });
+
+  var histPromise = fetch(baseUrl + '?action=getQrHistory', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ token: session.token, limit: 50 })
+  }).then(function(r) { return r.json(); });
+
+  Promise.all([invPromise, histPromise])
+  .then(function(results) {
     _dataPollInFlight = false;
     _lastDataPollTick = Date.now();
-    if (result.success && result.entries) {
+    var invResult = results[0];
+    var histResult = results[1];
+    if (invResult.success && invResult.entries) {
       _lastDataTs = Date.now();
-      _handleInventoryData(result.entries);
+      _handleInventoryData(invResult.entries);
+    }
+    if (histResult.success && histResult.entries) {
+      _renderHistoryTable(histResult.entries);
     }
     _updatePollDisplay();
   })

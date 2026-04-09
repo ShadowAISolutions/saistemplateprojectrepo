@@ -1,4 +1,4 @@
-var VERSION = "v01.04g";
+var VERSION = "v01.05g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -301,32 +301,71 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // PROJECT START — Add your project-specific code here
 
 /**
- * Process a QR scan entry — appends a row to the data spreadsheet.
+ * Process a QR scan entry — upserts: if barcode exists, adds to quantity; otherwise creates new row.
+ * Every change is logged to the History sheet.
  * Called from HTML layer via doPost(action=addQrEntry).
  */
 function processAddQrEntry(token, barcode, itemName, quantity) {
   var session = validateSessionForData(token, 'addQrEntry');
-  // session is guaranteed valid here (throws if invalid)
 
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
   }
-  // Auto-create header row if sheet is empty or missing headers
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(['Barcode', 'Item Name', 'Quantity', 'Last Updated', 'Last User']);
   }
 
-  sheet.appendRow([
-    barcode || '',
-    itemName || '',
-    quantity != null ? quantity : 1,
-    new Date(),
-    session.email || 'unknown'
-  ]);
+  var qtyToAdd = quantity != null ? Number(quantity) : 1;
+  var now = new Date();
+  var user = session.email || 'unknown';
+  var action = 'Add';
+  var newQty = qtyToAdd;
 
-  return { success: true };
+  // Search for existing barcode
+  var data = sheet.getDataRange().getValues();
+  var foundRow = -1;
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]).trim() === String(barcode).trim() && String(barcode).trim() !== '') {
+      foundRow = i + 1; // 1-based spreadsheet row
+      break;
+    }
+  }
+
+  if (foundRow > 0) {
+    // Upsert: update existing row's quantity
+    var oldQty = Number(data[foundRow - 1][2]) || 0;
+    newQty = oldQty + qtyToAdd;
+    // Update item name if provided and currently empty
+    var existingName = String(data[foundRow - 1][1] || '');
+    var updatedName = (itemName && !existingName) ? itemName : existingName;
+    sheet.getRange(foundRow, 2).setValue(updatedName);  // Item Name
+    sheet.getRange(foundRow, 3).setValue(newQty);        // Quantity
+    sheet.getRange(foundRow, 4).setValue(now);            // Last Updated
+    sheet.getRange(foundRow, 5).setValue(user);           // Last User
+    action = 'Restock';
+  } else {
+    // New item: append
+    sheet.appendRow([barcode || '', itemName || '', qtyToAdd, now, user]);
+  }
+
+  // Log to history
+  _logHistory(ss, now, user, action, barcode || '', itemName || '', (action === 'Restock' ? '+' : '+') + qtyToAdd, newQty);
+
+  return { success: true, action: action, newQuantity: newQty };
+}
+
+/**
+ * Helper: log an entry to the History sheet.
+ */
+function _logHistory(ss, timestamp, user, action, barcode, itemName, qtyChange, newQty) {
+  var histSheet = ss.getSheetByName('History');
+  if (!histSheet) {
+    histSheet = ss.insertSheet('History');
+    histSheet.appendRow(['Timestamp', 'User', 'Action', 'Barcode', 'Item Name', 'Qty Change', 'New Qty']);
+  }
+  histSheet.appendRow([timestamp, user, action, barcode, itemName, String(qtyChange), newQty]);
 }
 
 /**
@@ -390,8 +429,53 @@ function processDeleteQrEntry(token, rowIndex) {
     return { success: false, error: 'Row out of range' };
   }
 
+  // Capture row data before deletion for history log
+  var rowData = sheet.getRange(sheetRow, 1, 1, 5).getValues()[0];
+  var barcode = String(rowData[0] || '');
+  var itemName = String(rowData[1] || '');
+  var qty = Number(rowData[2]) || 0;
+
   sheet.deleteRow(sheetRow);
+
+  // Log deletion to history
+  _logHistory(ss, new Date(), session.email || 'unknown', 'Delete', barcode, itemName, '-' + qty, 0);
+
   return { success: true };
+}
+
+/**
+ * Retrieve recent history entries from the History sheet.
+ * Called from HTML layer via doPost(action=getQrHistory).
+ */
+function processGetQrHistory(token, limit) {
+  var session = validateSessionForData(token, 'getQrHistory');
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName('History');
+  if (!sheet) return { success: true, entries: [] };
+
+  var allData = sheet.getDataRange().getValues();
+  var rows = allData.slice(1); // skip header
+  var maxRows = Math.min(limit || 50, rows.length);
+  var recent = [];
+  for (var i = rows.length - 1; i >= rows.length - maxRows && i >= 0; i--) {
+    recent.push(rows[i]);
+  }
+
+  return {
+    success: true,
+    entries: recent.map(function(row) {
+      return {
+        timestamp: row[0] ? new Date(row[0]).toISOString() : '',
+        user: String(row[1] || ''),
+        action: String(row[2] || ''),
+        barcode: String(row[3] || ''),
+        itemName: String(row[4] || ''),
+        quantityChange: String(row[5] || ''),
+        newQuantity: row[6] != null ? row[6] : ''
+      };
+    })
+  };
 }
 
 // PROJECT END
@@ -883,6 +967,17 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     } catch (dqErr) {
       return ContentService.createTextOutput(JSON.stringify({ success: false, error: dqErr.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  if (action === "getQrHistory") {
+    try {
+      var ghBody = JSON.parse(e.postData.contents);
+      var ghResult = processGetQrHistory(ghBody.token, ghBody.limit);
+      return ContentService.createTextOutput(JSON.stringify(ghResult))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (ghErr) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: ghErr.message }))
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
