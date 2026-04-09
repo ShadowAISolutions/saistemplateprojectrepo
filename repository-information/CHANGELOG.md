@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v10.17r] — 2026-04-08 09:16:47 PM EST
+
+> **Prompt:** "analyze the autoHotkey/Combined Inventory and Intercept.ahk and write out all of the features it has. we will eventually be implementing features that has into our inventorymanagement, but for now i just want a comprehensive documents with all of the features the autoHotkey/Combined Inventory and Intercept.ahk has."
+
+### Added
+- Comprehensive AHK feature reference document (`repository-information/inventorymanagement-ahk-features.md`) — catalogs all 10 feature areas from the AutoHotkey inventory management script for future web implementation
 
 ## [v10.16r] — 2026-04-08 05:54:04 PM EST
 
