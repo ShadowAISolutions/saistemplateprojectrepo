@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 1/50`
+`Sections: 2/50`
 
 ## [Unreleased]
+
+## [v01.02w] — 2026-04-09 12:50:45 PM EST — v10.32r
+
+### Changed
+- All application content now renders directly in the page instead of in a separate frame
+- Data table and dashboard views load faster with direct rendering
+
+### Removed
+- Separate application frame overlay removed — the app runs natively in the page
 
 ## [v01.01w] — 2026-04-09 11:30:10 AM EST — v10.31r
 

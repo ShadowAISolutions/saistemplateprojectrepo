@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.01w">
+  <meta name="build-version" content="v01.02w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauthhtml1 Title</title>
 <!-- ══════════════ -->
@@ -90,79 +90,7 @@
     #version-indicator .dot.found    { background: #66bb6a; }
     #version-indicator .dot.error    { background: #ef5350; }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
-    #gas-pill {
-      position: fixed; bottom: 34px; right: 22px; z-index: 10003;
-      display: none; align-items: center; gap: 6px;
-      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
-      border-radius: 12px; font: 11px/1 monospace;
-      pointer-events: auto; cursor: pointer; transition: all 0.3s ease;
-    }
-    #gas-pill:hover { background: rgba(0,0,0,0.75); }
-    #gas-pill .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #888; transition: background 0.3s ease;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 6px; line-height: 1; color: #fff;
-    }
-    #gas-pill .dot.checking { background: #42a5f5; animation: pulse 0.6s infinite alternate; }
-    #gas-pill .dot.counting { background: #888; }
-    #gas-pill .dot.found    { background: #66bb6a; }
-    #gas-pill .dot.error    { background: #ef5350; }
-    #gcl-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6); z-index: 10004; display: none;
-      align-items: center; justify-content: center;
-    }
-    #gcl-popup {
-      background: #1a1a2e; color: #e0e0e0; border-radius: 12px;
-      max-width: 480px; width: 90%; max-height: 70vh;
-      display: flex; flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    }
-    #gcl-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    #gcl-title { font: bold 16px/1 sans-serif; color: #fff; }
-    #gcl-close {
-      background: none; border: none; color: #888; font-size: 24px;
-      cursor: pointer; padding: 4px 8px; line-height: 1;
-    }
-    #gcl-close:hover { color: #fff; }
-    #gcl-body {
-      padding: 16px 20px; overflow-y: auto; font: 13px/1.5 sans-serif;
-    }
-    #gcl-body h3 {
-      font-size: 14px; color: #7c8bff; margin: 16px 0 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;
-    }
-    #gcl-body h3:first-child { margin-top: 0; }
-    #gcl-body h4 {
-      font-size: 12px; color: #a0a0a0; margin: 10px 0 4px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    #gcl-body ul { margin: 0 0 8px; padding-left: 20px; }
-    #gcl-body li { margin-bottom: 4px; }
-    #sso-indicator {
-      position: fixed; bottom: 86px; right: 22px; z-index: 10003;
-      display: none; align-items: center; gap: 6px;
-      background: rgba(0,0,0,0.55); color: #ccc; padding: 4px 10px;
-      border-radius: 12px; font: 11px/1 monospace;
-      pointer-events: auto; transition: all 0.3s ease;
-    }
-    #sso-indicator.sso-clickable { cursor: pointer; }
-    #sso-indicator.sso-clickable:hover { background: rgba(0,0,0,0.75); }
-    #sso-indicator .sso-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; transition: background 0.3s ease; }
-    #sso-indicator .sso-dot.sso-off { background: #666; }
-    #sso-indicator .sso-dot.sso-pending { background: #ffa726; animation: pulse 0.6s infinite alternate; }
-    #sso-indicator .sso-dot.sso-ready { background: #4caf50; }
-    #sso-indicator .sso-dot.sso-dismissed { background: #ef5350; }
-    #sso-indicator .sso-label { color: #999; }
-    #sso-indicator .sso-value { font-weight: bold; }
-    #sso-indicator .sso-value.sso-off { color: #666; }
-    #sso-indicator .sso-value.sso-pending { color: #ffa726; }
-    #sso-indicator .sso-value.sso-ready { color: #4caf50; }
-    #sso-indicator .sso-value.sso-dismissed { color: #ef5350; }
+    /* PROJECT OVERRIDE: gas-pill, gcl-overlay, sso-indicator CSS removed — GAS layer migrated to HTML */
 /* ══════════════ */
 /* TEMPLATE END */
 /* ══════════════ */
@@ -334,6 +262,177 @@
 /* PROJECT START */
 /* ══════════════ */
     .html-layer-hidden { display: none !important; }
+    .gas-layer-hidden { display: none !important; }
+    /* GAS version & user email (migrated from GAS layer) */
+    #gas-version-display { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; display: none; }
+    #gas-user-email { position: fixed; top: 35px; right: 22px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; display: none; }
+    /* Live Data App (migrated from GAS layer) */
+    #live-data-app {
+      position: fixed; top: 30px; left: 0; right: 0; bottom: 30px; z-index: 2;
+      display: none; flex-direction: column;
+      background: #0f1117; color: #e1e4e8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+    }
+    #live-data-app.active { display: flex; }
+    #ld-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; background: #1a1b26; border-bottom: 1px solid #2a2b3d;
+      flex-shrink: 0; flex-wrap: wrap; gap: 8px;
+    }
+    #ld-header .left { display: flex; align-items: center; gap: 10px; }
+    #ld-header h2 { margin: 0; font-size: 16px; color: #fff; white-space: nowrap; }
+    #ld-header .right { display: flex; align-items: center; gap: 8px; }
+    #ld-conn-status {
+      display: flex; align-items: center; gap: 6px; padding: 4px 12px;
+      background: rgba(0,0,0,0.3); border-radius: 20px; font-size: 12px; color: #8b949e;
+    }
+    #ld-conn-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #888;
+      transition: background 0.3s;
+    }
+    #ld-conn-dot.live { background: #3fb950; }
+    #ld-conn-dot.updating { background: #d29922; animation: ld-pulse 0.6s infinite alternate; }
+    #ld-conn-dot.disconnected { background: #f85149; }
+    #ld-conn-label { white-space: nowrap; }
+    #ld-countdown { font-size: 11px; color: #6e7681; min-width: 20px; text-align: right; }
+    @keyframes ld-pulse { from { opacity: 1; } to { opacity: 0.4; } }
+    #ld-view-tabs {
+      display: flex; background: #1a1b26; border-bottom: 1px solid #2a2b3d; flex-shrink: 0;
+    }
+    .ld-view-tab {
+      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #8b949e;
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+      background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .ld-view-tab:hover { color: #e1e4e8; }
+    .ld-view-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+    #ld-table-view { flex: 1; overflow: auto; padding: 16px; }
+    #ld-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    #ld-data-table th {
+      position: sticky; top: 0; background: #1a1b26; color: #8b949e;
+      padding: 10px 12px; text-align: left; border-bottom: 2px solid #2a2b3d;
+      cursor: pointer; user-select: none; white-space: nowrap; font-weight: 600;
+    }
+    #ld-data-table th:hover { color: #e1e4e8; }
+    #ld-data-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+    #ld-data-table td {
+      padding: 8px 12px; border-bottom: 1px solid #1e2030; color: #c9d1d9;
+      transition: background 0.3s; cursor: default;
+    }
+    #ld-data-table tr:hover td { background: rgba(88,166,255,0.05); }
+    @keyframes ld-cell-flash { 0% { background: rgba(46,160,67,0.45); } 100% { background: transparent; } }
+    .ld-cell-changed { animation: ld-cell-flash 1.5s ease-out; }
+    #ld-data-table td.editing { padding: 2px 4px; background: rgba(88,166,255,0.1); }
+    #ld-data-table td.editing input {
+      width: 100%; padding: 6px 8px; font-size: 13px; font-family: inherit;
+      background: #161b22; color: #c9d1d9; border: 1px solid #58a6ff;
+      border-radius: 4px; outline: none; box-sizing: border-box;
+    }
+    #ld-data-table td.editing input:focus { box-shadow: 0 0 0 2px rgba(88,166,255,0.3); }
+    #ld-dashboard-view { flex: 1; overflow: auto; padding: 16px; display: none; }
+    #ld-dashboard-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+    }
+    .ld-dash-card {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+      padding: 20px; transition: border-color 0.2s;
+    }
+    .ld-dash-card:hover { border-color: #58a6ff; }
+    .ld-dash-card .card-label { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .ld-dash-card .card-value { font-size: 28px; font-weight: 700; color: #fff; word-break: break-word; transition: color 0.3s; }
+    .ld-dash-card .card-meta { font-size: 11px; color: #6e7681; margin-top: 8px; }
+    .ld-dash-card.stats { background: #161b22; border-color: #30363d; }
+    .ld-dash-card .card-value.changed { color: #3fb950; }
+    @keyframes ld-card-flash { 0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); } 100% { border-color: #2a2b3d; box-shadow: none; } }
+    .ld-card-changed { animation: ld-card-flash 1.5s ease-out; }
+    #ld-empty-state { display: none; flex: 1; align-items: center; justify-content: center; color: #6e7681; font-size: 14px; text-align: center; padding: 40px; }
+    #ld-data-table td, #ld-data-table th, button, .ld-view-tab { touch-action: manipulation; }
+    /* Delete confirmation modal */
+    #ld-delete-modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 10000; background: rgba(0,0,0,0.6);
+      align-items: center; justify-content: center;
+    }
+    #ld-delete-modal.active { display: flex; }
+    #ld-delete-modal .modal-box {
+      background: #1a1b26; border: 1px solid #2a2b3d; border-radius: 12px;
+      padding: 24px; max-width: 360px; width: 90%; text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    #ld-delete-modal .modal-title { font-size: 16px; font-weight: 700; color: #f85149; margin-bottom: 8px; }
+    #ld-delete-modal .modal-msg { font-size: 13px; color: #c9d1d9; margin-bottom: 8px; line-height: 1.5; }
+    #ld-delete-modal .modal-preview {
+      font-size: 12px; color: #8b949e; background: #0f1117; border-radius: 6px;
+      padding: 8px 12px; margin-bottom: 16px; word-break: break-word; max-height: 80px; overflow: auto;
+    }
+    #ld-delete-modal .modal-btns { display: flex; gap: 12px; justify-content: center; }
+    #ld-delete-modal .modal-btns button {
+      padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 600;
+      cursor: pointer; border: none; min-width: 90px;
+    }
+    #ld-delete-modal .btn-cancel { background: #30363d; color: #c9d1d9; }
+    #ld-delete-modal .btn-cancel:hover { background: #3d444d; }
+    #ld-delete-modal .btn-delete { background: #da3633; color: #fff; }
+    #ld-delete-modal .btn-delete:hover { background: #f85149; }
+    @media (max-width: 600px) {
+      #ld-header { padding: 10px 12px; }
+      #ld-dashboard-grid { grid-template-columns: 1fr; }
+      .ld-dash-card .card-value { font-size: 22px; }
+      #ld-data-table { font-size: 12px; }
+      #ld-data-table td { padding: 8px 8px; }
+      #ld-add-row-bar { flex-direction: column; }
+      #ld-add-row-bar input { min-width: 0 !important; width: 100%; }
+    }
+    /* Admin panel styles (migrated from GAS layer — hidden until admin role confirmed) */
+    #admin-badge { position: fixed; top: 7px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; display: none; }
+    #admin-dropdown-gas { display: none; position: fixed; top: 31px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+    #admin-dropdown-gas button { display: block; width: 100%; text-align: left; padding: 6px 12px; background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1.4 monospace; white-space: nowrap; }
+    #admin-dropdown-gas button:hover { background: rgba(144,202,249,0.1); color: #fff; }
+    #admin-panel-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; background: rgba(0,0,0,0.6); }
+    #admin-panel { position: fixed; top: 40px; left: 8px; z-index: 201; background: rgba(20,20,30,0.98); color: #ccc; border: 1px solid #444; border-radius: 8px; font: 12px/1.4 monospace; width: 480px; max-width: calc(100vw - 16px); max-height: calc(100vh - 80px); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+    #admin-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid #444; flex-shrink: 0; }
+    #admin-panel-header .admin-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+    #admin-panel-close { background: none; border: none; color: #999; cursor: pointer; font-size: 16px; padding: 0 4px; }
+    #admin-panel-close:hover { color: #fff; }
+    #admin-nav { display: flex; border-bottom: 1px solid #333; padding: 4px 8px; gap: 4px; flex-shrink: 0; }
+    .admin-tab { background: none; border: 1px solid #555; color: #90caf9; cursor: pointer; font: 10px/1 monospace; padding: 3px 8px; border-radius: 3px; }
+    .admin-tab:hover { background: rgba(144,202,249,0.1); }
+    .admin-tab.active { background: rgba(144,202,249,0.15); border-color: #90caf9; }
+    #admin-menu-gas { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 8px; border-bottom: 1px solid #333; flex-shrink: 0; }
+    .admin-menu-btn { background: none; border: none; color: #90caf9; cursor: pointer; font: 11px/1 monospace; padding: 2px 6px; }
+    .admin-menu-btn:hover { color: #fff; text-decoration: underline; }
+    .admin-menu-btn.active { color: #fff; font-weight: bold; }
+    #admin-content { flex: 1; overflow-y: auto; padding: 10px 12px; }
+    .pa-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 8px; }
+    .pa-title { color: #90caf9; font-weight: bold; font-size: 13px; }
+    .pa-action { border: 1px solid #90caf9; color: #90caf9; background: none; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; }
+    .pa-action:hover { background: rgba(144,202,249,0.1); }
+    .pa-body { margin-top: 8px; }
+    .pa-body label { display: block; color: #aaa; font-size: 11px; margin: 8px 0 4px; }
+    .pa-body input, .pa-body textarea, .pa-body select { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555; color: #eee; padding: 6px 8px; border-radius: 4px; font: 12px monospace; box-sizing: border-box; }
+    .pa-body textarea { resize: vertical; }
+    .pa-format-picker { margin: 8px 0; }
+    .pa-format-picker label { display: inline; margin-right: 12px; color: #ccc; font-size: 12px; }
+    .pa-status { color: #999; font-size: 11px; margin-top: 8px; text-align: center; }
+    .pa-empty { color: #888; font-size: 11px; text-align: center; padding: 16px 0; }
+    .pa-card { background: rgba(255,255,255,0.05); border: 1px solid #444; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+    .pa-card-header { color: #90caf9; font-weight: bold; font-size: 11px; }
+    .pa-card-meta { color: #888; font-size: 10px; margin: 4px 0; }
+    .pa-card-field { font-size: 11px; margin: 4px 0; }
+    .pa-card-field strong { color: #aaa; }
+    .pa-card-actions { margin-top: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .pa-approve { border: 1px solid #66bb6a; color: #66bb6a; background: none; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; }
+    .pa-approve:hover { background: rgba(102,187,106,0.15); }
+    .pa-deny { border: 1px solid #ef5350; color: #ef5350; background: none; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; }
+    .pa-deny:hover { background: rgba(239,83,80,0.15); }
+    .pa-deny-reason { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid #555; color: #eee; padding: 4px 6px; border-radius: 3px; font: 10px monospace; margin-top: 4px; display: none; }
+    .asp-session { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; }
+    .asp-session.asp-self { border-color: #1565c0; }
+    .asp-session.asp-emergency { border-color: #ef5350; }
+    .asp-role-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 9px; text-transform: uppercase; background: rgba(255,255,255,0.1); color: #90caf9; }
+    .asp-meta { color: #888; font-size: 10px; margin: 4px 0; }
+    .asp-kick { background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px; }
+    .asp-kick:hover { background: rgba(239,83,80,0.15); }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -347,13 +446,7 @@
   <div id="splash-code" class="splash"><div class="splash-title">Code Ready</div><img id="splash-code-logo" src="" alt=""></div>
   <div id="splash-maintenance" class="splash"><div class="splash-title">🔧This Webpage is Undergoing Maintenance<span id="maint-bypass" tabindex="-1" style="cursor:inherit;-webkit-user-select:none;user-select:text">🔧</span></div><img id="maintenance-logo" src="" alt=""><div id="maintenance-timestamp" class="maintenance-timestamp"></div></div>
 
-  <div id="gas-pill"><span class="dot"></span><span id="gas-pill-label">GAS ...</span></div>
-  <div id="gcl-overlay"><div id="gcl-popup"><div id="gcl-header"><span id="gcl-title">GAS Changelog</span><button id="gcl-close">&times;</button></div><div id="gcl-body"></div></div></div>
-  <div id="sso-indicator">
-    <span class="sso-label">SSO</span>
-    <span class="sso-dot sso-off"></span>
-    <span class="sso-value sso-off" id="sso-status">off</span>
-  </div>
+  <!-- GAS pill, GAS changelog overlay, and SSO indicator removed — GAS layer migrated to HTML -->
 <!-- ══════════════ -->
 <!-- TEMPLATE END -->
 <!-- ══════════════ -->
@@ -450,7 +543,7 @@
 
   <!-- Layer visibility toggles -->
   <button id="html-layer-toggle" onclick="window._toggleHtmlLayer()" style="position:fixed;bottom:7px;left:70px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">HTML</button>
-  <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="display:none;position:fixed;bottom:7px;left:135px;z-index:10005;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
+  <!-- GAS layer toggle button removed — GAS layer migrated to HTML -->
 
   <div id="auth-timers" onclick="toggleTimers()">
     <div class="timer-header"><span>&#9202;</span><span class="timer-pill-label" id="timer-pill-label">--:--</span><span class="toggle-icon" id="timer-toggle-icon">&#9656;</span></div>
@@ -467,8 +560,90 @@
 <!-- ══════════════ -->
 <!-- PROJECT START -->
 <!-- ══════════════ -->
-  <!-- Live Data UI has been migrated to the GAS layer (doGet HTML output in testauthhtml1.gs) -->
+  <!-- GAS version and user email (migrated from GAS layer — populated by JS after auth) -->
+  <h2 id="gas-version-display"></h2>
+  <div id="gas-user-email"></div>
 
+  <!-- Admin badge + dropdown + panel (migrated from GAS layer — hidden until admin confirmed) -->
+  <div id="admin-badge" style="display:none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">ADMIN &#x25BE;</div>
+  <div id="admin-dropdown-gas">
+    <button data-admin-panel="sessions">Sessions</button>
+    <button data-admin-panel="disclosures">Disclosures</button>
+    <button data-admin-panel="data-export">My Data</button>
+    <button data-admin-panel="amendment">Correction</button>
+    <button data-admin-panel="amendment-review">Amendments</button>
+    <button data-admin-panel="disagreement">Disagree</button>
+    <button data-admin-panel="extension">Extensions</button>
+    <button data-admin-panel="denial-notice">Denial Notice</button>
+    <button data-admin-panel="ehr-disclosures">EHR Disclosures</button>
+    <button data-admin-panel="breach-log">Breach Log</button>
+    <button data-admin-panel="representatives">Representatives</button>
+    <button data-admin-panel="legal-holds">Legal Holds</button>
+    <button data-admin-panel="compliance-audit">Compliance Audit</button>
+    <button data-admin-panel="archive-integrity">Archive Integrity</button>
+    <button data-admin-panel="retention-policy">Retention Policy</button>
+  </div>
+  <div id="admin-panel-overlay">
+    <div id="admin-panel">
+      <div id="admin-panel-header">
+        <span class="admin-title">Admin Tools</span>
+        <button id="admin-panel-close">&times;</button>
+      </div>
+      <div id="admin-content">
+        <div id="admin-loading" class="pa-empty">Select a tool from the admin menu.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Data App (migrated from GAS layer) -->
+  <div id="live-data-app">
+    <div id="ld-header">
+      <div class="left">
+        <h2>Live Data</h2>
+        <div id="ld-conn-status">
+          <div id="ld-conn-dot"></div>
+          <span id="ld-conn-label">Connecting...</span>
+          <span id="ld-countdown"></span>
+          <span style="color:#444;margin:0 2px;">|</span>
+          <span id="ld-poll-countdown" style="font-size:11px;color:#6e7681;">--</span>
+        </div>
+      </div>
+      <div class="right"></div>
+    </div>
+    <div id="ld-view-tabs">
+      <button class="ld-view-tab active" data-view="table">Table</button>
+      <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
+    </div>
+    <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
+      <input id="ld-add-col1" type="text" placeholder="Column 1" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <input id="ld-add-col2" type="text" placeholder="Column 2" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <input id="ld-add-col3" type="text" placeholder="Column 3" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <input id="ld-add-col4" type="text" placeholder="Column 4" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
+      <button id="ld-add-row-btn" style="padding:6px 14px;background:#238636;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">Add Row</button>
+    </div>
+    <div id="ld-table-view">
+      <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="ld-dashboard-view">
+      <div id="ld-dashboard-grid"></div>
+    </div>
+    <div id="ld-empty-state">Waiting for data...</div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div id="ld-delete-modal">
+    <div class="modal-box">
+      <div class="modal-title">Delete Row</div>
+      <div class="modal-msg">Are you sure you want to delete this row?</div>
+      <div class="modal-preview" id="ld-delete-preview"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" id="ld-delete-cancel">Cancel</button>
+        <button class="btn-delete" id="ld-delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test bar -->
   <div id="ld-test-bar" style="position:fixed;bottom:34px;left:8px;z-index:9999;display:flex;align-items:center;gap:8px;">
     <button id="force-heartbeat-btn" style="background:#1a1a2e;color:#ff8c42;border:1px solid #ff8c42;padding:8px 14px;border-radius:8px;font:12px/1 monospace;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Force Heartbeat</button>
     <button id="run-security-tests-btn" style="background:#1a1a2e;color:#7c8bff;border:1px solid #7c8bff;padding:8px 14px;border-radius:8px;font:12px/1 monospace;cursor:pointer;opacity:0.8;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">Security Tests</button>
@@ -487,7 +662,6 @@
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
-  <!-- GAS 1fr4m3 injected dynamically by script -->
 
   <script>
 /* tpl:7f3e9b2d */ // ── CONFIG ──
@@ -830,7 +1004,7 @@
       // cr34t3 1fr4m3
       var f = document.createElement(atob('aWZyYW1l'));
       f.id = 'gas-app';
-      f.style.cssText = 'width:100%;height:100%;border:none;position:fixed;top:0;left:0;z-index:1;';
+      f.style.cssText = 'width:0;height:0;border:none;position:absolute;overflow:hidden;';
       f.dataset.baseUrl = _u;
       document.body.appendChild(f);
     })();
@@ -856,172 +1030,10 @@
       return tmp.innerHTML;
     }
 
-    // GAS auto-refresh: poll <pagename>gs.version.txt for GAS version changes
-    // Also drives the GAS version pill (bottom-right, left of HTML pill) with countdown dot
-    (function() {
-      var GAS_POLL_INTERVAL = 10000;
-      var GAS_INITIAL_DELAY = 15000;
-      if (!AUTO_REFRESH) return;
-
-      var basePath = window.location.href.split('?')[0].split('#')[0];
-      var pageName = basePath.substring(basePath.lastIndexOf('/') + 1).replace('.html', '');
-      if (!pageName) pageName = 'index';
-      var gasVersionUrl = basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-versions/' + pageName + 'gs.version.txt';
-
-      var currentGasVersion = null;
-      var pill = document.getElementById('gas-pill');
-      var pillLabel = document.getElementById('gas-pill-label');
-      var dot = pill ? pill.querySelector('.dot') : null;
-      var countdownSeconds = 0;
-      var countdownTimer = null;
-
-      function startCountdown(interval) {
-        countdownSeconds = (interval || GAS_POLL_INTERVAL) / 1000;
-        if (countdownTimer) clearInterval(countdownTimer);
-        countdownTimer = setInterval(function() {
-          countdownSeconds--;
-          if (countdownSeconds <= 0) {
-            clearInterval(countdownTimer);
-            if (dot) { dot.textContent = ''; dot.className = 'dot'; }
-          } else if (countdownSeconds <= 5) {
-            if (dot) { dot.textContent = countdownSeconds; dot.className = 'dot counting'; }
-          }
-        }, 1000);
-      }
-
-      function checkGasUpdate() {
-        if (countdownTimer) clearInterval(countdownTimer);
-        if (dot) { dot.textContent = ''; dot.className = 'dot checking'; }
-        fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
-          .then(function(res) { return res.text(); })
-          .then(function(v) {
-            var fetched = v.trim();
-            var gParts = fetched.split('|');
-            var gasVer = (gParts.length >= 2 && gParts[1]) ? gParts[1] : fetched;
-            if (!currentGasVersion) {
-              currentGasVersion = fetched;
-              if (pill) { pill.style.display = 'flex'; }
-              if (pillLabel) pillLabel.textContent = 'GAS ' + gasVer;
-            } else if (fetched !== currentGasVersion) {
-              // GAS version changed on GitHub — reload immediately
-              if (dot) dot.className = 'dot found';
-              if (pillLabel) pillLabel.textContent = 'GAS updated — reloading...';
-              sessionStorage.setItem('gas-pending-sound', '1');
-              setTimeout(function() { window.location.reload(); }, 1500);
-              return;
-            }
-            if (dot) setTimeout(function() { dot.className = 'dot'; }, 800);
-            // Anti-sync: if GAS poll fired within 3s of HTML poll, add 5s delay to re-establish gap
-            var _gasPollDelay = GAS_POLL_INTERVAL;
-            if (window._htmlPollTime && Math.abs(Date.now() - window._htmlPollTime) < 3000) {
-              _gasPollDelay += 5000;
-            }
-            startCountdown(_gasPollDelay);
-            setTimeout(checkGasUpdate, _gasPollDelay);
-          })
-          .catch(function() {
-            if (dot) {
-              dot.className = 'dot error';
-              setTimeout(function() { dot.className = 'dot'; }, 2000);
-            }
-            startCountdown();
-            setTimeout(checkGasUpdate, GAS_POLL_INTERVAL);
-          });
-      }
-
-      // Fetch version immediately — only show GAS pill and start polling if gs.version.txt exists
-      // This allows the HTML+GAS template to work as a pure HTML page with no GAS project
-      fetch(gasVersionUrl + '?_cb=' + Date.now(), { cache: 'no-store' })
-        .then(function(res) {
-          if (!res.ok) throw new Error('no gs.version.txt');
-          return res.text();
-        })
-        .then(function(v) {
-          currentGasVersion = v.trim();
-          var gInitParts = currentGasVersion.split('|');
-          var gasInitVer = (gInitParts.length >= 2 && gInitParts[1]) ? gInitParts[1] : currentGasVersion;
-          if (pillLabel) pillLabel.textContent = 'GAS ' + gasInitVer;
-          if (pill) pill.style.display = 'flex';
-          startCountdown(GAS_INITIAL_DELAY);
-          setTimeout(checkGasUpdate, GAS_INITIAL_DELAY);
-        })
-        .catch(function() { /* no gs.version.txt — GAS pill stays hidden, no polling */ });
-
-      // GAS changelog popup — click pill to view GAS changelog
-      var gclOverlay = document.getElementById('gcl-overlay');
-      var gclBody = document.getElementById('gcl-body');
-      var gclCache = null;
-
-      if (pill) {
-        if (SHOW_CHANGELOG) {
-          pill.addEventListener('click', function(e) {
-            e.stopPropagation();
-            gclOverlay.style.display = 'flex';
-            if (!gclCache) fetchGasChangelog();
-          });
-        } else {
-          pill.style.cursor = 'default';
-        }
-      }
-
-      document.getElementById('gcl-close').addEventListener('click', function() { gclOverlay.style.display = 'none'; });
-      document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && gclOverlay.style.display === 'flex') gclOverlay.style.display = 'none'; });
-
-      function getGasChangelogUrl() {
-        return basePath.substring(0, basePath.lastIndexOf('/') + 1) + 'gs-changelogs/' + pageName + 'gs.changelog.md';
-      }
-
-      function parseGasChangelog(md) {
-        var lines = md.split('\n');
-        var html = '';
-        var inList = false;
-        for (var i = 0; i < lines.length; i++) {
-          var line = lines[i];
-          if (line.match(/^# /) || line.match(/^`Sections:/) || line.match(/^All notable/)
-              || line.match(/^Format follows/) || line.match(/^Developed by:/)) continue;
-          if (line.match(/^## \[Unreleased\]/)) continue;
-          if (line.match(/^## \[/)) {
-            if (inList) { html += '</ul>'; inList = false; }
-            var m = line.match(/^## \[(v[\d.]+g)\].*?— (.+)/);
-            if (m) html += '<h3>' + m[1] + ' &mdash; ' + m[2] + '</h3>';
-            continue;
-          }
-          if (line.match(/^### /)) {
-            if (inList) { html += '</ul>'; inList = false; }
-            html += '<h4>' + line.substring(4) + '</h4>';
-            continue;
-          }
-          if (line.match(/^- /)) {
-            if (!inList) { html += '<ul>'; inList = true; }
-            html += '<li>' + line.substring(2) + '</li>';
-            continue;
-          }
-        }
-        if (inList) html += '</ul>';
-        return html || '<p style="color:#888">No changelog entries yet.</p>';
-      }
-
-      function fetchGasChangelog() {
-        gclBody.innerHTML = '<p style="color:#888">Loading changelog\u2026</p>';
-        fetch(getGasChangelogUrl())
-          .then(function(res) { if (!res.ok) throw new Error(); return res.text(); })
-          .then(function(md) {
-            gclCache = sanitizeChangelogHtml(parseGasChangelog(md));
-            gclBody.innerHTML = gclCache;
-            var titleEl = document.getElementById('gcl-title');
-            if (titleEl && currentGasVersion) titleEl.textContent = 'GAS Changelog \u2014 ' + currentGasVersion.replace(/\|/g, '');
-          })
-          .catch(function() {
-            gclBody.innerHTML = '<p style="color:#888">Could not load changelog.</p>';
-          });
-      }
-    })();
-
-    // After reload: show green "Code Ready" splash + play Code Ready sound if GAS update pending
-    if (sessionStorage.getItem('gas-pending-sound')) {
-      sessionStorage.removeItem('gas-pending-sound');
-      showUpdateSplash('splash-code', 'code-sound-data', 'sounds/Code_Ready_Voice_1.mp3');
-    }
+    // PROJECT OVERRIDE START: GAS version polling and GAS changelog popup removed
+    // GAS visual layer migrated to HTML layer — no GAS pill, no GAS changelog overlay,
+    // no GAS version file polling. The GAS version is now shown via gas-auth-ok data.
+    // PROJECT OVERRIDE END
 
     // Changelog popup — click version indicator to view page changelog
     (function() {
@@ -1924,7 +1936,7 @@
           var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
           if (gasApp && baseUrl) {
             _expectingSession = true;
-            gasApp.src = baseUrl + '?session=' + encodeURIComponent(data.sessionToken);
+            gasApp.src = baseUrl + '?action=worker&session=' + encodeURIComponent(data.sessionToken);
             gasApp.addEventListener('load', function _appLoadSub() {
               gasApp.removeEventListener('load', _appLoadSub);
               _updateSubStep('sub-starting');
@@ -2003,6 +2015,11 @@
           if (data.permissions) {
             getStorage().setItem(PERMISSIONS_KEY, JSON.stringify(data.permissions));
           }
+        }
+        // PROJECT: Populate GAS version display from gas-auth-ok data
+        if (data.version) {
+          var gasVerEl = document.getElementById('gas-version-display');
+          if (gasVerEl) gasVerEl.textContent = data.version;
         }
         // Phase 3: IP forwarding removed — uncomment to re-enable
         // if (!_ipForwardedToGas && _clientIp && HTML_CONFIG.ENABLE_IP_LOGGING) {
@@ -2409,6 +2426,20 @@
       var tabWall = document.getElementById('tab-takeover-wall');
       if (tabWall) { tabWall.style.display = 'none'; _tabSurrendered = false; }
       if (typeof stopCountdownTimers === 'function') stopCountdownTimers();
+      // PROJECT: Deactivate Live Data App and admin UI (migrated from GAS layer)
+      if (typeof window._stopLiveDataApp === 'function') window._stopLiveDataApp();
+      var ldApp = document.getElementById('live-data-app');
+      if (ldApp) ldApp.classList.remove('active');
+      var adminBadge = document.getElementById('admin-badge');
+      if (adminBadge) adminBadge.style.display = 'none';
+      var adminDropdown = document.getElementById('admin-dropdown-gas');
+      if (adminDropdown) adminDropdown.style.display = 'none';
+      var adminOverlay = document.getElementById('admin-panel-overlay');
+      if (adminOverlay) adminOverlay.style.display = 'none';
+      var gasVerEl = document.getElementById('gas-version-display');
+      if (gasVerEl) gasVerEl.style.display = 'none';
+      var gasEmailEl = document.getElementById('gas-user-email');
+      if (gasEmailEl) gasEmailEl.style.display = 'none';
 
       // Always show sign-in UI (not reconnecting/signing-in) when showAuthWall is called
       signinEl.style.display = '';
@@ -2882,16 +2913,19 @@
       // data-requires-role attributes based on session storage.
       applyUIGating();
 
-      // PROJECT START — Send auth context to GAS UI so it can activate the Live Data app
-      if (_gasSandboxSource) {
-        var session = loadSession();
-        _gasSandboxSource.postMessage({
-          type: 'ld-init',
-          email: email,
-          permissions: session.permissions || [],
-          token: session.token
-        }, '*');
+      // PROJECT START — Activate Live Data App directly (migrated from GAS layer)
+      var session = loadSession();
+      if (typeof window._showLiveDataApp === 'function') {
+        window._showLiveDataApp(email, session.permissions || [], session.token);
       }
+      // Show admin badge if user is admin
+      var adminBadge = document.getElementById('admin-badge');
+      if (adminBadge && session.role === 'admin') {
+        adminBadge.style.display = '';
+      }
+      // Show GAS version display
+      var gasVerEl = document.getElementById('gas-version-display');
+      if (gasVerEl) { gasVerEl.style.display = ''; }
       // PROJECT END
     }
 
@@ -3635,7 +3669,7 @@
         var baseUrl = (gasApp && gasApp.dataset.baseUrl) || '';
         if (gasApp && baseUrl) {
           gasApp.style.visibility = 'hidden';
-          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+          gasApp.src = baseUrl + '?action=worker&session=' + encodeURIComponent(session.token);
         }
       } else {
         // Session was cleared (sign-out happened while this tab was surrendered)
@@ -3739,7 +3773,7 @@
           // silently dropped, leaving the user stuck on "Reconnecting...".
           // _expectingSession is only needed after mid-session iframe navigations
           // (gas-session-created, Use Here) where prior content may still be loaded.
-          gasApp.src = baseUrl + '?session=' + encodeURIComponent(session.token);
+          gasApp.src = baseUrl + '?action=worker&session=' + encodeURIComponent(session.token);
         }
         // Defer showApp until gas-auth-ok confirms the session is still valid
         // server-side. Without this, an attacker who injects a forged token into
@@ -3867,30 +3901,11 @@
       };
     })();
 
-    // GAS layer visibility toggle — hides/shows the entire GAS iframe
-    // Only shown when the GAS iframe exists AND user is authenticated (auth wall hidden)
-    (function() {
-      var _gasVisible = true;
-      window._toggleGasLayer = function() {
-        var gasApp = document.getElementById('gas-app');
-        var btn = document.getElementById('gas-layer-toggle');
-        if (!gasApp) return;
-        _gasVisible = !_gasVisible;
-        gasApp.style.display = _gasVisible ? '' : 'none';
-        if (btn) {
-          btn.textContent = _gasVisible ? 'GAS' : 'GAS \u25CB';
-          btn.style.borderColor = _gasVisible ? 'rgba(255,255,255,0.2)' : '#58a6ff';
-        }
-      };
-      window._showGasToggle = function() {
-        var btn = document.getElementById('gas-layer-toggle');
-        if (btn && document.getElementById('gas-app')) btn.style.display = '';
-      };
-      window._hideGasToggle = function() {
-        var btn = document.getElementById('gas-layer-toggle');
-        if (btn) btn.style.display = 'none';
-      };
-    })();
+    // PROJECT OVERRIDE: GAS layer toggle removed — GAS layer migrated to HTML
+    // Stub functions to prevent errors from template code that references them
+    window._toggleGasLayer = function() {};
+    window._showGasToggle = function() {};
+    window._hideGasToggle = function() {};
 
 
 
@@ -3902,9 +3917,553 @@
 // PROJECT START — Add your project-specific JavaScript here
 // ══════════════
 
-    // ── Live Data Viewer ──
-    // Displays spreadsheet data in a sortable table with cell editing.
-    // Live Data UI IIFE migrated to GAS layer (testauthhtml1.gs doGet output)
+    // ── GAS RPC Bridge ──
+    // Proxies function calls to the hidden worker iframe via postMessage.
+    // The worker iframe loads ?action=worker&session=TOKEN and provides google.script.run access.
+    var _rpcCallId = 0;
+    var _rpcCallbacks = {};
+    function gasCall(fn, args, onSuccess, onFailure) {
+      var gasApp = document.getElementById('gas-app');
+      if (!gasApp || !gasApp.contentWindow) {
+        if (onFailure) onFailure('Worker iframe not available');
+        return;
+      }
+      var callId = ++_rpcCallId;
+      _rpcCallbacks[callId] = { success: onSuccess || function(){}, failure: onFailure || function(){} };
+      try {
+        gasApp.contentWindow.postMessage({
+          type: 'gas-rpc',
+          fn: fn,
+          args: args || [],
+          callId: callId
+        }, '*');
+      } catch(ex) {
+        delete _rpcCallbacks[callId];
+        if (onFailure) onFailure(String(ex));
+        return;
+      }
+      // Timeout cleanup after 30s
+      setTimeout(function() {
+        var cb = _rpcCallbacks[callId];
+        if (cb) {
+          delete _rpcCallbacks[callId];
+          cb.failure('RPC timeout after 30s for ' + fn);
+        }
+      }, 30000);
+    }
+    // Handle RPC responses from worker iframe
+    window.addEventListener('message', function(evt) {
+      if (!evt.data) return;
+      if (evt.data.type === 'gas-rpc-result') {
+        var cb = _rpcCallbacks[evt.data.callId];
+        if (cb) { delete _rpcCallbacks[evt.data.callId]; cb.success(evt.data.result); }
+      }
+      if (evt.data.type === 'gas-rpc-error') {
+        var cb2 = _rpcCallbacks[evt.data.callId];
+        if (cb2) { delete _rpcCallbacks[evt.data.callId]; cb2.failure(evt.data.error); }
+      }
+    });
+
+    // ── Live Data App (migrated from GAS layer) ──
+    (function() {
+      var LD_STALE_THRESHOLD = 60000;
+      var _ldPrevDataJSON = null;
+      var _ldPrevCells = {};
+      var _ldCurrentView = 'table';
+      var _ldSortCol = -1;
+      var _ldSortAsc = true;
+      var _ldHeaders = [];
+      var _ldRows = [];
+      var _ldLastDataTs = 0;
+      var _ldStaleTimer = null;
+      var _ldCanEdit = false;
+      var _addRowPending = false;
+      var _addRowPendingIndex = undefined;
+      var _deleteRowPending = null;
+      var _gasDataPollInterval = null;
+      var _sessionToken = ''; // Set after auth
+
+      var ldConnDot = document.getElementById('ld-conn-dot');
+      var ldConnLabel = document.getElementById('ld-conn-label');
+      var ldCountdown = document.getElementById('ld-countdown');
+      var ldTableView = document.getElementById('ld-table-view');
+      var ldDashView = document.getElementById('ld-dashboard-view');
+      var ldDataTable = document.getElementById('ld-data-table');
+      var ldDashGrid = document.getElementById('ld-dashboard-grid');
+      var ldEmptyState = document.getElementById('ld-empty-state');
+      var ldApp = document.getElementById('live-data-app');
+
+      function ldSetConnectionStatus(state) {
+        if (!ldConnDot) return;
+        ldConnDot.className = state;
+        if (state === 'live') {
+          var age = Math.round((Date.now() - _ldLastDataTs) / 1000);
+          ldConnLabel.textContent = 'Live';
+          ldCountdown.textContent = age + 's';
+        } else if (state === 'updating') {
+          ldConnLabel.textContent = 'Updating...';
+        } else {
+          ldConnLabel.textContent = 'Disconnected';
+        }
+      }
+
+      function ldStartStaleCheck() {
+        if (_ldStaleTimer) clearInterval(_ldStaleTimer);
+        _ldStaleTimer = setInterval(function() {
+          if (_ldLastDataTs === 0) return;
+          var age = Date.now() - _ldLastDataTs;
+          if (age > LD_STALE_THRESHOLD) {
+            ldSetConnectionStatus('disconnected');
+          } else {
+            ldSetConnectionStatus('live');
+          }
+        }, 1000);
+      }
+
+      // Tab switching
+      var ldTabs = document.querySelectorAll('.ld-view-tab');
+      for (var ti = 0; ti < ldTabs.length; ti++) {
+        ldTabs[ti].addEventListener('click', function() {
+          for (var j = 0; j < ldTabs.length; j++) ldTabs[j].classList.remove('active');
+          this.classList.add('active');
+          _ldCurrentView = this.getAttribute('data-view');
+          ldTableView.style.display = _ldCurrentView === 'table' ? 'block' : 'none';
+          ldDashView.style.display = _ldCurrentView === 'dashboard' ? 'block' : 'none';
+        });
+      }
+
+      function ldDetectChanges(headers, rows) {
+        var changed = {};
+        var newCells = {};
+        for (var r = 0; r < rows.length; r++) {
+          for (var c = 0; c < rows[r].length; c++) {
+            var key = r + ':' + c;
+            var val = (rows[r][c] !== undefined && rows[r][c] !== null) ? String(rows[r][c]) : '';
+            newCells[key] = val;
+            if (_ldPrevCells.hasOwnProperty(key) && _ldPrevCells[key] !== val) {
+              changed[key] = true;
+            }
+          }
+        }
+        _ldPrevCells = newCells;
+        return changed;
+      }
+
+      function ldRenderTableView(changedCells) {
+        if (!ldDataTable) return;
+        var thead = ldDataTable.querySelector('thead tr');
+        var tbody = ldDataTable.querySelector('tbody');
+        thead.innerHTML = '';
+        _ldHeaders.forEach(function(h, ci) {
+          var th = document.createElement('th');
+          th.textContent = h;
+          var arrow = document.createElement('span');
+          arrow.className = 'sort-arrow';
+          if (_ldSortCol === ci) arrow.textContent = _ldSortAsc ? ' \u25B2' : ' \u25BC';
+          th.appendChild(arrow);
+          th.addEventListener('click', function() {
+            if (_ldSortCol === ci) { _ldSortAsc = !_ldSortAsc; }
+            else { _ldSortCol = ci; _ldSortAsc = true; }
+            ldRenderTableView({});
+          });
+          thead.appendChild(th);
+        });
+        if (_ldCanEdit) {
+          var thDel = document.createElement('th');
+          thDel.style.width = '40px';
+          thead.appendChild(thDel);
+        }
+        var indexedRows = _ldRows.map(function(row, i) { return { data: row, origIndex: i }; });
+        if (_ldSortCol >= 0 && _ldSortCol < _ldHeaders.length) {
+          indexedRows.sort(function(a, b) {
+            var va = a.data[_ldSortCol] || '', vb = b.data[_ldSortCol] || '';
+            var na = parseFloat(va), nb = parseFloat(vb);
+            if (!isNaN(na) && !isNaN(nb)) return _ldSortAsc ? na - nb : nb - na;
+            return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+          });
+        }
+        tbody.innerHTML = '';
+        indexedRows.forEach(function(entry) {
+          var row = entry.data;
+          var origIdx = entry.origIndex;
+          var isOptimisticAdd = (_addRowPendingIndex !== undefined && origIdx === _addRowPendingIndex);
+          var tr = document.createElement('tr');
+          if (isOptimisticAdd) {
+            tr.style.opacity = '0.35';
+            tr.style.pointerEvents = 'none';
+            tr.style.position = 'relative';
+          }
+          row.forEach(function(val, ci) {
+            var td = document.createElement('td');
+            td.textContent = val;
+            td.setAttribute('data-row', origIdx);
+            td.setAttribute('data-col', ci);
+            var key = origIdx + ':' + ci;
+            if (changedCells[key]) td.classList.add('ld-cell-changed');
+            if (_ldCanEdit && !isOptimisticAdd) {
+              td.style.cursor = 'pointer';
+              td.addEventListener('dblclick', function() {
+                ldStartCellEdit(this, origIdx, ci, val);
+              });
+              (function(tdEl, ri, colI, v) {
+                var lastTap = 0;
+                tdEl.addEventListener('touchend', function(e) {
+                  var now = Date.now();
+                  if (now - lastTap < 400) {
+                    e.preventDefault();
+                    ldStartCellEdit(tdEl, ri, colI, v);
+                    lastTap = 0;
+                  } else {
+                    lastTap = now;
+                  }
+                });
+              })(td, origIdx, ci, val);
+            }
+            tr.appendChild(td);
+          });
+          if (_ldCanEdit) {
+            var tdDel = document.createElement('td');
+            tdDel.style.textAlign = 'center';
+            tdDel.style.padding = '4px';
+            if (!isOptimisticAdd) {
+              var delBtn = document.createElement('button');
+              delBtn.textContent = '\uD83D\uDDD1\uFE0F';
+              delBtn.title = 'Delete row';
+              delBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;';
+              delBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(248,81,73,0.15)'; });
+              delBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
+              delBtn.addEventListener('click', (function(idx) {
+                return function() { ldDeleteRow(idx); };
+              })(origIdx));
+              tdDel.appendChild(delBtn);
+            }
+            tr.appendChild(tdDel);
+          }
+          if (isOptimisticAdd) {
+            var overlay = document.createElement('div');
+            overlay.textContent = 'Sending\u2026';
+            overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#58a6ff;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
+            tr.appendChild(overlay);
+          }
+          tbody.appendChild(tr);
+        });
+      }
+
+      function ldDeleteRow(rowIndex) {
+        if (_deleteRowPending) return;
+        var deletedRow = _ldRows[rowIndex];
+        if (!deletedRow) return;
+        var modal = document.getElementById('ld-delete-modal');
+        var preview = document.getElementById('ld-delete-preview');
+        var cancelBtn = document.getElementById('ld-delete-cancel');
+        var confirmBtn = document.getElementById('ld-delete-confirm');
+        var previewParts = [];
+        _ldHeaders.forEach(function(h, ci) {
+          previewParts.push(h + ': ' + (deletedRow[ci] || '\u2014'));
+        });
+        preview.textContent = previewParts.join(' \u2022 ');
+        modal.classList.add('active');
+        var newCancel = cancelBtn.cloneNode(true);
+        var newConfirm = confirmBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+        confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+        function closeModal() { modal.classList.remove('active'); }
+        newCancel.addEventListener('click', closeModal);
+        newConfirm.addEventListener('click', function() {
+          closeModal();
+          _executeDeleteRow(rowIndex, deletedRow);
+        });
+      }
+
+      function _executeDeleteRow(rowIndex, deletedRow) {
+        var tbody = ldDataTable ? ldDataTable.querySelector('tbody') : null;
+        if (tbody) {
+          var rows = tbody.querySelectorAll('tr');
+          for (var i = 0; i < rows.length; i++) {
+            var firstTd = rows[i].querySelector('td[data-row]');
+            if (firstTd && parseInt(firstTd.getAttribute('data-row'), 10) === rowIndex) {
+              rows[i].style.opacity = '0.35';
+              rows[i].style.pointerEvents = 'none';
+              rows[i].style.position = 'relative';
+              var overlay = document.createElement('div');
+              overlay.textContent = 'Deleting\u2026';
+              overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#f85149;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
+              rows[i].appendChild(overlay);
+              break;
+            }
+          }
+        }
+        _deleteRowPending = { index: rowIndex, row: deletedRow };
+        gasCall('deleteRow', [_sessionToken, rowIndex], function(result) {
+          _deleteRowPending = null;
+          if (result && result.liveData) _handleLiveData(result.liveData);
+        }, function(err) {
+          console.error('Delete row failed:', err);
+          _deleteRowPending = null;
+          ldRenderTableView({});
+          ldRenderDashboardView({});
+        });
+      }
+
+      function ldStartCellEdit(td, row, col, currentVal) {
+        if (td.classList.contains('editing')) return;
+        td.classList.add('editing');
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentVal;
+        td.textContent = '';
+        td.appendChild(input);
+        input.focus();
+        input.select();
+        function commitEdit() {
+          var newVal = input.value;
+          td.classList.remove('editing');
+          td.textContent = newVal;
+          if (newVal !== currentVal) {
+            gasCall('writeCell', [_sessionToken, row, col, newVal], function(result) {
+              if (result && result.liveData) _handleLiveData(result.liveData);
+            }, function(err) {
+              td.textContent = currentVal;
+              console.error('Cell write failed:', err);
+            });
+          }
+        }
+        input.addEventListener('blur', commitEdit);
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { input.blur(); }
+          if (e.key === 'Escape') {
+            td.classList.remove('editing');
+            td.textContent = currentVal;
+          }
+        });
+      }
+
+      function ldRenderDashboardView(changedCells) {
+        if (!ldDashGrid) return;
+        ldDashGrid.innerHTML = '';
+        if (_ldRows.length === 0) return;
+        var firstRow = _ldRows[0];
+        _ldHeaders.forEach(function(h, ci) {
+          var card = document.createElement('div');
+          card.className = 'ld-dash-card';
+          if (changedCells['0:' + ci]) card.classList.add('ld-card-changed');
+          var label = document.createElement('div');
+          label.className = 'card-label';
+          label.textContent = h;
+          var value = document.createElement('div');
+          value.className = 'card-value';
+          value.textContent = firstRow[ci] || '\u2014';
+          if (changedCells['0:' + ci]) value.classList.add('changed');
+          var meta = document.createElement('div');
+          meta.className = 'card-meta';
+          meta.textContent = _ldRows.length > 1 ? (_ldRows.length - 1) + ' more rows' : 'Only row';
+          card.appendChild(label);
+          card.appendChild(value);
+          card.appendChild(meta);
+          ldDashGrid.appendChild(card);
+        });
+        var stats = document.createElement('div');
+        stats.className = 'ld-dash-card stats';
+        var sl = document.createElement('div');
+        sl.className = 'card-label';
+        sl.textContent = 'Stats';
+        var sv = document.createElement('div');
+        sv.className = 'card-value';
+        sv.style.fontSize = '20px';
+        sv.textContent = _ldRows.length + ' rows \u00D7 ' + _ldHeaders.length + ' cols';
+        var sm = document.createElement('div');
+        sm.className = 'card-meta';
+        sm.textContent = 'Data via GAS CacheService (private spreadsheet)';
+        stats.appendChild(sl);
+        stats.appendChild(sv);
+        stats.appendChild(sm);
+        ldDashGrid.appendChild(stats);
+      }
+
+      function _handleLiveData(data) {
+        if (!data || !data.headers) return;
+        _ldLastDataTs = Date.now();
+        ldSetConnectionStatus('live');
+        var currentJSON = JSON.stringify(data);
+        if (currentJSON !== _ldPrevDataJSON) {
+          var changedCells = ldDetectChanges(data.headers, data.rows);
+          _ldPrevDataJSON = currentJSON;
+          _ldHeaders = data.headers.map(function(h, i) {
+            var val = (h !== undefined && h !== null) ? String(h) : '';
+            return val || String.fromCharCode(65 + i);
+          });
+          if (typeof _updateAddRowPlaceholders === 'function') _updateAddRowPlaceholders(_ldHeaders);
+          _ldRows = (data.rows || []).map(function(row) {
+            return row.map(function(v) {
+              return (v !== undefined && v !== null) ? String(v) : '';
+            });
+          });
+          if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+          ldRenderTableView(changedCells);
+          ldRenderDashboardView(changedCells);
+        }
+      }
+
+      // Data polling via RPC bridge
+      var _dataPollInFlight = false;
+      var _lastDataPollTick = 0;
+      var DATA_POLL_INTERVAL = 15000;
+      var _gasDataPollTimer = null;
+      var _pollCountdownEl = document.getElementById('ld-poll-countdown');
+
+      function _updatePollDisplay() {
+        if (!_pollCountdownEl) return;
+        if (_dataPollInFlight) {
+          _pollCountdownEl.textContent = 'polling...';
+          _pollCountdownEl.style.color = '#d29922';
+        } else if (_lastDataPollTick) {
+          var since = (Date.now() - _lastDataPollTick) / 1000;
+          var nextIn = Math.max(0, (DATA_POLL_INTERVAL / 1000) - since);
+          var s = Math.ceil(nextIn);
+          var m = Math.floor(s / 60);
+          s = s % 60;
+          _pollCountdownEl.textContent = '\u25B7 ' + (m > 0 ? m + ':' + (s < 10 ? '0' : '') + s : s + 's');
+          _pollCountdownEl.style.color = '#6e7681';
+        } else {
+          _pollCountdownEl.textContent = '--';
+          _pollCountdownEl.style.color = '#6e7681';
+        }
+      }
+      setInterval(_updatePollDisplay, 1000);
+
+      function _doDataPoll() {
+        if (_dataPollInFlight) return;
+        _dataPollInFlight = true;
+        _updatePollDisplay();
+        gasCall('getAuthenticatedData', [_sessionToken], function(data) {
+          _dataPollInFlight = false;
+          _lastDataPollTick = Date.now();
+          _updatePollDisplay();
+          if (data) { try { _handleLiveData(data); } catch(e) { console.error('Data poll error:', e); } }
+          _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
+        }, function() {
+          _dataPollInFlight = false;
+          _lastDataPollTick = Date.now();
+          _updatePollDisplay();
+          _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
+        });
+      }
+
+      function _startGasDataPoll() {
+        if (_gasDataPollTimer || _gasDataPollInterval) return;
+        _lastDataPollTick = Date.now();
+        _updatePollDisplay();
+        _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
+      }
+      function _stopGasDataPoll() {
+        if (_gasDataPollTimer) { clearTimeout(_gasDataPollTimer); _gasDataPollTimer = null; }
+        if (_gasDataPollInterval) { clearInterval(_gasDataPollInterval); _gasDataPollInterval = null; }
+      }
+
+      // Add-row input bar
+      (function() {
+        var addRowBtn = document.getElementById('ld-add-row-btn');
+        var inputs = [
+          document.getElementById('ld-add-col1'),
+          document.getElementById('ld-add-col2'),
+          document.getElementById('ld-add-col3'),
+          document.getElementById('ld-add-col4')
+        ];
+        var _updateAddRowPlaceholders_fn = function(headers) {
+          if (!headers) return;
+          inputs.forEach(function(inp, i) {
+            if (inp && headers[i]) inp.placeholder = String(headers[i]);
+          });
+          inputs.forEach(function(inp, i) {
+            if (inp) inp.style.display = i < headers.length ? '' : 'none';
+          });
+        };
+        _updateAddRowPlaceholders = _updateAddRowPlaceholders_fn;
+        function updateAddRowBtnState() {
+          if (!addRowBtn) return;
+          if (_addRowPending) return;
+          var visibleCount = _ldHeaders.length || inputs.length;
+          var hasText = inputs.slice(0, visibleCount).some(function(inp) {
+            return inp && inp.value.trim() !== '';
+          });
+          addRowBtn.disabled = !hasText;
+          addRowBtn.textContent = 'Add Row';
+          addRowBtn.style.opacity = hasText ? '' : '0.5';
+          addRowBtn.style.cursor = hasText ? 'pointer' : 'default';
+        }
+        if (addRowBtn) { addRowBtn.disabled = true; addRowBtn.style.opacity = '0.5'; addRowBtn.style.cursor = 'default'; }
+        inputs.forEach(function(inp) {
+          if (inp) inp.addEventListener('input', updateAddRowBtnState);
+        });
+        if (addRowBtn) {
+          addRowBtn.addEventListener('click', function() {
+            if (addRowBtn.disabled) return;
+            var visibleCount = _ldHeaders.length || inputs.length;
+            var values = inputs.slice(0, visibleCount).map(function(inp) { return inp ? inp.value : ''; });
+            var optimisticIndex = _ldRows.length;
+            _ldRows.push(values.map(function(v) { return String(v); }));
+            if (ldEmptyState) ldEmptyState.style.display = 'none';
+            _addRowPendingIndex = optimisticIndex;
+            ldRenderTableView({});
+            ldRenderDashboardView({});
+            addRowBtn.disabled = true;
+            addRowBtn.textContent = 'Sending...';
+            addRowBtn.style.opacity = '0.7';
+            addRowBtn.style.cursor = 'wait';
+            _addRowPending = true;
+            gasCall('addRow', [_sessionToken, JSON.stringify(values)], function(result) {
+              var wasAdd = _addRowPending;
+              _addRowPending = false;
+              _addRowPendingIndex = undefined;
+              if (result && result.liveData) _handleLiveData(result.liveData);
+              if (wasAdd) {
+                ldRenderTableView({});
+                updateAddRowBtnState();
+              }
+            }, function(err) {
+              console.error('Add row failed:', err);
+              _addRowPending = false;
+              _addRowPendingIndex = undefined;
+              _ldRows.pop();
+              ldRenderTableView({});
+              ldRenderDashboardView({});
+              if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+              updateAddRowBtnState();
+            });
+            inputs.forEach(function(inp) { if (inp) inp.value = ''; });
+            if (inputs[0]) inputs[0].focus();
+            updateAddRowBtnState();
+          });
+        }
+        inputs.forEach(function(inp) {
+          if (inp) inp.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && addRowBtn && !addRowBtn.disabled) addRowBtn.click();
+          });
+        });
+      })();
+
+      // Expose activation function for the auth flow
+      window._showLiveDataApp = function(email, permissions, token) {
+        _sessionToken = token || '';
+        if (ldApp) ldApp.classList.add('active');
+        _ldCanEdit = permissions && permissions.indexOf('write') !== -1;
+        var addRowBar = document.getElementById('ld-add-row-bar');
+        if (addRowBar && _ldCanEdit) addRowBar.style.display = 'flex';
+        // Show version and email
+        var verEl = document.getElementById('gas-version-display');
+        var emailEl = document.getElementById('gas-user-email');
+        if (emailEl) { emailEl.textContent = email || ''; emailEl.style.display = ''; }
+        // Re-render table if initial data was already loaded before permissions arrived
+        if (_ldHeaders.length > 0) ldRenderTableView({});
+        ldSetConnectionStatus('updating');
+        ldStartStaleCheck();
+        _startGasDataPoll();
+      };
+      window._stopLiveDataApp = function() {
+        _stopGasDataPoll();
+        if (ldApp) ldApp.classList.remove('active');
+      };
+    })();
 
     // Security test registry — each test has a name and a run function
     var _securityTests = [];

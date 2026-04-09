@@ -3,9 +3,41 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v10.32r] — 2026-04-09 12:50:45 PM EST
+
+> **Prompt:** "for our testauthhtml1 , i want you to move all of the html that we have in the gas layer to the hmtl layer, and then completely remove the gas layer.  there should not be any gas iframes or layers in the testauthhtml1"
+
+### Changed
+- Migrated all GAS-layer visual HTML/CSS/JS content to the HTML layer for `testauthhtml1` — the Live Data App (table/dashboard views, data polling, cell editing, row add/delete) now renders entirely in the HTML page
+- Replaced visible full-screen GAS iframe with a hidden RPC worker iframe (0×0 pixels) that acts as a `google.script.run` proxy via postMessage
+- Added `gasCall()` RPC bridge function to the HTML layer for server-side function calls
+- Changed auth flow to load `?action=worker&session=TOKEN` instead of `?session=TOKEN` (loads worker instead of full GAS UI)
+- Activated Live Data App directly from `showApp()` instead of via `ld-init` postMessage
+
+### Removed
+- Visible GAS iframe overlay (full-screen `z-index:1` iframe replaced with hidden worker)
+- GAS pill (version indicator with countdown dot)
+- GAS changelog overlay popup
+- GAS layer toggle button
+- SSO indicator
+- GAS version polling IIFE (~160 lines of JS)
+- GAS doGet() HTML template (~1,450 lines of inline HTML/CSS/JS removed from `.gs` file)
+
+#### `testauthhtml1.html` — v01.02w
+##### Changed
+- All application content now renders directly in the HTML page instead of in a GAS iframe
+- Data table and dashboard views load faster with direct HTML rendering
+##### Removed
+- Visible GAS layer overlay removed — application runs natively in the page
+
+#### `testauthhtml1.gs` — v01.02g
+##### Changed
+- Session route now returns lightweight RPC worker page instead of full application UI
+- Added `?action=worker` route for postMessage-based function call proxying
 
 ## [v10.31r] — 2026-04-09 11:30:10 AM EST
 
