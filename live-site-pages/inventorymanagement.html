@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.14w">
+  <meta name="build-version" content="v01.15w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -530,6 +530,25 @@
     }
     .qr-entries-empty { color: #555570; font-size: 0.65rem; text-align: center; padding: 16px; }
 
+    /* ─── Live Data Tabs ─── */
+    .qr-tabs-bar {
+      display: flex; gap: 0; border-bottom: 1px solid #2a2a3e; margin-bottom: 8px;
+    }
+    .qr-tab-btn {
+      flex: 1; padding: 7px 0; font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: #555570; background: none;
+      border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s;
+      text-align: center;
+    }
+    .qr-tab-btn:hover { color: #8888a8; }
+    .qr-tab-btn.active { color: #00ffcc; border-bottom-color: #00ffcc; }
+    .qr-tab-content { display: none; }
+    .qr-tab-content.active { display: block; }
+    .qr-tab-placeholder {
+      color: #555570; font-size: 0.65rem; text-align: center; padding: 32px 16px;
+      font-family: 'Space Mono', monospace;
+    }
+
     .qr-toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
       font-family: 'Space Mono', monospace; font-size: 0.7rem; padding: 8px 16px;
@@ -761,8 +780,21 @@
             <span class="qr-conn-countdown" id="qr-conn-countdown">--</span>
           </div>
         </div>
-        <div id="qr-entries-body">
-          <div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>
+        <div class="qr-tabs-bar">
+          <button class="qr-tab-btn active" data-tab="activity" onclick="_switchLiveTab('activity')">Activity</button>
+          <button class="qr-tab-btn" data-tab="inventory" onclick="_switchLiveTab('inventory')">Inventory</button>
+          <button class="qr-tab-btn" data-tab="history" onclick="_switchLiveTab('history')">History</button>
+        </div>
+        <div id="qr-tab-activity" class="qr-tab-content active">
+          <div id="qr-entries-body">
+            <div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>
+          </div>
+        </div>
+        <div id="qr-tab-inventory" class="qr-tab-content">
+          <div class="qr-tab-placeholder">Inventory view coming soon.</div>
+        </div>
+        <div id="qr-tab-history" class="qr-tab-content">
+          <div class="qr-tab-placeholder">History view coming soon.</div>
         </div>
       </div>
     </div>
@@ -4649,6 +4681,18 @@ function _renderQrEntriesTable(entries) {
   });
   html += '</tbody></table>';
   body.innerHTML = html;
+}
+
+// ─── Live Data Tab Switching ───
+function _switchLiveTab(tabName) {
+  var tabs = document.querySelectorAll('.qr-tab-btn');
+  var contents = document.querySelectorAll('.qr-tab-content');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === tabName);
+  }
+  for (var j = 0; j < contents.length; j++) {
+    contents[j].classList.toggle('active', contents[j].id === 'qr-tab-' + tabName);
+  }
 }
 
 // Show QR scanner panel once authenticated (auth-ok fires after successful sign-in)

@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v10.18r] — 2026-04-08 09:27:26 PM EST
+
+> **Prompt:** "for the inventorymanagement, make the live data have different tabs for now have 3 tabs. the one we already have which is Activity, Inventory, and History. for now the inventory and history tabs wont have functionality, just set them up"
+
+### Added
+- Tabbed interface for the Live Data section on the inventory management page — three tabs: Activity (existing entries table), Inventory (placeholder), and History (placeholder)
+
+#### `inventorymanagement.html` — v01.15w
+
+##### Added
+- Three tabs in the live data section: Activity, Inventory, and History
+- Activity tab shows the existing live data entries table
+- Inventory and History tabs display "coming soon" placeholders
 
 ## [v10.17r] — 2026-04-08 09:16:47 PM EST
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-04-08 09:27:26 PM EST — v10.18r
+
+### Added
+- Three tabs in the live data section: Activity, Inventory, and History — easily switch between views
+- Inventory and History tabs are placeholders for upcoming features
 
 ## [v01.14w] — 2026-04-08 05:54:04 PM EST — v10.16r
 
