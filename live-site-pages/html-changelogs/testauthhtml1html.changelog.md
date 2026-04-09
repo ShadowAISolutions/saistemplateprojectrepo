@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-04-09 05:41:32 PM EST — v10.50r
+
+### Added
+- New "➕ Entry" button for adding items without scanning — opens the same entry form with all fields editable
 
 ## [v01.16w] — 2026-04-09 05:24:29 PM EST — v10.49r
 

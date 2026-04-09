@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.16w">
+  <meta name="build-version" content="v01.17w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauthhtml1 Title</title>
 <!-- ══════════════ -->
@@ -779,6 +779,7 @@
       <input id="ld-add-col5" type="text" placeholder="Last Updated" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
       <input id="ld-add-col6" type="text" placeholder="Last User" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
       <button id="ld-add-row-btn" style="padding:6px 14px;background:#238636;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">Add Row</button>
+      <button id="ld-manual-entry-btn" style="padding:6px 14px;background:#1f6feb;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">&#10133; Entry</button>
     </div>
     <div id="ld-table-view">
       <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
@@ -805,7 +806,7 @@
   <!-- Scan confirmation modal -->
   <div id="ld-scan-confirm-modal">
     <div class="modal-box">
-      <div class="modal-title">Scanned Item</div>
+      <div class="modal-title" id="ld-scan-modal-title">Scanned Item</div>
       <div class="modal-subtitle" id="ld-scan-format-label"></div>
       <table class="scan-data-table">
         <tbody id="ld-scan-confirm-body"></tbody>
@@ -6013,7 +6014,12 @@
         var modal = document.getElementById('ld-scan-confirm-modal');
         var tbody = document.getElementById('ld-scan-confirm-body');
         var formatLabel = document.getElementById('ld-scan-format-label');
+        var titleEl = document.getElementById('ld-scan-modal-title');
         if (!modal || !tbody) return;
+
+        // Set title based on entry type
+        var isManual = scannedFormat === 'MANUAL ENTRY';
+        if (titleEl) titleEl.textContent = isManual ? 'New Entry' : 'Scanned Item';
 
         // Show format in subtitle
         if (formatLabel) {
@@ -6125,6 +6131,21 @@
 
       // Detect engine on load
       qrDetectEngine();
+
+      // Expose modal for manual entry (outside of scan flow)
+      window._showScanConfirmModal = _showScanConfirmModal;
+    })();
+
+    // Manual Entry button — opens the same scan confirmation modal without scanning
+    (function() {
+      var manualBtn = document.getElementById('ld-manual-entry-btn');
+      if (manualBtn) {
+        manualBtn.addEventListener('click', function() {
+          if (typeof window._showScanConfirmModal === 'function') {
+            window._showScanConfirmModal('', 'MANUAL ENTRY');
+          }
+        });
+      }
     })();
 
 // ══════════════

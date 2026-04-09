@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 59/100`
+`Sections: 60/100`
 
 ## [Unreleased]
+
+## [v10.50r] — 2026-04-09 05:41:32 PM EST
+
+> **Prompt:** "add a button that opens up the same UI for entering data when we scan something, so that we can use it without requiring scanning something."
+
+### Added
+- "➕ Entry" manual entry button in the add-row bar that opens the scan confirmation modal without requiring a barcode scan — all fields are available for manual input with Last Updated and Last User auto-filled
+- Modal title dynamically switches between "Scanned Item" (scan flow) and "New Entry" (manual flow) based on how it was opened
+- Exposed `_showScanConfirmModal` on `window` for cross-IIFE access from the manual entry button
+
+#### `testauthhtml1.html` — v01.17w
+
+##### Added
+- Manual entry button for adding rows without scanning a barcode — opens the same confirmation dialog with all fields editable
 
 ## [v10.49r] — 2026-04-09 05:24:29 PM EST
 
