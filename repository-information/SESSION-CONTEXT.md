@@ -4,48 +4,46 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-08 09:20:59 PM EST
+**Repo version:** v10.17r
+
+### What was done
+- **Title and duplicate scan fix (v10.10r–v10.11r)** — Set `<title>` to "Inventory Management" (was `TEMPLATE_TITLE` placeholder). Changed add-to-inventory logic from permanent per-barcode tracking (`_qrAddedScans`) to per-scan tracking (`_qrCurrentScanAdded`) — same item can be added multiple times across scans, but only once per scan. Fixed stale "...adding" button text on new scans.
+- **Mobile layout improvements (v10.12r–v10.13r)** — Reduced camera viewport from 1:1 to 4:3 aspect ratio with 260px max-height on mobile. Added 40px top padding to scanner header to clear the user-pill/sign-out bar. Added `viewport-fit=cover` for safe-area support. Added desktop media query (≥600px) for larger viewport. Made data table horizontally scrollable on mobile.
+- **Camera auto-resume on tab/app switch (v10.14r)** — Added `visibilitychange` listener with `_qrCameraWasActive` flag. Camera stops cleanly when page hidden, auto-resumes when visible. Graceful fallback if camera permission revoked while away.
+- **Camera auto-start when permission granted (v10.15r)** — `showQrPanel()` now checks `navigator.permissions.query({ name: 'camera' })` and auto-starts if `granted`. Falls back to START CAMERA button on unsupported browsers (Safari).
+- **Camera on/off toggle button (v10.16r)** — Circular toggle button in viewport next to torch button. Teal when camera on, red when off. Stops/starts camera without leaving scanner panel.
+- **AHK feature reference document (v10.17r)** — Created comprehensive `repository-information/inventorymanagement-ahk-features.md` cataloging all features from the AutoHotkey inventory management script (10 sections: user management, inventory operations, scan modes, views, image management, data persistence, audio feedback, GUI layout, error handling, infrastructure). Includes implementation priority map comparing existing web features vs. new AHK features.
+
+### Where we left off
+- **Inventory management scanner is fully functional with improved UX** — camera auto-starts, auto-resumes on tab switch, has on/off toggle, mobile layout is clean
+- The page is live at `ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html`
+- Next step: implement AHK features into the web app using `inventorymanagement-ahk-features.md` as the reference
+
+### Key decisions made
+- **Per-scan add tracking** — replaced permanent `_qrAddedScans` object with `_qrCurrentScanAdded` boolean that resets on each new scan or history click. Allows same barcode to be added to inventory multiple times across different scans.
+- **Inline camera stop on visibility hide** — does NOT call `stopQrCamera()` because that shows the start screen and sets "Camera inactive" status. Instead, inline-stops tracks/srcObject/flags to avoid visual flicker on auto-resume.
+- **Permissions API for auto-start** — `navigator.permissions.query({ name: 'camera' })` wrapped in try-catch for Safari compatibility. Auto-starts only when `state === 'granted'`.
+- **Camera toggle as overlay button** — positioned at `bottom: 8px; right: 48px` (next to torch at `right: 8px`). Uses `stopQrCamera()` then re-shows itself in `.off` state so user can toggle back on.
+
+### Active context
+- Branch: claude/inventory-duplicate-scan-fix-faFkz
+- Repo version: v10.17r
+- inventorymanagement.html: v01.14w, inventorymanagement.gs: v01.02g
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- AHK feature reference ready at `repository-information/inventorymanagement-ahk-features.md`
+
+## Previous Sessions
+
 **Date:** 2026-04-08 02:46:00 PM EST
 **Repo version:** v10.09r
 
 ### What was done
-- **Integrated QR scanner into inventory management HTML layer (v10.03r–v10.09r)** — Camera can't open in the GAS iframe sandbox, so the entire QR/barcode scanner from `qr-scanner6.html` was adapted into the inventorymanagement.html PROJECT sections (CSS, HTML body, JS). Uses jsQR (fallback) + native BarcodeDetector API
-- **GAS backend for spreadsheet writes (v10.03r)** — Added `processAddQrEntry()` and `processGetQrEntries()` in the inventorymanagement.gs PROJECT section. Routes via `doPost(action=addQrEntry)` and `doPost(action=getQrEntries)` with `// PROJECT:` markers in TEMPLATE territory. Auto-creates Live_Sheet tab + header row (Timestamp, Data, Format, Type, User, Source) on first entry
-- **HTML layer toggle integration (v10.04r)** — QR panel and toast added to `_htmlLayerEls` so they hide/show with the HTML toggle. Camera stops when layer is hidden
-- **Full-screen scanner as main interface (v10.05r)** — Removed toggle button and close button. Scanner panel now fills viewport (`100vw × 100vh`) with centered 480px content. Auto-shows after authentication
-- **"Add to Inventory" button smart hiding (v10.06r)** — Tracks which scans have been added via `_qrAddedScans` object. Button hides after successful add and stays hidden when revisiting from history. Server entries cross-referenced on poll to mark previously-added items
-- **Live data polling (v10.07r)** — Entries table auto-refreshes every 15 seconds using `DATA_POLL_INTERVAL` config. Polling loop with in-flight guard, starts on panel show, stops on hide. Immediate poll after adding a scan
-- **Testauth1-style connection status badge (v10.08r–v10.09r)** — Replaced simple countdown with `Live Data ● Live 2s | ▸ 14s` badge matching testauth1's `ld-conn-status` pattern. Green dot = live, amber pulsing = updating, gray = offline. Shows data freshness age + poll countdown
+- Integrated QR scanner into inventory management HTML layer (v10.03r–v10.09r) — full-screen scanner as main interface, GAS backend for spreadsheet writes, live data polling with testauth1-style status badge
 
 ### Where we left off
-- **Inventory management QR scanner is fully functional** — scan → add to spreadsheet → live polling → entries table
-- The page is live at `ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html`
-- The GAS backend connects to spreadsheet ID `1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg` with sheet `Live_Sheet`
-- All scanner code lives in PROJECT sections of HTML + GAS — template propagation safe
-
-### Key decisions made
-- **All UI in HTML layer** — camera access requires getUserMedia which is blocked in GAS iframe sandbox. All scanner UI, scanning logic, and GAS communication (via fetch POST) lives in the HTML layer
-- **Full-screen scanner** — user wanted the scanner as the main interface, not behind a toggle button
-- **fetch() to doPost for GAS communication** — cleaner than iframe/postMessage for data operations. Uses existing `doPost(action=...)` pattern with session token auth
-- **Polling over manual refresh** — 15-second auto-poll with testauth1-style status badge for live feel
-- **No GAS changes for polling** — existing `doPost(action=getQrEntries)` endpoint is sufficient; polling is purely an HTML-layer timer wrapping the existing fetch
-
-### Active context
-- Branch: claude/integrate-qr-scanner-Ki4Ic
-- Repo version: v10.09r
-- inventorymanagement.html: v01.07w, inventorymanagement.gs: v01.02g
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-04-08 01:12:00 PM EST
-**Repo version:** v10.02r
-
-### What was done
-- Reset inventorymanagement to original template state for rebuilding from scratch
-
-### Where we left off
-- Inventorymanagement was a clean template slate — ready for rebuilding
+- Inventory management QR scanner fully functional — scan → add to spreadsheet → live polling → entries table
 
 Developed by: ShadowAISolutions
