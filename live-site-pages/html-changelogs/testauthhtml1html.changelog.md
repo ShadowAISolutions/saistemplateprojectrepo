@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-04-09 03:03:37 PM EST — v10.42r
+
+### Fixed
+- Clearer messaging when QR scanning is not available on the current device
 
 ## [v01.10w] — 2026-04-09 02:55:42 PM EST — v10.41r
 

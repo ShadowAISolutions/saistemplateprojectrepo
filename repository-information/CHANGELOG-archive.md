@@ -77,6 +77,842 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v09.90r] — 2026-04-07 10:31:24 PM EST — [SHA unavailable]
+
+> **Prompt:** "the program portal itself can be excluded since we are already in it, so how do you suggest we do that" / "yes"
+
+### Changed
+- `getPortalApps()` now skips the portal's own page (derived from `EMBED_PAGE_URL`) so it doesn't show a card linking to itself
+
+#### `programportal.gs` — v01.65g
+
+##### Changed
+- Portal no longer shows a card for itself — the current app is excluded from the app list
+
+## [v09.89r] — 2026-04-07 10:24:49 PM EST — [SHA unavailable]
+
+> **Prompt:** "any reason why the programportal is not showing the globalacl?" / "yes"
+
+### Fixed
+- Removed `SELF` exclusion from `getPortalApps()` in programportal.gs — the globalacl column was skipped because its `#URL` row contained `SELF`, but since the portal card URL is built from the column header (`pageId + '.html'`) not from `#URL`, the exclusion was unnecessary and prevented Global ACL from appearing in the portal
+
+#### `programportal.gs` — v01.64g
+
+##### Fixed
+- Global ACL now appears in the portal alongside other authentication-enabled applications
+
+## [v09.88r] — 2026-04-07 10:16:45 PM EST — [SHA unavailable]
+
+> **Prompt:** "ok great that fixed it. i noticed that it wasnt hiding the admin dropdown all the way since i first created this project meaning that there is something not properly set up on the templates or setup-gas-project.sh or gas-project-creator . can you review them to see if we can fix it so that future projects properly have it set up"
+
+### Fixed
+- Root cause: the auth HTML template's `showApp()` never called `_showGasToggle()`, and the GAS auth template had an active duplicate toggle button inside the iframe with an incomplete `_gasLayerEls` list. Fixed all three issues in both templates so future projects are set up correctly
+- Propagated the fixes to all existing auth pages (globalacl.html, programportal.html) and their GAS scripts (globalacl.gs, programportal.gs)
+
+#### `globalacl.html` — v01.89w
+
+##### Fixed
+- Added `_showGasToggle()` call to `showApp()` so parent page's GAS toggle button is visible after auth
+
+#### `globalacl.gs` — v01.56g
+
+##### Fixed
+- Commented out duplicate GAS toggle button inside iframe — parent page's button handles the toggle
+
+#### `programportal.html` — v01.96w
+
+##### Fixed
+- Added `_showGasToggle()` call to `showApp()` so parent page's GAS toggle button is visible after auth
+
+#### `programportal.gs` — v01.63g
+
+##### Fixed
+- Commented out duplicate GAS toggle button inside iframe — parent page's button handles the toggle
+
+## [v09.87r] — 2026-04-07 10:08:31 PM EST — [SHA unavailable]
+
+> **Prompt:** "last session we were trying to see why the gas toggle in the inventorymanagement was not hiding the admin dropdown and the scan history. it is properly hiding the gas version number and signed in username. take your time to analyze why those are properly hidden but the admin dropdown and the scan history are not hidden"
+
+### Fixed
+- Root cause found: the parent page's GAS toggle button was never shown (`_showGasToggle()` was missing from `showApp()`), so the user was clicking the GAS iframe's internal toggle button which only hid 3 elements (`version`, `user-email`, `main-content`) — missing admin badge, admin dropdown, and scan panel. Fix: added `_showGasToggle()` call to `showApp()` (matching testauthgas1), reverted parent toggle to inline `style.display` approach, expanded GAS-side element list, and commented out the iframe's duplicate toggle button
+
+#### `inventorymanagement.html` — v01.15w
+
+##### Fixed
+- GAS toggle now properly hides all GAS content by showing the parent page's toggle button after auth — clicking it hides the entire GAS iframe
+
+#### `inventorymanagement.gs` — v01.14g
+
+##### Fixed
+- GAS-side toggle element list expanded to include admin badge, admin dropdown, admin panel overlay, scan panel, and scan delete modal
+- Iframe's duplicate GAS toggle button commented out — parent page's button handles the toggle
+
+## [v09.86r] — 2026-04-07 09:40:18 PM EST — [SHA unavailable]
+
+> **Prompt:** "it is still not hiding, do a much deeper analysis so that its properly hidden just like the other elements are without any mechanism we werent already using"
+
+### Fixed
+- Root cause found: the GAS toggle used `style.display = 'none'` to hide the iframe, but the auth flow's reconnect/reshow code (line 2042) resets `style.visibility = ''` after auth events — undoing the toggle. Fix: switched to using `.classList.add('html-layer-hidden')` which applies `display: none !important` via CSS class — the same mechanism the HTML toggle uses. The `!important` defeats any inline style override from the auth flow
+
+#### `inventorymanagement.html` — v01.14w
+
+##### Fixed
+- GAS toggle now reliably hides all GAS content using the same CSS class mechanism as the HTML toggle
+
+## [v09.85r] — 2026-04-07 09:34:43 PM EST — [SHA unavailable]
+
+> **Prompt:** "idk what you are doing but as per the screenshot, when toggling both toggles, i still see the admin dropdown and scan history, they shouldnt be visible"
+
+### Fixed
+- Added `visibility: hidden` alongside `display: none` on the GAS iframe toggle — belt-and-suspenders approach to ensure the GAS layer content (admin dropdown, scan history) is fully hidden when the GAS toggle is off
+
+#### `inventorymanagement.html` — v01.13w
+
+##### Fixed
+- GAS layer toggle now also sets visibility:hidden for more reliable hiding
+
+## [v09.84r] — 2026-04-07 09:22:12 PM EST — [SHA unavailable]
+
+> **Prompt:** "the admin dropdown and scan history are not properly set up to interact with their cooresponding toggles, fix that"
+
+### Fixed
+- Repositioned GAS iframe's admin badge, admin dropdown, admin panel, and user email to appear below the HTML-layer camera widget — they were hidden behind the camera (position: fixed with small top values). Now use `calc(min(100vw, 480px) * 0.75 + Npx)` to stay below the camera area
+
+#### `inventorymanagement.gs` — v01.13g
+
+##### Fixed
+- Admin controls and scan history now visible below the camera area instead of hidden behind it
+
+## [v09.83r] — 2026-04-07 09:00:16 PM EST — [SHA unavailable]
+
+> **Prompt:** "revert the last change, the part about the thing scanned fading out after the poll updates the information can stay though"
+
+### Removed
+- Reverted HTML-layer instant history list (`#qr-live-history`) — scan history updates only via the GAS 15s poll. The optimistic "saving..." → "✔ saved" notification on the HTML layer remains
+
+#### `inventorymanagement.html` — v01.12w
+
+##### Removed
+- Instant scan history list on the HTML layer (reverted per user request)
+
+## [v09.82r] — 2026-04-07 08:55:52 PM EST — [SHA unavailable]
+
+> **Prompt:** "is there a way to update the live data upon scanning the new information rather than waiting for the poll countdown to refresh it"
+
+### Added
+- Instant scan history update on the HTML layer — when `processBarcodeScan()` returns the updated history via the scanListener bridge, the parent renders it immediately below the camera (no need to wait for the 15s GAS poll). The GAS poll still runs for authoritative sync
+
+#### `inventorymanagement.html` — v01.11w
+
+##### Added
+- Scan history appears instantly after each scan — no more waiting for the polling countdown
+
+## [v09.81r] — 2026-04-07 08:29:42 PM EST — [SHA unavailable]
+
+> **Prompt:** "the left and right side still dont have padding"
+
+### Fixed
+- Increased side padding on both HTML scanner-container (12px → 16px + `box-sizing: border-box`) and GAS scan-panel (14px → 16px + `box-sizing: border-box` + matched `max-width: 480px` to scanner) so content doesn't touch screen edges on mobile
+
+#### `inventorymanagement.html` — v01.10w
+
+##### Fixed
+- Camera area and scan result notification now have visible side margins on mobile
+
+#### `inventorymanagement.gs` — v01.12g
+
+##### Fixed
+- Scan history rows now have visible side margins on mobile
+
+## [v09.80r] — 2026-04-07 08:25:37 PM EST — [SHA unavailable]
+
+> **Prompt:** "this is what it looks like now, i want it to not go off the edges on the left and right either, just a little padding. also the delete buttons should have a confirmation in the same way the testauthgas1 handles it. the optimistic needs more room as its overlapping as shown in screenshot"
+
+### Changed
+- Added horizontal padding (14px) to scan-panel so rows don't touch screen edges on mobile
+- Delete button now shows a confirmation modal (testauthgas1 pattern) with a preview of the scan value before deleting — prevents accidental deletion
+- Optimistic "last scan" element gets bottom margin so it doesn't overlap with the GAS "Scan History" title below. GAS scan-panel padding-top increased by 40px for more breathing room
+
+#### `inventorymanagement.html` — v01.09w
+
+##### Changed
+- Scan result notification now has spacing so it doesn't overlap scan history below
+
+#### `inventorymanagement.gs` — v01.11g
+
+##### Added
+- Delete confirmation dialog — tap the ✕ button to see a preview before confirming deletion
+
+##### Changed
+- Scan entries have proper side margins on mobile screens
+
+## [v09.79r] — 2026-04-07 08:14:16 PM EST — [SHA unavailable]
+
+> **Prompt:** "this is what it looks like on my phone, make the camera area much more compact so we have more space"
+
+### Changed
+- Made camera viewport more compact on mobile — changed aspect ratio from 1:1 (square) to 4:3 (landscape), reduced padding from 18px to 8px, tighter gap between elements. Gives ~25% more vertical space for scan history below
+- Updated GAS scan-panel padding-top to match the new smaller camera height (`min(100vw,480px) * 0.75 + 50px`)
+
+#### `inventorymanagement.html` — v01.08w
+
+##### Changed
+- Camera viewport is now more compact with a 4:3 aspect ratio
+
+#### `inventorymanagement.gs` — v01.10g
+
+##### Changed
+- Scan history position adjusted for the smaller camera area
+
+## [v09.78r] — 2026-04-07 08:08:27 PM EST — [SHA unavailable]
+
+> **Prompt:** "adad a button that functions similarly as the testauthgas1 that lets the user delete an entry"
+
+### Added
+- Delete button (✕) on each scan row in the GAS-layer scan history — dims the row optimistically, deletes from the Scans sheet server-side, refreshes cache and UI on success
+- `deleteScanRow(token, sheetRowIndex)` server function with session validation
+
+#### `inventorymanagement.gs` — v01.09g
+
+##### Added
+- Delete button on each scan entry to remove it from the spreadsheet
+
+## [v09.77r] — 2026-04-07 08:03:52 PM EST — [SHA unavailable]
+
+> **Prompt:** "the optimistic doesnt seem to be working probably because the html and gas are on different layers, is there a way for there to be optimistic rows visible instantly between the layers before the data polling takes over"
+
+### Added
+- Optimistic "last scan" notification on the HTML layer — shows scanned value instantly below the camera viewport with a slide-up animation, changes from "saving..." to "✔ saved" when the GAS bridge confirms, auto-fades after 20 seconds
+
+#### `inventorymanagement.html` — v01.07w
+
+##### Added
+- Instant scan result feedback below the camera — appears immediately when a barcode is detected, before the GAS poll picks it up
+
+## [v09.76r] — 2026-04-07 07:45:47 PM EST — [SHA unavailable]
+
+> **Prompt:** "ok, good. make it also have the same polling timer (including the visible countdown) that is used in the testauthgas1 live data, as well as showing the optimistic data (like in the testauth), so look at how the testauthgas1 works for its table and incorporate the same methodology"
+
+### Added
+- Visible poll countdown timer (`▷ 12s`) matching testauthgas1 pattern — updates every 1s, shows "polling..." when in-flight, time until next poll otherwise
+- Optimistic data support — scans can be shown immediately at reduced opacity before server confirms, cleared when poll returns fresh data
+- 15-second poll interval matching testauthgas1's `DATA_POLL_INTERVAL`
+
+#### `inventorymanagement.gs` — v01.08g
+
+##### Added
+- Visible countdown showing time until next data refresh
+- Optimistic scan entries that appear instantly while saving
+
+## [v09.75r] — 2026-04-07 07:37:51 PM EST — [SHA unavailable]
+
+> **Prompt:** "the scan history is hiding behind the camera view, have that appear below the coordinates, i know they are on different layers so you have to analyze their relative coordinates"
+
+### Fixed
+- GAS scan history panel now positioned below the camera widget using `padding-top: calc(min(100vw, 480px) + 80px)` — dynamically matches the camera viewport height (aspect-ratio 1:1 at max 480px) plus padding/status bar
+
+#### `inventorymanagement.gs` — v01.07g
+
+##### Fixed
+- Scan history now appears below the camera area instead of behind it
+
+## [v09.74r] — 2026-04-07 07:21:09 PM EST — [SHA unavailable]
+
+> **Prompt:** "clicking on the flashlight button is turning on but its not turning off when i click it again. on the gas layer below the relative scanning scanning html area, make something to test our scanning app so that things are saved in the spreadsheet and we can see it. use the testauthgas1 with the live data as the method, polling and all"
+
+### Fixed
+- Fixed torch toggle not turning off — simplified constraint application to avoid race condition in async promise chain
+
+### Added
+- Scan results saved to "Scans" sheet in the project spreadsheet (auto-creates sheet with headers on first scan)
+- GAS-side scan history UI with 10-second polling (testauthgas1 live data pattern) — shows timestamp, value, and format for each scan
+- `getScanHistory(token)` server function for authenticated polling
+- Server-side scan cache with self-healing (`_refreshScanCache` / `_getCachedScans`) — avoids repeated spreadsheet reads
+
+#### `inventorymanagement.html` — v01.06w
+
+##### Fixed
+- Flashlight toggle now properly turns off when tapped again
+
+#### `inventorymanagement.gs` — v01.06g
+
+##### Added
+- Scan history visible below the camera — shows saved scans with live updates
+
+## [v09.73r] — 2026-04-07 06:51:03 PM EST — [SHA unavailable]
+
+> **Prompt:** "the html is covering up the gas layer completely, only keep the camera components there, we dont need the full screen background so that i can still see the gas layer"
+
+### Changed
+- Stripped scanner HTML layer down to camera-only components: viewport, video, canvas, scan line, start button, status bar, torch, engine badge. Removed full-screen background, header, result card, history, upload, toast — GAS layer is now visible behind the camera widget
+- Camera widget uses `pointer-events: none` on the container so clicks pass through to the GAS iframe, with `pointer-events: auto` only on the scanner-container itself
+
+#### `inventorymanagement.html` — v01.05w
+
+##### Changed
+- Camera widget no longer covers the full screen — GAS layer is visible behind it
+
+## [v09.72r] — 2026-04-07 06:41:25 PM EST — [SHA unavailable]
+
+> **Prompt:** "you literally removed the gas layer. and the html toggle is not hiding all of the html, the gas toggle should still be there"
+
+### Fixed
+- Added `qr-scanner-page` to the HTML layer toggle element list — scanner now hides when HTML toggle is clicked, revealing the GAS iframe underneath
+
+#### `inventorymanagement.html` — v01.04w
+
+##### Fixed
+- Scanner now responds to the HTML layer toggle — click HTML to hide scanner and see the app layer
+
+## [v09.71r] — 2026-04-07 06:34:20 PM EST — [SHA unavailable]
+
+> **Prompt:** "it seems like we have 3 different html layers going on here with the toggles. the layer with our pills, the one that is unaffected by scans the one saying no scans yet (might be on gas layer not sure,fix it so that its interacting with the gas toggle), and the scan layer which shows the start camera button which should not be a toggle, it should be the main page, the gas layer can be functional but then the camera shouldnt occupy the whole screen. it should essentially function how the qr-scanner6 works, but we are dividing the labor between two layers"
+
+### Changed
+- Rebuilt scanner as the main page content (always visible, not a toggle overlay) — matches qr-scanner6 layout: header, camera viewport, status bar, result card, image upload, scan history all flowing vertically
+- Moved all scanner UI from GAS layer to HTML layer — GAS iframe runs in background for future Sheets integration via listener iframe bridge
+- Removed SCAN toggle button — scanner is now the primary page experience
+- Cleared GAS PROJECT sections (CSS, HTML, JS) — GAS doGet only renders the admin panel and auth, scanner UI is on the HTML layer
+
+#### `inventorymanagement.html` — v01.03w
+
+##### Changed
+- Scanner is now the main page layout with full qr-scanner6 feature set
+
+#### `inventorymanagement.gs` — v01.05g
+
+##### Changed
+- Cleared scanner result UI from GAS iframe — scanner display now handled by the embedding page
+
+## [v09.70r] — 2026-04-07 06:14:22 PM EST — [SHA unavailable]
+
+> **Prompt:** "this is what i see" (screenshot showing SCAN button not visible)
+
+### Fixed
+- Fixed SCAN toggle button not appearing — removed `display:none` that relied on a `_showGasToggle` hook that was never called; button now shows by default like the HTML/GAS buttons
+
+#### `inventorymanagement.html` — v01.02w
+
+##### Fixed
+- Scanner toggle button now visible alongside HTML and GAS buttons
+
+## [v09.69r] — 2026-04-07 05:58:59 PM EST — [SHA unavailable]
+
+> **Prompt:** "properly put the qr-scanner6 into the inventory gas" → "getting camera error" → plan mode: minimal HTML layer via listener iframe bridge
+
+### Added
+- QR/barcode scanner architecture using listener iframe bridge pattern — camera runs on HTML layer (bare minimum: video, canvas, detection loop), scan results sent to GAS via `action=scanListener` postMessage bridge, result UI and history rendered on GAS layer
+- `processBarcodeScan()` server-side function in inventory management GAS (placeholder — returns scanned data, future: Sheets lookup)
+- `action=scanListener` handler in GAS `doGet()` — lightweight listener page following the established heartbeat/signout pattern
+- SCAN toggle button on HTML layer for opening/closing camera overlay
+- CSP updates for `media-src` (camera streams) and `script-src` (jsQR CDN)
+
+### Changed
+- Moved scanner from GAS iframe (where camera was blocked by sandbox) to split architecture: camera bridge on HTML layer, result display on GAS layer
+
+#### `inventorymanagement.html` — v01.01w
+
+##### Added
+- Camera scanner overlay with QR/barcode detection
+
+#### `inventorymanagement.gs` — v01.04g
+
+##### Added
+- Scan result display panel with history
+- Barcode scan processing endpoint
+
+##### Changed
+- Removed non-functional camera code from GAS iframe (sandbox blocks getUserMedia)
+
+## [v09.68r] — 2026-04-07 05:24:49 PM EST — [SHA unavailable]
+
+> **Prompt:** "properly put the qr-scanner6 into the inventory gas"
+
+### Added
+- Integrated QR & Barcode scanner into the Inventory Management GAS app — camera-based scanning with native BarcodeDetector and jsQR fallback, image upload scanning, torch toggle, scan history, and type classification (URL, email, phone, SMS, WiFi, text, product, barcode)
+
+#### `inventorymanagement.gs` — v01.03g
+
+##### Added
+- Built-in QR code and barcode scanner with camera support
+- Image upload scanning from gallery
+- Flashlight toggle for low-light scanning
+- Scan history with up to 10 recent scans
+- Auto-detection of scan type (URL, email, phone, WiFi, product code)
+
+## [v09.67r] — 2026-04-07 05:02:49 PM EST — [SHA unavailable]
+
+> **Prompt:** "plan it but please take into account the pros and cons so i can decide whether we move forward with it"
+
+### Added
+- Dynamic Program Portal — portal app list now reads from the Master ACL spreadsheet metadata rows instead of a hardcoded array. New auth projects automatically appear after their first page load
+- Added `#ICON` (row 5) and `#DESC` (row 6) metadata rows to the Master ACL spreadsheet schema — user data rows shifted from row 5+ to row 7+
+- Added `PORTAL_ICON` and `PORTAL_DESCRIPTION` config variables to all auth GAS scripts and config.json files
+- Added Portal Icon and Portal Description input fields to the GAS Project Creator form
+
+### Changed
+- Updated `ensureMetadataRows()` and `registerSelfProject()` in auth GAS template and all 4 auth .gs files to support 5 metadata rows
+- Updated `getRegisteredProjects()` and `addPageColumn()` in globalacl.gs to read/write the new metadata rows
+- Updated `getUserAppAccess()` in programportal.gs to read user data from row 7+ instead of row 5+
+- Updated `setup-gas-project.sh` to accept and substitute `PORTAL_ICON` and `PORTAL_DESCRIPTION`
+
+#### `gas-project-creator.html` — v01.69w
+
+##### Added
+- Portal Icon and Portal Description fields in the project creator form
+
+#### `programportal.gs` — v01.62g
+
+##### Changed
+- Application list now loads dynamically — new projects appear automatically
+
+#### `globalacl.gs` — v01.55g
+
+##### Changed
+- Minor internal improvements
+
+#### `testauthgas1.gs` — v02.60g
+
+##### Changed
+- Minor internal improvements
+
+#### `inventorymanagement.gs` — v01.02g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.66r] — 2026-04-07 03:20:19 PM EST — [SHA unavailable]
+
+> **Prompt:** "im signing into the global acl manager but its not auto propagating figure out why and make it happen moving forward"
+
+### Fixed
+- Fixed cross-project admin secret not distributing to newly registered projects — `ensureCrossProjectSecret()` in GlobalACL now detects when the registered auth-project count changes (via cache comparison) and re-distributes the existing secret to all projects, so new projects automatically receive it on the next GlobalACL page load
+
+#### `globalacl.gs` — v01.54g
+
+##### Fixed
+- Admin session management now works for newly added projects without manual secret setup
+
+## [v09.65r] — 2026-04-07 03:07:14 PM EST — [SHA unavailable]
+
+> **Prompt:** "i did option 1, but it didnt work. check the setup-gas-project.sh , i noticed that you ran into some errors, so fix it there and in our script"
+
+### Fixed
+- Fixed HMAC_SECRET chicken-and-egg bug: `ensureScriptProperties_()` was only called from `pullAndDeployFromGitHub()` (deploy-time), but HMAC is required on first page load for session creation — added call to `doGet()` in the auth GAS template so HMAC_SECRET auto-generates on first visit
+- Fixed `setup-gas-project.sh` Phase 9 workflow deploy step insertion: replaced fragile `sed -i` with multiline `\n` escapes with a temp file + `sed r` approach that reliably inserts the deploy block
+
+### Changed
+- Propagated `ensureScriptProperties_()` doGet fix to all 4 auth GAS scripts (inventorymanagement, testauthgas1, globalacl, programportal) via template propagation
+
+#### `inventorymanagement.gs` — v01.01g
+
+##### Fixed
+- Sign-in now works on first deployment — setup properties auto-generate on first visit
+
+#### `testauthgas1.gs` — v02.59g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.53g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.61g
+
+##### Changed
+- Minor internal improvements
+
+## [v09.64r] — 2026-04-07 02:51:01 PM EST — [SHA unavailable]
+
+> **Prompt:** "Set up a new GAS project. Run the script, then commit and push.
+
+bash scripts/setup-gas-project.sh <<'CONFIG'
+{
+  "PROJECT_ENVIRONMENT_NAME": "inventorymanagement",
+  "TITLE": "Inventory Management",
+  "DEPLOYMENT_ID": "AKfycby0Eh2XhbibpLptNk94g8GAoIwgfzQ7ozRz6YBKfyXyXBYyANZJjCuYdFzi4_WIKYbKBw",
+  "SPREADSHEET_ID": "1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg",
+  "SHEET_NAME": "Live_Sheet",
+  "DEVELOPER_LOGO_URL": "https://www.shadowaisolutions.com/SAIS_Logo.png",
+  "YOUR_ORG_LOGO_URL": "https://www.shadowaisolutions.com/SAIS_Logo.png",
+  "SPLASH_LOGO_URL": "https://www.shadowaisolutions.com/SAIS_Logo.png",
+  "INCLUDE_AUTH": true,
+  "CLIENT_ID": "216764502068-7j0j6svmparsrfgdf784dneltlirpac2.apps.googleusercontent.com",
+  "AUTH_PRESET": "hipaa",
+  "MASTER_ACL_SPREADSHEET_ID": "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI",
+  "ACL_SHEET_NAME": "Access",
+  "ACL_PAGE_NAME": "inventorymanagement"
+}
+CONFIG"
+
+### Added
+- Set up new GAS project: Inventory Management (inventorymanagement) with auth, HIPAA preset, and full ACL configuration
+- Created inventorymanagement.html embedding page, inventorymanagement.gs GAS script, and inventorymanagement.config.json
+- Created version files (html.version.txt, gs.version.txt), changelogs, and per-environment diagram
+- Added Deploy Inventorymanagement step to auto-merge workflow for GAS webhook auto-deploy
+- Registered Inventorymanagement in GAS Projects table, REPO-ARCHITECTURE.md, and README.md tree
+
+## [v09.63r] — 2026-04-07 11:22:39 AM EST — [SHA unavailable]
+
+> **Prompt:** "good. now, if we are not including google authentication (toggle at the top is off), then the fields related to authentication should not be there, i.e. the master acl spreadsheet id, etc. verify that we wouldnt need those fields in this scenario"
+
+### Changed
+- Auth-only fields (Master ACL section, ACL Sheet Name, ACL Column Name) now hidden when "Include Google Authentication" toggle is off — verified against the noauth GAS template which has none of these variables
+
+#### `gas-project-creator.html` — v01.68w
+
+##### Changed
+- Master ACL, ACL Sheet Name, and ACL Column Name hidden when auth is disabled
+
+## [v09.62r] — 2026-04-07 11:16:28 AM EST — [SHA unavailable]
+
+> **Prompt:** "no, the master acl spreadsheet id when enabled is still not letting me type into it"
+
+### Fixed
+- Master ACL Spreadsheet ID field now accepts user input — `toggleMasterAcl()` now tracks state changes and only overwrites the value on actual toggle transitions (checked↔unchecked), not on repeated calls with the same state
+- Root cause: `updateFieldStates()` called `toggleMasterAcl()` on every input event, and the unchecked branch was overwriting `aclIdField.value` with `_aclValueBeforeToggle` (empty) on every keystroke
+
+#### `gas-project-creator.html` — v01.67w
+
+##### Fixed
+- Master ACL Spreadsheet ID field now properly editable — typing no longer gets overwritten
+
+## [v09.61r] — 2026-04-07 11:13:35 AM EST — [SHA unavailable]
+
+> **Prompt:** "ok the toggle is properly showing the acl sheet name and acl column name fields as enabled, but when the toggle is off, its not letting me type into the master acl spreadsheet id field"
+
+### Fixed
+- Master ACL Spreadsheet ID field now editable when toggle is unchecked — added `setFieldDisabled('cfg-master-acl-id', false)` before `toggleMasterAcl()` to properly restore the field from its disabled state (clears the `disabled` attribute and restores saved value)
+
+#### `gas-project-creator.html` — v01.66w
+
+##### Fixed
+- Master ACL Spreadsheet ID field now accepts input when toggle is unchecked
+
+## [v09.60r] — 2026-04-07 11:08:00 AM EST — [SHA unavailable]
+
+> **Prompt:** "the acl sheet name and acl column name fields are not properly being enabled after the master acl spreadsheet id is set"
+
+### Fixed
+- ACL Sheet Name and ACL Column Name now properly enable when Master ACL Spreadsheet ID is filled — added `oninput="updateFieldStates()"` to the Master ACL ID field and added ACL field re-evaluation in `toggleMasterAcl()`
+- Root cause: the Master ACL ID input had no `oninput` handler to trigger field state updates, and the toggle didn't re-evaluate ACL field states after auto-filling the ID
+
+#### `gas-project-creator.html` — v01.65w
+
+##### Fixed
+- ACL fields now enable when Master ACL Spreadsheet ID is set (manually or via toggle)
+
+## [v09.59r] — 2026-04-07 11:03:22 AM EST — [SHA unavailable]
+
+> **Prompt:** "actually something else is also going on also, the buttons think that the environment name isnt there, so fix these bugs"
+
+### Fixed
+- Copy buttons (Code.gs, HTML, Config) now correctly detect Environment Name — `updateDeployGate()` is called at the end of `updateFieldStates()` so it reads field values after all save/restore operations complete
+- Root cause: `updateDeployGate()` was called from `oninput` before `updateFieldStates()` had restored the saved env name value
+
+#### `gas-project-creator.html` — v01.64w
+
+##### Fixed
+- Copy buttons no longer incorrectly show "needs: Environment Name" when Environment Name is filled
+
+## [v09.58r] — 2026-04-07 11:01:26 AM EST — [SHA unavailable]
+
+> **Prompt:** "the acl sheet name and the acl column name are showing to enter deployment ID first but it shouldnt be tied to that, it should be if the master acl spreadsheet ID is set up"
+
+### Fixed
+- ACL Sheet Name and ACL Column Name now gated solely behind Master ACL Spreadsheet ID — no longer inherit the project field cascade reason ("Enter Deployment ID first"), always show "Enter Master ACL Spreadsheet ID first" when that field is empty
+
+#### `gas-project-creator.html` — v01.63w
+
+##### Fixed
+- ACL fields no longer show misleading "Enter Deployment ID first" message
+
+## [v09.57r] — 2026-04-07 10:56:55 AM EST — [SHA unavailable]
+
+> **Prompt:** "the acl column name should not mention defaults to if disabled, should also say enter spreadsheet id first instead. also if the master ACL spreadsheet ID is not filled either manually or through the toggle, the ACL sheet name and ACL column name should be disabled"
+
+### Fixed
+- ACL Sheet Name and ACL Column Name now gated behind Master ACL Spreadsheet ID being filled (either manually or via toggle) — show "Enter Master ACL Spreadsheet ID first" when empty
+- ACL Column Name no longer shows "Defaults to:" placeholder when disabled — only shows the default hint when the field is active and editable
+
+#### `gas-project-creator.html` — v01.62w
+
+##### Fixed
+- ACL fields now require Master ACL Spreadsheet ID before they can be edited
+- Disabled ACL Column Name no longer misleadingly shows default value hint
+
+## [v09.56r] — 2026-04-07 10:51:44 AM EST — [SHA unavailable]
+
+> **Prompt:** "the allowed domains should also default to all if blank. the acl sheet name and acl column name fields should be disabled if there is no spreadsheet id, same for the master acl spreadsheet id, it shouldnt refer to the entering environment name first"
+
+### Fixed
+- ACL Sheet Name, ACL Column Name, and Master ACL Spreadsheet ID now show "Enter Spreadsheet ID first" when Spreadsheet ID is empty (was incorrectly showing "Enter Environment Name first")
+- Moved ACL fields out of the generic project fields group into a Spreadsheet ID-dependent group
+- Blank Allowed Domains already treated as "All" (no domain restriction) — both blank and "All" skip domain restriction in copyGsCode and copyConfig
+
+#### `gas-project-creator.html` — v01.61w
+
+##### Fixed
+- ACL and Master ACL fields now correctly reference Spreadsheet ID as their dependency
+
+## [v09.55r] — 2026-04-07 10:45:04 AM EST — [SHA unavailable]
+
+> **Prompt:** "in this scenario, the clear X button should not be there since the field pulling from somewhere else, this should apply everywhere in the gas-project-creator for similar situations"
+
+### Fixed
+- Clear (X) button now hidden on readOnly fields (auto-filled from another field) — applied globally via `updateEmptyClasses()` so any current or future readOnly auto-fill field automatically gets this behavior
+
+#### `gas-project-creator.html` — v01.60w
+
+##### Fixed
+- Clear button no longer appears on fields that are auto-filled from another source
+
+## [v09.54r] — 2026-04-07 10:40:56 AM EST — [SHA unavailable]
+
+> **Prompt:** "that disabled field should mention what would enable the field like the other disabled fields. but the field should not be disabled if this spreadsheet is not the master acl, i should be able to put what the master acl spreadsheet id is"
+
+### Fixed
+- Master ACL Spreadsheet ID field now shows "Uncheck master ACL toggle to edit" hint when toggle is checked (consistent with other disabled fields)
+- Field is now properly editable when toggle is unchecked — fixed bug where `disabled` attribute from `setFieldDisabled` wasn't cleared by `toggleMasterAcl()`
+
+#### `gas-project-creator.html` — v01.59w
+
+##### Fixed
+- Master ACL Spreadsheet ID field now editable when toggle is unchecked
+- Disabled state shows hint about how to enable it
+
+## [v09.53r] — 2026-04-07 10:35:23 AM EST — [SHA unavailable]
+
+> **Prompt:** "actually instead of hiding the master acl spreadsheet id field, have it disabled if the checkmark is pressed."
+
+### Changed
+- Master ACL Spreadsheet ID field now stays visible but becomes disabled/readOnly when toggle is checked (auto-fills with Spreadsheet ID), instead of hiding
+- Restores the user's previous value when unchecked
+- `syncMasterAclId()` keeps the ACL ID field synced with Spreadsheet ID while toggle is checked
+
+#### `gas-project-creator.html` — v01.58w
+
+##### Changed
+- Master ACL Spreadsheet ID field disables with auto-fill instead of hiding when toggle is checked
+
+## [v09.52r] — 2026-04-07 10:28:36 AM EST — [SHA unavailable]
+
+> **Prompt:** "lets review the master ACL toggle. if unchecked should have a field to put the master ACL spreadsheet ID, if unchecked that field should be removed. the acl sheet name and acl column name should always be visible. the toggle should be moved to underneath the spreadsheet id field"
+
+### Changed
+- Redesigned master ACL section: toggle moved under Spreadsheet ID, external ACL ID field shows when unchecked (for referencing another spreadsheet as ACL), hides when checked (uses own Spreadsheet ID)
+- ACL Sheet Name and ACL Column Name are now always visible — no longer hidden based on toggle state
+- `copyGsCode()` and `copyConfig()` now support both modes: checked = own Spreadsheet ID as ACL, unchecked = external ACL spreadsheet ID
+
+#### `gas-project-creator.html` — v01.57w
+
+##### Changed
+- Master ACL toggle moved under Spreadsheet ID with external ACL ID field for non-self ACL projects
+- ACL Sheet Name and Column Name always visible
+
+## [v09.51r] — 2026-04-07 10:12:59 AM EST — [SHA unavailable]
+
+> **Prompt:** "the master ACL toggle should be right above the spreadsheet ID, having it untoggled should not be hiding the fields, dont we need to use them anyway? or if unchecked do we not need the ACL sheet name and column name?"
+
+### Changed
+- Moved master ACL toggle above Spreadsheet ID field for better visual flow
+- ACL detail fields (Sheet Name, Column Name) still show/hide based on toggle — when unchecked, no ACL is configured and those fields are not needed (the GAS code checks `hasAcl` and skips ACL logic when the ID is a placeholder)
+
+#### `gas-project-creator.html` — v01.56w
+
+##### Changed
+- Master ACL toggle moved above Spreadsheet ID
+
+## [v09.50r] — 2026-04-07 10:01:45 AM EST — [SHA unavailable]
+
+> **Prompt:** "the Allowed Domains should be prefilled to say "All" , and that should be equivalent to any google account can sign in."
+
+### Changed
+- Allowed Domains field in gas-project-creator now prefills with "All" — treated as no domain restriction (any Google account can sign in)
+- `copyGsCode()` and `copyConfig()` skip domain restriction when value is "All"
+
+#### `gas-project-creator.html` — v01.55w
+
+##### Changed
+- Allowed Domains now prefills with "All" meaning any Google account can sign in
+
+## [v09.49r] — 2026-04-07 09:55:58 AM EST — [SHA unavailable]
+
+> **Prompt:** "the master acl spreadsheet id field is still there, i want it removed, i just want it consolidated with the spreadsheet ID, so the toggle should be moved next to the spreadsheet ID"
+
+### Changed
+- Removed the separate Master ACL Spreadsheet ID field — when the "master ACL" toggle is checked, the project's Spreadsheet ID is used directly as the master ACL
+- Moved the master ACL toggle to sit directly under Spreadsheet ID field
+- ACL detail fields (Sheet Name, Column Name) now show/hide based on toggle state instead of depending on a separate ID field
+- Simplified `toggleMasterAcl()`, `toggleAclDetails()`, `copyGsCode()`, and `copyConfig()` to use Spreadsheet ID directly
+
+#### `gas-project-creator.html` — v01.54w
+
+##### Changed
+- Master ACL toggle moved next to Spreadsheet ID — no separate ACL spreadsheet ID field
+- ACL details appear inline when toggle is checked
+
+## [v09.48r] — 2026-04-07 09:47:23 AM EST — [SHA unavailable]
+
+> **Prompt:** "the authentication settings should be under the oauth client ID that we just moved up"
+
+### Changed
+- Merged Auth Preset and Allowed Domains into the Authentication Settings box under OAuth Client ID — removed the separate auth-fields box that was further down the form
+- All auth-related fields (Client ID, Auth Preset, Allowed Domains) are now consolidated in one section at the top
+
+#### `gas-project-creator.html` — v01.53w
+
+##### Changed
+- Auth Preset and Allowed Domains moved under OAuth Client ID in the Authentication Settings section
+
+## [v09.47r] — 2026-04-07 09:43:11 AM EST — [SHA unavailable]
+
+> **Prompt:** "instead of having a separate master ACL spreadsheet ID field, the toggle should be moved to next to the spreadsheet ID to modify it if toggled. the ACL sheet name and column name can be moved under that also. the oauth client id can be moved to before the deployment id, and i think it should be required before enabling the deployment id field, the authentication settings fields should be labeled as such"
+
+### Changed
+- Restructured gas-project-creator form layout: OAuth Client ID moved before Deployment ID in its own "Authentication Settings" box, gates Deployment ID when auth is enabled
+- Master ACL section (toggle, ID, sheet name, column name) moved from auth settings box to under Spreadsheet ID — now depends on Spreadsheet ID being filled, not Client ID
+- Auth settings box now only contains Auth Preset and Allowed Domains
+- New dependency cascade: Client ID → Deployment ID → Env Name → project fields → Spreadsheet ID → Master ACL
+
+#### `gas-project-creator.html` — v01.52w
+
+##### Changed
+- OAuth Client ID now appears before Deployment ID and is required to enable it (when auth is checked)
+- Master ACL section moved under Spreadsheet ID for logical grouping
+- Auth settings box simplified to just Auth Preset and Allowed Domains
+
+## [v09.46r] — 2026-04-07 08:47:47 AM EST — [SHA unavailable]
+
+> **Prompt:** "if i add deployment id, add project environment name, then delete deployment id and re ad deployment ID, the fields are disabled even though we still had a project environment name there before, fix this same bug everywhere in the gas-project-creator"
+
+### Fixed
+- Fixed field dependency cascade bug in gas-project-creator: when a parent field was cleared and re-filled, child fields stayed disabled because `updateFieldStates()` read dependent values before `setFieldDisabled()` had a chance to restore them. Now re-reads `hasEnvName`, `hasSpreadsheet`, and `hasClientId` after their fields have been restored, so downstream fields correctly re-enable
+
+#### `gas-project-creator.html` — v01.51w
+
+##### Fixed
+- Fields no longer stay disabled when a parent field is cleared and re-filled
+
+## [v09.45r] — 2026-04-07 08:41:28 AM EST — [SHA unavailable]
+
+> **Prompt:** "make the splash logo URL prefill to https://www.shadowaisolutions.com/SAIS_Logo.png , the splash logo URL defaulting to developer logo, what happens if the developer logo is blank, i think these should not depend on eachother, they should be independent in case i want some to be blank on purpose."
+
+### Changed
+- Made all 3 logo variables fully independent — `SPLASH_LOGO_URL` is now a standalone string value in all templates and pages, no longer a reference to `DEVELOPER_LOGO_URL`
+- Splash Logo URL field in gas-project-creator now prefills with the default SAIS logo URL
+- Updated field hints to clarify all 3 logos are independent of each other
+- Updated `copyHtmlCode()` regex to match the new single-quoted string format for `SPLASH_LOGO_URL`
+- Updated `setup-gas-project.sh` to handle `SPLASH_LOGO_URL` with proper default and consistent substitution pattern
+
+#### `gas-project-creator.html` — v01.50w
+
+##### Changed
+- Splash Logo URL now prefills with the default logo instead of being blank
+- All three logo fields are now described as independent of each other
+
+#### `testauthgas1.html` — v03.99w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.88w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.95w
+
+##### Changed
+- Minor internal improvements
+
+#### `text-compare.html` — v01.10w
+
+##### Changed
+- Minor internal improvements
+
+## [v09.44r] — 2026-04-07 08:34:10 AM EST — [SHA unavailable]
+
+> **Prompt:** "make it so that the deployment ID being filled is a requirement for the Project Environment Name to be active"
+
+### Changed
+- Project Environment Name field in gas-project-creator is now disabled until Deployment ID is filled
+- All downstream project config fields cascade: Deployment ID → Environment Name → project fields
+
+#### `gas-project-creator.html` — v01.49w
+
+##### Changed
+- Environment Name field now requires Deployment ID to be filled before it can be edited
+- Deployment ID field changes now trigger field state updates for the full cascade
+
+## [v09.43r] — 2026-04-07 08:26:38 AM EST — [SHA unavailable]
+
+> **Prompt:** "i guess we should have a field for each logo, developer, org, and splash"
+
+### Changed
+- Renamed `LOGO_URL` → `SPLASH_LOGO_URL` in all HTML templates and 5 live pages — the runtime pointer used by splash screens now has a descriptive name
+- Restructured gas-project-creator logo fields: replaced single "Splash Logo URL" field with 3 separate fields (Developer Logo, Org Logo, Splash Logo)
+- Updated `copyHtmlCode()` to substitute all 3 logo variables in HTML templates
+- Removed dead `SPLASH_LOGO_URL` substitution from `copyGsCode()` (logo variables don't exist in GAS templates)
+- Updated `setup-gas-project.sh` to parse and apply `DEVELOPER_LOGO_URL`, `YOUR_ORG_LOGO_URL`, and `SPLASH_LOGO_URL` separately
+- Removed stale `SPLASH_LOGO_URL` references from workflow comments (not a GAS variable)
+- Updated CLAUDE.md, gas-scripts.md, and IMPROVEMENTS.md documentation references
+
+#### `gas-project-creator.html` — v01.48w
+
+##### Changed
+- Logo configuration now has 3 separate fields: Developer Logo, Org Logo, and Splash Logo
+- Splash Logo defaults to Developer Logo when left blank
+
+#### `testauthgas1.html` — v03.98w
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.html` — v01.87w
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.html` — v01.94w
+
+##### Changed
+- Minor internal improvements
+
+#### `text-compare.html` — v01.09w
+
+##### Changed
+- Minor internal improvements
+
+## [v09.42r] — 2026-04-07 07:57:43 AM EST — [SHA unavailable]
+
+> **Prompt:** "in the gas-project-creator , are we actually using the Sound File ID for anything anymore? if not remove it"
+
+### Removed
+- Removed `SOUND_FILE_ID` variable from all GAS templates, live GAS scripts, config.json files, gas-project-creator form, setup script, workflow comments, and documentation — the variable was declared but never referenced after the `testSoundFetch` test function was archived
+
+#### `gas-project-creator.html` — v01.47w
+
+##### Removed
+- Removed Sound File ID form field (was unused by any live feature)
+
+#### `testauthgas1.gs` — v02.58g
+
+##### Changed
+- Minor internal improvements
+
+#### `globalacl.gs` — v01.52g
+
+##### Changed
+- Minor internal improvements
+
+#### `programportal.gs` — v01.60g
+
+##### Changed
+- Minor internal improvements
+
 ## [v09.41r] — 2026-04-06 11:16:59 PM EST — [4904c138](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4904c138c5eb03ea47e97b0a3ebfb25af95a3a6c)
 
 > **Prompt:** "make the copy code.gs for Gas and the Copy Config For Claude buttons the same red when they are disabled, and have the text mention which fields are missing to enable,, still need to know what the button name is so maybe separate missing and name with --"
