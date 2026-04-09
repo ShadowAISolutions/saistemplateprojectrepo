@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v10.41r] — 2026-04-09 02:55:42 PM EST
+
+> **Prompt:** "to the top portion of the testauthhtml1 , add ONLY the camera portion of the qr-scanner6.html , so that when the user scans something, it functions the same as if the user had used the add row button."
+
+### Added
+- QR/barcode camera scanner to the top of testauthhtml1 Live Data app — uses native BarcodeDetector API only (no external dependencies), scans populate the Barcode input and auto-trigger Add Row
+- Camera includes viewport with corner decorations, scan line animation, flash effect, torch/flashlight toggle, engine badge, start screen overlay, and status bar
+- Permission gating — camera section only visible when user has write permissions
+
+#### `testauthhtml1.html` — v01.10w
+
+##### Added
+- QR/barcode camera scanner at the top of the data view — scanned codes auto-add rows
+- Visual feedback on scan: flash effect, haptic vibration, animated scan line
+- Torch/flashlight toggle for low-light scanning
+- Graceful degradation for browsers without native BarcodeDetector
 
 ## [v10.40r] — 2026-04-09 02:25:59 PM EST
 

@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10w] — 2026-04-09 02:55:42 PM EST — v10.41r
+
+### Added
+- QR code and barcode camera scanner at the top of the data view — scanned codes automatically add rows
+- Visual feedback on scan: flash effect and haptic vibration
+- Torch/flashlight toggle for low-light scanning
+- Graceful fallback message for unsupported browsers
 
 ## [v01.09w] — 2026-04-09 02:19:59 PM EST — v10.39r
 
