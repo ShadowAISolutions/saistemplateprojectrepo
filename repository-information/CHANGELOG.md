@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 62/100`
+`Sections: 63/100`
 
 ## [Unreleased]
+
+## [v10.53r] — 2026-04-09 06:46:36 PM EST
+
+> **Prompt:** "the inventorymanagement, setup the user interface and the way it interacts with the spreadsheet like the testauthhtml1 . ask clarifying questions as needed"
+
+### Added
+- Full inventory management UI with live data table (sortable columns, inline cell editing, add/delete rows, 15s data polling, connection status indicator)
+- Dashboard view with summary stat cards
+- QR/barcode camera scanner (native BarcodeDetector API) with scan confirmation modal and manual entry button
+- GAS backend CRUD functions (getAuthenticatedData, writeCell, addRow, deleteRow) with CacheService data caching, RBAC permission checks, and audit logging
+- Worker RPC bridge (postMessage-based google.script.run proxy for HTML-layer UI calls)
+- Data poll action handler (lightweight session validation + cached data return)
+- Admin badge and panel for admin-role users
+
+#### `inventorymanagement.html` — v01.01w
+##### Added
+- Live data table with inline editing and barcode scanner
+- Dashboard view with inventory summary cards
+- Dark theme UI matching the testauthhtml1 design
+
+#### `inventorymanagement.gs` — v01.01g
+##### Added
+- Spreadsheet CRUD operations with session validation and audit logging
+- CacheService-based data caching with installable edit trigger
+- Worker RPC bridge for HTML-layer communication
 
 ## [v10.52r] — 2026-04-09 06:13:37 PM EST
 

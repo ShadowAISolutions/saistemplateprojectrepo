@@ -1,4 +1,4 @@
-var VERSION = "v01.00g";
+var VERSION = "v01.01g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -298,7 +298,227 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
 // ══════════════
 
 // ══════════════
-// PROJECT START — Add your project-specific code here
+// PROJECT START
+// ══════════════
+
+// ── Live Data via CacheService ──
+// PROJECT OVERRIDE: Data reads via CacheService — refreshed by installable onEdit
+// trigger bound to the target spreadsheet. Spreadsheet stays private.
+// processHeartbeat() piggybacks cached data on existing heartbeat calls (zero extra quota).
+// Heartbeat reads re-up the cache TTL so data never expires while viewers are present.
+// One-time setup: run installEditTrigger() from the script editor.
+
+/**
+ * refreshDataCache() — reads the private spreadsheet and stores data in CacheService.
+ * Called by the installable onEdit trigger when the data sheet is edited, and as a
+ * self-repair fallback when getCachedData() finds an empty cache.
+ */
+function refreshDataCache() {
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      // Auto-create the sheet with default headers if it was deleted
+      sheet = ss.insertSheet(SHEET_NAME);
+      sheet.getRange(1, 1, 1, 6).setValues([['Timestamp', 'Barcode', 'Item Name', 'Quantity', 'Last Updated', 'Last User']]);
+      // Clear stale cache so old data doesn't persist
+      CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
+    }
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0] || [];
+    var rows = data.slice(1);
+    var result = JSON.stringify({ headers: headers, rows: rows, ts: Date.now() });
+    // 100KB CacheService limit per key — large sheets may need chunking in the future
+    // 21600s (6h) TTL — heartbeat reads re-up this TTL so it never expires while viewers
+    // are present. The long TTL is a safety net for gaps between the last viewer leaving
+    // and the next one arriving.
+    CacheService.getScriptCache().put('livedata_' + SHEET_NAME, result, 21600);
+  } catch (e) {
+    Logger.log('refreshDataCache error: ' + e.message);
+  }
+}
+
+/**
+ * getCachedData() — reads live data from CacheService with self-healing.
+ * On cache hit: re-ups the TTL so data stays alive as long as viewers are present.
+ * On cache miss: self-repairs by calling refreshDataCache() to read the spreadsheet.
+ * Returns parsed object { headers, rows, ts } or null if spreadsheet is unavailable.
+ */
+function getCachedData() {
+  var cache = CacheService.getScriptCache();
+  var key = 'livedata_' + SHEET_NAME;
+  var cached = cache.get(key);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+  // Self-repair: cache miss → read spreadsheet, warm cache
+  refreshDataCache();
+  cached = cache.get(key);
+  return cached ? JSON.parse(cached) : null;
+}
+
+/**
+ * onEditInstallable(e) — refreshes CacheService immediately when the data sheet is edited.
+ * Installable trigger — required because this is a standalone script (not container-bound).
+ * One-time setup: run installEditTrigger() from the Apps Script editor.
+ * Only refreshes when the edited sheet matches SHEET_NAME.
+ */
+function onEditInstallable(e) {
+  try {
+    if (!e || !e.range) return;
+    if (e.range.getSheet().getName() === SHEET_NAME) {
+      refreshDataCache();
+    }
+  } catch (err) {
+    Logger.log('onEditInstallable cache refresh error: ' + err.message);
+  }
+}
+
+/**
+ * installEditTrigger() — one-time setup function. Run this manually from the
+ * Apps Script editor (Run → installEditTrigger) to create an installable onEdit
+ * trigger bound to the target spreadsheet.
+ * Safe to run multiple times — removes existing triggers before creating a new one.
+ */
+function installEditTrigger() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'onEditInstallable') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+  ScriptApp.newTrigger('onEditInstallable')
+    .forSpreadsheet(SPREADSHEET_ID)
+    .onEdit()
+    .create();
+  Logger.log('Edit trigger installed for spreadsheet: ' + SPREADSHEET_ID);
+}
+
+/**
+ * writeCell(token, row, col, value) — writes a single cell value to the data spreadsheet.
+ * Validates the session first (requires 'write' permission via RBAC).
+ * After writing, refreshes the cache immediately for instant feedback.
+ * Returns signed response with updated live data.
+ */
+function writeCell(token, row, col, value) {
+  var user = validateSessionForData(token, 'writeCell');
+  checkPermission(user, 'write', 'writeCell');
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2), +1 for 1-indexed
+  sheet.getRange(row + 2, col + 1).setValue(value);
+
+  // Refresh cache immediately for instant feedback (onEditInstallable will also fire)
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'cell_edit', {
+    row: row, col: col, sheet: SHEET_NAME
+  });
+
+  var writeResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  // Attach liveData AFTER signing — nested objects cause HMAC mismatch
+  writeResult.liveData = getCachedData();
+  return writeResult;
+}
+
+/**
+ * addRow(token, valuesJSON) — appends a new row to the data spreadsheet.
+ * valuesJSON is a JSON string of an array of cell values matching the header columns.
+ * Accepts JSON string because google.script.run can mangle array parameters.
+ * Validates the session first (requires 'write' permission via RBAC).
+ * After writing, refreshes the cache immediately for instant feedback.
+ * Returns signed response with updated live data.
+ */
+function addRow(token, valuesJSON) {
+  var user = validateSessionForData(token, 'addRow');
+  checkPermission(user, 'write', 'addRow');
+
+  var values;
+  try {
+    values = JSON.parse(valuesJSON);
+  } catch (e) {
+    return signMessage({ type: 'gas-write-error', error: 'invalid_values: ' + e.message }, user.messageKey || '');
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  sheet.appendRow(values);
+
+  // Refresh cache immediately for instant feedback
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'add_row', {
+    cols: values.length, sheet: SHEET_NAME
+  });
+
+  var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  addResult.liveData = getCachedData();
+  return addResult;
+}
+
+/**
+ * getAuthenticatedData(token) — validates session then returns cached data.
+ * Used by the data poll (google.script.run from the HTML layer).
+ * Requires 'read' permission via RBAC.
+ */
+function getAuthenticatedData(token) {
+  var user = validateSessionForData(token, 'getAuthenticatedData');
+  checkPermission(user, 'read', 'getAuthenticatedData');
+  return getCachedData();
+}
+
+/**
+ * deleteRow(token, rowIndex) — deletes a data row from the spreadsheet by its 0-based index.
+ * rowIndex 0 = first data row (spreadsheet row 2, after header).
+ * Validates the session first (requires 'write' permission via RBAC).
+ * After deleting, refreshes the cache immediately for instant feedback.
+ * Returns signed response with updated live data.
+ */
+function deleteRow(token, rowIndex) {
+  var user = validateSessionForData(token, 'deleteRow');
+  checkPermission(user, 'write', 'deleteRow');
+
+  rowIndex = parseInt(rowIndex, 10);
+  if (isNaN(rowIndex) || rowIndex < 0) {
+    return signMessage({ type: 'gas-write-error', error: 'invalid_row_index' }, user.messageKey || '');
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2)
+  var sheetRow = rowIndex + 2;
+  if (sheetRow > sheet.getLastRow()) {
+    return signMessage({ type: 'gas-write-error', error: 'row_out_of_range' }, user.messageKey || '');
+  }
+
+  sheet.deleteRow(sheetRow);
+
+  // Refresh cache immediately for instant feedback
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'delete_row', {
+    row: rowIndex, sheet: SHEET_NAME
+  });
+
+  var deleteResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  deleteResult.liveData = getCachedData();
+  return deleteResult;
+}
+
+// ══════════════
 // PROJECT END
 // ══════════════
 
@@ -1690,7 +1910,24 @@ function checkSpreadsheetAccess(email, opt_ss) {
   return denied;
 }
 
-// PROJECT START — Add your project-specific code here
+// PROJECT START — inventorymanagement data polling
+// ── Authenticated data poll — lightweight session check + data return ──
+// Called from doGet(action=getData) with token passed as URL parameter.
+// Unlike processHeartbeat(), this does NOT extend the session — it only verifies
+// the session exists in CacheService, then returns cached data. ~2x lighter than
+// heartbeat (no HMAC regen, no session write, no absolute timeout check).
+function processDataPoll(token) {
+  if (!token) {
+    return {type: 'live-data', data: null, error: 'no_token'};
+  }
+  var cache = getEpochCache();
+  var sessionRaw = cache.get("session_" + token);
+  if (!sessionRaw) {
+    return {type: 'live-data', data: null, error: 'no_session'};
+  }
+  // Session exists — user is authenticated. Return cached data.
+  return {type: 'live-data', data: getCachedData()};
+}
 // PROJECT END
 // =============================================
 // AUTH — Web App Entry Point (doGet)
@@ -1966,6 +2203,25 @@ function doGet(e) {
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
+
+  // PROJECT START — inventorymanagement data poll action handler
+  // Data poll action — validates session token then returns cached data inline.
+  // Token is passed as URL parameter (not postMessage — Google's nested iframe
+  // wrapper drops parent→child messages, making the ready/token handshake unreliable).
+  // Security: token is HTTPS-encrypted in transit, and only validates session existence
+  // (read-only CacheService check, no session extension).
+  if (action === 'getData') {
+    var dpToken = (e && e.parameter && e.parameter.token) || '';
+    var dpResult = processDataPoll(dpToken);
+    var dataListenerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      + 'window.top.postMessage(' + JSON.stringify(dpResult) + ', PARENT_ORIGIN);'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(dataListenerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  // PROJECT END
 
   // Admin session management — returns page that listens for admin commands via postMessage
   if (action === 'adminSessions') {
@@ -2323,6 +2579,85 @@ function doGet(e) {
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
+
+  // PROJECT START — Worker RPC bridge for HTML-layer UI
+  // Returns a lightweight page that proxies google.script.run calls via postMessage.
+  // The HTML layer sends {type:'gas-rpc', callId:N, fn:'functionName', args:[...]}
+  // and receives {type:'gas-rpc-result', callId:N, result:...} or {type:'gas-rpc-error',...}.
+  // Also sends gas-auth-ok on load so the existing auth flow works unchanged.
+  if (action === 'worker') {
+    var workerSessionToken = sessionToken || '';
+    var workerSession = validateSession(workerSessionToken);
+    if (workerSession.status !== 'authorized') {
+      var workerAuthHtml = '<!DOCTYPE html><html><body><script>'
+        + 'window.top.postMessage({type:"gas-needs-auth",authStatus:"' + escapeJs(workerSession.status) + '",email:"' + escapeJs(workerSession.email || '') + '",version:"' + escapeJs(VERSION) + '",evictionReason:"' + escapeJs(workerSession.evictionReason || '') + '"}, ' + JSON.stringify(PARENT_ORIGIN) + ');'
+        + '</' + 'script></body></html>';
+      return HtmlService.createHtmlOutput(workerAuthHtml)
+        .setTitle(TITLE)
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    }
+    // Retrieve messageKey for signing outgoing messages
+    var workerMsgKey = '';
+    try {
+      var wCache = getEpochCache();
+      var wRaw = wCache.get('session_' + workerSessionToken);
+      if (wRaw) { workerMsgKey = JSON.parse(wRaw).messageKey || ''; }
+    } catch(ex) {}
+    var workerIsAdmin = (workerSession.role === 'admin');
+    var workerHtml = '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body><script>'
+      + 'var PARENT_ORIGIN = ' + JSON.stringify(PARENT_ORIGIN) + ';'
+      // Send gas-auth-ok on load (same as the old doGet session page)
+      + 'window.top.postMessage({type:"gas-auth-ok",'
+      + '  version:' + JSON.stringify(VERSION) + ','
+      + '  needsReauth:' + (workerSession.needsReauth || false) + ','
+      + '  messageKey:' + JSON.stringify(workerMsgKey) + ','
+      + '  role:' + JSON.stringify(workerSession.role || RBAC_DEFAULT_ROLE) + ','
+      + '  permissions:' + JSON.stringify(workerSession.permissions || getRolesFromSpreadsheet()[workerSession.role] || getRolesFromSpreadsheet()[RBAC_DEFAULT_ROLE]) + ','
+      + '  isAdmin:' + workerIsAdmin
+      + '}, PARENT_ORIGIN);'
+      // Also send signed version via google.script.run (belt-and-suspenders)
+      + 'google.script.run'
+      + '  .withSuccessHandler(function(signed) {'
+      + '    window.top.postMessage(signed, PARENT_ORIGIN);'
+      + '  })'
+      + '  .withFailureHandler(function() {})'
+      + '  .signAppMessage(' + JSON.stringify(workerSessionToken) + ', "gas-auth-ok");'
+      // RPC bridge: listen for gas-rpc messages and proxy to google.script.run
+      + 'window.addEventListener("message", function(evt) {'
+      + '  if (evt.origin !== PARENT_ORIGIN) return;'
+      + '  if (!evt.data) return;'
+      // Handle gas-version-check (existing protocol)
+      + '  if (evt.data.type === "gas-version-check") {'
+      + '    google.script.run'
+      + '      .withSuccessHandler(function(signed) { window.top.postMessage(signed, PARENT_ORIGIN); })'
+      + '      .withFailureHandler(function() {})'
+      + '      .signAppMessage(' + JSON.stringify(workerSessionToken) + ', "gas-version");'
+      + '    return;'
+      + '  }'
+      // Handle generic RPC calls
+      + '  if (evt.data.type !== "gas-rpc") return;'
+      + '  var callId = evt.data.callId;'
+      + '  var fn = evt.data.fn;'
+      + '  var args = evt.data.args || [];'
+      + '  try {'
+      + '    var runner = google.script.run'
+      + '      .withSuccessHandler(function(r) {'
+      + '        window.top.postMessage({type:"gas-rpc-result",callId:callId,result:r}, PARENT_ORIGIN);'
+      + '      })'
+      + '      .withFailureHandler(function(e) {'
+      + '        window.top.postMessage({type:"gas-rpc-error",callId:callId,error:String(e)}, PARENT_ORIGIN);'
+      + '      });'
+      + '    runner[fn].apply(runner, args);'
+      + '  } catch(ex) {'
+      + '    window.top.postMessage({type:"gas-rpc-error",callId:callId,error:String(ex)}, PARENT_ORIGIN);'
+      + '  }'
+      + '});'
+      + '</' + 'script></body></html>';
+    return HtmlService.createHtmlOutput(workerHtml)
+      .setTitle(TITLE)
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+  // PROJECT END
 
   // Phase 7 cleanup: Legacy URL-parameter heartbeat (?heartbeat=TOKEN) and
   // sign-out (?signOut=TOKEN) routes removed. These are now handled by:
