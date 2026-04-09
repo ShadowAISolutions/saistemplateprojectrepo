@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v10.38r] — 2026-04-09 01:58:03 PM EST
+
+> **Prompt:** "make the data come up on startup because i only see the data after the first 15 second poll"
+
+### Fixed
+- Live Data App data poll delay — `_startGasDataPoll()` scheduled the first `_doDataPoll()` call after a 15-second `setTimeout` instead of calling it immediately, causing the "Waiting for data..." state to persist until the first poll fired
+
+#### `testauthhtml1.html` — v01.08w
+##### Fixed
+- Data now loads immediately after signing in instead of waiting 15 seconds
 
 ## [v10.37r] — 2026-04-09 01:38:06 PM EST
 
