@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06g] — 2026-04-09 09:59:32 AM EST — v10.28r
+
+### Fixed
+- Restock operations are faster with batch cell updates
+- Single data endpoint reduces server calls per poll cycle
 
 ## [v01.05g] — 2026-04-09 09:47:10 AM EST — v10.27r
 

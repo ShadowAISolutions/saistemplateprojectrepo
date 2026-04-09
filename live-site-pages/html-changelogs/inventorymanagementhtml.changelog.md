@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 24/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v01.25w] — 2026-04-09 09:59:32 AM EST — v10.28r
+
+### Fixed
+- Inventory data now loads reliably on first attempt instead of sometimes requiring multiple retries
 
 ## [v01.24w] — 2026-04-09 09:47:10 AM EST — v10.27r
 

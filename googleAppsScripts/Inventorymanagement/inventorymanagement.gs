@@ -1,4 +1,4 @@
-var VERSION = "v01.05g";
+var VERSION = "v01.06g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -340,10 +340,8 @@ function processAddQrEntry(token, barcode, itemName, quantity) {
     // Update item name if provided and currently empty
     var existingName = String(data[foundRow - 1][1] || '');
     var updatedName = (itemName && !existingName) ? itemName : existingName;
-    sheet.getRange(foundRow, 2).setValue(updatedName);  // Item Name
-    sheet.getRange(foundRow, 3).setValue(newQty);        // Quantity
-    sheet.getRange(foundRow, 4).setValue(now);            // Last Updated
-    sheet.getRange(foundRow, 5).setValue(user);           // Last User
+    // Batch update: single setValues call instead of 4 individual setValue calls
+    sheet.getRange(foundRow, 2, 1, 4).setValues([[updatedName, newQty, now, user]]);
     action = 'Restock';
   } else {
     // New item: append
@@ -369,40 +367,54 @@ function _logHistory(ss, timestamp, user, action, barcode, itemName, qtyChange, 
 }
 
 /**
- * Retrieve recent QR scan entries from the spreadsheet.
- * Called from HTML layer via doPost(action=getQrEntries).
+ * Retrieve inventory entries + history in a single call.
+ * Called from HTML layer via doPost(action=getInventoryData).
+ * Returns { success, entries: [...], history: [...] }
  */
-function processGetQrEntries(token, limit) {
-  var session = validateSessionForData(token, 'getQrEntries');
-
+function processGetInventoryData(token, limit) {
+  var session = validateSessionForData(token, 'getInventoryData');
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) return { success: true, entries: [] };
 
-  var allData = sheet.getDataRange().getValues();
-  // Skip header row (index 0)
-  var rows = allData.slice(1);
-  var maxRows = Math.min(limit || 20, rows.length);
-  var startIdx = rows.length - maxRows;
-  var recent = [];
-  for (var i = rows.length - 1; i >= startIdx; i--) {
-    recent.push({ row: rows[i], sheetRow: i });
+  // --- Inventory entries ---
+  var entries = [];
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (sheet && sheet.getLastRow() > 1) {
+    var allData = sheet.getDataRange().getValues();
+    var rows = allData.slice(1);
+    var maxRows = Math.min(limit || 50, rows.length);
+    for (var i = rows.length - 1; i >= rows.length - maxRows && i >= 0; i--) {
+      entries.push({
+        barcode: String(rows[i][0] || ''),
+        itemName: String(rows[i][1] || ''),
+        quantity: rows[i][2] != null ? rows[i][2] : '',
+        lastUpdated: rows[i][3] ? new Date(rows[i][3]).toISOString() : '',
+        lastUser: String(rows[i][4] || ''),
+        _rowIndex: i
+      });
+    }
   }
 
-  return {
-    success: true,
-    entries: recent.map(function(item) {
-      var row = item.row;
-      return {
-        barcode: String(row[0] || ''),
-        itemName: String(row[1] || ''),
-        quantity: row[2] != null ? row[2] : '',
-        lastUpdated: row[3] ? new Date(row[3]).toISOString() : '',
-        lastUser: String(row[4] || ''),
-        _rowIndex: item.sheetRow
-      };
-    })
-  };
+  // --- History entries ---
+  var history = [];
+  var histSheet = ss.getSheetByName('History');
+  if (histSheet && histSheet.getLastRow() > 1) {
+    var histData = histSheet.getDataRange().getValues();
+    var histRows = histData.slice(1);
+    var histMax = Math.min(limit || 50, histRows.length);
+    for (var h = histRows.length - 1; h >= histRows.length - histMax && h >= 0; h--) {
+      history.push({
+        timestamp: histRows[h][0] ? new Date(histRows[h][0]).toISOString() : '',
+        user: String(histRows[h][1] || ''),
+        action: String(histRows[h][2] || ''),
+        barcode: String(histRows[h][3] || ''),
+        itemName: String(histRows[h][4] || ''),
+        quantityChange: String(histRows[h][5] || ''),
+        newQuantity: histRows[h][6] != null ? histRows[h][6] : ''
+      });
+    }
+  }
+
+  return { success: true, entries: entries, history: history };
 }
 
 /**
@@ -443,40 +455,6 @@ function processDeleteQrEntry(token, rowIndex) {
   return { success: true };
 }
 
-/**
- * Retrieve recent history entries from the History sheet.
- * Called from HTML layer via doPost(action=getQrHistory).
- */
-function processGetQrHistory(token, limit) {
-  var session = validateSessionForData(token, 'getQrHistory');
-
-  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName('History');
-  if (!sheet) return { success: true, entries: [] };
-
-  var allData = sheet.getDataRange().getValues();
-  var rows = allData.slice(1); // skip header
-  var maxRows = Math.min(limit || 50, rows.length);
-  var recent = [];
-  for (var i = rows.length - 1; i >= rows.length - maxRows && i >= 0; i--) {
-    recent.push(rows[i]);
-  }
-
-  return {
-    success: true,
-    entries: recent.map(function(row) {
-      return {
-        timestamp: row[0] ? new Date(row[0]).toISOString() : '',
-        user: String(row[1] || ''),
-        action: String(row[2] || ''),
-        barcode: String(row[3] || ''),
-        itemName: String(row[4] || ''),
-        quantityChange: String(row[5] || ''),
-        newQuantity: row[6] != null ? row[6] : ''
-      };
-    })
-  };
-}
 
 // PROJECT END
 // ══════════════
@@ -948,14 +926,14 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
-  if (action === "getQrEntries") {
+  if (action === "getInventoryData") {
     try {
-      var gqBody = JSON.parse(e.postData.contents);
-      var gqResult = processGetQrEntries(gqBody.token, gqBody.limit);
-      return ContentService.createTextOutput(JSON.stringify(gqResult))
+      var giBody = JSON.parse(e.postData.contents);
+      var giResult = processGetInventoryData(giBody.token, giBody.limit);
+      return ContentService.createTextOutput(JSON.stringify(giResult))
         .setMimeType(ContentService.MimeType.JSON);
-    } catch (gqErr) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: gqErr.message }))
+    } catch (giErr) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: giErr.message }))
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
@@ -970,18 +948,6 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
   }
-  if (action === "getQrHistory") {
-    try {
-      var ghBody = JSON.parse(e.postData.contents);
-      var ghResult = processGetQrHistory(ghBody.token, ghBody.limit);
-      return ContentService.createTextOutput(JSON.stringify(ghResult))
-        .setMimeType(ContentService.MimeType.JSON);
-    } catch (ghErr) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, error: ghErr.message }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-  }
-
   return ContentService.createTextOutput("Unknown action");
 }
 

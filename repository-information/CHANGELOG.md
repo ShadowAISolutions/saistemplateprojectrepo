@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v10.28r] — 2026-04-09 09:59:32 AM EST
+
+> **Prompt:** "fix it but it should be a single gas call, no parallel"
+
+### Fixed
+- Data poll now makes a single GAS call (`getInventoryData`) returning both inventory + history, instead of 2 parallel calls that could cause one to fail and block the other
+- GAS upsert now uses a single `setValues()` batch call instead of 4 individual `setValue()` calls, reducing Sheets API overhead ~4x on restock operations
+
+### Changed
+- Merged GAS `processGetQrEntries` + `processGetQrHistory` into single `processGetInventoryData` endpoint
+- Removed separate `getQrHistory` doPost handler (consolidated into `getInventoryData`)
+
+#### `inventorymanagement.html` — v01.25w
+
+##### Fixed
+- Inventory data now loads reliably on first attempt — single GAS call eliminates the race condition where parallel calls could fail together
+
+#### `inventorymanagement.gs` — v01.06g
+
+##### Fixed
+- Restock operations are faster — batch cell update instead of 4 individual writes
+- Single data endpoint returns both inventory and history, halving the number of server calls per poll cycle
 
 ## [v10.27r] — 2026-04-09 09:47:10 AM EST
 
