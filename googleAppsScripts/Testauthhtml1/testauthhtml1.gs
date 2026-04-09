@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "testauthhtml1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -329,7 +329,13 @@ function refreshDataCache() {
   try {
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) return;
+    if (!sheet) {
+      // Auto-create the sheet with default headers if it was deleted
+      sheet = ss.insertSheet(SHEET_NAME);
+      sheet.getRange(1, 1, 1, 6).setValues([['Timestamp', 'Barcode', 'Item Name', 'Quantity', 'Last Updated', 'Last User']]);
+      // Clear stale cache so old data doesn't persist
+      CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
+    }
     var data = sheet.getDataRange().getValues();
     var headers = data[0] || [];
     var rows = data.slice(1);

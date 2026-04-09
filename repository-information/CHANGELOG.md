@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v10.40r] — 2026-04-09 02:25:59 PM EST
+
+> **Prompt:** "i deleted the Live_Sheet tab but its not automatically creating it, its still showing the old data for some reason with the old columns"
+
+### Fixed
+- `refreshDataCache()` silently returned when `Live_Sheet` tab was missing (`if (!sheet) return`) without clearing the stale 6-hour CacheService entry — old data persisted indefinitely after the sheet was deleted
+- Added auto-creation: when the sheet tab doesn't exist, `refreshDataCache()` now creates it with the correct 6-column headers (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) and clears the stale cache before proceeding to re-read
+
+#### `testauthhtml1.gs` — v01.03g
+##### Fixed
+- Data sheet now auto-creates with correct headers if deleted, and stale cached data is cleared
 
 ## [v10.39r] — 2026-04-09 02:19:59 PM EST
 
