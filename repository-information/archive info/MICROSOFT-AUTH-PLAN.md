@@ -653,7 +653,7 @@ This should be called early, before the page load IIFE, so MSAL is ready when th
 ### 4. Existing Auth Pages (Template Propagation)
 
 Per Pre-Commit #19, changes to the auth template propagate to all existing auth pages:
-- `live-site-pages/testauth1.html` — auth page, gets all changes
+- `live-site-pages/testauthgas1.html` — auth page, gets all changes
 
 Non-auth pages (`index.html`, `gas-project-creator.html`) are unaffected — they use the noauth template.
 
@@ -749,7 +749,7 @@ These systems work identically for both providers — no modifications needed:
 | GAS template (minimal auth) — new config, functions, modifications | ~30 min |
 | GAS template (test auth) — mirror minimal auth changes | ~15 min |
 | HTML auth template — MSAL init, sign-in functions, UI, provider routing | ~45 min |
-| Template propagation to testauth1.html | ~10 min (automatic via Pre-Commit #19) |
+| Template propagation to testauthgas1.html | ~10 min (automatic via Pre-Commit #19) |
 | Config file updates, documentation | ~15 min |
 | Version bumps, changelogs, commit/push cycle | ~15 min |
 | **Total** | **~2 hours (~1 session)** |
@@ -761,7 +761,7 @@ These systems work identically for both providers — no modifications needed:
 1. **Syntax check**: After all edits, verify no JavaScript syntax errors by reviewing the modified sections
 2. **Config consistency**: Verify `AUTH_PROVIDER` defaults to `'google'` in all templates — existing behavior is unchanged unless the user explicitly sets it to `'microsoft'` or `'both'`
 3. **Backward compatibility**: With `AUTH_PROVIDER = 'google'` (default), the system should behave identically to the current implementation — no Microsoft code paths are executed, no Microsoft button is shown, no MSAL library is loaded (use a guard to skip loading if AUTH_PROVIDER is 'google')
-4. **Template propagation**: Verify testauth1.html receives all template changes via Pre-Commit #19
+4. **Template propagation**: Verify testauthgas1.html receives all template changes via Pre-Commit #19
 5. **Provider isolation**: Verify that Google sign-in button calls Google GIS, Microsoft button calls MSAL, and each path passes the correct `authProvider` parameter through the token exchange chain
 
 ---

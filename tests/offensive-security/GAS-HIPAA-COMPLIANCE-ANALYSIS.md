@@ -1,6 +1,6 @@
 # Google Apps Script — HIPAA Compliance Analysis Under Workspace BAA
 
-> **Context:** This analysis evaluates whether Google Apps Script (GAS) is covered under a Google Workspace Business Associate Agreement (BAA) for HIPAA compliance, and what limitations apply — particularly for web app deployments like testauth1. Research conducted March 2026 using current Google documentation, HIPAA guidance, and industry sources.
+> **Context:** This analysis evaluates whether Google Apps Script (GAS) is covered under a Google Workspace Business Associate Agreement (BAA) for HIPAA compliance, and what limitations apply — particularly for web app deployments like testauthgas1. Research conducted March 2026 using current Google documentation, HIPAA guidance, and industry sources.
 
 ---
 
@@ -11,7 +11,7 @@
 - [Concerns for GAS Web App Deployments](#concerns-for-gas-web-app-deployments)
 - [Comparison: Platform vs Application Responsibility](#comparison-platform-vs-application-responsibility)
 - [Google's Own GAS-Specific Guidance](#googles-own-gas-specific-guidance)
-- [Impact on testauth1 Architecture](#impact-on-testauth1-architecture)
+- [Impact on testauthgas1 Architecture](#impact-on-testauthgas1-architecture)
 - [Bottom Line Summary](#bottom-line-summary)
 - [Sources](#sources)
 
@@ -145,7 +145,7 @@ From the [Google Workspace HIPAA Implementation Guide (September 2025)](https://
 
 ---
 
-## Impact on testauth1 Architecture
+## Impact on testauthgas1 Architecture
 
 Every finding in the [HTML Auth Security Audit](HTML-AUTH-SECURITY-AUDIT.md) remains fully applicable despite the BAA coverage. Specifically:
 
@@ -174,7 +174,7 @@ Every finding in the [HTML Auth Security Audit](HTML-AUTH-SECURITY-AUDIT.md) rem
 | Question | Answer |
 |----------|--------|
 | Is Apps Script covered by the Workspace BAA? | **Yes** — explicitly listed since September 2025 |
-| Does that make testauth1 code HIPAA-compliant? | **No** — all 24 audit findings are application-layer issues |
+| Does that make testauthgas1 code HIPAA-compliant? | **No** — all 24 audit findings are application-layer issues |
 | Can you use Apps Script web apps for PHI workflows? | **Yes, with proper controls** — domain-restricted access, audit logging, no PHI in URLs, encryption, MFA |
 | Do the SECURITY-REMEDIATION-GUIDE.md fixes still apply? | **100% yes** — the BAA covers the platform, not your code |
 | Are third-party add-ons/integrations covered? | **No** — explicitly excluded from the BAA |

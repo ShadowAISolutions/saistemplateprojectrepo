@@ -1,15 +1,15 @@
-# Template Update Plan: Sync Auth Templates with testauth1
+# Template Update Plan: Sync Auth Templates with testauthgas1
 
 > **Status:** Draft — awaiting developer approval
 > **Created:** 2026-03-19
-> **Approach:** Copy-then-modify (copy testauth1 files as new templates, then make targeted edits)
+> **Approach:** Copy-then-modify (copy testauthgas1 files as new templates, then make targeted edits)
 > **Scope:** Update `gas-minimal-auth-template-code.js.txt`, `gas-test-auth-template-code.js.txt`, `HtmlAndGasTemplateAutoUpdate-auth.html.txt`, and `setup-gas-project.sh`
 
 ---
 
 ## Overview
 
-Instead of writing thousands of lines from scratch, **copy testauth1's working files as the new templates** and make ~20-30 targeted modifications to genericize them. This is dramatically simpler than the previous approach because testauth1 already has every feature we want in the templates.
+Instead of writing thousands of lines from scratch, **copy testauthgas1's working files as the new templates** and make ~20-30 targeted modifications to genericize them. This is dramatically simpler than the previous approach because testauthgas1 already has every feature we want in the templates.
 
 ### Why copy-then-modify?
 
@@ -22,29 +22,29 @@ Instead of writing thousands of lines from scratch, **copy testauth1's working f
 
 ## Phase 1: GAS Auth Template (`gas-minimal-auth-template-code.js.txt`)
 
-**Source:** `googleAppsScripts/Testauth1/testauth1.gs` (2,116 lines)
+**Source:** `googleAppsScripts/Testauthgas1/testauthgas1.gs` (2,116 lines)
 **Target:** `live-site-pages/templates/gas-minimal-auth-template-code.js.txt`
 **Estimated edits:** ~20-25
 
 ### Step 1.1: Copy
 
 ```bash
-cp googleAppsScripts/Testauth1/testauth1.gs live-site-pages/templates/gas-minimal-auth-template-code.js.txt
+cp googleAppsScripts/Testauthgas1/testauthgas1.gs live-site-pages/templates/gas-minimal-auth-template-code.js.txt
 ```
 
 ### Step 1.2: Replace project-specific values with placeholders
 
-| Value in testauth1 | Template placeholder |
+| Value in testauthgas1 | Template placeholder |
 |---------------------|---------------------|
-| `var TITLE = 'testauth1';` | `var TITLE = 'TEMPLATE_TITLE';` |
+| `var TITLE = 'testauthgas1';` | `var TITLE = 'TEMPLATE_TITLE';` |
 | `var DEPLOYMENT_ID = '...'` | `var DEPLOYMENT_ID = 'TEMPLATE_DEPLOYMENT_ID';` |
 | `var SPREADSHEET_ID = '...'` | `var SPREADSHEET_ID = 'TEMPLATE_SPREADSHEET_ID';` |
-| `var SHEET_NAME     = 'Testauth1Data';` | `var SHEET_NAME     = 'Sheet1';` |
+| `var SHEET_NAME     = 'Testauthgas1Data';` | `var SHEET_NAME     = 'Sheet1';` |
 | `var GITHUB_OWNER  = 'ShadowAISolutions';` | `var GITHUB_OWNER  = 'TEMPLATE_GITHUB_OWNER';` |
 | `var GITHUB_REPO   = 'saistemplateprojectrepo';` | `var GITHUB_REPO   = 'TEMPLATE_GITHUB_REPO';` |
 | `var CLIENT_ID = '...'` | `var CLIENT_ID = 'TEMPLATE_CLIENT_ID';` |
 | `var SOUND_FILE_ID = '...'` | `var SOUND_FILE_ID = '';` |
-| Any hardcoded `testauth1` references in strings | Generic equivalents |
+| Any hardcoded `testauthgas1` references in strings | Generic equivalents |
 
 ### Step 1.3: Swap test values for production values
 
@@ -67,7 +67,7 @@ Also remove all `⚡ TEST VALUE` comment annotations.
 Replace project-specific roles with generic ones:
 
 ```javascript
-// FROM (testauth1):
+// FROM (testauthgas1):
 var RBAC_ROLES_FALLBACK = {
   admin:     ['read', 'write', 'delete', 'export', 'admin'],
   clinician: ['read', 'write', 'export'],
@@ -111,31 +111,31 @@ var VERSION = "v01.00g";
 - Remove `saveNote` UI elements from `doGet()` inline HTML (input fields, save button, related JavaScript)
 - Verify `ACTIVE_PRESET` defaults to `'standard'`
 - Ensure `ALLOWED_DOMAINS: []` and `ENABLE_DOMAIN_RESTRICTION: false` are present
-- Remove any remaining testauth1-specific comments or references
+- Remove any remaining testauthgas1-specific comments or references
 - Update the `Developed by:` footer
 
 ---
 
 ## Phase 2: HTML Auth Template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`)
 
-**Source:** `live-site-pages/testauth1.html`
+**Source:** `live-site-pages/testauthgas1.html`
 **Target:** `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`
 **Estimated edits:** ~20-25
 
 ### Step 2.1: Copy
 
 ```bash
-cp live-site-pages/testauth1.html live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt
+cp live-site-pages/testauthgas1.html live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt
 ```
 
 ### Step 2.2: Replace project-specific values with placeholders
 
-| Value in testauth1.html | Template placeholder |
+| Value in testauthgas1.html | Template placeholder |
 |-------------------------|---------------------|
-| `<title>testauth1</title>` | `<title>TEMPLATE_TITLE</title>` |
+| `<title>testauthgas1</title>` | `<title>TEMPLATE_TITLE</title>` |
 | `var _e = '...'` (encoded deployment URL) | `var _e = '';` |
 | `LOGO_URL` value | `'YOUR_ORG_LOGO_URL'` or template default |
-| Any hardcoded `testauth1` references | Generic equivalents |
+| Any hardcoded `testauthgas1` references | Generic equivalents |
 
 ### Step 2.3: Swap test values for production values
 
@@ -155,13 +155,13 @@ HTML-side config values that mirror the GAS test values:
 ### Step 2.5: Reset version
 
 - Update `<meta name="build-version" content="v01.00w">`
-- Remove any testauth1-specific version references
+- Remove any testauthgas1-specific version references
 
 ### Step 2.6: Clean up
 
 - Ensure `ALLOWED_DOMAINS: []` is present in HTML_CONFIG
 - Verify all GAS iframe references use the `_e` variable (not hardcoded URLs)
-- Remove any remaining testauth1-specific comments
+- Remove any remaining testauthgas1-specific comments
 - Update the `Developed by:` footer
 
 ---
@@ -219,7 +219,7 @@ After Phases 1-2, verify that the following sed patterns in `setup-gas-project.s
 
 ### Step 4.2: Fix any mismatches
 
-If testauth1 uses different spacing or formatting than what the sed patterns expect, update the sed patterns in `setup-gas-project.sh` to match the new template format.
+If testauthgas1 uses different spacing or formatting than what the sed patterns expect, update the sed patterns in `setup-gas-project.sh` to match the new template format.
 
 ### Step 4.3: Verify config.json template
 
@@ -244,7 +244,7 @@ Features that do **NOT** apply to noauth:
 
 ## What Gets EXCLUDED from Templates
 
-These testauth1-specific items are **not** brought to the templates:
+These testauthgas1-specific items are **not** brought to the templates:
 
 1. **Test timeout values** — 30s heartbeat, 3min session, etc. → use production values
 2. **Project-specific RBAC roles** — `clinician`, `billing` → use generic `admin`, `editor`, `viewer`
@@ -258,7 +258,7 @@ These testauth1-specific items are **not** brought to the templates:
 
 ## What Gets INCLUDED (features the templates gain)
 
-All of these come "for free" by copying testauth1:
+All of these come "for free" by copying testauthgas1:
 
 1. **RBAC system** — roles, permissions, spreadsheet-driven, 3-tier caching
 2. **Cache epoch system** — nuclear cache invalidation
@@ -300,6 +300,6 @@ All phases can be done in a single session.
 2. **Verify sed patterns after Phase 1-2** — dry-run `setup-gas-project.sh` or manually compare patterns
 3. **Test propagation** — after template updates, verify Pre-Commit #20 (Template Source Propagation) correctly identifies changes
 4. **Preserve PROJECT OVERRIDE markers** — any overrides in existing pages must be respected during propagation
-5. **Diff check** — after each phase, diff the new template against testauth1 to confirm only the intended changes were made
+5. **Diff check** — after each phase, diff the new template against testauthgas1 to confirm only the intended changes were made
 
 Developed by: ShadowAISolutions

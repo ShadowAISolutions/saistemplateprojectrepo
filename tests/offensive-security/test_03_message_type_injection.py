@@ -15,7 +15,7 @@ import sys
 import json
 from playwright.sync_api import sync_playwright
 
-TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html"
+TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthgas1.html"
 
 
 def run_test():

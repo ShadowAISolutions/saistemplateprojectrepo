@@ -6,7 +6,7 @@ A comprehensive write-up of the multi-session troubleshooting effort to prevent 
 
 ## The Problem
 
-When a user signs into a GAS-backed authenticated app (e.g. testauth1), the embedding HTML page loads the GAS app inside an iframe using a URL like:
+When a user signs into a GAS-backed authenticated app (e.g. testauthgas1), the embedding HTML page loads the GAS app inside an iframe using a URL like:
 
 ```
 https://script.google.com/.../exec?session=TOKEN
@@ -146,7 +146,7 @@ Also removed all the workarounds (unsigned `gas-auth-ok`, sig-exempt exceptions)
 
 3. **When opened directly:** `window.top` is Google's script.google.com shell, which does NOT match `PARENT_ORIGIN`. The `postMessage` is silently dropped (per the Web API spec — origin mismatch = silent drop, no error). No response ever arrives. After 2 seconds, the timeout fires, wipes `document.body.innerHTML`, and shows "Access denied."
 
-4. **Why `event.source` is critical:** `gasApp.contentWindow.postMessage()` would send the response to Google's outer shell iframe (the `<iframe>` element's contentWindow), NOT the sandbox frame where the code actually runs. `event.source` is the WindowProxy of the frame that sent the challenge — the sandbox itself. This was already documented in the codebase (testauth1.html line 1646-1652) from the token exchange flow.
+4. **Why `event.source` is critical:** `gasApp.contentWindow.postMessage()` would send the response to Google's outer shell iframe (the `<iframe>` element's contentWindow), NOT the sandbox frame where the code actually runs. `event.source` is the WindowProxy of the frame that sent the challenge — the sandbox itself. This was already documented in the codebase (testauthgas1.html line 1646-1652) from the token exchange flow.
 
 ## Summary of What We Learned
 
@@ -191,9 +191,9 @@ Also removed all the workarounds (unsigned `gas-auth-ok`, sig-exempt exceptions)
 
 | File | Role |
 |------|------|
-| `googleAppsScripts/Testauth1/testauth1.gs` | GAS server + authenticated HTML — contains the handshake guard |
+| `googleAppsScripts/Testauthgas1/testauthgas1.gs` | GAS server + authenticated HTML — contains the handshake guard |
 | `googleAppsScripts/Portal/portal.gs` | Portal GAS server — contains the handshake guard |
-| `live-site-pages/testauth1.html` | Embedding page — contains the handshake responder |
+| `live-site-pages/testauthgas1.html` | Embedding page — contains the handshake responder |
 | `live-site-pages/portal.html` | Portal embedding page — contains the handshake responder |
 | `live-site-pages/templates/gas-minimal-auth-template-code.js.txt` | Auth GAS template — handshake guard |
 | `live-site-pages/templates/gas-test-auth-template-code.js.txt` | Test auth GAS template — handshake guard |

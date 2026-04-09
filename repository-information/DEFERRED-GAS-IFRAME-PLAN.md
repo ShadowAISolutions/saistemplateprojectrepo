@@ -2,7 +2,7 @@
 
 **Status:** Draft — not yet implemented
 **Created:** 2026-04-05
-**Affects:** `live-site-pages/testauth1.html`, `googleAppsScripts/Testauth1/testauth1.gs`
+**Affects:** `live-site-pages/testauthgas1.html`, `googleAppsScripts/Testauthgas1/testauthgas1.gs`
 
 ## Problem
 
@@ -70,7 +70,7 @@ Instead of sending the Google access token through the iframe (by navigating it 
 
 ### Implementation Steps
 
-#### Step 1: Add JSON response mode to GAS `doGet()` (testauth1.gs)
+#### Step 1: Add JSON response mode to GAS `doGet()` (testauthgas1.gs)
 
 Add a new action handler in `doGet()` that accepts `action=exchangeToken&token=TOKEN` and returns a JSON response instead of HTML:
 

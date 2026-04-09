@@ -1329,7 +1329,7 @@
     // 3. Add 'https://api.ipify.org' back to connect-src in the CSP meta tag
     // 4. Uncomment the IP forwarding blocks in the message handler and gas-auth-ok handler
     // 5. Uncomment the clientIp parameter in the heartbeat URL
-    // 6. Re-enable corresponding GAS-side code (see testauth1.gs)
+    // 6. Re-enable corresponding GAS-side code (see testauthgas1.gs)
     // 7. Obtain a BAA with your IP lookup provider or use a Google Cloud Function proxy
     //
     // var _clientIp = '';  // Client IP for audit logging

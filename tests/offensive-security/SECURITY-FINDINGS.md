@@ -1,6 +1,6 @@
-# Security Findings — testauth1 Offensive Security Tests
+# Security Findings — testauthgas1 Offensive Security Tests
 
-Comprehensive findings from offensive security testing of the testauth1 authentication system. Each section documents what was tested, what was found, the defense posture, and any known limitations.
+Comprehensive findings from offensive security testing of the testauthgas1 authentication system. Each section documents what was tested, what was found, the defense posture, and any known limitations.
 
 Last updated: 2026-03-16 (v04.29r)
 
@@ -183,7 +183,7 @@ The `/dev` URL returns the HTML page shell (HTTP 200) to anyone, but the GAS ifr
 | Attack | Result | Detail |
 |--------|--------|--------|
 | 1 — postMessage flood (100 msgs) | BLOCKED | First-write-wins held; 100 rapid messages could not overwrite the legitimate messageKey |
-| 2 — BroadcastChannel hijack | BLOCKED | All channel name patterns (testauth1-sync, session-sync, auth-sync, etc.) failed — channel names are session-specific and not guessable |
+| 2 — BroadcastChannel hijack | BLOCKED | All channel name patterns (testauthgas1-sync, session-sync, auth-sync, etc.) failed — channel names are session-specific and not guessable |
 | 3 — BroadcastChannel DoS | BLOCKED | Forced sign-out via broadcast rejected — cross-tab messages don't bypass signature verification |
 | 4 — HMAC timing oracle | BLOCKED | 100 iterations showed no measurable timing variance between valid and invalid signatures — constant-time comparison confirmed |
 | 5 — Storage event injection | BLOCKED | sessionStorage events from other contexts don't affect the auth state machine |
@@ -411,7 +411,7 @@ This is the **only lever that immediately stops an ongoing attack** against the 
 3. Create a **new deployment** (do not delete the old one yet — you need the new ID first)
 4. Copy the new deployment ID
 5. Update the deployment ID in:
-   - `googleAppsScripts/Testauth1/testauth1.config.json` → `DEPLOYMENT_ID` field
+   - `googleAppsScripts/Testauthgas1/testauthgas1.config.json` → `DEPLOYMENT_ID` field
    - Run the GAS config sync (Pre-Commit #15) to propagate to `.gs` and HTML files
 6. Commit, push, and deploy the updated page
 7. **After** the new deployment is live, delete the old deployment in the Apps Script editor
@@ -452,7 +452,7 @@ After the attack subsides:
 
 ## Defense-in-Depth Summary
 
-The testauth1 system uses multiple overlapping defense layers:
+The testauthgas1 system uses multiple overlapping defense layers:
 
 | Layer | What It Protects | Bypass Requires |
 |-------|-----------------|-----------------|

@@ -1,9 +1,16 @@
-# Changelog — testauth1title (Google Apps Script)
+# Changelog — testauthgas1title (Google Apps Script)
 
 All notable user-facing changes to this script are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1gs.changelog-archive.md](testauth1gs.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthgas1gs.changelog-archive.md](testauthgas1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
+
+## [Unreleased]
+
+## [v02.61g] — 2026-04-09 10:48:40 AM EST — v10.29r
+
+### Changed
+- Minor internal improvements
 
 ## [v02.60g] — 2026-04-07 05:02:49 PM EST — v09.67r
 

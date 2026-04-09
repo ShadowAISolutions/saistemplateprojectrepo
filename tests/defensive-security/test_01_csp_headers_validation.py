@@ -20,7 +20,7 @@ BASE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo"
 
 # Pages categorized by auth type
 AUTH_PAGES = [
-    {"name": "testauth1", "url": f"{BASE_URL}/testauth1.html"},
+    {"name": "testauthgas1", "url": f"{BASE_URL}/testauthgas1.html"},
     {"name": "globalacl", "url": f"{BASE_URL}/globalacl.html"},
     {"name": "programportal", "url": f"{BASE_URL}/programportal.html"},
 ]

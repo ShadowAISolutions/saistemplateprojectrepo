@@ -311,13 +311,13 @@ A covered entity or business associate must:
 **Unique User Identification (Required):**
 - Every user must have a unique identifier — no shared accounts, no generic logins
 - The system must track which user performed which action
-- In our testauth1 environment: Google OAuth provides unique email identity per user
+- In our testauthgas1 environment: Google OAuth provides unique email identity per user
 - Identifier must persist across sessions for audit trail continuity
 
 **Emergency Access Procedure (Required):**
 - The system must have a mechanism to grant access to ePHI during emergencies even if normal authentication is unavailable
 - This is a "break glass" mechanism — must be logged, audited, and restricted
-- In our testauth1 environment: `ENABLE_EMERGENCY_ACCESS: true` with designated emergency email addresses
+- In our testauthgas1 environment: `ENABLE_EMERGENCY_ACCESS: true` with designated emergency email addresses
 - Must not compromise security — emergency access events must be heavily audited
 
 **Automatic Logoff (Addressable):**
@@ -325,7 +325,7 @@ A covered entity or business associate must:
 - HIPAA does NOT specify a timeout value — the entity determines appropriate values through risk analysis
 - Common industry conventions: 15 minutes (CMS internal policy), 20 minutes (NIST recommendation for moderate-sensitivity systems)
 - **The commonly cited "15 minutes" is NOT a legal mandate** — it is an industry convention adopted by CMS internally
-- In our testauth1 environment: Heartbeat-based inactivity detection with configurable timeout
+- In our testauthgas1 environment: Heartbeat-based inactivity detection with configurable timeout
 - **[NPRM]** proposes making this Required (no longer Addressable)
 
 **Encryption and Decryption (Addressable):**
@@ -344,7 +344,7 @@ A covered entity or business associate must:
 - Your system MUST log: who accessed what, when, from where, and what they did
 - Audit logs must be tamper-resistant — users should not be able to modify their own audit entries
 - Logs must be retained (per §164.316(b)(2)(i)) for at least 6 years
-- In our testauth1 environment: `ENABLE_AUDIT_LOG: true` writes login, logout, session events to spreadsheet
+- In our testauthgas1 environment: `ENABLE_AUDIT_LOG: true` writes login, logout, session events to spreadsheet
 - Must cover: successful logins, failed login attempts, data access, data modifications, session creation/termination, emergency access events
 - **[NPRM]** proposes this is already Required — no change, but emphasizes examination of logs must also occur
 
@@ -358,7 +358,7 @@ A covered entity or business associate must:
 
 **Coding requirements in detail:**
 - Data integrity verification — checksums, hash validation, HMAC signatures
-- In our testauth1 environment: `ENABLE_HMAC_INTEGRITY: true` provides HMAC-based integrity verification on session data
+- In our testauthgas1 environment: `ENABLE_HMAC_INTEGRITY: true` provides HMAC-based integrity verification on session data
 - Must detect unauthorized modification — not just prevent it, but detect it after the fact
 - Database integrity constraints, version control for ePHI records
 - **[NPRM]** proposes making this Required
@@ -372,7 +372,7 @@ A covered entity or business associate must:
 **Coding requirements in detail:**
 - Authentication must positively verify identity — not just accept a credential, but confirm the credential belongs to the claimed identity
 - Authentication methods may include: something you know (password), something you have (token/device), something you are (biometric)
-- In our testauth1 environment: Google OAuth verifies identity; session tokens authenticate subsequent requests
+- In our testauthgas1 environment: Google OAuth verifies identity; session tokens authenticate subsequent requests
 - **[NPRM]** proposes mandatory multi-factor authentication (MFA) — at least 2 of 3 factor categories
 
 ### §164.312(e)(1) — Transmission Security
@@ -387,7 +387,7 @@ A covered entity or business associate must:
 **Coding requirements in detail:**
 - ALL ePHI transmitted over networks must be protected from interception
 - TLS 1.2 or higher for all HTTP communications — no exceptions for internal networks
-- In our testauth1 environment: HTTPS enforced by both GitHub Pages and Google Apps Script
+- In our testauthgas1 environment: HTTPS enforced by both GitHub Pages and Google Apps Script
 - Integrity controls: TLS provides integrity checking; HMAC verifies session data wasn't tampered with in transit
 - Do NOT transmit ePHI via unencrypted email, FTP, HTTP, or other unprotected channels
 - **[NPRM]** proposes making both specifications Required — encryption in transit will be mandatory with no alternative

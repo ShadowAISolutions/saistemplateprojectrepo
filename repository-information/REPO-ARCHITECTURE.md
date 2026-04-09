@@ -43,7 +43,7 @@ graph TB
         subgraph "Environments (Pages)"
             direction LR
             GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
-            TESTAUTH1_PAGE["[template] testauth1.html\n(Test Auth 1)"]
+            TESTAUTHGAS1_PAGE["[template] testauthgas1.html\n(Test Auth 1)"]
             GLOBALACL_PAGE["[template] globalacl.html\n(Global ACL)"]
             PROGRAMPORTAL_PAGE["[template] programportal.html\n(Program Portal)"]
             TEXTCOMPARE_PAGE["[template] text-compare.html\n(Text Compare Tool)"]
@@ -52,7 +52,7 @@ graph TB
 
         subgraph "Google Apps Scripts [template]"
             direction LR
-            GAS_TESTAUTH1["[template] testauth1.gs"]
+            GAS_TESTAUTHGAS1["[template] testauthgas1.gs"]
         end
 
         subgraph "Shared Resources [template]"
@@ -99,29 +99,29 @@ graph TB
         end
     end
 
-    TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTH1_PAGE
+    TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTHGAS1_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| GLOBALACL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| PROGRAMPORTAL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| INVENTORYMANAGEMENT_PAGE
-    GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTH1
+    GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTHGAS1
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_GLOBALACL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_PROGRAMPORTAL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INVENTORYMANAGEMENT
-    TESTAUTH1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTH1
+    TESTAUTHGAS1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTHGAS1
     LIVE -.->|"serves"| GASTPL_PAGE
-    LIVE -.->|"serves"| TESTAUTH1_PAGE
+    LIVE -.->|"serves"| TESTAUTHGAS1_PAGE
     LIVE -.->|"serves"| GLOBALACL_PAGE
     LIVE -.->|"serves"| PROGRAMPORTAL_PAGE
     LIVE -.->|"serves"| TEXTCOMPARE_PAGE
     LIVE -.->|"serves"| INVENTORYMANAGEMENT_PAGE
-    GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTH1
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTHGAS1
     GAS_DEPLOY -.->|"triggers self-update"| GAS_GLOBALACL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_PROGRAMPORTAL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INVENTORYMANAGEMENT
     SHA_FILE -.->|"read by"| SHA_CHECK
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| GASTPL_PAGE
-    HTML_VERS -.->|"version polling"| TESTAUTH1_PAGE
+    HTML_VERS -.->|"version polling"| TESTAUTHGAS1_PAGE
     HTML_VERS -.->|"version polling"| GLOBALACL_PAGE
     HTML_VERS -.->|"version polling"| PROGRAMPORTAL_PAGE
     HTML_VERS -.->|"version polling"| TEXTCOMPARE_PAGE
@@ -336,7 +336,7 @@ Environment-specific internals (page lifecycle states, maintenance mode, splash 
 | Environment | Diagram |
 |-------------|---------|
 | GAS Project Creator | [`repository-information/diagrams/gas-project-creator-diagram.md`](diagrams/gas-project-creator-diagram.md) |
-| Test Auth 1 | [`repository-information/diagrams/testauth1-diagram.md`](diagrams/testauth1-diagram.md) |
+| Test Auth 1 | [`repository-information/diagrams/testauthgas1-diagram.md`](diagrams/testauthgas1-diagram.md) |
 | Global ACL | [`repository-information/diagrams/globalacl-diagram.md`](diagrams/globalacl-diagram.md) |
 | Program Portal | [`repository-information/diagrams/programportal-diagram.md`](diagrams/programportal-diagram.md) |
 

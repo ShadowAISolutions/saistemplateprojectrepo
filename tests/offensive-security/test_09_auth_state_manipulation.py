@@ -19,7 +19,7 @@ import sys
 import json
 from playwright.sync_api import sync_playwright
 
-TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html"
+TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthgas1.html"
 GAS_BASE_URL = "https://script.google.com/macros/s/AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w/exec"
 
 

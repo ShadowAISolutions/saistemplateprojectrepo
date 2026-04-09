@@ -591,7 +591,7 @@ fi
 info "Phase 7: Updating REPO-ARCHITECTURE.md..."
 ARCH_FILE="repository-information/REPO-ARCHITECTURE.md"
 # Derive Mermaid node ID from ENV_NAME: uppercase, no separators
-# e.g. testauth1 → TESTAUTH1, my-app → MYAPP
+# e.g. testauthgas1 → TESTAUTHGAS1, my-app → MYAPP
 NODE_ID=$(echo "$ENV_NAME" | tr '[:lower:]' '[:upper:]' | sed 's/[_-]//g')
 
 if [ -f "$ARCH_FILE" ]; then

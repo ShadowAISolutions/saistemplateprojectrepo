@@ -1,8 +1,8 @@
-# Security Update Plan — testauth1 Environment
+# Security Update Plan — testauthgas1 Environment
 
 **Created:** 2026-03-13
 **Status:** Implemented (v02.90r–v02.91r)
-**Scope:** `testauth1.gs` + `testauth1.html` (if successful, propagate to templates)
+**Scope:** `testauthgas1.gs` + `testauthgas1.html` (if successful, propagate to templates)
 **Base version:** v02.74r state (v01.14g GAS / v01.26w HTML)
 **Reference:** `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
 
@@ -10,7 +10,7 @@
 
 ## Why This Document Exists
 
-This is the **third attempt** at security hardening for testauth1. The previous two attempts (v02.75r–v02.84r) were fully reverted because they broke critical functionality:
+This is the **third attempt** at security hardening for testauthgas1. The previous two attempts (v02.75r–v02.84r) were fully reverted because they broke critical functionality:
 
 1. **v02.79r broke the GAS auto-deploy pipeline** — a `DEPLOY_SECRET` check was added to `doPost(action=deploy)`, which silently blocked all automatic code updates from GitHub. This caused the live GAS to be **permanently stuck at v01.15g** — every subsequent GAS-side fix (v02.80r, v02.82r) never reached the live environment
 2. **v02.75r–v02.84r broke Google Sign-In** — origin validation, CSP, and a PARENT_ORIGIN case mismatch caused the sign-in flow to get stuck on the "Sign In Required" page with no errors. The case mismatch (`ShadowAISolutions` vs browser-normalized `shadowaisolutions`) silently dropped all GAS→parent postMessages from v02.79r onward, and the fix (`.toLowerCase()`) never deployed because auto-deploy was already broken
@@ -165,14 +165,14 @@ Return generic error codes to the client, log details server-side only.
 
 ## Phase 1: Message-Type Allowlist + Cryptographic Message Authentication
 
-**Files:** `testauth1.gs`, `testauth1.html`
+**Files:** `testauthgas1.gs`, `testauthgas1.html`
 **Risk:** LOW — does not change the message flow, only adds validation
 
-### 1A. Message-Type Allowlist (HTML side — `testauth1.html`)
+### 1A. Message-Type Allowlist (HTML side — `testauthgas1.html`)
 
 **What:** Replace the bare `window.addEventListener('message', ...)` with a guarded listener that only processes known GAS message types.
 
-**Where:** `testauth1.html` line 997
+**Where:** `testauthgas1.html` line 997
 
 **Current code:**
 ```javascript
@@ -322,7 +322,7 @@ The heartbeat uses a separate hidden iframe (`gas-heartbeat`). The main iframe's
 
 **Decision: Use Option A** (pass messageKey as URL parameter to heartbeat iframe). The key is ephemeral (per-session), the URL is constructed by JS (not user-visible), and it avoids cross-origin issues.
 
-**Heartbeat iframe URL construction change in `testauth1.html`:**
+**Heartbeat iframe URL construction change in `testauthgas1.html`:**
 ```javascript
 // Current (around line 1417):
 hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token);
@@ -332,7 +332,7 @@ hbFrame.src = baseUrl + '?heartbeat=' + encodeURIComponent(session.token)
   + '&msgKey=' + encodeURIComponent(_messageKey || '');
 ```
 
-**GAS heartbeat handler change in `testauth1.gs`:**
+**GAS heartbeat handler change in `testauthgas1.gs`:**
 ```javascript
 // In doGet(), heartbeat section — read msgKey from URL params
 var msgKey = (e && e.parameter && e.parameter.msgKey) || '';
@@ -357,12 +357,12 @@ var hbOkHtml = '<!DOCTYPE html><html><body><script>'
 
 ## Phase 2: XSS Prevention (GAS side)
 
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **Risk:** LOW — only changes how values are interpolated into HTML strings, not the message flow
 
 ### 2A. Add Escape Helper Functions
 
-**Where:** `testauth1.gs`, after the `AUTH START` comment block (around line 248)
+**Where:** `testauthgas1.gs`, after the `AUTH START` comment block (around line 248)
 
 **Add these functions:**
 ```javascript
@@ -448,12 +448,12 @@ The `payload` variable is constructed via `JSON.stringify()` which handles escap
 
 ## Phase 3: Session Hardening
 
-**Files:** `testauth1.gs`, `testauth1.html`
+**Files:** `testauthgas1.gs`, `testauthgas1.html`
 **Risk:** MEDIUM — changes session data structure, affects HMAC validation
 
 ### 3A. Remove OAuth Access Token from Session Cache
 
-**Where:** `testauth1.gs`, `exchangeTokenForSession()` function (line ~354-362)
+**Where:** `testauthgas1.gs`, `exchangeTokenForSession()` function (line ~354-362)
 
 **Current:**
 ```javascript
@@ -489,7 +489,7 @@ var sessionData = {
 
 ### 3B. Expand HMAC Payload to Cover All Security-Relevant Fields
 
-**Where:** `testauth1.gs`, `generateSessionHmac()` function (line ~289)
+**Where:** `testauthgas1.gs`, `generateSessionHmac()` function (line ~289)
 
 **Current:**
 ```javascript
@@ -512,7 +512,7 @@ var payload = sessionData.email
 
 ### 3C. Fix OAuth Token Revocation
 
-**Where:** `testauth1.html`, `performSignOut()` function (line ~1458-1463)
+**Where:** `testauthgas1.html`, `performSignOut()` function (line ~1458-1463)
 
 **Current (broken):**
 ```javascript
@@ -546,12 +546,12 @@ try {
 
 ## Phase 4: Error Message Sanitization
 
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **Risk:** LOW — only changes error text sent to client
 
 ### 4A. Sanitize Token Exchange Error Response
 
-**Where:** `testauth1.gs`, `doGet()` — URL token exchange path (line ~748-749)
+**Where:** `testauthgas1.gs`, `doGet()` — URL token exchange path (line ~748-749)
 
 **Current:**
 ```javascript
@@ -577,10 +577,10 @@ try {
 
 ## Phase 5: Debug Log Cleanup
 
-**Files:** `testauth1.html`, `testauth1.gs`
+**Files:** `testauthgas1.html`, `testauthgas1.gs`
 **Risk:** VERY LOW — only removes `console.log` statements
 
-### Lines to remove in `testauth1.html`:
+### Lines to remove in `testauthgas1.html`:
 
 | Line | Content | Action |
 |------|---------|--------|
@@ -594,7 +594,7 @@ try {
 | 1080 | `console.log('[AUTH DEBUG] Heartbeat OK — session extended ...')` | Remove |
 | 1093 | `console.log('[AUTH DEBUG] Heartbeat failed — session expired ...')` | Remove |
 
-### Lines to remove in `testauth1.gs`:
+### Lines to remove in `testauthgas1.gs`:
 
 | Line | Content | Action |
 |------|---------|--------|
@@ -626,12 +626,12 @@ var exchangeHtml = '<!DOCTYPE html><html><body><script>'
 
 ## Phase 6: postMessage Target Origin on GAS Side
 
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **Risk:** MEDIUM — changes the target origin of all outgoing postMessages
 
 ### 6A. Use EMBED_PAGE_URL to Derive Target Origin
 
-**Where:** `testauth1.gs`, top of file (after line 8)
+**Where:** `testauthgas1.gs`, top of file (after line 8)
 
 **Add:**
 ```javascript
@@ -670,7 +670,7 @@ Or for template literals:
 window.top.postMessage({...}, '${PARENT_ORIGIN}');
 ```
 
-**Affected locations in `testauth1.gs`:**
+**Affected locations in `testauthgas1.gs`:**
 1. Heartbeat expired responses (lines ~659, 669, 679, 693, 706)
 2. Heartbeat OK response (line ~723)
 3. Sign-out confirmation (line ~733)
@@ -758,7 +758,7 @@ The phases are designed so that Phases 1A, 2, 4, and 5 cannot break sign-in (the
 
 ## GAS-Side postMessage Target Origin — Complete Change Map
 
-Every location in `testauth1.gs` where `postMessage` appears and the specific change needed:
+Every location in `testauthgas1.gs` where `postMessage` appears and the specific change needed:
 
 ### Heartbeat flow (doGet, heartbeat section):
 
@@ -866,7 +866,7 @@ top.postMessage({type: 'gas-version', version: data.version}, '${PARENT_ORIGIN}'
 
 ## HTML-Side Message Listener — Complete New Code
 
-The full replacement for the `window.addEventListener('message', ...)` block in `testauth1.html`:
+The full replacement for the `window.addEventListener('message', ...)` block in `testauthgas1.html`:
 
 ```javascript
 // =============================================
@@ -935,7 +935,7 @@ window.addEventListener('message', function(event) {
 
 ## Template Propagation Plan
 
-If testauth1 implementation is successful:
+If testauthgas1 implementation is successful:
 
 1. **Update auth HTML template** (`live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`):
    - Add message-type allowlist
@@ -963,11 +963,11 @@ If testauth1 implementation is successful:
 
 Before starting implementation, verify:
 
-- [ ] `testauth1.html` is at v01.26w (the reverted version)
-- [ ] `testauth1.gs` is at v01.14g (the reverted version with deploy protection comments)
+- [ ] `testauthgas1.html` is at v01.26w (the reverted version)
+- [ ] `testauthgas1.gs` is at v01.14g (the reverted version with deploy protection comments)
 - [ ] Sign-in flow works end-to-end on the current code (baseline test)
 - [ ] Auto-deploy works (push a no-op change and verify GAS pulls it)
-- [ ] `EMBED_PAGE_URL` in `testauth1.gs` (line 8) matches the actual GitHub Pages URL
+- [ ] `EMBED_PAGE_URL` in `testauthgas1.gs` (line 8) matches the actual GitHub Pages URL
 
 ## Post-Implementation Verification
 

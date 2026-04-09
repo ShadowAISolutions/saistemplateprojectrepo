@@ -2,8 +2,8 @@
 
 **Created:** 2026-03-21
 **Status:** Ready for implementation
-**Scope:** Phase 1 (Portal HIPAA conversion) + Phase 2 (BroadcastChannel SSO between Portal & Testauth1)
-**Backup location:** `repository-information/backups/` (portal.html.pre-sso.bak, testauth1.html.pre-sso.bak, SSO-REVERT-INSTRUCTIONS.md)
+**Scope:** Phase 1 (Portal HIPAA conversion) + Phase 2 (BroadcastChannel SSO between Portal & Testauthgas1)
+**Backup location:** `repository-information/backups/` (portal.html.pre-sso.bak, testauthgas1.html.pre-sso.bak, SSO-REVERT-INSTRUCTIONS.md)
 
 ---
 
@@ -11,7 +11,7 @@
 
 1. [Goal & Architecture](#1-goal--architecture)
 2. [Research Findings](#2-research-findings)
-3. [Current State — Portal vs Testauth1 HIPAA Gap Analysis](#3-current-state--portal-vs-testauth1-hipaa-gap-analysis)
+3. [Current State — Portal vs Testauthgas1 HIPAA Gap Analysis](#3-current-state--portal-vs-testauthgas1-hipaa-gap-analysis)
 4. [Phase 1 — Portal HIPAA Conversion](#4-phase-1--portal-hipaa-conversion)
 5. [Phase 2 — BroadcastChannel SSO](#5-phase-2--broadcastchannel-sso)
 6. [Testing Checklist](#6-testing-checklist)
@@ -24,18 +24,18 @@
 
 ### Goal
 
-User signs in once at the portal → opens any other auth page (testauth1, globalacl, etc.) → that page auto-authenticates without a sign-in prompt. All credential handling must meet HIPAA Security Rule requirements (§164.312).
+User signs in once at the portal → opens any other auth page (testauthgas1, globalacl, etc.) → that page auto-authenticates without a sign-in prompt. All credential handling must meet HIPAA Security Rule requirements (§164.312).
 
 ### Architecture Decision: BroadcastChannel-Only SSO
 
 **Chosen approach:** Real-time, ephemeral credential passing via `BroadcastChannel` — no persistent shared storage.
 
-**Why not localStorage?** testauth1 uses `sessionStorage` specifically for HIPAA compliance (credentials vanish on tab close). Storing an SSO token in `localStorage` would weaken the HIPAA posture by introducing a persistent credential on disk that survives browser restarts.
+**Why not localStorage?** testauthgas1 uses `sessionStorage` specifically for HIPAA compliance (credentials vanish on tab close). Storing an SSO token in `localStorage` would weaken the HIPAA posture by introducing a persistent credential on disk that survives browser restarts.
 
 **How it works:**
 
 ```
-Portal (signed in, tab open)          Testauth1 (just opened)
+Portal (signed in, tab open)          Testauthgas1 (just opened)
 ─────────────────────────────          ────────────────────────
 Holds Google access token              Page loads
   in memory (_pendingToken)        →   Broadcasts 'sso-token-request'
@@ -47,20 +47,20 @@ Responds with access token         →   Receives token
                                        App loads (no sign-in prompt!)
 ```
 
-**Trade-off:** The portal tab must remain open for SSO to work. If the user closes the portal before opening testauth1, testauth1 falls back to its own sign-in (which uses the same shared CLIENT_ID, so it's one Google prompt either way). This is HIPAA-aligned — credentials should not outlive their source session.
+**Trade-off:** The portal tab must remain open for SSO to work. If the user closes the portal before opening testauthgas1, testauthgas1 falls back to its own sign-in (which uses the same shared CLIENT_ID, so it's one Google prompt either way). This is HIPAA-aligned — credentials should not outlive their source session.
 
 ### Two-Phase Approach
 
 | Phase | What | Why |
 |-------|------|-----|
-| **Phase 1** | Convert portal from standard mode to HIPAA mode | SSO is only as secure as its weakest participant. Portal currently uses localStorage + URL token exchange + DJB2 hashing — all non-HIPAA. Must match testauth1's security level first. |
-| **Phase 2** | Add BroadcastChannel SSO between portal and testauth1 | Once both pages are HIPAA-compliant, add the ephemeral token-sharing layer. |
+| **Phase 1** | Convert portal from standard mode to HIPAA mode | SSO is only as secure as its weakest participant. Portal currently uses localStorage + URL token exchange + DJB2 hashing — all non-HIPAA. Must match testauthgas1's security level first. |
+| **Phase 2** | Add BroadcastChannel SSO between portal and testauthgas1 | Once both pages are HIPAA-compliant, add the ephemeral token-sharing layer. |
 
 ### What Does NOT Change
 
-- **GAS scripts** (portal.gs, testauth1.gs) — no modifications needed. Each GAS script still validates Google tokens independently and creates its own server-side session.
+- **GAS scripts** (portal.gs, testauthgas1.gs) — no modifications needed. Each GAS script still validates Google tokens independently and creates its own server-side session.
 - **GAS-side session management** — CacheService sessions, ACL checks, audit logging all remain per-project.
-- **Google OAuth token behavior** — Google access tokens are bearer tokens (not tied to CLIENT_ID at API call time), so a token from portal's sign-in flow works when testauth1 exchanges it with testauth1.gs.
+- **Google OAuth token behavior** — Google access tokens are bearer tokens (not tied to CLIENT_ID at API call time), so a token from portal's sign-in flow works when testauthgas1 exchanges it with testauthgas1.gs.
 
 ---
 
@@ -70,11 +70,11 @@ Responds with access token         →   Receives token
 
 **§164.312(a)(1) — Access Control:** Each user must have a unique identifier. SSO must not create shared/anonymous sessions. ✅ Met — each page creates its own per-user session via Google OAuth email.
 
-**§164.312(a)(2)(iii) — Automatic Logoff:** Sessions must terminate after a period of inactivity. ✅ Met — testauth1 has session timer enforcer with configurable timeout. Portal must add this in Phase 1.
+**§164.312(a)(2)(iii) — Automatic Logoff:** Sessions must terminate after a period of inactivity. ✅ Met — testauthgas1 has session timer enforcer with configurable timeout. Portal must add this in Phase 1.
 
-**§164.312(b) — Audit Controls:** Authentication events must be logged. ✅ Met — both pages have `_reportSecurityEvent()`. testauth1 has richer event types.
+**§164.312(b) — Audit Controls:** Authentication events must be logged. ✅ Met — both pages have `_reportSecurityEvent()`. testauthgas1 has richer event types.
 
-**§164.312(c)(1) — Integrity Controls:** Mechanisms to protect data from improper alteration. ✅ Met by testauth1 via HMAC-SHA256 message signing. Portal uses weak DJB2 hash — must upgrade in Phase 1.
+**§164.312(c)(1) — Integrity Controls:** Mechanisms to protect data from improper alteration. ✅ Met by testauthgas1 via HMAC-SHA256 message signing. Portal uses weak DJB2 hash — must upgrade in Phase 1.
 
 **§164.312(e)(1) — Transmission Security:** Credentials must be protected in transit. The BroadcastChannel approach satisfies this because:
 - BroadcastChannel is **same-origin only** — messages never leave the browser process
@@ -102,7 +102,7 @@ Responds with access token         →   Receives token
 | **Refresh Token** | ✅ Requires matching client credentials | ❌ No |
 | **ID Token** | Has `aud` claim — backend must validate | Depends on validation |
 
-**Implication for SSO:** A Google access token obtained via portal's CLIENT_ID can be used by testauth1's GAS backend to validate the user. The GAS `validateGoogleToken()` function calls Google's tokeninfo endpoint, which returns the user's email — it doesn't reject based on which CLIENT_ID initiated the flow.
+**Implication for SSO:** A Google access token obtained via portal's CLIENT_ID can be used by testauthgas1's GAS backend to validate the user. The GAS `validateGoogleToken()` function calls Google's tokeninfo endpoint, which returns the user's email — it doesn't reject based on which CLIENT_ID initiated the flow.
 
 **However, we are unifying to a single CLIENT_ID anyway** (per user's earlier decision). This eliminates any theoretical concern about cross-CLIENT_ID token usage.
 
@@ -119,11 +119,11 @@ Responds with access token         →   Receives token
 
 ---
 
-## 3. Current State — Portal vs Testauth1 HIPAA Gap Analysis
+## 3. Current State — Portal vs Testauthgas1 HIPAA Gap Analysis
 
 ### 3.1 HTML_CONFIG Comparison
 
-| Config Key | portal.html | testauth1.html (HIPAA) | Match? |
+| Config Key | portal.html | testauthgas1.html (HIPAA) | Match? |
 |-----------|---|---|---|
 | `STORAGE_TYPE` | `'localStorage'` | `'sessionStorage'` | ❌ |
 | `TOKEN_EXCHANGE_METHOD` | `'url'` | `'postMessage'` | ❌ |
@@ -134,11 +134,11 @@ Responds with access token         →   Receives token
 | `ENABLE_DOM_CLEARING_ON_EXPIRY` | *(missing)* | `true` | ❌ |
 | `ENABLE_IP_LOGGING` | *(missing)* | `false` (ipify lacks BAA) | ❌ |
 
-**Portal has 3 config values. Testauth1 has 8. Portal is missing 5 HIPAA toggles.**
+**Portal has 3 config values. Testauthgas1 has 8. Portal is missing 5 HIPAA toggles.**
 
 ### 3.2 Security Feature Comparison
 
-| Feature | portal.html | testauth1.html | Severity |
+| Feature | portal.html | testauthgas1.html | Severity |
 |---------|---|---|---|
 | **Storage type** | localStorage (persists) | sessionStorage (tab-close) | ⛔ BLOCKER |
 | **Token exchange** | URL param (`?exchangeToken=`) | postMessage (token never in URL) | ⛔ BLOCKER |
@@ -160,7 +160,7 @@ Responds with access token         →   Receives token
 ### 3.3 Code Size Gap
 
 - **portal.html**: 1,272 lines
-- **testauth1.html**: 4,070 lines
+- **testauthgas1.html**: 4,070 lines
 - **Gap**: ~2,800 lines of HIPAA security code
 
 ### 3.4 Session Function Differences
@@ -171,11 +171,11 @@ saveSession(sessionToken, email)
 // Keys: portal_gas_session_token, portal_gas_user_email
 ```
 
-**testauth1.html** stores 4 items:
+**testauthgas1.html** stores 4 items:
 ```javascript
 saveSession(sessionToken, email, role, permissions)
-// Keys: testauth1_gas_session_token, testauth1_gas_user_email,
-//        testauth1_gas_user_role, testauth1_gas_user_permissions
+// Keys: testauthgas1_gas_session_token, testauthgas1_gas_user_email,
+//        testauthgas1_gas_user_role, testauthgas1_gas_user_permissions
 ```
 
 ### 3.5 Message Verification Comparison
@@ -193,7 +193,7 @@ function _verifyMessageSignature(data, key) {
 }
 ```
 
-**testauth1.html** — HMAC-SHA256 via Web Crypto API:
+**testauthgas1.html** — HMAC-SHA256 via Web Crypto API:
 ```javascript
 // Cryptographically secure: imported CryptoKey + async verification
 async function _verifyHmacSha256(data, hexSig) {
@@ -208,7 +208,7 @@ async function _verifyHmacSha256(data, hexSig) {
 
 ### Overview
 
-Convert portal.html from standard mode to HIPAA-compliant mode by porting testauth1's security features. This is primarily a code-porting exercise — testauth1 is the reference implementation, and portal must match it.
+Convert portal.html from standard mode to HIPAA-compliant mode by porting testauthgas1's security features. This is primarily a code-porting exercise — testauthgas1 is the reference implementation, and portal must match it.
 
 **No GAS changes needed.** portal.gs already has HMAC support, session validation, and audit logging — these are GAS-side features controlled by `AUTH_CONFIG`. The HTML-side changes are independent.
 
@@ -243,13 +243,13 @@ var HTML_CONFIG = {
 
 **Remove** the `_verifyMessageSignature()` function (DJB2 hash, ~20 lines).
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `_hmacKey` and `_hmacKeySet` variables
 - `_importHmacKey(hexString)` — imports the GAS-provided key as a Web Crypto CryptoKey
 - `_verifyHmacSha256(data, hexSig)` — async HMAC-SHA256 signature verification
 - Update all message handlers to use async HMAC verification instead of sync DJB2
 
-**Key locations in testauth1 to port from:**
+**Key locations in testauthgas1 to port from:**
 - `_hmacKey` / `_hmacKeySet` declarations
 - `_importHmacKey()` function (~30 lines)
 - `_verifyHmacSha256()` function (~20 lines)
@@ -257,7 +257,7 @@ var HTML_CONFIG = {
 
 ### Step 3: Add Cryptographic Nonce for postMessage Token Exchange
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `_pendingNonce` variable
 - Nonce generation in `exchangeViaPostMessage()`: `crypto.getRandomValues(new Uint8Array(16))` → hex string
 - Nonce verification in `gas-session-created` handler: reject if `data.nonce !== _pendingNonce`, then consume (`_pendingNonce = null`)
@@ -265,14 +265,14 @@ var HTML_CONFIG = {
 
 ### Step 4: Add CSRF Nonce for Google Sign-In
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `_authNonce` variable (null initially)
 - Set `_authNonce` in `initGoogleSignIn()` before `requestAccessToken()`
 - Check and consume `_authNonce` in `handleTokenResponse()` — reject if null (stale callback)
 
 ### Step 5: Add Session Timer Enforcer
 
-**Add** from testauth1 (~50 lines):
+**Add** from testauthgas1 (~50 lines):
 - `_sessionTimerEnforcer` IIFE closure with `.lock()`, `.getServerDuration()`, `.getAbsoluteDuration()`, `.isLocked()`, `.reset()` methods
 - `Object.defineProperty` protection against DevTools tampering
 - Integration with `gas-session-created` handler to lock timer values
@@ -280,13 +280,13 @@ var HTML_CONFIG = {
 
 ### Step 6: Add DOM Clearing on Session Expiry
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - In session expiry handlers (`gas-needs-auth`, `gas-session-invalid`, `gas-signed-out`): when `HTML_CONFIG.ENABLE_DOM_CLEARING_ON_EXPIRY === true`, set `gasFrame.src = 'about:blank'` to clear PHI from the iframe DOM
 - In `showApp()`: check if iframe needs reloading after DOM clearing (via `loadIframeViaNonce()`)
 
 ### Step 7: Add Single-Tab Enforcement
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `_tabId` variable (random + timestamp)
 - `_tabSurrendered` and `_evictedByRemote` flags
 - BroadcastChannel for tab roll call (`tab-roll-call`, `tab-present` messages)
@@ -295,14 +295,14 @@ var HTML_CONFIG = {
 
 ### Step 8: Add Cross-Device Enforcement
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - Heartbeat error handling that detects `reason: 'new_sign_in'` from GAS
 - `_evictedByRemote` flag set on cross-device detection
 - Session termination + auth wall display with cross-device message
 
 ### Step 9: Add Nonce-Based Iframe Loading
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `loadIframeViaNonce(sessionToken, options)` function
 - `_pendingNonceToken` and `_nonceCallback` variables
 - `_expectingSession` guard against stale `gas-needs-auth` messages
@@ -310,7 +310,7 @@ var HTML_CONFIG = {
 
 ### Step 10: Add Missing Message Handlers
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `gas-session-invalid` handler — clear session, show auth wall
 - Enhanced `gas-needs-auth` handler with stale message filtering
 - Absolute timer expiry handling
@@ -318,7 +318,7 @@ var HTML_CONFIG = {
 
 ### Step 11: Add UI Enhancements
 
-**Add** from testauth1:
+**Add** from testauthgas1:
 - `showSigningIn()` function + HTML elements (`auth-wall-signing-in`, `auth-wall-reconnecting`)
 - `hideAllWarningBanners()` function + warning banner HTML (`session-warning-banner`, `absolute-warning-banner`)
 - Call `showSigningIn()` from `exchangeToken()`
@@ -326,7 +326,7 @@ var HTML_CONFIG = {
 
 ### Step 12: Update `showApp()` and `saveSession()`
 
-**Update `showApp()`** to match testauth1's signature:
+**Update `showApp()`** to match testauthgas1's signature:
 ```javascript
 // Before:
 function showApp(email, displayName)
@@ -346,15 +346,15 @@ Add `ROLE_KEY` and `PERMISSIONS_KEY` storage keys. Update `loadSession()` and `c
 
 ### Step 13: Update CLIENT_ID (Shared)
 
-**No change needed for portal** — portal keeps its own CLIENT_ID. In Phase 2, testauth1 will adopt portal's CLIENT_ID.
+**No change needed for portal** — portal keeps its own CLIENT_ID. In Phase 2, testauthgas1 will adopt portal's CLIENT_ID.
 
 ### Implementation Strategy
 
-The safest approach: **port code section by section from testauth1**, using testauth1 as the reference implementation. Do NOT rewrite from scratch — copy the exact patterns that are already proven in testauth1.
+The safest approach: **port code section by section from testauthgas1**, using testauthgas1 as the reference implementation. Do NOT rewrite from scratch — copy the exact patterns that are already proven in testauthgas1.
 
 **Order of operations:** Steps 1 → 2 → 3 → 4 → 5 (these must be done together as they're interdependent). Steps 6–12 can be done incrementally after the core security changes are in place.
 
-**Estimated portal.html size after Phase 1:** ~3,500–4,000 lines (comparable to testauth1's 4,070 lines). The ~300-line difference is portal's Projects panel UI (which testauth1 doesn't have) offset by testauth1's self-test infrastructure (which portal doesn't need).
+**Estimated portal.html size after Phase 1:** ~3,500–4,000 lines (comparable to testauthgas1's 4,070 lines). The ~300-line difference is portal's Projects panel UI (which testauthgas1 doesn't have) offset by testauthgas1's self-test infrastructure (which portal doesn't need).
 
 ---
 
@@ -372,10 +372,10 @@ After Phase 1 (portal is HIPAA-compliant), add ephemeral cross-page authenticati
 
 | Message | Direction | Payload | Purpose |
 |---------|-----------|---------|---------|
-| `sso-token-request` | Testauth1 → Portal | `{ type, tabId, pageName }` | "I need an access token" |
-| `sso-token-response` | Portal → Testauth1 | `{ type, accessToken, email, sourceTabId, sourcePage }` | "Here's the token" |
+| `sso-token-request` | Testauthgas1 → Portal | `{ type, tabId, pageName }` | "I need an access token" |
+| `sso-token-response` | Portal → Testauthgas1 | `{ type, accessToken, email, sourceTabId, sourcePage }` | "Here's the token" |
 | `sso-sign-out` | Any → All | `{ type, source, tabId }` | "I signed out — everyone should too" |
-| `sso-token-unavailable` | Portal → Testauth1 | `{ type, reason }` | "I don't have a token" (optional, for debugging) |
+| `sso-token-unavailable` | Portal → Testauthgas1 | `{ type, reason }` | "I don't have a token" (optional, for debugging) |
 
 ### 5.2 Portal Changes (Token Provider)
 
@@ -463,7 +463,7 @@ if (_ssoChannel) {
 }
 ```
 
-### 5.3 Testauth1 Changes (Token Consumer)
+### 5.3 Testauthgas1 Changes (Token Consumer)
 
 **Step 1: Change CLIENT_ID to portal's**
 
@@ -536,9 +536,9 @@ if (!attemptSSOAuth()) {
 }
 ```
 
-**Step 4: Bidirectional — testauth1 also provides tokens**
+**Step 4: Bidirectional — testauthgas1 also provides tokens**
 
-If user signed in at testauth1 first (bypassing portal), testauth1 should also respond to `sso-token-request` from other pages. Add the same listener pattern as portal:
+If user signed in at testauthgas1 first (bypassing portal), testauthgas1 should also respond to `sso-token-request` from other pages. Add the same listener pattern as portal:
 
 ```javascript
 // Hold token for SSO sharing (same pattern as portal)
@@ -575,29 +575,29 @@ SCENARIO A: Portal first (primary flow)
 4. Token exchanged with portal.gs → session created
 5. Portal shows app, _ssoUserEmail set
 
-6. User clicks "Open All Projects" → testauth1 opens in new tab
-7. testauth1 loads → attemptSSOAuth() fires
+6. User clicks "Open All Projects" → testauthgas1 opens in new tab
+7. testauthgas1 loads → attemptSSOAuth() fires
 8. Broadcasts 'sso-token-request' on 'sais-sso-auth' channel
 9. Portal receives request → responds with _ssoAccessToken
-10. testauth1 receives token → exchangeToken() → testauth1.gs validates
-11. testauth1.gs creates its own session → testauth1 shows app
-12. ✅ No sign-in prompt on testauth1!
+10. testauthgas1 receives token → exchangeToken() → testauthgas1.gs validates
+11. testauthgas1.gs creates its own session → testauthgas1 shows app
+12. ✅ No sign-in prompt on testauthgas1!
 
 
-SCENARIO B: Testauth1 first (fallback)
+SCENARIO B: Testauthgas1 first (fallback)
 ────────────────────────────────────────
 
-1. User opens testauth1.html directly
+1. User opens testauthgas1.html directly
 2. attemptSSOAuth() fires → broadcasts 'sso-token-request'
 3. No response within 2 seconds (portal not open)
 4. Falls back to initGoogleSignIn()
 5. Google Sign-In prompt → user authenticates
-6. Token held in _ssoAccessToken + exchanged with testauth1.gs
-7. testauth1 shows app
+6. Token held in _ssoAccessToken + exchanged with testauthgas1.gs
+7. testauthgas1 shows app
 
 8. Later, user opens portal.html
 9. Portal's attemptSSOAuth() fires → broadcasts request
-10. testauth1 responds with _ssoAccessToken
+10. testauthgas1 responds with _ssoAccessToken
 11. Portal auto-authenticates
 12. ✅ No sign-in prompt on portal!
 
@@ -605,11 +605,11 @@ SCENARIO B: Testauth1 first (fallback)
 SCENARIO C: Sign-out propagation
 ─────────────────────────────────
 
-1. User has portal + testauth1 open (both authenticated)
+1. User has portal + testauthgas1 open (both authenticated)
 2. User clicks Sign Out on portal
 3. Portal: clearSession() + clears _ssoAccessToken
 4. Portal: broadcasts 'sso-sign-out' on 'sais-sso-auth'
-5. testauth1 receives broadcast → clearSession() → shows auth wall
+5. testauthgas1 receives broadcast → clearSession() → shows auth wall
 6. ✅ Both pages signed out!
 ```
 
@@ -644,12 +644,12 @@ SCENARIO C: Sign-out propagation
 
 ### Phase 2 Testing (SSO)
 
-- [ ] **Portal → testauth1 SSO**: Sign in at portal → open testauth1 in new tab → testauth1 auto-authenticates (no sign-in prompt). Check: `sessionStorage` has testauth1's session token.
-- [ ] **testauth1 → portal SSO**: Clear all storage. Sign in at testauth1 → open portal in new tab → portal auto-authenticates.
-- [ ] **SSO timeout fallback**: Close all tabs. Open testauth1 only → `sso-token-request` sent, no response within 2s → normal sign-in flow appears.
-- [ ] **Cross-page sign-out**: Both pages open and authenticated. Sign out from portal → testauth1 shows auth wall. Sign out from testauth1 → portal shows auth wall.
-- [ ] **Tab close behavior**: Portal authenticated. Close portal tab. Open testauth1 → SSO fails (portal not open) → fallback sign-in. This is expected HIPAA behavior.
-- [ ] **Session independence**: Portal and testauth1 both authenticated via SSO. Wait for testauth1's GAS session to expire → testauth1 shows auth wall. Portal is unaffected (its own GAS session is still valid).
+- [ ] **Portal → testauthgas1 SSO**: Sign in at portal → open testauthgas1 in new tab → testauthgas1 auto-authenticates (no sign-in prompt). Check: `sessionStorage` has testauthgas1's session token.
+- [ ] **testauthgas1 → portal SSO**: Clear all storage. Sign in at testauthgas1 → open portal in new tab → portal auto-authenticates.
+- [ ] **SSO timeout fallback**: Close all tabs. Open testauthgas1 only → `sso-token-request` sent, no response within 2s → normal sign-in flow appears.
+- [ ] **Cross-page sign-out**: Both pages open and authenticated. Sign out from portal → testauthgas1 shows auth wall. Sign out from testauthgas1 → portal shows auth wall.
+- [ ] **Tab close behavior**: Portal authenticated. Close portal tab. Open testauthgas1 → SSO fails (portal not open) → fallback sign-in. This is expected HIPAA behavior.
+- [ ] **Session independence**: Portal and testauthgas1 both authenticated via SSO. Wait for testauthgas1's GAS session to expire → testauthgas1 shows auth wall. Portal is unaffected (its own GAS session is still valid).
 - [ ] **Private/incognito mode**: Open portal in incognito → BroadcastChannel may or may not be available depending on browser. SSO should fail gracefully → normal sign-in works.
 - [ ] **DevTools verification**: Application tab → sessionStorage → verify only page-scoped keys exist (no `sais_sso_*` localStorage keys). The SSO token only exists in JavaScript memory.
 
@@ -664,28 +664,28 @@ Backups are in `repository-information/backups/`:
 ```bash
 # From repo root:
 cp repository-information/backups/portal.html.pre-sso.bak live-site-pages/portal.html
-cp repository-information/backups/testauth1.html.pre-sso.bak live-site-pages/testauth1.html
+cp repository-information/backups/testauthgas1.html.pre-sso.bak live-site-pages/testauthgas1.html
 ```
 
 This restores:
 - Portal: localStorage, URL token exchange, DJB2 signing, standard mode
-- Testauth1: original CLIENT_ID, no SSO auto-detect, independent auth
+- Testauthgas1: original CLIENT_ID, no SSO auto-detect, independent auth
 
 ### Partial Revert (keep Phase 1, revert Phase 2 only)
 
 If Phase 1 (HIPAA conversion) works but Phase 2 (SSO) has issues:
 - Remove the `_ssoAccessToken`, `_ssoUserEmail` variables from both pages
 - Remove the `BroadcastChannel('sais-sso-auth')` listener from both pages
-- Remove `attemptSSOAuth()` function from testauth1
-- Restore `initGoogleSignIn()` as the direct initialization call in testauth1
-- Keep testauth1's CLIENT_ID as portal's (shared CLIENT_ID is still desirable)
+- Remove `attemptSSOAuth()` function from testauthgas1
+- Restore `initGoogleSignIn()` as the direct initialization call in testauthgas1
+- Keep testauthgas1's CLIENT_ID as portal's (shared CLIENT_ID is still desirable)
 
 ### Backup Versions
 
 | File | Backup Version | Current Version |
 |------|---------------|----------------|
 | portal.html | v01.18w | (will increment during implementation) |
-| testauth1.html | v02.61w | (will increment during implementation) |
+| testauthgas1.html | v02.61w | (will increment during implementation) |
 
 See `repository-information/backups/SSO-REVERT-INSTRUCTIONS.md` for detailed instructions.
 
@@ -695,7 +695,7 @@ See `repository-information/backups/SSO-REVERT-INSTRUCTIONS.md` for detailed ins
 
 ### Phase 3: Extend SSO to globalacl.html
 
-Same pattern as testauth1:
+Same pattern as testauthgas1:
 - Change CLIENT_ID to portal's
 - Add `attemptSSOAuth()` with BroadcastChannel listener
 - Add bidirectional token sharing
@@ -703,7 +703,7 @@ Same pattern as testauth1:
 
 ### Phase 4: Extract SSO into Auth Template
 
-Once SSO is proven on portal + testauth1:
+Once SSO is proven on portal + testauthgas1:
 - Add SSO logic to `HtmlAndGasTemplateAutoUpdate-auth.html.txt`
 - New `HTML_CONFIG` toggle: `ENABLE_SSO: true/false`
 - When enabled, `attemptSSOAuth()` runs automatically before `initGoogleSignIn()`

@@ -1,6 +1,6 @@
-# Offensive Security Tests — testauth1
+# Offensive Security Tests — testauthgas1
 
-These tests simulate real attacks against the testauth1 authentication system.
+These tests simulate real attacks against the testauthgas1 authentication system.
 Unlike the built-in defensive tests (which inspect code structure), these tests
 act as an **outside attacker** — sending malicious payloads and observing how
 the system responds in real time.

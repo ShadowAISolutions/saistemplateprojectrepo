@@ -18,7 +18,7 @@ import json
 import time
 from playwright.sync_api import sync_playwright
 
-TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html"
+TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthgas1.html"
 GAS_BASE_URL = "https://script.google.com/macros/s/AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w/exec"
 
 
@@ -118,14 +118,14 @@ def run_test():
 
             // Try common channel names the app might use
             var channelNames = [
-                'testauth1-signout',
-                'testauth1_signout',
+                'testauthgas1-signout',
+                'testauthgas1_signout',
                 'gas-signout',
                 'signout',
                 'auth-channel',
                 'session-channel',
-                'testauth1title-signout',
-                'testauth1title_signout'
+                'testauthgas1title-signout',
+                'testauthgas1title_signout'
             ];
 
             for (var i = 0; i < channelNames.length; i++) {
@@ -187,8 +187,8 @@ def run_test():
 
         bc_dos_result = page.evaluate("""() => {
             var names = [
-                'testauth1-signout', 'testauth1_signout',
-                'testauth1title-signout', 'testauth1title_signout',
+                'testauthgas1-signout', 'testauthgas1_signout',
+                'testauthgas1title-signout', 'testauthgas1title_signout',
                 'gas-signout', 'signout', 'auth-channel'
             ];
             var sent = 0;

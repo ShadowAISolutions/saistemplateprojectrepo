@@ -1,17 +1,17 @@
-# Security Update Plan II — testauth1 Environment
+# Security Update Plan II — testauthgas1 Environment
 
 **Created:** 2026-03-14
 **Status:** Ready for implementation
-**Scope:** `testauth1.gs` + `testauth1.html` (if successful, propagate to auth templates)
+**Scope:** `testauthgas1.gs` + `testauthgas1.html` (if successful, propagate to auth templates)
 **Base version:** v03.10r state (v01.18g GAS / v01.44w HTML)
-**Reference:** `07-SECURITY-UPDATE-PLAN-TESTAUTH1.md` (implemented v02.90r–v02.91r), `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
+**Reference:** `07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md` (implemented v02.90r–v02.91r), `06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md`
 **Methodology:** Adversarial audit — all vulnerabilities identified by reasoning as an attacker with full source access and Claude Opus 4.6
 
 ---
 
 ## Why This Document Exists
 
-The first security update plan (`07-SECURITY-UPDATE-PLAN-TESTAUTH1.md`, implemented v02.90r–v02.91r) successfully hardened testauth1 with 6 defense layers: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, and error sanitization.
+The first security update plan (`07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md`, implemented v02.90r–v02.91r) successfully hardened testauthgas1 with 6 defense layers: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, and error sanitization.
 
 However, an adversarial audit on 2026-03-14 — conducted by reasoning as an attacker who has Claude Opus 4.6, full repo source access, and web research capability — identified **19 additional vulnerabilities** that the first plan either missed, explicitly deferred, or partially addressed. Several of these chain together into high-impact attack sequences.
 
@@ -23,7 +23,7 @@ This plan addresses all 19 vulnerabilities across 7 implementation phases, order
 
 ### Constraint A: Never Touch the Deploy Handler (INHERITED)
 
-The `doPost(action=deploy)` handler in `testauth1.gs` (lines 142–157) **must remain completely unauthenticated**. No secret checks, no origin validation, no IP allowlisting, no conditional logic before `pullAndDeployFromGitHub()`.
+The `doPost(action=deploy)` handler in `testauthgas1.gs` (lines 142–157) **must remain completely unauthenticated**. No secret checks, no origin validation, no IP allowlisting, no conditional logic before `pullAndDeployFromGitHub()`.
 
 **Rationale:** Adding a `DEPLOY_SECRET` check in v02.79r silently broke the entire GAS auto-deploy pipeline, freezing the live GAS at v01.15g for the remainder of the v02.75r–v02.84r saga. The deploy action only calls `pullAndDeployFromGitHub()` which overwrites the script with whatever is on GitHub (the source of truth). The protective `⚠️ CRITICAL` comment block in the code must remain untouched.
 
@@ -117,7 +117,7 @@ Chain A: Passive Token Theft (HIGHEST PRIORITY — Phase 1 blocks it)
 
 Chain B: Cross-Page Session Theft (Phase 2 + 3 block it)
   VULN-4 (localStorage) + VULN-15 (origin sharing) + VULN-5 (no CSP)
-  → XSS on ANY page on the GitHub Pages domain steals testauth1 sessions
+  → XSS on ANY page on the GitHub Pages domain steals testauthgas1 sessions
   → Phase 2 switches to sessionStorage; Phase 3 adds CSP
 
 Chain C: Session Fixation via postMessage (Phase 6 blocks it)
@@ -141,7 +141,7 @@ Chain D: Full Account Takeover (Constraint A — partially mitigated Phase 5)
 **Fixes:** VULN-1 (partially), VULN-2, VULN-6
 **Constraint check:** ✅ A (deploy untouched), ✅ B (sign-in untouched), ✅ C (CSP not added yet)
 
-#### 1A. Add Referrer-Policy meta tag (HTML — testauth1.html)
+#### 1A. Add Referrer-Policy meta tag (HTML — testauthgas1.html)
 
 **Location:** Inside `<head>`, before any `<script>` or `<link>` tags.
 
@@ -163,9 +163,9 @@ Chain D: Full Account Takeover (Constraint A — partially mitigated Phase 5)
 2. Version polling still works (same-origin fetch — unaffected by referrer policy)
 3. Changelog loading still works (same-origin fetch — unaffected)
 
-#### 1B. Replace wildcard postMessage target origin (HTML — testauth1.html)
+#### 1B. Replace wildcard postMessage target origin (HTML — testauthgas1.html)
 
-**Location:** `testauth1.html` line 1050 (inside the `gas-ready-for-token` handler).
+**Location:** `testauthgas1.html` line 1050 (inside the `gas-ready-for-token` handler).
 
 **Current code:**
 ```javascript
@@ -211,7 +211,7 @@ Where `GAS_ORIGIN` is already defined at line 925 as `'https://script.google.com
 
 #### 2A. Switch TOKEN_EXCHANGE_METHOD to 'postMessage' (HTML + GAS)
 
-**Location:** `testauth1.html` line 303 (`HTML_CONFIG`) and `testauth1.gs` line 87 (`AUTH_CONFIG`).
+**Location:** `testauthgas1.html` line 303 (`HTML_CONFIG`) and `testauthgas1.gs` line 87 (`AUTH_CONFIG`).
 
 **Current code (HTML):**
 ```javascript
@@ -230,7 +230,7 @@ TOKEN_EXCHANGE_METHOD: 'postMessage'   // line 87 in hipaa preset
 
 The GAS side already has `TOKEN_EXCHANGE_METHOD: 'postMessage'` in the HIPAA preset definition, but the standard preset active config at line 74 has `TOKEN_EXCHANGE_METHOD: 'url'`. Update the standard preset:
 
-**Location:** `testauth1.gs` line 74.
+**Location:** `testauthgas1.gs` line 74.
 
 **Current code:**
 ```javascript
@@ -253,8 +253,8 @@ This eliminates the access token from URLs entirely — no browser history expos
 **Why this is now safe to enable:** The PARENT_ORIGIN `.toLowerCase()` fix (implemented in v02.90r) resolved the case-sensitivity bug that prevented postMessage exchange from working in v02.79r. The postMessage path was never "broken" — it was untested because the PARENT_ORIGIN bug silently dropped all messages.
 
 **Testing (CRITICAL — Constraint B):**
-1. Clear all testauth1 session data from the browser (localStorage/sessionStorage)
-2. Navigate to testauth1.html
+1. Clear all testauthgas1 session data from the browser (localStorage/sessionStorage)
+2. Navigate to testauthgas1.html
 3. Click "Sign In with Google"
 4. Verify the sign-in flow completes successfully — user should NOT get stuck on "Sign In Required"
 5. Verify the auth wall is hidden and the app is visible
@@ -267,7 +267,7 @@ This eliminates the access token from URLs entirely — no browser history expos
 
 #### 2B. Switch STORAGE_TYPE to 'sessionStorage' (HTML)
 
-**Location:** `testauth1.html` line 301 (`HTML_CONFIG`).
+**Location:** `testauthgas1.html` line 301 (`HTML_CONFIG`).
 
 **Current code:**
 ```javascript
@@ -281,7 +281,7 @@ STORAGE_TYPE: 'sessionStorage',
 
 **What this does:** Session tokens are stored in `sessionStorage` instead of `localStorage`. Key differences:
 - `sessionStorage` is **tab-scoped** — each tab gets its own storage, and it's cleared when the tab is closed
-- `sessionStorage` is **not shared across tabs** — an XSS in another tab on the same origin cannot read testauth1's session token
+- `sessionStorage` is **not shared across tabs** — an XSS in another tab on the same origin cannot read testauthgas1's session token
 - `sessionStorage` is **not persistent** — closing the browser clears all tokens (users must re-authenticate each browser session)
 
 **What this fixes:**
@@ -290,21 +290,21 @@ STORAGE_TYPE: 'sessionStorage',
 
 **UX impact:** Users will need to re-authenticate when they:
 - Close and reopen the browser
-- Open testauth1 in a new tab (each tab gets its own session — but the Google silent auth flow `prompt: ''` will make this seamless for users already signed into Google)
+- Open testauthgas1 in a new tab (each tab gets its own session — but the Google silent auth flow `prompt: ''` will make this seamless for users already signed into Google)
 
 **The silent auth flow mitigates the UX cost:** When the page loads with no session in sessionStorage, it automatically attempts silent Google Sign-In (`prompt: ''` at line 933). If the user is already signed into Google in the browser, this succeeds without any user interaction — the user sees the app load directly without clicking "Sign In." Only if silent auth fails (user not signed into Google) will they see the "Sign In Required" prompt.
 
 **Testing:**
 1. Sign in → verify session works normally
 2. Close the tab → open a new tab → verify session is gone (must re-authenticate)
-3. Open testauth1 in two tabs → verify each tab has its own independent session
+3. Open testauthgas1 in two tabs → verify each tab has its own independent session
 4. Sign out in one tab → verify the other tab still has its session (independent)
 
 #### 2C. Namespace localStorage keys (HTML — defense-in-depth)
 
 Even with the switch to sessionStorage, other features still use localStorage (audio data cache, audio-unlocked flag). Add a page-specific prefix to prevent cross-page key collisions.
 
-**Location:** `testauth1.html` — session key definitions (around line 889).
+**Location:** `testauthgas1.html` — session key definitions (around line 889).
 
 **Current code:**
 ```javascript
@@ -314,21 +314,21 @@ var EMAIL_KEY = 'gas_user_email';
 
 **Change to:**
 ```javascript
-var SESSION_KEY = 'testauth1_gas_session_token';
-var EMAIL_KEY = 'testauth1_gas_user_email';
+var SESSION_KEY = 'testauthgas1_gas_session_token';
+var EMAIL_KEY = 'testauthgas1_gas_user_email';
 ```
 
 Also update the session start time keys:
 ```javascript
-var SESSION_START_KEY = 'testauth1_gas_session_start';
-var ABSOLUTE_START_KEY = 'testauth1_gas_absolute_start';
+var SESSION_START_KEY = 'testauthgas1_gas_session_start';
+var ABSOLUTE_START_KEY = 'testauthgas1_gas_absolute_start';
 ```
 
-**What this does:** Even though the primary storage moves to sessionStorage (2B), the namespaced keys prevent any future regression or configuration change from exposing testauth1's tokens to other pages on the same origin.
+**What this does:** Even though the primary storage moves to sessionStorage (2B), the namespaced keys prevent any future regression or configuration change from exposing testauthgas1's tokens to other pages on the same origin.
 
 #### 2D. Remove message key from heartbeat URL (HTML + GAS)
 
-**Location:** `testauth1.html` line ~1469 (heartbeat frame src) and `testauth1.gs` heartbeat handler.
+**Location:** `testauthgas1.html` line ~1469 (heartbeat frame src) and `testauthgas1.gs` heartbeat handler.
 
 **Current code (HTML):**
 ```javascript
@@ -362,7 +362,7 @@ For the heartbeat response's postMessage signing, the GAS side already has the m
 
 **GAS changes for Option B:**
 
-**Location:** `testauth1.gs` heartbeat handler (around line 708).
+**Location:** `testauthgas1.gs` heartbeat handler (around line 708).
 
 In the heartbeat response HTML generation, instead of reading `msgKey` from the URL parameter, retrieve it from the session cache:
 
@@ -389,7 +389,7 @@ var msgKey = sessionData ? sessionData.messageKey || '' : '';
 
 #### 3A. Add Content-Security-Policy meta tag (HTML)
 
-**Location:** `testauth1.html` inside `<head>`, after the Referrer-Policy tag from Phase 1.
+**Location:** `testauthgas1.html` inside `<head>`, after the Referrer-Policy tag from Phase 1.
 
 **Add:**
 ```html
@@ -430,7 +430,7 @@ var msgKey = sessionData ? sessionData.messageKey || '' : '';
 
 **Testing (CRITICAL — Constraint B and C):**
 1. Open DevTools Console BEFORE loading the page
-2. Load testauth1.html — check for ANY CSP violation messages (they appear as `[Report Only]` or `Refused to...` errors)
+2. Load testauthgas1.html — check for ANY CSP violation messages (they appear as `[Report Only]` or `Refused to...` errors)
 3. Click "Sign In with Google" — verify the popup opens and sign-in completes
 4. Verify the GAS iframe loads and the app becomes visible
 5. Verify version polling works (check Network tab for 200 responses on `html.version.txt` and `gs.version.txt`)
@@ -442,7 +442,7 @@ var msgKey = sessionData ? sessionData.messageKey || '' : '';
 
 #### 3B. Sanitize changelog innerHTML (HTML)
 
-**Location:** `testauth1.html` lines 745–755 (GAS changelog) and 826–840 (HTML changelog).
+**Location:** `testauthgas1.html` lines 745–755 (GAS changelog) and 826–840 (HTML changelog).
 
 **Current pattern:**
 ```javascript
@@ -508,7 +508,7 @@ body.innerHTML = sanitizeChangelogHtml(changelogCache);
 
 #### 4A. Remove email from error responses (GAS)
 
-**Location:** `testauth1.gs` — `exchangeTokenForSession()` function.
+**Location:** `testauthgas1.gs` — `exchangeTokenForSession()` function.
 
 **Current code (around line 374):**
 ```javascript
@@ -538,7 +538,7 @@ return { success: false, error: "not_authorized" };
 
 Since per-IP rate limiting is impossible in GAS (Constraint D), implement **per-token rate limiting** — track the number of failed authentication attempts per access token fingerprint.
 
-**Location:** `testauth1.gs` — at the top of `exchangeTokenForSession()`.
+**Location:** `testauthgas1.gs` — at the top of `exchangeTokenForSession()`.
 
 **Add rate limit check:**
 ```javascript
@@ -569,7 +569,7 @@ function exchangeTokenForSession(googleAccessToken) {
 
 **Also add rate limiting to heartbeat validation:**
 
-**Location:** `testauth1.gs` — heartbeat handler in `doGet()`.
+**Location:** `testauthgas1.gs` — heartbeat handler in `doGet()`.
 
 ```javascript
 // Rate limit heartbeat: max 20 per session per 5-minute window
@@ -593,7 +593,7 @@ cache.put(hbKey, String(hbCount + 1), 300);
 
 #### 4C. Reduce absolute session timeout (GAS)
 
-**Location:** `testauth1.gs` — `AUTH_CONFIG` standard preset.
+**Location:** `testauthgas1.gs` — `AUTH_CONFIG` standard preset.
 
 **Current code:**
 ```javascript
@@ -619,7 +619,7 @@ ABSOLUTE_SESSION_TIMEOUT: 28800  // 8 hours — one work day
 
 #### 5A. Add deploy audit logging (GAS)
 
-**Location:** `testauth1.gs` — inside `pullAndDeployFromGitHub()` function, at the very beginning.
+**Location:** `testauthgas1.gs` — inside `pullAndDeployFromGitHub()` function, at the very beginning.
 
 **Add:**
 ```javascript
@@ -657,7 +657,7 @@ VULN-12 (deployment ID and spreadsheet ID in source code) is an informational fi
 
 #### 5C. Validate Master ACL placeholder (GAS)
 
-**Location:** `testauth1.gs` — wherever `MASTER_ACL_SPREADSHEET_ID` is referenced.
+**Location:** `testauthgas1.gs` — wherever `MASTER_ACL_SPREADSHEET_ID` is referenced.
 
 **Add a validation check:**
 ```javascript
@@ -684,7 +684,7 @@ function checkMasterAcl(email) {
 
 #### 6A. Enable HMAC for standard preset (GAS)
 
-**Location:** `testauth1.gs` — standard preset `AUTH_CONFIG`.
+**Location:** `testauthgas1.gs` — standard preset `AUTH_CONFIG`.
 
 **Current code:**
 ```javascript
@@ -715,7 +715,7 @@ ENABLE_HMAC_INTEGRITY: true
 
 #### 6B. Add bootstrap timestamp validation (HTML)
 
-**Location:** `testauth1.html` — in the `gas-session-created` message handler (around line 1035).
+**Location:** `testauthgas1.html` — in the `gas-session-created` message handler (around line 1035).
 
 **Current code:**
 ```javascript
@@ -758,14 +758,14 @@ function exchangeToken(token) {
 
 #### 6C. Add BroadcastChannel cross-tab session revocation (HTML)
 
-**Location:** `testauth1.html` — in the session management section.
+**Location:** `testauthgas1.html` — in the session management section.
 
 **Add channel initialization:**
 ```javascript
 // Cross-tab session revocation
 var _sessionChannel = null;
 try {
-  _sessionChannel = new BroadcastChannel('testauth1_session');
+  _sessionChannel = new BroadcastChannel('testauthgas1_session');
   _sessionChannel.onmessage = function(event) {
     if (event.data && event.data.type === 'session-revoked') {
       // Another tab signed out — clear our session too
@@ -812,7 +812,7 @@ function performSignOut() {
 
 Since `initTokenClient` doesn't support `state`, implement a client-side CSRF check instead:
 
-**Location:** `testauth1.html` — in the sign-in initialization.
+**Location:** `testauthgas1.html` — in the sign-in initialization.
 
 **Add a per-session nonce:**
 ```javascript
@@ -852,9 +852,9 @@ function handleTokenResponse(response) {
 
 Google's OAuth/OIDC ID tokens [do not natively include the `amr` (Authentication Methods References) claim](https://discuss.google.dev/t/enabling-amr-claim-in-oidc-id-token-for-salesforce-integration/329042) with MFA information. Unlike Auth0, Okta, and Keycloak — which all support `amr` claim inspection for MFA verification — Google does not expose whether the user authenticated with a second factor.
 
-**What this means:** The testauth1 environment cannot enforce MFA at the application level using Google as the sole identity provider. MFA enforcement must happen at the **Google Workspace admin level** (org-wide 2-Step Verification policy) or by introducing a secondary IdP that supports `amr` claims.
+**What this means:** The testauthgas1 environment cannot enforce MFA at the application level using Google as the sole identity provider. MFA enforcement must happen at the **Google Workspace admin level** (org-wide 2-Step Verification policy) or by introducing a secondary IdP that supports `amr` claims.
 
-**Accepted risk:** Users with weak Google passwords and no MFA are vulnerable, but this is a Google account security issue, not a testauth1 application issue. The recommended mitigation is to enable 2-Step Verification in Google Workspace admin.
+**Accepted risk:** Users with weak Google passwords and no MFA are vulnerable, but this is a Google account security issue, not a testauthgas1 application issue. The recommended mitigation is to enable 2-Step Verification in Google Workspace admin.
 
 ---
 
@@ -878,7 +878,7 @@ After each phase, run this full regression test:
 
 ### Sign-In Flow (Constraint B — MANDATORY after every phase)
 1. Clear all session data (localStorage AND sessionStorage)
-2. Load testauth1.html in an incognito window
+2. Load testauthgas1.html in an incognito window
 3. Verify "Sign In Required" page appears
 4. Click "Sign In with Google"
 5. Select a Google account
@@ -899,7 +899,7 @@ After each phase, run this full regression test:
 
 ### CSP Verification (only after Phase 3)
 1. Open DevTools Console before loading the page
-2. Load testauth1.html
+2. Load testauthgas1.html
 3. Complete a full sign-in flow
 4. **PASS:** Zero CSP violation errors in console
 5. **FAIL:** Any `Refused to...` error → note the blocked resource → add it to the CSP directive → re-test

@@ -1,6 +1,6 @@
-# Changelog Archive — testauth1title (Google Apps Script)
+# Changelog Archive — testauthgas1title (Google Apps Script)
 
-Older version sections rotated from [testauth1gs.changelog.md](testauth1gs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [testauthgas1gs.changelog.md](testauthgas1gs.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 

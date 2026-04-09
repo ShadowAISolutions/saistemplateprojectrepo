@@ -19,7 +19,7 @@ XSS requires an **injection point** — a place where user-controlled input gets
 - A comment field that stores and displays HTML without escaping it
 - An error message that echoes back the malicious input
 
-### Why XSS doesn't apply to testauth1
+### Why XSS doesn't apply to testauthgas1
 
 Our page has **no injection points**:
 

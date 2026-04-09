@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Document** | Phase B Implementation Guide |
-| **Environment** | testauth1 (GAS + GitHub Pages) |
+| **Environment** | testauthgas1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-30 |
 | **GAS Version** | v02.28g (implemented) |
 | **HTML Version** | v03.79w (implemented) |
@@ -19,14 +19,14 @@
 ### Related Documents
 
 - [HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md) — Phase A implementation (disclosure accounting, right of access, right to amendment)
-- [HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md](HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md) — Follow-up assessment identifying Phase B gaps
-- [HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md](HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md) — Original compliance assessment (2026-03-19)
+- [HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md](HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md) — Follow-up assessment identifying Phase B gaps
+- [HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md](HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md) — Original compliance assessment (2026-03-19)
 - [HIPAA-CODING-REQUIREMENTS.md](HIPAA-CODING-REQUIREMENTS.md) — 40-item regulatory checklist
 - [HIPAA-COMPLIANCE-REFERENCE.md](HIPAA-COMPLIANCE-REFERENCE.md) — CFR regulatory text reference
 
 ### Who This Is For
 
-This guide is for the developer continuing HIPAA Privacy Rule compliance in testauth1 after Phase A. It assumes:
+This guide is for the developer continuing HIPAA Privacy Rule compliance in testauthgas1 after Phase A. It assumes:
 - All Phase A functions are deployed and operational (`generateRequestId()`, `formatHipaaTimestamp()`, `validateIndividualAccess()`, `getOrCreateSheet()`, `wrapPhaseAOperation()`, plus all 11 endpoint functions)
 - Familiarity with the Phase A patterns: 5-step data flow, `wrapPhaseAOperation()` error wrapper, append-only design, `getOrCreateSheet()` auto-creation
 - Understanding of the RBAC system (roles: admin, clinician, billing, viewer; permissions: read, write, delete, export, amend, admin)
@@ -122,7 +122,7 @@ The following items were identified in the guide as **known gaps** and are docum
 | Item | CFR Reference | What's Missing | Why Not Implemented | Risk Level |
 |------|---------------|----------------|--------------------|-----------:|
 | **Individual breach notification** | §164.404(a) | No automated notification to affected individuals — only the security officer receives the alert email | Notifying individuals of a breach requires legally compliant content, format, and delivery methods that exceed what GAS + MailApp can reliably provide. Organizational workflow must handle this after the officer receives the alert | Medium |
-| **Substitute notice methods** | §164.404(d)(2) | No website posting or media notice for breaches affecting >500 individuals | Rare scenario; requires external systems (website CMS, media contacts) beyond testauth1's scope | Low |
+| **Substitute notice methods** | §164.404(d)(2) | No website posting or media notice for breaches affecting >500 individuals | Rare scenario; requires external systems (website CMS, media contacts) beyond testauthgas1's scope | Low |
 | **Automated HHS submission** | §164.408 | `getBreachReport()` generates the data but does NOT submit it to the HHS breach portal | HHS submission is a manual process in most organizations. The report output is structured to match HHS portal fields for easy copy-paste | Low |
 | **State law representative determination** | §164.502(g)(2) | `RelationshipType` enum captures the relationship type, but the system does not evaluate whether the relationship qualifies under the applicable state law | State law determination is an organizational policy decision — the system provides the data structure; humans provide the legal judgment | Low |
 | **~~Legal hold override for retention~~** | ~~(Operational)~~ | ✅ **Already implemented by Phase C** — `enforceRetention()` calls `checkLegalHold()` before archiving, skipping records under legal hold. Full CRUD: `placeLegalHold()`, `releaseLegalHold()`, `getLegalHolds()`, `checkLegalHold()` | N/A — resolved | ~~Low~~ |
@@ -148,7 +148,7 @@ These items are implemented in code but require manual setup before they functio
 
 | Item | What To Do | Why |
 |------|-----------|-----|
-| **Breach alert email** | Set `BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL` to a valid email address in `testauth1.gs` | Empty by default — breach detection will evaluate thresholds but no alert email will be sent until configured |
+| **Breach alert email** | Set `BREACH_ALERT_CONFIG.SECURITY_OFFICER_EMAIL` to a valid email address in `testauthgas1.gs` | Empty by default — breach detection will evaluate thresholds but no alert email will be sent until configured |
 | **MailApp authorization** | Run any function that calls `MailApp` from the Apps Script editor to trigger the OAuth consent screen | Required for breach alerting and amendment notification emails |
 | **Retention trigger** | Run `setupRetentionTrigger()` once from the Apps Script editor | Creates the daily installable time-driven trigger for retention enforcement. Will not run automatically until the trigger is installed |
 
@@ -249,7 +249,7 @@ The breach notification timeline is strict and non-negotiable:
 
 Per §164.402(2), a breach is **presumed** unless the covered entity demonstrates a **low probability** that the PHI was compromised, based on at least these four factors:
 
-| Factor | Question | testauth1 Context |
+| Factor | Question | testauthgas1 Context |
 |--------|----------|--------------------|
 | **1. Nature and extent of PHI** | What types and identifiers were involved? | Clinical notes, email addresses, RBAC roles — varies by incident |
 | **2. Unauthorized person** | Who accessed or received the PHI? | Security audit logs identify the actor (or "unknown" for external breaches) |
@@ -260,7 +260,7 @@ The `BreachLog` schema (Section 8) includes fields for each factor and the risk 
 
 ### Retention Enforcement — Current Gap
 
-The followup assessment identified that `AUDIT_LOG_RETENTION_YEARS: 6` is declared at `testauth1.gs:259` but the value is **never read by any code** — it is a configuration declaration, not enforcement. Currently:
+The followup assessment identified that `AUDIT_LOG_RETENTION_YEARS: 6` is declared at `testauthgas1.gs:259` but the value is **never read by any code** — it is a configuration declaration, not enforcement. Currently:
 
 | Aspect | Current State | Required State |
 |--------|--------------|---------------|
@@ -270,7 +270,7 @@ The followup assessment identified that `AUDIT_LOG_RETENTION_YEARS: 6` is declar
 | Archival of old data | ❌ No archival process | ✅ Time-driven trigger archives data older than retention period |
 | Config value read by code | ❌ Dead configuration | ✅ Retention script reads and enforces the value |
 
-**Mitigation note:** Google Sheets retains data indefinitely unless manually deleted — testauth1 **passively** meets the 6-year retention requirement. Phase B's retention enforcement converts this passive compliance into active enforcement (protection + archival + audit), which is the expected posture for an auditable HIPAA environment.
+**Mitigation note:** Google Sheets retains data indefinitely unless manually deleted — testauthgas1 **passively** meets the 6-year retention requirement. Phase B's retention enforcement converts this passive compliance into active enforcement (protection + archival + audit), which is the expected posture for an auditable HIPAA environment.
 
 ### Regulatory Timeline — Impact on Phase B
 
@@ -483,17 +483,17 @@ These modify the access control layer to allow representatives to act on behalf 
 
 | Phase A Component | Location | How Phase B Uses It |
 |-------------------|----------|-------------------|
-| `getDisclosureAccounting()` | `testauth1.gs:1804` | #19b calls it to get raw disclosures, then groups the output |
-| `requestDataExport()` / `getIndividualData()` | `testauth1.gs:1890` / `:1950` | #23b calls `getIndividualData()` to get records, then generates a summary |
-| `reviewAmendment()` | `testauth1.gs:2097` | #24b hooks into the approval path to queue third-party notifications |
-| `validateIndividualAccess()` | `testauth1.gs:1669` | #25 extends this with representative lookup before the self-service check |
-| `processSecurityEvent()` | `testauth1.gs:2645` | #28 adds threshold evaluation after the existing event processing |
-| `wrapPhaseAOperation()` | `testauth1.gs:1721` | All Phase B user-facing functions use this error wrapper |
-| `getOrCreateSheet()` | `testauth1.gs:1697` | All 3 new sheets auto-create using this pattern |
-| `generateRequestId()` | `testauth1.gs:1643` | New ID prefixes: `NOTIF-`, `BREACH-`, `REP-` |
-| `formatHipaaTimestamp()` | `testauth1.gs:1654` | All new audit entries use this timestamp format |
-| `convertToCSV()` | `testauth1.gs:2018` | #23b reuses CSV conversion for summary exports |
-| `escapeHtml()` | `testauth1.gs:~860` | All user-facing output sanitized |
+| `getDisclosureAccounting()` | `testauthgas1.gs:1804` | #19b calls it to get raw disclosures, then groups the output |
+| `requestDataExport()` / `getIndividualData()` | `testauthgas1.gs:1890` / `:1950` | #23b calls `getIndividualData()` to get records, then generates a summary |
+| `reviewAmendment()` | `testauthgas1.gs:2097` | #24b hooks into the approval path to queue third-party notifications |
+| `validateIndividualAccess()` | `testauthgas1.gs:1669` | #25 extends this with representative lookup before the self-service check |
+| `processSecurityEvent()` | `testauthgas1.gs:2645` | #28 adds threshold evaluation after the existing event processing |
+| `wrapPhaseAOperation()` | `testauthgas1.gs:1721` | All Phase B user-facing functions use this error wrapper |
+| `getOrCreateSheet()` | `testauthgas1.gs:1697` | All 3 new sheets auto-create using this pattern |
+| `generateRequestId()` | `testauthgas1.gs:1643` | New ID prefixes: `NOTIF-`, `BREACH-`, `REP-` |
+| `formatHipaaTimestamp()` | `testauthgas1.gs:1654` | All new audit entries use this timestamp format |
+| `convertToCSV()` | `testauthgas1.gs:2018` | #23b reuses CSV conversion for summary exports |
+| `escapeHtml()` | `testauthgas1.gs:~860` | All user-facing output sanitized |
 
 ### New Components Introduced by Phase B
 
@@ -513,7 +513,7 @@ These modify the access control layer to allow representatives to act on behalf 
 
 ### New Configuration Constants
 
-Add these configuration objects to `testauth1.gs` near the existing `SECURITY_PRESETS` section (around line 270):
+Add these configuration objects to `testauthgas1.gs` near the existing `SECURITY_PRESETS` section (around line 270):
 
 ```javascript
 // ═══════════════════════════════════════════════════════
@@ -1436,7 +1436,7 @@ The "reasonable diligence" standard means that having security events in audit l
 
 | Aspect | Current State | Phase B Target |
 |--------|--------------|---------------|
-| Security event detection | ✅ `processSecurityEvent()` at `testauth1.gs:2645` — detects and logs all event types | ✅ Same (no changes needed) |
+| Security event detection | ✅ `processSecurityEvent()` at `testauthgas1.gs:2645` — detects and logs all event types | ✅ Same (no changes needed) |
 | Escalating lockout | ✅ Three tiers: 5min → 30min → 6hr | ✅ Same |
 | Security event flood prevention | ✅ Global rate limit: 50 events per 5 minutes | ✅ Same |
 | Event audit logging | ✅ All events logged to `SessionAuditLog` | ✅ Same |
@@ -1513,7 +1513,7 @@ function evaluateBreachAlert(eventType, eventDetails) {
     + 'Threshold: ' + threshold + ' events in ' + BREACH_ALERT_CONFIG.WINDOW_MINUTES + ' minutes\n'
     + 'Actual Count: ' + eventCount + '\n'
     + 'Timestamp: ' + formatHipaaTimestamp() + '\n'
-    + 'Environment: testauth1\n\n'
+    + 'Environment: testauthgas1\n\n'
     + 'Event Details:\n'
     + JSON.stringify(eventDetails || {}, null, 2).substring(0, 500) + '\n\n'
     + 'ACTION REQUIRED:\n'
@@ -2477,7 +2477,7 @@ Complete these before writing any Phase B code:
 - [ ] **Time-driven trigger capability** — verify the GAS project can create installable triggers (Project Settings → Triggers)
 - [ ] **RBAC permissions verified** — `Roles` tab in Master ACL has all existing permissions (`read`, `write`, `delete`, `export`, `amend`, `admin`) with correct role mappings
 - [ ] **Test recipient email** — have a test email address available for amendment notification and breach alert testing
-- [ ] **HIPAA preset active** — `ACTIVE_PRESET = 'hipaa'` in `testauth1.gs`
+- [ ] **HIPAA preset active** — `ACTIVE_PRESET = 'hipaa'` in `testauthgas1.gs`
 - [ ] **Data audit logging enabled** — `AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG === true`
 
 ### Per-Function Security Checklist
@@ -2544,7 +2544,7 @@ This matrix maps every relevant CFR sub-section to the Phase B implementation, p
 | §164.524(c)(2)(i) | Electronic copy if maintained electronically | ✅ | ✅ | All data electronic — unchanged |
 | §164.524(c)(3) | **Summary of PHI if agreed upon** | ❌ | 🆕 ✅ | `generateDataSummary()` — metadata-only summary, no PHI content |
 | §164.524(c)(4) | Reasonable cost-based fees | ✅ | ✅ | $0 fee — electronic self-service |
-| §164.524(d)(1) | Unreviewable grounds for denial | N/A | N/A | testauth1 does not hold psychotherapy notes |
+| §164.524(d)(1) | Unreviewable grounds for denial | N/A | N/A | testauthgas1 does not hold psychotherapy notes |
 | §164.524(d)(2) | Reviewable grounds for denial | ⚠️ | ⚠️ | No formal denial workflow |
 
 #### §164.526 — Amendment of PHI (Phase B Extension: Third-Party Notifications)
@@ -2923,7 +2923,7 @@ This is a structured walkthrough for verifying all Phase B features after deploy
 | # | Check | How | Expected |
 |---|-------|-----|----------|
 | 1 | Auto-merge completed | Check the repository Actions tab for a successful workflow run on the `claude/*` branch | Workflow merged to `main` and deployed to GitHub Pages |
-| 2 | HTML version updated | Load testauth1.html — check the version indicator pill (bottom-right) | Shows `v03.79w`. If still showing old version, wait for the auto-refresh poll (up to 10 seconds) |
+| 2 | HTML version updated | Load testauthgas1.html — check the version indicator pill (bottom-right) | Shows `v03.79w`. If still showing old version, wait for the auto-refresh poll (up to 10 seconds) |
 | 3 | GAS version updated | After page loads, check the GAS version pill | Shows `v02.28g`. The workflow fires a webhook to `doPost(action=deploy)` — GAS pulls and redeploys itself within ~30 seconds |
 
 #### Tier 1: Verify New UI Elements Exist
@@ -3129,11 +3129,11 @@ The pending Privacy Rule NPRM (December 2020) and the Security Rule NPRM (Decemb
 
 | Requirement | Phase B Item | Impact |
 |-------------|-------------|--------|
-| SUD records have additional consent requirements beyond standard HIPAA | **#19b Grouped Accounting** | If testauth1 handles SUD data, grouped accounting must separate SUD disclosures from general disclosures. Add `DataCategory` filter to `getGroupedDisclosureAccounting()` |
+| SUD records have additional consent requirements beyond standard HIPAA | **#19b Grouped Accounting** | If testauthgas1 handles SUD data, grouped accounting must separate SUD disclosures from general disclosures. Add `DataCategory` filter to `getGroupedDisclosureAccounting()` |
 | SUD breach notification has additional requirements | **#28, #31 Breach Detection/Logging** | SUD-related breaches may require notification to additional parties. Add `DataCategory` field to `BreachLog` to flag SUD-related breaches |
 | SUD representatives may have different authority scope | **#25 Personal Representatives** | A representative authorized for general healthcare may not be authorized for SUD data access. Add `DataCategoryScope` to `PersonalRepresentatives` to limit representative access by data category |
 
-**Recommendation:** If testauth1 does not currently handle SUD data, no changes are needed. If SUD data may be added in the future, the `DataCategory` column additions are low-cost preparation:
+**Recommendation:** If testauthgas1 does not currently handle SUD data, no changes are needed. If SUD data may be added in the future, the `DataCategory` column additions are low-cost preparation:
 
 ```javascript
 // Future-proofed schema additions for 42 CFR Part 2 support:
@@ -3190,14 +3190,14 @@ Recommended monitoring cadence for Phase B-relevant regulations:
 | Document | Path | Relevance |
 |----------|------|-----------|
 | Phase A Implementation Guide | `repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` | Phase A implementation — prerequisite for Phase B |
-| Implementation Follow-Up | `repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` | Identifies Phase B gaps and roadmap |
-| Original Compliance Report | `repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` | Baseline compliance assessment |
+| Implementation Follow-Up | `repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md` | Identifies Phase B gaps and roadmap |
+| Original Compliance Report | `repository-information/HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md` | Baseline compliance assessment |
 | Coding Requirements | `repository-information/HIPAA-CODING-REQUIREMENTS.md` | 40-item regulatory checklist |
 | Compliance Reference | `repository-information/HIPAA-COMPLIANCE-REFERENCE.md` | Full CFR regulatory text |
 | GAS Platform Analysis | `repository-information/GAS-HIPAA-COMPLIANCE-ANALYSIS.md` | GAS-specific HIPAA considerations |
 | Auth Optimization Plan | `repository-information/10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` | Authentication architecture reference |
 
-### Key Code Locations (testauth1.gs) — Phase A Infrastructure Reused by Phase B
+### Key Code Locations (testauthgas1.gs) — Phase A Infrastructure Reused by Phase B
 
 | Function | Approximate Line | Purpose | Used By (Phase B) |
 |----------|:----------------:|---------|-------------------|

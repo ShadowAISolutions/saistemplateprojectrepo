@@ -1,12 +1,12 @@
 #!/bin/bash
-# compute-csp-hash.sh — Compute CSP SHA-256 hash for inline script in testauth1.html
+# compute-csp-hash.sh — Compute CSP SHA-256 hash for inline script in testauthgas1.html
 #
 # Usage: bash scripts/compute-csp-hash.sh [--verify]
 #
 # Without flags: prints the hash to paste into the CSP meta tag
 # With --verify:  compares the hash in the CSP meta tag against the actual script content
 
-FILE="live-site-pages/testauth1.html"
+FILE="live-site-pages/testauthgas1.html"
 
 if [ ! -f "$FILE" ]; then
   echo "Error: $FILE not found. Run from the repo root." >&2

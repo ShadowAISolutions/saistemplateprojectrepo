@@ -2,12 +2,12 @@
 
 **Created:** 2026-03-15
 **Status:** Ready for implementation
-**Scope:** `testauth1.html`, `testauth1.gs`
+**Scope:** `testauthgas1.html`, `testauthgas1.gs`
 **Preset-aware:** All phases work under both `standard` and `hipaa` presets — behavior is controlled by the existing `ACTIVE_PRESET` toggle system (see [06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)). Each phase documents its preset values explicitly.
 **Prerequisites:** Plans 7, 8, 9.2 fully implemented (security hardening I & II, cross-device enforcement)
 **References:**
-- [07-SECURITY-UPDATE-PLAN-TESTAUTH1.md](07-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
-- [08-SECURITY-UPDATE-PLAN-TESTAUTH1.md](08-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan II (implemented)
+- [07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md](07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md) — Security hardening Plan I (implemented)
+- [08-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md](08-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md) — Security hardening Plan II (implemented)
 - [09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md](09.2-CROSS-DEVICE-SESSION-ENFORCEMENT-HEARTBEAT-PLAN.md) — Cross-device enforcement (implemented)
 - [06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md) — Auth preset system
 - HIPAA Security Rule — 45 CFR § 164.312 (Technical Safeguards)
@@ -22,7 +22,7 @@ The current authentication system (plans 6–9.2) provides a solid foundation: G
 
 This plan addresses every security gap identified during the EMR readiness assessment, organized by implementation priority. Each phase includes exact code locations, current/modified code blocks, and design decisions — matching the quality standard established by plan 9.2.
 
-**Preset-aware design:** The codebase uses a `standard` / `hipaa` preset toggle system (`ACTIVE_PRESET` in `testauth1.gs`). Every hardening phase in this plan respects the existing toggle architecture — each feature checks its `AUTH_CONFIG` toggle before executing. The `hipaa` preset enables all hardening features by default; the `standard` preset leaves them off (preserving current behavior). No code breaks regardless of which preset is active. Switching presets is a code-level change (not a runtime toggle) — this is intentional, as HIPAA compliance is an organizational commitment that shouldn't be accidentally toggled off.
+**Preset-aware design:** The codebase uses a `standard` / `hipaa` preset toggle system (`ACTIVE_PRESET` in `testauthgas1.gs`). Every hardening phase in this plan respects the existing toggle architecture — each feature checks its `AUTH_CONFIG` toggle before executing. The `hipaa` preset enables all hardening features by default; the `standard` preset leaves them off (preserving current behavior). No code breaks regardless of which preset is active. Switching presets is a code-level change (not a runtime toggle) — this is intentional, as HIPAA compliance is an organizational commitment that shouldn't be accidentally toggled off.
 
 ### Key Architecture Principle
 
@@ -85,7 +85,7 @@ Every phase's behavior is governed by `AUTH_CONFIG` toggles that differ between 
 │        (Post-Hardening — HIPAA Preset, All Phases Active)            │
 │                                                                      │
 │  ┌─────────────────────────────────────────────────────────────┐     │
-│  │  Browser (HTML Host Page — testauth1.html)                   │     │
+│  │  Browser (HTML Host Page — testauthgas1.html)                   │     │
 │  │                                                              │     │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐   │     │
 │  │  │ Auth Wall     │  │ Session      │  │ Heartbeat       │   │     │
@@ -108,7 +108,7 @@ Every phase's behavior is governed by `AUTH_CONFIG` toggles that differ between 
 │  └─────────────────────────────────────────────────────────────┘     │
 │                                                                      │
 │  ┌─────────────────────────────────────────────────────────────┐     │
-│  │  Google Apps Script (testauth1.gs — server-side)             │     │
+│  │  Google Apps Script (testauthgas1.gs — server-side)             │     │
 │  │                                                              │     │
 │  │  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐   │     │
 │  │  │ Session Mgmt  │  │ HMAC         │  │ Rate Limiting   │   │     │
@@ -146,7 +146,7 @@ Every phase's behavior is governed by `AUTH_CONFIG` toggles that differ between 
 ### Phase 1: HMAC Secret Enforcement (P0 — Critical)
 
 **Risk:** Low (configuration change + fail-closed logic)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(c)(1) Integrity, § 164.312(e)(2)(i) Integrity Controls
 **What:** The HMAC integrity system is enabled in the HIPAA preset (`ENABLE_HMAC_INTEGRITY: true`) but **silently degrades to a no-op** when `HMAC_SECRET` is not set in GAS Script Properties. This means session tokens can be tampered with undetected. Change to fail-closed: if HMAC is enabled but no secret is configured, refuse to create sessions.
 
@@ -155,7 +155,7 @@ Every phase's behavior is governed by `AUTH_CONFIG` toggles that differ between 
 - **To disable HMAC entirely** (e.g., for a non-sensitive standard deployment), set `ENABLE_HMAC_INTEGRITY: false` via `PROJECT_OVERRIDES`. The `if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY)` guard exits both functions early — no secret needed, no error thrown.
 - **No new toggle needed** — this phase fixes the behavior of an existing toggle, not adding a new one.
 
-**Current code** (`testauth1.gs` lines 347–371):
+**Current code** (`testauthgas1.gs` lines 347–371):
 ```javascript
 function generateSessionHmac(sessionData) {
   if (!AUTH_CONFIG.ENABLE_HMAC_INTEGRITY) return '';
@@ -230,7 +230,7 @@ function verifySessionHmac(sessionData) {
 ### Phase 2: Domain Restriction Validation (P0 — Critical)
 
 **Risk:** Low (configuration validation)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(d) Person or Entity Authentication
 **What:** The HIPAA preset enables domain restriction (`ENABLE_DOMAIN_RESTRICTION: true`) but `ALLOWED_DOMAINS` is empty (`[]`). Add explicit validation: if domain restriction is enabled with an empty allowlist, reject all logins with a clear error.
 
@@ -239,7 +239,7 @@ function verifySessionHmac(sessionData) {
 - **`hipaa`**: `ENABLE_DOMAIN_RESTRICTION: true` — the new empty-allowlist validation fires. Admins must configure `ALLOWED_DOMAINS` or override to `false`.
 - **No new toggle needed** — this phase adds validation inside the existing `ENABLE_DOMAIN_RESTRICTION` guard.
 
-**Current domain check** (`testauth1.gs` lines 400–416):
+**Current domain check** (`testauthgas1.gs` lines 400–416):
 ```javascript
 if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION) {
   var emailDomain = userInfo.email.split('@')[1].toLowerCase();
@@ -300,7 +300,7 @@ if (AUTH_CONFIG.ENABLE_DOMAIN_RESTRICTION) {
 ### Phase 3: Server-Side Data Operation Validation (P1 — High)
 
 **Risk:** Medium (adds validation to all data operation functions)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(a)(1) Access Control, § 164.312(d) Authentication
 **What:** Currently, `google.script.run` calls from the GAS iframe execute **without validating the session**. The authenticated app HTML is rendered once at load time with a valid session, but subsequent `google.script.run` calls (which would read/write patient data) have no session check. If a session expires or is evicted between page load and a data operation, the operation still succeeds. This is the most critical security gap for EMR use.
 
@@ -446,7 +446,7 @@ The GAS iframe needs access to the session token to pass it to `validateSessionF
 
 **Option A — Pass token at app load time (simpler):**
 
-Modify the authenticated app HTML (`testauth1.gs` line 972+) to embed the session token as a JavaScript variable:
+Modify the authenticated app HTML (`testauthgas1.gs` line 972+) to embed the session token as a JavaScript variable:
 ```javascript
 // In doGet(), when building the authenticated app HTML:
 var html = `
@@ -509,14 +509,14 @@ withSessionToken(function(token) {
 
 4. **Error codes as thrown messages** — `SESSION_EXPIRED`, `SESSION_EVICTED`, `SESSION_CORRUPT`, `SESSION_INTEGRITY_VIOLATION` are thrown as error messages. The GAS iframe's `withFailureHandler` receives these as `err.message` and can notify the host page to show the appropriate UI.
 
-5. **New postMessage type: `gas-session-invalid`** — when a data operation fails due to session issues, the GAS iframe posts `gas-session-invalid` to the host page. The host page should handle this the same as `gas-heartbeat-expired` — show the auth wall with the appropriate reason message. Add to the message whitelist in `testauth1.html` line 1105.
+5. **New postMessage type: `gas-session-invalid`** — when a data operation fails due to session issues, the GAS iframe posts `gas-session-invalid` to the host page. The host page should handle this the same as `gas-heartbeat-expired` — show the auth wall with the appropriate reason message. Add to the message whitelist in `testauthgas1.html` line 1105.
 
 ---
 
 ### Phase 4: DOM Clearing on Session Expiry (P1 — High)
 
 **Risk:** Medium (changes to UI state management)
-**Files:** `testauth1.html`
+**Files:** `testauthgas1.html`
 **HIPAA:** 45 CFR § 164.312(a)(2)(iii) Automatic Logoff, § 164.312(c)(1) Integrity
 **What:** When a session expires, the auth wall overlays the page content but does **not destroy the GAS iframe**. The iframe's DOM still contains any patient data that was rendered. A determined user could use browser DevTools to inspect the DOM and read PHI after session expiry. For EMR compliance, the iframe must be destroyed (not just hidden) when the session ends.
 
@@ -534,7 +534,7 @@ ENABLE_DOM_CLEARING_ON_EXPIRY: true,   // Destroy GAS iframe content on session 
 - **`hipaa`**: `showAuthWall()` sets `gasFrame.src = 'about:blank'` to destroy PHI in the DOM before showing the overlay.
 - **Why toggle this?** DOM clearing requires iframe reload on re-auth (adds ~2-3s latency to the re-authentication flow). Standard deployments that don't display sensitive data in the GAS iframe don't need this tradeoff.
 
-**Current behavior** (`testauth1.html` lines 1412–1449):
+**Current behavior** (`testauthgas1.html` lines 1412–1449):
 ```javascript
 function showAuthWall(message, email) {
   var wall = document.getElementById('auth-wall');
@@ -636,7 +636,7 @@ function showApp(email, displayName) {
 ### Phase 5: Emergency / Break-Glass Access (P2 — Medium)
 
 **Risk:** Medium (new access path with elevated audit requirements)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(a)(2)(ii) Emergency Access Procedure
 **What:** HIPAA requires an "emergency access procedure" — a mechanism to access PHI in emergencies even when normal access controls might block it. The config flags exist (`ENABLE_EMERGENCY_ACCESS: true`, `EMERGENCY_ACCESS_PROPERTY: 'EMERGENCY_ACCESS_EMAILS'`) in the HIPAA preset but **no code implements them**. Implement a break-glass mechanism that bypasses normal ACL checks with enhanced audit logging.
 
@@ -653,7 +653,7 @@ function showApp(email, displayName) {
 4. Break-glass sessions get a shortened absolute timeout (1 hour vs. 8 hours) to minimize exposure
 5. Break-glass access is only used when normal access fails — if the user passes the normal ACL check, the emergency path is never triggered
 
-**Implementation location** (`testauth1.gs` — inside `exchangeTokenForSession()`, after the ACL check at lines 418–428):
+**Implementation location** (`testauthgas1.gs` — inside `exchangeTokenForSession()`, after the ACL check at lines 418–428):
 
 **Current code:**
 ```javascript
@@ -721,7 +721,7 @@ if (isEmergencyAccess) {
 
 **Heartbeat handler modification** — check `emergencyAbsoluteTimeout` if present:
 
-In the heartbeat absolute timeout check (`testauth1.gs` lines 817–831), add:
+In the heartbeat absolute timeout check (`testauthgas1.gs` lines 817–831), add:
 ```javascript
 // Emergency access sessions have a shortened absolute timeout
 var effectiveAbsoluteTimeout = hbData.emergencyAbsoluteTimeout || AUTH_CONFIG.ABSOLUTE_SESSION_TIMEOUT;
@@ -757,7 +757,7 @@ if (hbData.absoluteCreatedAt && effectiveAbsoluteTimeout) {
 ### Phase 6: Account Lockout After Failed Attempts (P2 — Medium)
 
 **Risk:** Low (extends existing rate limiting)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(d) Authentication
 **NIST:** SP 800-63B § 5.2.2 — Rate limiting / lockout mechanisms
 **What:** The current system has rate limiting (5 failed attempts per 5-minute window per token fingerprint) but no permanent or semi-permanent lockout. After the 5-minute window expires, an attacker can retry indefinitely. Add escalating lockout: temporary → extended → requires admin unlock.
@@ -775,7 +775,7 @@ ENABLE_ESCALATING_LOCKOUT: true,   // Escalating lockout tiers (5min → 30min �
 - **`standard`**: `ENABLE_ESCALATING_LOCKOUT: false` — the existing flat rate limit code runs as-is (5 failures / 5 min window). No escalation tiers.
 - **`hipaa`**: `ENABLE_ESCALATING_LOCKOUT: true` — the escalating lockout code replaces the flat rate limit with three tiers.
 
-**Current rate limiting** (`testauth1.gs` lines 383–391):
+**Current rate limiting** (`testauthgas1.gs` lines 383–391):
 ```javascript
 var rlCache = CacheService.getScriptCache();
 var tokenFingerprint = 'ratelimit_' + accessToken.substring(0, 16);
@@ -862,7 +862,7 @@ rlCache.put(tokenFingerprint, String(attemptCount + 1), lockoutDuration);
 ### Phase 7: IP-Based Session Binding (P2 — Medium)
 
 **Risk:** Medium (may cause issues with mobile/VPN users)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(d) Authentication (defense-in-depth)
 **What:** Bind sessions to the originating IP address. If a session token is used from a different IP than the one that created it, the session is invalidated. This mitigates session token theft — a stolen token is useless from a different network.
 
@@ -961,7 +961,7 @@ var clientIp = (e && e.parameter && e.parameter.clientIp) || 'unknown';
 ### Phase 8: Data-Level Audit Logging (P3 — Recommended)
 
 **Risk:** Low (adds logging to data operations)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(b) Audit Controls — "implement hardware, software, and/or procedural mechanisms that record and examine activity in information systems that contain or use ePHI"
 **What:** The current audit log captures login/logout/session events but NOT individual data access events. For EMR compliance, every read, write, update, and delete of patient data must be logged with: who, what, when, and which patient record.
 
@@ -1248,11 +1248,11 @@ Phase 8 (Data audit) ────────────────► Require
 
 Before deploying this system for EMR use, the administrator must set `ACTIVE_PRESET = 'hipaa'` and complete the following. (For `standard` preset deployments, these items are not required — all hardening features default to `false`/off.)
 
-- [ ] **Verify preset selection** — confirm `ACTIVE_PRESET = 'hipaa'` in `testauth1.gs` (line 38). If using `standard` with selective hardening, document which features are enabled via `PROJECT_OVERRIDES` and why
+- [ ] **Verify preset selection** — confirm `ACTIVE_PRESET = 'hipaa'` in `testauthgas1.gs` (line 38). If using `standard` with selective hardening, document which features are enabled via `PROJECT_OVERRIDES` and why
 - [ ] **Set HMAC secret** — GAS Editor → Project Settings → Script Properties → Add `HMAC_SECRET` with value from `openssl rand -hex 32`
 - [ ] **Configure domain restriction** — either set `ALLOWED_DOMAINS: ['yourhospital.com']` in the HIPAA preset, or explicitly set `ENABLE_DOMAIN_RESTRICTION: false` in `PROJECT_OVERRIDES` with documented justification
 - [ ] **Configure emergency access list** — GAS Editor → Project Settings → Script Properties → Add `EMERGENCY_ACCESS_EMAILS` with comma-separated admin emails
-- [ ] **Set production timer values** — uncomment the production values and remove the ⚡ TEST VALUE lines in both `testauth1.gs` (presets) and `testauth1.html` (client timers)
+- [ ] **Set production timer values** — uncomment the production values and remove the ⚡ TEST VALUE lines in both `testauthgas1.gs` (presets) and `testauthgas1.html` (client timers)
 - [ ] **Configure ACL spreadsheet** — set `MASTER_ACL_SPREADSHEET_ID` to the actual ACL spreadsheet, or ensure `SPREADSHEET_ID` has proper sharing permissions
 - [ ] **Verify Google Workspace BAA** — confirm your organization has signed the Google Workspace BAA (Admin Console → Account → Legal and compliance)
 - [ ] **Test break-glass access** — verify emergency access works by temporarily removing a test user from ACL and confirming they can still access via the emergency list

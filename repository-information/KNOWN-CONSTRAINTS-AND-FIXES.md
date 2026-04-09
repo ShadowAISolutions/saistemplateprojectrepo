@@ -24,7 +24,7 @@ The sandbox origin (`*.googleusercontent.com`) is dynamically generated and unpr
 **Times this was accidentally changed:** 3+ (each time it broke sign-in silently with no error messages)
 
 **Affected code:**
-- `testauth1.html` — `exchange-token` postMessage in the `gas-ready-for-token` handler
+- `testauthgas1.html` — `exchange-token` postMessage in the `gas-ready-for-token` handler
 
 ---
 
@@ -37,7 +37,7 @@ The sandbox origin (`*.googleusercontent.com`) is dynamically generated and unpr
 `event.source` is the `WindowProxy` of the frame that sent the original message. When the sandbox sends `gas-ready-for-token`, `event.source` points directly to the sandbox frame. Replying via `event.source` delivers the message to the correct listener.
 
 **Affected code:**
-- `testauth1.html` — `gas-ready-for-token` handler must use `event.source` to send `exchange-token`
+- `testauthgas1.html` — `gas-ready-for-token` handler must use `event.source` to send `exchange-token`
 
 ---
 
@@ -48,7 +48,7 @@ The sandbox origin (`*.googleusercontent.com`) is dynamically generated and unpr
 **Why:** The workflow runs in CI — it has a `GITHUB_TOKEN` but no GAS session token. Adding session requirements to the deploy path breaks the auto-deploy pipeline.
 
 **Affected code:**
-- `testauth1.gs` — `doPost(e)` deploy handler
+- `testauthgas1.gs` — `doPost(e)` deploy handler
 
 ---
 
@@ -59,8 +59,8 @@ The sandbox origin (`*.googleusercontent.com`) is dynamically generated and unpr
 **Why:** Each step depends on the output of the previous step. The Google access token is single-use for session creation. The GAS session token is generated server-side and must be delivered back to the HTML page before the app iframe can load authenticated content.
 
 **Affected code:**
-- `testauth1.html` — `initGoogleSignIn()` → `handleTokenResponse()` → `exchangeToken()` → message listener
-- `testauth1.gs` — `doGet(e)` token exchange paths → `exchangeTokenForSession()`
+- `testauthgas1.html` — `initGoogleSignIn()` → `handleTokenResponse()` → `exchangeToken()` → message listener
+- `testauthgas1.gs` — `doGet(e)` token exchange paths → `exchangeTokenForSession()`
 
 ---
 
@@ -73,7 +73,7 @@ The sandbox origin (`*.googleusercontent.com`) is dynamically generated and unpr
 **Note:** This is the **opposite** of Constraint A. The asymmetry exists because GAS knows where the HTML page lives (GitHub Pages — stable origin), but the HTML page cannot know where the GAS sandbox lives (googleusercontent.com — dynamic origin).
 
 **Affected code:**
-- `testauth1.gs` — all `window.top.postMessage(...)` calls in generated HTML
+- `testauthgas1.gs` — all `window.top.postMessage(...)` calls in generated HTML
 
 ---
 
@@ -87,7 +87,7 @@ Bugs that were diagnosed and fixed during development. Each entry documents the 
 
 ## Fix 1 — postMessage exchange not reaching GAS sandbox (sign-in stuck)
 
-**Version:** v01.50w (testauth1.html) · v03.18r
+**Version:** v01.50w (testauthgas1.html) · v03.18r
 
 **Symptom:** After switching to the `hipaa` auth preset (which uses `TOKEN_EXCHANGE_METHOD: 'postMessage'`), sign-in got stuck on the "Sign In Required" page. Google OAuth completed successfully but the token exchange never happened — no errors in console.
 
@@ -96,13 +96,13 @@ Bugs that were diagnosed and fixed during development. Each entry documents the 
 **Fix:** Changed to `event.source.postMessage(...)` in the `gas-ready-for-token` handler. `event.source` is the `WindowProxy` of the frame that sent the message, so it targets the sandbox directly. This also became **Constraint B**.
 
 **Affected code:**
-- `testauth1.html` — `gas-ready-for-token` handler
+- `testauthgas1.html` — `gas-ready-for-token` handler
 
 ---
 
 ## Fix 2 — HMAC verification rejecting all sessions (blank page after sign-in)
 
-**Version:** v01.23g (testauth1.gs) · v03.19r
+**Version:** v01.23g (testauthgas1.gs) · v03.19r
 
 **Symptom:** After Fix 1 resolved the sign-in flow, the page was no longer stuck on the login screen — but the GAS app content was blank. No elements displayed after successful sign-in.
 
@@ -116,13 +116,13 @@ The asymmetry between generation (returns empty = "no HMAC") and verification (r
 **Fix:** Added a secret-existence check to `verifySessionHmac()`: if the `HMAC_SECRET` property doesn't exist in script properties, return `true` (pass through). This makes verification match generation — both treat missing secret as "HMAC not available" rather than "HMAC failed."
 
 **Affected code:**
-- `testauth1.gs` — `verifySessionHmac()` function
+- `testauthgas1.gs` — `verifySessionHmac()` function
 
 ---
 
 ## Fix 3 — Re-sign-in after sign-out stuck (stale HMAC message key)
 
-**Version:** v01.51w (testauth1.html) · v03.20r
+**Version:** v01.51w (testauthgas1.html) · v03.20r
 
 **Symptom:** Fresh sign-in worked correctly. But after signing out and attempting to sign in again (without refreshing the page), the sign-in got stuck on the "Sign In Required" page — identical to Fix 1's symptom. A full page refresh fixed it.
 
@@ -137,7 +137,7 @@ On sign-out, `clearSession()` removed the session data from storage but **did no
 **Fix:** Added `_messageKey = null;` to `clearSession()`. This ensures the HMAC verification layer is reset between sessions, allowing unsigned bootstrap messages from new sign-in attempts to pass through.
 
 **Affected code:**
-- `testauth1.html` — `clearSession()` function
+- `testauthgas1.html` — `clearSession()` function
 
 ---
 
@@ -152,9 +152,9 @@ On sign-out, `clearSession()` removed the session data from storage but **did no
 **Why not use `BroadcastChannel` for both?** For `localStorage`, the `storage` event is free and automatic — adding `BroadcastChannel` would be redundant signaling code on top of something that already works. For `sessionStorage`, `BroadcastChannel` is necessary because no free mechanism exists. Each approach is optimal for its storage type.
 
 **Affected code:**
-- `testauth1.html` — `storage` event listener (Mechanism 1, standard preset)
-- `testauth1.html` — `BroadcastChannel` `auth-sign-out` (Mechanism 2, hipaa preset)
-- `testauth1.html` — `performSignOut()` broadcasts via `_signOutChannel` when active
+- `testauthgas1.html` — `storage` event listener (Mechanism 1, standard preset)
+- `testauthgas1.html` — `BroadcastChannel` `auth-sign-out` (Mechanism 2, hipaa preset)
+- `testauthgas1.html` — `performSignOut()` broadcasts via `_signOutChannel` when active
 
 ---
 
@@ -172,7 +172,7 @@ Design decisions and architectural plans that have been discussed and agreed upo
 
 **Goal:** A main login page (portal) authenticates the user once. Other pages with their own GAS backends accept the portal's session without requiring the user to sign in again.
 
-**The problem:** Each page (`testauth1.html`, `dashboard.html`, etc.) has its own GAS deployment with its own session store. A Google OAuth token exchanged on the portal's GAS backend creates a session only the portal recognizes — other GAS backends have no way to validate it.
+**The problem:** Each page (`testauthgas1.html`, `dashboard.html`, etc.) has its own GAS deployment with its own session store. A Google OAuth token exchanged on the portal's GAS backend creates a session only the portal recognizes — other GAS backends have no way to validate it.
 
 **The solution — central `auth.gs`:**
 
@@ -196,15 +196,15 @@ User clicks link → app-page.html reads master token from localStorage
 
 2. **`portal.html`** — the login page. Authenticates via `auth.gs`, stores the master session token in `localStorage` (accessible to all same-origin pages on GitHub Pages).
 
-3. **App pages** (`testauth1.html`, `dashboard.html`, etc.) — on load, read the master token from `localStorage`. If present, send it to their own GAS backend for validation against `auth.gs`. If valid, skip the sign-in wall entirely.
+3. **App pages** (`testauthgas1.html`, `dashboard.html`, etc.) — on load, read the master token from `localStorage`. If present, send it to their own GAS backend for validation against `auth.gs`. If valid, skip the sign-in wall entirely.
 
-4. **Cross-GAS validation** — GAS scripts can call other GAS deployments server-to-server via `UrlFetchApp.fetch()`. This means `testauth1.gs` can hit `auth.gs`'s web app URL to validate a token — no browser involvement, no CORS issues.
+4. **Cross-GAS validation** — GAS scripts can call other GAS deployments server-to-server via `UrlFetchApp.fetch()`. This means `testauthgas1.gs` can hit `auth.gs`'s web app URL to validate a token — no browser involvement, no CORS issues.
 
 **How it works with each preset:**
 
 - **Standard (`localStorage`):** The master token sits in `localStorage`, readable by all pages on the same GitHub Pages origin. Each page reads it on load and validates with its GAS backend. Cross-tab sync via the `storage` event means signing in on the portal auto-authenticates other open pages.
 
-- **Hipaa (`sessionStorage`):** `sessionStorage` doesn't share across pages, so the master token is passed via URL parameter when navigating from the portal. Link format: `testauth1.html?masterToken=TOKEN`. The receiving page reads the parameter, validates with its GAS backend, creates its own per-tab session, and strips the token from the URL (via `history.replaceState`). The token exposure in the URL is brief, same-origin, and not logged by the server (GitHub Pages is static).
+- **Hipaa (`sessionStorage`):** `sessionStorage` doesn't share across pages, so the master token is passed via URL parameter when navigating from the portal. Link format: `testauthgas1.html?masterToken=TOKEN`. The receiving page reads the parameter, validates with its GAS backend, creates its own per-tab session, and strips the token from the URL (via `history.replaceState`). The token exposure in the URL is brief, same-origin, and not logged by the server (GitHub Pages is static).
 
 **What needs to be built:**
 1. `auth.gs` — new GAS project with `createMasterSession()`, `validateMasterToken()`, and `revokeMasterSession()` endpoints
@@ -298,7 +298,7 @@ User clicks link → app-page.html reads master token from localStorage
 - CSP `connect-src` includes `https://script.google.com https://script.googleusercontent.com` (both required — GAS redirects from `script.google.com` to `script.googleusercontent.com` for the response payload)
 
 **Affected code:**
-- `testauth1.html` — `_sendDataPoll()`, `sendHeartbeat()`, CSP `connect-src`
-- `testauth1.gs` — `doPost()` function (getData and heartbeat actions)
+- `testauthgas1.html` — `_sendDataPoll()`, `sendHeartbeat()`, CSP `connect-src`
+- `testauthgas1.gs` — `doPost()` function (getData and heartbeat actions)
 
 Developed by: ShadowAISolutions

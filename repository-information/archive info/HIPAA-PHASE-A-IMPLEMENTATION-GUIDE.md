@@ -5,7 +5,7 @@
 | Field | Value |
 |-------|-------|
 | **Document** | Phase A Implementation Guide |
-| **Environment** | testauth1 (GAS + GitHub Pages) |
+| **Environment** | testauthgas1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-23 |
 | **GAS Version** | v01.91g |
 | **HTML Version** | v02.74w |
@@ -15,16 +15,16 @@
 
 ### Related Documents
 
-- [HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md](HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md) — Follow-up assessment identifying these gaps
-- [HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md](HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md) — Original compliance assessment (2026-03-19)
+- [HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md](HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md) — Follow-up assessment identifying these gaps
+- [HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md](HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md) — Original compliance assessment (2026-03-19)
 - [HIPAA-CODING-REQUIREMENTS.md](HIPAA-CODING-REQUIREMENTS.md) — 40-item regulatory checklist
 - [HIPAA-COMPLIANCE-REFERENCE.md](HIPAA-COMPLIANCE-REFERENCE.md) — CFR regulatory text reference
 
 ### Who This Is For
 
-This guide is for the developer implementing HIPAA Privacy Rule compliance in testauth1. It assumes familiarity with:
+This guide is for the developer implementing HIPAA Privacy Rule compliance in testauthgas1. It assumes familiarity with:
 - Google Apps Script (GAS) development and deployment
-- The testauth1 authentication architecture (sessions, RBAC, audit logging)
+- The testauthgas1 authentication architecture (sessions, RBAC, audit logging)
 - Google Sheets as a data backend
 - The existing `saveNote()` → `validateSessionForData()` → `checkPermission()` → `dataAuditLog()` pattern
 
@@ -51,7 +51,7 @@ Before starting implementation:
 ### What "Done" Looks Like — Status Summary
 
 Phase A core functions are **implemented**; some ancillary items remain unbuilt (low risk):
-- ✅ **Individuals can** request a disclosure accounting, download their data (JSON/CSV/Summary), and submit amendment requests — all through the testauth1 UI
+- ✅ **Individuals can** request a disclosure accounting, download their data (JSON/CSV/Summary), and submit amendment requests — all through the testauthgas1 UI
 - ✅ **Admins can** review and approve/deny amendment requests with documented reasons
 - ✅ **The system** automatically logs all disclosure, access, and amendment activity to HIPAA-compliant audit trails with configurable retention period (default 6 years)
 - ✅ **Compliance scorecard** moved from 16/40 ✅ (40%) to 19/40 ✅ (48%) — current law compliance from 61% to **71%**
@@ -123,15 +123,15 @@ OCR launched the Right of Access Initiative in 2019 specifically to enforce §16
 
 Based on 2024-2025 enforcement patterns:
 
-1. **Timeliness is paramount** — nearly every enforcement action involves exceeding the 30-day response window. testauth1's synchronous export (instant response) **exceeds** OCR expectations
-2. **Electronic format compliance** — OCR expects providers to support electronic access when data is maintained electronically. testauth1 is electronic-native
+1. **Timeliness is paramount** — nearly every enforcement action involves exceeding the 30-day response window. testauthgas1's synchronous export (instant response) **exceeds** OCR expectations
+2. **Electronic format compliance** — OCR expects providers to support electronic access when data is maintained electronically. testauthgas1 is electronic-native
 3. **Personal representatives** — denying access to authorized representatives is treated identically to denying the individual. Phase B should address this gap
-4. **Fee transparency** — unreasonable fees trigger enforcement. testauth1's $0 fee is the safest approach
+4. **Fee transparency** — unreasonable fees trigger enforcement. testauthgas1's $0 fee is the safest approach
 5. **Documentation** — OCR looks for documented policies, designated privacy officers, and audit trails. This guide and the audit logging infrastructure satisfy this requirement
 
 ### Key Takeaway
 
-> **testauth1's architecture is actually well-positioned for compliance.** The electronic self-service model (instant JSON/CSV export, full audit trail, RBAC-enforced access) exceeds what most healthcare providers offer. The primary risk is not technology — it's **not implementing** these capabilities at all. Phase A closes that gap.
+> **testauthgas1's architecture is actually well-positioned for compliance.** The electronic self-service model (instant JSON/CSV export, full audit trail, RBAC-enforced access) exceeds what most healthcare providers offer. The primary risk is not technology — it's **not implementing** these capabilities at all. Phase A closes that gap.
 
 ### Regulatory Timeline — Current Law vs Pending Changes
 
@@ -211,7 +211,7 @@ flowchart TB
 
 ### Data Flow Pattern
 
-Every Phase A function follows the same 5-step pattern established by `saveNote()` (`testauth1.gs:1375`):
+Every Phase A function follows the same 5-step pattern established by `saveNote()` (`testauthgas1.gs:1375`):
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -240,12 +240,12 @@ Every Phase A function follows the same 5-step pattern established by `saveNote(
 
 | Existing Component | Location | How Phase A Uses It |
 |-------------------|----------|-------------------|
-| Session validation | `testauth1.gs:validateSessionForData()` | Every endpoint validates the caller's session |
-| RBAC permission check | `testauth1.gs:checkPermission()` | Every endpoint checks the caller has the required permission |
-| Session audit log | `testauth1.gs:auditLog()` at :902 | Every endpoint logs the operation |
-| Data audit log | `testauth1.gs:dataAuditLog()` at :937 | Every endpoint logs PHI access/modification |
-| Sheet auto-creation | `testauth1.gs:_writeAuditLogEntry()` at :907 | Pattern for creating sheets on first use |
-| HTML escaping | `testauth1.gs:escapeHtml()` | All user-facing output is escaped |
+| Session validation | `testauthgas1.gs:validateSessionForData()` | Every endpoint validates the caller's session |
+| RBAC permission check | `testauthgas1.gs:checkPermission()` | Every endpoint checks the caller has the required permission |
+| Session audit log | `testauthgas1.gs:auditLog()` at :902 | Every endpoint logs the operation |
+| Data audit log | `testauthgas1.gs:dataAuditLog()` at :937 | Every endpoint logs PHI access/modification |
+| Sheet auto-creation | `testauthgas1.gs:_writeAuditLogEntry()` at :907 | Pattern for creating sheets on first use |
+| HTML escaping | `testauthgas1.gs:escapeHtml()` | All user-facing output is escaped |
 | UUID generation | `Utilities.getUuid()` | Request IDs, record IDs |
 | Timestamp formatting | `new Date().toISOString()` | All log entries |
 
@@ -268,7 +268,7 @@ Phase A requires adding permissions to the Roles tab of the Master ACL Spreadshe
 
 ### Common Utility Functions
 
-Add these shared utilities to `testauth1.gs` (place them near the existing utility functions around line 900):
+Add these shared utilities to `testauthgas1.gs` (place them near the existing utility functions around line 900):
 
 ```javascript
 // ═══════════════════════════════════════════════════════
@@ -333,7 +333,7 @@ function validateIndividualAccess(user, targetEmail, operationName) {
 
 ### Sheet Auto-Creation Pattern
 
-All three new sheets use the same auto-creation pattern from `_writeAuditLogEntry()` (`testauth1.gs:907`). Here is the reusable pattern:
+All three new sheets use the same auto-creation pattern from `_writeAuditLogEntry()` (`testauthgas1.gs:907`). Here is the reusable pattern:
 
 ```javascript
 /**
@@ -446,7 +446,7 @@ Per §164.528(a)(2), these disclosures are **exempt** from accounting:
 | National security / intelligence | Disclosures to health oversight agencies |
 | Law enforcement (certain circumstances) | Any other disclosure not listed as exempt |
 
-> **testauth1 context:** Currently, testauth1 does not make external disclosures (no outbound API calls to third parties, no data sharing endpoints). The `DisclosureLog` infrastructure must exist for compliance, but it may initially have zero entries. Future features that share PHI externally MUST call `recordDisclosure()`.
+> **testauthgas1 context:** Currently, testauthgas1 does not make external disclosures (no outbound API calls to third parties, no data sharing endpoints). The `DisclosureLog` infrastructure must exist for compliance, but it may initially have zero entries. Future features that share PHI externally MUST call `recordDisclosure()`.
 
 ### HITECH Act — EHR Accounting Expansion (§13405(c))
 
@@ -470,7 +470,7 @@ This expansion **removes the TPO exemption** for EHR-based disclosures — meani
 
 > **Source:** [Federal Register — HIPAA Privacy Rule Accounting of Disclosures Under HITECH](https://www.federalregister.gov/documents/2011/05/31/2011-13297/hipaa-privacy-rule-accounting-of-disclosures-under-the-health-information-technology-for-economic); [HIPAA Journal — New Regulations 2026](https://www.hipaajournal.com/new-hipaa-regulations/)
 
-#### Impact on testauth1
+#### Impact on testauthgas1
 
 If the implementing regulations are finalized, `getDisclosureAccounting()` would need dual-mode filtering:
 
@@ -510,10 +510,10 @@ Per §164.528(c), business associates must also track disclosures and either:
 
 The same 60-day response timeline applies.
 
-**testauth1 implications:**
-- If testauth1 data is shared with a BA (e.g., a lab, billing service, or analytics vendor), the BA's disclosures must be included in the accounting
+**testauthgas1 implications:**
+- If testauthgas1 data is shared with a BA (e.g., a lab, billing service, or analytics vendor), the BA's disclosures must be included in the accounting
 - **Recommended schema extension:** Add a `Source` column to `DisclosureLog` to distinguish:
-  - `CoveredEntity` — disclosures made directly by testauth1
+  - `CoveredEntity` — disclosures made directly by testauthgas1
   - `BusinessAssociate:Name` — disclosures reported by a specific BA
 - The `getDisclosureAccounting()` function should aggregate both sources when generating the accounting
 
@@ -718,7 +718,7 @@ function exportDisclosureAccounting(sessionToken, format) {
 
 ### HTML UI Component
 
-Add the disclosure accounting button and panel to `testauth1.html`:
+Add the disclosure accounting button and panel to `testauthgas1.html`:
 
 ```html
 <!-- Disclosure Accounting Button (visible to all authenticated users) -->
@@ -755,7 +755,7 @@ Add the disclosure accounting button and panel to `testauth1.html`:
 Future code that discloses PHI externally **must** call `recordDisclosure()`:
 
 ```javascript
-// Example: if testauth1 ever adds a "Share with Provider" feature
+// Example: if testauthgas1 ever adds a "Share with Provider" feature
 function shareWithProvider(sessionToken, providerEmail, recordId) {
   var user = validateSessionForData(sessionToken, 'shareWithProvider');
   checkPermission(user, 'write', 'shareWithProvider');
@@ -797,9 +797,9 @@ function shareWithProvider(sessionToken, providerEmail, recordId) {
 | 5 | Every access request is logged to the audit trail | `dataAuditLog()` called with `action: 'export'` |
 | 6 | Designated Record Set clearly defined | All sheets containing individual data are enumerated and queried |
 
-### Designated Record Set for testauth1
+### Designated Record Set for testauthgas1
 
-The "Designated Record Set" defines what constitutes an individual's records. In testauth1:
+The "Designated Record Set" defines what constitutes an individual's records. In testauthgas1:
 
 | Data Source | Sheet | Contains ePHI? | Included in Export |
 |------------|-------|---------------|-------------------|
@@ -827,9 +827,9 @@ The Privacy Rule permits a reasonable, cost-based fee for providing copies of PH
 
 > **Source:** [HHS Right of Access Guidance](https://www.hhs.gov/hipaa/for-professionals/privacy/guidance/access/index.html); 45 CFR §164.524(c)(4)
 
-#### testauth1 Fee Policy
+#### testauthgas1 Fee Policy
 
-- testauth1 provides **electronic self-service** export (JSON/CSV download via browser)
+- testauthgas1 provides **electronic self-service** export (JSON/CSV download via browser)
 - **Recommended fee: $0.00** — electronic self-service has negligible marginal cost; no labor, supplies, or postage involved
 - The `requestDataExport()` function should NOT include any fee-related logic
 - If a fee is ever introduced: it must be disclosed in the Notice of Privacy Practices, and the `AccessRequests` sheet should gain `FeeCharged` and `FeeJustification` columns
@@ -908,7 +908,7 @@ function validateIndividualOrRepresentativeAccess(user, targetEmail, operationNa
 }
 ```
 
-> **Phase A note:** Personal representative access is not required for the initial Phase A deployment (which supports self-service only). It becomes important when testauth1 expands to serve populations where representative access is common (pediatrics, elder care, etc.). The `PersonalRepresentatives` schema is documented in the Spreadsheet Schema Reference.
+> **Phase A note:** Personal representative access is not required for the initial Phase A deployment (which supports self-service only). It becomes important when testauthgas1 expands to serve populations where representative access is common (pediatrics, elder care, etc.). The `PersonalRepresentatives` schema is documented in the Spreadsheet Schema Reference.
 
 ### GAS Implementation
 
@@ -917,7 +917,7 @@ function validateIndividualOrRepresentativeAccess(user, targetEmail, operationNa
 ```javascript
 /**
  * Creates an access request and immediately generates the export.
- * For testauth1 (small dataset), export is synchronous — no 30-day delay.
+ * For testauthgas1 (small dataset), export is synchronous — no 30-day delay.
  * The AccessRequests sheet still tracks the request for compliance.
  *
  * @param {string} sessionToken
@@ -1021,7 +1021,7 @@ function getIndividualData(sessionToken) {
       displayName: user.displayName,
       role: user.role,
       exportDate: formatHipaaTimestamp(),
-      generatedBy: 'testauth1 v' + VERSION
+      generatedBy: 'testauthgas1 v' + VERSION
     },
     records: {},
     summary: { totalRecords: 0, sheetsQueried: 0 }
@@ -1235,7 +1235,7 @@ function handleDataExport() {
 }
 ```
 
-> **Note on `callGasEndpoint()`**: This is a placeholder for testauth1's actual GAS communication method. In the current architecture, GAS functions are called via `postMessage` to action-specific iframes. The actual implementation should follow the existing `heartbeat` / `signout` / `adminSessions` iframe communication pattern.
+> **Note on `callGasEndpoint()`**: This is a placeholder for testauthgas1's actual GAS communication method. In the current architecture, GAS functions are called via `postMessage` to action-specific iframes. The actual implementation should follow the existing `heartbeat` / `signout` / `adminSessions` iframe communication pattern.
 
 ---
 
@@ -1552,7 +1552,7 @@ if (decision === 'Approved') {
 
 **Required organizational documentation** (not code — administrative):
 
-| Documentation Item | Where to Document | testauth1 Status |
+| Documentation Item | Where to Document | testauthgas1 Status |
 |--------------------|------------------|-----------------|
 | Title of person/office receiving amendment requests | Notice of Privacy Practices | ⚠️ Not yet documented |
 | Title of person/office processing amendment requests | Internal policy document | ⚠️ Not yet documented |
@@ -1889,7 +1889,7 @@ Project Data Spreadsheet (1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA)
 Complete these before writing any code:
 
 - [x] **RBAC permissions verified** — `Roles` tab in Master ACL has `export`, `amend`, and `admin` permissions with correct role mappings (confirmed: admin/clinician/billing roles defined at lines 59-61)
-- [x] **HIPAA preset active** — `ACTIVE_PRESET = 'hipaa'` in `testauth1.gs`
+- [x] **HIPAA preset active** — `ACTIVE_PRESET = 'hipaa'` in `testauthgas1.gs`
 - [x] **Data audit logging enabled** — `AUTH_CONFIG.ENABLE_DATA_AUDIT_LOG === true`
 - [x] **Session audit logging enabled** — `AUTH_CONFIG.ENABLE_AUDIT_LOG === true`
 - [x] **HMAC integrity enabled** — `AUTH_CONFIG.ENABLE_HMAC_INTEGRITY === true`
@@ -1954,14 +1954,14 @@ This matrix maps every relevant CFR sub-section to the Phase A implementation, p
 | CFR Paragraph | Requirement | Phase A Status | Implementation Reference |
 |---------------|------------|:--------------:|--------------------------|
 | §164.524(a)(1) | Right to access designated record set | ✅ Covered | `requestDataExport()` — queries all designated record set sheets |
-| §164.524(b)(1) | Respond within 30 calendar days | ✅ Covered | `AccessRequests.ResponseDate` tracked; testauth1 responds instantly (synchronous) |
+| §164.524(b)(1) | Respond within 30 calendar days | ✅ Covered | `AccessRequests.ResponseDate` tracked; testauthgas1 responds instantly (synchronous) |
 | §164.524(b)(2)(i) | Written notice if request denied | ⚠️ Partial | Error responses returned but not as formal "written notice" |
 | §164.524(b)(2)(ii) | One 30-day extension with written explanation | ⚠️ Partial | Deadline calculated; extension status (`Extended`) exists but no extension workflow |
 | §164.524(c)(1) | Provide access in form and format requested | ✅ Covered | JSON and CSV format options |
 | §164.524(c)(2)(i) | Electronic copy if maintained electronically | ✅ Covered | All data is electronic; export is electronic |
 | §164.524(c)(3) | Summary of PHI if agreed upon | ✅ Covered | `generateDataSummary()` with agreement checkbox per §164.524(c)(3) |
 | §164.524(c)(4) | Reasonable cost-based fees | ✅ Covered | $0 fee — electronic self-service (see Fee Policy subsection) |
-| §164.524(d)(1) | Unreviewable grounds for denial (psychotherapy notes) | N/A | testauth1 does not hold psychotherapy notes |
+| §164.524(d)(1) | Unreviewable grounds for denial (psychotherapy notes) | N/A | testauthgas1 does not hold psychotherapy notes |
 | §164.524(d)(2) | Reviewable grounds for denial | ⚠️ Partial | No formal denial workflow implemented |
 
 #### §164.526 — Amendment of PHI
@@ -1979,7 +1979,7 @@ This matrix maps every relevant CFR sub-section to the Phase A implementation, p
 | §164.526(c)(3) | Notify third parties of amendment | ❌ Phase B | Requires outbound notification capability |
 | §164.526(d)(1)-(3) | Statement of disagreement process | ✅ Covered | `submitDisagreement()` with full lifecycle |
 | §164.526(d)(4) | Link disagreement to designated record set | ✅ Covered | `DisagreementStatement` column in `AmendmentRequests` |
-| §164.526(e) | Actions on notices from other entities | N/A | testauth1 is the sole covered entity for its data |
+| §164.526(e) | Actions on notices from other entities | N/A | testauthgas1 is the sole covered entity for its data |
 | §164.526(f) | Document responsible persons/offices | ⚠️ Gap | Organizational documentation needed (not code) |
 
 #### §164.528 — Accounting of Disclosures
@@ -2003,7 +2003,7 @@ This matrix maps every relevant CFR sub-section to the Phase A implementation, p
 | ⚠️ Partial / Gap | 8 | 26% | Partially addressed or recommended extension |
 | ❌ Phase B+ | 1 | 3% | Deferred to future phases (§164.526(c)(3) third-party notifications) |
 | ⏳ Pending Regulation | 1 | — | Regulation not yet finalized |
-| N/A | 3 | — | Not applicable to testauth1 |
+| N/A | 3 | — | Not applicable to testauthgas1 |
 
 > **Reading this matrix:** ✅ items are fully compliant. ⚠️ items work but have gaps in formal workflow (extensions, BA tracking) — these are low-risk gaps that can be addressed incrementally. ❌ items require new capabilities not yet implemented. ⏳ items depend on regulatory finalization.
 
@@ -2048,7 +2048,7 @@ Current law compliance (items 1-31):
 
 | Sheet | Expected Rows/Year | Row Size (bytes) | Annual Storage |
 |-------|-------------------|-----------------|----------------|
-| `DisclosureLog` | ~0-50 (testauth1 rarely discloses externally) | ~500 | ~25 KB |
+| `DisclosureLog` | ~0-50 (testauthgas1 rarely discloses externally) | ~500 | ~25 KB |
 | `AccessRequests` | ~10-100 (per active user) | ~300 | ~30 KB |
 | `AmendmentRequests` | ~5-50 (per active user) | ~800 | ~40 KB |
 
@@ -2193,10 +2193,10 @@ The largest proposed update to the HIPAA Privacy Rule is still pending finalizat
 
 **Future-proofing code — ✅ Implemented:**
 
-The `HIPAA_DEADLINES` configuration object is now implemented in `testauth1.gs` (near line 1735). All deadline and lookback values are configurable — when the NPRM finalizes, update the single config object:
+The `HIPAA_DEADLINES` configuration object is now implemented in `testauthgas1.gs` (near line 1735). All deadline and lookback values are configurable — when the NPRM finalizes, update the single config object:
 
 ```javascript
-// ✅ IMPLEMENTED — configurable deadlines in testauth1.gs
+// ✅ IMPLEMENTED — configurable deadlines in testauthgas1.gs
 var HIPAA_DEADLINES = {
   ACCESS_RESPONSE_DAYS: 30,      // §164.524(b)(1) — proposed NPRM: 15
   ACCESS_EXTENSION_DAYS: 30,     // §164.524(b)(2)(iii)
@@ -2222,7 +2222,7 @@ On December 27, 2024, HHS OCR proposed the first major update to the HIPAA Secur
 | **72-hour system restoration** | Need backup/restore capability for all 3 new sheets (DisclosureLog, AccessRequests, AmendmentRequests) | ⚠️ Not in place | Implement GAS time-trigger for automated sheet backups |
 | **Annual compliance audits** | Phase A documentation must support audit artifacts | ✅ This guide serves as audit evidence | Maintain this guide current |
 | **Technology asset inventory** | Phase A sheets and functions must be inventoried | ⚠️ Not tracked | Add to REPO-ARCHITECTURE.md or a dedicated inventory |
-| **MFA for all ePHI access** | testauth1 uses Google OAuth (MFA-capable) — Google enforces MFA policy | ✅ Aligned | Verify Google Workspace MFA enforcement |
+| **MFA for all ePHI access** | testauthgas1 uses Google OAuth (MFA-capable) — Google enforces MFA policy | ✅ Aligned | Verify Google Workspace MFA enforcement |
 
 > **Status:** Comments were due March 7, 2025. A regulatory freeze is in effect. The estimated compliance cost of $9.3 billion has drawn industry opposition. Final action uncertain but possible by late 2026.
 >
@@ -2236,12 +2236,12 @@ On February 8, 2024, HHS finalized the alignment of 42 CFR Part 2 (Confidentiali
 - **Accounting of disclosures:** The compliance date for SUD-record accounting of disclosures is **deferred** until HHS revises the HIPAA Privacy Rule's accounting provisions (the pending December 2020 NPRM)
 - **Full compliance required:** February 16, 2026
 
-**testauth1 impact — ✅ Addressed:**
+**testauthgas1 impact — ✅ Addressed:**
 - The `DisclosureLog` now includes a `DataCategory` column with enum values: `General`, `SUD`, `MentalHealth`, `HIV`, `Genetic` — supporting category-specific tracking per 42 CFR Part 2 and other regulations
 - `recordDisclosure()` accepts `params.dataCategory` (defaults to `General`)
 - `getDisclosureAccounting()` returns `dataCategory` in each disclosure record
 - CSV export includes the `DataCategory` column
-- If testauth1 handles SUD data in the future, disclosures can be flagged with `dataCategory: 'SUD'` for separate consent tracking
+- If testauthgas1 handles SUD data in the future, disclosures can be flagged with `dataCategory: 'SUD'` for separate consent tracking
 
 > **Source:** [42 CFR Part 2 Final Rule Fact Sheet](https://www.hhs.gov/hipaa/for-professionals/regulatory-initiatives/fact-sheet-42-cfr-part-2-final-rule/index.html)
 
@@ -2273,14 +2273,14 @@ Recommended monitoring cadence:
 
 | Document | Path | Relevance |
 |----------|------|-----------|
-| Implementation Follow-Up | `repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` | Identifies Phase A gaps and roadmap |
-| Original Compliance Report | `repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` | Baseline compliance assessment |
+| Implementation Follow-Up | `repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md` | Identifies Phase A gaps and roadmap |
+| Original Compliance Report | `repository-information/HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md` | Baseline compliance assessment |
 | Coding Requirements | `repository-information/HIPAA-CODING-REQUIREMENTS.md` | 40-item regulatory checklist |
 | Compliance Reference | `repository-information/HIPAA-COMPLIANCE-REFERENCE.md` | Full CFR regulatory text |
 | GAS Platform Analysis | `repository-information/GAS-HIPAA-COMPLIANCE-ANALYSIS.md` | GAS-specific HIPAA considerations |
 | Auth Optimization Plan | `repository-information/10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` | Authentication architecture reference |
 
-### Key Code Locations (testauth1.gs)
+### Key Code Locations (testauthgas1.gs)
 
 | Function | Line | Purpose |
 |----------|------|---------|
@@ -2312,9 +2312,9 @@ For maximum efficiency, implement in this order (each builds on the previous):
 ### Audit Methodology
 
 Every function listed below was verified by:
-1. Searching `testauth1.gs` for the function definition (confirming it exists)
+1. Searching `testauthgas1.gs` for the function definition (confirming it exists)
 2. Reading the function body to verify it matches the guide's specification (correct parameters, correct logic, correct sheet columns)
-3. Checking the HTML page (`testauth1.html`) for corresponding UI elements
+3. Checking the HTML page (`testauthgas1.html`) for corresponding UI elements
 4. Checking the GAS route handler (`doGet` action='phaseA') for endpoint registration
 
 ### GAS Functions — Core Phase A (17 functions)

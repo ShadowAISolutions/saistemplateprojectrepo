@@ -20,7 +20,7 @@ A Session Manager panel in the Global ACL page's PROJECT CONTENT area that displ
 | Project | Deployment ID | Has `listActiveSessions`? |
 |---------|--------------|--------------------------|
 | Global ACL | `AKfycbwARlOI...` | Yes |
-| Testauth1 | `AKfycbzcKmQ3...` | Yes |
+| Testauthgas1 | `AKfycbzcKmQ3...` | Yes |
 | Portal | `AKfycbzKwEfB...` | No — needs `listActiveSessions`, `adminSignOutUser`, and `?action=adminSessions` added to `portal.gs` |
 
 ### Features Implemented

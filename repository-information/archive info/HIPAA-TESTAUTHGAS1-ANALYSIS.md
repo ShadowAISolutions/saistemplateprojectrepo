@@ -1,18 +1,18 @@
-# HIPAA Compliance Analysis — testauth1 vs HIPAA-CODING-REQUIREMENTS.md
+# HIPAA Compliance Analysis — testauthgas1 vs HIPAA-CODING-REQUIREMENTS.md
 
 > **Analysis Date:** 2026-03-30
-> **Environment:** testauth1 (GAS v02.32g + HTML v03.83w)
+> **Environment:** testauthgas1 (GAS v02.32g + HTML v03.83w)
 > **Reference:** `HIPAA-CODING-REQUIREMENTS.md` — 40-item Coding Implementation Checklist
-> **Scope:** Deep cross-reference of every checklist item against actual testauth1 code
+> **Scope:** Deep cross-reference of every checklist item against actual testauthgas1 code
 >
-> This document analyzes each of the 40 requirements from the HIPAA Coding Implementation Checklist (Section 13 of `HIPAA-CODING-REQUIREMENTS.md`) against the actual testauth1 implementation. Each item is rated as:
+> This document analyzes each of the 40 requirements from the HIPAA Coding Implementation Checklist (Section 13 of `HIPAA-CODING-REQUIREMENTS.md`) against the actual testauthgas1 implementation. Each item is rated as:
 >
 > | Status | Meaning |
 > |--------|---------|
 > | ✅ **Done** | Fully implemented and verified in code |
 > | ⚠️ **Partial** | Implementation exists but has gaps |
 > | ❌ **Not Done** | Not implemented (may be expected — see notes) |
-> | 🔄 **N/A** | Not applicable to testauth1's architecture |
+> | 🔄 **N/A** | Not applicable to testauthgas1's architecture |
 > | 📋 **Policy** | Organizational/procedural — cannot be code-assessed |
 > | 🔮 **NPRM** | Proposed requirement (not yet law) — not implemented |
 
@@ -87,9 +87,9 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Unique identifier | Google OAuth email used as unique ID | `testauth1.gs:594` — `email: userInfo.email` |
+| Unique identifier | Google OAuth email used as unique ID | `testauthgas1.gs:594` — `email: userInfo.email` |
 | No shared accounts | Each session tied to individual email | Session token is per-user, per-device |
-| Per-action tracking | All audit log entries include user email | `testauth1.gs:1220-1260` — `auditLog()` and `dataAuditLog()` |
+| Per-action tracking | All audit log entries include user email | `testauthgas1.gs:1220-1260` — `auditLog()` and `dataAuditLog()` |
 | Cross-session persistence | Email identity persists across sessions | Google OAuth provides stable identity |
 
 **Verdict:** Fully compliant. Google OAuth enforces unique identity. No shared account mechanism exists.
@@ -103,10 +103,10 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Identity verification | Google OAuth validates access token against Google's userinfo endpoint | `testauth1.gs:2707-2731` — `validateGoogleToken()` |
-| Token exchange | OAuth token exchanged for server-side session token | `testauth1.gs:1374-1532` — `exchangeTokenForSession()` |
-| Ongoing verification | Session validated on every heartbeat and data operation | `testauth1.gs:1534-1614` — `validateSession()` |
-| Data operation gating | Every data read/write validates session first | `testauth1.gs:1616-1686` — `validateSessionForData()` |
+| Identity verification | Google OAuth validates access token against Google's userinfo endpoint | `testauthgas1.gs:2707-2731` — `validateGoogleToken()` |
+| Token exchange | OAuth token exchanged for server-side session token | `testauthgas1.gs:1374-1532` — `exchangeTokenForSession()` |
+| Ongoing verification | Session validated on every heartbeat and data operation | `testauthgas1.gs:1534-1614` — `validateSession()` |
+| Data operation gating | Every data read/write validates session first | `testauthgas1.gs:1616-1686` — `validateSessionForData()` |
 
 **Verdict:** Fully compliant. Authentication is delegated to Google's OAuth infrastructure with server-side token validation.
 
@@ -120,7 +120,7 @@
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
 | Break-glass mechanism | Emergency access emails in Script Properties | Config: `ENABLE_EMERGENCY_ACCESS: true` |
-| Override logic | Emergency emails bypass ACL check | `testauth1.gs:2780-2902` — `checkSpreadsheetAccess()` emergency override |
+| Override logic | Emergency emails bypass ACL check | `testauthgas1.gs:2780-2902` — `checkSpreadsheetAccess()` emergency override |
 | Heavy audit logging | Emergency access events logged separately | `auditLog('emergency_access', ...)` on emergency use |
 | Session flagging | Emergency access flagged on session data | `isEmergencyAccess` field tracked throughout |
 
@@ -135,11 +135,11 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Rolling timeout | Session expires after inactivity (15min prod / 3min test) | `testauth1.gs` — `SESSION_EXPIRATION: 900` (production preset) |
-| Absolute timeout | Hard ceiling regardless of activity (8hr prod / 5min test) | `testauth1.gs` — `ABSOLUTE_SESSION_TIMEOUT: 28800` (production) |
-| Server-side enforcement | Session destroyed in CacheService on timeout | `testauth1.gs:1534-1614` — timeout checks in `validateSession()` |
-| Heartbeat extension | Active users get session extended | `testauth1.gs:2904-2981` — `processHeartbeat()` |
-| Client-side timers | Visual countdown timers for both timeouts | `testauth1.html` — `auth-timers` panel with rolling + absolute displays |
+| Rolling timeout | Session expires after inactivity (15min prod / 3min test) | `testauthgas1.gs` — `SESSION_EXPIRATION: 900` (production preset) |
+| Absolute timeout | Hard ceiling regardless of activity (8hr prod / 5min test) | `testauthgas1.gs` — `ABSOLUTE_SESSION_TIMEOUT: 28800` (production) |
+| Server-side enforcement | Session destroyed in CacheService on timeout | `testauthgas1.gs:1534-1614` — timeout checks in `validateSession()` |
+| Heartbeat extension | Active users get session extended | `testauthgas1.gs:2904-2981` — `processHeartbeat()` |
+| Client-side timers | Visual countdown timers for both timeouts | `testauthgas1.html` — `auth-timers` panel with rolling + absolute displays |
 | Warning banners | Visual warnings before expiry | `session-warning-banner`, `absolute-warning-banner` elements |
 | DOM clearing on expiry | PHI removed from DOM on timeout | `ENABLE_DOM_CLEARING_ON_EXPIRY: true` |
 
@@ -154,12 +154,12 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| RBAC system | 4 roles: admin, clinician, billing, viewer | `testauth1.gs:58-63` — `RBAC_ROLES_FALLBACK` |
+| RBAC system | 4 roles: admin, clinician, billing, viewer | `testauthgas1.gs:58-63` — `RBAC_ROLES_FALLBACK` |
 | Permissions | 6 permissions: read, write, delete, export, amend, admin | Permission matrix enforced per-operation |
-| Per-operation enforcement | `checkPermission()` validates every operation | `testauth1.gs:193` — `checkPermission(user, requiredPermission, operationName)` |
+| Per-operation enforcement | `checkPermission()` validates every operation | `testauthgas1.gs:193` — `checkPermission(user, requiredPermission, operationName)` |
 | Centralized ACL | Master ACL Spreadsheet with Roles tab | `MASTER_ACL_SPREADSHEET_ID` configured |
-| UI gating | `data-requires-role` and `data-requires-permission` attributes | `testauth1.html` — `applyUIGating()` function |
-| Cache with epoch invalidation | Role lookups cached with atomic epoch invalidation | `testauth1.gs:82-96` — epoch-based cache |
+| UI gating | `data-requires-role` and `data-requires-permission` attributes | `testauthgas1.html` — `applyUIGating()` function |
+| Cache with epoch invalidation | Role lookups cached with atomic epoch invalidation | `testauthgas1.gs:82-96` — epoch-based cache |
 
 **Verdict:** Fully compliant. Full RBAC with centralized management, per-operation enforcement, and UI-level gating.
 
@@ -188,10 +188,10 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Admin session panel | Admin sees all active sessions | `testauth1.gs:542-609` — `listActiveSessions()` |
-| Remote sign-out ("Kick") | Admin can terminate any user's session | `testauth1.gs:611-635` — `adminSignOutUser()` |
+| Admin session panel | Admin sees all active sessions | `testauthgas1.gs:542-609` — `listActiveSessions()` |
+| Remote sign-out ("Kick") | Admin can terminate any user's session | `testauthgas1.gs:611-635` — `adminSignOutUser()` |
 | Cross-page sign-out | Sign-out propagates to all connected pages | Cross-project sign-out via BroadcastChannel |
-| Invalidate all sessions | All sessions for an email can be destroyed | `testauth1.gs:2678-2705` — `invalidateAllSessions()` |
+| Invalidate all sessions | All sessions for an email can be destroyed | `testauthgas1.gs:2678-2705` — `invalidateAllSessions()` |
 | ACL removal | Remove from spreadsheet = immediate denial | ACL check on every `validateSession()` call |
 
 **Verdict:** Fully compliant. Real-time termination via admin panel with cross-page propagation.
@@ -272,8 +272,8 @@
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
 | TLS integrity | TLS provides integrity checking on all connections | Platform-level |
-| HMAC session integrity | Session data signed with HMAC | `testauth1.gs:1297-1342` — `generateSessionHmac()`, `verifySessionHmac()` |
-| Message signing | GAS-to-HTML messages signed with HMAC | `testauth1.gs:1345-1372` — `signMessage()` |
+| HMAC session integrity | Session data signed with HMAC | `testauthgas1.gs:1297-1342` — `generateSessionHmac()`, `verifySessionHmac()` |
+| Message signing | GAS-to-HTML messages signed with HMAC | `testauthgas1.gs:1345-1372` — `signMessage()` |
 | HMAC key protection | HMAC key in Script Properties, never exposed to client | Server-side only |
 
 **Verdict:** Fully compliant. TLS provides transport integrity; HMAC provides application-level integrity verification on session data and messages.
@@ -300,8 +300,8 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Session audit log | All auth events logged | `testauth1.gs:1220-1253` — `auditLog()` writes to SessionAuditLog sheet |
-| Data audit log | All data operations logged | `testauth1.gs:1255-1295` — `dataAuditLog()` writes to DataAuditLog sheet |
+| Session audit log | All auth events logged | `testauthgas1.gs:1220-1253` — `auditLog()` writes to SessionAuditLog sheet |
+| Data audit log | All data operations logged | `testauthgas1.gs:1255-1295` — `dataAuditLog()` writes to DataAuditLog sheet |
 | Who | User email recorded | Every audit entry includes `user` field |
 | What | Action type recorded | `event` field (login, logout, heartbeat, data_read, etc.) |
 | When | ISO 8601 timestamp | `formatHipaaTimestamp()` generates timestamps |
@@ -317,7 +317,7 @@
 - `login_attempt` / `login_success` / `login_failure`
 - All HIPAA phase operations (disclosure, amendment, breach, legal hold, etc.)
 
-**Note on IP logging:** Client IP collection was intentionally disabled (`ENABLE_IP_LOGGING: false`) because the ipify.org service used for IP detection lacks a BAA. This is a HIPAA-conscious decision — collecting IP through a non-BAA service would itself be a potential violation. The code comments at `testauth1.gs:3120-3130` document this decision.
+**Note on IP logging:** Client IP collection was intentionally disabled (`ENABLE_IP_LOGGING: false`) because the ipify.org service used for IP detection lacks a BAA. This is a HIPAA-conscious decision — collecting IP through a non-BAA service would itself be a potential violation. The code comments at `testauthgas1.gs:3120-3130` document this decision.
 
 **Verdict:** Fully compliant. Comprehensive dual-log architecture (session + data) with HIPAA-formatted timestamps. IP omission is documented and justified.
 
@@ -331,9 +331,9 @@
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
 | Reviewable logs | Audit data in Google Sheets — searchable, filterable | SessionAuditLog and DataAuditLog sheets |
-| Admin session panel | Admin can view all active sessions | `testauth1.gs:542-609` — `listActiveSessions()` |
-| Compliance audit reports | Automated compliance audit with structured reports | `testauth1.gs:6842-7019` — `auditRetentionCompliance()` |
-| Exportable reports | Compliance reports exportable as JSON or text | `testauth1.gs:7021-7132` — `getComplianceAuditReport()` |
+| Admin session panel | Admin can view all active sessions | `testauthgas1.gs:542-609` — `listActiveSessions()` |
+| Compliance audit reports | Automated compliance audit with structured reports | `testauthgas1.gs:6842-7019` — `auditRetentionCompliance()` |
+| Exportable reports | Compliance reports exportable as JSON or text | `testauthgas1.gs:7021-7132` — `getComplianceAuditReport()` |
 
 **Verdict:** Fully compliant. Multiple review mechanisms available.
 
@@ -363,13 +363,13 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Incident detection | Automated threshold-based detection | `testauth1.gs:4987-5044` — `evaluateBreachAlert()` |
-| Email alerting | Security officer notified by email | `testauth1.gs:5047-5083` — `sendBreachAlert()` |
-| Incident logging | All incidents logged to BreachLog | `testauth1.gs:5199-5249` — `logBreachFromAlert()` |
-| Configuration retrieval | Alert config available for audit | `testauth1.gs:5086-5116` — `getBreachAlertConfig()` |
+| Incident detection | Automated threshold-based detection | `testauthgas1.gs:4987-5044` — `evaluateBreachAlert()` |
+| Email alerting | Security officer notified by email | `testauthgas1.gs:5047-5083` — `sendBreachAlert()` |
+| Incident logging | All incidents logged to BreachLog | `testauthgas1.gs:5199-5249` — `logBreachFromAlert()` |
+| Configuration retrieval | Alert config available for audit | `testauthgas1.gs:5086-5116` — `getBreachAlertConfig()` |
 | Event types monitored | 6 event types with configurable thresholds | `tier3_lockout`, `hmac_integrity_violation`, `session_hijack_attempt`, `brute_force`, `data_access_anomaly`, `permission_escalation` |
 | Always-log events | Critical events always logged regardless of threshold | `tier3_lockout`, `session_hijack_attempt`, `permission_escalation` |
-| Deduplication | Breach deduplication within cooldown window | `testauth1.gs:5199-5249` — cooldown check before logging |
+| Deduplication | Breach deduplication within cooldown window | `testauthgas1.gs:5199-5249` — cooldown check before logging |
 
 **Verdict:** Fully compliant. Comprehensive incident detection with configurable thresholds, email alerting, and deduplication.
 
@@ -385,14 +385,14 @@
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
 | Retention period | 6 years configured | `HIPAA_RETENTION_CONFIG.RETENTION_YEARS: 6` |
-| Retention enforcement | Daily time-driven trigger | `testauth1.gs:4952-4985` — `setupRetentionTrigger()` |
-| Archive mechanism | Records >6 years moved to `_Archive` sheets | `testauth1.gs:4814-4950` — `enforceRetention()` |
-| Legal hold override | Records under litigation exempt from archival | `testauth1.gs:6093-6143` — `checkLegalHold()` called in `enforceRetention()` |
+| Retention enforcement | Daily time-driven trigger | `testauthgas1.gs:4952-4985` — `setupRetentionTrigger()` |
+| Archive mechanism | Records >6 years moved to `_Archive` sheets | `testauthgas1.gs:4814-4950` — `enforceRetention()` |
+| Legal hold override | Records under litigation exempt from archival | `testauthgas1.gs:6093-6143` — `checkLegalHold()` called in `enforceRetention()` |
 | Sheet protection | Protected sheets listed in config | `SHEETS_TO_PROTECT`: 10 sheets covered |
-| Archive integrity | SHA-256 checksums on archived data | `testauth1.gs:6648-6693` — `computeArchiveChecksum()` |
-| Integrity verification | Archive integrity can be verified on demand | `testauth1.gs:6695-6840` — `verifyArchiveIntegrity()` |
-| Compliance audit | Automated retention compliance auditing | `testauth1.gs:6842-7019` — `auditRetentionCompliance()` |
-| Policy documentation | Auto-generated retention policy document | `testauth1.gs:6407-6548` — `getRetentionPolicyDocument()` |
+| Archive integrity | SHA-256 checksums on archived data | `testauthgas1.gs:6648-6693` — `computeArchiveChecksum()` |
+| Integrity verification | Archive integrity can be verified on demand | `testauthgas1.gs:6695-6840` — `verifyArchiveIntegrity()` |
+| Compliance audit | Automated retention compliance auditing | `testauthgas1.gs:6842-7019` — `auditRetentionCompliance()` |
+| Policy documentation | Auto-generated retention policy document | `testauthgas1.gs:6407-6548` — `getRetentionPolicyDocument()` |
 
 **Verdict:** Fully compliant. Comprehensive retention system with enforcement, legal holds, integrity verification, and compliance auditing.
 
@@ -407,13 +407,13 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Disclosure logging | All disclosures recorded in DisclosureLog sheet | `testauth1.gs:1891-1943` — `recordDisclosure()` |
-| Accounting retrieval | Disclosure history retrievable per individual | `testauth1.gs:1945-2013` — `getDisclosureAccounting()` |
-| Export capability | Accounting exportable as JSON or CSV | `testauth1.gs:2015-2050` — `exportDisclosureAccounting()` |
+| Disclosure logging | All disclosures recorded in DisclosureLog sheet | `testauthgas1.gs:1891-1943` — `recordDisclosure()` |
+| Accounting retrieval | Disclosure history retrievable per individual | `testauthgas1.gs:1945-2013` — `getDisclosureAccounting()` |
+| Export capability | Accounting exportable as JSON or CSV | `testauthgas1.gs:2015-2050` — `exportDisclosureAccounting()` |
 | 6-year lookback | Disclosure accounting covers 6 years | Covered by retention enforcement |
-| Grouped accounting | Repeated disclosures grouped by recipient | `testauth1.gs:5864-5962` — `getGroupedDisclosureAccounting()` |
+| Grouped accounting | Repeated disclosures grouped by recipient | `testauthgas1.gs:5864-5962` — `getGroupedDisclosureAccounting()` |
 | EHR disclosures | HITECH Act §13405(c) — TPO disclosure tracking | 3-year TPO lookback supported |
-| UI components | Disclosure panel, export format selector, grouped toggle | `testauth1.html` — disclosure-panel elements |
+| UI components | Disclosure panel, export format selector, grouped toggle | `testauthgas1.html` — disclosure-panel elements |
 
 **Verdict:** Fully compliant. Exceeds requirements with grouped accounting and HITECH EHR support.
 
@@ -428,9 +428,9 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| HMAC session integrity | Session data signed with HMAC-SHA256 | `testauth1.gs:1297-1318` — `generateSessionHmac()` |
-| HMAC verification | Verified on every session use | `testauth1.gs:1320-1332` — `verifySessionHmac()` |
-| Message signing | GAS-to-HTML messages signed | `testauth1.gs:1345-1367` — `signMessage()` |
+| HMAC session integrity | Session data signed with HMAC-SHA256 | `testauthgas1.gs:1297-1318` — `generateSessionHmac()` |
+| HMAC verification | Verified on every session use | `testauthgas1.gs:1320-1332` — `verifySessionHmac()` |
+| Message signing | GAS-to-HTML messages signed | `testauthgas1.gs:1345-1367` — `signMessage()` |
 | Fail-closed design | Missing HMAC secret throws error, prevents session creation | Secret stored in Script Properties |
 | Mismatch response | HMAC mismatch = session termination + security alert | Triggers `hmac_integrity_violation` event |
 
@@ -445,8 +445,8 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Archive checksums | SHA-256 checksums on archived data | `testauth1.gs:6648-6693` — `computeArchiveChecksum()` |
-| Integrity verification | On-demand verification of archive checksums | `testauth1.gs:6695-6840` — `verifyArchiveIntegrity()` |
+| Archive checksums | SHA-256 checksums on archived data | `testauthgas1.gs:6648-6693` — `computeArchiveChecksum()` |
+| Integrity verification | On-demand verification of archive checksums | `testauthgas1.gs:6695-6840` — `verifyArchiveIntegrity()` |
 | Tracking sheet | Checksums stored in RetentionIntegrityLog | `INTEGRITY_CONFIG.TRACKING_SHEET_NAME: 'RetentionIntegrityLog'` |
 | Mismatch detection | Recomputes checksum and compares — flags CRITICAL on mismatch | Indicates tampering or corruption |
 | Sheet protection | All HIPAA sheets auto-protected | `HIPAA_RETENTION_CONFIG.PROTECTION_LEVEL: 'warning'` |
@@ -481,14 +481,14 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Data export request | Individual can request their data | `testauth1.gs:2052-2094` — `requestDataExport()` |
+| Data export request | Individual can request their data | `testauthgas1.gs:2052-2094` — `requestDataExport()` |
 | Multi-format export | JSON, CSV, and Summary formats supported | Format selection in `requestDataExport()` |
-| Individual data retrieval | Extracts all records matching individual's email | `testauth1.gs:2112-2145` — `getIndividualData()` |
-| Summary option | HITECH §13405(c)(3) — condensed summary available | `testauth1.gs:5754-5862` — `generateDataSummary()` |
+| Individual data retrieval | Extracts all records matching individual's email | `testauthgas1.gs:2112-2145` — `getIndividualData()` |
+| Summary option | HITECH §13405(c)(3) — condensed summary available | `testauthgas1.gs:5754-5862` — `generateDataSummary()` |
 | 30-day deadline | Deadline tracked per request | `HIPAA_DEADLINES.ACCESS_RESPONSE_DAYS: 30` |
-| Extension workflow | 30-day extension with written reason | `testauth1.gs:2436-2490` — `requestAccessExtension()` |
-| Formal denial | Denial notice with required elements per §164.524(d) | `testauth1.gs:2564-2630` — `generateDenialNotice()` |
-| UI panel | "Download My Data" panel with format picker | `testauth1.html` — `data-export-panel` |
+| Extension workflow | 30-day extension with written reason | `testauthgas1.gs:2436-2490` — `requestAccessExtension()` |
+| Formal denial | Denial notice with required elements per §164.524(d) | `testauthgas1.gs:2564-2630` — `generateDenialNotice()` |
+| UI panel | "Download My Data" panel with format picker | `testauthgas1.html` — `data-export-panel` |
 | Fee display | "$0 (electronic self-service)" | Compliant with §164.524(c)(4) |
 
 **Verdict:** Fully compliant. Comprehensive access workflow including export, summary, extension, and denial.
@@ -502,15 +502,15 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Amendment request | Individual can request record corrections | `testauth1.gs:2219-2254` — `requestAmendment()` |
-| Admin review | Admin approves/denies with documented reason | `testauth1.gs:2260-2305` — `reviewAmendment()` |
-| Disagreement statement | Individual can file disagreement on denial | `testauth1.gs:2311-2350` — `submitDisagreement()` |
-| Amendment history | Full history retrievable per record | `testauth1.gs:2355-2388` — `getAmendmentHistory()` |
-| Pending amendments list | Admin can see all pending amendments | `testauth1.gs:2394-2421` — `getPendingAmendments()` |
-| Extension workflow | 30-day extension available | `testauth1.gs:2492-2531` — `requestAmendmentExtension()` |
-| Third-party notifications | Approved amendments notified to third parties | `testauth1.gs:5514-5636` — `sendAmendmentNotifications()` |
-| Notification tracking | Status of notifications tracked | `testauth1.gs:5638-5684` — `getNotificationStatus()` |
-| Disclosure recipients | Auto-fetch recipients who received the amended record | `testauth1.gs:5686-5752` — `getDisclosureRecipientsForRecord()` |
+| Amendment request | Individual can request record corrections | `testauthgas1.gs:2219-2254` — `requestAmendment()` |
+| Admin review | Admin approves/denies with documented reason | `testauthgas1.gs:2260-2305` — `reviewAmendment()` |
+| Disagreement statement | Individual can file disagreement on denial | `testauthgas1.gs:2311-2350` — `submitDisagreement()` |
+| Amendment history | Full history retrievable per record | `testauthgas1.gs:2355-2388` — `getAmendmentHistory()` |
+| Pending amendments list | Admin can see all pending amendments | `testauthgas1.gs:2394-2421` — `getPendingAmendments()` |
+| Extension workflow | 30-day extension available | `testauthgas1.gs:2492-2531` — `requestAmendmentExtension()` |
+| Third-party notifications | Approved amendments notified to third parties | `testauthgas1.gs:5514-5636` — `sendAmendmentNotifications()` |
+| Notification tracking | Status of notifications tracked | `testauthgas1.gs:5638-5684` — `getNotificationStatus()` |
+| Disclosure recipients | Auto-fetch recipients who received the amended record | `testauthgas1.gs:5686-5752` — `getDisclosureRecipientsForRecord()` |
 | 60-day deadline | Tracked per request | `HIPAA_DEADLINES.AMENDMENT_RESPONSE_DAYS: 60` |
 | Original preservation | Amendments are additive — originals never deleted | Append-only design in AmendmentRequests sheet |
 
@@ -523,7 +523,7 @@
 **Requirement:** Strip all 18 identifier categories from de-identified datasets.
 **CFR:** §164.514(b)(2) — **Standard**
 
-**Current state:** testauth1 does not produce de-identified datasets. The application handles identified PHI for operational purposes. No data is stripped of identifiers for research or secondary use.
+**Current state:** testauthgas1 does not produce de-identified datasets. The application handles identified PHI for operational purposes. No data is stripped of identifiers for research or secondary use.
 
 **Verdict:** Not applicable. If de-identified datasets are needed in the future, the 18-identifier stripping process would need to be implemented.
 
@@ -560,12 +560,12 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Threshold-based detection | Rolling 15-minute window for event counting | `testauth1.gs:4987-5035` — `evaluateBreachAlert()` |
+| Threshold-based detection | Rolling 15-minute window for event counting | `testauthgas1.gs:4987-5035` — `evaluateBreachAlert()` |
 | 6 event types monitored | tier3_lockout, hmac_integrity, session_hijack, brute_force, data_access_anomaly, permission_escalation | `BREACH_ALERT_CONFIG.THRESHOLDS` |
-| Email alerting | Security officer notified on threshold breach | `testauth1.gs:5047-5078` — `sendBreachAlert()` |
+| Email alerting | Security officer notified on threshold breach | `testauthgas1.gs:5047-5078` — `sendBreachAlert()` |
 | Alert cooldown | 60-minute cooldown prevents alert storms | `ALERT_COOLDOWN_MINUTES: 60` |
 | Always-log events | Critical events logged regardless of threshold | `tier3_lockout`, `session_hijack_attempt`, `permission_escalation` |
-| Deduplication | Duplicate breach entries suppressed within cooldown | `testauth1.gs:5199-5249` — `logBreachFromAlert()` |
+| Deduplication | Duplicate breach entries suppressed within cooldown | `testauthgas1.gs:5199-5249` — `logBreachFromAlert()` |
 
 **Verdict:** Fully compliant. Automated detection with configurable thresholds and intelligent alerting.
 
@@ -608,12 +608,12 @@
 
 | Aspect | Implementation | Evidence |
 |--------|---------------|----------|
-| Dedicated breach log | BreachLog sheet with structured fields | `testauth1.gs:5118-5189` — `logBreach()` |
+| Dedicated breach log | BreachLog sheet with structured fields | `testauthgas1.gs:5118-5189` — `logBreach()` |
 | Manual entry | Admin can log breaches manually | UI: `breach-dashboard-panel` |
-| Auto-detection | Automated breach logging from threshold alerts | `testauth1.gs:5199-5249` — `logBreachFromAlert()` |
-| Status workflow | Under Investigation → Confirmed/Not a Breach → Notified → Closed | `testauth1.gs:5251-5333` — `updateBreachStatus()` |
-| Annual reporting | HHS annual breach report generation | `testauth1.gs:5334-5407` — `getBreachReport()` |
-| Breach log retrieval | Full breach log with 6-year retention filtering | `testauth1.gs:5408-5513` — `getBreachLog()` |
+| Auto-detection | Automated breach logging from threshold alerts | `testauthgas1.gs:5199-5249` — `logBreachFromAlert()` |
+| Status workflow | Under Investigation → Confirmed/Not a Breach → Notified → Closed | `testauthgas1.gs:5251-5333` — `updateBreachStatus()` |
+| Annual reporting | HHS annual breach report generation | `testauthgas1.gs:5334-5407` — `getBreachReport()` |
+| Breach log retrieval | Full breach log with 6-year retention filtering | `testauthgas1.gs:5408-5513` — `getBreachLog()` |
 | Notification deadline | Auto-calculated 60-day deadline | `HIPAA_DEADLINES.BREACH_NOTIFICATION_DAYS: 60` |
 | HHS-aligned fields | BreachID, DiscoveryDate, NatureOfPhi, AffectedIndividuals, MitigationSteps, etc. | Full OCR reporting structure |
 
@@ -693,7 +693,7 @@ The following items from the HIPAA Coding Requirements checklist are **intention
 
 | # | Item | Why N/A |
 |---|------|---------|
-| 25 | De-Identification (Safe Harbor) | testauth1 does not produce de-identified datasets |
+| 25 | De-Identification (Safe Harbor) | testauthgas1 does not produce de-identified datasets |
 | 26 | De-Identification (Expert) | No expert determination process needed |
 | 27 | Re-Identification Codes | No de-identified data exists to re-identify |
 
@@ -765,7 +765,7 @@ These items must be configured before the environment is production-ready:
 
 ## Conclusion
 
-testauth1 implements **22 of 40** HIPAA Coding Requirements checklist items. Of the 18 remaining:
+testauthgas1 implements **22 of 40** HIPAA Coding Requirements checklist items. Of the 18 remaining:
 - **9 are NPRM** (proposed, not yet law)
 - **3 are N/A** (de-identification — not needed)
 - **5 are Policy/Process** (organizational, not code)

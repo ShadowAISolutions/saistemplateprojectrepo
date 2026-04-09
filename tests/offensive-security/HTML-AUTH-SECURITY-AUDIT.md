@@ -2,7 +2,7 @@
 
 **Audit Date:** 2026-03-16
 **Auditor Perspective:** Red Team + Blue Team + HIPAA Compliance
-**Target:** `testauth1.html` — Client-side authentication layer
+**Target:** `testauthgas1.html` — Client-side authentication layer
 **Context:** Pre-GAS-layer review; potential EMR use case (HIPAA-regulated)
 
 > This review was conducted with fresh eyes using online research, current OWASP guidance,
@@ -116,7 +116,7 @@ If I achieve XSS on any page of the same origin:
 3. I now have the session token AND the HMAC key
 4. Send forged signed messages to any tab
 
-**Prerequisite:** XSS on any page of the same GitHub Pages origin (not just testauth1.html).
+**Prerequisite:** XSS on any page of the same GitHub Pages origin (not just testauthgas1.html).
 
 ### Attack 4: Phish via shared GitHub Pages origin
 GitHub Pages shares `*.github.io` as a common origin domain. If I create `attacker.github.io`, I can potentially:

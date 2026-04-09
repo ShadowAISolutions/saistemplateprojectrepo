@@ -1,11 +1,11 @@
-# HIPAA Compliance Follow-Up — testauth1 Implementation Progress
+# HIPAA Compliance Follow-Up — testauthgas1 Implementation Progress
 
 > **Follow-Up Assessment Date:** 2026-03-23
 > **Original Report Date:** 2026-03-19
-> **Environment:** testauth1 (GAS + GitHub Pages)
+> **Environment:** testauthgas1 (GAS + GitHub Pages)
 > **Active Preset:** `hipaa`
 > **Version Range:** GAS v01.56g → v01.91g | HTML v02.35w → v02.74w (35 GAS + 39 HTML versions)
-> **Original Report:** `HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md`
+> **Original Report:** `HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md`
 > **Regulatory Reference:** `HIPAA-CODING-REQUIREMENTS.md` (v1.0)
 >
 > This document is a **follow-up companion** to the original compliance report — not a replacement. It captures what was implemented between 2026-03-19 and 2026-03-23, updates compliance statuses, and provides a revised gap analysis.
@@ -55,13 +55,13 @@
 
 | Aspect | Evidence | File:Line |
 |--------|----------|-----------|
-| RBAC system | Roles and permissions read from Master ACL Spreadsheet "Roles" tab | `testauth1.gs:48-65` — RBAC constants and fallback roles |
-| Role definitions | admin, clinician, billing, viewer — each with specific permission sets | `testauth1.gs:57-63` — `RBAC_ROLES_FALLBACK` |
-| Per-operation enforcement | `checkPermission()` validates every data operation against user's role | `testauth1.gs:192` — `checkPermission(user, requiredPermission, operationName)` |
-| Role from ACL | Roles loaded from spreadsheet with in-memory + CacheService caching | `testauth1.gs:105` — `getRolesFromSpreadsheet()` |
-| Cache invalidation | Epoch-based atomic cache invalidation — incrementing epoch orphans all cache entries | Throughout `testauth1.gs` |
-| Admin session panel | Admin users can view all active sessions and remotely sign out any user | `testauth1.html:271-311` — admin panel CSS; `testauth1.html:387` — panel HTML |
-| Role display | User pill shows role badge, color-coded by role | `testauth1.html` — user pill UI |
+| RBAC system | Roles and permissions read from Master ACL Spreadsheet "Roles" tab | `testauthgas1.gs:48-65` — RBAC constants and fallback roles |
+| Role definitions | admin, clinician, billing, viewer — each with specific permission sets | `testauthgas1.gs:57-63` — `RBAC_ROLES_FALLBACK` |
+| Per-operation enforcement | `checkPermission()` validates every data operation against user's role | `testauthgas1.gs:192` — `checkPermission(user, requiredPermission, operationName)` |
+| Role from ACL | Roles loaded from spreadsheet with in-memory + CacheService caching | `testauthgas1.gs:105` — `getRolesFromSpreadsheet()` |
+| Cache invalidation | Epoch-based atomic cache invalidation — incrementing epoch orphans all cache entries | Throughout `testauthgas1.gs` |
+| Admin session panel | Admin users can view all active sessions and remotely sign out any user | `testauthgas1.html:271-311` — admin panel CSS; `testauthgas1.html:387` — panel HTML |
+| Role display | User pill shows role badge, color-coded by role | `testauthgas1.html` — user pill UI |
 
 **Role permission matrix (hardcoded fallback):**
 
@@ -86,10 +86,10 @@
 
 | Aspect | Evidence | File:Line |
 |--------|----------|-----------|
-| Admin session panel | Admin users see all active sessions with email, role, timers | `testauth1.gs:454` — `listActiveSessions()` |
-| Remote sign-out ("Kick") | Admin can remotely terminate any user's session | `testauth1.gs:523` — `adminSignOutUser()` |
-| Cross-page sign-out | Signing out from any page signs out ALL connected pages | `testauth1.html` — v02.62w implementation |
-| "Sign Out" / "Sign Out All" | Separate buttons for single-page and all-page sign-out | `testauth1.html` — v02.74w |
+| Admin session panel | Admin users see all active sessions with email, role, timers | `testauthgas1.gs:454` — `listActiveSessions()` |
+| Remote sign-out ("Kick") | Admin can remotely terminate any user's session | `testauthgas1.gs:523` — `adminSignOutUser()` |
+| Cross-page sign-out | Signing out from any page signs out ALL connected pages | `testauthgas1.html` — v02.62w implementation |
+| "Sign Out" / "Sign Out All" | Separate buttons for single-page and all-page sign-out | `testauthgas1.html` — v02.74w |
 
 **Original gap — CLOSED:** Real-time access termination is now available via the admin session panel.
 
@@ -105,10 +105,10 @@
 
 | Aspect | Evidence | File:Line |
 |--------|----------|-----------|
-| Role-gated operations | `checkPermission()` enforces specific permissions per data operation | `testauth1.gs:192` |
-| Permission-denied logging | Failed permission checks are audit-logged with full detail | `testauth1.gs:192-210` |
-| Data audit trail | Every data operation logged with user, role, action, resource | `testauth1.gs:937` — `dataAuditLog()` |
-| Token discarded | Access token intentionally NOT stored in session | `testauth1.gs` — comment in session creation |
+| Role-gated operations | `checkPermission()` enforces specific permissions per data operation | `testauthgas1.gs:192` |
+| Permission-denied logging | Failed permission checks are audit-logged with full detail | `testauthgas1.gs:192-210` |
+| Data audit trail | Every data operation logged with user, role, action, resource | `testauthgas1.gs:937` — `dataAuditLog()` |
+| Token discarded | Access token intentionally NOT stored in session | `testauthgas1.gs` — comment in session creation |
 | Session IDs truncated | Session tokens truncated to 8 chars in all logs | Audit log functions |
 
 **Original gap — CLOSED:** Different roles now have different permission sets. A `viewer` cannot write; a `billing` role cannot delete. The `checkPermission()` gate ensures minimum necessary access per operation.
@@ -123,10 +123,10 @@
 
 | Version | Improvement | File:Line |
 |---------|-------------|-----------|
-| v01.81g | Secure page nonce handshake — credentials delivered via private postMessage channel, not URL | `testauth1.gs` — nonce handshake flow |
-| v01.83g | Secure token generation endpoint added | `testauth1.gs` |
-| v01.84g | Blocked direct script URL access — only one-time tokens accepted; tokens expire in 60 seconds | `testauth1.gs` |
-| v01.88g | Replaced direct-access protection with more reliable method | `testauth1.gs` |
+| v01.81g | Secure page nonce handshake — credentials delivered via private postMessage channel, not URL | `testauthgas1.gs` — nonce handshake flow |
+| v01.83g | Secure token generation endpoint added | `testauthgas1.gs` |
+| v01.84g | Blocked direct script URL access — only one-time tokens accepted; tokens expire in 60 seconds | `testauthgas1.gs` |
+| v01.88g | Replaced direct-access protection with more reliable method | `testauthgas1.gs` |
 
 **Impact:** Eliminated token-in-URL exposure (browser history, server logs, referrer headers). The postMessage three-phase handshake in HIPAA mode now uses one-time tokens that expire in 60 seconds.
 
@@ -152,10 +152,10 @@
 
 | Version | Improvement | File:Line |
 |---------|-------------|-----------|
-| v01.48g | Server-side message signing replaces client-side — HMAC-SHA256 with deterministic payload | `testauth1.gs:1027` — `signMessage()` |
-| v01.56g | All app messages now signed with stronger crypto | `testauth1.gs` |
+| v01.48g | Server-side message signing replaces client-side — HMAC-SHA256 with deterministic payload | `testauthgas1.gs:1027` — `signMessage()` |
+| v01.56g | All app messages now signed with stronger crypto | `testauthgas1.gs` |
 
-**Impact:** HMAC signing is now performed server-side where the key is protected, rather than trusting the client with the signing key. Client-side verification uses Web Crypto API with non-extractable keys (`testauth1.html:1432` — `_importHmacKey()`, `testauth1.html:1450` — `_verifyHmacSha256()`).
+**Impact:** HMAC signing is now performed server-side where the key is protected, rather than trusting the client with the signing key. Client-side verification uses Web Crypto API with non-extractable keys (`testauthgas1.html:1432` — `_importHmacKey()`, `testauthgas1.html:1450` — `_verifyHmacSha256()`).
 
 ---
 
@@ -165,8 +165,8 @@
 
 | Version | Improvement | File:Line |
 |---------|-------------|-----------|
-| v01.45g | Security reports capped at 50 per 5 minutes across all sources | `testauth1.gs:1768` — `processSecurityEvent()` |
-| v01.43g | Server receives and logs blocked attack reports from client-side | `testauth1.html:1382` — `_reportSecurityEvent()` |
+| v01.45g | Security reports capped at 50 per 5 minutes across all sources | `testauthgas1.gs:1768` — `processSecurityEvent()` |
+| v01.43g | Server receives and logs blocked attack reports from client-side | `testauthgas1.html:1382` — `_reportSecurityEvent()` |
 
 **Impact:** Prevents DoS via security event flooding while maintaining comprehensive attack logging.
 
@@ -181,7 +181,7 @@
 | v01.78g | HMAC keys auto-generate on first deploy — no manual Script Properties setup required |
 | v01.77g | Cross-project admin secret moved to per-project storage |
 
-**Impact:** Eliminates the risk of deploying without security keys configured. Fail-closed design: missing HMAC secret still prevents session creation (`testauth1.gs:260` — `ENABLE_HMAC_INTEGRITY: true`).
+**Impact:** Eliminates the risk of deploying without security keys configured. Fail-closed design: missing HMAC secret still prevents session creation (`testauthgas1.gs:260` — `ENABLE_HMAC_INTEGRITY: true`).
 
 ---
 
@@ -198,7 +198,7 @@ These features don't map directly to a specific HIPAA checklist item but signifi
 | SSO Provider flag | `SSO_PROVIDER: false` config option — when enabled, a page proactively re-acquires tokens after reconnect to serve as the SSO hub |
 | Security | Same-origin only (BroadcastChannel requires same-origin access); tokens are ephemeral in-memory |
 | HIPAA relevance | Reduces re-authentication friction without compromising security; each page still independently validates sessions with GAS backend |
-| Code | `testauth1.html:1121-1125` — SSO state variables; `testauth1.html:487` — `SSO_PROVIDER` config |
+| Code | `testauthgas1.html:1121-1125` — SSO state variables; `testauthgas1.html:487` — `SSO_PROVIDER` config |
 
 ### Admin Session Management Panel — v02.68w+
 
@@ -208,7 +208,7 @@ These features don't map directly to a specific HIPAA checklist item but signifi
 | Capabilities | View all active sessions (email, role, timers), remotely sign out any user |
 | Session detail | Creation time, last activity, remaining time (rolling + absolute), emergency access flag |
 | HIPAA relevance | Directly addresses §164.308(a)(3)(ii)(C) termination procedures — admin can immediately revoke access without editing the ACL spreadsheet |
-| Code | `testauth1.gs:454` — `listActiveSessions()`; `testauth1.gs:523` — `adminSignOutUser()`; `testauth1.html:271-311,387` — panel UI |
+| Code | `testauthgas1.gs:454` — `listActiveSessions()`; `testauthgas1.gs:523` — `adminSignOutUser()`; `testauthgas1.html:271-311,387` — panel UI |
 
 ### Cross-Project Administration — v01.77g
 
@@ -217,7 +217,7 @@ These features don't map directly to a specific HIPAA checklist item but signifi
 | Mechanism | Secret-based validation for cross-project admin access |
 | How it works | Central admin can view/manage sessions across multiple GAS projects from a single dashboard |
 | Security | Per-project admin secret stored in Script Properties; validates caller email + ACL admin role |
-| Code | `testauth1.gs:637` — `validateCrossProjectAdmin()` |
+| Code | `testauthgas1.gs:637` — `validateCrossProjectAdmin()` |
 
 ### Secure Token Generation Endpoint — v01.83g-v01.84g
 
@@ -382,20 +382,20 @@ These features don't map directly to a specific HIPAA checklist item but signifi
 
 | Config | Test Value | Production Value | File:Line |
 |--------|-----------|-----------------|-----------|
-| `SESSION_EXPIRATION` | 180s (3min) | 900s (15min) | `testauth1.gs:244` |
-| `ABSOLUTE_SESSION_TIMEOUT` | 300s (5min) | 28800s (8hr) | `testauth1.gs:246` |
-| `HEARTBEAT_INTERVAL` (GAS) | 30s | 300s (5min) | `testauth1.gs:249` |
-| `OAUTH_TOKEN_LIFETIME` | 180s (3min) | 3600s (1hr) | `testauth1.gs:252` |
-| `HEARTBEAT_INTERVAL` (HTML) | 30000ms (30s) | 300000ms (5min) | `testauth1.html:470` |
+| `SESSION_EXPIRATION` | 180s (3min) | 900s (15min) | `testauthgas1.gs:244` |
+| `ABSOLUTE_SESSION_TIMEOUT` | 300s (5min) | 28800s (8hr) | `testauthgas1.gs:246` |
+| `HEARTBEAT_INTERVAL` (GAS) | 30s | 300s (5min) | `testauthgas1.gs:249` |
+| `OAUTH_TOKEN_LIFETIME` | 180s (3min) | 3600s (1hr) | `testauthgas1.gs:252` |
+| `HEARTBEAT_INTERVAL` (HTML) | 30000ms (30s) | 300000ms (5min) | `testauthgas1.html:470` |
 
 ### Standard Preset Test Values
 
 | Config | Test Value | Production Value | File:Line |
 |--------|-----------|-----------------|-----------|
-| `SESSION_EXPIRATION` | 180s (3min) | 3600s (1hr) | `testauth1.gs:213` |
-| `ABSOLUTE_SESSION_TIMEOUT` | 300s (5min) | 28800s (8hr) | `testauth1.gs:215` |
-| `HEARTBEAT_INTERVAL` (GAS) | 30s | 300s (5min) | `testauth1.gs:218` |
-| `OAUTH_TOKEN_LIFETIME` | 180s (3min) | 3600s (1hr) | `testauth1.gs:221` |
+| `SESSION_EXPIRATION` | 180s (3min) | 3600s (1hr) | `testauthgas1.gs:213` |
+| `ABSOLUTE_SESSION_TIMEOUT` | 300s (5min) | 28800s (8hr) | `testauthgas1.gs:215` |
+| `HEARTBEAT_INTERVAL` (GAS) | 30s | 300s (5min) | `testauthgas1.gs:218` |
+| `OAUTH_TOKEN_LIFETIME` | 180s (3min) | 3600s (1hr) | `testauthgas1.gs:221` |
 
 ### Project Override Active
 
@@ -409,7 +409,7 @@ The HIPAA preset enables domain restriction (`ENABLE_DOMAIN_RESTRICTION: true`) 
 
 ## NPRM Readiness Assessment
 
-The 2025 HIPAA Security Rule NPRM proposes significant changes. Here is testauth1's readiness if these proposals become law:
+The 2025 HIPAA Security Rule NPRM proposes significant changes. Here is testauthgas1's readiness if these proposals become law:
 
 | # | Proposed Requirement | Readiness | Notes |
 |---|---------------------|-----------|-------|
@@ -475,14 +475,14 @@ These implementations go beyond HIPAA minimum requirements and demonstrate defen
 
 | Date | Version | Change |
 |------|---------|--------|
-| 2026-03-19 | 1.0 | Original compliance assessment — `HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` |
+| 2026-03-19 | 1.0 | Original compliance assessment — `HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md` |
 | 2026-03-23 | 1.0 | Follow-up implementation progress — this document |
 
 ### Related Documents
 
 | Document | Purpose |
 |----------|---------|
-| `HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` | Original 40-item compliance evaluation (2026-03-19) |
+| `HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md` | Original 40-item compliance evaluation (2026-03-19) |
 | `HIPAA-CODING-REQUIREMENTS.md` | Complete HIPAA regulatory reference (45 CFR Part 164) |
 | `HIPAA-COMPLIANCE-REFERENCE.md` | Quick-reference compliance summary (superseded by CODING-REQUIREMENTS) |
 | `GAS-HIPAA-COMPLIANCE-ANALYSIS.md` | Google Workspace BAA coverage analysis for Apps Script |

@@ -1,11 +1,16 @@
-# Changelog — testauth1title
+# Changelog — testauthgas1title
 
 All notable user-facing changes to this page are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauth1html.changelog-archive.md](testauth1html.changelog-archive.md) when this file exceeds 50 version sections.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthgas1html.changelog-archive.md](testauthgas1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 15/50`
+`Sections: 16/50`
 
 ## [Unreleased]
+
+## [v04.00w] — 2026-04-09 10:48:40 AM EST — v10.29r
+
+### Changed
+- Minor internal improvements
 
 ## [v03.99w] — 2026-04-07 08:41:28 AM EST — v09.45r
 

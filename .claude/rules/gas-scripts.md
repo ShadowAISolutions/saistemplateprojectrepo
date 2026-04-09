@@ -30,9 +30,9 @@ Each GAS project has a code file and a corresponding embedding page. Register th
 Each GAS project directory contains a `<page-name>.config.json` file that is the **single source of truth** for project-unique variables. This mirrors the `version.txt` pattern — one small file to edit, with sync rules that propagate values to `<page-name>.gs` and the embedding HTML page.
 
 ### Naming convention
-All GAS files are named after the HTML page they serve — mirroring the `testauth1html.version.txt` pattern:
-- `testauth1.gs` — GAS code for `testauth1.html`
-- `testauth1.config.json` — config for `testauth1.html`
+All GAS files are named after the HTML page they serve — mirroring the `testauthgas1html.version.txt` pattern:
+- `testauthgas1.gs` — GAS code for `testauthgas1.html`
+- `testauthgas1.config.json` — config for `testauthgas1.html`
 - `dashboard.gs` — GAS code for `dashboard.html`
 - `dashboard.config.json` — config for `dashboard.html`
 
@@ -100,7 +100,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | GCP Project Setup & Troubleshooting | *See `repository-information/CODING-GUIDELINES.md` — section "GCP Project Setup & Troubleshooting"* |
 | Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `googleAppsScripts/Testation7/testation7.config.json` | `live-site-pages/testation7.html` |
 | Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `googleAppsScripts/Testation8/testation8.config.json` | `live-site-pages/testation8.html` |
-| Testauth1 | `googleAppsScripts/Testauth1/testauth1.gs` | `googleAppsScripts/Testauth1/testauth1.config.json` | `live-site-pages/testauth1.html` |
+| Testauthgas1 | `googleAppsScripts/Testauthgas1/testauthgas1.gs` | `googleAppsScripts/Testauthgas1/testauthgas1.config.json` | `live-site-pages/testauthgas1.html` |
 | Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 | Programportal | `googleAppsScripts/Programportal/programportal.gs` | `googleAppsScripts/Programportal/programportal.config.json` | `live-site-pages/programportal.html` |
 | Inventorymanagement | `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` | `googleAppsScripts/Inventorymanagement/inventorymanagement.config.json` | `live-site-pages/inventorymanagement.html` |

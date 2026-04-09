@@ -6,7 +6,7 @@
 |-------|-------|
 | **Document** | Phase C Implementation Guide |
 | **Implementation Status** | ✅ Complete — all 5 items implemented across GAS + HTML; UI gaps fixed in v03.83w |
-| **Environment** | testauth1 (GAS + GitHub Pages) |
+| **Environment** | testauthgas1 (GAS + GitHub Pages) |
 | **Date** | 2026-03-30 |
 | **GAS Version** | v02.29g (Phase C functions implemented) |
 | **HTML Version** | v03.80w (Phase C admin UI implemented) |
@@ -19,14 +19,14 @@
 
 - [HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md) — Phase A implementation (disclosure accounting, right of access, right to amendment)
 - [HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md](HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md) — Phase B implementation (grouped disclosures, summary export, amendment notifications, breach infrastructure, retention core, personal representatives)
-- [HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md](HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md) — Follow-up assessment identifying Phase C roadmap
-- [HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md](HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md) — Original compliance assessment (2026-03-19)
+- [HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md](HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md) — Follow-up assessment identifying Phase C roadmap
+- [HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md](HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md) — Original compliance assessment (2026-03-19)
 - [HIPAA-CODING-REQUIREMENTS.md](HIPAA-CODING-REQUIREMENTS.md) — 40-item regulatory checklist
 - [HIPAA-COMPLIANCE-REFERENCE.md](HIPAA-COMPLIANCE-REFERENCE.md) — CFR regulatory text reference
 
 ### Who This Is For
 
-This guide is for the developer completing HIPAA retention enforcement in testauth1 after Phase B. It assumes:
+This guide is for the developer completing HIPAA retention enforcement in testauthgas1 after Phase B. It assumes:
 - All Phase A and Phase B functions are deployed and operational
 - Familiarity with the retention infrastructure implemented in Phase B: `enforceRetention()`, `setupRetentionTrigger()`, `HIPAA_RETENTION_CONFIG`, `getRetentionCutoffDate()` (Note: `auditRetentionCompliance()` was specified as a forward-looking item in Phase B and implemented in Phase C)
 - Understanding of the 5-step data flow pattern, `wrapHipaaOperation()` error wrapper, `getOrCreateSheet()` auto-creation
@@ -244,7 +244,7 @@ The penalty tiers for §164.316(b) violations follow the standard HIPAA enforcem
 
 ### Key Takeaway
 
-> **Retention enforcement is the most cost-effective HIPAA investment.** Every other compliance measure (access controls, encryption, breach detection, audit logging) is worthless if the evidence of those measures is lost. Phase C ensures testauth1's compliance documentation survives, is verifiable, and is ready for OCR inspection at any time within the 6-year window.
+> **Retention enforcement is the most cost-effective HIPAA investment.** Every other compliance measure (access controls, encryption, breach detection, audit logging) is worthless if the evidence of those measures is lost. Phase C ensures testauthgas1's compliance documentation survives, is verifiable, and is ready for OCR inspection at any time within the 6-year window.
 
 ### Regulatory Timeline — Current Law vs Pending Changes
 
@@ -356,7 +356,7 @@ flowchart TB
 
 ### Retention Data Flow — Lifecycle
 
-Every record in testauth1 follows this lifecycle:
+Every record in testauthgas1 follows this lifecycle:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -405,8 +405,8 @@ The `HIPAA_RETENTION_CONFIG.SHEETS_TO_PROTECT` array defines all sheets under re
 
 | Sheet | Created By | Contains | Retention Period |
 |-------|-----------|----------|-----------------|
-| `SessionAuditLog` | Original testauth1 | Login/logout events, session lifecycle | 6 years |
-| `DataAuditLog` | Original testauth1 | Per-operation PHI access records | 6 years |
+| `SessionAuditLog` | Original testauthgas1 | Login/logout events, session lifecycle | 6 years |
+| `DataAuditLog` | Original testauthgas1 | Per-operation PHI access records | 6 years |
 | `DisclosureLog` | Phase A | PHI disclosure records | 6 years |
 | `AccessRequests` | Phase A | Individual data access request tracking | 6 years |
 | `AmendmentRequests` | Phase A | PHI amendment request history | 6 years |
@@ -568,11 +568,11 @@ The core retention enforcement was implemented in Phase B (v02.28g). This sectio
 
 | Component | Function | Location | Status |
 |-----------|----------|----------|--------|
-| Configuration | `HIPAA_RETENTION_CONFIG` | `testauth1.gs:306-317` | ✅ Deployed |
-| Retention cutoff calculator | `getRetentionCutoffDate()` | `testauth1.gs` (Phase B shared utilities) | ✅ Deployed |
-| Daily enforcement trigger | `enforceRetention()` | `testauth1.gs:4532-4670` | ✅ Deployed |
-| Trigger installer | `setupRetentionTrigger()` | `testauth1.gs` (Phase B) | ✅ Deployed |
-| Retention compliance audit | `auditRetentionCompliance()` | `testauth1.gs` (Phase C) | ✅ Deployed in Phase C |
+| Configuration | `HIPAA_RETENTION_CONFIG` | `testauthgas1.gs:306-317` | ✅ Deployed |
+| Retention cutoff calculator | `getRetentionCutoffDate()` | `testauthgas1.gs` (Phase B shared utilities) | ✅ Deployed |
+| Daily enforcement trigger | `enforceRetention()` | `testauthgas1.gs:4532-4670` | ✅ Deployed |
+| Trigger installer | `setupRetentionTrigger()` | `testauthgas1.gs` (Phase B) | ✅ Deployed |
+| Retention compliance audit | `auditRetentionCompliance()` | `testauthgas1.gs` (Phase C) | ✅ Deployed in Phase C |
 
 #### Acceptance Criteria (Phase B — Verified)
 
@@ -1129,7 +1129,7 @@ if (rowsHeld > 0) {
 
 ### HTML UI Component
 
-Add the legal hold management panel to `testauth1.html` (visible to admin-role users only):
+Add the legal hold management panel to `testauthgas1.html` (visible to admin-role users only):
 
 ```html
 <!-- Legal Hold Management Button (admin only) -->
@@ -1559,7 +1559,7 @@ function setupComplianceAuditTrigger() {
 >
 > Implement electronic mechanisms to corroborate that electronic protected health information has not been altered or destroyed in an unauthorized manner.
 
-While §164.312(c)(2) is Addressable (not Required), testauth1 already implements HMAC-SHA256 message signing for transmission integrity. Extending integrity verification to archived records is a natural continuation of this defense-in-depth approach.
+While §164.312(c)(2) is Addressable (not Required), testauthgas1 already implements HMAC-SHA256 message signing for transmission integrity. Extending integrity verification to archived records is a natural continuation of this defense-in-depth approach.
 
 ### Acceptance Criteria
 
@@ -1862,7 +1862,7 @@ function getRetentionPolicyDocument(sessionToken) {
     }
 
     var document = {
-      title: 'HIPAA Record Retention Policy — testauth1',
+      title: 'HIPAA Record Retention Policy — testauthgas1',
       version: '1.0',
       generatedAt: timestamp,
       generatedBy: user.email,
@@ -1870,14 +1870,14 @@ function getRetentionPolicyDocument(sessionToken) {
       sections: [
         {
           heading: '1. Purpose',
-          content: 'This document establishes the record retention policy for the testauth1 '
+          content: 'This document establishes the record retention policy for the testauthgas1 '
             + 'environment, as required by the HIPAA Security Rule §164.316(b). It defines '
             + 'retention periods, enforcement mechanisms, and exception handling procedures '
             + 'for all electronic protected health information (ePHI) and security documentation.'
         },
         {
           heading: '2. Scope',
-          content: 'This policy applies to all electronic records maintained in the testauth1 '
+          content: 'This policy applies to all electronic records maintained in the testauthgas1 '
             + 'Project Data Spreadsheet, including but not limited to:',
           items: sheetsProtected.map(function(name) {
             return name + ' — protected, ' + retentionYears + '-year retention';
@@ -2160,7 +2160,7 @@ Complete these before writing any Phase C code:
 
 - [ ] **Phase A and Phase B complete** — all Phase A and Phase B functions deployed and passing their respective test scenarios
 - [ ] **Retention trigger operational** — `setupRetentionTrigger()` has been run; verify installable trigger exists under Project Settings → Triggers and is firing daily at 2:00 AM EST
-- [ ] **HIPAA preset active** — `ACTIVE_PRESET = 'hipaa'` in `testauth1.gs`
+- [ ] **HIPAA preset active** — `ACTIVE_PRESET = 'hipaa'` in `testauthgas1.gs`
 - [ ] **RBAC permissions verified** — `Roles` tab in Master ACL has all permissions (`read`, `write`, `delete`, `export`, `amend`, `admin`) with correct role mappings
 - [ ] **Archive sheets exist** — `enforceRetention()` has run at least once; verify `*_Archive` sheets are created (even if empty — they will be populated when records age past 6 years)
 - [ ] **MailApp authorization** — already configured for Phase B breach alerts; verify `script.send_mail` scope is still authorized
@@ -2525,7 +2525,7 @@ A structured testing guide for the developer to verify Phase C is functioning co
 | # | Check | How | Expected Result |
 |---|-------|-----|-----------------|
 | 1 | GAS version deployed | Open Apps Script editor → check `VERSION` at line 1 | `"v02.29g"` |
-| 2 | HTML page loaded | Navigate to testauth1 page → view source or DevTools | `<meta name="build-version" content="v03.80w">` |
+| 2 | HTML page loaded | Navigate to testauthgas1 page → view source or DevTools | `<meta name="build-version" content="v03.80w">` |
 | 3 | Admin dropdown buttons | Sign in as admin → click ADMIN badge | 4 new buttons visible: Legal Holds, Compliance Audit, Archive Integrity, Retention Policy |
 | 4 | No console errors | Open DevTools → Console tab | No errors related to Phase C element IDs (e.g. `lh-list`, `ca-result`, `ai-result`, `rp-result`) |
 | 5 | Non-admin exclusion | Sign in as non-admin user (clinician/viewer) | Phase C buttons NOT visible in dropdown (they require `admin` permission) |
@@ -2680,7 +2680,7 @@ The pending Security Rule NPRM (December 2024) would significantly affect retent
 
 | Requirement | Phase C Item | Impact |
 |-------------|-------------|--------|
-| SUD records may have longer retention requirements under state law | **#18 Core Retention** | If testauth1 handles SUD data, retention periods may need to be extended beyond 6 years for SUD-specific records. Use legal holds or per-record-type `retentionOverrides` |
+| SUD records may have longer retention requirements under state law | **#18 Core Retention** | If testauthgas1 handles SUD data, retention periods may need to be extended beyond 6 years for SUD-specific records. Use legal holds or per-record-type `retentionOverrides` |
 | SUD breach records have additional retention requirements | **Archive Integrity** | SUD-related archives may need separate integrity verification chains to demonstrate compliance with both HIPAA and 42 CFR Part 2 |
 | SUD legal holds may have additional court order requirements | **#18b Legal Hold** | Legal holds for SUD records may require documentation of specific court orders. The `Reason` and `Notes` fields in `LegalHolds` support this |
 
@@ -2742,14 +2742,14 @@ Recommended monitoring cadence for Phase C-relevant regulations:
 |----------|------|-----------|
 | Phase A Implementation Guide | `repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` | Phase A implementation — prerequisite for Phase B and C |
 | Phase B Implementation Guide | `repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` | Phase B implementation — retention core, breach infrastructure, personal representatives |
-| Implementation Follow-Up | `repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` | Master roadmap identifying Phases A through D |
-| Original Compliance Report | `repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` | Baseline compliance assessment (2026-03-19) |
+| Implementation Follow-Up | `repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md` | Master roadmap identifying Phases A through D |
+| Original Compliance Report | `repository-information/HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md` | Baseline compliance assessment (2026-03-19) |
 | Coding Requirements | `repository-information/HIPAA-CODING-REQUIREMENTS.md` | 40-item regulatory checklist |
 | Compliance Reference | `repository-information/HIPAA-COMPLIANCE-REFERENCE.md` | Full CFR regulatory text |
 | GAS Platform Analysis | `repository-information/GAS-HIPAA-COMPLIANCE-ANALYSIS.md` | GAS-specific HIPAA considerations |
 | Auth Optimization Plan | `repository-information/10.4.1-HIPAA-SINGLE-LOAD-AUTH-OPTIMIZATION-PLAN.md` | Authentication architecture reference |
 
-### Key Code Locations (testauth1.gs) — Phase B Infrastructure Reused by Phase C
+### Key Code Locations (testauthgas1.gs) — Phase B Infrastructure Reused by Phase C
 
 | Function | Approximate Line | Purpose | Used By (Phase C) |
 |----------|:----------------:|---------|-------------------|
@@ -2807,7 +2807,7 @@ Implement Phase C in this order (each item builds on the previous):
 | Date | Version | Author | Change |
 |------|---------|--------|--------|
 | 2026-03-30 | 1.0 | Claude Code | Initial Phase C implementation guide — comprehensive 18-section guide covering 5 items: #18 Core Retention Enhancement (last-in-effect date), #18b Legal Hold Override (litigation preservation), Retention Compliance Audit System, Archive Integrity Verification (SHA-256 checksums), and Retention Policy Documentation Generator. Includes full GAS function specifications, regulatory landscape with 6 OCR enforcement cases, spreadsheet schemas for 2 new sheets (LegalHolds, RetentionIntegrityLog), 40+ test scenarios, troubleshooting guide, forward-looking regulatory preparation, and cross-references with implementation order |
-| 2026-03-30 | 1.1 | Claude Code | Phase C fully implemented — all 14+ GAS functions deployed in testauth1.gs (v02.29g), HTML admin UI with 4 panels deployed in testauth1.html (v03.80w). Fixed `auditRetentionCompliance()` scope attribution (Phase C, not Phase B). Updated key code location line numbers to reflect post-implementation file positions |
+| 2026-03-30 | 1.1 | Claude Code | Phase C fully implemented — all 14+ GAS functions deployed in testauthgas1.gs (v02.29g), HTML admin UI with 4 panels deployed in testauthgas1.html (v03.80w). Fixed `auditRetentionCompliance()` scope attribution (Phase C, not Phase B). Updated key code location line numbers to reflect post-implementation file positions |
 | 2026-03-30 | 1.2 | Claude Code | Post-implementation update: added Implementation Status section (what was done, what requires configuration, known limitations with regulatory risk assessment); added Developer Verification Walkthrough (34-check structured testing guide organized by 6 priority tiers + quick smoke test); updated Phase C at a Glance table from pre-implementation targets (❌) to implemented status (✅ with version numbers) |
 
 ### Version Mapping
@@ -2821,7 +2821,7 @@ Implement Phase C in this order (each item builds on the previous):
 ### Document Scope Relationship
 
 ```
-HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md   ← Master roadmap (40 items across 4 phases)
+HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md   ← Master roadmap (40 items across 4 phases)
 ├── HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md     ← Phase A: Items #19, #20, #21, #22, #23, #24 (15 sections)
 ├── HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md     ← Phase B: Items #19b, #23b, #24b, #18, #28, #31, #25 (20 sections)
 ├── HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md     ← Phase C: Item #18 deep dive + legal hold + audit + integrity + policy (18 sections) ← YOU ARE HERE

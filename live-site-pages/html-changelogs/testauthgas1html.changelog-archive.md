@@ -1,6 +1,6 @@
-# Changelog Archive — testauth1title
+# Changelog Archive — testauthgas1title
 
-Older version sections rotated from [testauth1html.changelog.md](testauth1html.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
+Older version sections rotated from [testauthgas1html.changelog.md](testauthgas1html.changelog.md). Full granularity preserved — entries are moved here verbatim when the main changelog exceeds 50 version sections.
 
 ## Rotation Logic
 
@@ -401,7 +401,7 @@ Developed by: ShadowAISolutions
 ## [v03.12w] — 2026-03-26 11:06:12 AM EST — v06.93r — [89c77fa](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89c77faf423700d5160ba3305dd37bacceabacce)
 
 ### Changed
-- Page title updated to "Testauth1 Title"
+- Page title updated to "Testauthgas1 Title"
 
 ## [v03.11w] — 2026-03-26 10:49:30 AM EST — v06.92r — [a88695f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a88695ff34bf183bcbd91a857616128403e4a86c)
 

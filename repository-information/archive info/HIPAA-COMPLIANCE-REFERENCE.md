@@ -236,7 +236,7 @@ The technology and the policy and procedures for its use that protect ePHI and c
 
 ## Our Project's Implementation Status
 
-This section maps the HIPAA Security Rule requirements to what our project's HIPAA preset (`testauth1.gs` and `testauth1.html`) currently implements. Only the Technical Safeguards (§164.312) are within scope of our code — Administrative, Physical, Organizational, and Documentation safeguards are organizational responsibilities that cannot be enforced through application code.
+This section maps the HIPAA Security Rule requirements to what our project's HIPAA preset (`testauthgas1.gs` and `testauthgas1.html`) currently implements. Only the Technical Safeguards (§164.312) are within scope of our code — Administrative, Physical, Organizational, and Documentation safeguards are organizational responsibilities that cannot be enforced through application code.
 
 ### Technical Safeguards (§164.312) — What Our Code Controls
 

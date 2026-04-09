@@ -1,11 +1,11 @@
-var VERSION = "v02.60g";
-var TITLE = "testauth1title";
+var VERSION = "v02.61g";
+var TITLE = "testauthgas1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
-var FILE_PATH     = "googleAppsScripts/Testauth1/testauth1.gs";
+var FILE_PATH     = "googleAppsScripts/Testauthgas1/testauthgas1.gs";
 var DEPLOYMENT_ID = "AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w";
-var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html";
+var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthgas1.html";
 
 // Derive the parent page's origin from EMBED_PAGE_URL for postMessage targeting.
 // postMessage calls from the GAS iframe to the parent page use this as the targetOrigin
@@ -34,7 +34,7 @@ var SHEET_NAME     = "Live_Sheet";
 // Leave as placeholder to fall back to SPREADSHEET_ID editor/viewer check.
 var MASTER_ACL_SPREADSHEET_ID = "1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI";
 var ACL_SHEET_NAME = "Access";
-var ACL_PAGE_NAME  = "testauth1";
+var ACL_PAGE_NAME  = "testauthgas1";
 var PORTAL_ICON    = "🔐";
 var PORTAL_DESCRIPTION = "Authentication testing environment with full security features.";
 
@@ -1652,7 +1652,7 @@ function validateSessionForData(sessionToken, operationName) {
 //   return { success: true, email: user.email };
 // }
 // =============================================
-// PROJECT START — testauth1 data operations
+// PROJECT START — testauthgas1 data operations
 // Phase 3: clientIp parameter removed — to re-enable, change signature to:
 // function saveNote(sessionToken, noteText, clientIp) {
 function saveNote(sessionToken, noteText) {
@@ -2027,7 +2027,7 @@ function processHeartbeat(token) {
   return signMessage({type: 'gas-heartbeat-ok', expiresIn: AUTH_CONFIG.SESSION_EXPIRATION, absoluteRemaining: hbAbsRemaining}, msgKey);
 }
 
-// PROJECT START — testauth1 data polling
+// PROJECT START — testauthgas1 data polling
 // ── Authenticated data poll — lightweight session check + data return ──
 // Called from doGet(action=getData) with token passed as URL parameter.
 // Unlike processHeartbeat(), this does NOT extend the session — it only verifies
@@ -2217,7 +2217,7 @@ function doGet(e) {
       .setTitle(TITLE)
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
-  // PROJECT START — testauth1 data poll action handler
+  // PROJECT START — testauthgas1 data poll action handler
   // Data poll action — validates session token then returns cached data inline.
   // Token is passed as URL parameter (not postMessage — Google's nested iframe
   // wrapper drops parent→child messages, making the ready/token handshake unreliable).
@@ -2736,7 +2736,7 @@ function doGet(e) {
   // Admin role detection for conditional admin UI
   var isAdmin = (session.role === 'admin');
   var sessionTokenForAdmin = isAdmin ? sessionToken : '';
-  // PROJECT START — testauth1 pre-load cached data for live data table
+  // PROJECT START — testauthgas1 pre-load cached data for live data table
   var initialData = getCachedData();
   var initialDataJSON = initialData ? JSON.stringify(initialData) : 'null';
   // PROJECT END
@@ -2745,17 +2745,17 @@ function doGet(e) {
   var html = `
     <html>
     <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- PROJECT: testauth1 viewport -->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- PROJECT: testauthgas1 viewport -->
       <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
       <meta http-equiv="Pragma" content="no-cache">
       <meta http-equiv="Expires" content="0">
       <style>
         html, body { height: 100%; margin: 0; overflow: hidden; }
         body { font-family: sans-serif; }
-        .gas-layer-hidden { display: none !important; } /* PROJECT: testauth1 gas layer toggle */
+        .gas-layer-hidden { display: none !important; } /* PROJECT: testauthgas1 gas layer toggle */
         #version { position: fixed; bottom: 9px; left: 8px; z-index: 9999; color: #1565c0; font-size: 12px; margin: 0; font-family: monospace; opacity: 0.8; }
-        #user-email { position: fixed; top: 35px; right: 22px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; } /* PROJECT: testauth1 user email display */
-        /* PROJECT START — testauth1 Live Data App styles */
+        #user-email { position: fixed; top: 35px; right: 22px; z-index: 9999; color: #8b949e; font-size: 11px; font-family: monospace; opacity: 0.8; } /* PROJECT: testauthgas1 user email display */
+        /* PROJECT START — testauthgas1 Live Data App styles */
         #live-data-app {
           position: fixed; top: 30px; left: 0; right: 0; bottom: 30px; z-index: 2;
           display: none; flex-direction: column;
@@ -2941,10 +2941,10 @@ function doGet(e) {
       </style>
     </head>
     <body>
-      <!-- PROJECT START — testauth1 version and UI elements -->
+      <!-- PROJECT START — testauthgas1 version and UI elements -->
       <h2 id="version">${escapeHtml(VERSION)}</h2>
       <div id="user-email">${escapeHtml(session.email)}</div>
-      <!-- GAS toggle moved to HTML layer (testauth1.html) for full iframe hide/show
+      <!-- GAS toggle moved to HTML layer (testauthgas1.html) for full iframe hide/show
       <button id="gas-layer-toggle" onclick="window._toggleGasLayer()" style="position:fixed;bottom:8px;left:135px;z-index:9999;background:rgba(0,0,0,0.55);color:#ccc;border:1px solid rgba(255,255,255,0.2);padding:3px 8px;border-radius:10px;font:10px/1 monospace;cursor:pointer;opacity:0.6;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">GAS</button>
       -->
       <!-- PROJECT END -->
@@ -2981,7 +2981,7 @@ function doGet(e) {
       </div>
       ` : ''}
 
-      <!-- PROJECT START — testauth1 Live Data App UI -->
+      <!-- PROJECT START — testauthgas1 Live Data App UI -->
       <div id="live-data-app">
         <div id="ld-header">
           <div class="left">
@@ -3150,7 +3150,7 @@ function doGet(e) {
         document.addEventListener('click', _notifyActivity, true);
         document.addEventListener('input', _notifyActivity, true);
 
-        // PROJECT START — testauth1 Live Data App UI logic
+        // PROJECT START — testauthgas1 Live Data App UI logic
         (function() {
           var LD_STALE_THRESHOLD = 60000;
           var _ldPrevDataJSON = null;
@@ -4621,7 +4621,7 @@ function exportDisclosureAccounting(sessionToken, format) {
 
 /**
  * Creates an access request and immediately generates the export.
- * For testauth1 (small dataset), export is synchronous.
+ * For testauthgas1 (small dataset), export is synchronous.
  */
 function requestDataExport(sessionToken, format) {
   return wrapPhaseAOperation('requestDataExport', sessionToken, function(user) {
@@ -4691,7 +4691,7 @@ function getIndividualData(sessionToken) {
     individual: {
       email: user.email, displayName: user.displayName,
       role: user.role, exportDate: formatHipaaTimestamp(),
-      generatedBy: 'testauth1 v' + VERSION
+      generatedBy: 'testauthgas1 v' + VERSION
     },
     records: {},
     summary: { totalRecords: 0, sheetsQueried: 0 }
@@ -5685,7 +5685,7 @@ function sendBreachAlert(eventType, eventCount, threshold, eventDetails) {
     + 'Threshold: ' + threshold + ' events in ' + BREACH_ALERT_CONFIG.WINDOW_MINUTES + ' minutes\n'
     + 'Actual Count: ' + eventCount + '\n'
     + 'Timestamp: ' + formatHipaaTimestamp() + '\n'
-    + 'Environment: testauth1\n\n'
+    + 'Environment: testauthgas1\n\n'
     + 'Event Details:\n'
     + JSON.stringify(eventDetails || {}, null, 2).substring(0, 500) + '\n\n'
     + 'ACTION REQUIRED:\n'
@@ -7059,7 +7059,7 @@ function getRetentionPolicyDocument(sessionToken) {
     } catch (e) { /* Non-fatal */ }
 
     var document = {
-      title: 'HIPAA Record Retention Policy — testauth1',
+      title: 'HIPAA Record Retention Policy — testauthgas1',
       version: '1.0',
       generatedAt: timestamp,
       generatedBy: user.email,
@@ -7067,14 +7067,14 @@ function getRetentionPolicyDocument(sessionToken) {
       sections: [
         {
           heading: '1. Purpose',
-          content: 'This document establishes the record retention policy for the testauth1 '
+          content: 'This document establishes the record retention policy for the testauthgas1 '
             + 'environment, as required by the HIPAA Security Rule §164.316(b). It defines '
             + 'retention periods, enforcement mechanisms, and exception handling procedures '
             + 'for all electronic protected health information (ePHI) and security documentation.'
         },
         {
           heading: '2. Scope',
-          content: 'This policy applies to all electronic records maintained in the testauth1 '
+          content: 'This policy applies to all electronic records maintained in the testauthgas1 '
             + 'Project Data Spreadsheet, including but not limited to:',
           items: sheetsProtected.map(function(name) {
             return name + ' — protected, ' + retentionYears + '-year retention';

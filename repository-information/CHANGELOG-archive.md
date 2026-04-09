@@ -278,7 +278,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v09.28r] — 2026-04-06 07:41:52 PM EST — [e8608381](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e8608381ce8a3e58ca34b207ca9041331308c2c5)
 
-> **Prompt:** "analyze the gas-project-creator and associated setup-gas-project.sh to see if using it on a new program will create html and gas non project specific (template) code identical to any of the environments we have (testauth1, globalacl, programportal). if not, address whatever is not correctly set up, all projects should foundationally have identical code, except for project specific code."
+> **Prompt:** "analyze the gas-project-creator and associated setup-gas-project.sh to see if using it on a new program will create html and gas non project specific (template) code identical to any of the environments we have (testauthgas1, globalacl, programportal). if not, address whatever is not correctly set up, all projects should foundationally have identical code, except for project specific code."
 
 ### Changed
 - Changed noauth GAS template SHEET_NAME default from `"Live_Sheet"` to `"YOUR_SHEET_NAME"` for consistency with auth template
@@ -316,10 +316,10 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v09.26r] — 2026-04-06 05:03:52 PM EST — [ae57f85e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ae57f85e04edd02512a39c5aa71122995468c98a)
 
-> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, cosmetic diffs, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+> **Prompt:** "review the testauthgas1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, cosmetic diffs, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
 
 ### Changed
-- Added `// PROJECT OVERRIDE:` markers to testauth1.html for HEARTBEAT_INTERVAL test value (60000) and session duration test values (180s/300s) — prevents template propagation from overwriting project-specific test configurations
+- Added `// PROJECT OVERRIDE:` markers to testauthgas1.html for HEARTBEAT_INTERVAL test value (60000) and session duration test values (180s/300s) — prevents template propagation from overwriting project-specific test configurations
 - Added `// PROJECT OVERRIDE:` markers to programportal.html for HEARTBEAT_INTERVAL test value (30000) and SSO_PROVIDER (true)
 - Removed "Include Test Features" checkbox and test template logic from gas-project-creator.html — all new projects now use minimal GAS templates only
 - Updated setup-gas-project.sh to remove INCLUDE_TEST support — template selection is now auth/noauth only
@@ -331,7 +331,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Added
 - Created `gas-test-functions-reference.js.txt` — archived 6 test/diagnostic GAS functions (extended getAppData, getSoundBase64, writeVersionToSheet, readB1FromCacheOrSheet, onEditWriteB1ToCache, fetchGitHubQuotaAndLimits) for future reuse
 
-#### `testauth1.html` — v03.97w
+#### `testauthgas1.html` — v03.97w
 ##### Changed
 - Minor internal improvements
 
@@ -350,11 +350,11 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Reclassified shared template code: removed `PROJECT: ` prefix from admin role detection, admin panel styles, admin badge, admin panel logic, and sign-in/sign-out checklist markers across all GAS and HTML files — these are template code, not project code
 - Fixed orphan `// PROJECT END` in GAS test-auth template (had 3 ENDs vs 2 STARTs, now 2/2)
-- Wrapped multi-line project-specific code blocks in testauth1.html with proper `// PROJECT START/END` pairs (message types, signature-exempt types, sandbox capture, auth context send, panel cooldown)
+- Wrapped multi-line project-specific code blocks in testauthgas1.html with proper `// PROJECT START/END` pairs (message types, signature-exempt types, sandbox capture, auth context send, panel cooldown)
 - Wrapped globalacl.html message type whitelist with `// PROJECT START/END` pair
 - Applied same admin marker reclassification to `gas-minimal-auth-template-code.js.txt`
 
-#### `testauth1.html` — v03.96w
+#### `testauthgas1.html` — v03.96w
 
 ##### Changed
 - Minor internal improvements
@@ -369,7 +369,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - Minor internal improvements
 
-#### `testauth1.gs` — v02.57g
+#### `testauthgas1.gs` — v02.57g
 
 ##### Changed
 - Minor internal improvements
@@ -386,7 +386,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v09.24r] — 2026-04-06 01:50:46 PM EST — [f9dac72d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f9dac72d92c6ad0c39ba97939b9cf85684f532fd)
 
-> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+> **Prompt:** "review the testauthgas1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
 
 ### Changed
 - Fixed `sourceDisplayName` in all 3 auth HTML pages to use `document.title` instead of hardcoded strings — matches the auth template
@@ -394,7 +394,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Added missing `<!-- YOUR PAGE CONTENT HERE -->` placeholder comment to programportal.html PROJECT block — matches the auth template
 - Fixed HEARTBEAT_INTERVAL comment in auth template from inaccurate "poll GAS for fresh data" to correct "check for activity and send heartbeat"
 
-#### `testauth1.html` — v03.95w
+#### `testauthgas1.html` — v03.95w
 
 ##### Changed
 - Minor internal improvements
@@ -414,9 +414,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "the ~4 cosmetic blank line diffs around PROJECT markers should also match"
 
 ### Changed
-- Fixed all remaining blank line inconsistencies around PROJECT markers in testauth1.gs, globalacl.gs, and programportal.gs — stripped non-project code now has zero blank-line diffs against the template
+- Fixed all remaining blank line inconsistencies around PROJECT markers in testauthgas1.gs, globalacl.gs, and programportal.gs — stripped non-project code now has zero blank-line diffs against the template
 
-#### `testauth1.gs` — v02.56g
+#### `testauthgas1.gs` — v02.56g
 ##### Changed
 - Minor internal improvements
 
@@ -442,9 +442,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ### Changed
 - Added admin panel JS logic (~478 lines) to minimal-auth GAS template — all production auth scripts share this code but it was missing from the minimal template, forcing manual addition for every new project
-- Fixed blank line inconsistency in testauth1.gs doGet to match template (single → double blank before admin role detection)
+- Fixed blank line inconsistency in testauthgas1.gs doGet to match template (single → double blank before admin role detection)
 
-#### `testauth1.gs` — v02.55g
+#### `testauthgas1.gs` — v02.55g
 ##### Changed
 - Minor internal improvements
 
@@ -453,11 +453,11 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "continue"
 
 ### Changed
-- Removed unnecessary `// PROJECT START — testauth1 admin panel logic` / `// PROJECT END` wrapper from testauth1.gs — admin panel code is template code with inline `// PROJECT:` marker, matching globalacl and programportal
+- Removed unnecessary `// PROJECT START — testauthgas1 admin panel logic` / `// PROJECT END` wrapper from testauthgas1.gs — admin panel code is template code with inline `// PROJECT:` marker, matching globalacl and programportal
 - Fixed extra `// ══════════════` separator lines around empty PROJECT block in globalacl.gs to match template format
-- Added `// PROJECT:` markers to `_gasSandboxSource` variable and gas-auth-ok handler extension in testauth1.html for template propagation awareness
+- Added `// PROJECT:` markers to `_gasSandboxSource` variable and gas-auth-ok handler extension in testauthgas1.html for template propagation awareness
 
-#### `testauth1.gs` — v02.54g
+#### `testauthgas1.gs` — v02.54g
 ##### Changed
 - Minor internal improvements
 
@@ -467,14 +467,14 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v09.19r] — 2026-04-06 12:43:26 PM EST — [4b3f70f1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b3f70f1944736c180b63d7be3d512e0bbb4a848)
 
-> **Prompt:** "review the testauth1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
+> **Prompt:** "review the testauthgas1, globalacl, programportal, and related templates, html and gas files; to see how close they are to having identical in code, whitespace, and code ordering in their non project specific html and gas codes, our goal is to have all of them match exactly for non project specific code"
 
 ### Changed
 - Removed ~160 lines of programportal-specific code (portal header, app cards, toggles, registry) that had leaked into the GAS auth template (`gas-minimal-auth-template-code.js.txt`)
 - Added HMAC liveData stripping to HTML auth template and all three auth pages — prevents JSON.stringify mismatches between GAS V8 and browser engines for messages containing nested objects
-- Normalized testauth1.html HMAC comment to match template (removed PROJECT marker since this is now standard template code)
+- Normalized testauthgas1.html HMAC comment to match template (removed PROJECT marker since this is now standard template code)
 
-#### `testauth1.html` — v03.94w
+#### `testauthgas1.html` — v03.94w
 ##### Changed
 - Improved message signature verification for nested data
 
@@ -508,19 +508,19 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "make all 3 match identically in non project specific code"
 
 ### Changed
-- Synchronized non-project-specific (shared template) code across all 3 GAS files (testauth1.gs, globalacl.gs, programportal.gs) to be character-for-character identical using programportal as canonical source
-- Added missing JSDoc comments and cross-project section headers to testauth1.gs and globalacl.gs
+- Synchronized non-project-specific (shared template) code across all 3 GAS files (testauthgas1.gs, globalacl.gs, programportal.gs) to be character-for-character identical using programportal as canonical source
+- Added missing JSDoc comments and cross-project section headers to testauthgas1.gs and globalacl.gs
 - Canonicalized comment style, verbosity, and inline comment format across all shared functions
-- Reordered doGet action handlers in testauth1.gs to match canonical order (listSessions/setAdminSecret/adminSignOut/getNonce before phaseA)
+- Reordered doGet action handlers in testauthgas1.gs to match canonical order (listSessions/setAdminSecret/adminSignOut/getNonce before phaseA)
 - Added missing PostMessage handshake guard to globalacl.gs client-side JS
 - Added missing HMAC migration and Phase 3 IP logging comments to globalacl.gs
 - Wrapped leaked project-specific code in proper PROJECT markers across all 3 files:
-  - testauth1: version display, user-email div, GAS toggle, admin panel JS, CSS overrides
+  - testauthgas1: version display, user-email div, GAS toggle, admin panel JS, CSS overrides
   - globalacl: cross-project admin functions, ACL management UI logic, custom confirm dialog, version display, ACL table HTML, base CSS overrides
   - programportal: portal header/layout HTML, portal application registry JS
 - Standardized CSS baseline across all files (overflow: hidden, font-family: sans-serif)
 
-#### `testauth1.gs` — v02.53g
+#### `testauthgas1.gs` — v02.53g
 
 ##### Changed
 - Minor internal improvements
@@ -553,13 +553,13 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "continue"
 
 ### Changed
-- Added `<!-- PROJECT START -->` / `<!-- PROJECT END -->` block markers in doGet HTML body for testauth1 (Live Data App + delete modal) and programportal (announcements + app cards + footer + GAS toggle)
-- Converted `// PROJECT: Live Data App` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in testauth1.gs (wrapping ~555 lines of live data table UI logic)
+- Added `<!-- PROJECT START -->` / `<!-- PROJECT END -->` block markers in doGet HTML body for testauthgas1 (Live Data App + delete modal) and programportal (announcements + app cards + footer + GAS toggle)
+- Converted `// PROJECT: Live Data App` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in testauthgas1.gs (wrapping ~555 lines of live data table UI logic)
 - Converted `// PROJECT: Global sessions loader` JS single-line marker to `// PROJECT START` / `// PROJECT END` block in globalacl.gs (wrapping ~78 lines of cross-project session management)
-- Removed orphaned `// PROJECT END` before `</script>` in testauth1.gs and globalacl.gs (no matching START — were leftover from original file creation)
-- All 3 GAS files now have balanced PROJECT START/END markers: testauth1 (8 pairs), globalacl (6 pairs), programportal (7 pairs)
+- Removed orphaned `// PROJECT END` before `</script>` in testauthgas1.gs and globalacl.gs (no matching START — were leftover from original file creation)
+- All 3 GAS files now have balanced PROJECT START/END markers: testauthgas1 (8 pairs), globalacl (6 pairs), programportal (7 pairs)
 
-#### `testauth1.gs` — v02.52g
+#### `testauthgas1.gs` — v02.52g
 
 ##### Changed
 - Minor internal improvements
@@ -579,12 +579,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "continue with next phase"
 
 ### Changed
-- Added proper `/* PROJECT START */` / `/* PROJECT END */` CSS block markers in doGet HTML template for all 3 auth GAS files — wrapping testauth1's Live Data App styles (130 lines), globalacl's ACL table/modal/toolbar styles (75 lines), and programportal's portal layout + announcements styles (186 lines)
+- Added proper `/* PROJECT START */` / `/* PROJECT END */` CSS block markers in doGet HTML template for all 3 auth GAS files — wrapping testauthgas1's Live Data App styles (130 lines), globalacl's ACL table/modal/toolbar styles (75 lines), and programportal's portal layout + announcements styles (186 lines)
 - Fixed misleading phaseA handler comment in programportal.gs and globalacl.gs (was `// Security event action`, now correctly `// Phase A — HIPAA Privacy Rule operations listener`)
 - Added missing `// Security event action` comment before actual securityEvent handler in programportal.gs and globalacl.gs
 - Converted single-line `/* PROJECT: */` CSS annotations to proper block markers with clear start/end boundaries
 
-#### `testauth1.gs` — v02.51g
+#### `testauthgas1.gs` — v02.51g
 
 ##### Changed
 - Minor internal improvements
@@ -605,14 +605,14 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ### Changed
 - Unified doGet action handler comments across all 3 auth GAS files — fixed misleading `// Security event action` comment (was labeling phaseA handler), added `// Security event action` comment before actual securityEvent handler in programportal.gs and globalacl.gs, removed misplaced `// Cross-project admin sign-out` comment from programportal.gs setAdminSecret section, unified `// Auto-register` and `// Normal flow:` comments
-- Added `// PROJECT START`/`// PROJECT END` markers around testauth1's `getData` action handler
+- Added `// PROJECT START`/`// PROJECT END` markers around testauthgas1's `getData` action handler
 - Added `// PROJECT START`/`// PROJECT END` markers around globalacl's `adminGlobalSessions` action handler
 - Marked `ensureCrossProjectSecret()` call in globalacl doGet with `// PROJECT:` annotation
-- Added `// PROJECT START`/`// PROJECT END` markers around project-specific pre-HTML data loading in all 3 files (testauth1: `getCachedData()`, globalacl: `loadACLData()`, programportal: `getUserAppAccess()` + `getCachedAnnouncements()`)
+- Added `// PROJECT START`/`// PROJECT END` markers around project-specific pre-HTML data loading in all 3 files (testauthgas1: `getCachedData()`, globalacl: `loadACLData()`, programportal: `getUserAppAccess()` + `getCachedAnnouncements()`)
 - Unified `// Session valid` comment before `var html` across all 3 files
-- Removed extra `// Both paths are valid` comment block from testauth1
+- Removed extra `// Both paths are valid` comment block from testauthgas1
 
-#### `testauth1.gs` — v02.50g
+#### `testauthgas1.gs` — v02.50g
 
 ##### Changed
 - Minor internal improvements
@@ -632,13 +632,13 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "continue where we left off in SESSION-CONTEXT"
 
 ### Changed
-- Added proper `// PROJECT START` / `// PROJECT END` markers around project-specific data operation functions in all 3 auth GAS files — `saveNote` and `processDataPoll` in testauth1.gs, 12 ACL management functions in globalacl.gs, `getUserAppAccess` in programportal.gs
-- Added template example comments to DATA OPERATIONS section header in testauth1.gs and globalacl.gs (matching programportal.gs)
-- Removed duplicate `// AUTH — Page Nonce (postMessage handshake)` section headers from testauth1.gs and globalacl.gs (programportal.gs has just the plain function comment)
-- Fixed extra blank line before HIPAA COMPLIANCE section in testauth1.gs
+- Added proper `// PROJECT START` / `// PROJECT END` markers around project-specific data operation functions in all 3 auth GAS files — `saveNote` and `processDataPoll` in testauthgas1.gs, 12 ACL management functions in globalacl.gs, `getUserAppAccess` in programportal.gs
+- Added template example comments to DATA OPERATIONS section header in testauthgas1.gs and globalacl.gs (matching programportal.gs)
+- Removed duplicate `// AUTH — Page Nonce (postMessage handshake)` section headers from testauthgas1.gs and globalacl.gs (programportal.gs has just the plain function comment)
+- Fixed extra blank line before HIPAA COMPLIANCE section in testauthgas1.gs
 - Unified blank line patterns around PROJECT markers for consistent stripping
 
-#### `testauth1.gs` — v02.49g
+#### `testauthgas1.gs` — v02.49g
 
 ##### Changed
 - Minor internal improvements
@@ -655,7 +655,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v09.10r] — 2026-04-06 09:45:41 AM EST — [faef8437](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/faef84372336758ac6e3998ce2d29ebd2dac0f17)
 
-> **Prompt:** "now that the non project specific code between testauth1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
+> **Prompt:** "now that the non project specific code between testauthgas1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
 
 ### Changed
 - Added `<!-- YOUR PAGE CONTENT HERE -->` placeholder back to auth template's HTML PROJECT block
@@ -663,7 +663,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v09.09r] — 2026-04-06 09:42:41 AM EST — [40bb782c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/40bb782c9ca2bd3c4f4f2de5735b923234e91450)
 
-> **Prompt:** "now that the non project specific code between testauth1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
+> **Prompt:** "now that the non project specific code between testauthgas1, globalacl, and programportal are identical, update the template html and gs codes to match the non project specific code identically (other than the placeholders used by the templates with the corresponding setup-gas-project.sh script through gas-project-creator which should also be updated so that projects created moving forward have identical non project specific code."
 
 ### Changed
 - Rebuilt auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) from the unified programportal.html source — template non-project code now matches all 3 live auth pages exactly
@@ -676,9 +676,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "whatever makes them match 100%"
 
 ### Changed
-- Removed dead `_gasSandboxSource` code from globalacl.html (declared, set, and cleared but never read — only testauth1 uses it for ld-init postMessage)
+- Removed dead `_gasSandboxSource` code from globalacl.html (declared, set, and cleared but never read — only testauthgas1 uses it for ld-init postMessage)
 - Removed dead `_closeAllPanelsExcept(null)` call from globalacl.html showAuthWall (no panels registered — call was a no-op)
-- Unified globalacl.html whitespace and comment text to match programportal/testauth1 template code
+- Unified globalacl.html whitespace and comment text to match programportal/testauthgas1 template code
 
 #### `globalacl.html` — v01.83w
 
@@ -695,30 +695,30 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "get it to 100% addressing whitespace and code ordering. it should in theory also match the globalacl at the point"
 
 ### Changed
-- Achieved 100% non-project template code unification between programportal.html, testauth1.html, and globalacl.html
+- Achieved 100% non-project template code unification between programportal.html, testauthgas1.html, and globalacl.html
 
 #### `programportal.html` — v01.89w
 
 ##### Fixed
 - Added missing blank line before SSO indicator comment in startCountdownTimers
-- Moved SSO indicator click handler from before "Use Here" to after page load IIFE (matching testauth1/globalacl position)
-- Unified SSO indicator click handler comment text ("when user clicks 'retry'" matching testauth1/globalacl)
+- Moved SSO indicator click handler from before "Use Here" to after page load IIFE (matching testauthgas1/globalacl position)
+- Unified SSO indicator click handler comment text ("when user clicks 'retry'" matching testauthgas1/globalacl)
 
 ## [v09.06r] — 2026-04-06 08:56:31 AM EST — [de49f375](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/de49f3758ab085e025a589c465e7c79f5b05f870)
 
 > **Prompt:** "yes"
 
 ### Changed
-- Unified programportal.html non-project template code to match testauth1.html and globalacl.html
+- Unified programportal.html non-project template code to match testauthgas1.html and globalacl.html
 
 #### `programportal.html` — v01.88w
 
 ##### Fixed
 - Restored `loadIframeViaNonce()` in showApp DOM clearing reload and storage event login sync (was incorrectly using direct `?session=` URLs — breaks replay protection)
 - Fixed line-merge bugs in sign-in and sign-out stage checklist logic (comment and `var` declaration merged onto same line)
-- Restored client-side session expiry pre-check on page load (absolute + rolling timeout) to match testauth1/globalacl
+- Restored client-side session expiry pre-check on page load (absolute + rolling timeout) to match testauthgas1/globalacl
 - Restored `_expectingSession` comment in page load session resume
-- Unified "Use Here" tab reclaim handler structure to match testauth1/globalacl
+- Unified "Use Here" tab reclaim handler structure to match testauthgas1/globalacl
 - Unified comment formatting across ~15 template code areas (SSO section header, heartbeat interval, data poll interval, sign-in checklist, sign-out checklist, auth error comments, performSignOut SSO comments, nonce flow documentation)
 
 ## [v09.05r] — 2026-04-06 08:31:35 AM EST — [3165d00e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/3165d00e8a36a6a98303815a0014ab0cfff0df03)
@@ -726,17 +726,17 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "if there is identical code, i want them in exactly the same place (relatively)"
 
 ### Changed
-- Reorganized testauth1.gs to match globalacl.gs section structure — HIPAA config variables (BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG, HIPAA_DEADLINES) and shared utility functions (generateRequestId, formatHipaaTimestamp, validateIndividualAccess, getOrCreateSheet, wrapPhaseAOperation) moved from mid-file to after serverSignOut(), with globalacl-style section headers (HIPAA COMPLIANCE — Configuration, Shared Utilities, Phase A/B/C)
+- Reorganized testauthgas1.gs to match globalacl.gs section structure — HIPAA config variables (BREACH_ALERT_CONFIG, HIPAA_RETENTION_CONFIG, LEGAL_HOLD_CONFIG, INTEGRITY_CONFIG, REPRESENTATIVE_CONFIG, HIPAA_DEADLINES) and shared utility functions (generateRequestId, formatHipaaTimestamp, validateIndividualAccess, getOrCreateSheet, wrapPhaseAOperation) moved from mid-file to after serverSignOut(), with globalacl-style section headers (HIPAA COMPLIANCE — Configuration, Shared Utilities, Phase A/B/C)
 - Fixed processHeartbeat() return from 2-line assignment+return to 1-line inline return to match globalacl
 - Marked evaluateBreachAlert call as PROJECT-specific (was labeled Phase B)
 
-#### `testauth1.gs` — v02.48g
+#### `testauthgas1.gs` — v02.48g
 ##### Changed
 - Minor internal improvements
 
 ## [v09.04r] — 2026-04-06 08:10:11 AM EST — [ad53f43d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ad53f43d8b71ab145430de5ccdbda089fb0607bd)
 
-> **Prompt:** "review the text-compare.html we made, in the screenshot you can see the testauth1 on the left and the globalacl on the right. it doesnt really make sense for the left to be original and the right to be changed, it should be able to show me the differences between the two, and it doesnt make sense that i dont see the project specific code for the globalacl, is the project specific code in the right location in the code?"
+> **Prompt:** "review the text-compare.html we made, in the screenshot you can see the testauthgas1 on the left and the globalacl on the right. it doesnt really make sense for the left to be original and the right to be changed, it should be able to show me the differences between the two, and it doesnt make sense that i dont see the project specific code for the globalacl, is the project specific code in the right location in the code?"
 
 ### Changed
 - Updated text-compare.html labeling from directional "Original"/"Changed" to neutral "Text A"/"Text B" terminology — the tool now works as a peer comparison tool rather than implying one side is the source of truth
@@ -829,7 +829,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Moved GAS admin badge, dropdown, and panel from top-right (`right: 12px`) to top-left (`left: 12px`) in all three auth GAS scripts — the HTML user-pill (z-index 9999+) in the top-right was covering the admin badge due to iframe stacking context constraints
 
-#### `testauth1.gs` — v02.37g
+#### `testauthgas1.gs` — v02.37g
 
 ##### Fixed
 - Admin tools badge and menu moved to top-left corner to avoid being hidden behind the user interface
@@ -866,7 +866,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.60r] — 2026-04-03 02:06:38 PM EST — [97a9d29](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/97a9d297)
 
-> **Prompt:** "check and fix why the globalacl is not signing in via program portal anymore, testauth1 is properly signing in via program portal"
+> **Prompt:** "check and fix why the globalacl is not signing in via program portal anymore, testauthgas1 is properly signing in via program portal"
 
 ### Fixed
 - Fixed JavaScript crash in globalacl.html that prevented SSO sign-in from program portal — `document.getElementById('admin-global-sessions-btn').addEventListener(...)` threw TypeError because the button was removed in v08.55r but the JS handler was left behind, halting the entire script block before the SSO code could execute
@@ -878,13 +878,13 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.59r] — 2026-04-03 01:30:35 PM EST — [28afef6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/28afef6c)
 
-> **Prompt:** "go ahead and fix it. the program portal, testauth1, globalgcl should all handle the admin portal identically within the gas layer, make sure thats the case"
+> **Prompt:** "go ahead and fix it. the program portal, testauthgas1, globalgcl should all handle the admin portal identically within the gas layer, make sure thats the case"
 
 ### Fixed
-- Added admin elements (`admin-badge`, `admin-dropdown-gas`, `admin-panel-overlay`) to the GAS layer toggle's `_gasLayerEls` array in testauth1.gs and globalacl.gs — the GAS toggle now hides/shows admin UI when toggling the layer, matching programportal.gs behavior
-- Switched globalacl.gs GAS toggle from inline `style.display` manipulation to CSS class approach (`gas-layer-hidden` with `!important`), matching the pattern used by programportal.gs and testauth1.gs for consistent override of inline styles
+- Added admin elements (`admin-badge`, `admin-dropdown-gas`, `admin-panel-overlay`) to the GAS layer toggle's `_gasLayerEls` array in testauthgas1.gs and globalacl.gs — the GAS toggle now hides/shows admin UI when toggling the layer, matching programportal.gs behavior
+- Switched globalacl.gs GAS toggle from inline `style.display` manipulation to CSS class approach (`gas-layer-hidden` with `!important`), matching the pattern used by programportal.gs and testauthgas1.gs for consistent override of inline styles
 
-#### `testauth1.gs` — v02.36g
+#### `testauthgas1.gs` — v02.36g
 
 ##### Fixed
 - GAS layer toggle now properly hides/shows admin dropdown, badge, and panel overlay
@@ -897,12 +897,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.58r] — 2026-04-03 01:11:45 PM EST — [c60afb4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c60afb43)
 
-> **Prompt:** "why is it that when i toggle the gas layer in the testauth1, i still see the admin dropdown. it should be on the gas layer if its not already"
+> **Prompt:** "why is it that when i toggle the gas layer in the testauthgas1, i still see the admin dropdown. it should be on the gas layer if its not already"
 
 ### Removed
-- Removed all HIPAA admin UI from testauth1.html HTML layer (~2150 lines) — admin dropdown, sessions panel, Phase A/B/C panels (disclosure, data export, amendment, breach, representatives, legal holds, compliance audit, archive integrity, retention policy), and all associated CSS and JavaScript handlers. This was missed in the v08.55r cleanup that removed the same UI from programportal.html and globalacl.html. The GAS layer (testauth1.gs doGet()) already has the admin dropdown since v08.56r
+- Removed all HIPAA admin UI from testauthgas1.html HTML layer (~2150 lines) — admin dropdown, sessions panel, Phase A/B/C panels (disclosure, data export, amendment, breach, representatives, legal holds, compliance audit, archive integrity, retention policy), and all associated CSS and JavaScript handlers. This was missed in the v08.55r cleanup that removed the same UI from programportal.html and globalacl.html. The GAS layer (testauthgas1.gs doGet()) already has the admin dropdown since v08.56r
 
-#### `testauth1.html` — v03.84w
+#### `testauthgas1.html` — v03.84w
 
 ##### Removed
 - Removed duplicate admin dropdown and compliance panels — these controls now appear only within the application dashboard, eliminating a redundant copy that was visible outside the dashboard
@@ -914,7 +914,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Fixed syntax error ("Unexpected end of input") in programportal.gs caused by truncated `sendHipaaEmail` function — the function body was missing since the HIPAA backend propagation (d1a8542), leaving an unclosed `{` that caused GAS deploy failure
 - Fixed identical truncated `sendHipaaEmail` in globalacl.gs — same root cause from the same propagation commit
-- Restored complete function body (parameter validation, rate limiting, email sending via MailApp, audit logging, error handling) from testauth1.gs which had the working version
+- Restored complete function body (parameter validation, rate limiting, email sending via MailApp, audit logging, error handling) from testauthgas1.gs which had the working version
 
 #### `programportal.gs` — v01.43g
 
@@ -931,7 +931,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "ok you removed the admin dropdown from the html layer, but i still need to be able to interact with it, so the dropdown should be on the gas layer"
 
 ### Added
-- Propagated admin dashboard (badge, dropdown, 14 HIPAA panels, sessions panel) to globalacl.gs and testauth1.gs doGet() dashboards — admin UI now available on all auth GAS pages
+- Propagated admin dashboard (badge, dropdown, 14 HIPAA panels, sessions panel) to globalacl.gs and testauthgas1.gs doGet() dashboards — admin UI now available on all auth GAS pages
 - Added admin dashboard to GAS auth templates (gas-minimal-auth-template-code.js.txt and gas-test-auth-template-code.js.txt) for new projects
 
 ### Removed
@@ -943,7 +943,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Added
 - Admin badge, dropdown, and 14 HIPAA admin panels integrated into main GAS dashboard (conditionally rendered for admin users)
 
-#### `testauth1.gs` — v02.35g
+#### `testauthgas1.gs` — v02.35g
 
 ##### Added
 - Admin badge, dropdown, and 14 HIPAA admin panels integrated into main GAS dashboard (conditionally rendered for admin users)
@@ -1008,13 +1008,13 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.52r] — 2026-04-02 01:20:10 PM EST — [ca08f65](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ca08f65b)
 
-> **Prompt:** "do an analysis to see if we were to use the gas-project-creator and the corresponding setup-gas-project.sh would the outcome be identical on the html and gas to the testauth1 (aside from project specific items). if not fix everything so that is the case for all projects moving forward"
+> **Prompt:** "do an analysis to see if we were to use the gas-project-creator and the corresponding setup-gas-project.sh would the outcome be identical on the html and gas to the testauthgas1 (aside from project specific items). if not fix everything so that is the case for all projects moving forward"
 
 ### Fixed
 - Added missing `var SHEET_NAME` and `var SOUND_FILE_ID` config variables to `gas-minimal-auth-template-code.js.txt` — the only template variant missing these, causing `setup-gas-project.sh` and `gas-project-creator.html` to silently fail when substituting values for new auth projects
 - Fixed inconsistent `SHEET_NAME` default in `gas-test-auth-template-code.js.txt` from `"Sheet1"` to `"Live_Sheet"` to match all other templates and the setup script's default
-- Propagated missing `SHEET_NAME` and `SOUND_FILE_ID` vars to existing auth GAS files that were created from the buggy template: `globalacl.gs`, `programportal.gs`, `testauth1.gs`
-- Normalized `SHEET_NAME` spacing in `testauth1.gs` to match template format (5-space alignment)
+- Propagated missing `SHEET_NAME` and `SOUND_FILE_ID` vars to existing auth GAS files that were created from the buggy template: `globalacl.gs`, `programportal.gs`, `testauthgas1.gs`
+- Normalized `SHEET_NAME` spacing in `testauthgas1.gs` to match template format (5-space alignment)
 
 #### `globalacl.gs` — v01.32g
 
@@ -1026,14 +1026,14 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Added missing `SHEET_NAME` and `SOUND_FILE_ID` config variables (undefined `SHEET_NAME` was referenced at line 4160)
 
-#### `testauth1.gs` — v02.34g
+#### `testauthgas1.gs` — v02.34g
 
 ##### Fixed
 - Added missing `SOUND_FILE_ID` config variable and normalized `SHEET_NAME` spacing to match template format
 
 ## [v08.51r] — 2026-04-02 12:37:36 PM EST — [cd9afa0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cd9afa0a)
 
-> **Prompt:** "do an analysis to see if we were to use the gas-project-creator and the corresponding setup-gas-project.sh would the outcome be identical on the html and gas to the testauth1 (aside from project specific items). if not fix everything so that is the case for all projects moving forward"
+> **Prompt:** "do an analysis to see if we were to use the gas-project-creator and the corresponding setup-gas-project.sh would the outcome be identical on the html and gas to the testauthgas1 (aside from project specific items). if not fix everything so that is the case for all projects moving forward"
 
 ### Fixed
 - Added complete HIPAA compliance backend to `gas-test-auth-template-code.js.txt` — this template was missing all Phase A/B/C functions and the phaseA doGet route. Projects created with "Include Test Features" checked would have had HIPAA panels with no backend. Now all auth GAS templates (minimal and test) produce identical HIPAA backends
@@ -1051,7 +1051,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ### Added
 - Sub-step progress tracking CSS (`.sub-steps`, `.stage-time-total`, flex-wrap layout) added to auth template — programportal and globalacl already had the HTML sub-steps from earlier propagation
-- Amendment "current content" field (`amend-current`) added to amendment request panel in auth template, programportal, and globalacl — allows users to specify what content they believe is incorrect (matching testauth1)
+- Amendment "current content" field (`amend-current`) added to amendment request panel in auth template, programportal, and globalacl — allows users to specify what content they believe is incorrect (matching testauthgas1)
 - `currentContent` parameter now sent with amendment requests via `_sendPhaseA`
 
 #### `programportal.html` — v01.81w
@@ -1069,7 +1069,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "yes propagate"
 
 ### Added
-- Propagated complete HIPAA compliance backend (60+ functions, Phase A/B/C, phaseA doGet route) to `globalacl.gs` and `programportal.gs` — both auth projects now have the same HIPAA backend as testauth1
+- Propagated complete HIPAA compliance backend (60+ functions, Phase A/B/C, phaseA doGet route) to `globalacl.gs` and `programportal.gs` — both auth projects now have the same HIPAA backend as testauthgas1
 
 #### `globalacl.gs` — v01.31g
 
@@ -1086,7 +1086,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "yes proceed. Write in small chunks — use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally"
 
 ### Added
-- Complete HIPAA compliance backend added to GAS auth template (`gas-minimal-auth-template-code.js.txt`) — 60+ functions extracted from testauth1.gs covering all three compliance phases:
+- Complete HIPAA compliance backend added to GAS auth template (`gas-minimal-auth-template-code.js.txt`) — 60+ functions extracted from testauthgas1.gs covering all three compliance phases:
   - **Configuration**: `BREACH_ALERT_CONFIG`, `HIPAA_RETENTION_CONFIG`, `LEGAL_HOLD_CONFIG`, `INTEGRITY_CONFIG`, `REPRESENTATIVE_CONFIG`, `HIPAA_DEADLINES`
   - **Shared Utilities**: `generateRequestId`, `formatHipaaTimestamp`, `validateIndividualAccess`, `getOrCreateSheet`, `wrapPhaseAOperation`
   - **Phase A — Individual Rights**: Disclosure accounting (§164.528), right of access (§164.524), right to amendment (§164.526), 30-day extensions, formal denial notices
@@ -1097,7 +1097,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.46r] — 2026-04-02 11:18:15 AM EST — [1538449](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1538449c)
 
-> **Prompt:** "the gas toggle is not hiding the background in the program portal, is that because the background is in the html layer? in any case all of them should be functioning like the testauth1"
+> **Prompt:** "the gas toggle is not hiding the background in the program portal, is that because the background is in the html layer? in any case all of them should be functioning like the testauthgas1"
 
 ### Fixed
 - GAS Layer Toggle now sets `document.body.style.background = 'transparent'` when hiding GAS content — prevents body background (gradient, color) from remaining visible when GAS elements are hidden. Applied to all `.gs` files and all 4 GAS templates
@@ -1112,7 +1112,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - GAS toggle now hides the body background along with content elements
 
-#### `testauth1.gs` — v02.33g
+#### `testauthgas1.gs` — v02.33g
 
 ##### Changed
 - Minor internal improvements
@@ -1134,10 +1134,10 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.45r] — 2026-04-02 10:39:56 AM EST — [613d1dd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/613d1dd3)
 
-> **Prompt:** "on the gas layer make all the pages have the gas version in the bottom left corner, like it is in testauth1, including the templates (im looking particularly at the globalacl which doesnt have it yet)"
+> **Prompt:** "on the gas layer make all the pages have the gas version in the bottom left corner, like it is in testauthgas1, including the templates (im looking particularly at the globalacl which doesnt have it yet)"
 
 ### Added
-- GAS version display (`<h2 id="version">`) with fixed bottom-left positioning added to `globalacl.gs` — matching testauth1's pattern. All other `.gs` files and all 4 GAS templates already had it
+- GAS version display (`<h2 id="version">`) with fixed bottom-left positioning added to `globalacl.gs` — matching testauthgas1's pattern. All other `.gs` files and all 4 GAS templates already had it
 
 #### `globalacl.gs` — v01.29g
 
@@ -1146,36 +1146,36 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.44r] — 2026-04-02 10:35:03 AM EST — [63dbdd3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/63dbdd31)
 
-> **Prompt:** "the html toggle can be visible on the sign in page. please look at how the testauth1 is set up, that is the most accurate project of how we want it set up so check other features to make sure they match it"
+> **Prompt:** "the html toggle can be visible on the sign in page. please look at how the testauthgas1 is set up, that is the most accurate project of how we want it set up so check other features to make sure they match it"
 
 ### Fixed
-- HTML Layer Toggle now always visible (matching testauth1) — reverted `display:none` and showApp/showAuthWall gating added in v08.43r
-- Admin sessions button now closes the dropdown menu before opening the sessions panel (matching testauth1 behavior)
-- Added `admin-sessions-panel` to `_htmlLayerEls` array — HTML toggle now hides the sessions panel too (matching testauth1)
-- Reverted `roleBadge.textContent` to match testauth1 — role badge text set by `displayRole` directly (CSS `text-transform:uppercase` handles capitalization)
+- HTML Layer Toggle now always visible (matching testauthgas1) — reverted `display:none` and showApp/showAuthWall gating added in v08.43r
+- Admin sessions button now closes the dropdown menu before opening the sessions panel (matching testauthgas1 behavior)
+- Added `admin-sessions-panel` to `_htmlLayerEls` array — HTML toggle now hides the sessions panel too (matching testauthgas1)
+- Reverted `roleBadge.textContent` to match testauthgas1 — role badge text set by `displayRole` directly (CSS `text-transform:uppercase` handles capitalization)
 
 #### `programportal.html` — v01.80w
 
 ##### Fixed
-- Admin dropdown now closes when clicking Sessions; HTML toggle behavior matches testauth1
+- Admin dropdown now closes when clicking Sessions; HTML toggle behavior matches testauthgas1
 
 #### `globalacl.html` — v01.72w
 
 ##### Fixed
-- Admin dropdown now closes when clicking Sessions; HTML toggle behavior matches testauth1
+- Admin dropdown now closes when clicking Sessions; HTML toggle behavior matches testauthgas1
 
 ## [v08.43r] — 2026-04-02 10:28:07 AM EST — [5c12e6b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5c12e6b1)
 
 > **Prompt:** "why can i see the gas toggle in the globalacl when on the sign in page, the gas layer should not be loaded yet, and the toggle is supposed to be on the gas layer"
 
 ### Fixed
-- Moved GAS Layer Toggle from the HTML page to the GAS iframe (rendered by `doGet()`) — matches testauth1's architecture where the GAS toggle lives on the GAS layer, only appearing when the GAS app is loaded
+- Moved GAS Layer Toggle from the HTML page to the GAS iframe (rendered by `doGet()`) — matches testauthgas1's architecture where the GAS toggle lives on the GAS layer, only appearing when the GAS app is loaded
 - HTML Layer Toggle now starts hidden (`display:none`) and only shows after authentication via `showApp()` — no longer visible on the sign-in page
 - Removed `.gas-layer-hidden` CSS class and `_toggleGasLayer` JS from HTML pages (template, programportal, globalacl) — these belong in the GAS layer
 
 ### Added
 - GAS Layer Toggle button + JS IIFE added to all 4 GAS template source files (`gas-minimal-auth`, `gas-minimal-noauth`, `gas-test-auth`, `gas-test-noauth`)
-- GAS Layer Toggle propagated to existing `.gs` files: `index.gs`, `globalacl.gs`, `rndlivedata.gs`, `testenvironment.gs` (programportal.gs and testauth1.gs already had it)
+- GAS Layer Toggle propagated to existing `.gs` files: `index.gs`, `globalacl.gs`, `rndlivedata.gs`, `testenvironment.gs` (programportal.gs and testauthgas1.gs already had it)
 
 #### `programportal.html` — v01.79w
 
@@ -1209,7 +1209,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.42r] — 2026-04-02 10:11:41 AM EST — [7ab92ab](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7ab92ab6)
 
-> **Prompt:** "the html toggle in the globalacl is hiding the gas toggle, telling me that the gas toggle is on the html layer, it should be on the gas layer, so it should function like it does in the testauth1. make it so that in the global acl it also shows the gas version in the bottom left corner just like in the testauth1, do the same for the templates"
+> **Prompt:** "the html toggle in the globalacl is hiding the gas toggle, telling me that the gas toggle is on the html layer, it should be on the gas layer, so it should function like it does in the testauthgas1. make it so that in the global acl it also shows the gas version in the bottom left corner just like in the testauthgas1, do the same for the templates"
 
 ### Fixed
 - HTML Layer Toggle no longer hides the GAS Layer Toggle button — removed `gas-layer-toggle` and `html-layer-toggle` from the `_htmlLayerEls` array so both toggle buttons remain visible regardless of layer visibility state
@@ -1257,7 +1257,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "yes add these missing operational fields"
 
 ### Changed
-- Upgraded Legal Holds panel with status filter, sheet name selector, hold type dropdown, case reference, start/end/expiration date fields (matching testauth1's operational form)
+- Upgraded Legal Holds panel with status filter, sheet name selector, hold type dropdown, case reference, start/end/expiration date fields (matching testauthgas1's operational form)
 - Upgraded Breach Dashboard panel with mitigation steps textarea, report year selector, and renamed fields to match HIPAA §164.404(c) requirements
 - Upgraded Denial Notice panel with reviewable checkbox (§164.524(d)(2) appeal indicator), contact person, contact office fields, and notice output display
 - Upgraded Representatives panel with expiration date tracking, document reference, and notes field for operational workflow
@@ -1275,10 +1275,10 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.39r] — 2026-04-02 09:29:22 AM EST — [4b652e5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b652e5f)
 
-> **Prompt:** "the panel should be the same format as the testauth1, under dropdown, for all of them"
+> **Prompt:** "the panel should be the same format as the testauthgas1, under dropdown, for all of them"
 
 ### Changed
-- Restructured HIPAA buttons from flat inline buttons to dropdown menu matching testauth1's pattern — buttons now appear under an "ADMIN" badge dropdown (`#admin-menu` > `#admin-dropdown`) instead of cluttering the top bar
+- Restructured HIPAA buttons from flat inline buttons to dropdown menu matching testauthgas1's pattern — buttons now appear under an "ADMIN" badge dropdown (`#admin-menu` > `#admin-dropdown`) instead of cluttering the top bar
 - Applied dropdown structure to auth template, programportal, and globalacl
 - Added `#admin-menu`, `#admin-dropdown` CSS and dropdown toggle JS to all three files
 - Role badge now shows uppercase role name with dropdown arrow (e.g. "ADMIN ▾")
@@ -1477,10 +1477,10 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.22r] — 2026-03-30 07:31:49 PM EST — [ed407e5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ed407e59)
 
-> **Prompt:** "review the repository-information/HIPAA-CODING-REQUIREMENTS.md and do an analysis on testauth1 and create a document that lists the things that are done/not done including items NOT implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
+> **Prompt:** "review the repository-information/HIPAA-CODING-REQUIREMENTS.md and do an analysis on testauthgas1 and create a document that lists the things that are done/not done including items NOT implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
 
 ### Added
-- Created `HIPAA-TESTAUTH1-ANALYSIS.md` — comprehensive deep analysis cross-referencing all 40 HIPAA Coding Requirements checklist items against actual testauth1 code (GAS v02.32g, HTML v03.83w)
+- Created `HIPAA-TESTAUTHGAS1-ANALYSIS.md` — comprehensive deep analysis cross-referencing all 40 HIPAA Coding Requirements checklist items against actual testauthgas1 code (GAS v02.32g, HTML v03.83w)
 - Analysis includes: summary scorecard, detailed per-item assessment with code evidence (file:line references), items NOT implemented with rationale, implementation correctness assessment, known limitations, and post-deployment configuration checklist
 - Added file to README.md structure tree
 
@@ -1503,7 +1503,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Updated "Items NOT Implemented" table — marked 3 functional items (date pickers, status filter, sheet names) as ✅ Resolved; kept 4 naming/cosmetic items as Intentional Deviations
 - Updated "Implementation Correctness Assessment" — HTML legal holds form verdict upgraded from ⚠️ Partial to ✅ Correct
 
-#### `testauth1.html` — v03.83w
+#### `testauthgas1.html` — v03.83w
 
 ##### Fixed
 - Legal hold form now correctly lists all protected sheets for hold placement
@@ -1516,7 +1516,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.20r] — 2026-03-30 02:10:47 PM EST — [6c0642b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6c0642be)
 
-> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md for testauth1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
+> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md for testauthgas1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally using Edit to add subsequent sections one at a time"
 
 ### Changed
 - Rewrote HIPAA Phase C implementation status section with accurate assessment based on deep code verification against guide specifications
@@ -1546,7 +1546,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Updated HIPAA Phase B implementation guide status section — marked 4 discrepancies as resolved, 4 non-implemented items as addressed (3 newly implemented + 1 already done by Phase C), updated function counts and totals
 
-#### `testauth1.html` — v03.82w
+#### `testauthgas1.html` — v03.82w
 
 ##### Fixed
 - Grouped disclosure toggle now defaults to checked (grouped view)
@@ -1556,7 +1556,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Breach log viewer panel with status colors, source indicators, and summary statistics
 - Amendment approval auto-fetches disclosure recipients for notification workflow
 
-#### `testauth1.gs` — v02.32g
+#### `testauthgas1.gs` — v02.32g
 
 ##### Added
 - `sendBreachAlert()` — standalone breach alert email function (extracted from `evaluateBreachAlert()`)
@@ -1567,7 +1567,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.18r] — 2026-03-30 12:56:16 PM EST — [ebeb3d3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ebeb3d3c)
 
-> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md for testauth1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally, using Edit to add subsequent sections one at a time"
+> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md for testauthgas1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly. Do not attempt to write in a single Write call — large writes can stall or fail silently. Build it up incrementally, using Edit to add subsequent sections one at a time"
 
 ### Changed
 - Independently verified and rewrote HIPAA Phase B implementation status section in `HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` — corrected 4 phantom function names (`sendBreachAlert`, `getBreachAlertConfig`, `getBreachLog`, `validateRepresentativeAccess`), added "Items NOT Implemented (As Guide Expected)" section with 8 items, added "Implementation Discrepancies (Guide Spec vs Actual Code)" table with 5 spec-vs-code differences, added line number references for all 24 GAS-side additions and 11 doGet routes
@@ -1578,15 +1578,15 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "go ahead and fix the discrepancies, and also go ahead and implement all of the non implemented future proof items"
 
 ### Added
-- Implemented `requestAccessExtension()` in `testauth1.gs` — 30-day extension workflow for access requests per §164.524(b)(2), updates status to `Extended` with new deadline
-- Implemented `requestAmendmentExtension()` in `testauth1.gs` — 30-day extension workflow for amendment requests per §164.526(b)(2), updates status and deadline in AmendmentRequests sheet
-- Implemented `generateDenialNotice()` in `testauth1.gs` — formal written denial notice per §164.524(d)(2) with all 5 required elements: basis for denial, review rights, complaint process, contact info, HHS filing
+- Implemented `requestAccessExtension()` in `testauthgas1.gs` — 30-day extension workflow for access requests per §164.524(b)(2), updates status to `Extended` with new deadline
+- Implemented `requestAmendmentExtension()` in `testauthgas1.gs` — 30-day extension workflow for amendment requests per §164.526(b)(2), updates status and deadline in AmendmentRequests sheet
+- Implemented `generateDenialNotice()` in `testauthgas1.gs` — formal written denial notice per §164.524(d)(2) with all 5 required elements: basis for denial, review rights, complaint process, contact info, HHS filing
 - Added HITECH EHR dual-mode to `getDisclosureAccounting()` — new `options.includeEhrTpo` parameter includes TPO disclosures with 3-year lookback per HITECH §13405(c)
 - Added `Source` column to DisclosureLog schema (12 columns total) — supports BA vs covered entity disclosure tracking per §164.528(c)
 - Added route handlers in doGet Phase A listener: `phase-a-request-access-extension`, `phase-a-request-amendment-extension`, `phase-a-generate-denial-notice`, `phase-a-get-ehr-disclosures`
-- Added Extension Workflow panel to `testauth1.html` — UI for granting 30-day extensions to access/amendment requests
-- Added Formal Denial Notice panel to `testauth1.html` — generates structured denial notices with all §164.524(d)(2) elements
-- Added EHR Disclosures panel to `testauth1.html` — HITECH EHR disclosure accounting with TPO disclosure tagging
+- Added Extension Workflow panel to `testauthgas1.html` — UI for granting 30-day extensions to access/amendment requests
+- Added Formal Denial Notice panel to `testauthgas1.html` — generates structured denial notices with all §164.524(d)(2) elements
+- Added EHR Disclosures panel to `testauthgas1.html` — HITECH EHR disclosure accounting with TPO disclosure tagging
 
 ### Fixed
 - Fixed DisclosureLog header mismatch in `getDisclosureRecipientsForRecord()` — updated from 10 to 12 columns (added `DataCategory` and `Source`)
@@ -1597,7 +1597,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Updated HIPAA Phase A Implementation Guide v1.4 — marked 6 of 7 "Items NOT Implemented" as ✅ Implemented, fixed minor code discrepancy, updated executive summary
 
-#### `testauth1.gs` — v02.31g
+#### `testauthgas1.gs` — v02.31g
 ##### Added
 - 30-day extension workflows for access and amendment requests
 - Formal written denial notice generation with all HIPAA-required elements
@@ -1606,7 +1606,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Fixed
 - Disclosure log header consistency across all consuming functions (12-column standard)
 
-#### `testauth1.html` — v03.81w
+#### `testauthgas1.html` — v03.81w
 ##### Added
 - Extension Workflow panel for granting 30-day deadline extensions
 - Formal Denial Notice panel for generating structured denial documents
@@ -1615,7 +1615,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.16r] — 2026-03-30 12:23:05 PM EST — [9b575fa](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9b575fa1)
 
-> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md for testauth1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly"
+> **Prompt:** "ignore everything that was supposedly done, update the list of things that were done/not done in repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md for testauthgas1 including Items NOT Implemented (as guide expected), think deeply to see if everything was implemented and implemented correctly"
 
 ### Changed
 - Rewrote Section 16 (Implementation Status Audit) of `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` — fresh independent audit of all Phase A functions against source code, ignoring prior status claims
@@ -1630,17 +1630,17 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.15r] — 2026-03-30 12:00:52 PM EST — [0730fc1](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0730fc10)
 
-> **Prompt:** "update the list of things that were done/not done in repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md for testauth1, think deeply to see if everything was implemented and implemented correectly"
+> **Prompt:** "update the list of things that were done/not done in repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md for testauthgas1, think deeply to see if everything was implemented and implemented correectly"
 
 ### Added
-- Added `HIPAA_DEADLINES` config object to `testauth1.gs` — centralizes all HIPAA regulatory deadlines (access: 30d, amendment: 60d, accounting: 6yr, breach: 60d) with §-reference comments and proposed NPRM/HITECH alternatives
-- Added `DataCategory` column to DisclosureLog schema in `testauth1.gs` — supports 42 CFR Part 2 SUD record segmentation across `recordDisclosure()`, `getDisclosureAccounting()`, and `exportDisclosureAccounting()`
+- Added `HIPAA_DEADLINES` config object to `testauthgas1.gs` — centralizes all HIPAA regulatory deadlines (access: 30d, amendment: 60d, accounting: 6yr, breach: 60d) with §-reference comments and proposed NPRM/HITECH alternatives
+- Added `DataCategory` column to DisclosureLog schema in `testauthgas1.gs` — supports 42 CFR Part 2 SUD record segmentation across `recordDisclosure()`, `getDisclosureAccounting()`, and `exportDisclosureAccounting()`
 
 ### Changed
-- Replaced all hardcoded deadline values in `testauth1.gs` with `HIPAA_DEADLINES` references (accounting lookback, amendment response, breach notification)
+- Replaced all hardcoded deadline values in `testauthgas1.gs` with `HIPAA_DEADLINES` references (accounting lookback, amendment response, breach notification)
 - Updated `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` with comprehensive implementation status audit — all 17 core functions verified as implemented, 7 beyond-spec features documented, compliance matrix corrected (21/30 ✅), security checklists marked, Section 14 future-proofing items updated, new Section 16 added with full implementation status tables
 
-#### `testauth1.gs` — v02.30g
+#### `testauthgas1.gs` — v02.30g
 
 ##### Added
 - `HIPAA_DEADLINES` config object with 7 regulatory deadline constants
@@ -1658,7 +1658,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Added Implementation Status section to the Phase C guide with "What Was Implemented" table (14 functions, 4 utilities, 9 routes, 4 panels), post-deployment configuration items, and known limitations with regulatory risk assessments
 
 ### Changed
-- Updated `HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` scorecard — 7 items moved to ✅ Implemented: #18 6-Year Retention (Phase B+C), #19 Disclosure Accounting (Phase A+B), #23 Right of Access (Phase A), #24 Right to Amendment (Phase A), #28 Breach Detection (Phase B), #31 Breach Logging (Phase B). All current-law ❌ gaps now closed
+- Updated `HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md` scorecard — 7 items moved to ✅ Implemented: #18 6-Year Retention (Phase B+C), #19 Disclosure Accounting (Phase A+B), #23 Right of Access (Phase A), #24 Right to Amendment (Phase A), #28 Breach Detection (Phase B), #31 Breach Logging (Phase B). All current-law ❌ gaps now closed
 - Updated compliance percentage from 61% to 81% (22/31 current-law items implemented + 3 N/A)
 - Updated Before/After comparison table with three-column history (Original → Follow-Up → Current)
 - Marked Phases A, B, and C as complete in the implementation roadmap
@@ -1666,27 +1666,27 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.13r] — 2026-03-30 11:13:25 AM EST — [a699793](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a699793d)
 
-> **Prompt:** "as long as its not part of the Phase D — Production Hardening of repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md, then i do want you to implement it, so Phase C should be completely implemented."
+> **Prompt:** "as long as its not part of the Phase D — Production Hardening of repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md, then i do want you to implement it, so Phase C should be completely implemented."
 
 ### Added
-- Implemented all Phase C HIPAA GAS functions in `testauth1.gs` — 14+ new functions covering legal hold management (`placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()`), retention compliance audit (`auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()`), archive integrity verification (`computeArchiveChecksum()`, `verifyArchiveIntegrity()`), retention policy documentation (`getRetentionPolicyDocument()`, `exportRetentionPolicy()`), and shared utilities (`computeRowsChecksum()`, `wrapRetentionOperation()`, `getHoldNotificationEmail()`, `getRetentionRelevantDate()`)
-- Added `LEGAL_HOLD_CONFIG` and `INTEGRITY_CONFIG` objects to `testauth1.gs` for Phase C feature configuration
+- Implemented all Phase C HIPAA GAS functions in `testauthgas1.gs` — 14+ new functions covering legal hold management (`placeLegalHold()`, `releaseLegalHold()`, `checkLegalHold()`, `getLegalHolds()`), retention compliance audit (`auditRetentionCompliance()`, `getComplianceAuditReport()`, `setupComplianceAuditTrigger()`), archive integrity verification (`computeArchiveChecksum()`, `verifyArchiveIntegrity()`), retention policy documentation (`getRetentionPolicyDocument()`, `exportRetentionPolicy()`), and shared utilities (`computeRowsChecksum()`, `wrapRetentionOperation()`, `getHoldNotificationEmail()`, `getRetentionRelevantDate()`)
+- Added `LEGAL_HOLD_CONFIG` and `INTEGRITY_CONFIG` objects to `testauthgas1.gs` for Phase C feature configuration
 - Modified `enforceRetention()` to integrate legal hold checking, "last in effect" date calculation, and archive integrity checksums
-- Added 9 Phase C doGet message routes in `testauth1.gs` for HTML↔GAS communication
-- Added Phase C admin UI to `testauth1.html` — 4 new admin dropdown buttons (Legal Holds, Compliance Audit, Archive Integrity, Retention Policy) and 4 new admin panels with full CRUD functionality
-- Added Phase C message routing (8 response types) and handler functions in `testauth1.html`
-- Updated `showAuthWall()` in `testauth1.html` to clean up Phase C panels and clear PHI data on sign-out
+- Added 9 Phase C doGet message routes in `testauthgas1.gs` for HTML↔GAS communication
+- Added Phase C admin UI to `testauthgas1.html` — 4 new admin dropdown buttons (Legal Holds, Compliance Audit, Archive Integrity, Retention Policy) and 4 new admin panels with full CRUD functionality
+- Added Phase C message routing (8 response types) and handler functions in `testauthgas1.html`
+- Updated `showAuthWall()` in `testauthgas1.html` to clean up Phase C panels and clear PHI data on sign-out
 
 ### Changed
 - Fixed `HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md` — corrected `auditRetentionCompliance()` scope attribution from Phase B to Phase C, updated key code location line numbers to reflect post-implementation positions, added v1.1 version mapping entry
 
-#### `testauth1.gs` — v02.29g
+#### `testauthgas1.gs` — v02.29g
 
 ##### Added
 - All Phase C HIPAA retention functions: legal hold management, compliance audit, archive integrity, and policy documentation
 - Integration of legal hold checking and archive checksums into the daily retention enforcement flow
 
-#### `testauth1.html` — v03.80w
+#### `testauthgas1.html` — v03.80w
 
 ##### Added
 - Phase C admin panels: Legal Holds, Compliance Audit, Archive Integrity, Retention Policy
@@ -1694,7 +1694,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.12r] — 2026-03-30 10:26:30 AM EST — [94cf136](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/94cf1360)
 
-> **Prompt:** "with the same amount of detail, formatting, research, and deep thought used in the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md and repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md, i want you to apply that into making the HIPAA Phase C Implementation Guide, the next phase in the repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md . Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+> **Prompt:** "with the same amount of detail, formatting, research, and deep thought used in the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md and repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md, i want you to apply that into making the HIPAA Phase C Implementation Guide, the next phase in the repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md . Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
 ### Added
 - Created `repository-information/HIPAA-PHASE-C-IMPLEMENTATION-GUIDE.md` — comprehensive 2,669-line, 18-section implementation guide for HIPAA Phase C (Retention Enforcement deep dive), covering 5 items: #18 Core Retention Enhancement with "last in effect" date handling (§164.316(b)(2)(i)), #18b Legal Hold Override for litigation preservation (FRCP Rule 37(e)), Retention Compliance Audit System (§164.308(a)(8)), Archive Integrity Verification with SHA-256 checksums (§164.312(c)(1-2)), and Retention Policy Documentation Generator (§164.316(b)(1))
@@ -1722,19 +1722,19 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "Think deeply and implement repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md"
 
 ### Added
-- Implemented full HIPAA Phase B compliance extension for testauth1 — 18 new GAS functions, 11 doGet() message routes, 3 config objects, and 4 shared utility functions across all 3 priority tiers (P1: Required Sub-Paragraphs, P2: Breach Infrastructure, P3: Personal Representatives)
+- Implemented full HIPAA Phase B compliance extension for testauthgas1 — 18 new GAS functions, 11 doGet() message routes, 3 config objects, and 4 shared utility functions across all 3 priority tiers (P1: Required Sub-Paragraphs, P2: Breach Infrastructure, P3: Personal Representatives)
 - P1: `getGroupedDisclosureAccounting()` for §164.528(b)(2)(ii) grouped disclosures, `generateDataSummary()` for §164.524(c)(3) summary PHI export, `sendAmendmentNotifications()` + `getNotificationStatus()` + `getDisclosureRecipientsForRecord()` for §164.526(d) third-party amendment notifications
 - P2: `evaluateBreachAlert()` + `sendBreachAlert()` + `getBreachAlertConfig()` for §164.404/408 breach detection and alerting, `logBreach()` + `logBreachFromAlert()` + `getBreachLog()` + `getBreachReport()` + `updateBreachStatus()` for §164.408 breach logging with annual report generation, `enforceRetention()` + `setupRetentionTrigger()` + `auditRetentionCompliance()` for §164.316 retention enforcement with automated time-driven triggers
 - P3: `registerPersonalRepresentative()` + `getPersonalRepresentatives()` + `revokeRepresentative()` + `validateRepresentativeAccess()` for §164.502(g) personal representative access management
 - Extended `validateIndividualAccess()` with representative authorization support
 - Added `evaluateBreachAlert()` call in `processSecurityEvent()` for real-time breach detection
-- Added breach dashboard panel and personal representative management panel to testauth1.html with full admin UI
-- Added grouped disclosure toggle, summary export radio option with agreement checkbox, and all 11 Phase B message handlers + JavaScript handler functions to testauth1.html
+- Added breach dashboard panel and personal representative management panel to testauthgas1.html with full admin UI
+- Added grouped disclosure toggle, summary export radio option with agreement checkbox, and all 11 Phase B message handlers + JavaScript handler functions to testauthgas1.html
 - Wired data export download button to route "summary" format to Phase B `generateDataSummary()` endpoint
 - Updated `showAuthWall()` to hide Phase B panels (breach dashboard, representative panel) and clear Phase B data elements
 - Replaced browser `prompt()` in representative revocation with inline custom input (per "UI Dialogs — No Browser Defaults" coding guideline)
 
-#### `testauth1.gs` — v02.28g
+#### `testauthgas1.gs` — v02.28g
 
 ##### Added
 - 18 HIPAA Phase B functions: grouped disclosure accounting, summary PHI export, amendment notifications with tracking, breach detection/alerting/logging with annual reports, retention enforcement with automated triggers, personal representative registration/management/revocation
@@ -1744,7 +1744,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Real-time breach evaluation integrated into processSecurityEvent()
 - Representative authorization support in validateIndividualAccess()
 
-#### `testauth1.html` — v03.79w
+#### `testauthgas1.html` — v03.79w
 
 ##### Added
 - Breach dashboard admin panel with log viewer, incident logging form, and annual report generation
@@ -1760,7 +1760,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v08.09r] — 2026-03-30 08:31:22 AM EST — [e944944](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e944944f)
 
-> **Prompt:** "the same amount of detail, formatting. research, and deep thought used in the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md, i want you to apply that into making the HIPAA Phase B Implementation Guide, the next phase in the repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md . Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+> **Prompt:** "the same amount of detail, formatting. research, and deep thought used in the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md, i want you to apply that into making the HIPAA Phase B Implementation Guide, the next phase in the repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md . Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
 ### Added
 - Created `repository-information/HIPAA-PHASE-B-IMPLEMENTATION-GUIDE.md` — comprehensive Phase B implementation guide (3,067 lines, 20 sections) covering 7 HIPAA items across 3 priority tiers: P1 Required sub-paragraphs (#19b Grouped Disclosure Accounting, #23b Summary PHI Export, #24b Third-Party Amendment Notifications), P2 Breach Infrastructure (#18 Retention Enforcement, #28 Breach Detection Alerting, #31 Breach Logging), P3 Personal Representatives (#25 Personal Representative Access). Includes full GAS function specifications with code examples, 3 new spreadsheet schemas (AmendmentNotifications, BreachLog, PersonalRepresentatives), security checklist, CFR paragraph-level regulatory compliance matrix, before/after comparison tables (compliance 74%→90%), 55+ test scenarios with end-to-end integration test, troubleshooting guide, and forward-looking regulatory preparation covering pending NPRM impacts and state-level privacy law considerations
@@ -1770,11 +1770,11 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "Stop hook feedback: uncommitted changes (archive rotation ordering fix)"
 
 ### Fixed
-- Fixed testauth1 HTML changelog archive section ordering — rotated sections now appear in newest-first (reverse chronological) order as required
+- Fixed testauthgas1 HTML changelog archive section ordering — rotated sections now appear in newest-first (reverse chronological) order as required
 
 ## [v08.07r] — 2026-03-30 07:29:44 AM EST — [873f00b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/873f00bd)
 
-> **Prompt:** "analyze the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md and determine where we are in the process of implementing it in testauth1. then prepare to continue implementing"
+> **Prompt:** "analyze the repository-information/HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md and determine where we are in the process of implementing it in testauthgas1. then prepare to continue implementing"
 
 ### Security
 - Fixed CSV injection vulnerability in `convertToCSV()` — values starting with `=`, `+`, `@`, or `-` are now prefixed with a single quote to prevent formula injection when CSV files are opened in Excel/Sheets
@@ -1782,12 +1782,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Added missing `data-requires-permission="admin"` attribute to the amendment review button — non-admin users could see the button (though server-side permissions still blocked the action)
 
-#### `testauth1.gs` — v02.27g
+#### `testauthgas1.gs` — v02.27g
 
 ##### Security
 - Added CSV injection prevention in `convertToCSV()` — sanitizes formula injection characters (`=`, `+`, `@`, `-`) with single-quote prefix before RFC 4180 escaping
 
-#### `testauth1.html` — v03.78w
+#### `testauthgas1.html` — v03.78w
 
 ##### Fixed
 - Added `data-requires-permission="admin"` to the amendment review button so it's only visible to admins
@@ -1899,7 +1899,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.99r] — 2026-03-29 09:31:52 PM EST — [ccacaaf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ccacaaf0)
 
-> **Prompt:** "the gas toggle, why is it showing on the sign in page if there not supposed to be any gas visible, if there is gas that is supposedly visible in the sign in page address it" + "it should be like the testauth1" + "the gas toggle is on the gas layer itself"
+> **Prompt:** "the gas toggle, why is it showing on the sign in page if there not supposed to be any gas visible, if there is gas that is supposedly visible in the sign in page address it" + "it should be like the testauthgas1" + "the gas toggle is on the gas layer itself"
 
 ### Changed
 - Moved GAS layer toggle button from `programportal.html` (embedding page, visible on sign-in) to `programportal.gs` (GAS iframe, only visible after authentication) — matching TestAuth1's pattern where the GAS toggle lives inside the GAS layer
@@ -2027,7 +2027,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.91r] — 2026-03-29 06:41:17 PM EST — [7bd7671](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7bd76715)
 
-> **Prompt:** "it seems to be working, but use the same method (hopeful i think its called) as the testauth1, so that its instantaneous the effect of what is expected"
+> **Prompt:** "it seems to be working, but use the same method (hopeful i think its called) as the testauthgas1, so that its instantaneous the effect of what is expected"
 
 ### Changed
 - Announcements CRUD now uses optimistic updates (same pattern as TestAuth1's live data): local data array is mutated and re-rendered instantly before the server call, then reconciled with authoritative server data when the response arrives
@@ -2056,7 +2056,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.89r] — 2026-03-29 06:35:05 PM EST — [2a7fc8e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2a7fc8ec)
 
-> **Prompt:** "the up and down order arrows are affecting the spreadsheet, but there is no immediate feedback in this page. use the same method we are using in testauth1 for immediate feedback"
+> **Prompt:** "the up and down order arrows are affecting the spreadsheet, but there is no immediate feedback in this page. use the same method we are using in testauthgas1 for immediate feedback"
 
 ### Fixed
 - All announcements CRUD operations (reorder, add, edit, delete) now force an immediate re-render by resetting the change-detection JSON before applying server response data, ensuring the UI updates instantly without waiting for the next 60-second poll
@@ -2097,7 +2097,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.86r] — 2026-03-29 06:24:12 PM EST — [d66143e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d66143e5)
 
-> **Prompt:** "the html and gas buttons arent letting me click them, put them in the same spot and work the same way as the testauth1"
+> **Prompt:** "the html and gas buttons arent letting me click them, put them in the same spot and work the same way as the testauthgas1"
 
 ### Removed
 - Non-functional HTML/GAS version pills from the GAS iframe announcements section — these were duplicates of the working version pills on the embedding page (`programportal.html`) which already provide changelog popups at fixed bottom-right position, matching TestAuth1's layout
@@ -2165,7 +2165,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.82r] — 2026-03-29 06:03:02 PM EST — [5f6ee14](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5f6ee149)
 
-> **Prompt:** "in the program portal i want there to be an "Announcements" section which i want set up similar to the live data in the testauth1, use the same data polling setup as that."
+> **Prompt:** "in the program portal i want there to be an "Announcements" section which i want set up similar to the live data in the testauthgas1, use the same data polling setup as that."
 
 ### Added
 - Announcements section in the Program Portal with live data polling from a Google Sheets "Announcements" tab
@@ -2267,7 +2267,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Parent stage timer suffix changed from "total" to "group" (e.g. "6.5s group" instead of "6.5s total") to distinguish from the grand total on the final "Sign-in complete" / "Sign-out complete" row which keeps "total"
 
-#### `testauth1.html` — v03.77w
+#### `testauthgas1.html` — v03.77w
 
 ##### Changed
 - Parent stage timers now show "group" suffix instead of "total"
@@ -2289,7 +2289,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Total elapsed timer now live-ticks from the start on the "Sign-in complete" / "Sign-out complete" rows — starts counting immediately when the checklist begins (same 100ms interval as other stage tickers), freezes on completion with final value. Previously the total only appeared on completion (too late — page transitions away instantly)
 
-#### `testauth1.html` — v03.76w
+#### `testauthgas1.html` — v03.76w
 
 ##### Changed
 - Total elapsed timer now live-ticks on the final checklist row from the beginning
@@ -2311,7 +2311,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Moved total elapsed timer from a separate `<p>` below the checklist to the "Sign-in complete" / "Sign-out complete" row itself — displays as "X.Xs total" in italic, matching the parent-stage timer style. Removed the separate `.checklist-total-time` CSS and HTML elements since they were never visible (page transitions away instantly on completion)
 
-#### `testauth1.html` — v03.75w
+#### `testauthgas1.html` — v03.75w
 
 ##### Changed
 - Total elapsed time now shows on the "Sign-in complete" and "Sign-out complete" rows instead of below the checklist
@@ -2333,7 +2333,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Added
 - Added overall total elapsed time display at the bottom of sign-in and sign-out checklists across all 3 auth pages. Shows "Total: X.Xs" after all stages complete, giving the user a single number for the entire sign-in/sign-out duration
 
-#### `testauth1.html` — v03.74w
+#### `testauthgas1.html` — v03.74w
 
 ##### Added
 - Total elapsed time shown at bottom of sign-in and sign-out checklists on completion
@@ -2353,7 +2353,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "yes go ahead and do that"
 
 ### Changed
-- Embedded ACL data at build time in globalacl.gs `doGet()` — table data is now pre-loaded during HTML generation (same pattern as testauth1's `getCachedData()`), eliminating the post-load `google.script.run.loadACLData()` async fetch. ACL table now renders instantly when the app loads instead of showing a loading state
+- Embedded ACL data at build time in globalacl.gs `doGet()` — table data is now pre-loaded during HTML generation (same pattern as testauthgas1's `getCachedData()`), eliminating the post-load `google.script.run.loadACLData()` async fetch. ACL table now renders instantly when the app loads instead of showing a loading state
 
 #### `globalacl.gs` — v01.27g
 
@@ -2367,7 +2367,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Added
 - Added "Sign-out complete" finish line to sign-out checklist across all 3 auth pages — matches the "Sign-in complete" pattern for visual closure before the auth wall appears
 
-#### `testauth1.html` — v03.73w
+#### `testauthgas1.html` — v03.73w
 
 ##### Added
 - "Sign-out complete" final step in sign-out checklist
@@ -2389,7 +2389,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Renamed sign-out checklist final stage from "Waiting for server confirmation" → "Waiting for sign-out confirmation" across all 3 auth pages — more specific about what is being confirmed
 
-#### `testauth1.html` — v03.72w
+#### `testauthgas1.html` — v03.72w
 
 ##### Changed
 - Sign-out checklist final step now reads "Waiting for sign-out confirmation"
@@ -2412,7 +2412,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Renamed sign-in checklist final stage from "Confirming session with server" → "Sign-in complete" and internal key from "Almost ready…" → "Sign-in complete" — the stage was not actually confirming anything, it just signals completion
 - Renamed reconnect checklist final stage from "Confirming session with server" → "Session restored"
 
-#### `testauth1.html` — v03.71w
+#### `testauthgas1.html` — v03.71w
 
 ##### Changed
 - Final sign-in checklist step now reads "Sign-in complete" instead of "Confirming session with server"
@@ -2437,7 +2437,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Renamed sign-in checklist sub-steps: "Downloading app" → "Preparing interface", "Starting up" → "Initializing" across all 3 auth pages for more accurate descriptions
 
-#### `testauth1.html` — v03.70w
+#### `testauthgas1.html` — v03.70w
 
 ##### Changed
 - Renamed loading sub-steps to "Preparing interface" and "Initializing"
@@ -2454,10 +2454,10 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.66r] — 2026-03-29 01:19:57 AM EST — [6e998d3](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6e998d3f)
 
-> **Prompt:** "why is it that the globalacl spends a few secpmds with "starting up" while the application portal and testauth1 instantly complete that part?"
+> **Prompt:** "why is it that the globalacl spends a few secpmds with "starting up" while the application portal and testauthgas1 instantly complete that part?"
 
 ### Fixed
-- Fixed globalacl "Starting up" sub-step taking 2-5 seconds during sign-in — added immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call, matching the pattern already used by testauth1 and programportal
+- Fixed globalacl "Starting up" sub-step taking 2-5 seconds during sign-in — added immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call, matching the pattern already used by testauthgas1 and programportal
 
 #### `globalacl.gs` — v01.26g
 
@@ -2471,7 +2471,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Sign-in, sign-out, and reconnecting checklists now show all sub-steps upfront (always visible) instead of progressively revealing them as each parent stage is reached. Sub-steps start in pending state and transition to active/done as before — the only change is visibility
 
-#### `testauth1.html` — v03.69w
+#### `testauthgas1.html` — v03.69w
 
 ##### Changed
 - All checklist sub-steps are now visible from the start during sign-in and sign-out
@@ -2495,12 +2495,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.63r] — 2026-03-28 09:11:25 PM EST — [ad3f32a6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ad3f32a6)
 
-> **Prompt:** "we are now getting stuck on waiting for server confirmation signing out, using the testauth1 to try it out"
+> **Prompt:** "we are now getting stuck on waiting for server confirmation signing out, using the testauthgas1 to try it out"
 
 ### Fixed
 - Fixed `_finalizeSignOut()` guard being too strict — previous guard (`_authState !== 'signing-out'`) blocked even normal sign-out completion because the general `gas-signed-out` handler sets `_authState = 'signed-out'` before `_finalizeSignOut()` runs. Changed to only block when user has actively started a new auth flow (`signing-in`, `reconnecting`, or `authenticated`)
 
-#### `testauth1.html` — v03.68w
+#### `testauthgas1.html` — v03.68w
 
 ##### Fixed
 - Sign-out no longer gets stuck on "Waiting for server confirmation"
@@ -2517,12 +2517,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.62r] — 2026-03-28 08:50:32 PM EST — [c9302e11](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c9302e11)
 
-> **Prompt:** "i tried it in testauth1 (sign out and quickly sign back in), and its saying you have been signed out. but of course the fix should apply to all of them"
+> **Prompt:** "i tried it in testauthgas1 (sign out and quickly sign back in), and its saying you have been signed out. but of course the fix should apply to all of them"
 
 ### Fixed
 - Guarded `_finalizeSignOut()` with `_authState !== 'signing-out'` check — the previous fix guarded the general `gas-signed-out` handler but missed the closure-scoped `_soConfirmHandler` and 10-second fallback timeout, both of which call `_finalizeSignOut()`. These late callbacks were the actual culprit: they fire after sign-out completes (calling `showAuthWall('You have been signed out.')`) even if the user has already started a new sign-in
 
-#### `testauth1.html` — v03.67w
+#### `testauthgas1.html` — v03.67w
 
 ##### Fixed
 - Signing in immediately after signing out no longer gets interrupted by delayed sign-out completion
@@ -2545,7 +2545,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Added auth state machine (`_authState`) to prevent stale sign-out signals from interrupting fresh sign-in attempts. Five states: `signed-out`, `signing-in`, `authenticated`, `signing-out`, `reconnecting`. The `gas-signed-out` handler now only processes during `signing-out` state — HIPAA-safe because that message only originates from a GAS iframe loaded with `?action=signout` (inside `performSignOut()`)
 - Fixed BroadcastChannel sign-out self-reception — added `tabId` to the sign-out broadcast message and a `tabId !== _tabId` guard on the receiver, preventing a tab from processing its own sign-out broadcast
 
-#### `testauth1.html` — v03.66w
+#### `testauthgas1.html` — v03.66w
 
 ##### Fixed
 - Signing in immediately after signing out no longer gets interrupted by stale sign-out messages
@@ -2568,7 +2568,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Parent stage timers on stages with sub-steps now show "X.Xs total" suffix in italic styling (`stage-time-total` class) to distinguish them from sub-step timers — makes it clear the value is a total, not another step
 - Added live-ticking timer to reconnecting checklist stages — `_updateReconnectStage()` now activates `_startStageTick()`, and `_completeAllReconnectStages()`/`_resetReconnectChecklist()` properly clean up the timer
 
-#### `testauth1.html` — v03.65w
+#### `testauthgas1.html` — v03.65w
 
 ##### Fixed
 - Stage timers on steps with sub-steps now show "total" suffix in italic
@@ -2593,7 +2593,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Fixed checklist layout so stage timer appears on the same line as the stage text, with sub-steps wrapping to a new row below. Previously, sub-steps (as flex items) pushed the parent stage timer to the far right after the sub-step block, breaking the visual hierarchy. Used CSS `flex-wrap`, `order`, and `flex-basis: 100%` to enforce: line 1 = icon + stage text + timer, line 2 = indented sub-steps
 
-#### `testauth1.html` — v03.64w
+#### `testauthgas1.html` — v03.64w
 
 ##### Fixed
 - Stage timer now appears next to its stage text, not displaced by sub-steps
@@ -2615,7 +2615,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Added live-ticking timer for active main stages (sign-in and sign-out) — previously only sub-steps had a 100ms ticker (`_startSubStepTick`), while main stages only showed elapsed time on completion. Added `_startStageTick()` function that updates the active stage's timer every 100ms, matching the sub-step behavior. "Waiting for server confirmation" now shows a running timer while active
 
-#### `testauth1.html` — v03.63w
+#### `testauthgas1.html` — v03.63w
 
 ##### Fixed
 - "Waiting for server confirmation" now shows a live-ticking timer during sign-out
@@ -2641,7 +2641,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Restored parent stage total time display — removed the overly aggressive `:scope > .sub-steps` guard that was blocking all parent stage times. The `:scope > .stage-time` selector already prevents overwriting sub-step times
 - Sub-steps now complete (turn green with frozen time) when their parent stage transitions to done — added `_completeSubStepsForStage(el)` call in both `_updateSignInStage` and `_updateSignOutStage` so "Server authenticating" properly turns green when "Setting up your secure session" begins
 
-#### `testauth1.html` — v03.62w
+#### `testauthgas1.html` — v03.62w
 
 ##### Fixed
 - "Exchanging credentials with server" now shows its total time again
@@ -2664,7 +2664,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Parent stages with sub-steps no longer show a redundant total time — `_setStageTime` now skips any stage element that contains a `.sub-steps` child UL, since the sub-steps already provide the timing breakdown
 
-#### `testauth1.html` — v03.61w
+#### `testauthgas1.html` — v03.61w
 
 ##### Fixed
 - "Invalidating server session" and "Exchanging credentials with server" no longer show a confusing total time that duplicates sub-step values
@@ -2686,7 +2686,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Checklist reset now removes ALL `.stage-time` spans via `querySelectorAll` before resetting LI classes — previously `querySelector` per LI only removed the first `.stage-time` match, leaving parent stage total time spans orphaned across sign-in/sign-out cycles
 
-#### `testauth1.html` — v03.60w
+#### `testauthgas1.html` — v03.60w
 
 ##### Fixed
 - Checklist timer values no longer carry over between sign-in and sign-out cycles
@@ -2708,7 +2708,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Parent stage total time no longer overwrites first sub-step time — `_setStageTime` now uses `:scope > .stage-time` selector to only find direct child time spans, preventing it from matching time spans inside nested sub-step ULs
 
-#### `testauth1.html` — v03.59w
+#### `testauthgas1.html` — v03.59w
 
 ##### Fixed
 - Parent stage total time now displays separately from sub-step times
@@ -2730,7 +2730,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Sub-step timers now freeze when completed — added `_subStepFrozenTimes` map that captures elapsed time at the moment a sub-step transitions to done, preventing `_setSubStepTime` from recalculating with `Date.now() - startTime` on already-completed sub-steps
 
-#### `testauth1.html` — v03.58w
+#### `testauthgas1.html` — v03.58w
 
 ##### Fixed
 - Sub-step timers now freeze when completed — no longer show inflated times that keep growing
@@ -2750,9 +2750,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "instead of using miliseconds for these, make them use decimals of seconds"
 
 ### Changed
-- Stage timers now always display as decimal seconds (e.g. "0.0s" instead of "0ms") — removed the millisecond branch from `_formatStageTime` across testauth1, programportal, and globalacl
+- Stage timers now always display as decimal seconds (e.g. "0.0s" instead of "0ms") — removed the millisecond branch from `_formatStageTime` across testauthgas1, programportal, and globalacl
 
-#### `testauth1.html` — v03.57w
+#### `testauthgas1.html` — v03.57w
 
 ##### Changed
 - Checklist timers now display seconds with one decimal place instead of milliseconds
@@ -2784,10 +2784,10 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "ok great. make these changes including intermediary steps now apply to signing out and also for the application portal and global acl"
 
 ### Added
-- Sign-out sub-steps with live timing for "Invalidating server session" — tracks Connecting to server and Sending sign-out request as separate timed phases (testauth1, programportal, globalacl)
-- Sign-in and sign-out sub-steps propagated to programportal.html and globalacl.html — both pages now have the same sub-step tracking as testauth1
+- Sign-out sub-steps with live timing for "Invalidating server session" — tracks Connecting to server and Sending sign-out request as separate timed phases (testauthgas1, programportal, globalacl)
+- Sign-in and sign-out sub-steps propagated to programportal.html and globalacl.html — both pages now have the same sub-step tracking as testauthgas1
 
-#### `testauth1.html` — v03.56w
+#### `testauthgas1.html` — v03.56w
 
 ##### Added
 - Sign-out checklist now shows sub-steps with live timing during "Invalidating server session"
@@ -2811,7 +2811,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Sign-in sub-step timers now reset on each new sign-in — `_subStepStartTimes`, `_activeSubStepId`, and `_subStepTickTimer` are cleared in `showSigningIn()` alongside the existing `_stageStartTimes` reset. Sub-step containers (`.sub-steps.visible`) are also hidden so they re-appear fresh
 
-#### `testauth1.html` — v03.55w
+#### `testauthgas1.html` — v03.55w
 
 ##### Fixed
 - Sign-in checklist timers no longer accumulate across sign-out/sign-in cycles — timers reset cleanly on each new sign-in
@@ -2827,7 +2827,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - CSS for nested sub-step list items within the sign-in checklist
 - URL path auto-hides "Sending credentials" sub-step (only relevant to postMessage/HIPAA path)
 
-#### `testauth1.html` — v03.54w
+#### `testauthgas1.html` — v03.54w
 
 ##### Added
 - Sign-in checklist now shows detailed sub-steps with live timing during "Exchanging credentials with server" and "Loading the application"
@@ -2836,7 +2836,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.46r] — 2026-03-28 03:49:09 PM EST — [8cb043ba](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8cb043ba)
 
-> **Prompt:** "in testauth1, when deleting a row, ask for confirmation, it should be a gas confirmation not a browser confirmation. also when i try to double click on a cell on mobile/android its zooming in rather than clicking the cell. make it mobile friendly"
+> **Prompt:** "in testauthgas1, when deleting a row, ask for confirmation, it should be a gas confirmation not a browser confirmation. also when i try to double click on a cell on mobile/android its zooming in rather than clicking the cell. make it mobile friendly"
 
 ### Added
 - Custom styled delete confirmation modal in GAS iframe — shows row data preview with Cancel/Delete buttons, replacing direct deletion without confirmation
@@ -2847,7 +2847,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Mobile responsive improvements: add-row bar stacks vertically on narrow screens, table cells get tighter padding
 
-#### `testauth1.gs` — v02.26g
+#### `testauthgas1.gs` — v02.26g
 
 ##### Added
 - Custom HTML/CSS delete confirmation modal with row data preview
@@ -2866,12 +2866,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Admin dropdown now renders above open panels by raising `#user-pill` z-index from 9999 to 10012 — no longer closes panels when opening the dropdown
 - Delete row buttons now appear on initial data load — `_showLiveDataApp` re-renders the table after setting `_ldCanEdit`, so buttons show immediately instead of waiting for the first poll
 
-#### `testauth1.html` — v03.53w
+#### `testauthgas1.html` — v03.53w
 
 ##### Fixed
 - Admin dropdown menu now appears above open panels instead of closing them
 
-#### `testauth1.gs` — v02.25g
+#### `testauthgas1.gs` — v02.25g
 
 ##### Fixed
 - Delete buttons now appear immediately when data loads instead of after the first refresh
@@ -2883,7 +2883,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Admin dropdown now closes all open panels before opening — prevents the dropdown from appearing behind a previously opened panel (e.g. Active Sessions)
 
-#### `testauth1.html` — v03.52w
+#### `testauthgas1.html` — v03.52w
 
 ##### Fixed
 - Admin dropdown no longer hides behind open panels
@@ -2895,7 +2895,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Moved Sessions, Disclosures, My Data, Correction, Amendments, and Disagree buttons into a dropdown submenu under the ADMIN badge — only visible to admin users. Sign Out buttons remain directly in the user pill
 
-#### `testauth1.html` — v03.51w
+#### `testauthgas1.html` — v03.51w
 
 ##### Changed
 - Admin navigation buttons now appear in a dropdown menu instead of inline in the top bar
@@ -2907,7 +2907,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Removed unused `https://www.slant.co` from CSP `font-src` directive — no fonts were loaded from this domain. Kept `https://fonts.gstatic.com` which is required by the Google Sign-In (GIS) library for Material Icons
 
-#### `testauth1.html` — v03.50w
+#### `testauthgas1.html` — v03.50w
 
 ##### Changed
 - Cleaned up Content Security Policy to remove unused external font source
@@ -2919,7 +2919,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Connection status display changed from "Live Xs ago" to "Live Xs" and now shows "0s" instead of blank at zero seconds
 
-#### `testauth1.gs` — v02.24g
+#### `testauthgas1.gs` — v02.24g
 
 ##### Changed
 - Data freshness indicator now shows "0s" at zero seconds instead of blank, and removed "ago" suffix
@@ -2932,7 +2932,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Data poll countdown now counts down cleanly to 0s before showing "polling..." — removed 2000ms guard that was eating the last 2-3 seconds, switched from `Math.floor` to `Math.ceil` for natural countdown feel
 - Poll timing now uses chained `setTimeout` instead of `setInterval` — each poll fires exactly `DATA_POLL_INTERVAL` ms after the previous poll completes, so the countdown always matches the actual timing
 
-#### `testauth1.gs` — v02.23g
+#### `testauthgas1.gs` — v02.23g
 
 ##### Fixed
 - Data poll countdown now reaches 0 before polling instead of jumping from 2-3 seconds directly to "polling..."
@@ -2944,7 +2944,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Increased spacing between HTML and GAS toggle buttons at bottom-left — GAS toggle moved from `left: 110px` to `left: 135px` so the expanded states ("HTML ○" and "GAS ○") no longer overlap
 
-#### `testauth1.gs` — v02.22g
+#### `testauthgas1.gs` — v02.22g
 
 ##### Fixed
 - Toggle buttons no longer overlap when both are in their toggled-off state
@@ -2958,12 +2958,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Repositioned GAS `#version` to `left: 8px` (leftmost), HTML toggle to `left: 70px`, GAS toggle to `left: 110px` — version now appears to the left of both toggle buttons
 - Moved GAS `#user-email` from inside the Live Data header to a fixed position at `top: 35px, right: 8px` — sits below the HTML user-pill instead of behind it
 
-#### `testauth1.html` — v03.49w
+#### `testauthgas1.html` — v03.49w
 
 ##### Changed
 - HTML toggle button repositioned to `left: 70px` to make room for GAS version indicator at bottom-left
 
-#### `testauth1.gs` — v02.21g
+#### `testauthgas1.gs` — v02.21g
 
 ##### Fixed
 - Data poll countdown now starts immediately instead of showing "--" until the first poll
@@ -2978,7 +2978,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Repositioned GAS `#version` element from `left: 8px` to `left: 100px` to avoid overlapping with HTML layer toggle buttons at bottom-left corner
 - Hidden GAS `#user-email` element (redundant — email already shown in HTML user-pill and GAS Live Data header)
 
-#### `testauth1.gs` — v02.20g
+#### `testauthgas1.gs` — v02.20g
 
 ##### Fixed
 - Version indicator no longer overlaps with page controls at the bottom-left corner
@@ -2991,19 +2991,19 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - GAS layer toggle now uses CSS class (`gas-layer-hidden` with `!important`) instead of save/restore pattern — same fix as the HTML layer toggle in v07.35r, preventing stale display values from causing elements to disappear or overlap
 
-#### `testauth1.gs` — v02.19g
+#### `testauthgas1.gs` — v02.19g
 
 ##### Fixed
 - Toggle button no longer causes elements to overlap or disappear when used repeatedly
 
 ## [v07.35r] — 2026-03-28 01:34:55 PM EST — [f3d4c7e9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f3d4c7e9)
 
-> **Prompt:** "in testauth1, there are lots of elements overlapping and i dont see the sign out and other buttons at the top. i refreshed the page and they came back but see why that could have happened."
+> **Prompt:** "in testauthgas1, there are lots of elements overlapping and i dont see the sign out and other buttons at the top. i refreshed the page and they came back but see why that could have happened."
 
 ### Fixed
 - HTML layer toggle now uses CSS class (`html-layer-hidden` with `!important`) instead of save/restore pattern for element display values — prevents race condition where other code paths (`showApp`, `showAuthWall`, `startCountdownTimers`) modifying inline display styles would cause stale values to be restored, making elements disappear or overlap
 
-#### `testauth1.html` — v03.48w
+#### `testauthgas1.html` — v03.48w
 
 ##### Fixed
 - Toggle button no longer causes elements to overlap or disappear when used repeatedly
@@ -3015,12 +3015,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Layer visibility toggles now use `display: none` instead of `visibility: hidden` — all elements hide/show simultaneously instead of staggering due to different CSS transition speeds per element
 
-#### `testauth1.html` — v03.47w
+#### `testauthgas1.html` — v03.47w
 
 ##### Fixed
 - HTML toggle now hides/shows all elements at the same time
 
-#### `testauth1.gs` — v02.18g
+#### `testauthgas1.gs` — v02.18g
 
 ##### Fixed
 - GAS toggle now hides/shows all elements at the same time
@@ -3034,12 +3034,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Removed `gas-datapoll-state` postMessage bridge — the GAS layer now renders the countdown directly with a 1-second update interval
 - Removed the "Data Poll:" row from the HTML auth-timers panel
 
-#### `testauth1.html` — v03.46w
+#### `testauthgas1.html` — v03.46w
 
 ##### Removed
 - Data Poll row from session timer panel — moved to the secure application layer
 
-#### `testauth1.gs` — v02.17g
+#### `testauthgas1.gs` — v02.17g
 
 ##### Changed
 - Data refresh countdown now displays directly in the Live Data header next to connection status
@@ -3052,12 +3052,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - HTML layer visibility toggle — small "HTML" button (fixed bottom-left) hides/shows all HTML-layer visual elements (nav bar, version indicator, GAS pill, timers, test buttons, etc.)
 - GAS layer visibility toggle — small "GAS" button (fixed bottom-left inside GAS iframe) hides/shows all GAS-layer visual elements (Live Data app, version, email)
 
-#### `testauth1.html` — v03.45w
+#### `testauthgas1.html` — v03.45w
 
 ##### Added
 - "HTML" toggle button to hide/show the page controls overlay
 
-#### `testauth1.gs` — v02.16g
+#### `testauthgas1.gs` — v02.16g
 
 ##### Added
 - "GAS" toggle button to hide/show the data interface overlay
@@ -3069,12 +3069,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Data poll countdown timer now works across the layer boundary: GAS layer tracks poll state and sends `gas-datapoll-state` postMessage to the HTML layer, which renders the countdown/polling display in the timer panel — restoring the pre-migration behavior
 
-#### `testauth1.html` — v03.44w
+#### `testauthgas1.html` — v03.44w
 
 ##### Changed
 - Data poll timer display restored — receives state from GAS layer and renders countdown
 
-#### `testauth1.gs` — v02.15g
+#### `testauthgas1.gs` — v02.15g
 
 ##### Changed
 - Data poll now tracks in-flight state and sends countdown state to the parent page for timer display
@@ -3093,7 +3093,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Added
 - `getAuthenticatedData(token)` server-side function — validates session before returning cached data (used by the GAS-internal data poll)
 
-#### `testauth1.html` — v03.43w
+#### `testauthgas1.html` — v03.43w
 
 ##### Removed
 - Live Data UI (CSS, HTML, JavaScript) — migrated to GAS layer
@@ -3102,7 +3102,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ##### Changed
 - `_showLiveDataApp` call converted to `ld-init` postMessage to GAS sandbox
 
-#### `testauth1.gs` — v02.14g
+#### `testauthgas1.gs` — v02.14g
 
 ##### Added
 - Full Live Data UI (table, add-row, delete-row, cell editing, dashboard, sorting, connection status, optimistic rendering overlays) in `doGet()` HTML output
@@ -3117,7 +3117,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - "Sending..." overlay on optimistic add-row now clears immediately when GAS confirms the write, instead of waiting for the next 15-second data poll. Root cause: `_handleLiveData` skipped re-render when the server data matched the optimistic data (no JSON diff), leaving the overlay stuck
 
-#### `testauth1.html` — v03.42w
+#### `testauthgas1.html` — v03.42w
 
 ##### Fixed
 - "Sending..." overlay clears instantly when the new row is confirmed by the server
@@ -3130,7 +3130,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Optimistic add-row now shows a "Sending..." overlay on the new row (dimmed to 35% opacity with blue text, mirroring the "Deleting..." red overlay pattern)
 - Optimistic add-row no longer shows the delete button — it only appears after the server confirms the row
 
-#### `testauth1.html` — v03.41w
+#### `testauthgas1.html` — v03.41w
 
 ##### Changed
 - New rows appear dimmed with a "Sending..." overlay until the server confirms them
@@ -3144,7 +3144,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Data poll now has a 15-second safety timeout that auto-clears the in-flight flag if a fetch hangs — prevents permanent poll stall (same pattern as the heartbeat safety timer)
 - Wrapped `_handleLiveData` in try-catch within the data poll's Promise `.then()` — if the table render throws, the error is logged but the poll keeps running instead of silently dying
 
-#### `testauth1.html` — v03.40w
+#### `testauthgas1.html` — v03.40w
 
 ##### Fixed
 - Data updates no longer get stuck if a network request hangs or table rendering encounters an error
@@ -3156,7 +3156,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Add Row button now correctly detects text in input fields while "Sending..." is active — typing new values during a send makes the button immediately ready when the send completes, instead of staying disabled
 
-#### `testauth1.html` — v03.39w
+#### `testauthgas1.html` — v03.39w
 
 ##### Fixed
 - Add Row button recognizes new input typed while a previous row is still sending
@@ -3168,7 +3168,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Delete row now shows a "Deleting..." overlay on the row being deleted — row dims to 35% opacity with red "Deleting..." text centered over it, interactions disabled. Row is removed when the server confirms, or restored to normal on error
 
-#### `testauth1.html` — v03.38w
+#### `testauthgas1.html` — v03.38w
 
 ##### Changed
 - Delete row shows "Deleting..." overlay on the row while waiting for server confirmation
@@ -3182,12 +3182,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Delete button (🗑️) column in the live data table for users with write permission
 - Optimistic rendering for row deletion — row disappears instantly, restored on error
 
-#### `testauth1.html` — v03.37w
+#### `testauthgas1.html` — v03.37w
 
 ##### Added
 - Delete button column in table with optimistic row removal
 
-#### `testauth1.gs` — v02.13g
+#### `testauthgas1.gs` — v02.13g
 
 ##### Added
 - `deleteRow()` function for removing rows by index
@@ -3201,7 +3201,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Add-row button is now disabled when all input fields are empty — enables as soon as any field has text
 - Add-row now uses optimistic rendering — the new row appears in the table instantly on click, before the GAS server response arrives. If the server returns an error, the optimistic row is removed
 
-#### `testauth1.html` — v03.36w
+#### `testauthgas1.html` — v03.36w
 
 ##### Changed
 - Add Row button disabled when inputs are empty
@@ -3209,12 +3209,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.22r] — 2026-03-27 09:40:42 PM EST — [b9faf1c6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b9faf1c63aa99de229f718633e6dcff538ebcd3b)
 
-> **Prompt:** "in testauth1, when using the add row button, i see that theres a delay from when i click the add row button to when it shows up as visible on the table. this has nothing to do with the 15 second data poll, i think its auto updating after i add the row. first of all is this true, and if so can you have a "sending" splash message while the user waits for the result"
+> **Prompt:** "in testauthgas1, when using the add row button, i see that theres a delay from when i click the add row button to when it shows up as visible on the table. this has nothing to do with the 15 second data poll, i think its auto updating after i add the row. first of all is this true, and if so can you have a "sending" splash message while the user waits for the result"
 
 ### Changed
 - Add-row button now shows "Sending..." state (disabled + dimmed) while waiting for GAS server response, restoring to "Add Row" on success or error
 
-#### `testauth1.html` — v03.35w
+#### `testauthgas1.html` — v03.35w
 
 ##### Changed
 - Add-row button shows "Sending..." feedback during server round-trip
@@ -3226,12 +3226,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Removed
 - Reverted v07.19r and v07.20r changes — fetch-based token exchange broke sign-in (GAS `doPost` redirect handling differs from `doGet`), and iframe replacement broke DOM clearing (sandbox attributes not preserved). Restored original iframe-based token exchange, sign-out, security event reporter, and `about:blank` DOM clearing
 
-#### `testauth1.html` — v03.34w
+#### `testauthgas1.html` — v03.34w
 
 ##### Fixed
 - Restored working sign-in flow
 
-#### `testauth1.gs` — v02.12g
+#### `testauthgas1.gs` — v02.12g
 
 ##### Removed
 - Removed `doPost` handlers for `exchangeToken`, `signout`, and `securityEvent` (reverted to iframe-based approach)
@@ -3244,14 +3244,14 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Replaced `gasFrame.src = 'about:blank'` DOM clearing with iframe replacement — removes the old iframe entirely and inserts a fresh blank one instead of navigating, which avoids triggering Chrome's "message channel closed" errors from Google's internal GAS listeners when the iframe content is destroyed during sign-out
 - Applied same fix to Phase A iframe clearing in `showAuthWall()`
 
-#### `testauth1.html` — v03.33w
+#### `testauthgas1.html` — v03.33w
 
 ##### Fixed
 - Eliminated remaining console errors during sign-out and re-sign-in by replacing iframe navigation with iframe replacement for DOM clearing
 
 ## [v07.19r] — 2026-03-27 08:57:54 PM EST — [c1a81adb](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c1a81adb4e99b000f7eae27132dbf9f1870d5c8c)
 
-> **Prompt:** "after signing into testauth1, getting this again in the console."
+> **Prompt:** "after signing into testauthgas1, getting this again in the console."
 
 ### Fixed
 - Converted token exchange from iframe navigation to `fetch()` via `doPost(action=exchangeToken)` — eliminates "A listener indicated an asynchronous response" errors during sign-in by avoiding iframe destruction of Google's internal message channels
@@ -3259,12 +3259,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 - Converted sign-out from iframe navigation to `fetch()` via `doPost(action=signout)` — eliminates console errors during sign-out flow
 - Made `_finalizeSignOut()` idempotent (safe to call from both fetch callback and fallback timeout)
 
-#### `testauth1.html` — v03.32w
+#### `testauthgas1.html` — v03.32w
 
 ##### Fixed
 - Eliminated "message channel closed" console errors during sign-in and sign-out
 
-#### `testauth1.gs` — v02.11g
+#### `testauthgas1.gs` — v02.11g
 
 ##### Added
 - Added `doPost` handlers for `exchangeToken`, `signout`, and `securityEvent` actions — enables fetch-based communication that avoids iframe churn
@@ -3276,7 +3276,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Added
 - Added `_fetchPausedForGIS` guard to pause data poll and heartbeat fetch while GIS sign-in popup is open — prevents COOP conflict during re-authentication with active session
 
-#### `testauth1.html` — v03.31w
+#### `testauthgas1.html` — v03.31w
 
 ##### Added
 - Data polling and session checks now pause while the sign-in popup is open
@@ -3288,12 +3288,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Converted heartbeat from iframe navigation to `fetch()` via `doPost(action=heartbeat)` — same pattern as data poll fix, eliminates the last source of iframe churn console errors
 
-#### `testauth1.html` — v03.30w
+#### `testauthgas1.html` — v03.30w
 
 ##### Fixed
 - Eliminated remaining console errors from heartbeat iframe navigation
 
-#### `testauth1.gs` — v02.10g
+#### `testauthgas1.gs` — v02.10g
 
 ##### Changed
 - Minor internal improvements
@@ -3303,9 +3303,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "ok at least now we have 1 less error at a time, but still getting it." (screenshot of CSP blocking script.googleusercontent.com)
 
 ### Fixed
-- Added `https://script.googleusercontent.com` to CSP `connect-src` on testauth1 — GAS redirects fetch from `script.google.com` to `script.googleusercontent.com` for the response payload
+- Added `https://script.googleusercontent.com` to CSP `connect-src` on testauthgas1 — GAS redirects fetch from `script.google.com` to `script.googleusercontent.com` for the response payload
 
-#### `testauth1.html` — v03.29w
+#### `testauthgas1.html` — v03.29w
 
 ##### Fixed
 - Fixed data polling blocked after redirect to response server
@@ -3315,9 +3315,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "now after signing in, getting this" (screenshot of CSP connect-src blocking fetch to script.google.com)
 
 ### Fixed
-- Added `https://script.google.com` to CSP `connect-src` on testauth1 — required by the new fetch-based data poll which calls the GAS doPost endpoint directly
+- Added `https://script.google.com` to CSP `connect-src` on testauthgas1 — required by the new fetch-based data poll which calls the GAS doPost endpoint directly
 
-#### `testauth1.html` — v03.28w
+#### `testauthgas1.html` — v03.28w
 
 ##### Fixed
 - Fixed data polling blocked by content security policy after sign-in
@@ -3329,12 +3329,12 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Replaced iframe-based data poll with `fetch()` via `doPost` — eliminates the repeated iframe navigation that caused "A listener indicated an asynchronous response by returning true" errors in the console every 15 seconds
 
-#### `testauth1.html` — v03.27w
+#### `testauthgas1.html` — v03.27w
 
 ##### Fixed
 - Eliminated console errors caused by data poll iframe navigation destroying extension content scripts
 
-#### `testauth1.gs` — v02.09g
+#### `testauthgas1.gs` — v02.09g
 
 ##### Changed
 - Minor internal improvements
@@ -3346,7 +3346,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Added Google Sign-In font domains (`fonts.gstatic.com`, `www.slant.co`) to CSP `font-src` on all auth pages — the GSI client library loads Mulish and Plus Jakarta Display fonts which were blocked by the `'self' data:` only policy
 
-#### `testauth1.html` — v03.26w
+#### `testauthgas1.html` — v03.26w
 
 ##### Fixed
 - Eliminated font loading errors that appeared on every page load
@@ -3363,13 +3363,13 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ## [v07.12r] — 2026-03-27 07:12:09 PM EST — [ac6e9263](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ac6e926344ea2def73b034d981cfd623e42f29f9)
 
-> **Prompt:** "in the testauth1, we are still getting these errors when using the input fields and nothing is being written into the spreadsheet"
+> **Prompt:** "in the testauthgas1, we are still getting these errors when using the input fields and nothing is being written into the spreadsheet"
 
 ### Fixed
 - Fixed write-cell and add-row messages not reaching the GAS sandbox frame — `gasApp.contentWindow.postMessage()` sends to the outer script.google.com shell, not the inner googleusercontent.com sandbox where the listener runs. Now captures `event.source` from `gas-auth-ok` (which comes from the sandbox) and uses that stored `_gasSandboxSource` reference for all data write operations
 - Added `_gasSandboxSource` reset on `clearSession()` and iframe reload to prevent stale references
 
-#### `testauth1.html` — v03.25w
+#### `testauthgas1.html` — v03.25w
 
 ##### Fixed
 - Fixed spreadsheet writes not working — input field submissions and cell edits now correctly reach the server
@@ -3381,7 +3381,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Removed external font domains from CSP `font-src` on all auth pages — now `'self' data:` only, no external font CDN dependencies
 
-#### `testauth1.html` — v03.24w
+#### `testauthgas1.html` — v03.24w
 
 ##### Changed
 - Minor internal improvements
@@ -3403,7 +3403,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Fixed
 - Added `font-src 'self' data: https://fonts.gstatic.com https://www.slant.co` to CSP on all auth pages and the auth template — Google Identity Services loads fonts from these origins, which were blocked by `default-src 'none'` with no `font-src` directive
 
-#### `testauth1.html` — v03.23w
+#### `testauthgas1.html` — v03.23w
 
 ##### Fixed
 - Eliminated 47 font loading errors that appeared on every page load
@@ -3423,9 +3423,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "its already updated. assume that its always updated when i test it"
 
 ### Fixed
-- Fixed testauth1 add-row failing silently — `google.script.run` was mangling the array parameter. Changed GAS `addRow()` to accept a JSON string instead, with the GAS iframe serializing the values before the server call
+- Fixed testauthgas1 add-row failing silently — `google.script.run` was mangling the array parameter. Changed GAS `addRow()` to accept a JSON string instead, with the GAS iframe serializing the values before the server call
 
-#### `testauth1.gs` — v02.08g
+#### `testauthgas1.gs` — v02.08g
 
 ##### Fixed
 - Adding rows to the live data table now works correctly
@@ -3435,17 +3435,17 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "add input fields into the gas so i can test multiple users writing to the live data"
 
 ### Added
-- Added input fields and "Add Row" button to testauth1 live data viewer for testing multi-user writes to the spreadsheet
-- Added `addRow()` function to testauth1 GAS script that appends new rows via authenticated postMessage
+- Added input fields and "Add Row" button to testauthgas1 live data viewer for testing multi-user writes to the spreadsheet
+- Added `addRow()` function to testauthgas1 GAS script that appends new rows via authenticated postMessage
 - Input placeholders dynamically update to match actual spreadsheet column headers
 
-#### `testauth1.html` — v03.22w
+#### `testauthgas1.html` — v03.22w
 
 ##### Added
 - New input bar below the tabs for adding rows to the live data table
 - Inputs auto-label to match your spreadsheet columns
 
-#### `testauth1.gs` — v02.07g
+#### `testauthgas1.gs` — v02.07g
 
 ##### Added
 - Support for adding new rows to the live data spreadsheet from the page
@@ -3455,9 +3455,9 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "ok but it shouldnt overlap the version on the gas layer bottom left"
 
 ### Changed
-- Raised testauth1 testing buttons from bottom:8px to bottom:34px so they don't overlap the GAS version indicator at bottom-left
+- Raised testauthgas1 testing buttons from bottom:8px to bottom:34px so they don't overlap the GAS version indicator at bottom-left
 
-#### `testauth1.html` — v03.21w
+#### `testauthgas1.html` — v03.21w
 
 ##### Changed
 - Repositioned testing buttons higher to avoid overlapping the GAS version indicator
@@ -3469,7 +3469,7 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 ### Changed
 - Moved Force Heartbeat and Security Tests buttons out of the live-data-app container to fixed-position bottom-left, near the version indicators — the live data table is no longer affected by the button layout
 
-#### `testauth1.html` — v03.20w
+#### `testauthgas1.html` — v03.20w
 
 ##### Changed
 - Repositioned testing buttons from inside the data table to a fixed bottom-left bar alongside the version indicators
@@ -3479,21 +3479,21 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 > **Prompt:** "I meant that I want the live data table to be underneath the top row where the sign out is and also not be so tall so that the version on the right side are underneath coordinate wise don't actually move them, so the live table is not full page height but is somewhere in the center"
 
 ### Changed
-- Changed testauth1 live-data-app from full-screen fixed overlay to a contained panel that starts below the user-pill top bar (top: 36px) and stops above the version indicators (bottom: 120px), so the table sits in the center of the page with the sign-out row above and version pills visible below
+- Changed testauthgas1 live-data-app from full-screen fixed overlay to a contained panel that starts below the user-pill top bar (top: 36px) and stops above the version indicators (bottom: 120px), so the table sits in the center of the page with the sign-out row above and version pills visible below
 
-#### `testauth1.html` — v03.19w
+#### `testauthgas1.html` — v03.19w
 
 ##### Changed
 - Reduced live data viewer from full-page overlay to a contained panel between the top bar and version indicators
 
 ## [v07.04r] — 2026-03-27 04:25:25 PM EST — [db47a260](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/db47a260038950ccc67992f28c400369f1a89cb3)
 
-> **Prompt:** "In testauth1 make it so that the live table part is squished between the top row and the testing buttons"
+> **Prompt:** "In testauthgas1 make it so that the live table part is squished between the top row and the testing buttons"
 
 ### Changed
 - Moved testing buttons (Force Heartbeat, Security Tests) from fixed-position overlays into the live-data-app flex layout as a bottom bar, so the live table is constrained between the header row and the button bar instead of extending full-height behind floating buttons
 
-#### `testauth1.html` — v03.18w
+#### `testauthgas1.html` — v03.18w
 
 ##### Changed
 - Restructured live data layout to place testing buttons in a bottom bar within the app container, keeping the table view squished between the top header and the buttons
@@ -3535,13 +3535,13 @@ Developed by: ShadowAISolutions
 
 ### Changed
 - Ported the SSO indicator system (CSS, HTML, JS) from `programportal.html` into the auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) so all new auth pages inherit it automatically via the gas-project-creator
-- Propagated SSO indicator to `testauth1.html` and `globalacl.html` — both pages now have the full SSO indicator system (gated behind `SSO_PROVIDER: false`, so completely inert)
+- Propagated SSO indicator to `testauthgas1.html` and `globalacl.html` — both pages now have the full SSO indicator system (gated behind `SSO_PROVIDER: false`, so completely inert)
 - Merged `_onGisPopupClosed()` into `_onGisPopupDismissed()` across all auth pages — single handler now manages both SSO indicator state and auth wall display
 - Added `_updateSsoIndicator()` function with auth-wall guard to template — prevents SSO badge from appearing on the sign-in screen
 - Added `_ssoRefreshDismissed` variable, SSO indicator calls to `handleTokenResponse`, `startCountdownTimers`, `stopCountdownTimers`, `attemptReauth`, SSO reconnect callback, and click handler to template
 - Relocated SSO indicator CSS/HTML/JS in `programportal.html` from AP-specific AUTH sections to TEMPLATE sections for consistency with the template source
 
-#### `testauth1.html` — v03.17w
+#### `testauthgas1.html` — v03.17w
 ##### Changed
 - Minor internal improvements
 
@@ -3580,7 +3580,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
 
-#### `testauth1.html` — v03.16w
+#### `testauthgas1.html` — v03.16w
 ##### Fixed
 - `attemptReauth()` now accepts `emailHint` parameter; `reauth-btn` handler captures email before `clearSession()`
 
@@ -3604,7 +3604,7 @@ Developed by: ShadowAISolutions
 ##### Changed
 - Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
 
-#### `testauth1.html` — v03.15w
+#### `testauthgas1.html` — v03.15w
 ##### Changed
 - Added `login_hint` to `initGoogleSignIn()` and both `initTokenClient` calls in `attemptReauth()`
 
@@ -3618,17 +3618,17 @@ Developed by: ShadowAISolutions
 
 ## [v06.95r] — 2026-03-26 12:03:38 PM EST — [1122d29e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1122d29ea161e104c74e4afcaa83b55ba2d59e47)
 
-> **Prompt:** "when the absolute timer is low (for example in testauth1), and i click sign in again, it shows the popup to select a google account, but it stops the countdown from happening, and disconnects the data sync, which is fine but to should still be showing an indicator, unless this has timed out everything. however when i close the GIS, its not doing anything, not signing out or anything. i think it should be handled how we handled the SSO GIS reconnecting in the application portal, but do your own analysis. fix this everywhere it applies to"
+> **Prompt:** "when the absolute timer is low (for example in testauthgas1), and i click sign in again, it shows the popup to select a google account, but it stops the countdown from happening, and disconnects the data sync, which is fine but to should still be showing an indicator, unless this has timed out everything. however when i close the GIS, its not doing anything, not signing out or anything. i think it should be handled how we handled the SSO GIS reconnecting in the application portal, but do your own analysis. fix this everywhere it applies to"
 
 ### Fixed
-- Added GIS popup dismissal handling (`_onGisPopupDismissed`) to the auth template, testauth1.html, and globalacl.html — when the user closes the Google sign-in popup without completing authentication and the session has already expired (e.g. absolute timer ran out while the popup was open), the auth wall is now properly shown with a clear message instead of leaving the page in a limbo state
-- Added `error_callback: _onGisPopupDismissed` to all 5 `initTokenClient` calls in the auth template, testauth1, and globalacl (initGoogleSignIn, attemptReauth outer/inner, sign-in button handler, SSO refresh) — mirrors the Program Portal's existing `error_callback: _onGisPopupClosed` pattern
+- Added GIS popup dismissal handling (`_onGisPopupDismissed`) to the auth template, testauthgas1.html, and globalacl.html — when the user closes the Google sign-in popup without completing authentication and the session has already expired (e.g. absolute timer ran out while the popup was open), the auth wall is now properly shown with a clear message instead of leaving the page in a limbo state
+- Added `error_callback: _onGisPopupDismissed` to all 5 `initTokenClient` calls in the auth template, testauthgas1, and globalacl (initGoogleSignIn, attemptReauth outer/inner, sign-in button handler, SSO refresh) — mirrors the Program Portal's existing `error_callback: _onGisPopupClosed` pattern
 
 #### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
 ##### Fixed
 - Added `_onGisPopupDismissed()` function and `error_callback` to all GIS `initTokenClient` calls
 
-#### `testauth1.html` — v03.14w
+#### `testauthgas1.html` — v03.14w
 ##### Fixed
 - Added `_onGisPopupDismissed()` function and `error_callback` to all GIS `initTokenClient` calls
 
@@ -3641,15 +3641,15 @@ Developed by: ShadowAISolutions
 > **Prompt:** "make sure everything we have fixed is applied to the templates also"
 
 ### Security
-- Propagated SSO email validation (`_validateSSOTokenEmail`) from programportal.html to the auth template, testauth1.html, and globalacl.html — ensures SSO token re-acquisition on reconnect validates the Google account matches the active session across all auth pages, not just the Program Portal
-- Added `login_hint` parameter to reconnect SSO GIS `initTokenClient` calls in the auth template, testauth1.html, and globalacl.html — pre-selects the correct Google account during silent token refresh
+- Propagated SSO email validation (`_validateSSOTokenEmail`) from programportal.html to the auth template, testauthgas1.html, and globalacl.html — ensures SSO token re-acquisition on reconnect validates the Google account matches the active session across all auth pages, not just the Program Portal
+- Added `login_hint` parameter to reconnect SSO GIS `initTokenClient` calls in the auth template, testauthgas1.html, and globalacl.html — pre-selects the correct Google account during silent token refresh
 
 #### `HtmlAndGasTemplateAutoUpdate-auth.html.txt` — (template, no version)
 ##### Security
 - Added `_validateSSOTokenEmail` function for SSO token email validation
 - Added `login_hint` and `_validateSSOTokenEmail` wrapper to reconnect SSO GIS token client
 
-#### `testauth1.html` — v03.13w
+#### `testauthgas1.html` — v03.13w
 ##### Security
 - Added SSO token email validation to reconnect flow — mismatched Google accounts are rejected
 - Added `login_hint` to pre-select the correct Google account during SSO token refresh
@@ -3661,14 +3661,14 @@ Developed by: ShadowAISolutions
 
 ## [v06.93r] — 2026-03-26 11:06:12 AM EST — [89c77faf](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89c77faf423700d5160ba3305dd37bacceabacce)
 
-> **Prompt:** "go ahead and change the title of testauth1 from "CHANGE THIS PROJECT TITLE TEMPLATE" to "Testauth1 Title""
+> **Prompt:** "go ahead and change the title of testauthgas1 from "CHANGE THIS PROJECT TITLE TEMPLATE" to "Testauthgas1 Title""
 
 ### Changed
-- Updated testauth1 page title from the template placeholder to "Testauth1 Title"
+- Updated testauthgas1 page title from the template placeholder to "Testauthgas1 Title"
 
-#### `testauth1.html` — v03.12w
+#### `testauthgas1.html` — v03.12w
 ##### Changed
-- Page title updated from placeholder to "Testauth1 Title"
+- Page title updated from placeholder to "Testauthgas1 Title"
 
 ## [v06.92r] — 2026-03-26 10:49:30 AM EST — [a88695ff](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a88695ff34bf183bcbd91a857616128403e4a86c)
 
@@ -3685,7 +3685,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - "Use Here" session reclaim no longer hangs on reconnecting
 
-#### `testauth1.html` — v03.11w
+#### `testauthgas1.html` — v03.11w
 ##### Fixed
 - "Use Here" session reclaim no longer hangs on reconnecting
 
@@ -3717,7 +3717,7 @@ Developed by: ShadowAISolutions
 ##### Changed
 - SSO sign-in now shows the progress checklist with "Signing in via Program Portal" subtitle above it
 
-#### `testauth1.html` — v03.10w
+#### `testauthgas1.html` — v03.10w
 ##### Changed
 - SSO sign-in now shows the progress checklist with "Signing in via Program Portal" subtitle above it
 
@@ -3736,7 +3736,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
 
-#### `testauth1.html` — v03.09w
+#### `testauthgas1.html` — v03.09w
 ##### Fixed
 - Fixed sign-in hanging on "Exchanging credentials with server" when the server takes longer than 30 seconds to respond — now shows a clear timeout error with a retry prompt
 
@@ -3757,12 +3757,12 @@ Developed by: ShadowAISolutions
 > **Prompt:** "alright, now make the equivalent checklists for all the other applications"
 
 ### Added
-- Added sign-in, sign-out, and reconnecting stage checklists with timing to testauth1.html — replaces old single-line subtitle and static text with interactive checklists matching the Program Portal pattern
-- Added sign-in, sign-out, and reconnecting stage checklists with timing to globalacl.html — same pattern as testauth1
+- Added sign-in, sign-out, and reconnecting stage checklists with timing to testauthgas1.html — replaces old single-line subtitle and static text with interactive checklists matching the Program Portal pattern
+- Added sign-in, sign-out, and reconnecting stage checklists with timing to globalacl.html — same pattern as testauthgas1
 - Both pages use 2-stage reconnecting checklist (no SSO stage) since `SSO_PROVIDER: false`
 - SSO sign-in override hides checklist and shows "Signing in via [Source]" subtitle on both pages
 
-#### `testauth1.html` — v03.08w
+#### `testauthgas1.html` — v03.08w
 
 ##### Added
 - Sign-in now shows a real-time checklist with timing for each authentication step
@@ -3844,7 +3844,7 @@ Developed by: ShadowAISolutions
 ##### Added
 - Sign-in stage indicator messages showing authentication progress under the session spinner
 
-#### `testauth1.html` — v03.07w
+#### `testauthgas1.html` — v03.07w
 
 ##### Added
 - Sign-in stage indicator messages showing authentication progress under the session spinner
@@ -3885,7 +3885,7 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Data poll timer now shows "polling..." for at least 2 seconds after each poll fires — the GAS inline-JS response arrives faster than the 1s timer tick, so `_dataPollInFlight` was clearing before the timer could display the polling state. Added a 2-second minimum display window based on `_lastDataPollTick` timestamp
 
-#### `testauth1.html` — v03.06w
+#### `testauthgas1.html` — v03.06w
 ##### Fixed
 - Data poll countdown now shows "polling..." indicator on every poll cycle, not just the first
 
@@ -3896,7 +3896,7 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Fixed data poll countdown jumping randomly mid-countdown — removed duplicate `_lastDataPollTick = Date.now()` from the `live-data` response handler that was overwriting the request-time timestamp, causing the countdown to reset to 15 at a random point during the cycle
 
-#### `testauth1.html` — v03.05w
+#### `testauthgas1.html` — v03.05w
 ##### Fixed
 - Data poll countdown now counts down smoothly from 15 to 0 without random jumps
 
@@ -3907,7 +3907,7 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Restored `_lastDataPollTick = Date.now()` in `_sendDataPoll()` — removing it in the previous fix left the timer without a baseline, causing display issues. The timestamp is now set in both places: when the request fires (for timer baseline) and when the response arrives (for accurate countdown start)
 
-#### `testauth1.html` — v03.04w
+#### `testauthgas1.html` — v03.04w
 ##### Fixed
 - Minor internal improvements
 
@@ -3918,7 +3918,7 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Data poll timer now shows "polling..." during the request round-trip — moved `_lastDataPollTick` assignment from `_sendDataPoll()` (request sent) to the `live-data` handler (response received), so the timer stays in "polling..." state until the response arrives instead of immediately starting the countdown
 
-#### `testauth1.html` — v03.03w
+#### `testauthgas1.html` — v03.03w
 ##### Fixed
 - Data refresh countdown now briefly shows "polling..." before resetting, instead of jumping from 0 to 15
 
@@ -3930,11 +3930,11 @@ Developed by: ShadowAISolutions
 - Fixed data poll session validation always failing — `processDataPoll()` used `CacheService.getScriptCache()` directly instead of `getEpochCache()`, causing cache key mismatch (sessions stored with epoch prefix `e0_session_...` but lookup searched for `session_...` without prefix)
 - Fixed `live-data` HTML handler not clearing `_dataPollInFlight` on error responses — flag now clears on any `live-data` message (success or failure), preventing 15s timeout delays between retries
 
-#### `testauth1.gs` — v02.06g
+#### `testauthgas1.gs` — v02.06g
 ##### Fixed
 - Data refresh now correctly validates your session before delivering updates
 
-#### `testauth1.html` — v03.02w
+#### `testauthgas1.html` — v03.02w
 ##### Fixed
 - Data refresh recovers faster when the server reports an error
 
@@ -3948,11 +3948,11 @@ Developed by: ShadowAISolutions
 - Removed `gas-data-poll-ready` message type, `_dataPollIframeReady`, and `_dataPollIframeOrigin` — no longer needed without the postMessage handshake
 - Reverted data poll iframe to simple reload-per-poll (persistent iframe approach was also incompatible with GAS sandbox)
 
-#### `testauth1.gs` — v02.05g
+#### `testauthgas1.gs` — v02.05g
 ##### Fixed
 - Data refresh now works correctly with session authentication
 
-#### `testauth1.html` — v03.01w
+#### `testauthgas1.html` — v03.01w
 ##### Fixed
 - Data refresh now updates reliably on every poll cycle
 
@@ -3963,7 +3963,7 @@ Developed by: ShadowAISolutions
 ### Changed
 - Increased heartbeat test interval from 30s to 60s for testing
 
-#### `testauth1.html` — v03.00w
+#### `testauthgas1.html` — v03.00w
 ##### Changed
 - Minor internal improvements
 
@@ -3976,7 +3976,7 @@ Developed by: ShadowAISolutions
 - Added `_dataPollIframeReady` flag and `_dataPollIframeOrigin` to track iframe state — subsequent polls send token via `postMessage` to the existing iframe instead of reloading it
 - `_stopDataPoll()` now resets `_dataPollIframeReady` and `_dataPollIframeOrigin` for clean teardown
 
-#### `testauth1.html` — v02.99w
+#### `testauthgas1.html` — v02.99w
 ##### Fixed
 - Data refresh now works reliably — no longer requires a heartbeat to trigger
 
@@ -3988,7 +3988,7 @@ Developed by: ShadowAISolutions
 - Data poll safety timeout now resets `_lastDataPollTick` when clearing the in-flight flag — prevents the countdown timer from showing 0:00 after a failed/slow response
 - "Disconnected" indicator was a symptom of data poll responses not arriving — the safety timeout fix ensures the timer recovers gracefully between retries
 
-#### `testauth1.html` — v02.98w
+#### `testauthgas1.html` — v02.98w
 ##### Fixed
 - Data refresh countdown timer no longer gets stuck at 0:00 after a slow server response
 
@@ -4014,11 +4014,11 @@ Developed by: ShadowAISolutions
 - Added `gas-data-poll-ready` message type to allowed messages and HMAC exemption list
 - Added `gas-data-poll-ready` handler in `_processVerifiedMessage` to send token via postMessage
 
-#### `testauth1.gs` — v02.04g
+#### `testauthgas1.gs` — v02.04g
 ##### Security
 - Data poll endpoint now validates session token before returning spreadsheet data
 
-#### `testauth1.html` — v02.97w
+#### `testauthgas1.html` — v02.97w
 ##### Security
 - Data requests now include session authentication — unauthenticated data access is no longer possible
 
@@ -4029,27 +4029,27 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Heartbeat timer now shows countdown even when idle — previously displayed static "◇ idle" text with no countdown until activity resumed
 
-#### `testauth1.html` — v02.96w
+#### `testauthgas1.html` — v02.96w
 ##### Fixed
 - Heartbeat timer countdown now remains visible during idle state — shows time until next tick with "◇ idle" indicator
 
 ## [v06.66r] — 2026-03-25 09:47:45 PM EST — [c8a789b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/c8a789b)
 
-> **Prompt:** "in the testauth1, it seems like the data poll is happening both in the heartbeat or in the data poll, i think it should always be done with the data poll rather than flipping back and forth between the pipelines. what do you think?"
+> **Prompt:** "in the testauthgas1, it seems like the data poll is happening both in the heartbeat or in the data poll, i think it should always be done with the data poll rather than flipping back and forth between the pipelines. what do you think?"
 
 ### Changed
-- Decoupled data polling from heartbeat pipeline in testauth1 — data poll now runs continuously and independently, heartbeat only handles session extension
-- Removed `liveData` piggybacking from `processHeartbeat()` in testauth1.gs — heartbeat response no longer carries spreadsheet data
-- Removed `data.liveData` extraction from heartbeat OK handler in testauth1.html
+- Decoupled data polling from heartbeat pipeline in testauthgas1 — data poll now runs continuously and independently, heartbeat only handles session extension
+- Removed `liveData` piggybacking from `processHeartbeat()` in testauthgas1.gs — heartbeat response no longer carries spreadsheet data
+- Removed `data.liveData` extraction from heartbeat OK handler in testauthgas1.html
 - Data poll starts at session establishment and runs on its own interval regardless of user activity state
 - Renamed all `_idle*` variables/functions to `_data*` (e.g. `_idleDataPollInterval` → `_dataPollInterval`, `IDLE_DATA_POLL_INTERVAL` → `DATA_POLL_INTERVAL`) since the poll is no longer idle-only
 - Data poll timer display no longer depends on `_heartbeatIdle` — shows countdown whenever poll is active
 
-#### `testauth1.gs` — v02.03g
+#### `testauthgas1.gs` — v02.03g
 ##### Changed
 - Heartbeat response no longer carries spreadsheet data — removed `liveData` piggybacking from `processHeartbeat()`
 
-#### `testauth1.html` — v02.95w
+#### `testauthgas1.html` — v02.95w
 ##### Changed
 - Data polling now runs continuously via dedicated pipeline, independent of heartbeat activity state
 - Data poll timer always shows countdown when active, not just when idle
@@ -4061,7 +4061,7 @@ Developed by: ShadowAISolutions
 ### Changed
 - All timer rows (Absolute, Session, Heartbeat, Data Poll) are now always visible in the auth-timers panel — Data Poll shows `--` when idle polling is not active instead of being hidden
 
-#### `testauth1.html` — v02.94w
+#### `testauthgas1.html` — v02.94w
 ##### Changed
 - All timer rows are now always visible — the Data Poll row shows `--` when inactive instead of disappearing
 
@@ -4072,7 +4072,7 @@ Developed by: ShadowAISolutions
 ### Changed
 - Data poll countdown now shows as its own dedicated row (`Data Poll:`) in the auth-timers panel, separate from the heartbeat row — appears only when idle polling is active and disappears when regular heartbeat resumes
 
-#### `testauth1.html` — v02.93w
+#### `testauthgas1.html` — v02.93w
 ##### Changed
 - When idle, the timer now counts down to the next background data poll so you can see exactly when fresh data will arrive
 
@@ -4083,7 +4083,7 @@ Developed by: ShadowAISolutions
 ### Changed
 - Idle data poll now shows its own countdown timer (`◇ Xs idle`) based on `IDLE_DATA_POLL_INTERVAL` (15s), distinct from the heartbeat countdown (30s) — makes it easy to see which pipe is active and when the next poll fires
 
-#### `testauth1.html` — v02.92w
+#### `testauthgas1.html` — v02.92w
 ##### Changed
 - When idle, the heartbeat timer shows a countdown to the next data poll (`◇ 12s idle`) instead of the heartbeat interval, so you can see exactly when the next background data fetch will fire
 
@@ -4094,7 +4094,7 @@ Developed by: ShadowAISolutions
 ### Changed
 - Decoupled idle data poll interval from heartbeat interval — new `IDLE_DATA_POLL_INTERVAL` config variable set to 15s (heartbeat remains at 30s), giving 2x data freshness while idle at negligible additional cost
 
-#### `testauth1.html` — v02.91w
+#### `testauthgas1.html` — v02.91w
 ##### Changed
 - Idle data poll now runs every 15 seconds (was 30s tied to heartbeat) — data stays fresher when you step away, with its own independent config variable
 
@@ -4106,12 +4106,12 @@ Developed by: ShadowAISolutions
 - Fixed idle data poll not updating the table — `gasApp.contentWindow.postMessage()` was being dropped by Google's GAS sandbox origin validation; replaced with a dedicated `?action=getData` iframe (same proven pattern as the heartbeat iframe) that calls `getCachedData()` server-side and postMessages the result back to the parent
 - Removed unused `get-live-data` postMessage handler from GAS main iframe — the getData action iframe handles data fetching entirely server-side
 
-#### `testauth1.gs` — v02.02g
+#### `testauthgas1.gs` — v02.02g
 ##### Fixed
 - Added `?action=getData` handler to `doGet()` — returns lightweight HTML page that calls `getCachedData()` and sends data back via `top.postMessage()`
 - Removed `get-live-data` message handler from main iframe HTML — no longer needed since idle data poll uses its own iframe
 
-#### `testauth1.html` — v02.90w
+#### `testauthgas1.html` — v02.90w
 ##### Fixed
 - Idle data poll now uses a dedicated hidden iframe (`#gas-data-poll`) instead of `gasApp.contentWindow.postMessage()` — bypasses GAS sandbox origin mismatch that was silently dropping messages
 
@@ -4123,7 +4123,7 @@ Developed by: ShadowAISolutions
 - Decoupled live data polling from auth heartbeat (Option C) — when idle, a lightweight `getCachedData()` call replaces the full heartbeat, reducing server cost ~10x per idle viewer while keeping data live
 - Added visual heartbeat indicator to distinguish active heartbeat (`▶ sending...`) from idle data poll (`◇ polling data...`) and idle countdown (`◇ idle`)
 
-#### `testauth1.html` — v02.89w
+#### `testauthgas1.html` — v02.89w
 ##### Changed
 - Data stays live even when idle — lightweight background poll replaces the activity-gated heartbeat for data updates
 - Heartbeat timer now shows `▶` for active heartbeats and `◇` for idle data polling, so you can tell which pipe is firing
@@ -4136,26 +4136,26 @@ Developed by: ShadowAISolutions
 - Fixed heartbeat taking ~15s instead of ~2-3s — removed unnecessary CacheService TTL re-up write on every read and moved liveData outside the HMAC-signed payload to reduce serialization overhead
 - Fixed live data not updating after spreadsheet edits — liveData nested objects caused JSON.stringify mismatches between GAS V8 and browser engines, breaking HMAC signature verification and silently dropping heartbeat messages
 
-#### `testauth1.html` — v02.88w
+#### `testauthgas1.html` — v02.88w
 ##### Fixed
 - Data now updates correctly when the spreadsheet is edited — fixed a signature verification issue that was silently blocking data updates
 
-#### `testauth1.gs` — v02.01g
+#### `testauthgas1.gs` — v02.01g
 ##### Fixed
 - Heartbeat response time restored to normal — live data is no longer included in the security signature computation, reducing processing time
 
 ## [v06.58r] — 2026-03-25 05:41:07 PM EST — [0764aa8d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0764aa8d2046cb83721b95fbd2a9335f75fad9fb)
 
-> **Prompt:** "alright, write up this idea of live data editing with the intention of applying it for the testauth1 environment in a prompt format to use with you in a new session, including all context to begin coding. you can show the same type of data table we made in the rnd live data in the testauth1 instead of the giant 1 in the center."
+> **Prompt:** "alright, write up this idea of live data editing with the intention of applying it for the testauthgas1 environment in a prompt format to use with you in a new session, including all context to begin coding. you can show the same type of data table we made in the rnd live data in the testauthgas1 instead of the giant 1 in the center."
 
 ### Added
-- Live data table with cell editing in testauth1 — private spreadsheet data served via CacheService, piggybacked on the existing auth heartbeat at zero additional GAS quota
+- Live data table with cell editing in testauthgas1 — private spreadsheet data served via CacheService, piggybacked on the existing auth heartbeat at zero additional GAS quota
 - Cell editing with RBAC enforcement — double-click to edit, writes gated by 'write' permission via `checkPermission()`
 - Dashboard card view with change detection (green flash animation on updated cells/cards)
 - Sortable table columns (click header to toggle ascending/descending)
 - Connection status indicator with staleness detection (live/updating/disconnected states)
 
-#### `testauth1.html` — v02.87w
+#### `testauthgas1.html` — v02.87w
 ##### Added
 - Live data table replacing the placeholder content area — sortable columns, cell change detection with green flash animation
 - Dashboard card view with automatic change highlighting
@@ -4163,7 +4163,7 @@ Developed by: ShadowAISolutions
 - Double-click cell editing for users with write permission
 - View toggle between Table and Dashboard layouts
 
-#### `testauth1.gs` — v02.00g
+#### `testauthgas1.gs` — v02.00g
 ##### Added
 - CacheService-based live data serving — `refreshDataCache()`, `getCachedData()` with self-healing cache pattern
 - Installable onEdit trigger support — `onEditInstallable()` and `installEditTrigger()` for instant cache refresh on spreadsheet edits
@@ -4204,7 +4204,7 @@ Developed by: ShadowAISolutions
 
 ### Changed
 - Replaced time-driven trigger with edit-triggered + self-healing cache for rndlivedata
-- Cache TTL extended to 6 hours with heartbeat-based TTL re-up (testauth1 pattern)
+- Cache TTL extended to 6 hours with heartbeat-based TTL re-up (testauthgas1 pattern)
 - Zero GAS quota when nobody is viewing or editing — no time-driven trigger needed
 
 #### `rndlivedata.gs` — v01.05g
@@ -4414,11 +4414,11 @@ CONFIG"
 
 ## [v06.44r] — 2026-03-25 09:07:53 AM EST — [8845bc44](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8845bc44ad5e064bcb51b07edbab0b25ca6f2f20)
 
-> **Prompt:** "check to see if the templates are matching the testauth1 improvements, if not go ahead and update them"
+> **Prompt:** "check to see if the templates are matching the testauthgas1 improvements, if not go ahead and update them"
 
 ### Fixed
 - Panel overlay persistence during sign-out — overlays (admin sessions, changelog, GAS changelog) now close before the signing-out wall appears, preventing UI glitches
-- GAS `adminSignOut` error handling — auth failures now return `{error: "unauthorized"}` instead of `{success: false, error: reason}`, matching testauth1's cleaner pattern
+- GAS `adminSignOut` error handling — auth failures now return `{error: "unauthorized"}` instead of `{success: false, error: reason}`, matching testauthgas1's cleaner pattern
 - GAS cache variable naming — renamed `_cpSecretCache` → `_crossProjectSecret` for clarity and consistency across all projects
 
 ### Added
@@ -4442,20 +4442,20 @@ CONFIG"
 
 ## [v06.43r] — 2026-03-23 08:34:55 PM EST — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
 
-> **Prompt:** "i mean in regards to implementing it in testauth1, not changing the guide"
+> **Prompt:** "i mean in regards to implementing it in testauthgas1, not changing the guide"
 
 ### Added
 - Disagreement submission form UI — the last missing Phase A HIPAA element, completing all 9/9 UI components
 - GAS listener routing for `submitDisagreement()` via Phase A iframe messaging
 
-#### `testauth1.html` — v02.86w
+#### `testauthgas1.html` — v02.86w
 ##### Added
 - "Disagree" button in the Phase A nav bar (permission-gated to `amend` role)
 - Disagreement statement panel with amendment ID input, statement textarea, and submit button
 - Client-side handler for disagreement submission with success/error feedback
 - `phase-a-disagreement-result` message type added to postMessage allowlists and response router
 
-#### `testauth1.gs` — v01.99g
+#### `testauthgas1.gs` — v01.99g
 ##### Added
 - `phase-a-submit-disagreement` message handler in the Phase A listener iframe, routing to `submitDisagreement()` GAS function
 
@@ -4468,7 +4468,7 @@ CONFIG"
 - Panel cooldown reduced from 5 seconds to 1 second
 - All buttons are now disabled during cooldown (including the active panel's button, since it no longer toggles)
 
-#### `testauth1.html` — v02.85w
+#### `testauthgas1.html` — v02.85w
 ##### Changed
 - Panel buttons now only open — closing is done via the X button or by switching panels
 - Cooldown reduced to 1 second
@@ -4480,7 +4480,7 @@ CONFIG"
 ### Changed
 - Panel cooldown now visually disables other nav buttons (dimmed, not-allowed cursor, disabled attribute) during the 5-second window — the active panel's button stays enabled so it can be closed
 
-#### `testauth1.html` — v02.84w
+#### `testauthgas1.html` — v02.84w
 ##### Changed
 - Other panel buttons now appear visually disabled during the cooldown period
 
@@ -4492,7 +4492,7 @@ CONFIG"
 - Panel buttons (Sessions, Disclosures, My Data, Correction, Amendments) now enforce mutual exclusion — opening one panel automatically closes any other open panel
 - Added 5-second cooldown after opening a panel before another can be opened (closing the current panel is always allowed during cooldown)
 
-#### `testauth1.html` — v02.83w
+#### `testauthgas1.html` — v02.83w
 ##### Changed
 - Navigation panels no longer overlap — only one panel can be open at a time
 - Added a brief cooldown between switching panels to prevent rapid toggling
@@ -4505,7 +4505,7 @@ CONFIG"
 - Fixed Disclosure Accounting panel stuck on "Loading..." — `google.script.run` silently drops Date objects returned from spreadsheet cells; converted all date fields to ISO strings before returning from GAS functions
 - Fixed same Date serialization issue in Pending Amendments, Amendment History, and Individual Data Export functions
 
-#### `testauth1.gs` — v01.98g
+#### `testauthgas1.gs` — v01.98g
 ##### Fixed
 - Fixed disclosure accounting and amendment panels not loading — date values from spreadsheet are now properly converted to strings
 
@@ -4516,7 +4516,7 @@ CONFIG"
 ### Security
 - Removed the `seedSampleData` doGet action endpoint from the GAS script — served its purpose, no reason to leave a data-writing endpoint exposed
 
-#### `testauth1.gs` — v01.97g
+#### `testauthgas1.gs` — v01.97g
 ##### Removed
 - Removed the temporary data seeding endpoint — test data has been populated and the endpoint is no longer needed
 
@@ -4528,11 +4528,11 @@ CONFIG"
 - Replaced broken UI-based seed approach with a direct `doGet` action endpoint (`?action=seedSampleData&email=...&secret=...`) that writes sample data directly to the spreadsheet — no session/iframe required
 - Removed the "Seed Sample Data" button and all Phase A iframe wiring for seeding
 
-#### `testauth1.gs` — v01.96g
+#### `testauthgas1.gs` — v01.96g
 ##### Changed
 - Sample data seeding now works via a direct URL call instead of through the app UI — more reliable for populating test data
 
-#### `testauth1.html` — v02.82w
+#### `testauthgas1.html` — v02.82w
 ##### Removed
 - Removed "Seed Sample Data" button from the My Data panel (seeding is now done via direct URL)
 
@@ -4544,11 +4544,11 @@ CONFIG"
 - Seed Sample Data function — admin-only button in the My Data panel that populates DisclosureLog, AmendmentRequests, and notes sheet with realistic HIPAA-compliant sample data for the signed-in user
 - Phase A iframe handler for `phase-a-seed-sample-data` message type
 
-#### `testauth1.gs` — v01.95g
+#### `testauthgas1.gs` — v01.95g
 ##### Added
 - New "Seed Sample Data" feature — populates your account with sample disclosures, amendment requests, and clinical notes for testing
 
-#### `testauth1.html` — v02.81w
+#### `testauthgas1.html` — v02.81w
 ##### Added
 - "Seed Sample Data" button in the My Data panel (admin-only) — one click to populate test data across all HIPAA features
 
@@ -4560,7 +4560,7 @@ CONFIG"
 - Fixed "Download My Data" (Right of Access) crashing with "An internal error occurred" — root cause was missing `var SHEET_NAME` declaration in the GAS script, causing a `ReferenceError` when `getIndividualData()` tried to query the main data sheet
 - Added missing session error types (`SESSION_EVICTED`, `SESSION_CORRUPT`, `SESSION_INTEGRITY_VIOLATION`) to the Phase A error handler so they return user-friendly messages instead of the generic internal error
 
-#### `testauth1.gs` — v01.94g
+#### `testauthgas1.gs` — v01.94g
 ##### Fixed
 - Data download now works — you can export your data as JSON or CSV from the "My Data" panel
 - Improved error messages when sessions are interrupted — you'll see a clear "please sign in again" message instead of a generic error
@@ -4573,7 +4573,7 @@ CONFIG"
 - Phase A panels, admin sessions panel, and GCL overlay now close immediately at the start of `performSignOut()` — before the "Signing out..." wall is shown — so no high-z-index overlays float above the signing-out animation
 - Root cause: panels had z-index 10010 while signing-out-wall had z-index 10002, so panels stayed visible and interactive during the sign-out process
 
-#### `testauth1.html` — v02.80w
+#### `testauthgas1.html` — v02.80w
 ##### Fixed
 - Panels and overlays now close immediately when you sign out — no more lingering popups during the sign-out process
 
@@ -4586,7 +4586,7 @@ CONFIG"
 - Phase A panel data content (disclosure lists, amendment text, form inputs) cleared on signout to prevent PHI exposure via DevTools
 - Phase A iframe destroyed (`about:blank`) on signout — same HIPAA pattern as main GAS iframe destruction
 
-#### `testauth1.html` — v02.79w
+#### `testauthgas1.html` — v02.79w
 ##### Fixed
 - HIPAA panels close and clear data when you sign out or your session expires
 
@@ -4597,7 +4597,7 @@ CONFIG"
 ### Fixed
 - Phase A `_getToken()` read from wrong storage key (`__auth_session` JSON) — now uses existing `loadSession()` which reads from the correct dynamic key (`_pageName + '_gas_session_token'`)
 
-#### `testauth1.html` — v02.78w
+#### `testauthgas1.html` — v02.78w
 ##### Fixed
 - Session token now correctly retrieved for Phase A operations
 
@@ -4608,7 +4608,7 @@ CONFIG"
 ### Fixed
 - Phase A messages rejected by `_KNOWN_GAS_MESSAGES` allowlist — added all 8 Phase A message types to the allowlist so they pass Layer 1 validation
 
-#### `testauth1.html` — v02.77w
+#### `testauthgas1.html` — v02.77w
 ##### Fixed
 - Added Phase A message types to `_KNOWN_GAS_MESSAGES` allowlist — root cause of panels stuck on loading
 
@@ -4626,13 +4626,13 @@ CONFIG"
 ### Added
 - `getPendingAmendments()` GAS function for admin amendment review panel (returns all Pending/UnderReview amendments)
 
-#### `testauth1.gs` — v01.93g
+#### `testauthgas1.gs` — v01.93g
 ##### Fixed
 - Added Phase A postMessage listener page (`action=phaseA`) in `doGet()` for all 6 Phase A operations
 ##### Added
 - `getPendingAmendments()` — admin-only function to list all pending amendment requests
 
-#### `testauth1.html` — v02.76w
+#### `testauthgas1.html` — v02.76w
 ##### Fixed
 - Phase A panels now communicate through dedicated iframe with proper handshake
 - Replaced `_getGasSource()` with `_sendPhaseA()` using Phase A iframe source
@@ -4643,21 +4643,21 @@ CONFIG"
 > **Prompt:** "yes plan that now"
 
 ### Added
-- Implemented HIPAA Phase A code in `testauth1.gs` — 14 new GAS functions for Disclosure Accounting (§164.528), Right of Access (§164.524), and Right to Amendment (§164.526)
+- Implemented HIPAA Phase A code in `testauthgas1.gs` — 14 new GAS functions for Disclosure Accounting (§164.528), Right of Access (§164.524), and Right to Amendment (§164.526)
 - Shared utility functions: `generateRequestId()`, `formatHipaaTimestamp()`, `validateIndividualAccess()`, `getOrCreateSheet()`, `wrapPhaseAOperation()`
 - Disclosure Accounting: `recordDisclosure()`, `getDisclosureAccounting()`, `exportDisclosureAccounting()`
 - Right of Access: `requestDataExport()`, `getIndividualData()`, `extractRecordsForEmail()`, `convertToCSV()`, `updateAccessRequestStatus()`
 - Right to Amendment: `requestAmendment()`, `reviewAmendment()`, `submitDisagreement()`, `getAmendmentHistory()`
-- 4 new HIPAA UI buttons in testauth1 user-pill: Disclosures, My Data, Correction, Amendments (RBAC-gated)
-- 4 new panels in testauth1: disclosure accounting panel, data export panel, amendment request form, admin amendment review panel
+- 4 new HIPAA UI buttons in testauthgas1 user-pill: Disclosures, My Data, Correction, Amendments (RBAC-gated)
+- 4 new panels in testauthgas1: disclosure accounting panel, data export panel, amendment request form, admin amendment review panel
 - Phase A CSS styles matching existing admin-sessions-panel dark theme
 - JavaScript event handlers, postMessage communication, and rendering functions for all Phase A panels
 
-#### `testauth1.gs` — v01.92g
+#### `testauthgas1.gs` — v01.92g
 ##### Added
 - HIPAA Phase A server-side functions (disclosure tracking, data export, amendment workflow)
 
-#### `testauth1.html` — v02.75w
+#### `testauthgas1.html` — v02.75w
 ##### Added
 - HIPAA Phase A UI components (buttons, panels, JavaScript handlers)
 
@@ -4668,7 +4668,7 @@ CONFIG"
 ### Added
 - Regulatory Landscape & Enforcement Context section — OCR Right of Access Initiative enforcement data (54 actions, $9.4M+ in 2024), penalty tier tables, enforcement case studies
 - HITECH Act EHR Accounting Expansion subsection — §13405(c) dormant provisions, future-proofed function signature, BA disclosure tracking recommendations
-- Fee Policy subsection — §164.524(c)(4) fee rules, $6.50 flat fee option, testauth1 $0 recommendation
+- Fee Policy subsection — §164.524(c)(4) fee rules, $6.50 flat fee option, testauthgas1 $0 recommendation
 - Personal Representative Access subsection — §164.502(g) requirements, recommended Phase B implementation with `PersonalRepresentatives` sheet schema
 - Amendment Notification Workflow subsection — §164.526(c)(2)-(3) post-approval notification requirements, recommended `AmendmentNotifications` sheet and code extension
 - Amendment Documentation Requirements — §164.526(f) organizational documentation checklist
@@ -4683,7 +4683,7 @@ CONFIG"
 
 ## [v06.27r] — 2026-03-23 01:10:04 PM EST — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
 
-> **Prompt:** "create a comprehensive implementation-ready reference document that addresses Phase A of the repository-information/HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md Recommended Implementation Roadmap. This document will be used to implement the fixes in testauth1. Include working code blocks, architecture diagrams, comparison tables, a security checklist, and troubleshooting. This should be a single document someone could follow to implement every fix from scratch. Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+> **Prompt:** "create a comprehensive implementation-ready reference document that addresses Phase A of the repository-information/HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md Recommended Implementation Roadmap. This document will be used to implement the fixes in testauthgas1. Include working code blocks, architecture diagrams, comparison tables, a security checklist, and troubleshooting. This should be a single document someone could follow to implement every fix from scratch. Write the document in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
 ### Added
 - Created `HIPAA-PHASE-A-IMPLEMENTATION-GUIDE.md` — comprehensive implementation guide for Privacy Rule compliance (Phase A of the HIPAA remediation roadmap)
@@ -4700,10 +4700,10 @@ CONFIG"
 
 ## [v06.26r] — 2026-03-23 12:33:53 PM EST — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
 
-> **Prompt:** "see where we left off as far as implementing Hippa compliance for testauth1 ,we were using repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md but we have made additions,  look over the repository-information/HIPAA-CODING-REQUIREMENTS.md, think deep. then make a file with the latest implementations as a followup based on the goal of repository-information/HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md"
+> **Prompt:** "see where we left off as far as implementing Hippa compliance for testauthgas1 ,we were using repository-information/HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md but we have made additions,  look over the repository-information/HIPAA-CODING-REQUIREMENTS.md, think deep. then make a file with the latest implementations as a followup based on the goal of repository-information/HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md"
 
 ### Added
-- Created `HIPAA-TESTAUTH1-IMPLEMENTATION-FOLLOWUP.md` — follow-up compliance report documenting all security improvements between v01.56g/v02.35w and v01.91g/v02.74w (35 GAS + 39 HTML versions)
+- Created `HIPAA-TESTAUTHGAS1-IMPLEMENTATION-FOLLOWUP.md` — follow-up compliance report documenting all security improvements between v01.56g/v02.35w and v01.91g/v02.74w (35 GAS + 39 HTML versions)
 - Updated compliance scorecard: 14→16 implemented items, 5→3 partial items
 - Documented status upgrades: #5 Access Authorization (⚠️→✅), #22 Minimum Necessary (⚠️→✅)
 - Documented 6 new security features beyond the 40-item checklist (SSO, admin panel, secure token exchange, cross-project admin, auto-generated keys, IP logging BAA decision)
@@ -4794,7 +4794,7 @@ CONFIG"
 ### Changed
 - Redesigned GIS indicator as a standalone SSO readiness indicator on the application portal only — shows whether the portal is ready to serve SSO tokens to other auth pages (off/pending/ready states)
 - Moved indicator out of `#auth-timers` into its own fixed-position pill (`#sso-indicator`) at bottom-right
-- Reverted GIS indicator from auth template, testauth1, and globalacl — SSO provider functionality is programportal-specific
+- Reverted GIS indicator from auth template, testauthgas1, and globalacl — SSO provider functionality is programportal-specific
 
 #### `programportal.html` — v01.23w
 
@@ -4813,7 +4813,7 @@ CONFIG"
 ##### Added
 - GIS popup state indicator in auth timers panel (idle/silent/interactive states)
 
-#### `testauth1.html` — v02.74w (no change)
+#### `testauthgas1.html` — v02.74w (no change)
 
 ##### Added
 - GIS popup state indicator in auth timers panel (idle/silent/interactive states)
@@ -4836,7 +4836,7 @@ CONFIG"
 ##### Added
 - New "Sign Out" button for signing out of this page only, and "Sign Out All" button for signing out of all connected pages
 
-#### `testauth1.html` — v02.74w
+#### `testauthgas1.html` — v02.74w
 
 ##### Added
 - New "Sign Out" button for signing out of this page only, and "Sign Out All" button for signing out of all connected pages
@@ -4851,14 +4851,14 @@ CONFIG"
 > **Prompt:** "i have to think about it but i thought it was only if accessed via the programportal"
 
 ### Fixed
-- Restricted SSO token sharing to SSO provider pages only — previously any signed-in auth page responded to SSO token requests (allowing testauth1 to SSO into Program Portal); now only pages with `SSO_PROVIDER: true` (Program Portal) respond to token requests, enforcing the intended hub-spoke SSO direction
+- Restricted SSO token sharing to SSO provider pages only — previously any signed-in auth page responded to SSO token requests (allowing testauthgas1 to SSO into Program Portal); now only pages with `SSO_PROVIDER: true` (Program Portal) respond to token requests, enforcing the intended hub-spoke SSO direction
 
 #### `programportal.html` — v01.20w
 
 ##### Fixed
 - SSO token response now gated by SSO_PROVIDER check — only responds to cross-page auth requests when configured as the SSO hub
 
-#### `testauth1.html` — v02.73w
+#### `testauthgas1.html` — v02.73w
 
 ##### Fixed
 - SSO token response now gated by SSO_PROVIDER check — no longer provides tokens to other pages
@@ -4878,11 +4878,11 @@ CONFIG"
 #### `programportal.gs` — v01.08g
 
 ##### Fixed
-- Fixed session listing to use the correct storage key pattern, matching Global ACL and Testauth1
+- Fixed session listing to use the correct storage key pattern, matching Global ACL and Testauthgas1
 
 ## [v06.14r] — 2026-03-23 07:45:16 AM EST — [a34eb0c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a34eb0c1d7a819974abbadde66b627cac2a24f71)
 
-> **Prompt:** "the global sessions is working for testauth1, but its not working for the application portal. remember that we removed the "portal" and not have "application portal" instead"
+> **Prompt:** "the global sessions is working for testauthgas1, but its not working for the application portal. remember that we removed the "portal" and not have "application portal" instead"
 
 ### Fixed
 - Fixed Global Sessions panel not showing Program Portal sessions — remote session `project` names from GAS scripts now get overridden with the master spreadsheet display name, preventing name mismatches when a project is renamed
@@ -4964,7 +4964,7 @@ CONFIG"
 ##### Fixed
 - Global Sessions panel no longer shows "Invalid JSON response" for other projects
 
-#### `testauth1.gs` — v01.91g
+#### `testauthgas1.gs` — v01.91g
 
 ##### Changed
 - Minor internal improvements
@@ -4976,14 +4976,14 @@ CONFIG"
 
 ## [v06.08r] — 2026-03-22 02:46:35 PM EST — [sha-unavailable]
 
-> **Prompt:** "ok so understand why you didnt have this working when we initially did the SSO with the global acl, and make sure that this will apply to the templates, go ahead and fix up the template files if you havent already so that they all will be properly set up like the testauth1 is when used for new projects"
+> **Prompt:** "ok so understand why you didnt have this working when we initially did the SSO with the global acl, and make sure that this will apply to the templates, go ahead and fix up the template files if you havent already so that they all will be properly set up like the testauthgas1 is when used for new projects"
 
 ### Added
 - Complete SSO cross-page token sharing infrastructure to auth template — new projects now inherit SSO support automatically (variable declarations, BroadcastChannel setup, token request/response handlers, sign-out propagation, `attemptSSOAuth()` function, and page-load SSO attempt)
 
 ## [v06.07r] — 2026-03-22 02:30:05 PM EST — [sha-unavailable]
 
-> **Prompt:** "there is something wrong with the global ACL. lets exlude the application portal for now and assume im signing in directly. when i duplicate the tab, its expiring the session instead of moving the session to the new tab. it is working properly with the testauth1"
+> **Prompt:** "there is something wrong with the global ACL. lets exlude the application portal for now and assume im signing in directly. when i duplicate the tab, its expiring the session instead of moving the session to the new tab. it is working properly with the testauthgas1"
 
 ### Fixed
 - Fixed tab duplication causing session expiry on localStorage-based pages (Global ACL) — the surrendering tab's `stopCountdownTimers()` removed `SESSION_START_KEY` from shared localStorage, causing the claiming tab's next timer tick to read a missing value, compute `remaining <= 0`, and trigger `performSignOut('session-expired')` which destroyed the session for both tabs
@@ -4993,7 +4993,7 @@ CONFIG"
 ##### Fixed
 - Tab duplication no longer expires the session — the new tab correctly inherits the active session
 
-#### `testauth1.html` — v02.72w
+#### `testauthgas1.html` — v02.72w
 
 ##### Changed
 - Minor internal improvements
@@ -5005,7 +5005,7 @@ CONFIG"
 
 ## [v06.06r] — 2026-03-22 02:12:54 PM EST — [sha-unavailable]
 
-> **Prompt:** "the global acl is not showing the Signing in via Program Portal like the testauth1 is, make sure the improvements we have made to testauth1 are also done on the global acl"
+> **Prompt:** "the global acl is not showing the Signing in via Program Portal like the testauthgas1 is, make sure the improvements we have made to testauthgas1 are also done on the global acl"
 
 ### Fixed
 - Global ACL now shows "Signing in via Program Portal" during SSO authentication — the `signing-in-subtitle` element ID was missing from the HTML and the subtitle reset logic was missing from `showSigningIn()`
@@ -5027,7 +5027,7 @@ CONFIG"
 ##### Fixed
 - Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
 
-#### `testauth1.html` — v02.71w
+#### `testauthgas1.html` — v02.71w
 
 ##### Fixed
 - Session expiry warning no longer appears incorrectly when you have plenty of session time remaining
@@ -5039,7 +5039,7 @@ CONFIG"
 
 ## [v06.04r] — 2026-03-22 01:34:18 PM EST — [sha-unavailable]
 
-> **Prompt:** "go ahead and implement the SSO from the programportal to all remaining applications (testauth1 already has it, i think we are only missing Global ACL)"
+> **Prompt:** "go ahead and implement the SSO from the programportal to all remaining applications (testauthgas1 already has it, i think we are only missing Global ACL)"
 
 ### Added
 - SSO consumer support for Global ACL page — BroadcastChannel token sharing, automatic sign-in via programportal, and cross-page sign-out propagation
@@ -5067,7 +5067,7 @@ CONFIG"
 ##### Fixed
 - SSO token re-acquisition waits for GIS library to load during reconnect
 
-#### `testauth1.html` — v02.70w
+#### `testauthgas1.html` — v02.70w
 
 ##### Changed
 - Minor internal improvements
@@ -5089,7 +5089,7 @@ CONFIG"
 ##### Changed
 - SSO token re-acquisition now happens during reconnect overlay instead of after app is shown
 
-#### `testauth1.html` — v02.69w
+#### `testauthgas1.html` — v02.69w
 
 ##### Changed
 - Minor internal improvements
@@ -5125,17 +5125,17 @@ CONFIG"
 
 ## [v05.99r] — 2026-03-22 12:23:54 PM EST — [sha-unavailable]
 
-> **Prompt:** "ok but now its making it so when i refresh the testauth1 page, its doing the silent GIS re-auth, even if i signed into the application directly"
+> **Prompt:** "ok but now its making it so when i refresh the testauthgas1 page, its doing the silent GIS re-auth, even if i signed into the application directly"
 
 ### Fixed
-- Silent GIS token re-acquisition now gated behind `HTML_CONFIG.SSO_PROVIDER` flag — only fires on the application portal (the designated SSO hub), not on child apps like testauth1 or globalacl
+- Silent GIS token re-acquisition now gated behind `HTML_CONFIG.SSO_PROVIDER` flag — only fires on the application portal (the designated SSO hub), not on child apps like testauthgas1 or globalacl
 
 #### `programportal.html` — v01.12w
 
 ##### Changed
 - Added `SSO_PROVIDER: true` config flag — portal re-acquires Google token on reconnect for SSO sharing
 
-#### `testauth1.html` — v02.68w
+#### `testauthgas1.html` — v02.68w
 
 ##### Changed
 - Added `SSO_PROVIDER: false` config flag — no silent GIS re-auth on reconnect
@@ -5147,7 +5147,7 @@ CONFIG"
 
 ## [v05.98r] — 2026-03-22 12:08:17 PM EST — [sha-unavailable]
 
-> **Prompt:** "ive noticed that the application portal works great on a fresh sign in to it, when i click on testauth1 it automatically authenticates it via the application portal. however, if i refresh the page of the application portal, and it goes through "reconnecting" the testauth1 link no longer automatically authenticates, it just asks for a sign in required"
+> **Prompt:** "ive noticed that the application portal works great on a fresh sign in to it, when i click on testauthgas1 it automatically authenticates it via the application portal. however, if i refresh the page of the application portal, and it goes through "reconnecting" the testauthgas1 link no longer automatically authenticates, it just asks for a sign in required"
 
 ### Fixed
 - SSO auto-authentication now works after page refresh/reconnect — the Google access token (`_ssoAccessToken`) is silently re-acquired via GIS after a successful reconnect, so the portal can respond to SSO requests from child apps
@@ -5157,7 +5157,7 @@ CONFIG"
 ##### Fixed
 - SSO token re-acquired after reconnect so child apps can auto-authenticate
 
-#### `testauth1.html` — v02.67w
+#### `testauthgas1.html` — v02.67w
 
 ##### Fixed
 - SSO token re-acquired after reconnect so child apps can auto-authenticate
@@ -5174,7 +5174,7 @@ CONFIG"
 ### Changed
 - "Session Active Elsewhere" overlay now shows the application name in the heading and message text, using `document.title` to identify which app's session is active elsewhere
 
-#### `testauth1.html` — v02.66w
+#### `testauthgas1.html` — v02.66w
 
 ##### Changed
 - "Session Active Elsewhere" heading and message now include the application name
@@ -5217,7 +5217,7 @@ CONFIG"
 ##### Fixed
 - "Signing in via [source]" subtitle now correctly displays during SSO authentication
 
-#### `testauth1.html` — v02.65w
+#### `testauthgas1.html` — v02.65w
 
 ##### Fixed
 - "Signing in via [source]" subtitle now correctly displays during SSO authentication
@@ -5234,7 +5234,7 @@ CONFIG"
 ##### Changed
 - Sign-in screen now shows which page provided your credentials when signing in via SSO
 
-#### `testauth1.html` — v02.64w
+#### `testauthgas1.html` — v02.64w
 
 ##### Changed
 - Sign-in screen now shows which page provided your credentials when signing in via SSO
@@ -5251,7 +5251,7 @@ CONFIG"
 ##### Fixed
 - Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
 
-#### `testauth1.html` — v02.63w
+#### `testauthgas1.html` — v02.63w
 
 ##### Fixed
 - Session timeout on other pages no longer disrupts your session — only deliberate sign-outs affect all pages
@@ -5261,13 +5261,13 @@ CONFIG"
 > **Prompt:** "for the repository-information/12-HIPAA-SSO-IMPLEMENTATION-PLAN.md i believe we are ready for phase 2, go ahead and start implementing it if we are ready to proceed. remember that the goal of this is so that we can use the programportal as the starting point to authenticate into the other projects, you should have what we are trying to accomplish documented somewhere"
 
 ### Added
-- Implemented Phase 2 BroadcastChannel SSO — programportal.html and testauth1.html now share Google OAuth tokens via ephemeral in-memory BroadcastChannel ('sais-sso-auth'), enabling single sign-on across auth pages
+- Implemented Phase 2 BroadcastChannel SSO — programportal.html and testauthgas1.html now share Google OAuth tokens via ephemeral in-memory BroadcastChannel ('sais-sso-auth'), enabling single sign-on across auth pages
 - Added `attemptSSOAuth()` function to both pages — on page load (no existing session), broadcasts a token request and auto-authenticates if another auth page responds within 2 seconds
 - Added bidirectional SSO token provision — both pages can act as SSO provider (whichever the user signs into first shares tokens with the other)
 - Added cross-page sign-out propagation via `sso-sign-out` broadcast — signing out from one page signs out all SSO-connected pages
 
 ### Changed
-- Changed testauth1.html CLIENT_ID to match programportal's shared CLIENT_ID (`216764502068-7j0j6svmparsrfgdf784dneltlirpac2`) — required for cross-page Google token sharing
+- Changed testauthgas1.html CLIENT_ID to match programportal's shared CLIENT_ID (`216764502068-7j0j6svmparsrfgdf784dneltlirpac2`) — required for cross-page Google token sharing
 
 #### `programportal.html` — v01.06w
 
@@ -5275,7 +5275,7 @@ CONFIG"
 - Single sign-on support — sign in once, other auth pages auto-authenticate without a sign-in prompt
 - Cross-page sign-out — signing out from any connected page signs out all pages
 
-#### `testauth1.html` — v02.62w
+#### `testauthgas1.html` — v02.62w
 
 ##### Added
 - Single sign-on support — auto-authenticates when another auth page (like Program Portal) is already signed in
@@ -5312,7 +5312,7 @@ Developed by: ShadowAISolutions
 #### `programportal.gs` — v01.04g
 
 ##### Fixed
-- Sign-in no longer crashes — added missing page nonce validation that was present in testauth1 but missing from programportal
+- Sign-in no longer crashes — added missing page nonce validation that was present in testauthgas1 but missing from programportal
 
 ## [v05.89r] — 2026-03-21 11:34:54 PM EST — [sha-unavailable]
 
@@ -5420,14 +5420,14 @@ Developed by: ShadowAISolutions
 > **Prompt:** "write up the plan with all context in a new file you need in case of interruptions, think deep, research online, write large files in chunks, etc"
 
 ### Added
-- Created `12-HIPAA-SSO-IMPLEMENTATION-PLAN.md` — comprehensive two-phase plan for HIPAA-compliant SSO between portal and testauth1 (725 lines, includes gap analysis, research findings, implementation steps, testing checklist, and revert procedure)
+- Created `12-HIPAA-SSO-IMPLEMENTATION-PLAN.md` — comprehensive two-phase plan for HIPAA-compliant SSO between portal and testauthgas1 (725 lines, includes gap analysis, research findings, implementation steps, testing checklist, and revert procedure)
 
 ## [v05.81r] — 2026-03-21 08:08:47 PM EST — [sha-unavailable]
 
 > **Prompt:** "proceed with the detailed implementation plan, add a note somewhere so we can easily revert to how it currently is should our update not work"
 
 ### Added
-- Created pre-SSO backups of `portal.html` and `testauth1.html` in `repository-information/backups/`
+- Created pre-SSO backups of `portal.html` and `testauthgas1.html` in `repository-information/backups/`
 - Added `SSO-REVERT-INSTRUCTIONS.md` with step-by-step revert procedure
 
 ## [v05.80r] — 2026-03-21 07:08:43 PM EST — [sha-unavailable]
@@ -5487,7 +5487,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - GAS changelog popup title no longer shows pipe characters
 
-#### `testauth1.html` — v02.61w
+#### `testauthgas1.html` — v02.61w
 ##### Fixed
 - GAS changelog popup title no longer shows pipe characters
 
@@ -5525,7 +5525,7 @@ Developed by: ShadowAISolutions
 ##### Changed
 - GAS version polling now parses pipe-delimited format from gs.version.txt
 
-#### `testauth1.html` — v02.60w
+#### `testauthgas1.html` — v02.60w
 ##### Changed
 - GAS version polling now parses pipe-delimited format from gs.version.txt
 
@@ -5543,10 +5543,10 @@ Developed by: ShadowAISolutions
 
 ## [v05.75r] — 2026-03-21 05:47:28 PM EST — [sha-unavailable]
 
-> **Prompt:** "the fixes that we have made to the testauth1, make sure those are applied to the templates"
+> **Prompt:** "the fixes that we have made to the testauthgas1, make sure those are applied to the templates"
 
 ### Changed
-- Propagated testauth1 auth fixes (v05.65r–v05.74r) to both auth templates — nonce-based authentication flow, signature exemptions, CacheService eventual consistency workarounds, updated Use Here and page-load resume handlers
+- Propagated testauthgas1 auth fixes (v05.65r–v05.74r) to both auth templates — nonce-based authentication flow, signature exemptions, CacheService eventual consistency workarounds, updated Use Here and page-load resume handlers
 
 ## [v05.74r] — 2026-03-21 05:21:32 PM EST — [sha-unavailable]
 
@@ -5556,7 +5556,7 @@ Developed by: ShadowAISolutions
 - Fixed page refresh and "Use Here" stuck on "Reconnecting..." — replaced unreliable `loadIframeViaNonce()` (CacheService eventual consistency) with direct `?session=` iframe load on both paths. The postMessage handshake guard protects against direct URL access
 - Fixed `invalid_signature` security event on login — the immediate unsigned `gas-auth-ok` was being rejected by HMAC verification when the key had already been imported from `gas-session-created`. Added `gas-auth-ok` to the HMAC signature-exempt list
 
-#### `testauth1.html` — v02.59w
+#### `testauthgas1.html` — v02.59w
 ##### Fixed
 - Page refresh and "Use Here" reconnect immediately instead of getting stuck
 - Sign-in no longer triggers a false `invalid_signature` security event
@@ -5569,7 +5569,7 @@ Developed by: ShadowAISolutions
 - Restored immediate unsigned `gas-auth-ok` postMessage before the async `google.script.run.signAppMessage()` call — v05.69r removed this and left only the async path, but `google.script.run` is too slow on the nonce/refresh path, causing the parent page to stay stuck on "Reconnecting..." indefinitely
 - The immediate `gas-auth-ok` fires synchronously on page load; the signed version follows asynchronously as belt-and-suspenders
 
-#### `testauth1.gs` — v01.90g
+#### `testauthgas1.gs` — v01.90g
 ##### Fixed
 - Page refresh and "Use Here" now complete immediately instead of waiting for async server round-trip
 
@@ -5580,7 +5580,7 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Skip postMessage handshake guard on `?page_nonce=` path — nonces are one-time-use so a copied nonce URL is already useless (no handshake needed for replay protection). The handshake was blocking the page refresh and "Use Here" flows because it ran unconditionally
 
-#### `testauth1.gs` — v01.89g
+#### `testauthgas1.gs` — v01.89g
 ##### Fixed
 - Handshake guard now only runs on `?session=` path (initial sign-in); nonce-loaded pages skip it
 
@@ -5600,11 +5600,11 @@ Developed by: ShadowAISolutions
 - Added postMessage handshake guard to portal.gs (previously had no iframe guard at all)
 - Direct URL access to authenticated GAS apps now shows "Access denied" after 2-second timeout instead of the full authenticated UI
 
-#### `testauth1.html` — v02.58w
+#### `testauthgas1.html` — v02.58w
 ##### Security
 - Added frame handshake responder to verify GAS iframe is embedded in the correct parent page
 
-#### `testauth1.gs` — v01.88g
+#### `testauthgas1.gs` — v01.88g
 ##### Security
 - Replaced broken iframe guard with postMessage handshake that verifies embedding via challenge-response with the parent page
 
@@ -5627,13 +5627,13 @@ Developed by: ShadowAISolutions
 - Removed immediate unsigned `gas-auth-ok` and sig-exempt workarounds (no longer needed with `?session=` path)
 - Nonce flow (`loadIframeViaNonce`) remains for page refresh, tab reclaim, and cross-tab sync (replay protection for existing tokens)
 
-#### `testauth1.html` — v02.57w
+#### `testauthgas1.html` — v02.57w
 ##### Fixed
 - Sign-in uses `?session=TOKEN` directly, avoiding CacheService race condition
 ##### Changed
 - Removed `gas-auth-ok` from signature-exempt list (HMAC verification restored)
 
-#### `testauth1.gs` — v01.87g
+#### `testauthgas1.gs` — v01.87g
 ##### Changed
 - Removed hard-block on `?session=` parameter — both `?session=` and `?page_nonce=` are valid
 - Removed `pageNonce` generation from `exchangeTokenForSession()` (not needed for `?session=` sign-in)
@@ -5647,11 +5647,11 @@ Developed by: ShadowAISolutions
 - Send `gas-auth-ok` immediately via `window.top.postMessage()` from the GAS app HTML — `google.script.run.signAppMessage()` async call was not firing or completing, leaving the page stuck on "Signing in..."
 - Added `gas-auth-ok` to HMAC signature-exempt list — allows unsigned immediate `gas-auth-ok` to be processed while signed version arrives later
 
-#### `testauth1.html` — v02.56w
+#### `testauthgas1.html` — v02.56w
 ##### Fixed
 - Sign-in now completes immediately without waiting for async server call
 
-#### `testauth1.gs` — v01.86g
+#### `testauthgas1.gs` — v01.86g
 ##### Fixed
 - App sends unsigned `gas-auth-ok` immediately on load, with signed version following asynchronously
 
@@ -5662,7 +5662,7 @@ Developed by: ShadowAISolutions
 ### Fixed
 - Added `gas-ready-for-token` to HMAC signature-exempt list — this message comes from the token exchange listener page which has no signing key; when a user re-signs in with an existing HMAC key from a prior session, the message was being rejected as `invalid_signature`
 
-#### `testauth1.html` — v02.55w
+#### `testauthgas1.html` — v02.55w
 ##### Fixed
 - Sign-in flow no longer blocked by HMAC verification of unsigned token exchange messages
 
@@ -5674,11 +5674,11 @@ Developed by: ShadowAISolutions
 - Fixed sign-in flow stuck on "Signing in..." — the two-step nonce round-trip during OAuth token exchange introduced timing/state issues between `gas-session-created` and `gas-auth-ok`
 - Generate page nonce server-side inside `exchangeTokenForSession()` and include it in the `gas-session-created` response — eliminates the intermediate `?action=getNonce` iframe navigation during sign-in
 
-#### `testauth1.html` — v02.54w
+#### `testauthgas1.html` — v02.54w
 ##### Fixed
 - Sign-in no longer gets stuck on "Signing in..." screen — uses server-provided nonce directly
 
-#### `testauth1.gs` — v01.85g
+#### `testauthgas1.gs` — v01.85g
 ##### Changed
 - Token exchange now returns a pre-generated page nonce alongside the session token
 
@@ -5692,16 +5692,16 @@ Developed by: ShadowAISolutions
 
 ### Added
 - `action=getNonce` listener route in GAS `doGet()` — generates one-time-use page nonces via `google.script.run.generatePageNonce()`
-- `loadIframeViaNonce()` helper function in testauth1.html — centralizes the two-step nonce flow for all authenticated iframe loads
+- `loadIframeViaNonce()` helper function in testauthgas1.html — centralizes the two-step nonce flow for all authenticated iframe loads
 - `gas-nonce-ready` and `gas-nonce-result` postMessage handlers for the nonce generation flow
 - Increased page nonce TTL from 30 seconds to 60 seconds for the two-step flow
 
-#### `testauth1.html` — v02.53w
+#### `testauthgas1.html` — v02.53w
 ##### Changed
 - Sign-in, session restore, tab reclaim, and cross-tab sync all now use nonce-based iframe loading instead of direct session token URLs
 - Session tokens are never exposed in browser history, network logs, or shareable URLs
 
-#### `testauth1.gs` — v01.84g
+#### `testauthgas1.gs` — v01.84g
 ##### Added
 - Nonce generation listener page (`action=getNonce`) for secure iframe loading
 ##### Changed
@@ -5716,7 +5716,7 @@ Developed by: ShadowAISolutions
 - Reverted postMessage handshake flow — GAS sandbox cross-origin constraints prevent reliable multi-step nonce exchange; restored `?session=` URL parameter for iframe loading
 - The iframe guard (`window.parent === window.top`) remains as the primary defense against direct `/exec` access
 
-#### `testauth1.html` — v02.52w
+#### `testauthgas1.html` — v02.52w
 ##### Fixed
 - Sign-in flow restored to working state
 
@@ -5728,7 +5728,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - Sign-in flow restored to working state
 
-#### `testauth1.gs` — v01.83g
+#### `testauthgas1.gs` — v01.83g
 ##### Fixed
 - Restored simple auth response for unauthorized requests
 
@@ -5744,7 +5744,7 @@ Developed by: ShadowAISolutions
 - Fixed handshake page nonce redirect — the GAS sandbox can't navigate itself to `/exec` (different origin), so the handshake now posts `gas-handshake-complete` with the nonce to the parent page, which sets `gasApp.src` to the nonce URL
 - Added `gas-handshake-complete` message type to allowed message whitelist and signature exempt list
 
-#### `testauth1.html` — v02.51w
+#### `testauthgas1.html` — v02.51w
 ##### Fixed
 - Session setup now completes properly after sign-in
 
@@ -5756,7 +5756,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - Session setup now completes properly after sign-in
 
-#### `testauth1.gs` — v01.82g
+#### `testauthgas1.gs` — v01.82g
 ##### Fixed
 - Handshake page now sends nonce to parent for iframe reload instead of navigating within the sandbox
 
@@ -5783,7 +5783,7 @@ Developed by: ShadowAISolutions
 - Session tokens no longer exposed in iframe URLs — prevents token extraction via DevTools, network inspector, or URL copy
 - Direct browser access to GAS `/exec` URL now shows nothing useful — handshake requires a parent frame to respond
 
-#### `testauth1.html` — v02.50w
+#### `testauthgas1.html` — v02.50w
 ##### Changed
 - Session token exchange with GAS iframe now uses postMessage handshake instead of URL parameter
 
@@ -5795,7 +5795,7 @@ Developed by: ShadowAISolutions
 ##### Changed
 - Session token exchange with GAS iframe now uses postMessage handshake instead of URL parameter
 
-#### `testauth1.gs` — v01.81g
+#### `testauthgas1.gs` — v01.81g
 ##### Added
 - Page nonce handshake flow — `generatePageNonce()` and `validatePageNonce()` functions
 - Handshake page in `doGet()` that challenges the parent frame for session token
@@ -5817,7 +5817,7 @@ Developed by: ShadowAISolutions
 - Added "Signing out..." visual blocker overlay — shows immediately on sign-out to block UI interaction while the server-side session invalidation round-trip completes (1-2 seconds)
 - 10-second fallback timeout ensures the auth wall always appears even if the GAS server doesn't respond
 
-#### `testauth1.html` — v02.49w
+#### `testauthgas1.html` — v02.49w
 ##### Fixed
 - Sign-out now properly invalidates server-side sessions before clearing the GAS iframe
 ##### Added
@@ -5843,19 +5843,19 @@ Developed by: ShadowAISolutions
 - Fixed GAS iframe guard — `window.self === window.top` never fires because GAS always runs inside Google's sandbox iframe; changed to `window.parent === window.top` which correctly detects direct navigation vs legitimate embedding
 - Applied the same fix to both auth GAS templates (minimal and test)
 
-#### `testauth1.gs` — v01.80g
+#### `testauthgas1.gs` — v01.80g
 ##### Fixed
 - Iframe guard now correctly blocks direct navigation to session URLs (was previously dead code due to GAS sandbox nesting)
 
 ## [v05.59r] — 2026-03-21 11:09:01 AM EST — [sha-unavailable]
 
-> **Prompt:** "trouble in paradise. as per the screenshot which was done in the testauth1, you can see an exec?session= link and that link opens up the gas script, which is opening up the gas. unfortunately it is opening as if the user was logged in"
+> **Prompt:** "trouble in paradise. as per the screenshot which was done in the testauthgas1, you can see an exec?session= link and that link opens up the gas script, which is opening up the gas. unfortunately it is opening as if the user was logged in"
 
 ### Fixed
 - Added iframe guard to GAS auth app HTML — prevents direct navigation to `exec?session=TOKEN` URLs from rendering the authenticated app outside the embedding iframe
 - Applied the same fix to both auth GAS templates (minimal and test) for consistency
 
-#### `testauth1.gs` — v01.79g
+#### `testauthgas1.gs` — v01.79g
 ##### Fixed
 - Direct navigation to session URLs no longer renders the app — shows "Access denied" message instead
 
@@ -5898,7 +5898,7 @@ Developed by: ShadowAISolutions
 - Removed manual HMAC secret generation UI from gas-project-creator (Generate button, input field, Copy button) — no longer needed since HMAC_SECRET auto-generates on first deploy
 - Updated CACHE_EPOCH and HMAC_SECRET descriptions in gas-project-creator to "auto-generated on first deploy"
 
-#### `testauth1.html` — v02.48w
+#### `testauthgas1.html` — v02.48w
 ##### Changed
 - Updated HMAC setup error message to reflect auto-generation on deploy
 
@@ -5915,7 +5915,7 @@ Developed by: ShadowAISolutions
 - Removed manual HMAC secret generation UI (Generate button, input field, Copy button)
 - Updated CACHE_EPOCH and HMAC_SECRET property descriptions to "auto-generated on first deploy"
 
-#### `testauth1.gs` — v01.78g
+#### `testauthgas1.gs` — v01.78g
 ##### Added
 - `ensureScriptProperties_()` function for auto-initializing HMAC_SECRET and CACHE_EPOCH
 ##### Changed
@@ -5941,7 +5941,7 @@ Developed by: ShadowAISolutions
 
 ### Added
 - Secret rotation capability via `rotateAdminSecret()` — admin can rotate the cross-project secret, which automatically distributes the new secret to all registered projects
-- `setAdminSecret` endpoint on all auth projects (testauth1, portal, templates) — accepts secret updates from GlobalACL with old-secret authentication
+- `setAdminSecret` endpoint on all auth projects (testauthgas1, portal, templates) — accepts secret updates from GlobalACL with old-secret authentication
 
 #### `globalacl.gs` — v01.17g
 
@@ -5953,7 +5953,7 @@ Developed by: ShadowAISolutions
 - `distributeSecret_()` — pushes the admin secret to all registered projects via UrlFetchApp.fetchAll
 - `rotateAdminSecret()` — generates a new secret, distributes to all projects, updates local storage
 
-#### `testauth1.gs` — v01.77g
+#### `testauthgas1.gs` — v01.77g
 
 ##### Changed
 - `getCrossProjectSecret()` now reads from Script Properties instead of spreadsheet Config tab
@@ -5985,7 +5985,7 @@ Developed by: ShadowAISolutions
 ##### Fixed
 - All popups, overlays, and background timers now properly deactivated on sign-out
 
-#### `testauth1.html` — v02.47w
+#### `testauthgas1.html` — v02.47w
 
 ##### Fixed
 - Popups and overlays no longer persist on screen after signing out
@@ -6103,7 +6103,7 @@ Developed by: ShadowAISolutions
 ##### Changed
 - Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
 
-#### `testauth1.gs` — v01.76g
+#### `testauthgas1.gs` — v01.76g
 
 ##### Changed
 - Project metadata (name, URL, auth status) is now stored directly in the Access tab as metadata rows instead of a separate Projects tab — simplifies the spreadsheet layout
@@ -6125,7 +6125,7 @@ Developed by: ShadowAISolutions
 ##### Added
 - New projects now automatically get a page column in the Access tab with FALSE checkboxes for all existing users
 
-#### `testauth1.gs` — v01.75g
+#### `testauthgas1.gs` — v01.75g
 
 ##### Added
 - New projects now automatically get a page column in the Access tab with FALSE checkboxes for all existing users
@@ -6151,7 +6151,7 @@ Developed by: ShadowAISolutions
 - Cross-project session conflicts in the same browser — signing into one project no longer overwrites or interferes with another project's session
 - All localStorage keys and BroadcastChannel names are now scoped per-project using the page name derived from the URL path
 
-#### `testauth1.html` — v02.46w
+#### `testauthgas1.html` — v02.46w
 
 ##### Fixed
 - Sessions no longer conflict with other projects open in the same browser
@@ -6173,7 +6173,7 @@ Developed by: ShadowAISolutions
 
 ## [v05.43r] — 2026-03-20 06:56:29 PM EST — [sha-unavailable]
 
-> **Prompt:** "you made it show myself, but it should be showing sessions from all projects, which i am signed into the testauth1 project with another user as seen in the screenshot. is there a better way to accomplish this? recreating how we have configured everything is fine, recommend the best long term approach"
+> **Prompt:** "you made it show myself, but it should be showing sessions from all projects, which i am signed into the testauthgas1 project with another user as seen in the screenshot. is there a better way to accomplish this? recreating how we have configured everything is fine, recommend the best long term approach"
 
 ### Added
 - Zero-configuration auto-registration for all auth-enabled GAS projects — each project registers itself in the Master ACL "Projects" sheet on first page load, eliminating the need for manual spreadsheet setup
@@ -6193,7 +6193,7 @@ Developed by: ShadowAISolutions
 ##### Changed
 - Replaced self-project fallback with proper auto-registration infrastructure
 
-#### `testauth1.gs` — v01.74g
+#### `testauthgas1.gs` — v01.74g
 
 ##### Added
 - Auto-registration on page load — registers itself with its deployment URL in the Projects sheet
@@ -6217,7 +6217,7 @@ Developed by: ShadowAISolutions
 
 ## [v05.41r] — 2026-03-20 06:13:55 PM EST — [sha-unavailable]
 
-> **Prompt:** "i want an interface which is like the sessions button in the testauth1 project, but i want it to apply to all projects. should it be part of the globalacl manager or is that something that should be its own specific environment"
+> **Prompt:** "i want an interface which is like the sessions button in the testauthgas1 project, but i want it to apply to all projects. should it be part of the globalacl manager or is that something that should be its own specific environment"
 
 ### Added
 - Global Sessions interface on the GlobalACL page — aggregates active sessions from all auth-enabled GAS projects into a single admin view
@@ -6225,7 +6225,7 @@ Developed by: ShadowAISolutions
 - "Global Sessions" button alongside existing "Sessions" button on GlobalACL, with a dedicated green-themed panel showing sessions grouped by project
 - Admin ability to kick users from specific projects or all projects at once from the Global Sessions panel
 - Project registry reader that discovers auth-enabled projects from a "Projects" tab in the Master ACL Spreadsheet
-- Cross-project `listSessions` and `adminSignOut` doGet endpoints on all three auth projects (globalacl, testauth1, portal)
+- Cross-project `listSessions` and `adminSignOut` doGet endpoints on all three auth projects (globalacl, testauthgas1, portal)
 - Cross-project session functions propagated to both auth GAS templates for future projects
 
 #### `globalacl.html` — v01.01w
@@ -6245,7 +6245,7 @@ Developed by: ShadowAISolutions
 - `listSessions` and `adminSignOut` doGet action routes for cross-project queries
 - `adminGlobalSessions` doGet action route for the Global Sessions iframe listener
 
-#### `testauth1.gs` — v01.73g
+#### `testauthgas1.gs` — v01.73g
 
 ##### Added
 - Cross-project session listing and admin sign-out endpoints (`listSessions`, `adminSignOut` doGet routes)
@@ -6609,7 +6609,7 @@ CONFIG"
 > **Prompt:** "start with the TEMPLATE-UPDATE-PLAN.md"
 
 ### Added
-- Auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — full rebuild synced with testauth1's evolved feature set including RBAC, HMAC-SHA256 message signing, admin panel, cache epoch, cross-device session enforcement, tab takeover, CSP, deferred AudioContext, changelog sanitization, and 10+ new config toggles
+- Auth HTML template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — full rebuild synced with testauthgas1's evolved feature set including RBAC, HMAC-SHA256 message signing, admin panel, cache epoch, cross-device session enforcement, tab takeover, CSP, deferred AudioContext, changelog sanitization, and 10+ new config toggles
 - Auth GAS minimal template (`gas-minimal-auth-template-code.js.txt`) — rebuilt with RBAC roles (admin/editor/viewer), HMAC-SHA256 signed messages, epoch-based cache, ACL spreadsheet support, cross-device enforcement, and `PARENT_ORIGIN` for secure postMessage
 - Auth GAS test template (`gas-test-auth-template-code.js.txt`) — extended minimal template with diagnostic UI, version count status, sound test, sheet operations, and live quota panels
 - Content Security Policy meta tag added to noauth HTML template
@@ -6618,7 +6618,7 @@ CONFIG"
 
 ### Changed
 - Noauth HTML template AudioContext initialization deferred to first user gesture via `_ensureAudioCtx()` — eliminates Chrome autoplay policy console warning
-- Auth templates genericized: `clinician` → `editor`, `billing` role removed, testauth1-specific references replaced with template placeholders
+- Auth templates genericized: `clinician` → `editor`, `billing` role removed, testauthgas1-specific references replaced with template placeholders
 
 ### Fixed
 - Template placeholder consistency — `YOUR_SPREADSHEET_ID` → `TEMPLATE_SPREADSHEET_ID` in auth GAS templates' internal comparison checks
@@ -6652,19 +6652,19 @@ CONFIG"
 
 ## [v05.15r] — 2026-03-19 07:17:21 PM EST — [36dea381](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/36dea38154dc4b80a2657c66c2a2dc179666607b)
 
-> **Prompt:** "update the gas and html templates to match what we have in the testauth1 environment. make sure you therefore fix the scripts to work on the new template code"
+> **Prompt:** "update the gas and html templates to match what we have in the testauthgas1 environment. make sure you therefore fix the scripts to work on the new template code"
 
 ### Added
-- `TEMPLATE-UPDATE-PLAN.md` — phased implementation plan for syncing auth templates with testauth1's evolved feature set (RBAC, HMAC-SHA256, admin panel, cache epoch, cross-device enforcement, tab takeover, CSP, and 10+ new config toggles)
+- `TEMPLATE-UPDATE-PLAN.md` — phased implementation plan for syncing auth templates with testauthgas1's evolved feature set (RBAC, HMAC-SHA256, admin panel, cache epoch, cross-device enforcement, tab takeover, CSP, and 10+ new config toggles)
 
 ## [v05.14r] — 2026-03-19 05:46:46 PM EST — [769c4358](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/769c4358f9264f6c1de087cc72686d30361ce673)
 
-> **Prompt:** "in the testauth1, for an admin user, i am no longer able to click on the button to see who is logged in to log them out anymore, think deep"
+> **Prompt:** "in the testauthgas1, for an admin user, i am no longer able to click on the button to see who is logged in to log them out anymore, think deep"
 
 ### Fixed
 - Admin Sessions button unclickable for admin users — `applyUIGating()` set `el.style.display = ''` to show gated elements, but the `#admin-sessions-btn` CSS has `display: none` as default, so clearing the inline style just exposed the stylesheet rule and the button stayed hidden. Changed to `display: 'inline-block'` for visible state
 
-#### `testauth1.html` — v02.45w
+#### `testauthgas1.html` — v02.45w
 
 ##### Fixed
 - Admin Sessions button now properly visible and clickable for admin users
@@ -6676,7 +6676,7 @@ CONFIG"
 ### Added
 - `inspectCache()` diagnostic function — probes all known cache key patterns for each user and logs what's found, including current and previous epoch entries
 
-#### `testauth1.gs` — v01.72g
+#### `testauthgas1.gs` — v01.72g
 
 ##### Added
 - New diagnostic tool to view cache contents from the GAS editor
@@ -6690,7 +6690,7 @@ CONFIG"
 - All CacheService access now goes through `getEpochCache()` wrapper that auto-prefixes keys with the epoch number
 - Running `clearAllAccessCache()` from the GAS editor is now a true nuclear clear — guaranteed to invalidate everything
 
-#### `testauth1.gs` — v01.71g
+#### `testauthgas1.gs` — v01.71g
 
 ##### Changed
 - Cache clearing now invalidates everything at once — no more stale entries from any source
@@ -6702,7 +6702,7 @@ CONFIG"
 ### Fixed
 - `clearAllAccessCache()` now collects emails from BOTH the ACL spreadsheet AND the SPREADSHEET_ID sharing list — previously only read the ACL tab, so users cached from the old sharing-list method (before ACL migration) were never cleared
 
-#### `testauth1.gs` — v01.70g
+#### `testauthgas1.gs` — v01.70g
 
 ##### Fixed
 - Cache clearing now covers all users regardless of which access method originally cached them
@@ -6714,12 +6714,12 @@ CONFIG"
 ### Fixed
 - Sessions button hidden for admin users — `applyUIGating()` was checking permissions array for "admin" but the spreadsheet Roles tab may not have "admin" as a permission column. Added `data-requires-role` attribute support alongside `data-requires-permission`, and switched the Sessions button to use role-based gating
 
-#### `testauth1.html` — v02.44w
+#### `testauthgas1.html` — v02.44w
 
 ##### Fixed
 - Admin session management button now appears correctly for admin users
 
-#### `testauth1.gs` — v01.69g
+#### `testauthgas1.gs` — v01.69g
 
 ##### Changed
 - Minor internal improvements
@@ -6731,7 +6731,7 @@ CONFIG"
 ### Changed
 - `clearAccessCacheForUser()` now accepts an email parameter and falls back to Script Properties key `CLEAR_CACHE_EMAIL` — no longer requires editing the source code
 
-#### `testauth1.gs` — v01.68g
+#### `testauthgas1.gs` — v01.68g
 
 ##### Changed
 - Cache clearing for individual users now reads the target email from a Script Properties setting instead of requiring a code edit
@@ -6744,7 +6744,7 @@ CONFIG"
 - `clearAllAccessCache()` now invalidates all active sessions, forcing users to re-authenticate with fresh roles — previously only cleared the access lookup cache while existing sessions kept the old role
 - `clearAccessCacheForUser()` also invalidates the target user's sessions for the same reason
 
-#### `testauth1.gs` — v01.67g
+#### `testauthgas1.gs` — v01.67g
 
 ##### Fixed
 - Clearing the access cache now forces all users to sign in again so role changes take effect immediately
@@ -6759,13 +6759,13 @@ CONFIG"
 - Removed `uiElements` from all auth response payloads (`exchangeTokenForSession`, `signAppMessage`, `doGet` paths)
 - Admin sessions button now uses `data-requires-permission="admin"` instead of hardcoded role check in JavaScript
 
-#### `testauth1.gs` — v01.66g
+#### `testauthgas1.gs` — v01.66g
 
 ##### Changed
 - Removed UIElements spreadsheet functions and all uiElements response fields — UI gating is now handled client-side
 - Simplified clearAllAccessCache() — no longer clears UI elements cache
 
-#### `testauth1.html` — v02.43w
+#### `testauthgas1.html` — v02.43w
 
 ##### Changed
 - `applyUIGating()` now scans for `data-requires-permission` attributes and compares against session permissions instead of reading a server-provided mapping
@@ -6774,7 +6774,7 @@ CONFIG"
 
 ## [v05.06r] — 2026-03-19 02:07:08 PM EST — [062f5111](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/062f5111eeeb9f216d2be75940b764eb960bce2f)
 
-> **Prompt:** "ok ive made them, proceed with implementing these into testauth1"
+> **Prompt:** "ok ive made them, proceed with implementing these into testauthgas1"
 
 ### Changed
 - Centralized RBAC: roles and permissions now read from the "Roles" tab of the ACL spreadsheet instead of being hardcoded in the GAS script — admins can change permissions by editing spreadsheet cells without redeploying code
@@ -6782,7 +6782,7 @@ CONFIG"
 - Renamed ACL tab from "ACL" to "Access" to match the new centralized spreadsheet structure
 - Added 10-minute CacheService caching and in-memory execution caching for spreadsheet-driven role lookups to minimize API calls
 
-#### `testauth1.gs` — v01.65g
+#### `testauthgas1.gs` — v01.65g
 
 ##### Changed
 - Replaced hardcoded `RBAC_ROLES` object with `getRolesFromSpreadsheet()` that reads from the "Roles" tab of the centralized ACL spreadsheet (falls back to hardcoded values if tab is missing)
@@ -6793,7 +6793,7 @@ CONFIG"
 - Updated `clearAllAccessCache()` to also clear the roles matrix and UI elements caches
 - Updated `ACL_SHEET_NAME` from "ACL" to "Access"
 
-#### `testauth1.html` — v02.42w
+#### `testauthgas1.html` — v02.42w
 
 ##### Changed
 - Added `UI_ELEMENTS_KEY` to session storage for persisting UI gating rules across page interactions
@@ -6807,9 +6807,9 @@ CONFIG"
 > **Prompt:** "lets start first by using a new dedicated spreadsheet, its spreadsheet ID is 1HASSFzjdqTrZiOAJTEfHu8e-a_6huwouWtSFlbU8wLI"
 
 ### Changed
-- Switched testauth1 ACL to use a new dedicated centralized spreadsheet for access control, separating ACL management from project data
+- Switched testauthgas1 ACL to use a new dedicated centralized spreadsheet for access control, separating ACL management from project data
 
-#### `testauth1.gs` — v01.64g
+#### `testauthgas1.gs` — v01.64g
 
 ##### Changed
 - Updated MASTER_ACL_SPREADSHEET_ID to point to new dedicated ACL spreadsheet
@@ -6822,13 +6822,13 @@ CONFIG"
 - Fixed heartbeat stuck on "sending..." after admin sign-out — `gas-heartbeat-expired` was being rejected by HMAC signature verification because the server can't sign the response when the session (and its signing key) no longer exists. Added `gas-heartbeat-expired` and `gas-heartbeat-error` to the signature-exempt list
 - Fixed eviction tombstone being consumed by the first reader (heartbeat), leaving nothing for page refresh to read — tombstones now expire naturally (5 min TTL) instead of being deleted on first read, so both heartbeat and page refresh can independently detect the admin sign-out reason
 
-#### `testauth1.html` — v02.41w
+#### `testauthgas1.html` — v02.41w
 
 ##### Fixed
 - Admin sign-out now immediately shows "An administrator ended your session" without requiring a page refresh
 - Heartbeat no longer gets stuck on "sending..." when session is admin-invalidated
 
-#### `testauth1.gs` — v01.63g
+#### `testauthgas1.gs` — v01.63g
 
 ##### Fixed
 - Eviction tombstones are no longer consumed on first read, allowing multiple consumers (heartbeat, page refresh) to detect the sign-out reason
@@ -6843,13 +6843,13 @@ CONFIG"
 - `invalidateAllSessions()` now accepts a `reason` parameter — admin sign-outs use `admin_signout`, natural sign-ins continue using `new_sign_in`
 - `validateSession()` now checks eviction tombstones and forwards the reason to `gas-needs-auth`, enabling the client to show context-appropriate messages on page refresh
 
-#### `testauth1.html` — v02.40w
+#### `testauthgas1.html` — v02.40w
 
 ##### Fixed
 - Users signed out by an admin now see a clear sign-in page instead of being stuck on "Reconnecting..."
 - Admin sign-out now shows "An administrator ended your session" instead of a generic expiration message
 
-#### `testauth1.gs` — v01.62g
+#### `testauthgas1.gs` — v01.62g
 
 ##### Fixed
 - Admin sign-out now properly notifies the signed-out user's browser via distinct eviction reason
@@ -6861,7 +6861,7 @@ CONFIG"
 ### Fixed
 - Fixed admin session panel stuck on "Loading sessions..." — the postMessage was being sent to the GAS outer shell iframe (`contentWindow`) instead of the inner sandbox frame where the listener runs. Now uses `event.source` from the `gas-admin-sessions-ready` signal to target the correct sandbox frame (same pattern as `gas-ready-for-token`)
 
-#### `testauth1.html` — v02.39w
+#### `testauthgas1.html` — v02.39w
 
 ##### Fixed
 - Session management panel now loads and displays active sessions correctly
@@ -6871,19 +6871,19 @@ CONFIG"
 > **Prompt:** "yes build that"
 
 ### Added
-- Admin session management panel — admins can view all active sessions (email, role, last activity, time remaining) and sign out any user directly from the testauth1 UI
+- Admin session management panel — admins can view all active sessions (email, role, last activity, time remaining) and sign out any user directly from the testauthgas1 UI
 - Server-side `listActiveSessions()` and `adminSignOutUser()` GAS functions, both admin-permission-gated with audit logging
-- New `action=adminSessions` doGet route in testauth1.gs for postMessage-based admin panel communication (same pattern as heartbeat/signout)
+- New `action=adminSessions` doGet route in testauthgas1.gs for postMessage-based admin panel communication (same pattern as heartbeat/signout)
 - "Sessions" button in user pill (visible only to admin role) toggles the admin panel overlay
 
-#### `testauth1.gs` — v01.61g
+#### `testauthgas1.gs` — v01.61g
 
 ##### Added
 - `listActiveSessions(sessionToken)` — walks ACL spreadsheet to enumerate all active sessions from cache, returns email, role, timestamps, and remaining time
 - `adminSignOutUser(sessionToken, targetEmail)` — invalidates all sessions for a target user, admin-permission-gated
 - `action=adminSessions` doGet route — lightweight postMessage listener page for admin session commands
 
-#### `testauth1.html` — v02.38w
+#### `testauthgas1.html` — v02.38w
 
 ##### Added
 - Admin session management panel with dark-themed UI — shows active sessions with email, role badge, sign-in time, last activity, and countdown timers
@@ -6897,9 +6897,9 @@ CONFIG"
 > **Prompt:** "you can add these things to the gas for me"
 
 ### Added
-- Added admin utility functions to testauth1.gs for clearing the server-side access cache — `clearAccessCacheForUser()` clears a single user, `clearAllAccessCache()` clears all ACL-listed users
+- Added admin utility functions to testauthgas1.gs for clearing the server-side access cache — `clearAccessCacheForUser()` clears a single user, `clearAllAccessCache()` clears all ACL-listed users
 
-#### `testauth1.gs` — v01.60g
+#### `testauthgas1.gs` — v01.60g
 
 ##### Added
 - Admin utility to clear access cache for a specific user or all users, so ACL changes take effect immediately without waiting 10 minutes
@@ -6911,7 +6911,7 @@ CONFIG"
 ### Fixed
 - Fixed bug where users not in the ACL tab could still sign in via the spreadsheet's editor/viewer sharing list (Method 2 fallback). When the ACL tab is configured, it is now the sole authority — the sharing-list check is skipped entirely
 
-#### `testauth1.gs` — v01.59g
+#### `testauthgas1.gs` — v01.59g
 
 ##### Fixed
 - Users not listed in the ACL tab are now properly denied access instead of being admitted through the spreadsheet sharing list
@@ -6923,29 +6923,29 @@ CONFIG"
 ### Changed
 - Added role badge display to the user pill after sign-in, showing the user's assigned RBAC role (e.g. admin, clinician, viewer) from the ACL spreadsheet
 
-#### `testauth1.html` — v02.37w
+#### `testauthgas1.html` — v02.37w
 
 ##### Changed
 - Show user's role badge in the top-right corner after sign-in
 
 ## [v04.97r] — 2026-03-19 10:55:31 AM EST — [a26ea88c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a26ea88ce094f78828008309d6a2be4ff3986851)
 
-> **Prompt:** "for now use the testauth1 spreadsheet as the ACL while we are testing, set up the tab for it"
+> **Prompt:** "for now use the testauthgas1 spreadsheet as the ACL while we are testing, set up the tab for it"
 
 ### Changed
-- Configured `MASTER_ACL_SPREADSHEET_ID` to use the existing testauth1 data spreadsheet (`1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA`) as the ACL source for testing — activates RBAC role lookups from the ACL tab
+- Configured `MASTER_ACL_SPREADSHEET_ID` to use the existing testauthgas1 data spreadsheet (`1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA`) as the ACL source for testing — activates RBAC role lookups from the ACL tab
 
-#### `testauth1.gs` — v01.58g
+#### `testauthgas1.gs` — v01.58g
 
 ##### Changed
-- ACL spreadsheet ID set to testauth1 data spreadsheet — RBAC now reads roles from the ACL tab in the same spreadsheet
+- ACL spreadsheet ID set to testauthgas1 data spreadsheet — RBAC now reads roles from the ACL tab in the same spreadsheet
 
 ## [v04.96r] — 2026-03-19 10:46:42 AM EST — [215a045b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/215a045bf21c0b30c70a8b0e6b8197c8bbca7374)
 
 > **Prompt:** "ok how do you suggest we get started with RBAC"
 
 ### Added
-- Implemented Role-Based Access Control (RBAC) in the testauth1 environment — four roles (admin, clinician, billing, viewer) with distinct permission sets, addressing HIPAA §164.308(a)(4)(ii) compliance gap #5 from the HIPAA compliance report
+- Implemented Role-Based Access Control (RBAC) in the testauthgas1 environment — four roles (admin, clinician, billing, viewer) with distinct permission sets, addressing HIPAA §164.308(a)(4)(ii) compliance gap #5 from the HIPAA compliance report
 - Permission gate function `checkPermission()` validates user role against required permissions before data operations, throwing PERMISSION_DENIED on denial with full audit logging
 - Role and permissions now stored in server-side session cache and delivered to client via postMessage (gas-session-created and gas-auth-ok)
 - Client-side role/permissions storage in sessionStorage for future UI gating
@@ -6959,7 +6959,7 @@ CONFIG"
 - Emergency access users receive 'admin' role with full permissions, logged as isEmergencyAccess
 - Session resume via gas-auth-ok now updates stored role/permissions (covers role changes between sessions)
 
-#### `testauth1.gs` — v01.57g
+#### `testauthgas1.gs` — v01.57g
 
 ##### Added
 - RBAC role definitions: admin (full access), clinician (read/write/export/amend), billing (read/export), viewer (read-only)
@@ -6972,7 +6972,7 @@ CONFIG"
 - All postMessage responses include role and permissions
 - Audit logging includes role and permission check details
 
-#### `testauth1.html` — v02.36w
+#### `testauthgas1.html` — v02.36w
 
 ##### Added
 - ROLE_KEY and PERMISSIONS_KEY storage keys for client-side role persistence
@@ -6985,10 +6985,10 @@ CONFIG"
 
 ## [v04.95r] — 2026-03-19 09:15:01 AM EST — [0ab475c7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0ab475c777379a255262058a378c5b7a2f4a4479)
 
-> **Prompt:** "review the repository-information/HIPAA-CODING-REQUIREMENTS.md , and analyze which parts are missing/completed in our testauth1 environment. think deeply and create a report document with your findings"
+> **Prompt:** "review the repository-information/HIPAA-CODING-REQUIREMENTS.md , and analyze which parts are missing/completed in our testauthgas1 environment. think deeply and create a report document with your findings"
 
 ### Added
-- Created `HIPAA-TESTAUTH1-COMPLIANCE-REPORT.md` — comprehensive compliance assessment evaluating all 40 HIPAA coding checklist items against the testauth1 environment. Reports 14 fully implemented, 5 partial, 4 not implemented, 3 N/A, 5 policy/process, and 9 NPRM items. Identifies 7 priority gaps (disclosure accounting, right of access, right to amendment, RBAC, retention enforcement, breach alerting, breach logging) and 5 strengths exceeding requirements (dual timeouts, HMAC integrity, dual audit logs, escalating lockout, fail-closed design). Includes test-value warnings for production deployment
+- Created `HIPAA-TESTAUTHGAS1-COMPLIANCE-REPORT.md` — comprehensive compliance assessment evaluating all 40 HIPAA coding checklist items against the testauthgas1 environment. Reports 14 fully implemented, 5 partial, 4 not implemented, 3 N/A, 5 policy/process, and 9 NPRM items. Identifies 7 priority gaps (disclosure accounting, right of access, right to amendment, RBAC, retention enforcement, breach alerting, breach logging) and 5 strengths exceeding requirements (dual timeouts, HMAC integrity, dual audit logs, escalating lockout, fail-closed design). Includes test-value warnings for production deployment
 
 ## [v04.94r] — 2026-03-19 08:48:12 AM EST — [638d68b7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/638d68b76a4bbe67f3fbd4cbaa1da4cfdc6fac7c)
 
@@ -7001,21 +7001,21 @@ CONFIG"
 
 ## [v04.93r] — 2026-03-18 11:55:09 PM EST — [36fb461c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/36fb461c11944e406cc01a40db041b045901531e)
 
-> **Prompt:** "are you able to make a testauth2 html so that we can test a much earlier version, for now just make it identical to the testauth1 html. use the same gas"
+> **Prompt:** "are you able to make a testauth2 html so that we can test a much earlier version, for now just make it identical to the testauthgas1 html. use the same gas"
 
 ### Added
-- Created `testauth2.html` — identical copy of `testauth1.html` sharing the same GAS backend (`testauth1.gs`), for testing earlier auth versions independently without affecting the primary test page
+- Created `testauth2.html` — identical copy of `testauthgas1.html` sharing the same GAS backend (`testauthgas1.gs`), for testing earlier auth versions independently without affecting the primary test page
 
 ## [v04.92r] — 2026-03-18 11:42:52 PM EST — [6155863e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6155863eab77be23faf5bf531ae7f9ede8c85bae)
 
-> **Prompt:** "its still doing the blink. can you write up your current findings in a document, and then revert the testauth1 environment completely to its pre-10.4.1 state"
+> **Prompt:** "its still doing the blink. can you write up your current findings in a document, and then revert the testauthgas1 environment completely to its pre-10.4.1 state"
 
 ### Added
 - Created `10.4.1-IMPLEMENTATION-FINDINGS.md` — documents the implementation attempt, three issues encountered (stuck on signing in, double signAppMessage, persistent visual blink), technical learnings, quota analysis, and five recommendations for future re-attempt
 
 ### Reverted
-- Reverted `testauth1.gs` to v01.56g (pre-10.4.1 state) — removed `exchangeTokenAndBuildApp()`, `buildAppHtmlString()`, and modified listener page
-- Reverted `testauth1.html` to v02.35w (pre-10.4.1 state) — removed `appLoaded` guard in `gas-session-created` handler
+- Reverted `testauthgas1.gs` to v01.56g (pre-10.4.1 state) — removed `exchangeTokenAndBuildApp()`, `buildAppHtmlString()`, and modified listener page
+- Reverted `testauthgas1.html` to v02.35w (pre-10.4.1 state) — removed `appLoaded` guard in `gas-session-created` handler
 - Reverted GAS/HTML version files and changelog entries to pre-10.4.1 values
 
 ## [v04.91r] — 2026-03-18 11:36:01 PM EST — [4351e501](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4351e5015051855dde2ae8dc9b10c6c33f763713)
@@ -7025,7 +7025,7 @@ CONFIG"
 ### Fixed
 - Fixed double `signAppMessage` execution in HIPAA single-load path — `buildAppHtmlString()` included a `<script>` tag that could execute in the GAS sandbox (non-standard innerHTML behavior), causing `signAppMessage` to fire twice (once from the listener's direct call, once from the injected script). Split `buildAppHtmlString()` return into `{ markup, script }` — innerHTML path receives markup only (no scripts), `?session=` path receives both (scripts auto-execute normally in HtmlService output). Eliminates the extra `google.script.run` round-trip and the visual "blink" from double gas-auth-ok processing
 
-#### `testauth1.gs` — v01.59g
+#### `testauthgas1.gs` — v01.59g
 ##### Fixed
 - Eliminated extra server call during sign-in that was causing a brief visual flash
 
@@ -7036,7 +7036,7 @@ CONFIG"
 ### Fixed
 - Fixed HIPAA single-load auth: app was stuck on "Signing in..." because innerHTML-injected `<script>` tags don't auto-execute in the GAS sandbox. Replaced script execution approach — the listener page's success handler now directly calls `google.script.run.signAppMessage()` and sets up event listeners instead of relying on `createElement('script')` + `appendChild`. Also fixed `getElementsByTagName` live collection infinite loop bug
 
-#### `testauth1.gs` — v01.58g
+#### `testauthgas1.gs` — v01.58g
 ##### Fixed
 - Sign-in now completes properly — the app interface loads and becomes interactive after authentication
 
@@ -7047,7 +7047,7 @@ CONFIG"
 ### Changed
 - Implemented HIPAA single-load auth optimization — reduced HIPAA postMessage login from 2 `doGet()` calls to 1 by using `innerHTML` SPA technique. The listener page now calls `exchangeTokenAndBuildApp()` which returns session data + app HTML in a single `google.script.run` response, then injects the app UI via `innerHTML` and manually executes scripts. Eliminates one full iframe reload per sign-in (25% reduction in GAS executions per login) while maintaining all security guarantees (HMAC, nonce, origin validation, audit logging). Session token no longer appears in URL during HIPAA login flow
 
-#### `testauth1.gs` — v01.57g
+#### `testauthgas1.gs` — v01.57g
 ##### Added
 - `exchangeTokenAndBuildApp()` — combined exchange + app HTML builder for single-load optimization
 - `buildAppHtmlString()` — extracted app HTML body builder, shared between single-load and `?session=` paths
@@ -7055,7 +7055,7 @@ CONFIG"
 - HIPAA listener page success handler now injects app HTML via `innerHTML` + manual script execution instead of triggering a second `doGet()` reload
 - `?session=` path refactored to use `buildAppHtmlString()` (identical output, shared code)
 
-#### `testauth1.html` — v02.36w
+#### `testauthgas1.html` — v02.36w
 ##### Changed
 - `gas-session-created` handler now checks `appLoaded` flag — skips iframe reload when app HTML was already injected by the single-load optimization
 
@@ -7123,7 +7123,7 @@ CONFIG"
 - Removed `_messageKey` raw string variable from host page — only `_hmacKey` (CryptoKey) remains
 - Removed DJB2-specific tests from self-test panel (Test 13 updated to HMAC-only)
 
-#### `testauth1.gs` — v01.56g
+#### `testauthgas1.gs` — v01.56g
 
 ##### Added
 - `signAppMessage()` server-side function for HMAC-SHA256 signing of GAS session HTML messages (same pattern as `processHeartbeat`/`processSignOut`)
@@ -7134,7 +7134,7 @@ CONFIG"
 ##### Removed
 - `_s()` inline DJB2 signing function and `_mk` variable from session HTML inline script
 
-#### `testauth1.html` — v02.35w
+#### `testauthgas1.html` — v02.35w
 
 ##### Changed
 - `_verifyMessageSignature()` simplified to HMAC-SHA256 only path (DJB2 fallback removed)
@@ -7151,13 +7151,13 @@ CONFIG"
 > **Prompt:** "yes proceed that way, make the implementation plan a single document. When writing a large document or file, write it in small chunks — create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
 
 ### Changed
-- Removed legacy URL-parameter heartbeat (`?heartbeat=TOKEN`) and sign-out (`?signOut=TOKEN`) routes from `doGet()` in `testauth1.gs` — these were superseded by Phase 7's postMessage-based `processHeartbeat()` and `processSignOut()` functions (~120 lines of dead code removed)
+- Removed legacy URL-parameter heartbeat (`?heartbeat=TOKEN`) and sign-out (`?signOut=TOKEN`) routes from `doGet()` in `testauthgas1.gs` — these were superseded by Phase 7's postMessage-based `processHeartbeat()` and `processSignOut()` functions (~120 lines of dead code removed)
 - Checked off Phase 9 verification in the implementation guide (`10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md`)
 
 ### Added
 - Created DJB2 → HMAC-SHA256 migration plan (`10.3-DJB2-TO-HMAC-MIGRATION-PLAN.md`) — 7-step implementation plan to migrate the four remaining DJB2-signed messages in GAS session HTML (`gas-auth-ok`, `gas-version`, `gas-user-activity`, `gas-session-invalid`) to server-side HMAC-SHA256 signing via `google.script.run`
 
-#### `testauth1.gs` — v01.55g
+#### `testauthgas1.gs` — v01.55g
 
 ##### Changed
 - Removed legacy URL-parameter heartbeat and sign-out routes from `doGet()` — dead code after Phase 7 migration
@@ -7181,12 +7181,12 @@ CONFIG"
 - Fixed iframe reload loop caused by injecting `gas-session-created` into the `?session` GAS path — every `?session` load (tab duplicate, refresh, normal sign-in) was triggering the handler which reloads the iframe, creating an infinite loop
 - Reverted the GAS-side `gas-session-created` injection; instead, `gas-auth-ok` now includes `messageKey` and the HTML-side `gas-auth-ok` handler imports the key when `_hmacKey` is null — this is safe because `gas-auth-ok` is a terminal message (no iframe reload), so no loop can occur
 
-#### `testauth1.html` — v02.34w
+#### `testauthgas1.html` — v02.34w
 
 ##### Fixed
 - HMAC key is now imported from `gas-auth-ok` when the key is missing (after "Use Here" reclaim, tab duplicate, or page refresh)
 
-#### `testauth1.gs` — v01.54g
+#### `testauthgas1.gs` — v01.54g
 
 ##### Changed
 - `gas-auth-ok` message now includes `messageKey` from the session, replacing the reverted `gas-session-created` injection approach
@@ -7200,12 +7200,12 @@ CONFIG"
 - Added `_directSessionLoad` guard to `gas-session-created` handler to prevent iframe reload loop — when the message comes from the `?session` path (already loaded), the handler skips reloading the iframe
 - Reset `_iframeLoadTime` in "Use Here" handler so the 30-second bootstrap replay check doesn't reject the reclaim's `gas-session-created`
 
-#### `testauth1.html` — v02.33w
+#### `testauthgas1.html` — v02.33w
 
 ##### Fixed
 - HMAC key is now properly restored after reclaiming a session with "Use Here"
 
-#### `testauth1.gs` — v01.53g
+#### `testauthgas1.gs` — v01.53g
 
 ##### Fixed
 - Session reclaim via `?session=TOKEN` now delivers the HMAC signing key to the host page
@@ -7220,7 +7220,7 @@ CONFIG"
 - Clarified item 15 (key survives takeover) — Tab A must be signed in BEFORE Tab B claims the session; if Tab A never signed in, `_hmacKey` will correctly be null
 - Clarified item 18 (CSP XSS test) — expected to fail until Phase 8 hash-based CSP is activated; current CSP has `unsafe-inline` in script-src
 
-#### `testauth1.html` — v02.32w
+#### `testauthgas1.html` — v02.32w
 
 ##### Fixed
 - Security event reports no longer fire from tabs that have been taken over by another tab
@@ -7252,7 +7252,7 @@ CONFIG"
 - Removed dead `delete window._r` and `gasApp.removeAttribute('srcdoc')` cleanup code from page-load IIFEs
 - Updated stale comments referencing srcdoc race conditions
 
-#### `testauth1.html` — v02.31w
+#### `testauthgas1.html` — v02.31w
 
 ##### Fixed
 - Removed global GAS URL exposure — deployment URL no longer accessible via `window._r`
@@ -7295,9 +7295,9 @@ CONFIG"
 
 ### Added
 - Created `scripts/compute-csp-hash.sh` — CSP SHA-256 hash computation script with `--verify` mode for checking hash mismatches
-- Added commented-out hardened CSP meta tag (hash-based with `strict-dynamic`) to testauth1.html — ready to activate after all other security phases are complete
+- Added commented-out hardened CSP meta tag (hash-based with `strict-dynamic`) to testauthgas1.html — ready to activate after all other security phases are complete
 
-#### `testauth1.html` — v02.30w
+#### `testauthgas1.html` — v02.30w
 
 ##### Added
 - Prepared hash-based Content Security Policy — ready to activate when all security phases are complete
@@ -7315,12 +7315,12 @@ CONFIG"
 > **Prompt:** "before you remove it, add something as a rule/reference so that you can use the logic you just used so we can clean up dead code anywhere we designate later"
 
 ### Removed
-- Removed dead srcdoc code from GAS iframe IIFE in testauth1.html — srcdoc navigation was cancelled by every code path, making it dead code with active cleanup burden in two init branches
+- Removed dead srcdoc code from GAS iframe IIFE in testauthgas1.html — srcdoc navigation was cancelled by every code path, making it dead code with active cleanup burden in two init branches
 
 ### Added
 - Added "Dead Code Detection Methodology" reference to `.claude/rules/html-pages.md` — documents the systematic analysis for identifying dead code and pre-auth resource abuse vectors
 
-#### `testauth1.html` — v02.29w
+#### `testauthgas1.html` — v02.29w
 
 ##### Removed
 - Removed unnecessary iframe startup code that was already being cancelled on every page load — cleaner initialization flow
@@ -7332,7 +7332,7 @@ CONFIG"
 ### Fixed
 - Added pre-auth guard to `_reportSecurityEvent()` — prevents unauthenticated quota abuse via postMessage spam on the login page (GAS requests no longer fire when no session exists)
 
-#### `testauth1.html` — v02.28w
+#### `testauthgas1.html` — v02.28w
 
 ##### Fixed
 - Security event reporting now requires an active session — unauthenticated visitors can no longer trigger GAS quota consumption via postMessage spam
@@ -7344,7 +7344,7 @@ CONFIG"
 ### Changed
 - Implemented Phase 7: Token-in-URL Elimination (H-5, H-6, M-4) — session tokens and security event details no longer appear in URL parameters
 
-#### `testauth1.gs` — v01.52g
+#### `testauthgas1.gs` — v01.52g
 
 ##### Added
 - `processHeartbeat(token)` server-side function — heartbeat logic extracted from doGet() for postMessage-based calling
@@ -7352,7 +7352,7 @@ CONFIG"
 - `processSecurityEvent(eventType, details)` server-side function — security event logging extracted from doGet()
 - Three `?action=` routes in doGet() (`heartbeat`, `signout`, `securityEvent`) — return listener pages that receive sensitive data via postMessage
 
-#### `testauth1.html` — v02.27w
+#### `testauthgas1.html` — v02.27w
 
 ##### Changed
 - `sendHeartbeat()` now loads `?action=heartbeat` instead of `?heartbeat=TOKEN` — token sent via postMessage after ready signal
@@ -7378,7 +7378,7 @@ CONFIG"
 ### Fixed
 - Phase 6 (H-4) session resume path — `_lockSessionTimers()` now also called inside `startCountdownTimers()` as a catch-all. On session resume (returning with stored token), `gas-session-created` never fires, so the timers were never locked. The catch-all ensures immutability regardless of which sign-in path was used
 
-#### `testauth1.html` — v02.26w
+#### `testauthgas1.html` — v02.26w
 
 ##### Fixed
 - Session timer protection now works on all sign-in paths including session resume from stored tokens
@@ -7394,7 +7394,7 @@ CONFIG"
 - Signature Verification test now saves/restores `_hmacKeySet` flag so Phase 5's first-write-wins guard doesn't block test key import
 - Immutable Session Timers security test now verifies Object.defineProperty targets correct property names and checks `writable:false` state
 
-#### `testauth1.html` — v02.25w
+#### `testauthgas1.html` — v02.25w
 
 ##### Fixed
 - Session timer protection now properly prevents modification via browser console
@@ -7415,7 +7415,7 @@ CONFIG"
 - Implemented Phase 6 (H-4) immutable session timers — closure-scoped enforcer + Object.defineProperty prevents client-side timer tampering on shared workstations
 - Updated security implementation guide progress to 6/10 phases complete
 
-#### `testauth1.html` — v02.24w
+#### `testauthgas1.html` — v02.24w
 
 ##### Changed
 - Session timeout values are now tamper-proof — cannot be modified via browser DevTools to prevent automatic logoff
@@ -7434,7 +7434,7 @@ CONFIG"
 ### Changed
 - Implemented Phase 5 (H-3) messageKey lifecycle hardening — added `_hmacKeySet` defense-in-depth guard, centralized key clearing to `clearSession()` and iframe-reload path only
 
-#### `testauth1.html` — v02.23w
+#### `testauthgas1.html` — v02.23w
 
 ##### Changed
 - Improved authentication key management — keys can no longer be overwritten by forged messages mid-session
@@ -7446,7 +7446,7 @@ CONFIG"
 ### Changed
 - Implemented Phase 4 (H-1) BroadcastChannel credential leak fix — stripped session token, email, and HMAC key from tab-claim broadcasts
 
-#### `testauth1.html` — v02.22w
+#### `testauthgas1.html` — v02.22w
 
 ##### Changed
 - Improved session security by removing sensitive data from cross-tab communication
@@ -7471,15 +7471,15 @@ CONFIG"
 > **Prompt:** "can you have all the code for getting the IP that you just removed commented out as you had it in case i want to re-add it later please"
 
 ### Changed
-- Restored all removed IP collection code as commented-out blocks in testauth1.html and testauth1.gs for easy re-enablement
+- Restored all removed IP collection code as commented-out blocks in testauthgas1.html and testauthgas1.gs for easy re-enablement
 - Added step-by-step re-enablement instructions in comments
 
-#### `testauth1.html` — v02.21w
+#### `testauthgas1.html` — v02.21w
 
 ##### Changed
 - Added commented-out IP collection, validation, forwarding, and heartbeat code with re-enablement instructions
 
-#### `testauth1.gs` — v01.51g
+#### `testauthgas1.gs` — v01.51g
 
 ##### Changed
 - Added commented-out IP extraction, storage, iframe IP collection, and message handler code with re-enablement instructions
@@ -7489,7 +7489,7 @@ CONFIG"
 > **Prompt:** "proceed with implementing the next step of 10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
 ### Removed
-- Removed ipify.org dependency from testauth1 (Phase 3: C-3, M-2) — third-party IP lookup service lacks BAA coverage, constituting unauthorized PHI disclosure under HIPAA
+- Removed ipify.org dependency from testauthgas1 (Phase 3: C-3, M-2) — third-party IP lookup service lacks BAA coverage, constituting unauthorized PHI disclosure under HIPAA
 - Removed all client IP collection, validation, forwarding, and logging code from both HTML host page and GAS backend
 - Removed `api.ipify.org` from Content Security Policy `connect-src` directive
 
@@ -7497,7 +7497,7 @@ CONFIG"
 - All audit log entries now use `'not-collected'` for the client IP field instead of actual IP addresses
 - `saveNote()` function signature simplified — clientIp parameter removed since IP is no longer collected
 
-#### `testauth1.html` — v02.20w
+#### `testauthgas1.html` — v02.20w
 
 ##### Removed
 - Removed ipify.org fetch block, `_validateIp` function, `_clientIp` variable, `_ipForwardedToGas` flag, and all IP forwarding logic
@@ -7507,7 +7507,7 @@ CONFIG"
 ##### Changed
 - `ENABLE_IP_LOGGING` set to `false` with HIPAA compliance comment
 
-#### `testauth1.gs` — v01.50g
+#### `testauthgas1.gs` — v01.50g
 
 ##### Removed
 - Removed GAS iframe's XHR to ipify.org and `host-client-ip` message handler
@@ -7528,7 +7528,7 @@ CONFIG"
 - Changed `host-client-ip` targetOrigin from `'*'` to `event.origin` (the verified GAS origin) for tighter security
 - Added `_ipForwardedToGas` flag to ensure IP is forwarded exactly once
 
-#### `testauth1.html` — v02.19w
+#### `testauthgas1.html` — v02.19w
 
 ##### Fixed
 - Eliminated console warning from Google's warden about unexpected postMessage origin — IP forwarding now waits until GAS iframe is ready
@@ -7541,7 +7541,7 @@ CONFIG"
 ### Fixed
 - Reverted `host-client-ip` outgoing postMessage targetOrigin from `'https://script.google.com'` back to `'*'` — `gasFrame.contentWindow` origin depends on GAS load timing and may still be at the parent origin when the IP fetch completes, causing the restricted targetOrigin to fail
 
-#### `testauth1.html` — v02.18w
+#### `testauthgas1.html` — v02.18w
 
 ##### Fixed
 - Console error on page load resolved — IP forwarding messages no longer fail due to origin mismatch
@@ -7557,13 +7557,13 @@ CONFIG"
 ### Changed
 - GAS postMessage listener page updated to capture and echo nonce from `exchange-token` messages in both success and failure response paths
 
-#### `testauth1.html` — v02.17w
+#### `testauthgas1.html` — v02.17w
 
 ##### Added
 - Token exchange nonce verification — forged session creation messages without a matching nonce are rejected
 - Non-token messages now scoped to specific Google origin instead of wildcard
 
-#### `testauth1.gs` — v01.49g
+#### `testauthgas1.gs` — v01.49g
 
 ##### Changed
 - Token exchange listener echoes nonce back in session creation response for verification
@@ -7583,7 +7583,7 @@ CONFIG"
 - Origin validation regex was too restrictive — Google's GAS sandbox subdomains contain hyphens (e.g. `n-abc123-0lu-script.googleusercontent.com`) but the regex only allowed `[a-z0-9]+` before `-script`, silently dropping all legitimate GAS messages and preventing sign-in from completing
 - Broadened regex to accept any `*.googleusercontent.com` subdomain (all Google-controlled) — handles all current and future sandbox subdomain format variations
 
-#### `testauth1.html` — v02.16w
+#### `testauthgas1.html` — v02.16w
 
 ##### Fixed
 - Sign-in now completes successfully — origin validation no longer blocks legitimate server messages with hyphenated subdomain origins
@@ -7597,7 +7597,7 @@ CONFIG"
 - Layer 0 origin check in postMessage listener — messages from non-Google origins are silently dropped before reaching the allowlist or HMAC verification layers
 - Security test (Test 19b) for origin validation — verifies 4 legitimate origins are accepted and 6 attack patterns are rejected
 
-#### `testauth1.html` — v02.15w
+#### `testauthgas1.html` — v02.15w
 
 ##### Added
 - Origin validation gate on all incoming postMessages — blocks cross-origin message injection (Category 3 finding H-2)
@@ -7610,7 +7610,7 @@ CONFIG"
 ### Fixed
 - Fixed security test runner hanging on async tests (Tests 13, 37) — runner now detects when `addResult` is called asynchronously and waits for completion (up to 5s timeout) before advancing to the next test
 
-#### `testauth1.html` — v02.14w
+#### `testauthgas1.html` — v02.14w
 
 ##### Fixed
 - Security tests no longer get stuck on "Waiting to run" for tests that verify cryptographic signatures
@@ -7627,7 +7627,7 @@ CONFIG"
 > **Prompt:** "continue with implementing the next step 1.3 of the repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md"
 
 ### Added
-- Added HMAC-SHA256 signature verification to `testauth1.html` using Web Crypto API (Phase 1, Step 1.3)
+- Added HMAC-SHA256 signature verification to `testauthgas1.html` using Web Crypto API (Phase 1, Step 1.3)
   - `_importHmacKey()` — imports raw key as non-extractable CryptoKey (verify-only)
   - `_verifyHmacSha256()` — async verification using `crypto.subtle.verify()`
   - `_verifyDjb2Legacy()` — extracted legacy DJB2 verification for dual-accept migration
@@ -7641,7 +7641,7 @@ CONFIG"
 - All session reset points (`clearSession`, reauth, "Use Here", cross-device eviction) now null both `_messageKey` and `_hmacKey`
 - Security tests updated for async HMAC-SHA256 verification (Test 13, 37, 43)
 
-#### `testauth1.html` — v02.13w
+#### `testauthgas1.html` — v02.13w
 
 ##### Added
 - Messages from the server are now verified using HMAC-SHA256 cryptographic signatures (Web Crypto API)
@@ -7664,12 +7664,12 @@ CONFIG"
 > **Prompt:** "proceed with next step"
 
 ### Changed
-- Replaced all 7 inline DJB2 hash signing blocks in `testauth1.gs` `doGet()` with server-side `signMessage()` HMAC-SHA256 pre-signing (Phase 1, Step 1.2)
+- Replaced all 7 inline DJB2 hash signing blocks in `testauthgas1.gs` `doGet()` with server-side `signMessage()` HMAC-SHA256 pre-signing (Phase 1, Step 1.2)
   - Heartbeat responses (expired, error, HMAC violation, absolute timeout, session timeout, OK) now use server-computed HMAC-SHA256 signatures
   - Sign-out response now uses server-computed HMAC-SHA256 signature
   - The messageKey is no longer embedded in client-side HTML responses — it stays server-side only
 
-#### `testauth1.gs` — v01.48g
+#### `testauthgas1.gs` — v01.48g
 
 ##### Changed
 - Messages are now signed on the server before being sent, replacing the previous client-side signing approach
@@ -7679,12 +7679,12 @@ CONFIG"
 > **Prompt:** "start implementing step 1.1 of repository-information/10.2-CATEGORY3-CODE-IMPLEMENTATION-GUIDE.md, afterwards tell me what specifically to test for in functionality relating to what you modified, then wait for me to tell you to proceed and you will continue step by step"
 
 ### Added
-- Added `signMessage()` HMAC-SHA256 function to `testauth1.gs` — server-side message signing using `Utilities.computeHmacSha256Signature()` (Phase 1, Step 1.1 of Category 3 security implementation)
+- Added `signMessage()` HMAC-SHA256 function to `testauthgas1.gs` — server-side message signing using `Utilities.computeHmacSha256Signature()` (Phase 1, Step 1.1 of Category 3 security implementation)
   - Deterministic payload construction with sorted keys
   - Signed byte array → hex string conversion with proper unsigned masking
   - Placed alongside existing HMAC session integrity functions
 
-#### `testauth1.gs` — v01.47g
+#### `testauthgas1.gs` — v01.47g
 
 ##### Added
 - Server-side HMAC-SHA256 message signing function for postMessage integrity
@@ -7716,10 +7716,10 @@ CONFIG"
 
 ## [v04.40r] — 2026-03-17 11:08:18 AM EST — [1c3c8cda](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1c3c8cda206cd60f428a0787b12978f3ed2876bf)
 
-> **Prompt:** "remove the 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md file"
+> **Prompt:** "remove the 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTHGAS1.md file"
 
 ### Removed
-- 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md — comprehensive auth implementation document for testauth1 environment (removed from repo and README tree)
+- 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTHGAS1.md — comprehensive auth implementation document for testauthgas1 environment (removed from repo and README tree)
 
 ## [v04.39r] — 2026-03-17 10:31:40 AM EST — [4b1afb2b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/4b1afb2b6f75f1bd83424374be3a2172641315cc)
 
@@ -7733,7 +7733,7 @@ CONFIG"
 > **Prompt:** "can you put this information in its own file in our repo"
 
 ### Added
-- GAS-HIPAA-COMPLIANCE-ANALYSIS.md — analysis of Google Apps Script HIPAA compliance under Workspace BAA, covering BAA coverage status, platform vs application responsibility breakdown, GAS web app deployment concerns, Google's own GAS-specific guidance, impact on testauth1 architecture (all 24 audit findings mapped), and 10+ authoritative sources
+- GAS-HIPAA-COMPLIANCE-ANALYSIS.md — analysis of Google Apps Script HIPAA compliance under Workspace BAA, covering BAA coverage status, platform vs application responsibility breakdown, GAS web app deployment concerns, Google's own GAS-specific guidance, impact on testauthgas1 architecture (all 24 audit findings mapped), and 10+ authoritative sources
 
 ## [v04.37r] — 2026-03-17 09:07:45 AM EST — [9ffc3e31](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9ffc3e3105143fd19767fd049245a18a9d0b6923)
 
@@ -7754,7 +7754,7 @@ CONFIG"
 ## [v04.35r] — 2026-03-16 08:04:14 PM EST — [5e6a8c55](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5e6a8c556ea65b26eceecf33a6d3c833323a662d)
 
 ### Added
-- 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTH1.md — comprehensive 1200-line authentication implementation document covering complete auth flow walkthrough, session management, HMAC integrity, CSP analysis, postMessage security model, cross-device enforcement, preset system, security audit remediation status, HIPAA 2026 readiness assessment, implementation roadmap with dependency graph, attack surface analysis, defense-in-depth matrix, and testing procedures. Synthesized from 11 existing plans, independent security audit, known constraints, and extensive web research (OWASP, NIST, IETF, Google, Microsoft 2025–2026 guidance)
+- 10.1-AUTH-IMPLEMENTATION-DOCUMENT-TESTAUTHGAS1.md — comprehensive 1200-line authentication implementation document covering complete auth flow walkthrough, session management, HMAC integrity, CSP analysis, postMessage security model, cross-device enforcement, preset system, security audit remediation status, HIPAA 2026 readiness assessment, implementation roadmap with dependency graph, attack surface analysis, defense-in-depth matrix, and testing procedures. Synthesized from 11 existing plans, independent security audit, known constraints, and extensive web research (OWASP, NIST, IETF, Google, Microsoft 2025–2026 guidance)
 
 ## [v04.34r] — 2026-03-16 06:32:53 PM EST — [2e791e05](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2e791e05c88f52488a95d08e3a6df84deadde8fb)
 
@@ -7778,12 +7778,12 @@ CONFIG"
 ### Added
 - IP format validation on client-reported IP addresses — validates IPv4/IPv6 format and truncates to 45 characters at three layers: host page, GAS inner iframe, and GAS server-side. Prevents log injection via arbitrary strings in the IP field
 
-#### `testauth1.html` — v02.12w
+#### `testauthgas1.html` — v02.12w
 
 ##### Added
 - IP address validation before logging — malformed values are now rejected instead of stored as-is
 
-#### `testauth1.gs` — v01.46g
+#### `testauthgas1.gs` — v01.46g
 
 ##### Added
 - Server-side IP format validation on URL parameter — rejects non-IP strings before audit logging
@@ -7804,7 +7804,7 @@ CONFIG"
 ### Changed
 - "Signing in…" and "Reconnecting…" screens now have distinct animations — spinning ring for sign-in, pulsing dots for reconnection
 
-#### `testauth1.html` — v02.11w
+#### `testauthgas1.html` — v02.11w
 
 ##### Changed
 - "Signing in…" uses a spinning ring animation (new session)
@@ -7815,7 +7815,7 @@ CONFIG"
 ### Added
 - Spinner animation on "Signing in…" and "Reconnecting…" screens — provides visual feedback while waiting for session setup or verification
 
-#### `testauth1.html` — v02.10w
+#### `testauthgas1.html` — v02.10w
 
 ##### Added
 - Spinning loading indicator on the "Signing in…" and "Reconnecting…" screens
@@ -7825,7 +7825,7 @@ CONFIG"
 ### Changed
 - Refactored tab counting from continuous heartbeat (every 3s) to on-demand roll call — zero background overhead, count is only collected when the tab-takeover overlay appears
 
-#### `testauth1.html` — v02.09w
+#### `testauthgas1.html` — v02.09w
 
 ##### Changed
 - Tab count now uses on-demand roll call instead of continuous heartbeat — other tabs respond instantly when asked, and the count updates in real time as responses arrive
@@ -7835,7 +7835,7 @@ CONFIG"
 ### Added
 - Tab-takeover overlay now shows how many other tabs have the page open (e.g. "2 other tabs have this page open") — uses zero-cost browser-local BroadcastChannel heartbeat with no server calls
 
-#### `testauth1.html` — v02.08w
+#### `testauthgas1.html` — v02.08w
 
 ##### Added
 - Tab count displayed in the "Session Active in Another Tab" overlay when multiple tabs are detected
@@ -7848,7 +7848,7 @@ CONFIG"
 ### Added
 - "Signing in…" screen now appears between selecting your Google account and the app loading — previously the sign-in form stayed visible during this transition
 
-#### `testauth1.html` — v02.07w
+#### `testauthgas1.html` — v02.07w
 
 ##### Fixed
 - Restored centering on the sign-in page
@@ -7861,7 +7861,7 @@ CONFIG"
 ### Changed
 - Sign-in page now shows "Reconnecting… Verifying your session" instead of "Sign In Required" when resuming a valid session on page reload or tab reclaim — reduces confusion about what's happening during session verification
 
-#### `testauth1.html` — v02.06w
+#### `testauthgas1.html` — v02.06w
 
 ##### Changed
 - Added "Reconnecting…" visual state during session verification on page reload and tab reclaim
@@ -7872,7 +7872,7 @@ CONFIG"
 - Fixed logo not displaying on login page — `img-src` was restricted to `*.googleusercontent.com` only but logos load from `www.shadowaisolutions.com` and `logoipsum.com`
 - Added `media-src 'self'` to CSP — `default-src 'none'` was blocking same-origin audio files (splash screen sounds)
 
-#### `testauth1.html` — v02.05w
+#### `testauthgas1.html` — v02.05w
 
 ##### Fixed
 - Added logo and placeholder logo domains to `img-src` CSP whitelist
@@ -7889,7 +7889,7 @@ CONFIG"
 ### Changed
 - Updated SECURITY-FINDINGS.md with comprehensive deep-analysis of all 14 test 08 findings (9 CSP audit + 9 attack results), categorized as FIXED, ACCEPTED, or UNFIXABLE
 
-#### `testauth1.html` — v02.04w
+#### `testauthgas1.html` — v02.04w
 
 ##### Security
 - Added `default-src 'none'` — deny-all fallback that also blocks eval()
@@ -7901,13 +7901,13 @@ CONFIG"
 ## [v04.20r] — 2026-03-16 01:47:48 PM EST — [e6ed4e46](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e6ed4e467e1f4eef60a0415129bc1e5f567b29de)
 
 ### Security
-- Added `form-action 'self'` to CSP meta tag on testauth1 — prevents form submissions to attacker-controlled URLs
+- Added `form-action 'self'` to CSP meta tag on testauthgas1 — prevents form submissions to attacker-controlled URLs
 
 ### Changed
 - Updated SECURITY-FINDINGS.md with actual-run results for test 07 (6/6 blocked, including timing oracle confirmation) and test 08 (9/9 blocked, full CSP audit table)
 - Upgraded test 08 status from "MOSTLY BLOCKED / Medium" to "BLOCKED / Low" after adding `form-action` directive
 
-#### `testauth1.html` — v02.03w
+#### `testauthgas1.html` — v02.03w
 
 ##### Security
 - Added `form-action 'self'` to Content Security Policy — closes the last missing directive identified during offensive security testing
@@ -7934,7 +7934,7 @@ CONFIG"
 - Fixed false positive `hmac_secret_leak` detection in test_06 — sensitive pattern matching now looks for actual secret value prefixes instead of generic words like "secret"
 - Updated test_06 Attack 4 to demonstrate IP rotation bypass and verify global rate limit effectiveness
 
-#### `testauth1.gs` — v01.45g
+#### `testauthgas1.gs` — v01.45g
 
 ##### Security
 - Replaced per-IP security event rate limit with global rate limit (50/5min) — prevents bypass via clientIp parameter rotation
@@ -7949,7 +7949,7 @@ CONFIG"
 ## [v04.16r] — 2026-03-16 12:37:32 PM EST — [90f2e8f2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/90f2e8f2c39d348aec753a07e1e257888616ebcc)
 
 ### Added
-- 5 new offensive security tests for testauth1 (tests 05–09):
+- 5 new offensive security tests for testauthgas1 (tests 05–09):
   - `test_05_clickjacking_iframe_embedding.py` — clickjacking, CSP frame-ancestors, framebusting, double-framing, sandbox abuse
   - `test_06_deploy_endpoint_abuse.py` — deploy endpoint probing, POST injection, error disclosure, security event flood, version pinning
   - `test_07_session_race_timing.py` — postMessage flood, BroadcastChannel hijack/DoS, HMAC timing oracle, storage injection, session resurrection
@@ -7980,7 +7980,7 @@ CONFIG"
 ### Changed
 - Security event rate limiter now logs a `security_event_throttled` entry when an IP hits the 20-event limit, giving the defender visibility that further events were suppressed
 
-#### `testauth1.gs` — v01.44g
+#### `testauthgas1.gs` — v01.44g
 
 ##### Changed
 - Attack report rate limiting now tells you when an attacker was cut off
@@ -7994,12 +7994,12 @@ CONFIG"
 
 ### Added
 - Added Security Event Reporter system — client-side defense layers now report blocked attacks (unknown message types, replay attempts, invalid signatures, duplicate session hijacking) to the GAS backend for audit logging
-- Server-side security event handler in both testauth1.gs and portal.gs — receives attack telemetry via hidden iframe beacons, rate-limited to 20 events per 5-minute window per IP/event type, logged to SessionAuditLog sheet
+- Server-side security event handler in both testauthgas1.gs and portal.gs — receives attack telemetry via hidden iframe beacons, rate-limited to 20 events per 5-minute window per IP/event type, logged to SessionAuditLog sheet
 
 ### Security
-- Added first-write-wins guard on `_messageKey` in portal.html — prevents message key overwriting attacks (was already present in testauth1.html)
+- Added first-write-wins guard on `_messageKey` in portal.html — prevents message key overwriting attacks (was already present in testauthgas1.html)
 
-#### `testauth1.html` — v02.02w
+#### `testauthgas1.html` — v02.02w
 
 ##### Added
 - Blocked attacks are now reported to the server for security monitoring
@@ -8010,7 +8010,7 @@ CONFIG"
 - Blocked attacks are now reported to the server for security monitoring
 - Additional protection against session key overwriting attacks
 
-#### `testauth1.gs` — v01.43g
+#### `testauthgas1.gs` — v01.43g
 
 ##### Added
 - Server now receives and logs blocked attack reports from the page
@@ -8032,7 +8032,7 @@ CONFIG"
 - Fixed duplicate `gas-session-created` message overwriting legitimate session data — second `gas-session-created` with a different `messageKey` is now rejected entirely (first-write-wins on both key and session data)
 - Fixed cross-tab storage sync calling `showApp()` directly — login sync via `storage` event now defers to `gas-auth-ok` like all other auth paths
 
-#### `testauth1.html` — v02.01w
+#### `testauthgas1.html` — v02.01w
 
 ##### Security
 - Sign-in screen now stays visible during page reload until the server re-confirms your session is valid
@@ -8050,9 +8050,9 @@ CONFIG"
 - Fixed client-side auth wall bypass via forged `gas-session-created` postMessage — auth wall now stays visible until `gas-auth-ok` confirms the session is valid server-side. Previously, a forged `gas-session-created` message could hide the auth wall before the GAS backend validated the token
 
 ### Fixed
-- Fixed all offensive security tests using wrong storage key names (`testauth1_session`/`testauth1_email` instead of `gas_session_token`/`gas_user_email`) — diagnostics were showing `None` for storage values that were actually present
+- Fixed all offensive security tests using wrong storage key names (`testauthgas1_session`/`testauthgas1_email` instead of `gas_session_token`/`gas_user_email`) — diagnostics were showing `None` for storage values that were actually present
 
-#### `testauth1.html` — v02.00w
+#### `testauthgas1.html` — v02.00w
 
 ##### Security
 - Deferred `showApp()` from `gas-session-created` handler to `gas-auth-ok` handler — auth wall only hides after GAS backend confirms session validity, preventing forged postMessage bypass
@@ -8060,7 +8060,7 @@ CONFIG"
 #### `portal.html` — v01.09w
 
 ##### Security
-- Same `showApp()` deferral fix as testauth1 — auth wall stays up until `gas-auth-ok` confirms
+- Same `showApp()` deferral fix as testauthgas1 — auth wall stays up until `gas-auth-ok` confirms
 
 ## [v04.07r] — 2026-03-16 09:31:35 AM EST — [6da68481](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6da684818517511ec473b6e71e254f1f517adb46)
 
@@ -8092,7 +8092,7 @@ CONFIG"
 ## [v04.02r] — 2026-03-16 08:47:20 AM EST — [fc63dbca](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc63dbcaa433388b57925e333008d151c5a82d1f)
 
 ### Added
-- Offensive security test suite (`tests/offensive-security/`) with 4 standalone Playwright-based attack scripts targeting testauth1 auth system
+- Offensive security test suite (`tests/offensive-security/`) with 4 standalone Playwright-based attack scripts targeting testauthgas1 auth system
   - Test 01: XSS via postMessage injection (unknown types, poisoned fields, raw payloads, signature bypass)
   - Test 02: Session token forgery & fixation (storage injection, forged gas-session-created, messageKey overwrite race)
   - Test 03: Message type spoofing & protocol confusion (prototype pollution, DoS via forced sign-out, state machine confusion, type coercion)
@@ -8103,7 +8103,7 @@ CONFIG"
 ### Security
 - SessionAuditLog sheet now gets the same tamper-resistant protection as DataAuditLog when auto-created
 
-#### `testauth1.gs` — v01.42g
+#### `testauthgas1.gs` — v01.42g
 
 ##### Security
 - Added `sheet.protect()` with warning-only mode to `_writeAuditLogEntry()` for parity with DataAuditLog sheet protection
@@ -8113,7 +8113,7 @@ CONFIG"
 ### Changed
 - Renamed session audit log spreadsheet tab from `AuditLog` to `SessionAuditLog` for clarity alongside the existing `DataAuditLog` tab
 
-#### `testauth1.gs` — v01.41g
+#### `testauthgas1.gs` — v01.41g
 
 ##### Changed
 - `AUDIT_LOG_SHEET_NAME` renamed from `AuditLog` to `SessionAuditLog` in both standard and hipaa presets
@@ -8123,7 +8123,7 @@ CONFIG"
 ### Added
 - Each saved patient note now receives a unique resource ID (UUID) in the Data Audit Log, enabling individual record tracing
 
-#### `testauth1.gs` — v01.40g
+#### `testauthgas1.gs` — v01.40g
 
 ##### Added
 - `saveNote()` generates a UUID via `Utilities.getUuid()` and passes it as `resourceId` to the data audit log
@@ -8133,7 +8133,7 @@ CONFIG"
 ### Security
 - Session token in Data Audit Log Details JSON column is now truncated to 8 characters (was previously full token) to prevent token theft from audit spreadsheets
 
-#### `testauth1.gs` — v01.39g
+#### `testauthgas1.gs` — v01.39g
 
 ##### Security
 - Session ID truncated in Details JSON to match SessionId column truncation, with undo comment for easy reversal
@@ -8143,7 +8143,7 @@ CONFIG"
 ### Fixed
 - Fixed client IP still blank — added direct XHR fetch (`XMLHttpRequest` to `api.ipify.org`) inside GAS iframe as primary method, with host-page postMessage as fallback. Previous approach relied solely on cross-frame postMessage which may not reach nested Google wrapper iframes
 
-#### `testauth1.gs` — v01.38g
+#### `testauthgas1.gs` — v01.38g
 
 ##### Fixed
 - Client IP now fetched directly via `XMLHttpRequest` in GAS iframe (dual-path: XHR primary, host postMessage fallback)
@@ -8155,13 +8155,13 @@ CONFIG"
 - Added `api.ipify.org` to host page CSP `connect-src` directive
 - `saveNote()` now receives `clientIp` directly as a parameter from the GAS iframe, with fallback to session-stored IP from heartbeat
 
-#### `testauth1.gs` — v01.37g
+#### `testauthgas1.gs` — v01.37g
 
 ##### Fixed
 - Client IP now reliably reaches audit logs — `saveNote()` accepts `clientIp` as direct parameter instead of relying on heartbeat round-trip
 - Removed `api.ipify.org` fetch from GAS iframe (sandbox blocks it), replaced with `host-client-ip` postMessage listener
 
-#### `testauth1.html` — v01.99w
+#### `testauthgas1.html` — v01.99w
 
 ##### Fixed
 - Client IP fetch moved to host page level where CSP allows it
@@ -8176,7 +8176,7 @@ CONFIG"
 - `ENABLE_DATA_AUDIT_LOG` and `DATA_AUDIT_LOG_SHEET_NAME` toggles in both GAS presets — `false` (standard) skips per-operation logging, `true` (HIPAA) logs every data read/write to a separate audit sheet
 - `ENABLE_IP_LOGGING` toggle in HTML_CONFIG — controls whether client IP is captured and forwarded in heartbeat requests
 
-#### `testauth1.gs` — v01.36g
+#### `testauthgas1.gs` — v01.36g
 
 ##### Added
 - Client IP fetch via `api.ipify.org` in GAS iframe authenticated HTML (toggle-gated by `ENABLE_IP_LOGGING`)
@@ -8187,7 +8187,7 @@ CONFIG"
 - `saveNote()` now calls `dataAuditLog()` for per-operation audit trail
 - `validateSessionForData()` now returns `clientIp` and `isEmergencyAccess` for downstream audit logging
 
-#### `testauth1.html` — v01.98w
+#### `testauthgas1.html` — v01.98w
 
 ##### Added
 - `ENABLE_IP_LOGGING` toggle in HTML_CONFIG
@@ -8208,14 +8208,14 @@ CONFIG"
 - `ENABLE_ESCALATING_LOCKOUT` toggle in both GAS presets — `false` (standard) preserves flat 5/5min rate limit, `true` (HIPAA) enables tiered lockout
 - Client-side error messages for `account_locked` and `rate_limited` login failures
 
-#### `testauth1.html` — v01.97w
+#### `testauthgas1.html` — v01.97w
 
 ##### Added
 - DOM clearing on session expiry — GAS iframe replaced with `about:blank` to destroy any patient data in the DOM
 - GAS iframe auto-reload on re-authentication after DOM clearing
 - User-facing error messages for account lockout and rate limiting
 
-#### `testauth1.gs` — v01.35g
+#### `testauthgas1.gs` — v01.35g
 
 ##### Added
 - `ENABLE_DOM_CLEARING_ON_EXPIRY` toggle in standard (`false`) and HIPAA (`true`) presets
@@ -8228,7 +8228,7 @@ CONFIG"
 ### Fixed
 - Fixed false "Session expiring soon" warning after "Use Here" tab reclaim — the `gas-auth-ok` handler's `needsReauth` check now correctly skips when `_directSessionLoad` was active (server-side session may be near expiry, but the client just reset its rolling timer and the next heartbeat will extend it)
 
-#### `testauth1.html` — v01.96w
+#### `testauthgas1.html` — v01.96w
 
 ##### Fixed
 - "Session expiring soon" warning no longer appears incorrectly after reclaiming a session with "Use Here"
@@ -8238,7 +8238,7 @@ CONFIG"
 ### Fixed
 - Fixed absolute session timer resetting on "Use Here" — `stopCountdownTimers()` in the `tab-claim` handler was clearing `ABSOLUTE_START_KEY` from sessionStorage; the key is now preserved across the stop/start cycle so the absolute timer continues from the original sign-in
 
-#### `testauth1.html` — v01.95w
+#### `testauthgas1.html` — v01.95w
 
 ##### Fixed
 - Reclaiming a session with "Use Here" now correctly preserves the absolute session timer countdown
@@ -8248,7 +8248,7 @@ CONFIG"
 ### Fixed
 - Fixed GAS iframe not reappearing after "Use Here" — the visibility restore was in the `gas-session-created` handler but GAS sends `gas-auth-ok` for valid session reloads; moved the `_directSessionLoad` visibility restore and deferred `showApp()`/timer start to the `gas-auth-ok` handler
 
-#### `testauth1.html` — v01.94w
+#### `testauthgas1.html` — v01.94w
 
 ##### Fixed
 - GAS app now properly reappears after clicking "Use Here" — the app UI and timers are activated once the GAS server confirms the session is valid
@@ -8258,7 +8258,7 @@ CONFIG"
 ### Fixed
 - "Use Here" tab reclaim no longer resets the absolute session timer — the absolute timer now continues from the original sign-in time instead of restarting, preventing indefinite session extension via tab switching
 
-#### `testauth1.html` — v01.93w
+#### `testauthgas1.html` — v01.93w
 
 ##### Fixed
 - Reclaiming a session with "Use Here" no longer resets the absolute session timer — the timer continues from when you originally signed in
@@ -8268,7 +8268,7 @@ CONFIG"
 ### Fixed
 - Eliminated GAS iframe flicker when clicking "Use Here" — the iframe is now hidden during reload and revealed only after `gas-session-created` confirms the GAS app is ready, and the unnecessary double-reload (from the OAuth token-exchange path) is skipped when the iframe was loaded directly with a session token
 
-#### `testauth1.html` — v01.92w
+#### `testauthgas1.html` — v01.92w
 
 ##### Fixed
 - Clicking "Use Here" no longer causes a brief GAS iframe flicker — the app appears smoothly after the session is confirmed
@@ -8278,7 +8278,7 @@ CONFIG"
 ### Fixed
 - Same-browser "Use Here" button now transfers the valid session token from the claiming tab to the surrendering tab via BroadcastChannel — previously the surrendering tab's sessionStorage had a stale token, causing a brief app flash followed by "Session expired" when reclaiming
 
-#### `testauth1.html` — v01.91w
+#### `testauthgas1.html` — v01.91w
 
 ##### Fixed
 - Clicking "Use Here" on a tab that was displaced by another tab's sign-in now seamlessly reclaims the session instead of briefly showing the app then signing you out
@@ -8288,7 +8288,7 @@ CONFIG"
 ### Changed
 - GAS iframe user activity now updates the heartbeat activity timestamp instead of forcing an immediate heartbeat — the regular interval tick and urgent <30s heartbeat handle session extension, eliminating unnecessary server requests during normal interaction
 
-#### `testauth1.html` — v01.90w
+#### `testauthgas1.html` — v01.90w
 
 ##### Changed
 - Interacting with the app (typing, clicking) no longer forces an immediate heartbeat — activity is tracked and the regular heartbeat cycle handles session extension naturally
@@ -8299,7 +8299,7 @@ CONFIG"
 - Activity-triggered heartbeats now respect a cooldown (half the heartbeat interval) to prevent flooding the server with requests on every user interaction — previously every GAS iframe action triggered an immediate heartbeat every 5 seconds
 - Heartbeat requests now auto-clear after 15 seconds if the server response never arrives, preventing the heartbeat from getting permanently stuck on "sending..."
 
-#### `testauth1.html` — v01.89w
+#### `testauthgas1.html` — v01.89w
 
 ##### Fixed
 - Interacting with the app no longer causes constant "sending..." in the heartbeat display — heartbeats are now rate-limited to once per 15 seconds during active use
@@ -8310,7 +8310,7 @@ CONFIG"
 ### Fixed
 - Fixed blank GAS iframe when clicking "Use Here" on a non-original tab — the `_expectingSession` guard was incorrectly suppressing the `gas-needs-auth` response from an invalidated session token, leaving the app visible with no GAS content and eventually re-triggering the "Session Active Elsewhere" overlay
 
-#### `testauth1.html` — v01.88w
+#### `testauthgas1.html` — v01.88w
 
 ##### Fixed
 - Clicking "Use Here" on a tab whose server session was invalidated (by signing in on another tab) now properly shows the sign-in screen instead of a blank GAS iframe
@@ -8325,7 +8325,7 @@ CONFIG"
 - New `gas-session-invalid` postMessage type for data operation session failures
 - Session token now embedded in authenticated app HTML for `google.script.run` calls
 
-#### `testauth1.gs` — v01.34g
+#### `testauthgas1.gs` — v01.34g
 
 ##### Added
 - `ENABLE_DATA_OP_VALIDATION` config toggle — gates server-side session re-validation on data operations
@@ -8335,7 +8335,7 @@ CONFIG"
 ##### Changed
 - Save Note button now calls server-side `saveNote()` via `google.script.run` instead of client-side simulation
 
-#### `testauth1.html` — v01.87w
+#### `testauthgas1.html` — v01.87w
 
 ##### Added
 - `gas-session-invalid` message type in whitelist and handler — triggers auth wall with specific reason when a data operation detects an invalid session
@@ -8345,12 +8345,12 @@ CONFIG"
 ### Changed
 - Sign-in error messages now surface specific misconfiguration details instead of generic "Access denied" — HMAC secret missing, domain restriction misconfigured, and domain not allowed each show distinct setup instructions
 
-#### `testauth1.gs` — v01.33g
+#### `testauthgas1.gs` — v01.33g
 
 ##### Changed
 - URL and postMessage token exchange error handlers now detect HMAC-specific errors and pass `hmac_secret_missing` error code instead of generic `server_error`
 
-#### `testauth1.html` — v01.86w
+#### `testauthgas1.html` — v01.86w
 
 ##### Changed
 - Auth wall now shows specific setup instructions for `hmac_secret_missing`, `domain_not_configured`, and `domain_not_allowed` errors instead of generic "Access denied"
@@ -8361,7 +8361,7 @@ CONFIG"
 - Implemented EMR Security Hardening Phase 1: HMAC secret enforcement — `generateSessionHmac()` now throws when HMAC is enabled but secret is missing (fail-closed), `verifySessionHmac()` returns false instead of passing through
 - Implemented EMR Security Hardening Phase 2: Domain restriction validation — empty allowlist with `ENABLE_DOMAIN_RESTRICTION: true` now returns `domain_not_configured` error with security alert audit log instead of silently rejecting all domains
 
-#### `testauth1.gs` — v01.32g
+#### `testauthgas1.gs` — v01.32g
 
 ##### Changed
 - HMAC generation now fails closed when secret is missing — throws error with setup instructions instead of silently returning empty string
@@ -8409,12 +8409,12 @@ CONFIG"
 - GAS iframe activity detection: user interactions (typing, clicking) now trigger an immediate heartbeat on the host page, catching expired sessions before data loss
 - "Save Note" test button in GAS UI for simulating EMR data entry with session validation
 
-#### `testauth1.html` — v01.85w
+#### `testauthgas1.html` — v01.85w
 
 ##### Added
 - `gas-user-activity` message handler that triggers immediate heartbeat when user interacts with GAS iframe content
 
-#### `testauth1.gs` — v01.31g
+#### `testauthgas1.gs` — v01.31g
 
 ##### Added
 - Activity detection listeners (keydown, click, input) that post `gas-user-activity` to the host page with 5-second debounce
@@ -8425,7 +8425,7 @@ CONFIG"
 ### Added
 - Added "Force Heartbeat" button for on-demand session validity testing without waiting for the automatic heartbeat interval
 
-#### `testauth1.html` — v01.84w
+#### `testauthgas1.html` — v01.84w
 
 ##### Added
 - "Force Heartbeat" button for testing session validity on demand without waiting for the automatic heartbeat interval
@@ -8435,7 +8435,7 @@ CONFIG"
 ### Added
 - Implemented Phase 9 of cross-device session enforcement (Plan 9.2): 4 security tests validating cross-device config toggle, eviction state variable, heartbeat reason code processing, and overlay text reset behavior
 
-#### `testauth1.html` — v01.83w
+#### `testauthgas1.html` — v01.83w
 
 ##### Added
 - 4 security tests for cross-device enforcement: config toggle validation, state variable check, heartbeat reason code processing, and overlay text reset verification (tests 39–42, total now 42)
@@ -8443,9 +8443,9 @@ CONFIG"
 ## [v03.72r] — 2026-03-15 12:39:33 PM EST — [SHA unavailable] — [9dd1b008](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/9dd1b0089ff97da4cdda68eb1e7108413c4b5e8e)
 
 ### Added
-- Implemented Phases 4–7 of cross-device session enforcement (Plan 9.2): client-side handling of eviction reason codes in `testauth1.html` — cross-device eviction shows "Session Active Elsewhere" overlay with "Sign In Here" button, same-browser tab claims show original overlay text, and "Use Here" button correctly routes to auth wall for cross-device eviction vs session reclaim for same-browser
+- Implemented Phases 4–7 of cross-device session enforcement (Plan 9.2): client-side handling of eviction reason codes in `testauthgas1.html` — cross-device eviction shows "Session Active Elsewhere" overlay with "Sign In Here" button, same-browser tab claims show original overlay text, and "Use Here" button correctly routes to auth wall for cross-device eviction vs session reclaim for same-browser
 
-#### `testauth1.html` — v01.82w
+#### `testauthgas1.html` — v01.82w
 
 ##### Added
 - Cross-device session detection: when another device signs in, a "Session Active Elsewhere" overlay appears with a "Sign In Here" button
@@ -8457,7 +8457,7 @@ CONFIG"
 ### Added
 - Implemented Phase 3 of cross-device session enforcement (Plan 9.2): `ENABLE_CROSS_DEVICE_ENFORCEMENT` toggle added to both `standard` and `hipaa` AUTH_CONFIG presets, gating tombstone writes in `invalidateAllSessions()`
 
-#### `testauth1.gs` — v01.30g
+#### `testauthgas1.gs` — v01.30g
 
 ##### Added
 - `ENABLE_CROSS_DEVICE_ENFORCEMENT` configuration toggle in both auth presets — controls whether eviction tombstones are written during session invalidation
@@ -8470,7 +8470,7 @@ CONFIG"
 ### Security
 - All `gas-heartbeat-expired` postMessage responses are now HMAC-signed (Phase 8) — previously only `gas-heartbeat-ok` was signed, allowing potential injection of fake expiration messages
 
-#### `testauth1.gs` — v01.29g
+#### `testauthgas1.gs` — v01.29g
 
 ##### Added
 - Heartbeat expired responses now include a reason code indicating why the session ended
@@ -8484,7 +8484,7 @@ CONFIG"
 ### Added
 - Implemented Phase 1 of cross-device session enforcement (Plan 9.2): eviction tombstone in `invalidateAllSessions()` — when a new device signs in, a short-lived `evicted_TOKEN` cache entry is written for each invalidated session so the heartbeat handler can distinguish cross-device eviction from natural timeout
 
-#### `testauth1.gs` — v01.28g
+#### `testauthgas1.gs` — v01.28g
 
 ##### Added
 - Eviction tombstone mechanism: `cache.put("evicted_" + token, "new_sign_in", 300)` writes a 5-minute tombstone for each invalidated session during sign-in, enabling future heartbeat reason code differentiation
@@ -8511,9 +8511,9 @@ CONFIG"
 ## [v03.64r] — 2026-03-14 11:31:37 PM EST — [272faf6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/272faf69c1b430946561e376538ed6f16250e2c8)
 
 ### Changed
-- Enabled single-tab enforcement on testauth1 (`SINGLE_TAB_ENFORCEMENT` toggled from `false` to `true`)
+- Enabled single-tab enforcement on testauthgas1 (`SINGLE_TAB_ENFORCEMENT` toggled from `false` to `true`)
 
-#### `testauth1.html` — v01.81w
+#### `testauthgas1.html` — v01.81w
 
 ##### Changed
 - Enabled single-tab enforcement — only one browser tab can be active at a time
@@ -8523,7 +8523,7 @@ CONFIG"
 ### Added
 - Added single-tab enforcement feature (toggleable via `SINGLE_TAB_ENFORCEMENT` in HTML_CONFIG, default off) — when enabled, only one browser tab can be active at a time per session
 
-#### `testauth1.html` — v01.80w
+#### `testauthgas1.html` — v01.80w
 
 ##### Added
 - Single-tab enforcement with "Session Active Elsewhere" overlay and "Use Here" button to reclaim the session from another tab (off by default, toggle `SINGLE_TAB_ENFORCEMENT` to enable)
@@ -8533,7 +8533,7 @@ CONFIG"
 ### Changed
 - Session warning banner now appears at 30 seconds remaining instead of 60, matching the urgent heartbeat threshold so user interaction actually extends the session
 
-#### `testauth1.html` — v01.79w
+#### `testauthgas1.html` — v01.79w
 
 ##### Changed
 - Session expiry banner triggers at 30 seconds remaining to match when the urgent heartbeat is active
@@ -8543,7 +8543,7 @@ CONFIG"
 ### Changed
 - Warning banners now show live countdown timers that update every second
 
-#### `testauth1.html` — v01.78w
+#### `testauthgas1.html` — v01.78w
 
 ##### Changed
 - Session and absolute expiry warning banners now display a live countdown showing time remaining
@@ -8553,7 +8553,7 @@ CONFIG"
 ### Fixed
 - Fixed GAS iframe not reloading after re-authentication — HMAC message key from the previous session was blocking the new session's signed messages, causing the app to appear unloaded after clicking Sign In
 
-#### `testauth1.html` — v01.77w
+#### `testauthgas1.html` — v01.77w
 
 ##### Fixed
 - Re-authentication now properly resets the message verification key so the new session's messages are accepted and the app reloads correctly
@@ -8563,7 +8563,7 @@ CONFIG"
 ### Fixed
 - Fixed re-auth race condition where clicking the Sign In button on the absolute warning banner triggered OAuth but did not reload the GAS iframe or reset countdown timers afterward
 
-#### `testauth1.html` — v01.76w
+#### `testauthgas1.html` — v01.76w
 
 ##### Fixed
 - Clicking "Sign In" on the session expiry banner now properly reloads the app and resets all timers after re-authentication
@@ -8584,7 +8584,7 @@ CONFIG"
 - Warning banners now appear below the sign-out pill instead of overlapping it at the top of the page
 - Both banners stack dynamically when both are active so they never overlap each other
 
-#### `testauth1.html` — v01.75w
+#### `testauthgas1.html` — v01.75w
 
 ##### Changed
 - Session expiry warning now says "interact with the page to stay signed in" instead of prompting to sign in again
@@ -8597,7 +8597,7 @@ CONFIG"
 ### Fixed
 - Fixed AudioContext console warning — sound context is now created on first user gesture instead of at page load, eliminating Chrome's autoplay policy warning
 
-#### `testauth1.html` — v01.74w
+#### `testauthgas1.html` — v01.74w
 
 ##### Fixed
 - Sound system no longer triggers a console warning on page load
@@ -8605,9 +8605,9 @@ CONFIG"
 ## [v03.55r] — 2026-03-14 09:18:31 PM EST — [d5137fe](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d5137feb9cc4426282c849aeb78ff4ee441d305a)
 
 ### Fixed
-- Fixed accessibility issue in testauth1 GAS script — `<label>` element now properly associated with heartbeat test input via `for` attribute
+- Fixed accessibility issue in testauthgas1 GAS script — `<label>` element now properly associated with heartbeat test input via `for` attribute
 
-#### `testauth1.gs` — v01.27g
+#### `testauthgas1.gs` — v01.27g
 
 ##### Fixed
 - Associated label with heartbeat test input field — resolves browser accessibility warning
@@ -8627,7 +8627,7 @@ CONFIG"
 ##### Changed
 - Favicon now loads from file instead of inline data
 
-#### `testauth1.html` — v01.73w
+#### `testauthgas1.html` — v01.73w
 
 ##### Changed
 - Favicon now loads from file instead of inline data
@@ -8657,7 +8657,7 @@ CONFIG"
 ##### Added
 - Added placeholder favicon — no more missing icon in browser tab
 
-#### `testauth1.html` — v01.72w
+#### `testauthgas1.html` — v01.72w
 
 ##### Added
 - Added placeholder favicon — no more missing icon in browser tab
@@ -8677,7 +8677,7 @@ CONFIG"
 ### Fixed
 - Fixed noisy console warning "Unexpected token response — no pending sign-in" caused by GIS automatic token renewal callbacks — downgraded to debug-level log
 
-#### `testauth1.html` — v01.71w
+#### `testauthgas1.html` — v01.71w
 
 ##### Fixed
 - Fixed console warning appearing during normal sign-in flow when Google's identity services fires automatic token callbacks
@@ -8692,7 +8692,7 @@ CONFIG"
 ### Changed
 - Removed 27 fake/trivial security tests that tested variable assignments or DOM existence instead of real behavior — 38 behavioral tests remain
 
-#### `testauth1.html` — v01.70w
+#### `testauthgas1.html` — v01.70w
 
 ##### Changed
 - Removed 27 fake and trivial security tests that were testing variable assignments or DOM existence instead of actual behavior (38 real tests remain)
@@ -8702,7 +8702,7 @@ CONFIG"
 ### Changed
 - Merged duplicate document.write and eval() security tests into a single "Code Safety Scan" test — eliminates redundant script enumeration (65 tests total)
 
-#### `testauth1.html` — v01.69w
+#### `testauthgas1.html` — v01.69w
 
 ##### Changed
 - Merged "No document.write" and "No eval() Usage" tests into a single "Code Safety Scan" test (65 tests total)
@@ -8712,7 +8712,7 @@ CONFIG"
 ### Fixed
 - Fixed "No eval() Usage" security test failing — `allScripts` variable was not declared in the test's isolated scope after the test runner restructure
 
-#### `testauth1.html` — v01.68w
+#### `testauthgas1.html` — v01.68w
 
 ##### Fixed
 - Fixed "No eval() Usage" security test failing with "allScripts is not defined" error
@@ -8722,7 +8722,7 @@ CONFIG"
 ### Changed
 - Restructured security test runner to two-phase UI — "Security Tests" button shows all 66 tests as pending, then "Run All" executes them one-by-one with live pass/fail transitions (previously all tests ran immediately on button click)
 
-#### `testauth1.html` — v01.67w
+#### `testauthgas1.html` — v01.67w
 
 ##### Changed
 - "Run Security Tests" button now shows all 66 tests as pending first, then a "Run All" button runs them one-by-one with live pass/fail transitions
@@ -8732,7 +8732,7 @@ CONFIG"
 ### Fixed
 - Fixed security tests destroying active sessions when run — tests for performSignOut, showAuthWall, exchangeToken, and handleTokenResponse now use safe code inspection instead of calling the functions directly (which stopped timers, reloaded the iframe, and showed the sign-in wall)
 
-#### `testauth1.html` — v01.66w
+#### `testauthgas1.html` — v01.66w
 
 ##### Fixed
 - Fixed security tests causing sign-out and "Access denied" when clicking "Run Security Tests" — destructive function calls replaced with safe code inspection
@@ -8742,7 +8742,7 @@ CONFIG"
 ### Changed
 - Upgraded ~25 security tests from existence-only checks to behavioral verification — tests now call functions, verify side effects, and confirm state transitions (e.g. CSRF nonce consumption, session cleanup, storage round-trips, heartbeat state machine)
 
-#### `testauth1.html` — v01.65w
+#### `testauthgas1.html` — v01.65w
 
 ##### Changed
 - Upgraded security tests from existence-only checks to behavioral verification — tests now actively call functions, verify side effects, and confirm state transitions instead of just checking if code exists
@@ -8752,7 +8752,7 @@ CONFIG"
 ### Fixed
 - Fixed three false-positive security test warnings: tests 52/53 (document.write/eval) now skip the test runner script itself to avoid self-detection, and test 65 (clickjacking) correctly reports frame-ancestors as an HTTP-header-only directive that doesn't belong in meta CSP tags
 
-#### `testauth1.html` — v01.64w
+#### `testauthgas1.html` — v01.64w
 
 ##### Fixed
 - Fixed three security test false positives: "document.write" and "eval()" tests no longer flag themselves, and clickjacking test correctly reports that frame-ancestors is an HTTP-header-only directive
@@ -8760,9 +8760,9 @@ CONFIG"
 ## [v03.43r] — 2026-03-14 06:52:15 PM EST — [02ec70ec](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/02ec70ece22e88fd3ee3350aaaab69fb3534076a)
 
 ### Added
-- Expanded testauth1 security test panel from 23 to 65 tests — added CSP connect/style/img-src audits, OAuth client ID validation, session duration configuration checks, all sanitizer deep tests (event handlers, nested XSS, form injection, CSS injection), auth function existence checks, UI state exclusivity verification, code safety scans (no eval, no document.write), storage key naming audit, open redirect check, clickjacking protection, and more
+- Expanded testauthgas1 security test panel from 23 to 65 tests — added CSP connect/style/img-src audits, OAuth client ID validation, session duration configuration checks, all sanitizer deep tests (event handlers, nested XSS, form injection, CSS injection), auth function existence checks, UI state exclusivity verification, code safety scans (no eval, no document.write), storage key naming audit, open redirect check, clickjacking protection, and more
 
-#### `testauth1.html` — v01.63w
+#### `testauthgas1.html` — v01.63w
 
 ##### Added
 - Expanded security tests from 23 to 65 — added CSP directive audits, OAuth configuration checks, sanitizer deep tests, session lifecycle verification, UI state checks, code safety scans, and storage security audits
@@ -8772,7 +8772,7 @@ CONFIG"
 ### Fixed
 - Session expiry warning banner now triggers automatically when ≤60 seconds remain, instead of only appearing on page refresh — banner also auto-hides when a heartbeat extends the session
 
-#### `testauth1.html` — v01.62w
+#### `testauthgas1.html` — v01.62w
 
 ##### Fixed
 - "Session expiring soon" warning now appears automatically when less than 60 seconds remain, instead of only showing on page refresh
@@ -8782,7 +8782,7 @@ CONFIG"
 ### Fixed
 - Fixed console 404 error in security test panel caused by XSS test payload triggering a network request — replaced with data URI
 
-#### `testauth1.html` — v01.61w
+#### `testauthgas1.html` — v01.61w
 
 ##### Fixed
 - Fixed a console error (404) that appeared when running security tests
@@ -8790,9 +8790,9 @@ CONFIG"
 ## [v03.40r] — 2026-03-14 06:29:20 PM EST — [6f012875](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6f0128755bbc1ccc2ab9694ffd5c8150442ef756)
 
 ### Added
-- Expanded security test panel from 12 to 23 tests in testauth1 — added signature verification logic test, GAS iframe presence, postMessage exchange check, CSP script/frame source audit, plugin injection prevention, GAS origin constant, SVG/MathML XSS vector test, session flag isolation, activity event tracking, and session cleanup verification
+- Expanded security test panel from 12 to 23 tests in testauthgas1 — added signature verification logic test, GAS iframe presence, postMessage exchange check, CSP script/frame source audit, plugin injection prevention, GAS origin constant, SVG/MathML XSS vector test, session flag isolation, activity event tracking, and session cleanup verification
 
-#### `testauth1.html` — v01.60w
+#### `testauthgas1.html` — v01.60w
 
 ##### Added
 - Added 11 new security tests: signature hash verification with known values, GAS iframe check, postMessage exchange mode, CSP script-src/frame-src domain audit, object-src plugin blocking, GAS_ORIGIN validation, SVG/Math XSS sanitization, sessionStorage flag isolation, activity event completeness, and clearSession key reset verification
@@ -8802,7 +8802,7 @@ CONFIG"
 ### Fixed
 - Fixed security test panel's changelog sanitization test failing because `sanitizeChangelogHtml` was scoped inside a closure — moved to top-level scope so both changelog rendering and the security test can access it
 
-#### `testauth1.html` — v01.59w
+#### `testauthgas1.html` — v01.59w
 
 ##### Fixed
 - Moved `sanitizeChangelogHtml` from IIFE-scoped to top-level scope to fix the security test "Changelog Sanitization" check
@@ -8810,9 +8810,9 @@ CONFIG"
 ## [v03.38r] — 2026-03-14 06:21:23 PM EST — [06987a4c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/06987a4cdb0b231aff0120d79097a10b9b190c77)
 
 ### Added
-- Added security test panel to testauth1 — a "Run Security Tests" button that validates all implemented security features (CSP, sanitization, CSRF nonce, message allowlist, bootstrap replay protection, key protection, HMAC verification, cross-tab signout, session config, error sanitization, heartbeat, referrer policy)
+- Added security test panel to testauthgas1 — a "Run Security Tests" button that validates all implemented security features (CSP, sanitization, CSRF nonce, message allowlist, bootstrap replay protection, key protection, HMAC verification, cross-tab signout, session config, error sanitization, heartbeat, referrer policy)
 
-#### `testauth1.html` — v01.58w
+#### `testauthgas1.html` — v01.58w
 
 ##### Added
 - Added "Run Security Tests" button in the bottom-left corner that runs 12 client-side security checks and displays pass/fail/warning results in a dark overlay panel
@@ -8820,10 +8820,10 @@ CONFIG"
 ## [v03.37r] — 2026-03-14 06:10:46 PM EST — [1153b121](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1153b1211b859371149651ad5d06f333dc7a11ce)
 
 ### Security
-- Added client-side CSRF nonce protection for the OAuth sign-in flow in testauth1 — ensures token callbacks only process tokens from sign-in flows initiated by the current page (VULN-14)
+- Added client-side CSRF nonce protection for the OAuth sign-in flow in testauthgas1 — ensures token callbacks only process tokens from sign-in flows initiated by the current page (VULN-14)
 - Documented Google MFA limitation: Google's OAuth ID tokens do not include `amr` claim, so MFA enforcement must happen at Workspace admin level (VULN-16)
 
-#### `testauth1.html` — v01.57w
+#### `testauthgas1.html` — v01.57w
 
 ##### Security
 - Added `_authNonce` CSRF protection: a nonce is generated before each `requestAccessToken()` call and verified in `handleTokenResponse()` — rejects unsolicited token callbacks
@@ -8832,19 +8832,19 @@ CONFIG"
 ## [v03.36r] — 2026-03-14 06:03:06 PM EST — [a9a2db60](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a9a2db60d39d1b8ede31181e25b79bc338a16665)
 
 ### Security
-- Enabled HMAC-SHA256 session integrity verification for standard preset in testauth1 — both presets now verify session data has not been tampered with (VULN-9)
+- Enabled HMAC-SHA256 session integrity verification for standard preset in testauthgas1 — both presets now verify session data has not been tampered with (VULN-9)
 - Added bootstrap timestamp validation to reject replayed gas-session-created messages older than 30 seconds (VULN-10)
 - Added first-write-wins protection for message signing key — prevents attacker from overwriting the key after initial delivery (VULN-10)
 - BroadcastChannel cross-tab session revocation confirmed already implemented (VULN-18)
 
-#### `testauth1.html` — v01.56w
+#### `testauthgas1.html` — v01.56w
 
 ##### Security
 - Added iframe load timestamp tracking for bootstrap validation
 - Added 30-second freshness check on gas-session-created messages — rejects stale/replayed bootstrap messages
 - Added first-write-wins guard: once the message signing key is set, subsequent gas-session-created messages cannot overwrite it
 
-#### `testauth1.gs` — v01.26g
+#### `testauthgas1.gs` — v01.26g
 
 ##### Security
 - Enabled ENABLE_HMAC_INTEGRITY for standard preset (was already enabled for hipaa preset)
@@ -8852,11 +8852,11 @@ CONFIG"
 ## [v03.35r] — 2026-03-14 05:58:39 PM EST — [ff0161f9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ff0161f9f5fdd0afb7ececaa2dc3a7d97d642c10)
 
 ### Security
-- Added deploy audit logging to testauth1 — every deploy trigger is now recorded in a rolling 20-entry cache log with timestamps and version info for security monitoring (VULN-3 detection)
+- Added deploy audit logging to testauthgas1 — every deploy trigger is now recorded in a rolling 20-entry cache log with timestamps and version info for security monitoring (VULN-3 detection)
 - Master ACL placeholder validation confirmed already implemented — prevents API calls with unconfigured spreadsheet ID (VULN-19)
 - Deployment ID and spreadsheet ID exposure in source code documented as accepted risk — these are identifiers, not secrets (VULN-12)
 
-#### `testauth1.gs` — v01.25g
+#### `testauthgas1.gs` — v01.25g
 
 ##### Security
 - Added rolling deploy audit log (20 entries, 6hr TTL) at the start of pullAndDeployFromGitHub() — records timestamp, trigger source, and current version for each deploy event
@@ -8869,12 +8869,12 @@ CONFIG"
 - Reduced absolute session timeout from 16 hours to 8 hours to shrink stolen session exposure window (VULN-17)
 - Updated authentication error display to show generic "Access denied" message instead of exposing error codes or email addresses
 
-#### `testauth1.html` — v01.55w
+#### `testauthgas1.html` — v01.55w
 
 ##### Security
 - Changed authentication failure message from detailed error code + email to generic "Access denied. Contact your administrator."
 
-#### `testauth1.gs` — v01.24g
+#### `testauthgas1.gs` — v01.24g
 
 ##### Security
 - Removed email field from domain_not_allowed and not_authorized error responses
@@ -8885,10 +8885,10 @@ CONFIG"
 ## [v03.33r] — 2026-03-14 05:46:37 PM EST — [2388e2a2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2388e2a22d8f1045eab4d523f52a4efb693a01cb)
 
 ### Security
-- Added Content Security Policy (CSP) meta tag to testauth1 — blocks unauthorized script sources, object/embed injection, and base-URI hijacking while whitelisting Google Identity Services and GAS iframe origins
+- Added Content Security Policy (CSP) meta tag to testauthgas1 — blocks unauthorized script sources, object/embed injection, and base-URI hijacking while whitelisting Google Identity Services and GAS iframe origins
 - Added HTML sanitization for changelog popups — strips dangerous elements (script, iframe, object, embed, form, svg) and event handler attributes from externally-fetched changelog content before innerHTML rendering
 
-#### `testauth1.html` — v01.54w
+#### `testauthgas1.html` — v01.54w
 
 ##### Security
 - Added Content-Security-Policy meta tag with directives for script-src, connect-src, frame-src, style-src, img-src, object-src, and base-uri
@@ -9002,7 +9002,7 @@ CONFIG"
 - Added `BroadcastChannel` cross-tab sign-out for hipaa preset (`sessionStorage`) — duplicated tabs now sign out when any tab signs out
 - Documented cross-tab sign-out architecture as Constraint F in `KNOWN-CONSTRAINTS-AND-FIXES.md`
 
-#### `testauth1.html` — v01.53w
+#### `testauthgas1.html` — v01.53w
 
 ##### Added
 - Cross-tab sign-out now works with the hipaa security preset
@@ -9014,7 +9014,7 @@ CONFIG"
 - Added Resolved Fixes section documenting the 3 hipaa sign-in bugs and their fixes (postMessage targeting, HMAC verification, stale message key)
 - Updated all references to the renamed file across the repo
 
-#### `testauth1.html` — v01.52w
+#### `testauthgas1.html` — v01.52w
 
 ##### Changed
 - Minor internal improvements
@@ -9029,7 +9029,7 @@ CONFIG"
 ### Fixed
 - Fixed re-sign-in after sign-out getting stuck on "Sign In Required" — the HMAC message signing key (`_messageKey`) from the previous session persisted after sign-out, causing unsigned bootstrap messages (`gas-ready-for-token`) from the new sign-in attempt to be silently dropped by HMAC verification
 
-#### `testauth1.html` — v01.51w
+#### `testauthgas1.html` — v01.51w
 
 ##### Fixed
 - Signing out and signing back in no longer gets stuck on the sign-in page
@@ -9039,7 +9039,7 @@ CONFIG"
 ### Fixed
 - Fixed HMAC verification failing when `HMAC_SECRET` script property is not configured — `verifySessionHmac()` now checks for the secret and passes through (returns true) when it's missing, matching the behavior of `generateSessionHmac()` which also returns empty when the secret is absent
 
-#### `testauth1.gs` — v01.23g
+#### `testauthgas1.gs` — v01.23g
 
 ##### Fixed
 - Fixed blank page after sign-in when using hipaa security preset — HMAC verification was rejecting valid sessions because the HMAC secret was not configured
@@ -9052,7 +9052,7 @@ CONFIG"
 ### Added
 - Created `KNOWN-CONSTRAINTS-AND-FIXES.md` documenting architectural constraints that must not be changed (GAS double-iframe `'*'` targetOrigin, `event.source` for HTML→GAS replies, unauthenticated deploy webhook, sign-in flow chain, PARENT_ORIGIN for GAS→HTML)
 
-#### `testauth1.html` — v01.50w
+#### `testauthgas1.html` — v01.50w
 
 ##### Fixed
 - Fixed sign-in getting stuck when using the hipaa security preset
@@ -9062,7 +9062,7 @@ CONFIG"
 ### Fixed
 - Reverted postMessage targetOrigin from `GAS_ORIGIN` back to `'*'` for the HTML→GAS exchange-token message — GAS double-iframe architecture serves the listener from a sandboxed `googleusercontent.com` subdomain, causing the browser to silently drop messages targeted at `script.google.com` (VULN-2 remains open on this direction; exposure limited to single-use token)
 
-#### `testauth1.html` — v01.49w
+#### `testauthgas1.html` — v01.49w
 
 ##### Fixed
 - Fixed sign-in getting stuck on "Sign In Required" when using postMessage token exchange — the access token message was being silently dropped by the browser
@@ -9070,17 +9070,17 @@ CONFIG"
 ## [v03.16r] — 2026-03-14 12:53:45 PM EST — [916074b5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/916074b539ddb8b995bd0e69da3409a5865363ed)
 
 ### Changed
-- Switched testauth1 from `standard` to `hipaa` auth preset — enables HMAC message integrity, audit logging, emergency access, and postMessage token exchange by default
+- Switched testauthgas1 from `standard` to `hipaa` auth preset — enables HMAC message integrity, audit logging, emergency access, and postMessage token exchange by default
 - Fixed hipaa preset validation to only require `ALLOWED_DOMAINS` when `ENABLE_DOMAIN_RESTRICTION` is true (previously threw unconditionally)
 
-#### `testauth1.gs` — v01.22g
+#### `testauthgas1.gs` — v01.22g
 
 ##### Changed
 - Switched `ACTIVE_PRESET` from `'standard'` to `'hipaa'`
 - Added `PROJECT_OVERRIDES` with `ENABLE_DOMAIN_RESTRICTION: false` to allow any Google account
 - Fixed `resolveConfig()` validation — `ALLOWED_DOMAINS` check now gated on `ENABLE_DOMAIN_RESTRICTION`
 
-#### `testauth1.html` — v01.48w
+#### `testauthgas1.html` — v01.48w
 
 ##### Changed
 - Switched `STORAGE_TYPE` from `'localStorage'` to `'sessionStorage'` (session cleared on tab close)
@@ -9092,12 +9092,12 @@ CONFIG"
 ### Changed
 - Added commented-out production values above each test value in GAS and HTML config — to revert, uncomment the original lines and delete the ⚡ TEST VALUE lines
 
-#### `testauth1.gs` — v01.21g
+#### `testauthgas1.gs` — v01.21g
 
 ##### Changed
 - Added commented-out production values above each ⚡ TEST VALUE line in both standard and hipaa presets for easy revert
 
-#### `testauth1.html` — v01.47w
+#### `testauthgas1.html` — v01.47w
 
 ##### Changed
 - Added commented-out production values above each ⚡ TEST VALUE line for easy revert
@@ -9108,7 +9108,7 @@ CONFIG"
 - Set all timed auth config values to fast-test values for rapid testing (sessions, heartbeats, OAuth lifetime)
 - Added inline comments documenting every timed config value with its production default
 
-#### `testauth1.gs` — v01.20g
+#### `testauthgas1.gs` — v01.20g
 
 ##### Changed
 - Session expiration: 1 hour → 3 minutes (for testing)
@@ -9118,7 +9118,7 @@ CONFIG"
 - OAuth refresh buffer: 5 minutes → 1 minute (for testing)
 - Added inline comments to all timed values showing production defaults
 
-#### `testauth1.html` — v01.46w
+#### `testauthgas1.html` — v01.46w
 
 ##### Changed
 - Heartbeat interval: 5 minutes → 30 seconds (for testing)
@@ -9130,7 +9130,7 @@ CONFIG"
 
 ### Changed
 
-#### `testauth1.gs` — v01.19g
+#### `testauthgas1.gs` — v01.19g
 
 ##### Changed
 - Reduced OAuth token refresh buffer from 15 minutes to 5 minutes — the "session is expiring soon" reauth banner now only appears in the last 5 minutes of OAuth token lifetime instead of the last 15
@@ -9139,7 +9139,7 @@ CONFIG"
 
 ### Security
 
-#### `testauth1.html` — v01.45w
+#### `testauthgas1.html` — v01.45w
 
 ##### Security
 - Added `Referrer-Policy: no-referrer` meta tag to prevent OAuth and session tokens from leaking via HTTP referrer headers (VULN-1, VULN-6)
@@ -9148,12 +9148,12 @@ CONFIG"
 ## [v03.11r] — 2026-03-14 12:13:26 PM EST — [d60016c4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d60016c4a1405d24e8af7c1ad4f45209364b7c04)
 
 ### Added
-- Comprehensive security update plan II for testauth1 (`repository-information/08-SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — adversarial audit covering 19 vulnerabilities across 7 implementation phases: referrer policy + postMessage origin fix, token exposure reduction (postMessage exchange, sessionStorage, key namespacing), Content Security Policy + innerHTML sanitization, error sanitization + rate limiting + session timeout reduction, deploy audit logging + information exposure documentation, HMAC enablement + bootstrap hardening + cross-tab session revocation via BroadcastChannel, and OAuth flow hardening. Includes complete attack chain analysis, hard constraints inherited from the first plan, CSP directives validated against Google Identity Services documentation, and full regression testing protocol
+- Comprehensive security update plan II for testauthgas1 (`repository-information/08-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md`) — adversarial audit covering 19 vulnerabilities across 7 implementation phases: referrer policy + postMessage origin fix, token exposure reduction (postMessage exchange, sessionStorage, key namespacing), Content Security Policy + innerHTML sanitization, error sanitization + rate limiting + session timeout reduction, deploy audit logging + information exposure documentation, HMAC enablement + bootstrap hardening + cross-tab session revocation via BroadcastChannel, and OAuth flow hardening. Includes complete attack chain analysis, hard constraints inherited from the first plan, CSP directives validated against Google Identity Services documentation, and full regression testing protocol
 
 ## [v03.10r] — 2026-03-14 11:26:51 AM EST — [61cf1fb9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/61cf1fb934a89f38c720d53de93844387f309e1f)
 
 ### Changed
-- Renamed `SECURITY-UPDATE-PLAN-TESTAUTH1.md` → `07-SECURITY-UPDATE-PLAN-TESTAUTH1.md` and updated status to "Implemented" — the 6-phase security hardening was fully implemented in v02.90r–v02.91r
+- Renamed `SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md` → `07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md` and updated status to "Implemented" — the 6-phase security hardening was fully implemented in v02.90r–v02.91r
 - Updated all cross-references (README tree, CHANGELOG entries, SESSION-CONTEXT.md)
 
 ## [v03.09r] — 2026-03-13 11:38:31 PM EST — [b90be1e9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b90be1e9fc0d69f9dfc3df4acf58a11f7bf6a8a0)
@@ -9162,7 +9162,7 @@ CONFIG"
 - Stacked the session timer, GAS version, and HTML version pins vertically in the bottom-right corner instead of spreading them horizontally
 - Propagated vertical pin stacking to the auth HTML template
 
-#### `testauth1.html` — v01.44w
+#### `testauthgas1.html` — v01.44w
 
 ##### Changed
 - Status pins now stack vertically in the bottom-right corner — session timer on top, GAS version in the middle, HTML version on the bottom
@@ -9173,7 +9173,7 @@ CONFIG"
 - Session pin now shows ▶ indicator in minimized state when heartbeat is active
 - Propagated ▶ minimized pill indicator to the auth HTML template
 
-#### `testauth1.html` — v01.43w
+#### `testauthgas1.html` — v01.43w
 
 ##### Added
 - Session countdown pill now shows ▶ when your activity is being tracked
@@ -9181,16 +9181,16 @@ CONFIG"
 ## [v03.07r] — 2026-03-13 11:17:21 PM EST — [89eb7954](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/89eb795456c1133bcb38c4b0bff98f3c420daea8)
 
 ### Changed
-- Changed testauth1 session countdown to 1 hour and heartbeat interval to 5 minutes
+- Changed testauthgas1 session countdown to 1 hour and heartbeat interval to 5 minutes
 - Updated auth templates (GAS and HTML) to match: session 1 hour, heartbeat 5 minutes
 
-#### `testauth1.html` — v01.42w
+#### `testauthgas1.html` — v01.42w
 
 ##### Changed
 - Session now lasts 1 hour instead of 2 hours
 - Heartbeat checks happen every 5 minutes instead of every 10 minutes
 
-#### `testauth1.gs` — v01.18g
+#### `testauthgas1.gs` — v01.18g
 
 ##### Changed
 - Session expiration changed to 1 hour
@@ -9199,15 +9199,15 @@ CONFIG"
 ## [v03.06r] — 2026-03-13 11:12:06 PM EST — [b2af24cc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b2af24ccf8ed9fe1bd555475e71b8ec318056274)
 
 ### Changed
-- Increased testauth1 session countdown from 3 minutes to 2 hours and heartbeat interval from 30 seconds to 10 minutes
+- Increased testauthgas1 session countdown from 3 minutes to 2 hours and heartbeat interval from 30 seconds to 10 minutes
 
-#### `testauth1.html` — v01.41w
+#### `testauthgas1.html` — v01.41w
 
 ##### Changed
 - Session now lasts 2 hours instead of 3 minutes
 - Heartbeat checks happen every 10 minutes instead of every 30 seconds
 
-#### `testauth1.gs` — v01.17g
+#### `testauthgas1.gs` — v01.17g
 
 ##### Changed
 - Session expiration extended from 3 minutes to 2 hours
@@ -9219,9 +9219,9 @@ CONFIG"
 - Removed 15-second grace period for in-flight heartbeats — the urgent heartbeat (instant send in the last 30s) makes this unnecessary
 
 ### Changed
-- Propagated testauth1 improvements to the auth template: urgent heartbeat for last-30s activity, `▶ ready` indicator replacing `(active)` label
+- Propagated testauthgas1 improvements to the auth template: urgent heartbeat for last-30s activity, `▶ ready` indicator replacing `(active)` label
 
-#### `testauth1.html` — v01.40w
+#### `testauthgas1.html` — v01.40w
 
 ##### Removed
 - Removed grace period delay before session expiry — sessions now expire immediately when the timer runs out
@@ -9231,7 +9231,7 @@ CONFIG"
 ### Removed
 - Removed iframe focus polling for heartbeat activity — it falsely reported activity whenever focus was inside the iframe, even when the user was idle. Keyboard-only interaction inside the GAS iframe is a narrow edge case; mouse movement on the host page already covers most real usage
 
-#### `testauth1.html` — v01.39w
+#### `testauthgas1.html` — v01.39w
 
 ##### Removed
 - Removed false activity detection that kept the session active even when you weren't interacting
@@ -9241,7 +9241,7 @@ CONFIG"
 ### Fixed
 - Iframe focus detection now requires `document.hasFocus()` — prevents false activity when the browser tab is not focused
 
-#### `testauth1.html` — v01.38w
+#### `testauthgas1.html` — v01.38w
 
 ##### Fixed
 - Session no longer falsely shows activity when you switch to another tab or window
@@ -9251,7 +9251,7 @@ CONFIG"
 ### Fixed
 - Typing inside the GAS iframe now counts as activity for heartbeat — added iframe focus detection since cross-origin iframes swallow keyboard events
 
-#### `testauth1.html` — v01.37w
+#### `testauthgas1.html` — v01.37w
 
 ##### Fixed
 - Typing in text boxes inside the app now keeps your session active
@@ -9261,7 +9261,7 @@ CONFIG"
 ### Fixed
 - Heartbeat display no longer shows "▶ ready" immediately after extending — resets to idle so the next tick decides the state, removing the confusing "extended ✓" → "active" flash
 
-#### `testauth1.html` — v01.36w
+#### `testauthgas1.html` — v01.36w
 
 ##### Fixed
 - Heartbeat indicator resets to idle after session extension instead of immediately showing "ready"
@@ -9271,7 +9271,7 @@ CONFIG"
 ### Fixed
 - Fixed heartbeat ready indicator not appearing on activity — `_heartbeatIdle` was not cleared when user became active, so display stayed stuck on `(idle)` until the next 30s tick
 
-#### `testauth1.html` — v01.35w
+#### `testauthgas1.html` — v01.35w
 
 ##### Fixed
 - Heartbeat "ready" indicator now appears immediately when you interact with the page, instead of staying on "idle" until the next heartbeat cycle
@@ -9281,7 +9281,7 @@ CONFIG"
 ### Changed
 - Heartbeat countdown now shows `▶ ready` indicator when it will fire on the next tick, replacing the generic `(active)` label
 
-#### `testauth1.html` — v01.34w
+#### `testauthgas1.html` — v01.34w
 
 ##### Changed
 - Heartbeat countdown shows a clear "ready" indicator when your session will be extended on the next heartbeat
@@ -9291,7 +9291,7 @@ CONFIG"
 ### Added
 - Added urgent heartbeat — when session has <30s remaining and user is active, sends heartbeat immediately instead of waiting for the next 30s interval tick
 
-#### `testauth1.html` — v01.33w
+#### `testauthgas1.html` — v01.33w
 
 ##### Added
 - Session now extends immediately when you're active in the last 30 seconds before expiry
@@ -9301,7 +9301,7 @@ CONFIG"
 ### Changed
 - Reverted cursor flicker fix attempts (v02.95r, v02.96r) — restored heartbeat to v01.29w behavior (persistent iframe, direct DOM writes)
 
-#### `testauth1.html` — v01.32w
+#### `testauthgas1.html` — v01.32w
 
 ##### Changed
 - Reverted heartbeat to original approach — minor cursor flicker during heartbeat is acceptable
@@ -9311,7 +9311,7 @@ CONFIG"
 ### Fixed
 - Fixed heartbeat cursor flicker by batching DOM updates with requestAnimationFrame and adding CSS containment to the timer pill
 
-#### `testauth1.html` — v01.31w
+#### `testauthgas1.html` — v01.31w
 
 ##### Fixed
 - Fixed cursor flickering from caret to pointer when heartbeat status updates
@@ -9321,7 +9321,7 @@ CONFIG"
 ### Fixed
 - Fixed heartbeat iframe cursor flicker — heartbeat now uses a disposable iframe with src pre-set before DOM insertion instead of navigating an existing iframe
 
-#### `testauth1.html` — v01.30w
+#### `testauthgas1.html` — v01.30w
 
 ##### Fixed
 - Fixed cursor flickering from caret to pointer during heartbeat requests
@@ -9329,9 +9329,9 @@ CONFIG"
 ## [v02.94r] — 2026-03-13 08:58:37 PM EST — [b00ed37e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b00ed37e5cdc80a9f74b1b99a77b06f4a5033d29)
 
 ### Added
-- Added text input field to testauth1 GAS app for testing whether heartbeat iframe reloads disrupt user typing
+- Added text input field to testauthgas1 GAS app for testing whether heartbeat iframe reloads disrupt user typing
 
-#### `testauth1.gs` — v01.16g
+#### `testauthgas1.gs` — v01.16g
 
 ##### Added
 - Added text input field for heartbeat interruption testing
@@ -9341,7 +9341,7 @@ CONFIG"
 ### Fixed
 - Fixed session timeout race condition — when a heartbeat was in-flight and the countdown hit 0, the client would sign the user out before the server response could extend the session. Added a 15-second grace period that shows "extending..." while waiting for the heartbeat response
 
-#### `testauth1.html` — v01.29w
+#### `testauthgas1.html` — v01.29w
 
 ##### Fixed
 - Session no longer times out while a heartbeat response is in transit — shows "extending..." instead of immediately signing out
@@ -9351,7 +9351,7 @@ CONFIG"
 ### Fixed
 - Fixed GAS changelog popup not showing version headers with timestamps — the `parseGasChangelog` regex was missing the `v` prefix in the version capture group (`[\d.]+g` → `v[\d.]+g`), causing all `## [vXX.XXg]` headers to be silently skipped while entries were shown without grouping
 
-#### `testauth1.html` — v01.28w
+#### `testauthgas1.html` — v01.28w
 
 ##### Fixed
 - Version headers now appear in the GAS changelog popup with timestamps
@@ -9374,7 +9374,7 @@ CONFIG"
 ## [v02.91r] — 2026-03-13 08:03:00 PM EST — [107b9361](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/107b9361aed9b3751eb4d61283da466e115c81e0)
 
 ### Changed
-- Propagated all security hardening from testauth1 to auth templates — both `gas-minimal-auth-template-code.js.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt` now include the full 6-phase security implementation so new GAS projects created via setup-gas-project.sh inherit all defenses by default
+- Propagated all security hardening from testauthgas1 to auth templates — both `gas-minimal-auth-template-code.js.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt` now include the full 6-phase security implementation so new GAS projects created via setup-gas-project.sh inherit all defenses by default
 
 ### Security
 - **Auth GAS template** — added PARENT_ORIGIN derivation, `escapeHtml()`/`escapeJs()` XSS prevention, expanded HMAC payload, per-session message signing key, `messageKey` in session responses, error sanitization, all `"*"` → `PARENT_ORIGIN` on postMessages, removed `accessToken` from session storage
@@ -9383,7 +9383,7 @@ CONFIG"
 ## [v02.90r] — 2026-03-13 07:15:58 PM EST — [03d6406f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/03d6406f415f5b931302872afbce7246d517633b)
 
 ### Added
-- Defense-in-depth security hardening for testauth1 environment (6-phase implementation from 07-SECURITY-UPDATE-PLAN-TESTAUTH1.md)
+- Defense-in-depth security hardening for testauthgas1 environment (6-phase implementation from 07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md)
 
 ### Security
 - **Message-type allowlist** (HTML) — postMessage listener now only processes 8 known GAS message types, rejecting all others
@@ -9395,7 +9395,7 @@ CONFIG"
 - **Debug log cleanup** (both) — removed all `[AUTH DEBUG]` and `[GAS DEBUG]` console.log statements from production code
 - **OAuth revocation fix** (HTML) — removed broken `google.accounts.oauth2.revoke(session.token)` call that was passing the server session token instead of the OAuth access token
 
-#### `testauth1.html` — v01.27w
+#### `testauthgas1.html` — v01.27w
 
 ##### Added
 - Message-type allowlist for postMessage security
@@ -9410,7 +9410,7 @@ CONFIG"
 ##### Removed
 - Debug console.log statements from authentication flow
 
-#### `testauth1.gs` — v01.15g
+#### `testauthgas1.gs` — v01.15g
 
 ##### Added
 - `escapeHtml()` and `escapeJs()` XSS prevention helpers
@@ -9429,12 +9429,12 @@ CONFIG"
 ## [v02.89r] — 2026-03-13 07:00:04 PM EST — [76b63d88](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/76b63d88a450807c0c8ca18abfb4f4637902cccd)
 
 ### Changed
-- Corrected security update plan failure analysis (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — identified that GAS was stuck at v01.15g from v02.79r onward because DEPLOY_SECRET broke auto-deploy, meaning all subsequent GAS-side fixes (v02.80r–v02.82r) never deployed to the live environment. Corrected false lessons: PARENT_ORIGIN case mismatch (not `.toLowerCase()`) was the actual root cause of persistent sign-in failure; TOKEN_EXCHANGE_METHOD='postMessage' was never properly tested (revert never deployed). Added `.toLowerCase()` to Phase 6 PARENT_ORIGIN derivation to prevent repeating the v02.79r bug
+- Corrected security update plan failure analysis (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md`) — identified that GAS was stuck at v01.15g from v02.79r onward because DEPLOY_SECRET broke auto-deploy, meaning all subsequent GAS-side fixes (v02.80r–v02.82r) never deployed to the live environment. Corrected false lessons: PARENT_ORIGIN case mismatch (not `.toLowerCase()`) was the actual root cause of persistent sign-in failure; TOKEN_EXCHANGE_METHOD='postMessage' was never properly tested (revert never deployed). Added `.toLowerCase()` to Phase 6 PARENT_ORIGIN derivation to prevent repeating the v02.79r bug
 
 ## [v02.88r] — 2026-03-13 06:46:07 PM EST — [d7fb950e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d7fb950e91781c246d1cc53add83d89738d1f466)
 
 ### Added
-- Comprehensive security update plan for testauth1 (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTH1.md`) — implementation-ready plan covering 6 phases: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, error sanitization, and postMessage target origin restriction. Includes complete failure analysis of v02.75r–v02.84r (the two previous reverted attempts) with root causes documented for each, and explicit "never touch" constraints for the deploy handler and sign-in flow
+- Comprehensive security update plan for testauthgas1 (`repository-information/SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md`) — implementation-ready plan covering 6 phases: message-type allowlist, cryptographic message authentication, XSS prevention, session hardening, debug cleanup, error sanitization, and postMessage target origin restriction. Includes complete failure analysis of v02.75r–v02.84r (the two previous reverted attempts) with root causes documented for each, and explicit "never touch" constraints for the deploy handler and sign-in flow
 
 ## [v02.87r] — 2026-03-13 06:13:23 PM EST — [52e3870f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/52e3870f05e80147b202833f30b11328d6dc1bdc)
 
@@ -9447,7 +9447,7 @@ CONFIG"
 - Protective `⚠️ CRITICAL` comment block in all GAS deploy handlers (`doPost(action=deploy)`) warning against adding authentication or guards — prevents silent breakage of the auto-update pipeline
 - Deploy Handler Protection rule in `.claude/rules/gas-scripts.md` documenting why the deploy endpoint must remain unauthenticated, what happened when auth was added (v02.79r), and the pattern to watch for
 
-#### `testauth1.gs` — v01.14g
+#### `testauthgas1.gs` — v01.14g
 
 ##### Added
 - Minor internal improvements
@@ -9458,12 +9458,12 @@ CONFIG"
 - Full repo revert to v02.74r state — undoes all changes from v02.75r through v02.84r (security hardening, postMessage fixes, security action plan, template propagation)
 - Removed `repository-information/SECURITY-ACTION-PLAN.md` (created in v02.78r)
 
-#### `testauth1.html` — v01.26w (reverted from v01.35w)
+#### `testauthgas1.html` — v01.26w (reverted from v01.35w)
 
 ##### Changed
 - Reverted to v01.26w state — undoes security hardening changes (CSP meta tag, origin validation, postMessage security, CSRF token handling) that were applied in v02.75r–v02.84r
 
-#### `testauth1.gs` — v01.13g (reverted from v01.17g)
+#### `testauthgas1.gs` — v01.13g (reverted from v01.17g)
 
 ##### Changed
 - Reverted to v01.13g state — undoes server-side security hardening (state parameter validation, origin checks, action allowlists) from v02.79r–v02.84r
@@ -9494,7 +9494,7 @@ CONFIG"
 - Removed automatic silent OAuth sign-in on page load — the Google account picker popup no longer fires when refreshing the auth wall page; sign-in only triggers when the user clicks "Sign In with Google"
 - Reverted incorrect SIGNED_OUT_FLAG approach from v02.69r
 
-#### `testauth1.html` — v01.26w
+#### `testauthgas1.html` — v01.26w
 
 ##### Fixed
 - Page refresh on "Sign In Required" screen no longer auto-triggers Google sign-in popup
@@ -9509,7 +9509,7 @@ CONFIG"
 ### Fixed
 - Fixed auto sign-in after manual sign-out on auth pages — signing out and refreshing no longer silently re-authenticates; the account picker is now shown
 
-#### `testauth1.html` — v01.25w
+#### `testauthgas1.html` — v01.25w
 
 ##### Fixed
 - Fixed sign-out followed by page refresh auto-signing back in without account picker
@@ -9533,7 +9533,7 @@ CONFIG"
 ## [v02.66r] — 2026-03-12 11:19:23 PM EST — [6e4c737](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/6e4c7378b199adf9d6b582fbcbbaedf433cf802f)
 
 ### Changed
-- Propagated heartbeat-based session management system from testauth1 to auth templates, replacing the old inactivity-timeout pattern
+- Propagated heartbeat-based session management system from testauthgas1 to auth templates, replacing the old inactivity-timeout pattern
 - Auth templates now include: heartbeat functions, countdown timer UI, absolute session timeout, z-index stacking fixes, auth wall branding, cross-tab session sync, and `select_account` sign-in UX
 
 ## [v02.65r] — 2026-03-12 10:36:32 PM EST — [d495d5e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d495d5e3f72c712cb915782e2d81f2512bb6dccc)
@@ -9541,7 +9541,7 @@ CONFIG"
 ### Added
 - Cross-tab login sync — signing in on one tab now automatically signs in all other open tabs of the same page (uses the browser's native `storage` event for instant, secure same-origin sync)
 
-#### `testauth1.html` — v01.24w
+#### `testauthgas1.html` — v01.24w
 
 ##### Added
 - Cross-tab session sync: signing in on one tab instantly signs in all other open tabs; signing out in one tab instantly signs out all others
@@ -9551,7 +9551,7 @@ CONFIG"
 ### Changed
 - GAS script version bump to test auto-refresh and session expiry account chooser fix
 
-#### `testauth1.gs` — v01.13g
+#### `testauthgas1.gs` — v01.13g
 
 ##### Changed
 - Minor internal improvements
@@ -9561,7 +9561,7 @@ CONFIG"
 ### Fixed
 - After auto-refresh when a session has timed out, users now see the sign-in screen with account chooser instead of being silently re-authenticated
 
-#### `testauth1.html` — v01.23w
+#### `testauthgas1.html` — v01.23w
 
 ##### Fixed
 - Auto-refresh after session timeout no longer skips the account chooser — users can select which Google account to sign in with
@@ -9572,7 +9572,7 @@ CONFIG"
 - Auth access check now uses dual OR logic — either master ACL spreadsheet TRUE or editor/viewer sharing-list grants access (both methods work simultaneously)
 - Auth template updated to match the OR-based dual access method
 
-#### `testauth1.gs` — v01.12g
+#### `testauthgas1.gs` — v01.12g
 
 ##### Changed
 - Access check uses dual OR logic — master ACL TRUE or editor/viewer sharing-list grants access (previously fallback-only)
@@ -9588,7 +9588,7 @@ CONFIG"
 ### Changed
 - Auth access check now uses master ACL spreadsheet when configured, with fallback to legacy editor/viewer check
 
-#### `testauth1.gs` — v01.11g
+#### `testauthgas1.gs` — v01.11g
 
 ##### Added
 - Master ACL spreadsheet support — checks email against row-based ACL instead of spreadsheet sharing list
@@ -9604,7 +9604,7 @@ CONFIG"
 ### Fixed
 - Session timer pill no longer overlaps the GAS version display in the bottom-left corner
 
-#### `testauth1.html` — v01.22w
+#### `testauthgas1.html` — v01.22w
 
 ##### Fixed
 - Moved session timer pill to the right to avoid overlapping the GAS layer version text
@@ -9614,7 +9614,7 @@ CONFIG"
 ### Changed
 - Session timers redesigned as a compact pill matching the version and GAS pills — shows session countdown while minimized, expands on click to show all timers
 
-#### `testauth1.html` — v01.21w
+#### `testauthgas1.html` — v01.21w
 
 ##### Changed
 - Session timers restyled as a bottom-left pill with session countdown visible while collapsed
@@ -9625,7 +9625,7 @@ CONFIG"
 ### Removed
 - Removed "Test GAS Call" debug button from session timers panel
 
-#### `testauth1.html` — v01.20w
+#### `testauthgas1.html` — v01.20w
 
 ##### Removed
 - Removed debug button and result display from session timers
@@ -9636,7 +9636,7 @@ CONFIG"
 - Sign-in screen now shows company logo and environment title above the "Sign In Required" heading
 - Version indicator pills (HTML and GAS) are now visible on the sign-in screen — previously hidden behind the auth wall's solid background
 
-#### `testauth1.html` — v01.19w
+#### `testauthgas1.html` — v01.19w
 
 ##### Changed
 - Added company logo and environment title to auth wall
@@ -9648,7 +9648,7 @@ CONFIG"
 ### Changed
 - Google Sign-In now shows account chooser when clicking "Sign In with Google" instead of auto-selecting the last used account
 
-#### `testauth1.html` — v01.18w
+#### `testauthgas1.html` — v01.18w
 
 ##### Changed
 - Sign-in button always presents Google account chooser for explicit account selection
@@ -9659,7 +9659,7 @@ CONFIG"
 ### Fixed
 - Heartbeat no longer destroys the GAS app iframe — uses a hidden iframe for server heartbeat requests instead of navigating the main `gas-app` iframe
 
-#### `testauth1.html` — v01.17w
+#### `testauthgas1.html` — v01.17w
 
 ##### Fixed
 - GAS app content no longer disappears after the first heartbeat extension — heartbeat requests now use a separate hidden iframe instead of navigating the main GAS iframe
@@ -9669,7 +9669,7 @@ CONFIG"
 ### Changed
 - Session timers panel now starts minimized — click "Session Timers" header to expand/collapse
 
-#### `testauth1.html` — v01.16w
+#### `testauthgas1.html` — v01.16w
 
 ##### Changed
 - Session timers default to collapsed state with a clickable header to expand
@@ -9679,7 +9679,7 @@ CONFIG"
 ### Changed
 - Countdown timer now shows hours format (H:MM:SS) when remaining time is 1 hour or more — applies to absolute session timer
 
-#### `testauth1.html` — v01.15w
+#### `testauthgas1.html` — v01.15w
 
 ##### Changed
 - Timer display uses H:MM:SS format for durations over 1 hour (e.g. "16:00:00" instead of "960:00")
@@ -9696,7 +9696,7 @@ CONFIG"
 - `ENABLE_INACTIVITY_TIMEOUT`, `CLIENT_INACTIVITY_TIMEOUT`, `ENABLE_AUTO_SIGNOUT` config options
 - `startInactivityTimer()`, `resetInactivityTimer()`, `stopInactivityTimer()`, `handleInactivityTimeout()` functions
 
-#### `testauth1.html` — v01.14w
+#### `testauthgas1.html` — v01.14w
 
 ##### Changed
 - Reordered session timer display: Absolute → Session → Heartbeat
@@ -9716,7 +9716,7 @@ CONFIG"
 ### Added
 - Auto sign-out when session or absolute timer expires — users are automatically signed out with a descriptive message instead of just showing "expired" in the timer
 
-#### `testauth1.html` — v01.13w
+#### `testauthgas1.html` — v01.13w
 
 ##### Changed
 - Absolute session duration increased from 6 minutes to 16 hours
@@ -9725,7 +9725,7 @@ CONFIG"
 - Auto sign-out on session expiry with message "Your session has expired"
 - Auto sign-out on absolute timeout with message "Your session has reached the maximum duration"
 
-#### `testauth1.gs` — v01.10g
+#### `testauthgas1.gs` — v01.10g
 
 ##### Changed
 - Standard preset `ABSOLUTE_SESSION_TIMEOUT`: 360s → 57600s (16 hours)
@@ -9744,12 +9744,12 @@ CONFIG"
 - Added absolute timeout checks in both `validateSession()` and heartbeat handler — refuses to extend past the absolute limit
 - Added absolute countdown timer row in client-side timer panel
 
-#### `testauth1.html` — v01.12w
+#### `testauthgas1.html` — v01.12w
 
 ##### Added
 - New "Absolute" countdown timer showing the hard session ceiling that cannot be extended
 
-#### `testauth1.gs` — v01.09g
+#### `testauthgas1.gs` — v01.09g
 
 ##### Added
 - Absolute session timeout enforcement — sessions now have a hard ceiling that heartbeats cannot extend past
@@ -9760,7 +9760,7 @@ CONFIG"
 ### Changed
 - Heartbeat timer row now shows a live countdown to the next heartbeat tick with (active) or (idle) status indicator
 
-#### `testauth1.html` — v01.11w
+#### `testauthgas1.html` — v01.11w
 
 ##### Changed
 - Heartbeat display now counts down to the next heartbeat check, showing whether it will extend the session (active) or skip (idle)
@@ -9776,7 +9776,7 @@ CONFIG"
 ### Removed
 - Removed `SESSION_REFRESH_WINDOW` from both standard and HIPAA presets — replaced by the heartbeat system
 
-#### `testauth1.html` — v01.10w
+#### `testauthgas1.html` — v01.10w
 
 ##### Added
 - Session heartbeat that monitors your activity and automatically extends your session while you're using the page
@@ -9785,7 +9785,7 @@ CONFIG"
 ##### Removed
 - Removed refresh window display — replaced by the heartbeat system
 
-#### `testauth1.gs` — v01.08g
+#### `testauthgas1.gs` — v01.08g
 
 ##### Added
 - Server-side heartbeat handler that extends your session when you're actively using the page
@@ -9797,16 +9797,16 @@ CONFIG"
 ## [v02.46r] — 2026-03-12 05:18:55 PM EST — [155c5799](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/155c57992b228b423adae01c92ddfcd6adc7a98c)
 
 ### Changed
-- Reduced testauth1 session expiration from 30 minutes to 3 minutes and refresh window from 5 minutes to 1.5 minutes for testing
-- Added "Test GAS Call" debug button to testauth1 timer panel to manually trigger server-side session validation
+- Reduced testauthgas1 session expiration from 30 minutes to 3 minutes and refresh window from 5 minutes to 1.5 minutes for testing
+- Added "Test GAS Call" debug button to testauthgas1 timer panel to manually trigger server-side session validation
 
-#### `testauth1.html` — v01.09w
+#### `testauthgas1.html` — v01.09w
 
 ##### Changed
 - Shortened session timer to 3 minutes and refresh window to 1.5 minutes for testing
 - Added "Test GAS Call" button to the session timers panel — triggers a server round-trip to test session expiry behavior
 
-#### `testauth1.gs` — v01.07g
+#### `testauthgas1.gs` — v01.07g
 
 ##### Changed
 - Reduced session expiration from 1800s to 180s (3 min) and refresh window from 300s to 90s (1.5 min) for testing
@@ -9814,9 +9814,9 @@ CONFIG"
 ## [v02.45r] — 2026-03-12 04:38:41 PM EST — [74b972d8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/74b972d87af34ba33b0a555af29e7e50b111dffb)
 
 ### Added
-- Added countdown timer panel to testauth1 showing session expiration, refresh window status, and inactivity timeout in real-time
+- Added countdown timer panel to testauthgas1 showing session expiration, refresh window status, and inactivity timeout in real-time
 
-#### `testauth1.html` — v01.08w
+#### `testauthgas1.html` — v01.08w
 
 ##### Added
 - Added live countdown timers showing session time remaining, refresh window status, and inactivity timeout
@@ -9824,9 +9824,9 @@ CONFIG"
 ## [v02.44r] — 2026-03-12 02:58:04 PM EST — [7a2af78c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a2af78cfbb146b7c80b2ff0ed0a1de04797ff96)
 
 ### Changed
-- Bumped testauth1 GAS script version to test the self-update webhook deployment
+- Bumped testauthgas1 GAS script version to test the self-update webhook deployment
 
-#### `testauth1.gs` — v01.06g
+#### `testauthgas1.gs` — v01.06g
 
 ##### Changed
 - Version bump to verify automatic code deployment via webhook
@@ -9834,9 +9834,9 @@ CONFIG"
 ## [v02.43r] — 2026-03-12 02:50:25 PM EST — [bbbd3efd](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bbbd3efd9a2b33860c4e995ceda89048b846572e)
 
 ### Fixed
-- Fixed GAS self-update (auto-deploy webhook) not working for testauth1 — the `GITHUB_OWNER`, `GITHUB_REPO`, `TITLE`, and `FILE_PATH` variables were still set to template placeholders, causing `pullAndDeployFromGitHub()` to fetch from a nonexistent path and fail silently
+- Fixed GAS self-update (auto-deploy webhook) not working for testauthgas1 — the `GITHUB_OWNER`, `GITHUB_REPO`, `TITLE`, and `FILE_PATH` variables were still set to template placeholders, causing `pullAndDeployFromGitHub()` to fetch from a nonexistent path and fail silently
 
-#### `testauth1.gs` — v01.05g
+#### `testauthgas1.gs` — v01.05g
 
 ##### Fixed
 - Replaced placeholder variables (`YOUR_ORG_NAME`, `YOUR_REPO_NAME`, `YOUR_PROJECT_FOLDER/YOUR_PAGE_NAME.gs`, `YOUR_PROJECT_TITLE`) with actual values so the self-update webhook can pull code from the correct GitHub path
@@ -9847,7 +9847,7 @@ CONFIG"
 - Fixed session not persisting across page refreshes — the iframe's `srcdoc` race condition also affected the session-resume path, causing `gas-needs-auth` to fire and wipe the valid session from localStorage before the session-URL navigation could complete
 - Added `_expectingSession` guard flag to ignore stale `gas-needs-auth` messages when a session navigation is in flight
 
-#### `testauth1.html` — v01.07w
+#### `testauthgas1.html` — v01.07w
 
 ##### Fixed
 - Fixed page refresh dropping authenticated session — `srcdoc` is now removed in the session-resume branch (same fix as the no-session branch), and stale `gas-needs-auth` messages are ignored during session navigation
@@ -9862,7 +9862,7 @@ CONFIG"
 ### Fixed
 - Strengthened auth race condition fix — removed `srcdoc` attribute and deleted `window._r` before setting iframe to `about:blank`, preventing the queued srcdoc script from navigating to the bare GAS URL (the prior `src`-only fix was ineffective because HTML spec gives `srcdoc` priority over `src`)
 
-#### `testauth1.html` — v01.06w
+#### `testauthgas1.html` — v01.06w
 
 ##### Fixed
 - Prevented iframe `srcdoc` script from overriding the `about:blank` navigation — `srcdoc` is now removed and `window._r` deleted before cancelling the iframe load
@@ -9877,7 +9877,7 @@ CONFIG"
 ### Fixed
 - Fixed auth race condition causing false "Session expired" error on initial page load — the GAS iframe was navigating to the bare deployment URL before Google Sign-In could obtain a token, triggering a premature `gas-needs-auth` message. The iframe is now held on `about:blank` until a token is available for exchange
 
-#### `testauth1.html` — v01.05w
+#### `testauthgas1.html` — v01.05w
 
 ##### Fixed
 - Prevented premature iframe navigation when no local session exists — avoids the misleading "Session expired" error on first visit
@@ -9893,12 +9893,12 @@ CONFIG"
 - Fixed auth flow not loading the app after sign-in — the iframe was not reloaded with the session token after URL-path token exchange, leaving the exchange response HTML visible instead of the app UI
 - Added debug logging to GAS exchange response to trace postMessage delivery
 
-#### `testauth1.html` — v01.04w
+#### `testauthgas1.html` — v01.04w
 
 ##### Fixed
 - After successful token exchange, the iframe now reloads with the session token (previously only happened for postMessage exchange path)
 
-#### `testauth1.gs` — v01.04g
+#### `testauthgas1.gs` — v01.04g
 
 ##### Fixed
 - Added browser-side debug logging to the token exchange response to diagnose postMessage delivery issues
@@ -9908,7 +9908,7 @@ CONFIG"
 ### Fixed
 - Fixed GAS postMessage not reaching parent page — Apps Script's sandbox iframe wrapper intercepts `window.parent.postMessage`; switched all GAS scripts and templates to use `window.top.postMessage` which bypasses the sandbox and reaches the embedding page directly
 
-#### `testauth1.gs` — v01.03g
+#### `testauthgas1.gs` — v01.03g
 
 ##### Fixed
 - Fixed postMessage communication being intercepted by Google's iframe sandbox — messages now reach the embedding page correctly
@@ -9919,7 +9919,7 @@ CONFIG"
 - Fixed Google sign-in completing but auth wall persisting — the decoded GAS deployment URL was being deleted before the auth token exchange could use it
 - Preserved GAS deployment URL in iframe `data-base-url` attribute so auth token exchange can reload the iframe after sign-in
 
-#### `testauth1.html` — v01.03w
+#### `testauthgas1.html` — v01.03w
 
 ##### Fixed
 - Fixed sign-in flow failing after Google popup closes — deployment URL now persists for token exchange
@@ -9937,15 +9937,15 @@ CONFIG"
 ## [v02.36r] — 2026-03-12 01:22:58 PM EST — [1b3d73dc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/1b3d73dc932173d477ff93acbd49f36e727d99d3)
 
 ### Added
-- Added console.log auth flow debugging to testauth1 HTML page to trace sign-in postMessage flow
+- Added console.log auth flow debugging to testauthgas1 HTML page to trace sign-in postMessage flow
 - Added try-catch around GAS `exchangeTokenForSession()` so server errors are sent back as `gas-session-created` with error details instead of crashing silently
 
-#### `testauth1.html` — v01.02w
+#### `testauthgas1.html` — v01.02w
 
 ##### Added
 - Added console.log debugging at key auth flow points (token response, exchange URL, postMessage listener)
 
-#### `testauth1.gs` — v01.02g
+#### `testauthgas1.gs` — v01.02g
 
 ##### Fixed
 - Wrapped token exchange in try-catch to prevent silent server errors from breaking the sign-in flow
@@ -9955,7 +9955,7 @@ CONFIG"
 ### Added
 - Added visible debug marker ("1") to GAS iframe output to diagnose whether iframe loads after auth
 
-#### `testauth1.gs` — v01.01g
+#### `testauthgas1.gs` — v01.01g
 
 ##### Added
 - Added centered debug marker to verify iframe loading after authentication
@@ -9963,9 +9963,9 @@ CONFIG"
 ## [v02.34r] — 2026-03-12 01:03:01 PM EST — [a4652de9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/a4652de93565a90ed00b678fb5e73d0c2d7135cc)
 
 ### Fixed
-- Updated testauth1 OAuth Client ID to a user-created credential with authorized JavaScript origins for GitHub Pages (Apps Script auto-generated client IDs cannot be modified)
+- Updated testauthgas1 OAuth Client ID to a user-created credential with authorized JavaScript origins for GitHub Pages (Apps Script auto-generated client IDs cannot be modified)
 
-#### `testauth1.html` — v01.01w
+#### `testauthgas1.html` — v01.01w
 
 ##### Fixed
 - Fixed Google OAuth sign-in — replaced locked Apps Script-managed Client ID with user-created OAuth credential that authorizes the GitHub Pages origin
@@ -9986,25 +9986,25 @@ CONFIG"
 ## [v02.32r] — 2026-03-12 11:55:11 AM EST — [28c5a5de](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/28c5a5de263c5820059d97b81cc55b7c50263fa0)
 
 ### Added
-- Set up new GAS project `testauth1` with Google OAuth authentication (standard preset)
-- Created `testauth1.html` embedding page from auth template with encoded deployment URL
-- Created `testauth1.gs` GAS script from minimal-auth template with OAuth config
-- Created `testauth1.config.json` project config
-- Created version files (`testauth1html.version.txt`, `testauth1gs.version.txt`), changelogs, and changelog archives
-- Added `testauth1-diagram.md` per-environment architecture diagram (auth sequence)
-- Added Deploy Testauth1 webhook step to auto-merge workflow
-- Registered Testauth1 in GAS Projects table
+- Set up new GAS project `testauthgas1` with Google OAuth authentication (standard preset)
+- Created `testauthgas1.html` embedding page from auth template with encoded deployment URL
+- Created `testauthgas1.gs` GAS script from minimal-auth template with OAuth config
+- Created `testauthgas1.config.json` project config
+- Created version files (`testauthgas1html.version.txt`, `testauthgas1gs.version.txt`), changelogs, and changelog archives
+- Added `testauthgas1-diagram.md` per-environment architecture diagram (auth sequence)
+- Added Deploy Testauthgas1 webhook step to auto-merge workflow
+- Registered Testauthgas1 in GAS Projects table
 
 ### Fixed
 - Fixed setup script creating noauth files when auth was requested (Python `False` vs bash `true` string comparison) — recreated files from correct auth templates
 - Fixed SPREADSHEET_ID placeholder comparison checks in generated GAS file — sed was replacing both the variable value and the guard-clause string literals, causing guard clauses to always evaluate true
 
-#### `testauth1.html` — v01.00w
+#### `testauthgas1.html` — v01.00w
 
 ##### Added
-- New auth-enabled page for testauth1title with Google OAuth sign-in
+- New auth-enabled page for testauthgas1title with Google OAuth sign-in
 
-#### `testauth1.gs` — v01.00g
+#### `testauthgas1.gs` — v01.00g
 
 ##### Added
 - New auth-enabled GAS web app with OAuth token exchange and audit logging
@@ -10894,35 +10894,35 @@ CONFIG"
 > **Prompt:** "get it to 100%, other than project specific code which should be clearly in a specific separated section"
 
 ### Changed
-- Fixed remaining cosmetic differences in shared auth code between testauth1.html and globalacl.html — removed extra blank lines, aligned comment wording, added missing "Fall through" comment — shared code is now 100% identical
+- Fixed remaining cosmetic differences in shared auth code between testauthgas1.html and globalacl.html — removed extra blank lines, aligned comment wording, added missing "Fall through" comment — shared code is now 100% identical
 
-#### `testauth1.html` — v03.93w
+#### `testauthgas1.html` — v03.93w
 ##### Changed
 - Minor internal improvements
 
 ## [v09.02r] — 2026-04-05 11:20:04 PM EST
 
-> **Prompt:** "the following is the comparison between testauth1 and globalcl, i want their non project specific code to be idential, so address that."
+> **Prompt:** "the following is the comparison between testauthgas1 and globalcl, i want their non project specific code to be idential, so address that."
 
 ### Changed
-- Unified shared auth/template code between testauth1.html and globalacl.html — non-project-specific code is now identical
-- Replaced fetch()-based heartbeat in testauth1 with iframe+postMessage approach (token never in URL, HIPAA-aligned)
+- Unified shared auth/template code between testauthgas1.html and globalacl.html — non-project-specific code is now identical
+- Replaced fetch()-based heartbeat in testauthgas1 with iframe+postMessage approach (token never in URL, HIPAA-aligned)
 - Removed `_fetchPausedForGIS` from both files (no longer needed with iframe-based heartbeat)
 - Added `_gasSandboxSource` to globalacl (shared auth infrastructure for GAS sandbox frame communication)
 - Restored `loadIframeViaNonce()` usage in globalacl for cross-tab sync and DOM clearing reload (session replay protection)
 - Added comprehensive documentation to `loadIframeViaNonce()` explaining the 7-attempt history (v05.59r–v05.70r), CacheService limitations, and design tradeoffs
 - Separated project-specific message types from shared `_KNOWN_GAS_MESSAGES` and `_SIG_EXEMPT` with `// PROJECT:` markers in both files
-- Added stale session checks on page load in testauth1 (already in globalacl) — prevents "Reconnecting" for expired sessions
-- Added `applyUIGating()` and role badge display to testauth1's `showApp()` (already in globalacl)
-- Moved panel cooldown system to PROJECT section in testauth1 (shared panel registry kept as template code)
-- Fixed AUTH END CSS comment formatting in testauth1 (added proper separators)
-- Moved `.html-layer-hidden` CSS to PROJECT CSS section in testauth1
+- Added stale session checks on page load in testauthgas1 (already in globalacl) — prevents "Reconnecting" for expired sessions
+- Added `applyUIGating()` and role badge display to testauthgas1's `showApp()` (already in globalacl)
+- Moved panel cooldown system to PROJECT section in testauthgas1 (shared panel registry kept as template code)
+- Fixed AUTH END CSS comment formatting in testauthgas1 (added proper separators)
+- Moved `.html-layer-hidden` CSS to PROJECT CSS section in testauthgas1
 - Standardized SSO section comment header across both files
 - Cleaned up stale comments (data poll migration, CacheService, redundant code annotations)
 - Made IP logging comment generic (`your project's .gs file` instead of page-specific reference)
 - Added `_closeAllPanelsExcept(null)` to globalacl's `showAuthWall()` (was missing)
 
-#### `testauth1.html` — v03.92w
+#### `testauthgas1.html` — v03.92w
 ##### Changed
 - Minor internal improvements
 
@@ -10996,7 +10996,7 @@ CONFIG"
 
 ## [v08.96r] — 2026-04-05 09:44:11 PM EST
 
-> **Prompt:** "for testing, i am comparing the code of live-site-pages/testauth1.html and live-site-pages/globalacl.html , use that context to come up with something useful, in this example my goal is to make it so that we can quickly see whether the foundational code between the two is identical and only the project specific code is different"
+> **Prompt:** "for testing, i am comparing the code of live-site-pages/testauthgas1.html and live-site-pages/globalacl.html , use that context to come up with something useful, in this example my goal is to make it so that we can quickly see whether the foundational code between the two is identical and only the project specific code is different"
 
 ### Added
 - "Template Only" comparison mode to text-compare tool that strips PROJECT blocks before comparing, showing only TEMPLATE/foundational code differences
@@ -11050,7 +11050,7 @@ CONFIG"
 - Added `_updateSubStep()` calls to auth HTML template — function definition existed but was never called (dead code until now)
 - Restored missing frame-handshake-challenge handler and nonce message handlers in globalacl.html — nonce variables/function were dead code without the handlers
 - Fixed section ordering in globalacl.gs (ADMIN UTILITIES → CROSS-PROJECT reversed to match template canonical order: CROSS-PROJECT → ADMIN UTILITIES)
-- Moved admin utilities out of testauth1.gs PROJECT section to between CROSS-PROJECT and TEMPLATE START (matching template structure)
+- Moved admin utilities out of testauthgas1.gs PROJECT section to between CROSS-PROJECT and TEMPLATE START (matching template structure)
 - Fixed `_directSessionLoad` comment in globalacl.html to match template text
 - Fixed entity encoding in programportal.html (`…` → `&hellip;`)
 - Removed `.html-layer-hidden` class from template CSS PROJECT block (project-specific, not template)
@@ -11073,7 +11073,7 @@ CONFIG"
 ##### Changed
 - Minor internal improvements
 
-#### `testauth1.gs` — v02.47g
+#### `testauthgas1.gs` — v02.47g
 ##### Changed
 - Minor internal improvements
 
@@ -11082,25 +11082,25 @@ CONFIG"
 > **Prompt:** "go ahead and ask me questions as to which options to go with in making it so that they are all identical foundationally other than designated project sections. include in the question an option to skip in case i want to leave them as is for some reason"
 
 ### Changed
-- Harmonized three auth projects (testauth1, globalacl, programportal) to match the auth HTML/GAS templates foundationally — all TEMPLATE/AUTH sections now identical, with only PROJECT-designated sections differing
+- Harmonized three auth projects (testauthgas1, globalacl, programportal) to match the auth HTML/GAS templates foundationally — all TEMPLATE/AUTH sections now identical, with only PROJECT-designated sections differing
 - Updated `YOUR_ORG_LOGO_URL` template placeholder from `logoipsum.com` to `www.shadowaisolutions.com/SAIS_Logo.png` across all templates and projects
-- Added `gas-layer-toggle` button and `_toggleGasLayer` IIFE to auth HTML template AUTH section — propagated to all three auth projects (previously only testauth1 had it, in PROJECT section)
-- Moved testauth1's `html-layer-toggle` and `gas-layer-toggle` from PROJECT to AUTH section to match template placement
+- Added `gas-layer-toggle` button and `_toggleGasLayer` IIFE to auth HTML template AUTH section — propagated to all three auth projects (previously only testauthgas1 had it, in PROJECT section)
+- Moved testauthgas1's `html-layer-toggle` and `gas-layer-toggle` from PROJECT to AUTH section to match template placement
 - Moved programportal's `_validateSSOTokenEmail()` back to template-matching position (was moved earlier for project-specific reasons)
-- Added PROJECT OVERRIDE markers to testauth1 auth presets for test-environment shortened timeouts
-- Added PROJECT OVERRIDE markers to testauth1 `_htmlLayerEls` extra test UI elements
+- Added PROJECT OVERRIDE markers to testauthgas1 auth presets for test-environment shortened timeouts
+- Added PROJECT OVERRIDE markers to testauthgas1 `_htmlLayerEls` extra test UI elements
 - Removed "(programportal only)" comment qualifiers from programportal to match template
-- Removed "Data Poll timer removed" comment from testauth1 to match template
+- Removed "Data Poll timer removed" comment from testauthgas1 to match template
 - Updated noauth template CSP `img-src` to include `www.shadowaisolutions.com`
 
 ### Fixed
 - Restored `loadIframeViaNonce()` function to globalacl — was completely missing, causing lack of replay protection for iframe loading on page refresh/tab reclaim
 
-#### `testauth1.html` — v03.91w
+#### `testauthgas1.html` — v03.91w
 ##### Changed
 - Minor internal improvements
 
-#### `testauth1.gs` — v02.46g
+#### `testauthgas1.gs` — v02.46g
 ##### Changed
 - Minor internal improvements
 
@@ -11121,8 +11121,8 @@ CONFIG"
 > **Prompt:** "go ahead and improve it"
 
 ### Changed
-- Aligned reconnecting checklist in all three auth projects (testauth1, globalacl, programportal) back to the template's dynamic SSO handling — `_rcStageOrder` is now config-driven via `SSO_PROVIDER` instead of hardcoded per-project
-- Restored `rc-stage-sso` HTML element in testauth1 and globalacl (hidden by default, shown dynamically when `SSO_PROVIDER: true`)
+- Aligned reconnecting checklist in all three auth projects (testauthgas1, globalacl, programportal) back to the template's dynamic SSO handling — `_rcStageOrder` is now config-driven via `SSO_PROVIDER` instead of hardcoded per-project
+- Restored `rc-stage-sso` HTML element in testauthgas1 and globalacl (hidden by default, shown dynamically when `SSO_PROVIDER: true`)
 - Added `style="display:none;"` default to programportal's `rc-stage-sso` element to match template (SSO stage is shown dynamically by `showReconnecting()`)
 - Restored dynamic SSO show/hide logic in `showReconnecting()` across all three projects
 - Removed `// PROJECT:` markers on reconnecting checklist sections (now template-standard, no longer project customizations)
@@ -11130,7 +11130,7 @@ CONFIG"
 ### Fixed
 - Fixed missing `user-select: none` on `.warning-banner` CSS in programportal (was present in template and other projects)
 
-#### `testauth1.html` — v03.90w
+#### `testauthgas1.html` — v03.90w
 
 ##### Changed
 - Minor internal improvements
@@ -11150,10 +11150,10 @@ CONFIG"
 
 ## [v08.89r] — 2026-04-05 05:11:37 PM EST
 
-> **Prompt:** "everything that is currently identical in the other projects i.e. globalacl and program portal as well as the testauth1 should be in the templates"
+> **Prompt:** "everything that is currently identical in the other projects i.e. globalacl and program portal as well as the testauthgas1 should be in the templates"
 
 ### Changed
-- Absorbed common auth project code into the HTML auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — all changes were already identical across testauth1, globalacl, and programportal but missing from the template
+- Absorbed common auth project code into the HTML auth template (`HtmlAndGasTemplateAutoUpdate-auth.html.txt`) — all changes were already identical across testauthgas1, globalacl, and programportal but missing from the template
 - Added `so-stage-complete` sign-out checklist stage (6th stage) to HTML body and JS `_soStageOrder` array
 - Fixed sign-out confirm text: "Waiting for server confirmation" → "Waiting for sign-out confirmation"
 - Reordered sign-in DOM elements: moved subtitle paragraph after checklist (H2 → spinner → checklist → subtitle)
@@ -11166,17 +11166,17 @@ CONFIG"
 > **Prompt:** "yes continue"
 
 ### Changed
-- Fixed HTML auth template checklist text to match testauth1: reconnect final stage → "Session restored", sign-in final stage → "Sign-in complete", JS stage map updated
+- Fixed HTML auth template checklist text to match testauthgas1: reconnect final stage → "Session restored", sign-in final stage → "Sign-in complete", JS stage map updated
 - Fixed HTML auth template sign-in subtitle: added margin-top:10px, removed default placeholder text
 - Standardized HTML entities: all auth headings now use `&hellip;` consistently (was mixing Unicode `…` and entity)
 
 ## [v08.87r] — 2026-04-05 04:28:54 PM EST
 
-> **Prompt:** "make sure that the templates are also identical, the idea is that if we use the gas-project-creator and associated setup-gas-project.sh , we should have an identical code to the testauth1 except for project specific code. make sure that this is the case"
+> **Prompt:** "make sure that the templates are also identical, the idea is that if we use the gas-project-creator and associated setup-gas-project.sh , we should have an identical code to the testauthgas1 except for project specific code. make sure that this is the case"
 
 ### Changed
-- Updated GAS auth templates (minimal-auth + test-auth) to match testauth1: unified RBAC to 4 roles with amend, added getData/heartbeat doPost() handlers, improved PROJECT_OVERRIDES comments, standardized placeholder strings
-- Updated HTML auth template to match testauth1: unified CSP headers, removed divergent user-select properties from pills, changed user-pill z-index to 10012, moved html-layer-hidden to PROJECT CSS, added DATA_POLL_INTERVAL, removed ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, added HIPAA comments
+- Updated GAS auth templates (minimal-auth + test-auth) to match testauthgas1: unified RBAC to 4 roles with amend, added getData/heartbeat doPost() handlers, improved PROJECT_OVERRIDES comments, standardized placeholder strings
+- Updated HTML auth template to match testauthgas1: unified CSP headers, removed divergent user-select properties from pills, changed user-pill z-index to 10012, moved html-layer-hidden to PROJECT CSS, added DATA_POLL_INTERVAL, removed ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, added HIPAA comments
 - Updated HTML noauth template: removed divergent user-select properties from pills
 
 ### Fixed
@@ -11184,21 +11184,21 @@ CONFIG"
 
 ## [v08.86r] — 2026-04-05 04:14:37 PM EST
 
-> **Prompt:** "do an analysis of the program portal, testauth1, and globalacl environments to identify every single difference in how they are coded, EXCEPT for project specific code in the gas layer. my goal after your analysis is to make every environment identically coded and organized other than their specific project code"
+> **Prompt:** "do an analysis of the program portal, testauthgas1, and globalacl environments to identify every single difference in how they are coded, EXCEPT for project specific code in the gas layer. my goal after your analysis is to make every environment identically coded and organized other than their specific project code"
 
 ### Changed
-- Unified CSP headers across all three environments (portal, testauth1, globalacl) — standardized connect-src and font-src directives
+- Unified CSP headers across all three environments (portal, testauthgas1, globalacl) — standardized connect-src and font-src directives
 - Unified CSS styling across all environments — standardized z-index values, removed divergent user-select properties, moved html-layer-hidden to consistent location
 - Unified HTML_CONFIG across all environments — added DATA_POLL_INTERVAL, removed divergent ALLOWED_DOMAINS/ENABLE_DOMAIN_RESTRICTION, standardized HIPAA comments
 - Unified GAS RBAC roles to 4-role structure (admin/clinician/billing/viewer + amend permission) across all environments
 - Added Phase B (breach alerting) and Phase C (retention, legal hold, integrity, representative) configuration blocks to portal and globalacl GAS scripts
-- Added getData and heartbeat doPost() handlers to portal and globalacl GAS scripts (previously testauth1-only)
+- Added getData and heartbeat doPost() handlers to portal and globalacl GAS scripts (previously testauthgas1-only)
 - Standardized cache management approach (epoch-bump) across all GAS scripts
 - Standardized placeholder strings and comments across all GAS scripts
 - Added Google OAuth design note to portal and globalacl architecture diagrams
 
 ### Fixed
-- Fixed validateSessionForData() in portal and testauth1 — now correctly extracts role/permissions from cache when data validation is disabled (prevents silent permission check failures)
+- Fixed validateSessionForData() in portal and testauthgas1 — now correctly extracts role/permissions from cache when data validation is disabled (prevents silent permission check failures)
 
 #### `programportal.html` — v01.84w
 
@@ -11213,7 +11213,7 @@ CONFIG"
 ##### Fixed
 - Permission checks now work correctly when data validation is disabled
 
-#### `testauth1.gs` — v02.45g
+#### `testauthgas1.gs` — v02.45g
 
 ##### Fixed
 - Permission checks now work correctly when data validation is disabled
@@ -11253,11 +11253,11 @@ CONFIG"
 > **Prompt:** "the font color for the gas version in bottom left corner of the program portal is white so we cant see it, should be same color as the other environments, see if theres any more inconsistencies that can be normalized"
 
 ### Fixed
-- Fixed programportal.gs `#version` color from `rgba(255,255,255,0.3)` (invisible on white strip) to `#1565c0` (blue, matching testauth1 and globalacl)
+- Fixed programportal.gs `#version` color from `rgba(255,255,255,0.3)` (invisible on white strip) to `#1565c0` (blue, matching testauthgas1 and globalacl)
 - Fixed programportal.gs `#version` font-size from 11px to 12px (matching other environments)
 
 ### Changed
-- Normalized admin badge styling on globalacl.gs and programportal.gs to match testauth1: dark semi-transparent background (`rgba(0,0,0,0.55)`), border, 10px border-radius, opacity hover effect
+- Normalized admin badge styling on globalacl.gs and programportal.gs to match testauthgas1: dark semi-transparent background (`rgba(0,0,0,0.55)`), border, 10px border-radius, opacity hover effect
 - Added `onmouseover`/`onmouseout` opacity handlers to admin badge HTML on both environments
 
 #### `globalacl.gs` — v01.41g
@@ -11275,10 +11275,10 @@ CONFIG"
 
 ## [v08.83r] — 2026-04-05 03:06:33 PM EST
 
-> **Prompt:** "idk what you just did but you still dont have padding like we have on the testauth1, im talking about the white space at the top and bottom"
+> **Prompt:** "idk what you just did but you still dont have padding like we have on the testauthgas1, im talking about the white space at the top and bottom"
 
 ### Changed
-- Added `#acl-main` wrapper to globalacl.gs with `position: fixed; top: 30px; bottom: 30px` — creates white strips at top/bottom matching testauth1's `#live-data-app` pattern
+- Added `#acl-main` wrapper to globalacl.gs with `position: fixed; top: 30px; bottom: 30px` — creates white strips at top/bottom matching testauthgas1's `#live-data-app` pattern
 - Added `#portal-main` wrapper to programportal.gs with same fixed positioning — moves gradient background to inset container, exposing white body strips
 - Body overflow set to `hidden` on both, wrapper handles scrolling
 - Updated gas layer toggle element lists to use new wrapper IDs
@@ -11295,27 +11295,27 @@ CONFIG"
 
 ## [v08.82r] — 2026-04-05 03:00:10 PM EST
 
-> **Prompt:** "i want the others to also have the top and bottom padding on the gas layer that the testauth1 has"
+> **Prompt:** "i want the others to also have the top and bottom padding on the gas layer that the testauthgas1 has"
 
 ### Changed
-- Added 30px top/bottom body padding to globalacl and programportal GAS layers, matching testauth1's layout strips for admin badge and version/toggle elements
+- Added 30px top/bottom body padding to globalacl and programportal GAS layers, matching testauthgas1's layout strips for admin badge and version/toggle elements
 
 #### `globalacl.gs` — v01.39g
 
 ##### Changed
-- Added top and bottom padding to match testauth1 layout
+- Added top and bottom padding to match testauthgas1 layout
 
 #### `programportal.gs` — v01.48g
 
 ##### Changed
-- Added top and bottom padding to match testauth1 layout
+- Added top and bottom padding to match testauthgas1 layout
 
 ## [v08.81r] — 2026-04-05 02:52:59 PM EST
 
-> **Prompt:** "ok good. we have made a bunch of changes in the last 2 sessions with the gas and html layer toggles and positioning of pills in testauth1. i want those changes to be propagated to the other environments, i.e. globalacl and programportal"
+> **Prompt:** "ok good. we have made a bunch of changes in the last 2 sessions with the gas and html layer toggles and positioning of pills in testauthgas1. i want those changes to be propagated to the other environments, i.e. globalacl and programportal"
 
 ### Changed
-- Propagated pill positioning and admin badge centering changes from testauth1 to globalacl and programportal
+- Propagated pill positioning and admin badge centering changes from testauthgas1 to globalacl and programportal
 - All right-side pills shifted from right: 8px to right: 22px on both pages (version indicator, GAS pill, SSO indicator, auth timers, user pill, warning banners)
 - Admin badge centered vertically in top strip (top: 12px → 7px) on both GAS files
 - Admin dropdown position adjusted (top: 36px → 31px) on both GAS files
@@ -11348,7 +11348,7 @@ CONFIG"
 
 ## [v08.80r] — 2026-04-05 02:42:37 PM EST
 
-> **Prompt:** "as per the screenshot in testauth1, make it so that the admin button is centered vertically in the white area, same of the other elements on the html layer within the white areas, also make it so that the pills on the right side are moved a bit to the left so that when a scollbar appears they are not overlapping it"
+> **Prompt:** "as per the screenshot in testauthgas1, make it so that the admin button is centered vertically in the white area, same of the other elements on the html layer within the white areas, also make it so that the pills on the right side are moved a bit to the left so that when a scollbar appears they are not overlapping it"
 
 ### Changed
 - Centered admin badge vertically in the top 30px strip of the GAS layer (top: 12px → 7px)
@@ -11357,13 +11357,13 @@ CONFIG"
 - Moved all right-side pills from right: 8px to right: 22px to prevent scrollbar overlap: version indicator, GAS pill, SSO indicator, auth timers, user pill, and warning banners
 - Moved GAS user-email display from right: 8px to right: 22px for consistency
 
-#### `testauth1.html` — v03.89w
+#### `testauthgas1.html` — v03.89w
 
 ##### Changed
 - Controls no longer overlap with the browser scrollbar
 - Bottom toggle buttons better centered in their area
 
-#### `testauth1.gs` — v02.44g
+#### `testauthgas1.gs` — v02.44g
 
 ##### Changed
 - Admin button better centered in the header bar
@@ -11384,7 +11384,7 @@ CONFIG"
 - Reverted deferred GAS iframe creation — restored iframe loading on page load (needed for auth token exchange with GAS backend)
 - GAS toggle button now hidden on sign-in page and shown only after authentication — `showAuthWall()` hides it, `showApp()` shows it
 
-#### `testauth1.html` — v03.88w
+#### `testauthgas1.html` — v03.88w
 
 ##### Fixed
 - Fixed sign-in getting stuck at "Requesting sign-in from Google"
@@ -11397,7 +11397,7 @@ CONFIG"
 ### Security
 - Deferred GAS iframe creation until after authentication — the iframe is no longer loaded on the sign-in page, preventing unauthenticated users from accessing the GAS deployment URL, app structure, and JavaScript logic via DevTools
 
-#### `testauth1.html` — v03.87w
+#### `testauthgas1.html` — v03.87w
 
 ##### Changed
 - Improved login security — backend connection deferred until after sign-in
@@ -11411,12 +11411,12 @@ CONFIG"
 - GAS toggle in GAS layer commented out (preserved for re-enable if needed)
 - HTML-layer GAS toggle only appears when the `#gas-app` iframe exists in the DOM
 
-#### `testauth1.gs` — v02.43g
+#### `testauthgas1.gs` — v02.43g
 
 ##### Changed
 - Minor internal improvements
 
-#### `testauth1.html` — v03.86w
+#### `testauthgas1.html` — v03.86w
 
 ##### Added
 - Added GAS layer toggle that fully hides the GAS iframe
@@ -11428,7 +11428,7 @@ CONFIG"
 ### Fixed
 - Restored admin badge text color to original blue (`#90caf9`) — was incorrectly changed to `#ccc` when matching GAS toggle pill style
 
-#### `testauth1.gs` — v02.42g
+#### `testauthgas1.gs` — v02.42g
 
 ##### Fixed
 - Restored admin button text to its original blue color
@@ -11441,12 +11441,12 @@ CONFIG"
 - Updated admin badge pill to match GAS toggle pill styling — dark semi-transparent background with opacity hover effect instead of color-swap hover
 - Removed `user-select: none` from all pill elements (version indicator, GAS pill, SSO indicator, user pill, auth timers, admin badge) so text is selectable with Ctrl+A
 
-#### `testauth1.gs` — v02.41g
+#### `testauthgas1.gs` — v02.41g
 
 ##### Changed
 - Admin button now matches the style of other control pills
 
-#### `testauth1.html` — v03.85w
+#### `testauthgas1.html` — v03.85w
 
 ##### Changed
 - Control pills are now text-selectable
@@ -11459,7 +11459,7 @@ CONFIG"
 - Reverted dropdown `top` change (28px back to 36px) — the dropdown click behavior was not the issue
 - Fixed admin badge colors blending with the white top strip background — changed from light-on-light (`rgba(255,255,255,0.12)` bg, `#90caf9`/`#fff` text) to dark-on-light (`rgba(0,0,0,0.12)` bg, `#1565c0`/`#0d47a1` text) so the badge and its hover state are visible against the white strip
 
-#### `testauth1.gs` — v02.40g
+#### `testauthgas1.gs` — v02.40g
 
 ##### Fixed
 - Fixed admin button becoming invisible when hovered — now uses darker colors visible on light backgrounds
@@ -11471,19 +11471,19 @@ CONFIG"
 ### Fixed
 - Fixed admin dropdown disappearing when moving mouse from badge to dropdown — reduced gap between badge and dropdown by moving dropdown from `top: 36px` to `top: 28px`
 
-#### `testauth1.gs` — v02.39g
+#### `testauthgas1.gs` — v02.39g
 
 ##### Fixed
 - Fixed admin menu disappearing when trying to select an option
 
 ## [v08.71r] — 2026-04-05 12:10:48 PM EST
 
-> **Prompt:** "in the screenshot you can see in testauth1 we have a little strip of space at the bottom for the gas layer, i want a similar strip of space at the top for the gas layer also"
+> **Prompt:** "in the screenshot you can see in testauthgas1 we have a little strip of space at the bottom for the gas layer, i want a similar strip of space at the top for the gas layer also"
 
 ### Changed
-- Added 30px top strip space for the GAS layer in testauth1, mirroring the existing bottom strip — gives GAS UI elements (admin badge, user email) a dedicated top area
+- Added 30px top strip space for the GAS layer in testauthgas1, mirroring the existing bottom strip — gives GAS UI elements (admin badge, user email) a dedicated top area
 
-#### `testauth1.gs` — v02.38g
+#### `testauthgas1.gs` — v02.38g
 
 ##### Changed
 - Adjusted layout spacing to show a control strip at the top of the page

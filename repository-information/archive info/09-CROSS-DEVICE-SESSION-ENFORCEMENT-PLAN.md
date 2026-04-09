@@ -2,18 +2,18 @@
 
 **Created:** 2026-03-15
 **Status:** Ready for implementation
-**Scope:** `testauth1.html`, `testauth1.gs`
+**Scope:** `testauthgas1.html`, `testauthgas1.gs`
 **Base version:** v01.81w (HTML), v01.27g (GAS), v03.64r (repo)
 **References:**
-- [07-SECURITY-UPDATE-PLAN-TESTAUTH1.md](07-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan I (implemented)
-- [08-SECURITY-UPDATE-PLAN-TESTAUTH1.md](08-SECURITY-UPDATE-PLAN-TESTAUTH1.md) — Security hardening Plan II (implemented)
+- [07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md](07-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md) — Security hardening Plan I (implemented)
+- [08-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md](08-SECURITY-UPDATE-PLAN-TESTAUTHGAS1.md) — Security hardening Plan II (implemented)
 - [06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md](06-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md) — Auth preset system
 
 ---
 
 ## Why This Document Exists
 
-As of v03.64r, testauth1 has **same-browser single-tab enforcement** via BroadcastChannel (`SINGLE_TAB_ENFORCEMENT: true`). When a user opens a second tab in the same browser, the old tab shows a "Session Active Elsewhere" overlay and the new tab claims the session.
+As of v03.64r, testauthgas1 has **same-browser single-tab enforcement** via BroadcastChannel (`SINGLE_TAB_ENFORCEMENT: true`). When a user opens a second tab in the same browser, the old tab shows a "Session Active Elsewhere" overlay and the new tab claims the session.
 
 **What's missing:** if the same user signs in on a **different device** (or a different browser on the same machine), both sessions run independently. The server already invalidates old sessions on new sign-in (`invalidateAllSessions()` in `exchangeTokenForSession()`), but the old device doesn't discover this until its next heartbeat — which runs every 30 seconds (test) or 5 minutes (production). During that window, the old device continues to display the app with a session that no longer exists server-side.
 
@@ -123,7 +123,7 @@ The server already does the invalidation. The cross-device polling simply makes 
 ### Phase 1: GAS — Add `checkSession` Action to `doGet`
 
 **Risk:** Low
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **What:** Add a new query parameter handler in `doGet` for `?check=SESSION_TOKEN` that performs a read-only session validity check.
 
 **Why a separate action (not piggybacking on heartbeat):**
@@ -224,7 +224,7 @@ if (checkToken) {
 ### Phase 2: GAS — Add `ENABLE_SESSION_CHECK` to Auth Config
 
 **Risk:** Low
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **What:** Add the toggle to both presets so the feature can be controlled server-side.
 
 **Add to both `standard` and `hipaa` presets:**
@@ -259,7 +259,7 @@ The client uses `sessionCheckInterval > 0` to determine whether to start polling
 ### Phase 3: Client — Add Session Check Polling
 
 **Risk:** Medium (new polling loop — must handle lifecycle correctly)
-**Files:** `testauth1.html`
+**Files:** `testauthgas1.html`
 **What:** Add a new `startSessionCheck()` / `stopSessionCheck()` pair and wire it into the auth lifecycle.
 
 #### 3a. New HTML_CONFIG toggle
@@ -402,7 +402,7 @@ if (data.type === 'gas-session-evicted') {
 ### Phase 4: Client — Lifecycle Wiring
 
 **Risk:** Low
-**Files:** `testauth1.html`
+**Files:** `testauthgas1.html`
 **What:** Call `startSessionCheck()` and `stopSessionCheck()` at the right lifecycle points.
 
 #### 4a. Start session check after successful sign-in
@@ -518,7 +518,7 @@ startSessionCheck();
 ### Phase 5: Overlay Text Update
 
 **Risk:** Low
-**Files:** `testauth1.html`
+**Files:** `testauthgas1.html`
 **What:** Update the overlay text to be accurate for cross-device eviction.
 
 The current overlay says "This session is active in another tab." For cross-device eviction, it should say "This session is active on another device." The text should be dynamic based on the eviction source.
@@ -542,7 +542,7 @@ document.getElementById('tab-use-here-btn').textContent = 'Use Here';
 ### Phase 6: Security Test Addition
 
 **Risk:** Low
-**Files:** `testauth1.html`
+**Files:** `testauthgas1.html`
 **What:** Add a security test to verify the cross-device session check infrastructure exists.
 
 Add a test similar to the existing single-tab enforcement test (Test 35). The test should verify:

@@ -2,7 +2,7 @@
 
 **Status:** Deferred — not implemented yet
 **Date:** 2026-03-29
-**Context:** HIPAA-compliant auth pages (testauth1, programportal, globalacl)
+**Context:** HIPAA-compliant auth pages (testauthgas1, programportal, globalacl)
 
 ## Problem
 
@@ -64,13 +64,13 @@ window.addEventListener('pagehide', function() {
 ### Files to Modify (when implementing)
 
 **GAS files (add `pendingClose` to `doPost`):**
-- `googleAppsScripts/Testauth1/testauth1.gs`
+- `googleAppsScripts/Testauthgas1/testauthgas1.gs`
 - `googleAppsScripts/Programportal/programportal.gs`
 - `googleAppsScripts/Globalacl/globalacl.gs`
 - GAS auth template (if applicable)
 
 **HTML files (add `pagehide` listener):**
-- `live-site-pages/testauth1.html`
+- `live-site-pages/testauthgas1.html`
 - `live-site-pages/programportal.html`
 - `live-site-pages/globalacl.html`
 - `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-auth.html.txt`
@@ -141,7 +141,7 @@ The pending close shortens the **cache TTL** (how long CacheService keeps the en
 
 ## Testing Plan (for future implementation)
 
-1. Sign in on testauth1 → open admin sessions panel → note 1 active session
+1. Sign in on testauthgas1 → open admin sessions panel → note 1 active session
 2. Close the tab → wait 60+ seconds
 3. Sign in again → open admin sessions panel → should see only 1 session (old one expired)
 4. Verify GAS execution log shows `pendingClose` event

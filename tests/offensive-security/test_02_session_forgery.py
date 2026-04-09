@@ -16,7 +16,7 @@ import hashlib
 import secrets
 from playwright.sync_api import sync_playwright
 
-TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html"
+TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthgas1.html"
 
 # Forged session tokens an attacker might try
 FORGED_TOKENS = [

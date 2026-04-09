@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v10.29r] — 2026-04-09 10:48:40 AM EST
+
+> **Prompt:** "rename the testauth1 environment to testauthgas1"
+
+### Changed
+- Renamed `testauth1` environment to `testauthgas1` across entire repo — HTML page, GAS script, config, version files, changelogs, diagrams, workflow deploy steps, rules files, README tree, REPO-ARCHITECTURE.md, archive docs, test files, and backup files
+
+#### `testauthgas1.html` — v04.00w
+
+##### Changed
+- Environment renamed from testauth1 to testauthgas1
+
+#### `testauthgas1.gs` — v02.61g
+
+##### Changed
+- Environment renamed from testauth1 to testauthgas1
 
 ## [v10.28r] — 2026-04-09 09:59:32 AM EST
 
@@ -66,10 +83,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v10.26r] — 2026-04-09 09:33:59 AM EST
 
-> **Prompt:** "refer to the testauth1 for the method of optimistic data, and apply the same method to the inventorymanagement, ask clarifying questions if its not quite clear"
+> **Prompt:** "refer to the testauthgas1 for the method of optimistic data, and apply the same method to the inventorymanagement, ask clarifying questions if its not quite clear"
 
 ### Added
-- Optimistic data rendering for inventory management — new entries appear instantly in the table (dimmed with "Sending…" overlay) before server confirmation, matching testauth1's pattern
+- Optimistic data rendering for inventory management — new entries appear instantly in the table (dimmed with "Sending…" overlay) before server confirmation, matching testauthgas1's pattern
 - Delete functionality for inventory entries — each row gets a × button with confirmation modal and optimistic "Deleting…" overlay
 - Cell change flash animation — cells that change between polls flash green (1.5s), helping multi-user awareness
 - GAS backend `processDeleteQrEntry` endpoint for deleting inventory rows by sheet index
@@ -86,7 +103,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Delete button (×) per inventory row with dark-themed confirmation modal
 - Optimistic delete rendering — row dims with "Deleting…" overlay, restores on failure
 - Cell-level change detection with green flash animation between polls
-- Local data array and reconciliation logic matching testauth1's pattern
+- Local data array and reconciliation logic matching testauthgas1's pattern
 
 #### `inventorymanagement.gs` — v01.04g
 
@@ -315,22 +332,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v10.09r] — 2026-04-08 02:38:26 PM EST
 
-> **Prompt:** "i was referring to the countdown in the testauth1 polling which im showing in the screenshot"
+> **Prompt:** "i was referring to the countdown in the testauthgas1 polling which im showing in the screenshot"
 
 ### Changed
-- Replaced simple countdown timer with testauth1-style connection status badge: `Live Data ● Live 2s | ▸ 14s`
-- Badge shows: green dot + "Live" + data age + divider + poll countdown (matching testauth1's `ld-conn-status` pattern)
+- Replaced simple countdown timer with testauthgas1-style connection status badge: `Live Data ● Live 2s | ▸ 14s`
+- Badge shows: green dot + "Live" + data age + divider + poll countdown (matching testauthgas1's `ld-conn-status` pattern)
 - Amber pulsing dot + "Updating..." during fetch, gray "Offline" when stopped
 
 #### `inventorymanagement.html` — v01.07w
 
 ##### Changed
-- Entries header now shows testauth1-style live connection status badge
+- Entries header now shows testauthgas1-style live connection status badge
 - Displays data freshness age and poll countdown in a rounded pill
 
 ## [v10.08r] — 2026-04-08 02:33:08 PM EST
 
-> **Prompt:** "make the poll countdown timer visible on the inventorymanagement similar to how it shows it in the testauth1"
+> **Prompt:** "make the poll countdown timer visible on the inventorymanagement similar to how it shows it in the testauthgas1"
 
 ### Added
 - Visible poll countdown timer in the inventory entries header — shows seconds until next refresh (`⚡ 12s`), turns cyan in last 5 seconds, shows `polling...` in amber during fetch
@@ -344,7 +361,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v10.07r] — 2026-04-08 02:26:55 PM EST
 
-> **Prompt:** "ok good. now how the live data is handled, look at the testauth1 environment to see how that is handled, so that we can see updates by polling intervals and apply that to the inventorymanagement"
+> **Prompt:** "ok good. now how the live data is handled, look at the testauthgas1 environment to see how that is handled, so that we can see updates by polling intervals and apply that to the inventorymanagement"
 
 ### Added
 - Live data polling for inventory entries — auto-refreshes every 15 seconds using existing `DATA_POLL_INTERVAL` config
@@ -517,7 +534,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v09.98r] — 2026-04-08 12:12:41 PM EST
 
-> **Prompt:** "i think we need to remake the inventorymanagement. the camera works, and its even writing to the spreadsheet when i scan, but its not properly working with adding new item. come up with a plan to get everything working. you can take inspiration with how the data is updated in the table with the testauth1 project and also inspiration from the original qr-scanner6"
+> **Prompt:** "i think we need to remake the inventorymanagement. the camera works, and its even writing to the spreadsheet when i scan, but its not properly working with adding new item. come up with a plan to get everything working. you can take inspiration with how the data is updated in the table with the testauthgas1 project and also inspiration from the original qr-scanner6"
 
 ### Fixed
 - Made barcode field editable in Add New Item modal — removed `readonly` attribute, added placeholder text
@@ -748,7 +765,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 > **Prompt:** "last session we were trying to see why the gas toggle in the inventorymanagement was not hiding the admin dropdown and the scan history. it is properly hiding the gas version number and signed in username. take your time to analyze why those are properly hidden but the admin dropdown and the scan history are not hidden"
 
 ### Fixed
-- Root cause found: the parent page's GAS toggle button was never shown (`_showGasToggle()` was missing from `showApp()`), so the user was clicking the GAS iframe's internal toggle button which only hid 3 elements (`version`, `user-email`, `main-content`) — missing admin badge, admin dropdown, and scan panel. Fix: added `_showGasToggle()` call to `showApp()` (matching testauth1), reverted parent toggle to inline `style.display` approach, expanded GAS-side element list, and commented out the iframe's duplicate toggle button
+- Root cause found: the parent page's GAS toggle button was never shown (`_showGasToggle()` was missing from `showApp()`), so the user was clicking the GAS iframe's internal toggle button which only hid 3 elements (`version`, `user-email`, `main-content`) — missing admin badge, admin dropdown, and scan panel. Fix: added `_showGasToggle()` call to `showApp()` (matching testauthgas1), reverted parent toggle to inline `style.display` approach, expanded GAS-side element list, and commented out the iframe's duplicate toggle button
 
 #### `inventorymanagement.html` — v01.15w
 
@@ -840,11 +857,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v09.80r] — 2026-04-07 08:25:37 PM EST
 
-> **Prompt:** "this is what it looks like now, i want it to not go off the edges on the left and right either, just a little padding. also the delete buttons should have a confirmation in the same way the testauth1 handles it. the optimistic needs more room as its overlapping as shown in screenshot"
+> **Prompt:** "this is what it looks like now, i want it to not go off the edges on the left and right either, just a little padding. also the delete buttons should have a confirmation in the same way the testauthgas1 handles it. the optimistic needs more room as its overlapping as shown in screenshot"
 
 ### Changed
 - Added horizontal padding (14px) to scan-panel so rows don't touch screen edges on mobile
-- Delete button now shows a confirmation modal (testauth1 pattern) with a preview of the scan value before deleting — prevents accidental deletion
+- Delete button now shows a confirmation modal (testauthgas1 pattern) with a preview of the scan value before deleting — prevents accidental deletion
 - Optimistic "last scan" element gets bottom margin so it doesn't overlap with the GAS "Scan History" title below. GAS scan-panel padding-top increased by 40px for more breathing room
 
 #### `inventorymanagement.html` — v01.09w
@@ -880,7 +897,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v09.78r] — 2026-04-07 08:08:27 PM EST
 
-> **Prompt:** "adad a button that functions similarly as the testauth1 that lets the user delete an entry"
+> **Prompt:** "adad a button that functions similarly as the testauthgas1 that lets the user delete an entry"
 
 ### Added
 - Delete button (✕) on each scan row in the GAS-layer scan history — dims the row optimistically, deletes from the Scans sheet server-side, refreshes cache and UI on success
@@ -905,12 +922,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v09.76r] — 2026-04-07 07:45:47 PM EST
 
-> **Prompt:** "ok, good. make it also have the same polling timer (including the visible countdown) that is used in the testauth1 live data, as well as showing the optimistic data (like in the testauth), so look at how the testauth1 works for its table and incorporate the same methodology"
+> **Prompt:** "ok, good. make it also have the same polling timer (including the visible countdown) that is used in the testauthgas1 live data, as well as showing the optimistic data (like in the testauth), so look at how the testauthgas1 works for its table and incorporate the same methodology"
 
 ### Added
-- Visible poll countdown timer (`▷ 12s`) matching testauth1 pattern — updates every 1s, shows "polling..." when in-flight, time until next poll otherwise
+- Visible poll countdown timer (`▷ 12s`) matching testauthgas1 pattern — updates every 1s, shows "polling..." when in-flight, time until next poll otherwise
 - Optimistic data support — scans can be shown immediately at reduced opacity before server confirms, cleared when poll returns fresh data
-- 15-second poll interval matching testauth1's `DATA_POLL_INTERVAL`
+- 15-second poll interval matching testauthgas1's `DATA_POLL_INTERVAL`
 
 #### `inventorymanagement.gs` — v01.08g
 
@@ -932,14 +949,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 
 ## [v09.74r] — 2026-04-07 07:21:09 PM EST
 
-> **Prompt:** "clicking on the flashlight button is turning on but its not turning off when i click it again. on the gas layer below the relative scanning scanning html area, make something to test our scanning app so that things are saved in the spreadsheet and we can see it. use the testauth1 with the live data as the method, polling and all"
+> **Prompt:** "clicking on the flashlight button is turning on but its not turning off when i click it again. on the gas layer below the relative scanning scanning html area, make something to test our scanning app so that things are saved in the spreadsheet and we can see it. use the testauthgas1 with the live data as the method, polling and all"
 
 ### Fixed
 - Fixed torch toggle not turning off — simplified constraint application to avoid race condition in async promise chain
 
 ### Added
 - Scan results saved to "Scans" sheet in the project spreadsheet (auto-creates sheet with headers on first scan)
-- GAS-side scan history UI with 10-second polling (testauth1 live data pattern) — shows timestamp, value, and format for each scan
+- GAS-side scan history UI with 10-second polling (testauthgas1 live data pattern) — shows timestamp, value, and format for each scan
 - `getScanHistory(token)` server function for authenticated polling
 - Server-side scan cache with self-healing (`_refreshScanCache` / `_getCachedScans`) — avoids repeated spreadsheet reads
 
@@ -1085,7 +1102,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 ##### Changed
 - Minor internal improvements
 
-#### `testauth1.gs` — v02.60g
+#### `testauthgas1.gs` — v02.60g
 
 ##### Changed
 - Minor internal improvements
@@ -1116,14 +1133,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 - Fixed `setup-gas-project.sh` Phase 9 workflow deploy step insertion: replaced fragile `sed -i` with multiline `\n` escapes with a temp file + `sed r` approach that reliably inserts the deploy block
 
 ### Changed
-- Propagated `ensureScriptProperties_()` doGet fix to all 4 auth GAS scripts (inventorymanagement, testauth1, globalacl, programportal) via template propagation
+- Propagated `ensureScriptProperties_()` doGet fix to all 4 auth GAS scripts (inventorymanagement, testauthgas1, globalacl, programportal) via template propagation
 
 #### `inventorymanagement.gs` — v01.01g
 
 ##### Fixed
 - Sign-in now works on first deployment — setup properties auto-generate on first visit
 
-#### `testauth1.gs` — v02.59g
+#### `testauthgas1.gs` — v02.59g
 
 ##### Changed
 - Minor internal improvements
@@ -1427,7 +1444,7 @@ CONFIG"
 - Splash Logo URL now prefills with the default logo instead of being blank
 - All three logo fields are now described as independent of each other
 
-#### `testauth1.html` — v03.99w
+#### `testauthgas1.html` — v03.99w
 
 ##### Changed
 - Minor internal improvements
@@ -1480,7 +1497,7 @@ CONFIG"
 - Logo configuration now has 3 separate fields: Developer Logo, Org Logo, and Splash Logo
 - Splash Logo defaults to Developer Logo when left blank
 
-#### `testauth1.html` — v03.98w
+#### `testauthgas1.html` — v03.98w
 
 ##### Changed
 - Minor internal improvements
@@ -1512,7 +1529,7 @@ CONFIG"
 ##### Removed
 - Removed Sound File ID form field (was unused by any live feature)
 
-#### `testauth1.gs` — v02.58g
+#### `testauthgas1.gs` — v02.58g
 
 ##### Changed
 - Minor internal improvements

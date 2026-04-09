@@ -1,7 +1,7 @@
 """
 OFFENSIVE SECURITY TEST 01: XSS via postMessage Injection
 
-Attack scenario: An attacker opens the testauth1 page in an iframe (or the user
+Attack scenario: An attacker opens the testauthgas1 page in an iframe (or the user
 has it open) and sends malicious postMessage payloads from a different origin,
 attempting to:
   1. Inject script execution via crafted message data
@@ -16,7 +16,7 @@ import sys
 import json
 from playwright.sync_api import sync_playwright
 
-TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauth1.html"
+TARGET_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthgas1.html"
 
 # XSS payloads an attacker would try to inject via postMessage fields
 XSS_PAYLOADS = [

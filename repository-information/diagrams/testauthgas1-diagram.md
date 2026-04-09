@@ -1,19 +1,19 @@
-# testauth1.html — GAS Integration Sequence Diagram (Auth)
+# testauthgas1.html — GAS Integration Sequence Diagram (Auth)
 
 Sequence diagram showing the dual polling systems (HTML + GAS), iframe injection flow, and Google OAuth authentication.
 
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant HTML as testauth1.html
-    participant HV as testauth1html.version.txt
-    participant GV as testauth1gs.version.txt
+    participant HTML as testauthgas1.html
+    participant HV as testauthgas1html.version.txt
+    participant GV as testauthgas1gs.version.txt
     participant GAS as GAS Web App<br>(Apps Script)
     participant Google as Google OAuth
     participant CL as Changelogs
 
     Note over Browser,HTML: Page Load
-    Browser->>HTML: Load testauth1.html
+    Browser->>HTML: Load testauthgas1.html
     HTML->>HTML: Decode _e → reverse(atob()) → GAS deployment URL
     HTML->>HTML: Create iframe with srcdoc bootstrap
     HTML->>GAS: iframe navigates to deployment URL
@@ -33,7 +33,7 @@ sequenceDiagram
 
     Note over Browser,HV: HTML Auto-Refresh (every 10s)
     loop Every 10 seconds
-        HTML->>HV: GET testauth1html.version.txt?_cb=timestamp
+        HTML->>HV: GET testauthgas1html.version.txt?_cb=timestamp
         HV-->>HTML: |v01.XXw| or maintenance|v01.XXw|timestamp
         alt Version changed
             HTML->>HTML: Show "Updating..." + set pending-sound
@@ -47,10 +47,10 @@ sequenceDiagram
     end
 
     Note over Browser,GV: GAS Auto-Refresh (15s delay, then every 10s)
-    HTML->>GV: Initial check: does testauth1gs.version.txt exist?
+    HTML->>GV: Initial check: does testauthgas1gs.version.txt exist?
     GV-->>HTML: v01.XXg (exists → show GAS pill)
     loop Every 10 seconds (after 15s initial delay)
-        HTML->>GV: GET testauth1gs.version.txt?_cb=timestamp
+        HTML->>GV: GET testauthgas1gs.version.txt?_cb=timestamp
         GV-->>HTML: v01.XXg
         alt GAS version changed
             HTML->>HTML: "GAS updated — reloading..."
@@ -66,11 +66,11 @@ sequenceDiagram
 
     Note over Browser,CL: Changelog Popups
     Browser->>HTML: Click HTML version pill
-    HTML->>CL: Fetch testauth1html.changelog.md
+    HTML->>CL: Fetch testauthgas1html.changelog.md
     CL-->>HTML: Markdown → parsed to HTML popup
 
     Browser->>HTML: Click GAS version pill
-    HTML->>CL: Fetch testauth1gs.changelog.md
+    HTML->>CL: Fetch testauthgas1gs.changelog.md
     CL-->>HTML: Markdown → parsed to HTML popup
 ```
 

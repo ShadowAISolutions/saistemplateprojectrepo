@@ -2,7 +2,7 @@
 
 **Created:** 2026-03-15
 **Status:** Ready for implementation
-**Scope:** `testauth1.gs` (and future GAS application files)
+**Scope:** `testauthgas1.gs` (and future GAS application files)
 **Prerequisites:** Plan 10 (EMR Security Hardening — all 8 phases) fully implemented
 **Layer:** This plan covers **Layer 2 (Data Access Control)** and **Layer 3 (EMR Application Features)** — building on top of the auth & session security foundation established by Plan 10.
 **References:**
@@ -59,7 +59,7 @@ This plan secures **what happens after sign-in** — how data is accessed, who c
 ### Phase 1: Role-Based Access Control (RBAC)
 
 **Risk:** Medium (new authorization layer on every data operation)
-**Files:** `testauth1.gs`, new `Roles` and `Permissions` sheets
+**Files:** `testauthgas1.gs`, new `Roles` and `Permissions` sheets
 **HIPAA:** 45 CFR § 164.312(a)(1) Access Control — "allow access only to those persons or software programs that have been granted access rights"
 
 **What:** The current system is binary — you're either authorized (in the ACL) or not. An EMR needs granular roles: a nurse can view vitals but not psychiatric notes, a billing clerk sees insurance info but not diagnoses, an admin manages users but doesn't see patient data.
@@ -178,7 +178,7 @@ return {
 ### Phase 2: Minimum Necessary Access
 
 **Risk:** Medium (changes data return structure for all data operations)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.502(b) — "when using or disclosing protected health information... a covered entity must make reasonable efforts to limit protected health information to the minimum necessary to accomplish the intended purpose"
 
 **What:** Every data query function must filter its return data to include only the fields the user's role permits. A nurse asking for a patient record gets `{name, dob, vitals, medications}` — not the full record with psychiatric notes and billing codes.
@@ -249,7 +249,7 @@ function getPatientRecord(sessionToken, patientId) {
 ### Phase 3: Input Validation and Sanitization
 
 **Risk:** High (touches all data write paths — must not break legitimate data)
-**Files:** `testauth1.gs`
+**Files:** `testauthgas1.gs`
 **HIPAA:** 45 CFR § 164.312(c)(1) Integrity — "protect ePHI from improper alteration or destruction"
 **OWASP:** Injection prevention, stored XSS prevention
 
@@ -357,7 +357,7 @@ var PATIENT_FIELDS = {
 ### Phase 4: PHI Segmentation in Google Sheets
 
 **Risk:** Medium (changes spreadsheet structure — requires data migration if existing data)
-**Files:** `testauth1.gs`, spreadsheet architecture
+**Files:** `testauthgas1.gs`, spreadsheet architecture
 **HIPAA:** 45 CFR § 164.312(a)(1) Access Control — defense-in-depth for direct Sheets access
 
 **What:** Structure spreadsheets so that direct identifiers (name, SSN, DOB) and clinical data (diagnoses, medications, notes) are in separate sheets, linked by an internal patient ID. If someone gains direct access to one sheet (via Google Sheets sharing, bypassing the app), they see either identifiers or clinical data — not both.
@@ -446,7 +446,7 @@ function getPatientRecord(sessionToken, patientId) {
 ### Phase 5: Data Retention and Deletion
 
 **Risk:** Medium (automated deletion of data — must be thoroughly tested)
-**Files:** `testauth1.gs`, scheduled triggers
+**Files:** `testauthgas1.gs`, scheduled triggers
 **HIPAA:** 45 CFR § 164.530(j) — "a covered entity must retain the documentation required by paragraph (j)(1) of this section for 6 years from the date of its creation or the date when it last was in effect, whichever is later"
 
 **What:** Implement retention policies that automatically archive or flag records past their retention period, and provide a secure deletion mechanism that logs every deletion for compliance.
@@ -584,7 +584,7 @@ function deletePatientRecord(sessionToken, patientId, reason) {
 ### Phase 6: Consent Tracking
 
 **Risk:** Low (additive — new sheet and functions, doesn't modify existing data paths)
-**Files:** `testauth1.gs`, new `Consent` sheet
+**Files:** `testauthgas1.gs`, new `Consent` sheet
 **HIPAA:** 45 CFR § 164.508 — authorizations required for certain uses and disclosures of PHI
 
 **What:** Track patient consent for data sharing, treatment authorizations, and PHI disclosures. Data operations that involve sharing PHI externally (referrals, insurance submissions, research) must verify consent before proceeding.
@@ -688,7 +688,7 @@ function shareRecordWithInsurance(sessionToken, patientId, insurerId) {
 ### Phase 7: Disclosure Logging
 
 **Risk:** Low (additive — extends existing audit log)
-**Files:** `testauth1.gs`, new `DisclosureLog` sheet
+**Files:** `testauthgas1.gs`, new `DisclosureLog` sheet
 **HIPAA:** 45 CFR § 164.528 — "an individual has a right to receive an accounting of disclosures of protected health information made by a covered entity"
 
 **What:** HIPAA requires covered entities to track and provide an accounting of all PHI disclosures (with limited exceptions for treatment, payment, and healthcare operations). Patients have the right to request this accounting.

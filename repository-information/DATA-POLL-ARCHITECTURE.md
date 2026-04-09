@@ -181,7 +181,7 @@ The 30 simultaneous executions limit is **per deploying user**, not per viewer. 
 
 ### Why it matters for multi-app deployments
 
-If you deploy multiple GAS projects (testauth1, programportal, globalacl, etc.), all of their data polls, heartbeats, and other GAS calls share the same 30-slot pool. The calls don't get separate pools per project — they all compete for the same 30 concurrent execution slots under the deploying account.
+If you deploy multiple GAS projects (testauthgas1, programportal, globalacl, etc.), all of their data polls, heartbeats, and other GAS calls share the same 30-slot pool. The calls don't get separate pools per project — they all compete for the same 30 concurrent execution slots under the deploying account.
 
 ### When you're safe
 
@@ -276,7 +276,7 @@ The countdown starts at ~13s (not 15s) because ~2 seconds are consumed by the po
 ## Configuration Reference
 
 ```javascript
-// In HTML_CONFIG (testauth1.html)
+// In HTML_CONFIG (testauthgas1.html)
 ENABLE_HEARTBEAT: true,
 // HEARTBEAT_INTERVAL: 300000  // ms — production (5min)
 HEARTBEAT_INTERVAL: 60000,    // ⚡ TEST VALUE (60s)
@@ -298,7 +298,7 @@ DATA_POLL_INTERVAL: 15000,    // 15s — continuous lightweight data poll
 
 | File | What it contains |
 |---|---|
-| `googleAppsScripts/Testauth1/testauth1.gs` | `processHeartbeat()` (line ~2422), `processDataPoll()` (line ~2501), `getCachedData()` (line ~575), `doGet()` getData handler (line ~2686) |
-| `live-site-pages/testauth1.html` | `sendHeartbeat()` (line ~3129), `_sendDataPoll()` (line ~3096), `_startDataPoll()` (line ~3079), `_stopDataPoll()` (line ~3085), `live-data` handler (line ~4006), timer display logic (line ~2984) |
+| `googleAppsScripts/Testauthgas1/testauthgas1.gs` | `processHeartbeat()` (line ~2422), `processDataPoll()` (line ~2501), `getCachedData()` (line ~575), `doGet()` getData handler (line ~2686) |
+| `live-site-pages/testauthgas1.html` | `sendHeartbeat()` (line ~3129), `_sendDataPoll()` (line ~3096), `_startDataPoll()` (line ~3079), `_stopDataPoll()` (line ~3085), `live-data` handler (line ~4006), timer display logic (line ~2984) |
 
 Developed by: ShadowAISolutions

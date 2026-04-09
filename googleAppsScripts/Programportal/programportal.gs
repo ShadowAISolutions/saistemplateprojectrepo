@@ -4755,7 +4755,7 @@ function exportDisclosureAccounting(sessionToken, format) {
 
 /**
  * Creates an access request and immediately generates the export.
- * For testauth1 (small dataset), export is synchronous.
+ * For testauthgas1 (small dataset), export is synchronous.
  */
 function requestDataExport(sessionToken, format) {
   return wrapPhaseAOperation('requestDataExport', sessionToken, function(user) {
@@ -4825,7 +4825,7 @@ function getIndividualData(sessionToken) {
     individual: {
       email: user.email, displayName: user.displayName,
       role: user.role, exportDate: formatHipaaTimestamp(),
-      generatedBy: 'testauth1 v' + VERSION
+      generatedBy: 'testauthgas1 v' + VERSION
     },
     records: {},
     summary: { totalRecords: 0, sheetsQueried: 0 }
@@ -5819,7 +5819,7 @@ function sendBreachAlert(eventType, eventCount, threshold, eventDetails) {
     + 'Threshold: ' + threshold + ' events in ' + BREACH_ALERT_CONFIG.WINDOW_MINUTES + ' minutes\n'
     + 'Actual Count: ' + eventCount + '\n'
     + 'Timestamp: ' + formatHipaaTimestamp() + '\n'
-    + 'Environment: testauth1\n\n'
+    + 'Environment: testauthgas1\n\n'
     + 'Event Details:\n'
     + JSON.stringify(eventDetails || {}, null, 2).substring(0, 500) + '\n\n'
     + 'ACTION REQUIRED:\n'
@@ -7193,7 +7193,7 @@ function getRetentionPolicyDocument(sessionToken) {
     } catch (e) { /* Non-fatal */ }
 
     var document = {
-      title: 'HIPAA Record Retention Policy — testauth1',
+      title: 'HIPAA Record Retention Policy — testauthgas1',
       version: '1.0',
       generatedAt: timestamp,
       generatedBy: user.email,
@@ -7201,14 +7201,14 @@ function getRetentionPolicyDocument(sessionToken) {
       sections: [
         {
           heading: '1. Purpose',
-          content: 'This document establishes the record retention policy for the testauth1 '
+          content: 'This document establishes the record retention policy for the testauthgas1 '
             + 'environment, as required by the HIPAA Security Rule §164.316(b). It defines '
             + 'retention periods, enforcement mechanisms, and exception handling procedures '
             + 'for all electronic protected health information (ePHI) and security documentation.'
         },
         {
           heading: '2. Scope',
-          content: 'This policy applies to all electronic records maintained in the testauth1 '
+          content: 'This policy applies to all electronic records maintained in the testauthgas1 '
             + 'Project Data Spreadsheet, including but not limited to:',
           items: sheetsProtected.map(function(name) {
             return name + ' — protected, ' + retentionYears + '-year retention';
