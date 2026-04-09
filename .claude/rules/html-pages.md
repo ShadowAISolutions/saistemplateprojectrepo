@@ -340,4 +340,46 @@ When `showAuthWall()` is called (whether from sign-out, session expiry, or any o
 
 *Rule: see `.claude/rules/gas-scripts.md` — section "GAS UI Layout Awareness". GAS elements are guests in the host HTML page and must defer to its layout.*
 
+## Visual Verification After UI Changes
+
+**After making any visual/UI change to an HTML page** (new elements, modals, overlays, CSS styling, layout changes, z-index adjustments), run a Playwright visual verification **before committing**. This catches layout bugs, z-index issues, and rendering problems before they reach the deployed site.
+
+### When this triggers
+- Adding or modifying modals, popups, overlays, panels, or floating UI elements
+- Changing CSS that affects layout, positioning, or visibility (z-index, display, position, flex, grid)
+- Adding new HTML sections or restructuring existing DOM
+- Modifying splash screens, auth walls, or full-screen overlays
+- Any change where "does this look right?" is a relevant question
+
+### When this does NOT trigger
+- Non-visual changes: JavaScript logic, variable renaming, config values, version bumps
+- Documentation-only changes: CHANGELOG, README, markdown files
+- GAS script changes (`.gs` files) — unless they affect the embedding page's visible UI
+- Template variable or metadata changes
+
+### What to do
+1. Write a Python Playwright script that opens the modified page in a headless Chromium browser
+2. Simulate the authenticated state (hide auth wall, activate the app) if the page requires sign-in
+3. Activate the specific UI element that was changed (show the modal, open the panel, trigger the overlay)
+4. Take a screenshot to `/tmp/visual-test-<page>.png`
+5. **Read the screenshot** and visually verify the change looks correct
+6. If the verification reveals a problem, fix it before committing — do not commit broken UI
+
+### Viewport
+- Use `390×844` (mobile) for pages that primarily target mobile users (e.g. pages with QR scanner, touch-focused UIs)
+- Use `1280×800` (desktop) for admin pages or desktop-focused UIs
+- When in doubt, test both viewports
+
+### Expected `file://` errors to ignore
+When opening pages via `file://` protocol, these console errors are expected and harmless:
+- `Fetch API cannot load file:///...` — version polling, sound loading, and changelog fetches require HTTP
+- `Failed to load resource: net::ERR_FILE_NOT_FOUND` — relative resource paths that resolve differently under `file://`
+- Google Sign-In / GIS library errors — auth libraries require HTTPS
+
+### Skip override
+The user can say **"skip visual test"** to bypass this for a specific change. This does not disable the rule permanently — it applies only to the current interaction.
+
+### Full command reference
+*For on-demand visual testing (user-triggered), see CLAUDE.md — "Visual Test Command"*
+
 Developed by: ShadowAISolutions

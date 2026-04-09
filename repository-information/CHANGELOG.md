@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 56/100`
+`Sections: 57/100`
 
 ## [Unreleased]
+
+## [v10.47r] — 2026-04-09 05:04:47 PM EST
+
+> **Prompt:** "make it into a Repo Workflow Command , and also add it to the claude.md or whichever .md file you deem ideal for this as a rule, i.e. "From now on, after making any visual/UI change to an HTML page, use Playwright to take a screenshot and verify it looks correct before committing.""
+
+### Added
+- Visual Test Command in CLAUDE.md — on-demand Playwright-based visual verification of HTML pages (`visual test`, `screenshot it`, `test it`)
+- Automatic visual verification rule in `.claude/rules/html-pages.md` — Playwright screenshot and visual inspection runs automatically after UI changes before committing
+- Reference Files entry for the new visual verification rule
 
 ## [v10.46r] — 2026-04-09 04:54:57 PM EST
 
