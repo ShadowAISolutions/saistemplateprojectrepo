@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 2/50`
+`Sections: 3/50`
 
 ## [Unreleased]
+
+## [v01.03g] — 2026-04-08 10:41:24 PM EST — v10.24r
+
+### Changed
+- Inventory data now saves with columns: Barcode, Item Name, Quantity, Last Updated, Last User
+- Inventory list returns data matching the new column layout
 
 ## [v01.02g] — 2026-04-08 02:08:12 PM EST — v10.06r
 

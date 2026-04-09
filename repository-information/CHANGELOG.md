@@ -3,9 +3,31 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v10.24r] — 2026-04-08 10:41:24 PM EST
+
+> **Prompt:** "the add to inventory button should be taking into account our inventory columns, since they are different to what we had before. they are Barcode, Item Name, Quantity, Last Updated, Last User, the other information we are not adding here, we will use them later"
+
+### Changed
+- Updated "Add to Inventory" to send barcode, itemName (empty for now), and quantity (default 1) instead of old data/format/type fields
+- GAS backend spreadsheet columns changed from `[Timestamp, Data, Format, Type, User, Source]` to `[Barcode, Item Name, Quantity, Last Updated, Last User]`
+- GAS `processGetQrEntries` now returns `barcode`, `itemName`, `quantity`, `lastUpdated`, `lastUser` fields
+- HTML render function updated to map new field names from GAS response
+
+#### `inventorymanagement.html` — v01.21w
+
+##### Changed
+- "Add to Inventory" now sends barcode and quantity (default 1) to the spreadsheet
+- Inventory tab data display aligned with new column structure
+
+#### `inventorymanagement.gs` — v01.03g
+
+##### Changed
+- Spreadsheet columns updated to Barcode, Item Name, Quantity, Last Updated, Last User
+- Data retrieval returns the new column fields
 
 ## [v10.23r] — 2026-04-08 10:02:33 PM EST
 

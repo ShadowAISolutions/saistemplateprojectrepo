@@ -1,4 +1,4 @@
-var VERSION = "v01.02g";
+var VERSION = "v01.03g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -304,7 +304,7 @@ var AUTH_CONFIG = resolveConfig(ACTIVE_PRESET, PROJECT_OVERRIDES);
  * Process a QR scan entry — appends a row to the data spreadsheet.
  * Called from HTML layer via doPost(action=addQrEntry).
  */
-function processAddQrEntry(token, data, format, type) {
+function processAddQrEntry(token, barcode, itemName, quantity) {
   var session = validateSessionForData(token, 'addQrEntry');
   // session is guaranteed valid here (throws if invalid)
 
@@ -315,16 +315,15 @@ function processAddQrEntry(token, data, format, type) {
   }
   // Auto-create header row if sheet is empty or missing headers
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['Timestamp', 'Data', 'Format', 'Type', 'User', 'Source']);
+    sheet.appendRow(['Barcode', 'Item Name', 'Quantity', 'Last Updated', 'Last User']);
   }
 
   sheet.appendRow([
+    barcode || '',
+    itemName || '',
+    quantity != null ? quantity : 1,
     new Date(),
-    data || '',
-    format || 'UNKNOWN',
-    type || 'TEXT',
-    session.email || 'unknown',
-    'QR_SCAN'
+    session.email || 'unknown'
   ]);
 
   return { success: true };
@@ -342,20 +341,20 @@ function processGetQrEntries(token, limit) {
   if (!sheet) return { success: true, entries: [] };
 
   var allData = sheet.getDataRange().getValues();
-  // Skip header row (index 0), filter rows where column F (index 5) is 'QR_SCAN'
-  var qrRows = allData.slice(1).filter(function(row) { return row[5] === 'QR_SCAN'; });
-  var maxRows = Math.min(limit || 20, qrRows.length);
-  var recent = qrRows.slice(qrRows.length - maxRows).reverse();
+  // Skip header row (index 0)
+  var rows = allData.slice(1);
+  var maxRows = Math.min(limit || 20, rows.length);
+  var recent = rows.slice(rows.length - maxRows).reverse();
 
   return {
     success: true,
     entries: recent.map(function(row) {
       return {
-        timestamp: row[0] ? new Date(row[0]).toISOString() : '',
-        data: String(row[1] || ''),
-        format: String(row[2] || ''),
-        type: String(row[3] || ''),
-        user: String(row[4] || '')
+        barcode: String(row[0] || ''),
+        itemName: String(row[1] || ''),
+        quantity: row[2] != null ? row[2] : '',
+        lastUpdated: row[3] ? new Date(row[3]).toISOString() : '',
+        lastUser: String(row[4] || '')
       };
     })
   };
@@ -823,7 +822,7 @@ function doPost(e) {
   if (action === "addQrEntry") {
     try {
       var aqBody = JSON.parse(e.postData.contents);
-      var aqResult = processAddQrEntry(aqBody.token, aqBody.data, aqBody.format, aqBody.type);
+      var aqResult = processAddQrEntry(aqBody.token, aqBody.barcode, aqBody.itemName, aqBody.quantity);
       return ContentService.createTextOutput(JSON.stringify(aqResult))
         .setMimeType(ContentService.MimeType.JSON);
     } catch (aqErr) {

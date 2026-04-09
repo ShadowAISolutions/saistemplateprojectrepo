@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.21w] — 2026-04-08 10:41:24 PM EST — v10.24r
+
+### Changed
+- "Add to Inventory" now saves barcode and quantity to the inventory spreadsheet with the new column layout
 
 ## [v01.20w] — 2026-04-08 10:02:33 PM EST — v10.23r
 

@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.20w">
+  <meta name="build-version" content="v01.21w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4554,9 +4554,9 @@ function addQrEntryToSheet() {
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
       token: session.token,
-      data: _qrLastScanData,
-      format: _qrLastScanFormat || 'UNKNOWN',
-      type: _qrLastScanType || 'TEXT'
+      barcode: _qrLastScanData,
+      itemName: '',
+      quantity: 1
     })
   })
   .then(function(r) { return r.json(); })
@@ -4679,8 +4679,8 @@ function _renderQrEntriesTable(entries) {
     return;
   }
   entries.forEach(function(e) {
-    var ts = e.timestamp ? new Date(e.timestamp).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-    html += '<tr><td>' + _escQrHtml(e.data || '') + '</td><td>' + _escQrHtml(e.itemName || '') + '</td><td>' + _escQrHtml(String(e.quantity != null ? e.quantity : '')) + '</td><td>' + _escQrHtml(ts) + '</td><td>' + _escQrHtml(e.user || '') + '</td></tr>';
+    var ts = e.lastUpdated ? new Date(e.lastUpdated).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    html += '<tr><td>' + _escQrHtml(e.barcode || '') + '</td><td>' + _escQrHtml(e.itemName || '') + '</td><td>' + _escQrHtml(String(e.quantity != null ? e.quantity : '')) + '</td><td>' + _escQrHtml(ts) + '</td><td>' + _escQrHtml(e.lastUser || '') + '</td></tr>';
   });
   html += '</tbody></table>';
   body.innerHTML = html;
