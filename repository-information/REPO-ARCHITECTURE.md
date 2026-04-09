@@ -44,6 +44,7 @@ graph TB
             direction LR
             GASTPL_PAGE["[template] gas-project-creator.html\n(GAS Project Creator)"]
             TESTAUTHGAS1_PAGE["[template] testauthgas1.html\n(Test Auth 1)"]
+            TESTAUTHHTML1_PAGE["[template] testauthhtml1.html\n(Test Auth HTML 1)"]
             GLOBALACL_PAGE["[template] globalacl.html\n(Global ACL)"]
             PROGRAMPORTAL_PAGE["[template] programportal.html\n(Program Portal)"]
             TEXTCOMPARE_PAGE["[template] text-compare.html\n(Text Compare Tool)"]
@@ -53,6 +54,7 @@ graph TB
         subgraph "Google Apps Scripts [template]"
             direction LR
             GAS_TESTAUTHGAS1["[template] testauthgas1.gs"]
+            GAS_TESTAUTHHTML1["[template] testauthhtml1.gs"]
         end
 
         subgraph "Shared Resources [template]"
@@ -100,21 +102,26 @@ graph TB
     end
 
     TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTHGAS1_PAGE
+    TPL_AUTH -.->|"copy to create\nnew auth pages"| TESTAUTHHTML1_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| GLOBALACL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| PROGRAMPORTAL_PAGE
     TPL_AUTH -.->|"copy to create\nnew auth pages"| INVENTORYMANAGEMENT_PAGE
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTHGAS1
+    GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_TESTAUTHHTML1
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_GLOBALACL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_PROGRAMPORTAL
     GASTPL_MIN_AUTH -.->|"template source\n(setup-gas-project.sh)"| GAS_INVENTORYMANAGEMENT
     TESTAUTHGAS1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTHGAS1
+    TESTAUTHHTML1_PAGE -.->|"embeds via iframe"| GAS_TESTAUTHHTML1
     LIVE -.->|"serves"| GASTPL_PAGE
     LIVE -.->|"serves"| TESTAUTHGAS1_PAGE
+    LIVE -.->|"serves"| TESTAUTHHTML1_PAGE
     LIVE -.->|"serves"| GLOBALACL_PAGE
     LIVE -.->|"serves"| PROGRAMPORTAL_PAGE
     LIVE -.->|"serves"| TEXTCOMPARE_PAGE
     LIVE -.->|"serves"| INVENTORYMANAGEMENT_PAGE
     GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTHGAS1
+    GAS_DEPLOY -.->|"triggers self-update"| GAS_TESTAUTHHTML1
     GAS_DEPLOY -.->|"triggers self-update"| GAS_GLOBALACL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_PROGRAMPORTAL
     GAS_DEPLOY -.->|"triggers self-update"| GAS_INVENTORYMANAGEMENT
@@ -122,6 +129,7 @@ graph TB
     UPDATE_SHA -.->|"writes"| SHA_FILE
     HTML_VERS -.->|"version polling"| GASTPL_PAGE
     HTML_VERS -.->|"version polling"| TESTAUTHGAS1_PAGE
+    HTML_VERS -.->|"version polling"| TESTAUTHHTML1_PAGE
     HTML_VERS -.->|"version polling"| GLOBALACL_PAGE
     HTML_VERS -.->|"version polling"| PROGRAMPORTAL_PAGE
     HTML_VERS -.->|"version polling"| TEXTCOMPARE_PAGE

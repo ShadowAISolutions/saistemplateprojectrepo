@@ -101,6 +101,7 @@ Domain-specific coding constraints are maintained in a dedicated reference file.
 | Testation7 | `googleAppsScripts/Testation7/testation7.gs` | `googleAppsScripts/Testation7/testation7.config.json` | `live-site-pages/testation7.html` |
 | Testation8 | `googleAppsScripts/Testation8/testation8.gs` | `googleAppsScripts/Testation8/testation8.config.json` | `live-site-pages/testation8.html` |
 | Testauthgas1 | `googleAppsScripts/Testauthgas1/testauthgas1.gs` | `googleAppsScripts/Testauthgas1/testauthgas1.config.json` | `live-site-pages/testauthgas1.html` |
+| Testauthhtml1 | `googleAppsScripts/Testauthhtml1/testauthhtml1.gs` | `googleAppsScripts/Testauthhtml1/testauthhtml1.config.json` | `live-site-pages/testauthhtml1.html` |
 | Globalacl | `googleAppsScripts/Globalacl/globalacl.gs` | `googleAppsScripts/Globalacl/globalacl.config.json` | `live-site-pages/globalacl.html` |
 | Programportal | `googleAppsScripts/Programportal/programportal.gs` | `googleAppsScripts/Programportal/programportal.config.json` | `live-site-pages/programportal.html` |
 | Inventorymanagement | `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` | `googleAppsScripts/Inventorymanagement/inventorymanagement.config.json` | `live-site-pages/inventorymanagement.html` |
