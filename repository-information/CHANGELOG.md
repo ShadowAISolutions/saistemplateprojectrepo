@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 53/100`
+`Sections: 54/100`
 
 ## [Unreleased]
+
+## [v10.44r] — 2026-04-09 04:34:01 PM EST
+
+> **Prompt:** "undo the last change you made"
+
+### Removed
+- Reverted smart scan dialog (v10.43r) — removed barcode lookup, new-item dialog, quantity-update dialog from QR scanner; restored simple scan-to-add-row behavior
+
+#### `testauthhtml1.html` — v01.13w
+
+##### Removed
+- Reverted scan dialog — scanning directly adds to the barcode input and clicks Add Row
 
 ## [v10.43r] — 2026-04-09 04:26:39 PM EST
 

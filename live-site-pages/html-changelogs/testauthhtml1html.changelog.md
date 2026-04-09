@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthhtml1html.changelog-archive.md](testauthhtml1html.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-04-09 04:34:01 PM EST — v10.44r
+
+### Removed
+- Reverted scan dialog — scanning directly adds to the barcode input and clicks Add Row
 
 ## [v01.12w] — 2026-04-09 04:26:39 PM EST — v10.43r
 
