@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v10.31r] — 2026-04-09 11:30:10 AM EST
+
+> **Prompt:** "for the testauthhtml1 , the new deployment id is AKfycbzPUkD3W7y3oGRRMKVt8Vl3ohGg_57SouUHKbbtYhtK7Ran-0SS4vVvft6_GR2YIRqDSg , the spreadsheet id is 1x_1aG2H1x8JfDbq6-uY8Hdz6PvzIeZLFFEw4vNe4oes . since this is a new page, do any necessary changes to the ACL and other interconnected settings, if you need more info from me let me know"
+
+### Changed
+- Updated `testauthhtml1` environment with its own GAS deployment — new `DEPLOYMENT_ID` and `SPREADSHEET_ID` replacing the shared values copied from `testauthgas1`
+- Synced config to `testauthhtml1.gs` (`DEPLOYMENT_ID`, `SPREADSHEET_ID`), `testauthhtml1.html` (encoded `var _e`), and workflow deploy step webhook URL
+
+#### `testauthhtml1.html` — v01.01w
+##### Changed
+- Updated GAS iframe to connect to the new dedicated deployment
+
+#### `testauthhtml1.gs` — v01.01g
+##### Changed
+- Updated deployment ID and spreadsheet ID to own GAS project values
 
 ## [v10.30r] — 2026-04-09 10:57:44 AM EST
 

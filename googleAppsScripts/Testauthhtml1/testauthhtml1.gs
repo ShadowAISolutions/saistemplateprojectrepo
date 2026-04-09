@@ -1,10 +1,10 @@
-var VERSION = "v01.00g";
+var VERSION = "v01.01g";
 var TITLE = "testauthhtml1title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";
 var FILE_PATH     = "googleAppsScripts/Testauthhtml1/testauthhtml1.gs";
-var DEPLOYMENT_ID = "AKfycbzcKmQ37XpdCS5ziKpInaGoHa8tZ0w6MeIP6cMWMV6-wXG2hS1K2pmBq4e4-J7xpNL-_w";
+var DEPLOYMENT_ID = "AKfycbzPUkD3W7y3oGRRMKVt8Vl3ohGg_57SouUHKbbtYhtK7Ran-0SS4vVvft6_GR2YIRqDSg";
 var EMBED_PAGE_URL = "https://ShadowAISolutions.github.io/saistemplateprojectrepo/testauthhtml1.html";
 
 // Derive the parent page's origin from EMBED_PAGE_URL for postMessage targeting.
@@ -23,7 +23,7 @@ var PARENT_ORIGIN = EMBED_PAGE_URL.replace(/^(https?:\/\/[^\/]+).*$/, '$1').toLo
 // AUTH CONFIG
 // ══════════════
 // Spreadsheet ID for project data (the GAS app reads/writes user data here).
-var SPREADSHEET_ID = "1EKParBF6pP5Iz605yMiEqm1I7cKjgN-98jevkKfBYAA";
+var SPREADSHEET_ID = "1x_1aG2H1x8JfDbq6-uY8Hdz6PvzIeZLFFEw4vNe4oes";
 var SHEET_NAME     = "Live_Sheet";
 // Master ACL spreadsheet — centralized access control for all GAS-powered pages.
 // Two tabs:
