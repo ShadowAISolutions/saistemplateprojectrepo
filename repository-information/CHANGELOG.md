@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v10.35r] — 2026-04-09 01:13:55 PM EST
+
+> **Prompt:** "i can see the column fields but still waiting for data"
+
+### Fixed
+- RPC bridge was sending postMessage to `gasApp.contentWindow` (the outer Google shell iframe) instead of `_gasSandboxSource` (the inner sandbox where the worker script runs). GAS double-iframe architecture: `contentWindow` is the outer shell, `event.source` from `gas-auth-ok` is the inner sandbox. Messages to the outer shell never reach the worker script
+
+#### `testauthhtml1.html` — v01.05w
+##### Fixed
+- Data now loads from the server — live table and dashboard populate correctly
 
 ## [v10.34r] — 2026-04-09 01:09:33 PM EST
 
