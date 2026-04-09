@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v10.36r] — 2026-04-09 01:29:29 PM EST
+
+> **Prompt:** "the html toggle should toggle the newly added live data visual UI"
+
+### Fixed
+- HTML layer toggle did not hide/show the Live Data App UI — `#live-data-app` was missing from the `_htmlLayerEls` toggle list
+
+#### `testauthhtml1.html` — v01.06w
+##### Fixed
+- HTML layer toggle now includes the Live Data App container in the toggle list
 
 ## [v10.35r] — 2026-04-09 01:13:55 PM EST
 
