@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v10.33r] — 2026-04-09 01:04:10 PM EST
+
+> **Prompt:** "the screenshot is what i see now, i dont see that live data table"
+
+### Fixed
+- Live Data App not showing after authentication — added direct DOM activation fallback in `showApp()` and changed empty state to `display: flex` by default so "Waiting for data..." is visible immediately
+
+#### `testauthhtml1.html` — v01.03w
+##### Fixed
+- Application content now appears immediately after signing in
 
 ## [v10.32r] — 2026-04-09 12:50:45 PM EST
 
