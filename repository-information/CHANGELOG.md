@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 60/100`
+`Sections: 61/100`
 
 ## [Unreleased]
+
+## [v10.51r] — 2026-04-09 05:49:13 PM EST
+
+> **Prompt:** "if the camera already has user permission, then have it auto turn on instead of requiring press start camera, but also add a button next to the flashlight toggle to turn off the camera"
+
+### Added
+- Camera auto-start: if camera permission is already granted, the QR scanner starts automatically without requiring the user to tap "START CAMERA"
+- Stop camera button (✖) positioned bottom-left of the viewport — stops the camera stream and returns to the start screen
+
+#### `testauthhtml1.html` — v01.18w
+
+##### Added
+- Camera auto-starts when permission is already granted — no need to tap "START CAMERA"
+- Stop camera button (✖) next to the flashlight toggle to turn off the camera
 
 ## [v10.50r] — 2026-04-09 05:41:32 PM EST
 

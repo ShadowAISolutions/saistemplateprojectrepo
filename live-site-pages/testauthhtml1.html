@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.17w">
+  <meta name="build-version" content="v01.18w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Testauthhtml1 Title</title>
 <!-- ══════════════ -->
@@ -560,6 +560,8 @@
     .qr-torch-btn { position: absolute; bottom: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #555570; font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: all 0.2s; padding: 0; line-height: 1; }
     .qr-torch-btn:active { transform: scale(0.9); }
     .qr-torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
+    .qr-stop-btn { position: absolute; bottom: 10px; left: 10px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #ff6b6b; font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 15; transition: all 0.2s; padding: 0; line-height: 1; }
+    .qr-stop-btn:active { transform: scale(0.9); }
     .qr-status-bar { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 0.68rem; color: #555570; padding: 8px 2px 0; max-width: 400px; margin: 0 auto; }
     .qr-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555570; flex-shrink: 0; transition: background 0.3s; }
     .qr-status-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; animation: qrPulse 1.5s ease-in-out infinite; }
@@ -755,6 +757,7 @@
         <div class="qr-scan-line" id="qr-scan-line"></div>
         <div class="qr-found-flash" id="qr-found-flash"></div>
         <button class="qr-torch-btn" id="qr-torch-btn">&#128294;</button>
+        <button class="qr-stop-btn" id="qr-stop-btn">&#x2716;</button>
         <div class="qr-engine-badge" id="qr-engine-badge">detecting...</div>
         <div id="qr-start-screen">
           <div class="qr-big-icon">&#128247;</div>
@@ -5880,6 +5883,7 @@
       var qrTorchBtn = document.getElementById('qr-torch-btn');
       var qrStartBtn = document.getElementById('qr-start-btn');
       var qrStartScreen = document.getElementById('qr-start-screen');
+      var qrStopBtn = document.getElementById('qr-stop-btn');
 
       var qrScanning = false;
       var qrCooldown = false;
@@ -5958,10 +5962,27 @@
               if (qrTorchBtn) qrTorchBtn.style.display = 'flex';
             }
           } catch(e) {}
+          if (qrStopBtn) qrStopBtn.style.display = 'flex';
           qrStartNativeLoop();
         } catch(e) {
           qrSetStatus('error', 'Camera error: ' + e.message);
         }
+      }
+
+      // Stop camera and show start screen again
+      function qrStopCamera() {
+        qrScanning = false;
+        qrNativeLoopActive = false;
+        if (qrVideo && qrVideo.srcObject) {
+          qrVideo.srcObject.getTracks().forEach(function(t) { t.stop(); });
+          qrVideo.srcObject = null;
+        }
+        if (qrTorchBtn) { qrTorchBtn.style.display = 'none'; qrTorchBtn.classList.remove('on'); }
+        if (qrStopBtn) qrStopBtn.style.display = 'none';
+        qrTorchOn = false;
+        qrTorchSupported = false;
+        if (qrStartScreen) qrStartScreen.style.display = '';
+        qrSetStatus('', 'Camera inactive');
       }
 
       function qrStartNativeLoop() {
@@ -6128,9 +6149,25 @@
       // Event listeners
       if (qrStartBtn) qrStartBtn.addEventListener('click', qrStartCamera);
       if (qrTorchBtn) qrTorchBtn.addEventListener('click', qrToggleTorch);
+      if (qrStopBtn) qrStopBtn.addEventListener('click', qrStopCamera);
 
       // Detect engine on load
       qrDetectEngine();
+
+      // Auto-start camera if permission already granted
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: 'camera' }).then(function(result) {
+          if (result.state === 'granted' && qrBarcodeDetector) {
+            qrStartCamera();
+          } else if (result.state === 'granted') {
+            // BarcodeDetector may not be ready yet — wait briefly
+            var checkReady = setInterval(function() {
+              if (qrBarcodeDetector) { clearInterval(checkReady); qrStartCamera(); }
+            }, 200);
+            setTimeout(function() { clearInterval(checkReady); }, 3000);
+          }
+        }).catch(function() { /* permissions API not supported — manual start */ });
+      }
 
       // Expose modal for manual entry (outside of scan flow)
       window._showScanConfirmModal = _showScanConfirmModal;
