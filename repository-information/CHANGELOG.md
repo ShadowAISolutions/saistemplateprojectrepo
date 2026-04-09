@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 55/100`
+`Sections: 56/100`
 
 ## [Unreleased]
+
+## [v10.46r] — 2026-04-09 04:54:57 PM EST
+
+> **Prompt:** "i dont see any popup/UI/GUI/window when scanning"
+
+### Fixed
+- Scan confirmation modal was not appearing because `_ldHeaders` was scoped to the Live Data App IIFE and inaccessible from the QR Scanner IIFE — exposed via `window._ldGetHeaders()` cross-IIFE accessor
+
+#### `testauthhtml1.html` — v01.15w
+
+##### Fixed
+- Scan confirmation dialog now appears correctly after scanning a barcode
 
 ## [v10.45r] — 2026-04-09 04:44:43 PM EST
 
