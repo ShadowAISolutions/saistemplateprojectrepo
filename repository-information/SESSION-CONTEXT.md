@@ -4,46 +4,48 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-08 10:45:53 PM EST
+**Repo version:** v10.24r
+
+### What was done
+- **Added tabbed Live Data interface (v10.18r–v10.19r)** — Three tabs: Inventory, History, Activity. Inventory is the default tab. Tab bar with teal active indicator. Tab switching via `_switchLiveTab()`.
+- **Tab order and defaults (v10.19r)** — Reordered tabs to Inventory → History → Activity. Set Inventory as the default active tab.
+- **Column headers always visible (v10.21r)** — All three tabs show their column headers even when no data is loaded. Empty message appears below the headers.
+- **Tab role assignment (v10.22r)** — Activity tab repurposed as local scan history (card-based UI, no spreadsheet saves — replaced the old standalone scan history section). Inventory tab hosts the spreadsheet-polled entries table. The old standalone scan history section was removed.
+- **Inventory columns updated (v10.23r–v10.24r)** — Inventory tab columns: Barcode, Item Name, Quantity, Last Updated, Last User. History tab columns: Timestamp, User, Action, Barcode, Item Name, Qty Change, New Qty. GAS backend (`processAddQrEntry`, `processGetQrEntries`) and HTML frontend (`addQrEntryToSheet`, `_renderQrEntriesTable`) updated to match new column structure. "Add to Inventory" now sends barcode + quantity (default 1).
+
+### Where we left off
+- **Tabbed Live Data UI is complete** — three tabs with correct columns, Inventory as default
+- **Inventory tab** is fully wired to the spreadsheet (add + poll) with new columns: Barcode, Item Name, Quantity, Last Updated, Last User
+- **Activity tab** shows local scan history (card-based, no spreadsheet saves)
+- **History tab** has column structure set up but no functionality yet (placeholder — will be wired later)
+- Item Name column is sent as empty string for now — to be wired up later
+- The `_renderInventoryTable` and `_renderHistoryTable` functions exist but are not yet called by any data source — they'll be used when those tabs get their own data flows
+
+### Key decisions made
+- **Three-tab architecture** — Inventory (spreadsheet data, default), History (future — action log), Activity (local scan history). Only Inventory saves to the spreadsheet.
+- **Activity tab = scan history** — the old standalone scan history section was removed and its card-based UI was moved into the Activity tab. This keeps scan history accessible but separate from inventory data.
+- **Inventory columns** — Barcode, Item Name, Quantity, Last Updated, Last User. The scanned barcode goes into the Barcode column. Item Name is empty for now (will be filled via lookup or manual entry later). Quantity defaults to 1.
+- **GAS spreadsheet structure changed** — old columns `[Timestamp, Data, Format, Type, User, Source]` replaced with `[Barcode, Item Name, Quantity, Last Updated, Last User]`. Existing spreadsheet data will need manual cleanup if it has old-format rows.
+
+### Active context
+- Branch: claude/add-inventory-tabs-rNGCv
+- Repo version: v10.24r
+- inventorymanagement.html: v01.21w, inventorymanagement.gs: v01.03g
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- AHK feature reference at `repository-information/inventorymanagement-ahk-features.md`
+
+## Previous Sessions
+
 **Date:** 2026-04-08 09:20:59 PM EST
 **Repo version:** v10.17r
 
 ### What was done
-- **Title and duplicate scan fix (v10.10r–v10.11r)** — Set `<title>` to "Inventory Management" (was `TEMPLATE_TITLE` placeholder). Changed add-to-inventory logic from permanent per-barcode tracking (`_qrAddedScans`) to per-scan tracking (`_qrCurrentScanAdded`) — same item can be added multiple times across scans, but only once per scan. Fixed stale "...adding" button text on new scans.
-- **Mobile layout improvements (v10.12r–v10.13r)** — Reduced camera viewport from 1:1 to 4:3 aspect ratio with 260px max-height on mobile. Added 40px top padding to scanner header to clear the user-pill/sign-out bar. Added `viewport-fit=cover` for safe-area support. Added desktop media query (≥600px) for larger viewport. Made data table horizontally scrollable on mobile.
-- **Camera auto-resume on tab/app switch (v10.14r)** — Added `visibilitychange` listener with `_qrCameraWasActive` flag. Camera stops cleanly when page hidden, auto-resumes when visible. Graceful fallback if camera permission revoked while away.
-- **Camera auto-start when permission granted (v10.15r)** — `showQrPanel()` now checks `navigator.permissions.query({ name: 'camera' })` and auto-starts if `granted`. Falls back to START CAMERA button on unsupported browsers (Safari).
-- **Camera on/off toggle button (v10.16r)** — Circular toggle button in viewport next to torch button. Teal when camera on, red when off. Stops/starts camera without leaving scanner panel.
-- **AHK feature reference document (v10.17r)** — Created comprehensive `repository-information/inventorymanagement-ahk-features.md` cataloging all features from the AutoHotkey inventory management script (10 sections: user management, inventory operations, scan modes, views, image management, data persistence, audio feedback, GUI layout, error handling, infrastructure). Includes implementation priority map comparing existing web features vs. new AHK features.
+- Camera features (auto-resume, auto-start, on/off toggle), mobile layout improvements, AHK feature reference document, title fix, duplicate scan fix (v10.10r–v10.17r)
 
 ### Where we left off
-- **Inventory management scanner is fully functional with improved UX** — camera auto-starts, auto-resumes on tab switch, has on/off toggle, mobile layout is clean
-- The page is live at `ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html`
-- Next step: implement AHK features into the web app using `inventorymanagement-ahk-features.md` as the reference
-
-### Key decisions made
-- **Per-scan add tracking** — replaced permanent `_qrAddedScans` object with `_qrCurrentScanAdded` boolean that resets on each new scan or history click. Allows same barcode to be added to inventory multiple times across different scans.
-- **Inline camera stop on visibility hide** — does NOT call `stopQrCamera()` because that shows the start screen and sets "Camera inactive" status. Instead, inline-stops tracks/srcObject/flags to avoid visual flicker on auto-resume.
-- **Permissions API for auto-start** — `navigator.permissions.query({ name: 'camera' })` wrapped in try-catch for Safari compatibility. Auto-starts only when `state === 'granted'`.
-- **Camera toggle as overlay button** — positioned at `bottom: 8px; right: 48px` (next to torch at `right: 8px`). Uses `stopQrCamera()` then re-shows itself in `.off` state so user can toggle back on.
-
-### Active context
-- Branch: claude/inventory-duplicate-scan-fix-faFkz
-- Repo version: v10.17r
-- inventorymanagement.html: v01.14w, inventorymanagement.gs: v01.02g
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-- AHK feature reference ready at `repository-information/inventorymanagement-ahk-features.md`
-
-## Previous Sessions
-
-**Date:** 2026-04-08 02:46:00 PM EST
-**Repo version:** v10.09r
-
-### What was done
-- Integrated QR scanner into inventory management HTML layer (v10.03r–v10.09r) — full-screen scanner as main interface, GAS backend for spreadsheet writes, live data polling with testauth1-style status badge
-
-### Where we left off
-- Inventory management QR scanner fully functional — scan → add to spreadsheet → live polling → entries table
+- Inventory management scanner fully functional with improved UX — next step was implementing AHK features
 
 Developed by: ShadowAISolutions
