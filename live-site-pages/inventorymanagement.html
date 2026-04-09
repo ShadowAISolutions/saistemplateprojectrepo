@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.17w">
+  <meta name="build-version" content="v01.18w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -787,16 +787,19 @@
         </div>
         <div id="qr-tab-inventory" class="qr-tab-content active">
           <div id="qr-inventory-body">
+            <table class="qr-entries-table"><thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th></tr></thead><tbody></tbody></table>
             <div class="qr-entries-empty">No inventory data yet.</div>
           </div>
         </div>
         <div id="qr-tab-history" class="qr-tab-content">
           <div id="qr-history-body">
+            <table class="qr-entries-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Barcode</th><th>Item Name</th><th>Qty Change</th><th>New Qty</th></tr></thead><tbody></tbody></table>
             <div class="qr-entries-empty">No history data yet.</div>
           </div>
         </div>
         <div id="qr-tab-activity" class="qr-tab-content">
           <div id="qr-entries-body">
+            <table class="qr-entries-table"><thead><tr><th>Time</th><th>Data</th><th>Format</th><th>Type</th><th>User</th></tr></thead><tbody></tbody></table>
             <div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>
           </div>
         </div>
@@ -4674,11 +4677,12 @@ function _stopDataPoll() {
 function _renderQrEntriesTable(entries) {
   var body = document.getElementById('qr-entries-body');
   if (!body) return;
+  var html = '<table class="qr-entries-table"><thead><tr><th>Time</th><th>Data</th><th>Format</th><th>Type</th><th>User</th></tr></thead><tbody>';
   if (!entries || entries.length === 0) {
-    body.innerHTML = '<div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>';
+    html += '</tbody></table><div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>';
+    body.innerHTML = html;
     return;
   }
-  var html = '<table class="qr-entries-table"><thead><tr><th>Time</th><th>Data</th><th>Format</th><th>Type</th><th>User</th></tr></thead><tbody>';
   entries.forEach(function(e) {
     var ts = e.timestamp ? new Date(e.timestamp).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
     html += '<tr><td>' + _escQrHtml(ts) + '</td><td title="' + _escQrHtml(e.data || '') + '">' + _escQrHtml(e.data || '') + '</td><td>' + _escQrHtml(e.format || '') + '</td><td>' + _escQrHtml(e.type || '') + '</td><td>' + _escQrHtml(e.user || '') + '</td></tr>';
@@ -4703,11 +4707,12 @@ function _switchLiveTab(tabName) {
 function _renderInventoryTable(entries) {
   var body = document.getElementById('qr-inventory-body');
   if (!body) return;
+  var html = '<table class="qr-entries-table"><thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th></tr></thead><tbody>';
   if (!entries || entries.length === 0) {
-    body.innerHTML = '<div class="qr-entries-empty">No inventory data yet.</div>';
+    html += '</tbody></table><div class="qr-entries-empty">No inventory data yet.</div>';
+    body.innerHTML = html;
     return;
   }
-  var html = '<table class="qr-entries-table"><thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th></tr></thead><tbody>';
   entries.forEach(function(e) {
     var ts = e.lastUpdated ? new Date(e.lastUpdated).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
     html += '<tr><td>' + _escQrHtml(e.barcode || '') + '</td><td>' + _escQrHtml(e.itemName || '') + '</td><td>' + _escQrHtml(String(e.quantity != null ? e.quantity : '')) + '</td><td>' + _escQrHtml(ts) + '</td><td>' + _escQrHtml(e.lastUser || '') + '</td></tr>';
@@ -4720,11 +4725,12 @@ function _renderInventoryTable(entries) {
 function _renderHistoryTable(entries) {
   var body = document.getElementById('qr-history-body');
   if (!body) return;
+  var html = '<table class="qr-entries-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Barcode</th><th>Item Name</th><th>Qty Change</th><th>New Qty</th></tr></thead><tbody>';
   if (!entries || entries.length === 0) {
-    body.innerHTML = '<div class="qr-entries-empty">No history data yet.</div>';
+    html += '</tbody></table><div class="qr-entries-empty">No history data yet.</div>';
+    body.innerHTML = html;
     return;
   }
-  var html = '<table class="qr-entries-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>Barcode</th><th>Item Name</th><th>Qty Change</th><th>New Qty</th></tr></thead><tbody>';
   entries.forEach(function(e) {
     var ts = e.timestamp ? new Date(e.timestamp).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
     html += '<tr><td>' + _escQrHtml(ts) + '</td><td>' + _escQrHtml(e.user || '') + '</td><td>' + _escQrHtml(e.action || '') + '</td><td>' + _escQrHtml(e.barcode || '') + '</td><td>' + _escQrHtml(e.itemName || '') + '</td><td>' + _escQrHtml(String(e.quantityChange != null ? e.quantityChange : '')) + '</td><td>' + _escQrHtml(String(e.newQuantity != null ? e.newQuantity : '')) + '</td></tr>';

@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v10.21r] — 2026-04-08 09:46:02 PM EST
+
+> **Prompt:** "even if there is no data yet in the tabs it should still show the headings for the columns"
+
+### Changed
+- All three Live Data tabs (Inventory, History, Activity) now show column headers even when there is no data — empty message appears below the headers
+
+#### `inventorymanagement.html` — v01.18w
+
+##### Changed
+- Column headers are always visible in all tabs, with empty-state message shown below when no data is available
 
 ## [v10.20r] — 2026-04-08 09:41:36 PM EST
 
