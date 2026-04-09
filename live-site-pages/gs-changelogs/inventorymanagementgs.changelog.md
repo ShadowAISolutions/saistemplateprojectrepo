@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04g] — 2026-04-09 09:33:59 AM EST — v10.26r
+
+### Added
+- Inventory items can now be deleted individually
+- Inventory list now includes row tracking for accurate item targeting
 
 ## [v01.03g] — 2026-04-08 10:41:24 PM EST — v10.24r
 

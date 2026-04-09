@@ -1,4 +1,4 @@
-var VERSION = "v01.03g";
+var VERSION = "v01.04g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -344,20 +344,54 @@ function processGetQrEntries(token, limit) {
   // Skip header row (index 0)
   var rows = allData.slice(1);
   var maxRows = Math.min(limit || 20, rows.length);
-  var recent = rows.slice(rows.length - maxRows).reverse();
+  var startIdx = rows.length - maxRows;
+  var recent = [];
+  for (var i = rows.length - 1; i >= startIdx; i--) {
+    recent.push({ row: rows[i], sheetRow: i });
+  }
 
   return {
     success: true,
-    entries: recent.map(function(row) {
+    entries: recent.map(function(item) {
+      var row = item.row;
       return {
         barcode: String(row[0] || ''),
         itemName: String(row[1] || ''),
         quantity: row[2] != null ? row[2] : '',
         lastUpdated: row[3] ? new Date(row[3]).toISOString() : '',
-        lastUser: String(row[4] || '')
+        lastUser: String(row[4] || ''),
+        _rowIndex: item.sheetRow
       };
     })
   };
+}
+
+/**
+ * Delete an inventory entry by row index.
+ * Called from HTML layer via doPost(action=deleteQrEntry).
+ */
+function processDeleteQrEntry(token, rowIndex) {
+  var session = validateSessionForData(token, 'deleteQrEntry');
+
+  rowIndex = parseInt(rowIndex, 10);
+  if (isNaN(rowIndex) || rowIndex < 0) {
+    return { success: false, error: 'Invalid row index' };
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return { success: false, error: 'Sheet not found' };
+  }
+
+  // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2)
+  var sheetRow = rowIndex + 2;
+  if (sheetRow > sheet.getLastRow()) {
+    return { success: false, error: 'Row out of range' };
+  }
+
+  sheet.deleteRow(sheetRow);
+  return { success: true };
 }
 
 // PROJECT END
@@ -838,6 +872,17 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     } catch (gqErr) {
       return ContentService.createTextOutput(JSON.stringify({ success: false, error: gqErr.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  if (action === "deleteQrEntry") {
+    try {
+      var dqBody = JSON.parse(e.postData.contents);
+      var dqResult = processDeleteQrEntry(dqBody.token, dqBody.rowIndex);
+      return ContentService.createTextOutput(JSON.stringify(dqResult))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (dqErr) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: dqErr.message }))
         .setMimeType(ContentService.MimeType.JSON);
     }
   }

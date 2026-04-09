@@ -3,9 +3,40 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v10.26r] — 2026-04-09 09:33:59 AM EST
+
+> **Prompt:** "refer to the testauth1 for the method of optimistic data, and apply the same method to the inventorymanagement, ask clarifying questions if its not quite clear"
+
+### Added
+- Optimistic data rendering for inventory management — new entries appear instantly in the table (dimmed with "Sending…" overlay) before server confirmation, matching testauth1's pattern
+- Delete functionality for inventory entries — each row gets a × button with confirmation modal and optimistic "Deleting…" overlay
+- Cell change flash animation — cells that change between polls flash green (1.5s), helping multi-user awareness
+- GAS backend `processDeleteQrEntry` endpoint for deleting inventory rows by sheet index
+- `_rowIndex` field in GAS `processGetQrEntries` response for accurate delete targeting
+
+### Changed
+- Inventory table now renders from a persistent local data array (`_inventoryEntries`) instead of directly from server response, enabling optimistic inserts and change detection
+- Data reconciliation replaces the entire local array on each poll, automatically clearing optimistic entries
+
+#### `inventorymanagement.html` — v01.23w
+
+##### Added
+- Optimistic add rendering — new items appear immediately at 35% opacity with "Sending…" overlay
+- Delete button (×) per inventory row with dark-themed confirmation modal
+- Optimistic delete rendering — row dims with "Deleting…" overlay, restores on failure
+- Cell-level change detection with green flash animation between polls
+- Local data array and reconciliation logic matching testauth1's pattern
+
+#### `inventorymanagement.gs` — v01.04g
+
+##### Added
+- `processDeleteQrEntry` function for deleting inventory entries by row index
+- `deleteQrEntry` action handler in `doPost`
+- `_rowIndex` field in `processGetQrEntries` response entries for delete targeting
 
 ## [v10.25r] — 2026-04-09 08:20:11 AM EST
 

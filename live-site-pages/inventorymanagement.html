@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.22w">
+  <meta name="build-version" content="v01.23w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -609,6 +609,54 @@
     .qr-manual-submit:active { transform: scale(0.97); }
     .qr-manual-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
+    /* ─── Optimistic States & Cell Flash ─── */
+    @keyframes qr-cell-flash { 0% { background: rgba(46,160,67,0.45); } 100% { background: transparent; } }
+    .qr-cell-changed { animation: qr-cell-flash 1.5s ease-out; }
+    .qr-entries-table td { transition: background 0.3s; }
+    .qr-row-optimistic { opacity: 0.35; pointer-events: none; position: relative; }
+    .qr-row-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; justify-content: center;
+      font: 600 13px/1 sans-serif; letter-spacing: 0.5px; pointer-events: none;
+    }
+    .qr-row-overlay.sending { color: #58a6ff; }
+    .qr-row-overlay.deleting { color: #f85149; }
+    .qr-delete-btn {
+      background: none; border: 1px solid transparent; color: #555570;
+      font-size: 0.8rem; cursor: pointer; padding: 2px 6px; border-radius: 4px;
+      transition: all 0.15s; line-height: 1;
+    }
+    .qr-delete-btn:hover { color: #f85149; border-color: #f85149; }
+
+    /* ─── Delete Confirmation Modal ─── */
+    #qr-delete-modal {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 10000; background: rgba(0,0,0,0.6);
+      align-items: center; justify-content: center;
+    }
+    #qr-delete-modal.active { display: flex; }
+    .qr-delete-modal-box {
+      background: #12121a; border: 1px solid #2a2a3e; border-radius: 12px;
+      padding: 20px 24px; max-width: 340px; width: 90%; text-align: center;
+    }
+    .qr-delete-modal-title {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      color: #f85149; margin-bottom: 8px; letter-spacing: 0.05em;
+    }
+    .qr-delete-modal-msg {
+      font-size: 0.72rem; color: #8b949e; margin-bottom: 16px; line-height: 1.5;
+    }
+    .qr-delete-modal-actions { display: flex; gap: 10px; }
+    .qr-delete-modal-btn {
+      flex: 1; padding: 8px 12px; border-radius: 8px; border: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .qr-delete-modal-btn.cancel { background: #1e1e2e; color: #8b949e; }
+    .qr-delete-modal-btn.cancel:hover { background: #2a2a3e; }
+    .qr-delete-modal-btn.confirm { background: #f85149; color: #fff; }
+    .qr-delete-modal-btn.confirm:hover { background: #da3633; }
+
     /* Desktop: allow larger camera viewport */
     @media (min-width: 600px) {
       .qr-viewport-wrapper { max-height: 360px; }
@@ -867,6 +915,18 @@
 
   <!-- QR Toast notification -->
   <div class="qr-toast info" id="qr-toast"></div>
+
+  <!-- Delete confirmation modal -->
+  <div id="qr-delete-modal">
+    <div class="qr-delete-modal-box">
+      <div class="qr-delete-modal-title">DELETE ITEM</div>
+      <div class="qr-delete-modal-msg" id="qr-delete-modal-msg">Are you sure you want to delete this item?</div>
+      <div class="qr-delete-modal-actions">
+        <button class="qr-delete-modal-btn cancel" id="qr-delete-cancel">Cancel</button>
+        <button class="qr-delete-modal-btn confirm" id="qr-delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
 
 <!-- ══════════════ -->
 <!-- PROJECT END -->
@@ -4243,6 +4303,15 @@ var _qrLastScanType  = null;
 var _qrCurrentScanAdded = false;  // tracks whether current scan was already added (resets each scan)
 var _qrCameraWasActive = false;   // remembers camera state across tab/app switches
 
+// ─── Optimistic Data State ──────────────────────────────────────
+var _inventoryEntries = [];          // Local copy of server entries
+var _prevInventoryJSON = null;       // For change detection (JSON comparison)
+var _prevInventoryCells = {};        // Cell-level tracking {row:col -> value}
+var _addEntryPending = false;        // Is an add in flight?
+var _addEntryPendingIndex = undefined; // Index of optimistic row
+var _deleteEntryPending = null;      // { index, entry } if delete in flight
+var _deleteModalCallback = null;     // Callback for delete confirmation
+
 // ─── QR Scanner — Engine detection ──────────────────────────────
 function detectQrEngine() {
   if ('BarcodeDetector' in window) {
@@ -4613,6 +4682,16 @@ function addQrEntryToSheet() {
   var addBtn = document.getElementById('qr-add-btn');
   if (addBtn) { addBtn.disabled = true; addBtn.textContent = '...adding'; }
 
+  // Optimistic: insert into local array immediately
+  var optimisticEntry = {
+    barcode: _qrLastScanData, itemName: '', quantity: 1,
+    lastUpdated: new Date().toISOString(), lastUser: session.email || 'unknown'
+  };
+  _inventoryEntries.push(optimisticEntry);
+  _addEntryPendingIndex = _inventoryEntries.length - 1;
+  _addEntryPending = true;
+  _renderQrEntriesTable({});
+
   fetch(baseUrl + '?action=addQrEntry', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -4625,17 +4704,25 @@ function addQrEntryToSheet() {
   })
   .then(function(r) { return r.json(); })
   .then(function(result) {
+    _addEntryPending = false;
+    _addEntryPendingIndex = undefined;
     if (result.success) {
       _qrCurrentScanAdded = true;
       if (addBtn) addBtn.style.display = 'none';
       showQrToast('Added to inventory!', 'success');
-      _doDataPoll(); // immediate poll to show new entry
+      _doDataPoll(); // poll reconciles optimistic with server data
     } else {
+      _inventoryEntries.pop();
+      _renderQrEntriesTable({});
       if (addBtn) { addBtn.disabled = false; addBtn.textContent = '\u271A Add to Inventory'; }
       showQrToast(result.error || 'Failed to add entry', 'error');
     }
   })
   .catch(function() {
+    _addEntryPending = false;
+    _addEntryPendingIndex = undefined;
+    _inventoryEntries.pop();
+    _renderQrEntriesTable({});
     if (addBtn) { addBtn.disabled = false; addBtn.textContent = '\u271A Add to Inventory'; }
     showQrToast('Network error', 'error');
   });
@@ -4678,6 +4765,21 @@ function addManualEntryToSheet() {
 
   if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '...adding'; }
 
+  // Optimistic: insert into local array immediately
+  var optimisticEntry = {
+    barcode: barcode, itemName: itemName, quantity: quantity,
+    lastUpdated: new Date().toISOString(), lastUser: session.email || 'unknown'
+  };
+  _inventoryEntries.push(optimisticEntry);
+  _addEntryPendingIndex = _inventoryEntries.length - 1;
+  _addEntryPending = true;
+  _renderQrEntriesTable({});
+
+  // Clear form immediately for fast re-entry
+  barcodeInput.value = '';
+  nameInput.value = '';
+  qtyInput.value = '1';
+
   fetch(baseUrl + '?action=addQrEntry', {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
@@ -4690,18 +4792,23 @@ function addManualEntryToSheet() {
   })
   .then(function(r) { return r.json(); })
   .then(function(result) {
+    _addEntryPending = false;
+    _addEntryPendingIndex = undefined;
     if (result.success) {
       showQrToast('Item added to inventory!', 'success');
-      barcodeInput.value = '';
-      nameInput.value = '';
-      qtyInput.value = '1';
-      _doDataPoll(); // immediate poll to show new entry
+      _doDataPoll();
     } else {
+      _inventoryEntries.pop();
+      _renderQrEntriesTable({});
       showQrToast(result.error || 'Failed to add item', 'error');
     }
     if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '\u271A Add to Inventory'; }
   })
   .catch(function() {
+    _addEntryPending = false;
+    _addEntryPendingIndex = undefined;
+    _inventoryEntries.pop();
+    _renderQrEntriesTable({});
     showQrToast('Network error', 'error');
     if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '\u271A Add to Inventory'; }
   });
@@ -4774,7 +4881,7 @@ function fetchQrEntries() {
     _lastDataPollTick = Date.now();
     if (result.success && result.entries) {
       _lastDataTs = Date.now();
-      _renderQrEntriesTable(result.entries);
+      _handleInventoryData(result.entries);
     }
     _updatePollDisplay();
   })
@@ -4799,21 +4906,173 @@ function _stopDataPoll() {
   _stopPollDisplay();
 }
 
-function _renderQrEntriesTable(entries) {
+// ─── Optimistic Data — Change Detection ────────────────────────
+function _detectInventoryChanges(entries) {
+  var changed = {};
+  var newCells = {};
+  for (var r = 0; r < entries.length; r++) {
+    var e = entries[r];
+    var vals = [e.barcode || '', e.itemName || '', String(e.quantity != null ? e.quantity : ''), e.lastUpdated || '', e.lastUser || ''];
+    for (var c = 0; c < vals.length; c++) {
+      var key = r + ':' + c;
+      newCells[key] = vals[c];
+      if (_prevInventoryCells.hasOwnProperty(key) && _prevInventoryCells[key] !== vals[c]) {
+        changed[key] = true;
+      }
+    }
+  }
+  _prevInventoryCells = newCells;
+  return changed;
+}
+
+// ─── Optimistic Data — Reconciliation ──────────────────────────
+function _handleInventoryData(entries) {
+  var newJSON = JSON.stringify(entries);
+  if (newJSON === _prevInventoryJSON && _addEntryPendingIndex === undefined && !_deleteEntryPending) return;
+  var changedCells = _detectInventoryChanges(entries);
+  _prevInventoryJSON = newJSON;
+  _inventoryEntries = entries.slice();
+  _addEntryPendingIndex = undefined;
+  _addEntryPending = false;
+  _renderQrEntriesTable(changedCells);
+}
+
+// ─── Optimistic Data — Table Render ────────────────────────────
+function _renderQrEntriesTable(changedCells) {
   var body = document.getElementById('qr-entries-body');
   if (!body) return;
-  var html = '<table class="qr-entries-table"><thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th></tr></thead><tbody>';
+  var entries = _inventoryEntries;
   if (!entries || entries.length === 0) {
-    html += '</tbody></table><div class="qr-entries-empty">No inventory data yet.</div>';
-    body.innerHTML = html;
+    body.innerHTML = '<table class="qr-entries-table"><thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th><th></th></tr></thead><tbody></tbody></table><div class="qr-entries-empty">No inventory data yet.</div>';
     return;
   }
-  entries.forEach(function(e) {
-    var ts = e.lastUpdated ? new Date(e.lastUpdated).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
-    html += '<tr><td>' + _escQrHtml(e.barcode || '') + '</td><td>' + _escQrHtml(e.itemName || '') + '</td><td>' + _escQrHtml(String(e.quantity != null ? e.quantity : '')) + '</td><td>' + _escQrHtml(ts) + '</td><td>' + _escQrHtml(e.lastUser || '') + '</td></tr>';
+  var table = document.createElement('table');
+  table.className = 'qr-entries-table';
+  var thead = '<thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th><th></th></tr></thead>';
+  table.innerHTML = thead;
+  var tbody = document.createElement('tbody');
+
+  entries.forEach(function(e, origIdx) {
+    var isOptimisticAdd = (_addEntryPendingIndex !== undefined && origIdx === _addEntryPendingIndex);
+    var isOptimisticDel = (_deleteEntryPending && origIdx === _deleteEntryPending.index);
+    var tr = document.createElement('tr');
+
+    if (isOptimisticAdd || isOptimisticDel) {
+      tr.className = 'qr-row-optimistic';
+    }
+
+    var ts = e.lastUpdated ? new Date(e.lastUpdated).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '\u2014';
+    var vals = [_escQrHtml(e.barcode || ''), _escQrHtml(e.itemName || ''), _escQrHtml(String(e.quantity != null ? e.quantity : '')), _escQrHtml(ts), _escQrHtml(e.lastUser || '')];
+
+    for (var c = 0; c < vals.length; c++) {
+      var td = document.createElement('td');
+      td.setAttribute('data-row', origIdx);
+      td.textContent = '';
+      td.innerHTML = vals[c];
+      var key = origIdx + ':' + c;
+      if (changedCells && changedCells[key]) td.classList.add('qr-cell-changed');
+      tr.appendChild(td);
+    }
+
+    // Delete column
+    var tdDel = document.createElement('td');
+    tdDel.style.width = '30px';
+    tdDel.style.textAlign = 'center';
+    if (!isOptimisticAdd && !isOptimisticDel) {
+      var delBtn = document.createElement('button');
+      delBtn.className = 'qr-delete-btn';
+      delBtn.textContent = '\u2715';
+      delBtn.title = 'Delete';
+      delBtn.setAttribute('data-row', origIdx);
+      delBtn.onclick = function() { deleteInventoryEntry(parseInt(this.getAttribute('data-row'), 10)); };
+      tdDel.appendChild(delBtn);
+    }
+    tr.appendChild(tdDel);
+
+    // Overlay for optimistic states
+    if (isOptimisticAdd) {
+      var ov = document.createElement('div');
+      ov.className = 'qr-row-overlay sending';
+      ov.textContent = 'Sending\u2026';
+      tr.appendChild(ov);
+    } else if (isOptimisticDel) {
+      var ov2 = document.createElement('div');
+      ov2.className = 'qr-row-overlay deleting';
+      ov2.textContent = 'Deleting\u2026';
+      tr.appendChild(ov2);
+    }
+
+    tbody.appendChild(tr);
   });
-  html += '</tbody></table>';
-  body.innerHTML = html;
+
+  table.appendChild(tbody);
+  body.innerHTML = '';
+  body.appendChild(table);
+}
+
+// ─── Optimistic Data — Delete ──────────────────────────────────
+function deleteInventoryEntry(rowIndex) {
+  if (rowIndex < 0 || rowIndex >= _inventoryEntries.length) return;
+  var entry = _inventoryEntries[rowIndex];
+  var msg = 'Delete "' + _escQrHtml(entry.barcode || entry.itemName || 'this item') + '"?';
+  _showDeleteModal(msg, function() { _executeDeleteEntry(rowIndex); });
+}
+
+function _showDeleteModal(msg, onConfirm) {
+  var modal = document.getElementById('qr-delete-modal');
+  var msgEl = document.getElementById('qr-delete-modal-msg');
+  var confirmBtn = document.getElementById('qr-delete-confirm');
+  var cancelBtn = document.getElementById('qr-delete-cancel');
+  if (!modal) return;
+  msgEl.innerHTML = msg;
+  modal.classList.add('active');
+  _deleteModalCallback = onConfirm;
+  function cleanup() {
+    modal.classList.remove('active');
+    confirmBtn.removeEventListener('click', onConf);
+    cancelBtn.removeEventListener('click', onCanc);
+    _deleteModalCallback = null;
+  }
+  function onConf() { cleanup(); if (onConfirm) onConfirm(); }
+  function onCanc() { cleanup(); }
+  confirmBtn.addEventListener('click', onConf);
+  cancelBtn.addEventListener('click', onCanc);
+}
+
+function _executeDeleteEntry(rowIndex) {
+  var session = loadSession();
+  if (!session || !session.token) { showQrToast('Not authenticated', 'error'); return; }
+  var baseUrl = _getQrGasBaseUrl();
+  if (!baseUrl) { showQrToast('GAS not configured', 'error'); return; }
+
+  var entry = _inventoryEntries[rowIndex];
+  var sheetRow = entry._rowIndex;
+  if (sheetRow === undefined) { showQrToast('Cannot delete optimistic entry', 'error'); return; }
+
+  _deleteEntryPending = { index: rowIndex, entry: entry };
+  _renderQrEntriesTable({});
+
+  fetch(baseUrl + '?action=deleteQrEntry', {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ token: session.token, rowIndex: sheetRow })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    _deleteEntryPending = null;
+    if (result.success) {
+      showQrToast('Item deleted', 'success');
+      _doDataPoll();
+    } else {
+      _renderQrEntriesTable({});
+      showQrToast(result.error || 'Failed to delete', 'error');
+    }
+  })
+  .catch(function() {
+    _deleteEntryPending = null;
+    _renderQrEntriesTable({});
+    showQrToast('Network error', 'error');
+  });
 }
 
 // ─── Live Data Tab Switching ───

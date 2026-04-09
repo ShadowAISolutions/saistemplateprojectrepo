@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23w] — 2026-04-09 09:33:59 AM EST — v10.26r
+
+### Added
+- New items now appear instantly in the inventory table before the server confirms — shown with a subtle dimmed style while saving
+- Delete button on each inventory row — tap the × to remove an item, with a confirmation prompt
+- Changed cells flash green briefly when inventory data updates from other users
 
 ## [v01.22w] — 2026-04-09 08:20:11 AM EST — v10.25r
 
