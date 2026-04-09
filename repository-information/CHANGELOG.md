@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v10.19r] — 2026-04-08 09:35:30 PM EST
+
+> **Prompt:** "make the order of the tabs be Inventory, History, Activity"
+
+### Changed
+- Reordered Live Data tabs on inventory management page to: Inventory, History, Activity
+
+#### `inventorymanagement.html` — v01.16w
+
+##### Changed
+- Tab order changed from Activity → Inventory → History to Inventory → History → Activity
 
 ## [v10.18r] — 2026-04-08 09:27:26 PM EST
 
