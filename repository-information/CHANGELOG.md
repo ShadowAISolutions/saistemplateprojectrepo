@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v10.39r] — 2026-04-09 02:19:59 PM EST
+
+> **Prompt:** "change the columns to be Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User"
+
+### Changed
+- Updated add-row input bar from 4 generic column inputs to 6 inputs with placeholders matching the spreadsheet columns: Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User
+- Updated JS `inputs` array to reference all 6 input elements
+
+#### `testauthhtml1.html` — v01.09w
+##### Changed
+- Add row bar now shows 6 input fields matching the data columns
 
 ## [v10.38r] — 2026-04-09 01:58:03 PM EST
 
