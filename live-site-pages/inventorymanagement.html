@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.18w">
+  <meta name="build-version" content="v01.19w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -762,12 +762,6 @@
         <input type="file" class="qr-file-input" id="qr-file-input" accept="image/*" onchange="scanQrFromFile(event)">
       </div>
 
-      <!-- Scan history -->
-      <div class="qr-history-section" id="qr-history-section" style="display:none">
-        <div class="qr-history-title">Scan History</div>
-        <div id="qr-history-list"></div>
-      </div>
-
       <!-- Inventory entries from spreadsheet -->
       <div class="qr-entries-section" id="qr-entries-section">
         <div class="qr-entries-header">
@@ -786,8 +780,8 @@
           <button class="qr-tab-btn" data-tab="activity" onclick="_switchLiveTab('activity')">Activity</button>
         </div>
         <div id="qr-tab-inventory" class="qr-tab-content active">
-          <div id="qr-inventory-body">
-            <table class="qr-entries-table"><thead><tr><th>Barcode</th><th>Item Name</th><th>Quantity</th><th>Last Updated</th><th>Last User</th></tr></thead><tbody></tbody></table>
+          <div id="qr-entries-body">
+            <table class="qr-entries-table"><thead><tr><th>Time</th><th>Data</th><th>Format</th><th>Type</th><th>User</th></tr></thead><tbody></tbody></table>
             <div class="qr-entries-empty">No inventory data yet.</div>
           </div>
         </div>
@@ -798,9 +792,9 @@
           </div>
         </div>
         <div id="qr-tab-activity" class="qr-tab-content">
-          <div id="qr-entries-body">
-            <table class="qr-entries-table"><thead><tr><th>Time</th><th>Data</th><th>Format</th><th>Type</th><th>User</th></tr></thead><tbody></tbody></table>
-            <div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>
+          <div class="qr-history-section" id="qr-history-section">
+            <div id="qr-history-list"></div>
+            <div class="qr-entries-empty" id="qr-activity-empty">No scans yet. Scan a code to see activity here.</div>
           </div>
         </div>
       </div>
@@ -4486,7 +4480,8 @@ function _addQrToHistory(data, type, format) {
   var icons = {url:'\uD83D\uDD17',email:'\u2709\uFE0F',phone:'\uD83D\uDCDE',sms:'\uD83D\uDCAC',wifi:'\uD83D\uDCF6',text:'\uD83D\uDCC4'};
   _qrHistoryItems.unshift({data:data, type:type, format:format, time:new Date()});
   if (_qrHistoryItems.length > 10) _qrHistoryItems.pop();
-  _qrHistSection.style.display = 'flex';
+  var _actEmpty = document.getElementById('qr-activity-empty');
+  if (_actEmpty) _actEmpty.style.display = 'none';
   _qrHistList.innerHTML = '';
   _qrHistoryItems.forEach(function(item) {
     var el = document.createElement('div');
@@ -4679,7 +4674,7 @@ function _renderQrEntriesTable(entries) {
   if (!body) return;
   var html = '<table class="qr-entries-table"><thead><tr><th>Time</th><th>Data</th><th>Format</th><th>Type</th><th>User</th></tr></thead><tbody>';
   if (!entries || entries.length === 0) {
-    html += '</tbody></table><div class="qr-entries-empty">No entries yet. Scan a code and add it to inventory.</div>';
+    html += '</tbody></table><div class="qr-entries-empty">No inventory data yet.</div>';
     body.innerHTML = html;
     return;
   }

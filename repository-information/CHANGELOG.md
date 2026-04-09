@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v10.22r] — 2026-04-08 09:56:50 PM EST
+
+> **Prompt:** "instead of our current scan history, have the scan history functionality move to the activity tab instead. the concept we had for the activity tab will be used in the inventory tab instead. but with the information for those columns, dont worry about the columns we dont use yet we will eventually wire them up, but the inventory tab is the one that will save into the spreadsheet, the activity tab wont, it; be like the scan history currently is."
+
+### Changed
+- Activity tab now shows scan history (card-based, local only — no spreadsheet saves), replacing the old standalone scan history section
+- Inventory tab now hosts the spreadsheet-polled entries table (previously in Activity tab) — this is the tab that saves to the spreadsheet
+- Removed the old standalone scan history section (functionality moved into Activity tab)
+
+#### `inventorymanagement.html` — v01.19w
+
+##### Changed
+- Activity tab repurposed as local scan history with card-based UI
+- Inventory tab now shows the live spreadsheet data entries
+- Standalone scan history section removed (merged into Activity tab)
 
 ## [v10.21r] — 2026-04-08 09:46:02 PM EST
 
