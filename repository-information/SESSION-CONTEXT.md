@@ -4,42 +4,48 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-09 01:17:45 PM EST
+**Repo version:** v10.35r
+
+### What was done
+- **Migrated testauthhtml1 GAS layer to HTML layer (v10.32r)** — Moved all visual HTML/CSS/JS from the GAS doGet() iframe into the HTML page. Live Data App (table, dashboard, data polling, cell editing, row add/delete), admin panel HTML, and all related styles now render directly from `testauthhtml1.html`. The visible full-screen GAS iframe was replaced with a hidden 0×0 worker iframe that acts as an RPC bridge for `google.script.run` calls via postMessage. Removed GAS pill, GAS changelog overlay, SSO indicator, GAS layer toggle, and GAS version polling (~1,450 lines removed from `.gs` doGet). Added `?action=worker` route to GAS doGet that returns a lightweight RPC bridge page
+- **Fixed script crash from null SSO indicator (v10.34r)** — Removing `#sso-indicator` HTML broke `document.getElementById('sso-indicator').addEventListener(...)` which crashed the entire script, preventing Live Data App IIFE, RPC handler, and HTML layer toggle from loading. Added null-check
+- **Fixed RPC bridge target (v10.35r)** — `gasCall()` was sending postMessage to `gasApp.contentWindow` (the outer Google shell) instead of `_gasSandboxSource` (the inner sandbox captured from `event.source` on `gas-auth-ok`). GAS double-iframe architecture means `contentWindow` is the outer shell — messages never reach the worker. Fixed to use `_gasSandboxSource`
+- **Admin panel JS skipped** — per developer request, admin panel HTML elements are present but have no JS logic wired up yet
+
+### Where we left off
+- **DATA STILL NOT LOADING** — the Live Data App UI shows correctly (dark background, table headers, "Waiting for data..." text, "Connecting..." status) but data from the spreadsheet is not populating. The RPC bridge fix (using `_gasSandboxSource`) was the last change pushed. Next session needs to verify:
+  1. Is `_gasSandboxSource` actually being set when `gas-auth-ok` arrives from the worker?
+  2. Is the RPC message reaching the worker's inner sandbox?
+  3. Is `google.script.run.getAuthenticatedData(token)` succeeding or failing silently in the worker?
+  4. Is the response postMessage from the worker reaching the HTML layer's RPC handler?
+  - **Debugging approach**: Add console.log statements at each point in the chain to identify where the data flow breaks, OR use browser DevTools Network tab to see if the `google.script.run` call is being made from within the worker iframe
+
+### Key decisions made
+- **Hidden worker iframe pattern** — instead of removing ALL iframes (which would lose all server-side functionality), kept a hidden 0×0 iframe as a `google.script.run` RPC proxy via postMessage. The user confirmed this approach
+- **Admin panel deferred** — user said to skip admin panel JS for now, just focus on the data table
+- **GAS doGet simplified** — the `?session=TOKEN` route now returns the same worker bridge page instead of the full 1,450-line HTML template
+
+### Active context
+- Branch: claude/migrate-gas-to-html-sQe9q
+- Repo version: v10.35r
+- testauthhtml1.html: v01.05w, testauthhtml1.gs: v01.02g
+- testauthgas1.html: v04.00w, testauthgas1.gs: v02.61g
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- **Key files**: `live-site-pages/testauthhtml1.html` (HTML layer with migrated UI), `googleAppsScripts/Testauthhtml1/testauthhtml1.gs` (GAS with worker route)
+
+## Previous Sessions
+
 **Date:** 2026-04-09 11:56:06 AM EST
 **Repo version:** v10.31r
 
 ### What was done
-- **Configured testauthhtml1 with its own GAS deployment (v10.31r)** — Updated DEPLOYMENT_ID (`AKfycbzPUkD3W7y3oGRRMKVt8Vl3ohGg_57SouUHKbbtYhtK7Ran-0SS4vVvft6_GR2YIRqDSg`) and SPREADSHEET_ID (`1x_1aG2H1x8JfDbq6-uY8Hdz6PvzIeZLFFEw4vNe4oes`) across config.json, .gs, .html (encoded `var _e`), and workflow deploy step webhook URL
-- **Investigated nested HTML/iframe security** — Researched and confirmed the iframe embedding architecture is secure for HIPAA: browser same-origin policy isolates GAS iframe, `PARENT_ORIGIN` blocks postMessage to wrong pages, frame handshake guard blocks direct URL access, Google OAuth CLIENT_ID is origin-locked. A copied HTML page on another domain is a dead shell
-- **Diagnosed stale data from old spreadsheet** — GAS CacheService was serving cached data from the old testauthgas1 spreadsheet (6-hour TTL on `'livedata_' + SHEET_NAME`). Writes went to the correct new spreadsheet (direct `SpreadsheetApp.openById()`), but reads returned stale cache. Resolved after an edit triggered `refreshDataCache()` on the new spreadsheet
-- **Identified bootstrap problem with copied GAS projects** — When a GAS project is copied from another, the running code's `FILE_PATH` points to the source project's `.gs` file. The auto-deploy webhook pulls that file instead of the new one, perpetuating old config. Fix: manual paste of correct code into Apps Script editor (one-time bootstrap)
+- Configured testauthhtml1 with its own GAS deployment — separate DEPLOYMENT_ID and SPREADSHEET_ID
+- Diagnosed stale cache data from old spreadsheet, identified GAS project bootstrap problem
 
 ### Where we left off
-- testauthhtml1 is fully configured with its own deployment and spreadsheet, working correctly
-- Developer confirmed edits go to the correct spreadsheet; stale reads resolved after cache refresh
-
-### Key decisions made
-- **Separate GAS deployments per page** — each page needs its own DEPLOYMENT_ID for proper ACL enforcement, audit trails, and session isolation (shared deployment means shared CacheService, shared ACL column, shared audit logs)
-- **CacheService stale data is a known bootstrap issue** — when switching SPREADSHEET_ID, the 6-hour cache TTL can serve old data. Any edit to the new spreadsheet triggers `refreshDataCache()` and self-heals
-
-### Active context
-- Branch: claude/debug-nested-html-loading-4tT5O
-- Repo version: v10.31r
-- testauthgas1.html: v04.00w, testauthgas1.gs: v02.61g
-- testauthhtml1.html: v01.01w, testauthhtml1.gs: v01.01g
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-
-## Previous Sessions
-
-**Date:** 2026-04-09 11:03:05 AM EST
-**Repo version:** v10.30r
-
-### What was done
-- Renamed testauth1 → testauthgas1 (v10.29r) — full environment rename across 17 files/directories, 67 content updates
-- Created testauthhtml1 environment (v10.30r) — identical copy of testauthgas1 with all references renamed
-
-### Where we left off
-- Both environment operations merged to main. testauthhtml1 needed separate GAS deployment (resolved in next session)
+- testauthhtml1 fully configured with own deployment and spreadsheet, working correctly before the GAS→HTML migration
 
 Developed by: ShadowAISolutions
