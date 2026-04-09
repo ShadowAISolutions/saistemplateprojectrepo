@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 61/100`
+`Sections: 62/100`
 
 ## [Unreleased]
+
+## [v10.52r] — 2026-04-09 06:13:37 PM EST
+
+> **Prompt:** "reset the inventorymanagement environment to how it was when it was first created, keeping the ID's instead of the placeholders"
+
+### Changed
+- Reset inventorymanagement environment to initial template state — HTML page (v01.25w → v01.00w), GAS script (v01.06g → v01.00g), version files, and changelogs all restored to clean "just created" state from auth templates while preserving real deployment IDs, spreadsheet IDs, and CLIENT_ID
+
+#### `inventorymanagement.html` — v01.00w
+
+##### Changed
+- Page reset to initial template state
+
+#### `inventorymanagement.gs` — v01.00g
+
+##### Changed
+- Script reset to initial template state
 
 ## [v10.51r] — 2026-04-09 05:49:13 PM EST
 
