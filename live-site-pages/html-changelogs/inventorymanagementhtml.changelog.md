@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 11/50`
+`Sections: 12/50`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-04-10 01:06:37 PM EST — v10.67r
+
+### Changed
+- Mobile view now shows only Item Name and Quantity columns — Barcode, Last User, and Last Updated are hidden below 600px screen width for easier scanning on phones
 
 ## [v01.11w] — 2026-04-10 12:08:01 PM EST — v10.65r
 

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v10.67r] — 2026-04-10 01:06:37 PM EST
+
+> **Prompt:** "for the inventorymanagement, have the mobile view only show the item name and quantity column"
+
+### Changed
+- Added a mobile-only CSS rule to `live-site-pages/inventorymanagement.html` inside the existing `@media (max-width: 600px)` block that hides the Barcode, Last User, and Last Updated columns (`th:nth-child(3|4|5)` and `td[data-col="2"|"3"|"4"]`) so the mobile view shows only Item Name and Quantity. The delete action column is automatically preserved because its `<th>` lives at `nth-child(6)` (outside the selector range) and its `<td>` has no `data-col` attribute. Rendering logic in `ldRenderTableView()` is untouched — this is a pure CSS visibility change, so hidden cells still exist in the DOM and sorting/editing/data attributes work unchanged when the viewport is resized back to desktop. Verified via Playwright at 390×844 mobile (only Item Name + Quantity + delete visible), 1280×800 desktop (all 5 columns + delete visible), and 601×844 boundary (above breakpoint — all columns visible)
+
+#### `inventorymanagement.html` — v01.12w
+##### Changed
+- Mobile view now shows only Item Name and Quantity columns — Barcode, Last User, and Last Updated are hidden below 600px screen width for easier scanning on phones
 
 ## [v10.66r] — 2026-04-10 12:16:52 PM EST
 
