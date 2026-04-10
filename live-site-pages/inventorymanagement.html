@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.03w">
+  <meta name="build-version" content="v01.04w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4782,8 +4782,9 @@
         _stopGasDataPoll();
         if (ldApp) ldApp.classList.remove('active');
       };
-      // Expose headers for QR scanner confirmation modal (cross-IIFE access)
+      // Expose headers and rows for QR scanner confirmation modal (cross-IIFE access)
       window._ldGetHeaders = function() { return _ldHeaders; };
+      window._ldGetRows = function() { return _ldRows; };
     })();
 
     // ── QR Camera Scanner (native BarcodeDetector only — no external dependencies) ──
@@ -4912,11 +4913,12 @@
           else if (hLow === 'timestamp') timestampColIdx = ci;
         }
         var existingRow = null;
+        var ldRows = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
         if (barcodeColIdx >= 0 && scannedData) {
           var scannedLower = String(scannedData).trim().toLowerCase();
-          for (var ri = 0; ri < _ldRows.length; ri++) {
-            if (String(_ldRows[ri][barcodeColIdx]).trim().toLowerCase() === scannedLower) {
-              existingRow = _ldRows[ri];
+          for (var ri = 0; ri < ldRows.length; ri++) {
+            if (String(ldRows[ri][barcodeColIdx]).trim().toLowerCase() === scannedLower) {
+              existingRow = ldRows[ri];
               break;
             }
           }

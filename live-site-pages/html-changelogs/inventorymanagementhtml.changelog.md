@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 3/50`
+`Sections: 4/50`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-04-09 07:59:20 PM EST — v10.57r
+
+### Fixed
+- Fixed scan confirmation not appearing after scanning a barcode
 
 ## [v01.03w] — 2026-04-09 07:46:26 PM EST — v10.56r
 

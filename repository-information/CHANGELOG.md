@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
 
 ## [Unreleased]
+
+## [v10.57r] — 2026-04-09 07:59:20 PM EST
+
+> **Prompt:** "after the last change, scanning is not showing the gui to add entries"
+
+### Fixed
+- Fixed scan confirmation modal not appearing — `_ldRows` was referenced directly from the QR scanner scope but is a local variable inside the Live Data App IIFE. Added `window._ldGetRows` accessor (matching existing `_ldGetHeaders` pattern) and updated the barcode lookup to use it
+
+#### `inventorymanagement.html` — v01.04w
+##### Fixed
+- Fixed scan confirmation modal crash caused by cross-scope variable access
 
 ## [v10.56r] — 2026-04-09 07:46:26 PM EST
 
