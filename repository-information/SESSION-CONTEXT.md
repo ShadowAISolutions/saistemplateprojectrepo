@@ -4,6 +4,46 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-10 12:23:39 PM EST
+**Repo version:** v10.66r
+
+### What was done
+- **Removed inventory Timestamp column and reordered columns (v10.65r, v01.11w, v01.04g)** — Per user request, reorganized the inventory management table to show 5 columns in this order: Item Name, Quantity, Barcode, Last User, Last Updated (Timestamp removed entirely). Code changes:
+  - `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` line 323 — sheet auto-create fallback changed from 6 cols (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) to 5 cols in the new order
+  - `live-site-pages/inventorymanagement.html` line 4964 — scan-confirm modal fallback headers updated to new 5-col order
+  - `live-site-pages/inventorymanagement.html` lines 4968–4975 + 5011 — removed dead `timestampColIdx` lookup and Timestamp pre-fill per behavioral-rules.md "Dead Code Detection Methodology" (both would be permanently unreachable once Timestamp is gone from the sheet)
+  - Main render logic (`ldRenderTableView`, `_handleLiveData`, `addRow`) is data-driven via `_ldHeaders.forEach` — naturally adapts to whatever column count/order GAS returns. No mapping/translation layer was needed
+  - Verified via Playwright at 390×844 mobile: 5 `<th>` in new order, scan-confirm modal (new + existing barcode) renders 5 fields correctly, Item Name pre-fill still works after removing `timestampColIdx` (proves dead-code cleanup didn't break remaining header lookups)
+- **Calibrated time-estimate heuristics (v10.66r)** — Follow-up commit after discovering original overall estimate (4m) missed by ~22m because it only covered the plan-mode research/planning phase and was structurally blind to the post-approval execution phase. Added a new **Plan-mode flows** clause to the "Time estimate" bullet in `.claude/rules/chat-bookends.md` requiring the original estimate to include BOTH planning AND anticipated post-approval execution (file edits, commit cycle, push cycle, visual verification, calibration overhead). Per-phase heuristic values (`~10s per tool call`, `~30s per commit/push cycle`, etc.) unchanged — the miss was framing, not numbers. The post-approval 8m estimate vs. actual ~9m 10s (before the calibration commit itself added more time) was within tolerance
+- **Plan rejected on first pass and rewritten** — initial plan proposed a complex HTML-layer translation layer (display col ↔ sheet col mapping) to preserve existing 6-col sheet structure with Timestamp auto-fill. User clarified they'd manually restructure the sheet, which dramatically simplified the plan — no mapping, no translation, no auto-fill
+- **Remember session housekeeping** — saved this entry
+
+### Where we left off
+- v10.65r and v10.66r both pushed and merged into main via the auto-merge workflow. Branch `claude/reorganize-inventory-columns-P3C0P` was deleted after the first push (normal workflow behavior) and recreated for the second push (follow-up calibration commit, then merged + deleted again)
+- **User will manually restructure the Google Sheet** — from 6 cols (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) to 5 cols (Item Name, Quantity, Barcode, Last User, Last Updated). Until that happens, the live page will still show the old sheet shape via `_handleLiveData` because the HTML is data-driven from whatever GAS returns. The fallback headers only activate when `_ldHeaders` is empty on first load
+- **Two commits in one interaction** — explicit "prior push already merged" exception to the Single-commit rule (v10.65r merged to main and the branch was deleted within ~60s, so a new commit was unavoidable for the calibration follow-up)
+- Plan file saved to `/root/.claude/plans/iterative-swimming-squid.md` (outside repo, plan-mode convention)
+
+### Key decisions made
+- **HTML-only change + GAS fallback — no mapping layer** — Since the user agreed to manually restructure the sheet, no HTML-to-sheet column-index translation is needed. The render logic is data-driven via `_ldHeaders.forEach`, so it naturally adapts. This is dramatically simpler than the initial mapping-layer proposal and avoids the complexity of keeping the Timestamp column intact with auto-fill
+- **Dead code cleanup inside the main commit** — removed `timestampColIdx` tracking variable + Timestamp pre-fill line per Dead Code Detection Methodology. These would be permanently unreachable once Timestamp is gone from the sheet, so cleaning them up keeps the code honest
+- **Framing calibration, not numeric calibration** — the per-phase heuristics were accurate. The miss was that in plan mode, I estimated only the planning phase and didn't project the post-approval execution phase. The fix is a procedural clarification added to the Time estimate bullet, not a heuristic value change
+
+### Active context
+- Repo version: v10.66r
+- `inventorymanagement.html`: v01.11w
+- `inventorymanagement.gs`: v01.04g
+- `.claude/rules/chat-bookends.md`: modified (new Plan-mode flows clause in Time estimate bullet)
+- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- No active reminders
+- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- **Key files touched this session:** `googleAppsScripts/Inventorymanagement/inventorymanagement.gs`, `live-site-pages/inventorymanagement.html`, `live-site-pages/html-versions/inventorymanagementhtml.version.txt`, `live-site-pages/gs-versions/inventorymanagementgs.version.txt`, `live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md`, `live-site-pages/gs-changelogs/inventorymanagementgs.changelog.md`, `repository-information/CHANGELOG.md`, `repository-information/repository.version.txt`, `README.md`, `.claude/rules/chat-bookends.md`
+- **User will manually update the Google Sheet** — 6-col → 5-col restructure is the user's responsibility (confirmed during plan approval). Do NOT try to migrate the sheet from code
+- **Playwright browsers reinstalled** — `/opt/pw-browsers/` now has `chromium_headless_shell-1208` (new) alongside the prior `-1194`. Playwright 1.58.0 was `pip install`ed at session start. Future sessions can use `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers python3 -m playwright ...` without reinstalling
+- **Open issues carried forward from prior sessions:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1
+
+## Previous Sessions
+
 **Date:** 2026-04-10 11:39:42 AM EST
 **Repo version:** v10.64r
 
@@ -35,43 +75,7 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 - `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
 - **Key files touched this session:** `live-site-pages/inventorymanagement.html`, `.claude/rules/chat-bookends.md` (heuristic calibration), `live-site-pages/html-versions/inventorymanagementhtml.version.txt`, `live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md`, `repository-information/CHANGELOG.md`, `repository-information/repository.version.txt`, `README.md`
 - **New CSS pattern — `.qr-expanded` fullscreen toggle** — class on `.qr-viewport-wrapper` flips it to `position: fixed; inset: 0` on mobile. `body.qr-fullscreen-active` disables pointer events on header/tabs/table/dashboard while expanded. Mobile-only — gated by `qrIsMobile()` → `window.matchMedia('(max-width: 600px)')`
-- **Plan mode flow worked end-to-end** — used plan mode with 2 parallel Explore agents → 1 Plan agent → plan file at `/root/.claude/plans/tingly-chasing-moler.md` → ExitPlanMode → approval → execution + visual verify + commit + push. Plan subagents took ~5min (longer than old 1–2m heuristic, which is why calibration happened)
-- **Playwright is installed** — Chromium headless shell at `/opt/pw-browsers/` (no need to reinstall in same-machine sessions)
 - **Hook recovery pattern used** — initial CODING COMPLETE was premature (heuristic edit was uncommitted); stop hook correctly caught it. Recovered by rebasing onto updated `origin/main` (prior push had merged and branch was deleted), then committing and pushing the cleanup as v10.64r. The "prior push already merged → new push needed" rule is the exception that allows 2 commits per interaction
-- **Open issues carried forward from prior sessions:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1
-
-## Previous Sessions
-
-**Date:** 2026-04-09 11:53:26 PM EST
-**Repo version:** v10.62r
-
-### What was done
-- **Added quantity stepper buttons (v10.58r, v01.05w)** — Added −/+ buttons flanking the Quantity input in the scan confirmation modal for existing items. Buttons increment/decrement by 1, typing still works. CSS uses `.qty-stepper-group` flex container and `.qty-stepper-btn` dark-theme buttons
-- **Fixed stepper targeting wrong field (v10.59r, v01.06w)** — `var inp` in the loop is function-scoped, so the closures captured the last loop iteration's input (Last User). Wrapped handlers in an IIFE `(function(qtyInp) { ... })(inp)` to capture the correct reference at iteration time
-- **Removed focus from stepper buttons (v10.60r, v01.07w)** — The `qtyInp.focus()` calls after ± were triggering the mobile on-screen keyboard. Removed them
-- **Removed auto-focus from Add Row/Entry flows (v10.61r, v01.08w)** — The Add Row click handler had `inputs[0].focus()` after submission; the scan modal had an auto-focus loop on the first empty input when opened. Both removed to prevent mobile keyboard popup
-- **Removed visible input fields and Add Row button (v10.62r, v01.09w)** — The 6 inline inputs (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) and the Add Row button were removed from the toolbar visually. Only the Entry button remains visible. Inputs changed to `type="hidden"` and Add Row button got `display:none` — they stay in the DOM so the scan confirmation modal's `onConfirm()` can still write values and click Add Row programmatically
-
-### Where we left off
-- Inventory management page toolbar now only shows the Entry button — all data entry goes through the scan confirmation modal (whether via QR scan or manual Entry click)
-- Mobile keyboard never auto-pops when interacting with the add-row workflow
-- Scan confirmation modal for existing items has working +/− stepper buttons on the Quantity field
-- All 5 changes pushed and merged via `claude/add-quantity-buttons-jeOcy` (5 separate push cycles)
-
-### Key decisions made
-- **IIFE over ES6 `let`** — used the IIFE closure capture pattern for the stepper button handlers to stay consistent with the ES5 style already in this file (`var` throughout)
-- **Hide, don't delete** — hid inputs via `type="hidden"` and Add Row button via `display:none` rather than removing them from the DOM. This preserves the scan modal's `onConfirm()` → `ld-add-col*` → `ld-add-row-btn.click()` wiring, which is the path used for both scanned items and manual Entry clicks
-- **Remove focus, not suppress it** — removed `focus()` calls rather than using `preventDefault()` or `inputmode="none"`. The focus calls were unnecessary (users don't need the input focused after a button click) and removing them is the cleanest fix
-
-### Active context
-- Repo version: v10.62r
-- `inventorymanagement.html`: v01.09w
-- `inventorymanagement.gs`: v01.03g (unchanged this session)
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-- **Key files touched this session:** `live-site-pages/inventorymanagement.html` (only code file edited)
-- **The `var` closure-in-loop pattern** — if future edits to the scan modal's dynamic input loop (line ~4952 area) need per-input event handlers, remember to use an IIFE to capture `inp` — otherwise the handlers will all reference the last input created in the loop
 - **Open issues carried forward from prior sessions:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1
 
 Developed by: ShadowAISolutions
