@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v10.61r] — 2026-04-09 09:10:55 PM EST
+
+> **Prompt:** "ok good. the add row buttons should also not trigger the keyboard to open"
+
+### Changed
+- Removed auto-focus from the Add Row button handler (no longer focuses the first input after submission) and from the scan confirmation modal (no longer focuses the first empty input when the modal opens) — prevents mobile keyboard from popping up
+
+#### `inventorymanagement.html` — v01.08w
+##### Changed
+- Add Row and Entry buttons no longer trigger mobile keyboard popup
 
 ## [v10.60r] — 2026-04-09 09:05:22 PM EST
 
