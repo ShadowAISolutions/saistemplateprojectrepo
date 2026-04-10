@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v10.63r] — 2026-04-10 11:28:11 AM EST
+
+> **Prompt:** "the screenshot is of  inventorymanagement on the phone. while it looks nice, the camera portion is encompassing so much of the screen that seeing the inventory list itself and adding more features is difficult. come up with a UI design to accomodate for a user friendly experience."
+
+### Changed
+- Redesigned the inventory management scanner for mobile viewports (≤600px) — released the `aspect-ratio: 1/1` lock on `.qr-viewport-wrapper` and replaced it with a compact `height: 22vh; max-height: 200px` strip so the inventory table becomes the primary focus. On mobile, tapping the strip adds a `.qr-expanded` class that toggles the wrapper to `position: fixed; inset: 0` fullscreen — reusing the same `<video>` element so the camera stream is never restarted (no re-permission, no warm-up lag). Added a "TAP TO EXPAND" hint chip in compact state and a 44×44 × collapse button in expanded state. All overlays (corners, scan-line, torch, engine-badge, start-screen, found-flash) reposition proportionally via scoped selectors inside the existing `@media (max-width: 600px)` block. Added `body.qr-fullscreen-active` guard that disables pointer events on the header/tabs/table/dashboard beneath the fullscreen scanner. Wrapped `window._showScanConfirmModal` to auto-collapse the scanner when a scan fires the confirmation modal (so the table is visible behind it). Added Escape key handler for keyboard tablets. Desktop behavior is unchanged — every new CSS rule is inside the 600px media query, base `.qr-expand-hint { display: none }` hides it on desktop, and the `qrIsMobile()` gate makes the wrapper click a no-op at wider viewports. Introduced a scoped `qrScanMoveMobile` keyframe to avoid cross-media `@keyframes` override quirks
+
+#### `inventorymanagement.html` — v01.10w
+##### Changed
+- Redesigned the inventory scanner for phone screens — the camera now shows as a compact strip at the top of the page, leaving plenty of room for the inventory list
+- Tap the scanner strip to expand it to fullscreen for tougher scans; tap the × button to collapse it back
+- When a scan is detected, the scanner automatically collapses so the inventory list is visible behind the confirmation dialog
+- Desktop view is unchanged
 
 ## [v10.62r] — 2026-04-09 10:27:54 PM EST
 

@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10w] — 2026-04-10 11:28:11 AM EST — v10.63r
+
+### Changed
+- Redesigned the scanner for phone screens — the camera now shows as a compact strip at the top, leaving room for the inventory list below
+- Tap the scanner strip to expand it to fullscreen for tougher scans; tap the × button to collapse it back
+- When a scan is detected, the scanner automatically collapses so the inventory list is visible behind the confirmation dialog
+- Desktop view is unchanged
 
 ## [v01.09w] — 2026-04-09 10:27:54 PM EST — v10.62r
 

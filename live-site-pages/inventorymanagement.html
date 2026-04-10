@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.09w">
+  <meta name="build-version" content="v01.10w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -508,7 +508,54 @@
       #ld-data-table td { padding: 8px 8px; }
       #ld-add-row-bar { flex-direction: column; }
       #ld-add-row-bar input { min-width: 0 !important; width: 100%; }
+      /* ── Compact mobile scanner strip ── */
+      #qr-camera-section { padding: 8px 12px; }
+      .qr-viewport-wrapper { aspect-ratio: auto; height: 22vh; max-height: 200px; max-width: none; border-radius: 12px; cursor: pointer; }
+      .qr-viewport-wrapper .qr-corner { width: 20px; height: 20px; }
+      .qr-viewport-wrapper .qr-corner.tl { top: 8px; left: 8px; }
+      .qr-viewport-wrapper .qr-corner.tr { top: 8px; right: 8px; }
+      .qr-viewport-wrapper .qr-corner.bl { bottom: 8px; left: 8px; }
+      .qr-viewport-wrapper .qr-corner.br { bottom: 8px; right: 8px; }
+      .qr-viewport-wrapper .qr-scan-line { left: 8px; right: 8px; top: 8px; animation-name: qrScanMoveMobile; }
+      .qr-viewport-wrapper .qr-torch-btn,
+      .qr-viewport-wrapper .qr-stop-btn { width: 44px; height: 44px; bottom: 6px; }
+      .qr-viewport-wrapper .qr-torch-btn { right: 6px; }
+      .qr-viewport-wrapper .qr-stop-btn { left: 6px; }
+      .qr-viewport-wrapper .qr-engine-badge { bottom: 6px; left: 6px; font-size: 0.5rem; padding: 2px 5px; }
+      .qr-status-bar { max-width: none; padding: 4px 2px 0; font-size: 0.62rem; }
+      .qr-viewport-wrapper .qr-expand-hint { display: block; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid #1e1e2e; color: #8b949e; font: 600 0.58rem/1 monospace; letter-spacing: 0.05em; pointer-events: none; z-index: 15; }
+      @keyframes qrScanMoveMobile {
+        0%  { top: 8px; opacity: 1; }
+        48% { top: calc(100% - 10px); opacity: 1; }
+        50% { top: calc(100% - 10px); opacity: 0; }
+        52% { top: 8px; opacity: 0; }
+        54% { opacity: 1; }
+        100%{ top: calc(100% - 10px); opacity: 1; }
+      }
+      /* ── Expanded (fullscreen) state on mobile ── */
+      .qr-viewport-wrapper.qr-expanded { position: fixed; inset: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; border-radius: 0; margin: 0; z-index: 9500; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #0f1117; }
+      .qr-viewport-wrapper.qr-expanded .qr-corner { width: 36px; height: 36px; }
+      .qr-viewport-wrapper.qr-expanded .qr-corner.tl { top: 24px; left: 24px; }
+      .qr-viewport-wrapper.qr-expanded .qr-corner.tr { top: 24px; right: 24px; }
+      .qr-viewport-wrapper.qr-expanded .qr-corner.bl { bottom: 24px; left: 24px; }
+      .qr-viewport-wrapper.qr-expanded .qr-corner.br { bottom: 24px; right: 24px; }
+      .qr-viewport-wrapper.qr-expanded .qr-scan-line { left: 24px; right: 24px; }
+      .qr-viewport-wrapper.qr-expanded .qr-torch-btn { bottom: 32px; right: 24px; width: 48px; height: 48px; display: flex; }
+      .qr-viewport-wrapper.qr-expanded .qr-stop-btn { bottom: 32px; left: 24px; }
+      .qr-viewport-wrapper.qr-expanded .qr-engine-badge { bottom: 32px; left: 24px; font-size: 0.62rem; }
+      .qr-viewport-wrapper.qr-expanded .qr-expand-hint { display: none; }
     }
+    /* Collapse button — hidden by default, only visible when wrapper has .qr-expanded */
+    .qr-collapse-btn { display: none; position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.65); color: #c9d1d9; border: 1px solid #2a2b3d; font-size: 20px; align-items: center; justify-content: center; cursor: pointer; z-index: 25; padding: 0; line-height: 1; }
+    .qr-viewport-wrapper.qr-expanded .qr-collapse-btn { display: flex; }
+    /* Lock underlying UI while fullscreen scanner is active */
+    body.qr-fullscreen-active { overflow: hidden; }
+    body.qr-fullscreen-active #ld-table-view,
+    body.qr-fullscreen-active #ld-dashboard-view,
+    body.qr-fullscreen-active #ld-view-tabs,
+    body.qr-fullscreen-active #ld-header { pointer-events: none; }
+    /* Expand hint is hidden by default (only shown inside the 600px media query) */
+    .qr-expand-hint { display: none; }
     /* Admin panel styles (migrated from GAS layer — hidden until admin role confirmed) */
     #admin-badge { position: fixed; top: 7px; left: 12px; z-index: 100; background: rgba(0,0,0,0.55); padding: 3px 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; font: 10px/1 monospace; text-transform: uppercase; letter-spacing: 0.5px; color: #90caf9; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; display: none; }
     #admin-dropdown-gas { display: none; position: fixed; top: 31px; left: 12px; z-index: 101; background: rgba(20,20,30,0.95); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 0; min-width: 140px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
@@ -777,6 +824,8 @@
         <div class="qr-found-flash" id="qr-found-flash"></div>
         <button class="qr-torch-btn" id="qr-torch-btn">&#128294;</button>
         <button class="qr-stop-btn" id="qr-stop-btn">&#x2716;</button>
+        <div class="qr-expand-hint">TAP TO EXPAND</div>
+        <button class="qr-collapse-btn" id="qr-collapse-btn" type="button" aria-label="Collapse scanner">&times;</button>
         <div class="qr-engine-badge" id="qr-engine-badge">detecting...</div>
         <div id="qr-start-screen">
           <div class="qr-big-icon">&#128247;</div>
@@ -5033,6 +5082,49 @@
         }).catch(function() {});
       }
       window._showScanConfirmModal = _showScanConfirmModal;
+
+      // ── Tap-to-expand scanner (mobile only) ──
+      var qrWrapper = document.getElementById('qr-viewport');
+      var qrCollapseBtn = document.getElementById('qr-collapse-btn');
+      var QR_EXPANDED_KEY = 'ld_qr_expanded_v1';
+      function qrIsMobile() { return window.matchMedia('(max-width: 600px)').matches; }
+      function qrExpand() {
+        if (!qrWrapper) return;
+        qrWrapper.classList.add('qr-expanded');
+        document.body.classList.add('qr-fullscreen-active');
+        try { localStorage.setItem(QR_EXPANDED_KEY, '1'); } catch (e) {}
+      }
+      function qrCollapse() {
+        if (!qrWrapper) return;
+        qrWrapper.classList.remove('qr-expanded');
+        document.body.classList.remove('qr-fullscreen-active');
+        try { localStorage.setItem(QR_EXPANDED_KEY, '0'); } catch (e) {}
+      }
+      function qrToggleExpand(e) {
+        if (!qrIsMobile()) return;
+        if (e && e.target && (
+            e.target.closest('.qr-torch-btn') ||
+            e.target.closest('.qr-stop-btn') ||
+            e.target.closest('.qr-collapse-btn') ||
+            e.target.closest('#qr-start-screen'))) return;
+        if (qrWrapper.classList.contains('qr-expanded')) qrCollapse();
+        else qrExpand();
+      }
+      if (qrWrapper) qrWrapper.addEventListener('click', qrToggleExpand);
+      if (qrCollapseBtn) qrCollapseBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); qrCollapse();
+      });
+      // Wrap the scan-confirm modal opener to auto-collapse the scanner when a scan fires,
+      // so the user sees the inventory table behind the confirmation modal.
+      var _origShowScanConfirm = window._showScanConfirmModal;
+      window._showScanConfirmModal = function(raw, fmt) {
+        if (qrIsMobile()) qrCollapse();
+        return _origShowScanConfirm(raw, fmt);
+      };
+      // Escape key collapses (for tablets with external keyboards)
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && qrWrapper && qrWrapper.classList.contains('qr-expanded')) qrCollapse();
+      });
     })();
 
     // Manual Entry button — opens the same scan confirmation modal without scanning
