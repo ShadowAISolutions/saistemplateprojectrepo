@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v10.66r] — 2026-04-10 12:16:52 PM EST
+
+> **Prompt:** *(hook-triggered cleanup — follow-up to v10.65r)*
+
+### Changed
+- Calibrated the time-estimate heuristics in `.claude/rules/chat-bookends.md` after v10.65r's ACTUAL TOTAL COMPLETION TIME (18m 34s) missed the original estimate (4m) by 14m 34s. Root cause: the original estimate only covered the plan-mode research/planning phase and did not project the anticipated post-approval execution phase, so when the plan was approved and execution began, the estimate was structurally blind to the second half of the response. Added a new **Plan-mode flows** clause to the "Time estimate" bullet that explicitly requires the original overall estimate to include BOTH phases — research/planning AND anticipated post-approval execution (file reads, edits, commit cycle, push cycle, visual verification, calibration overhead). The clause states: "A plan-mode response is not 'done' when `ExitPlanMode` is called — it continues through approval and execution until `✅✅CODING COMPLETE✅✅`, and the estimate must cover that full wall-clock span." The per-phase heuristic values (`~10s per tool call`, `~30s per commit/push cycle`, etc.) are unchanged — they were accurate for this response (the post-approval estimate of 8m vs. actual 9m 10s was within the 2-minute tolerance). The miss was framing, not numbers
 
 ## [v10.65r] — 2026-04-10 12:08:01 PM EST
 
