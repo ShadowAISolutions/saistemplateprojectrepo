@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v10.65r] — 2026-04-10 12:08:01 PM EST
+
+> **Prompt:** "in the inventory management, i want to remove the timestamp column, and rearrange the others order: Item Name, Quantity, Barcode, Last User, Last Updated"
+
+### Changed
+- Removed the Timestamp column from the inventory management page and reordered the remaining columns to `Item Name | Quantity | Barcode | Last User | Last Updated`. The display is data-driven via `_ldHeaders`/`_ldRows` in the render loops at `live-site-pages/inventorymanagement.html` lines 4407 and 4446 — the actual column shape comes from the Google Sheet, which the user manually restructured from 6 columns to 5 in the new order. The only code-side changes were the hardcoded fallback defaults that describe the sheet shape: updated `sheet.getRange(1, 1, 1, 5).setValues(...)` in `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` line 323 (auto-create fallback — triggers if the sheet tab is deleted), and updated the scan-confirm modal's fallback array at `live-site-pages/inventorymanagement.html` line 4964 (used when `_ldHeaders` is empty). Also cleaned up dead code in the scan-confirm modal — removed the `timestampColIdx` tracking variable and the `else if (hLow === 'timestamp')` branch (lines 4968–4975) plus the Timestamp pre-fill line (previously 5011) since Timestamp is no longer a column, making the lookup permanently `-1` and the pre-fill unreachable (per behavioral-rules.md "Dead Code Detection Methodology"). Visually verified via Playwright at 390×844 mobile viewport: table renders 5 columns in the new order, scan-confirm modal for a new barcode shows 5 fields in the new order, and scan-confirm modal for an existing barcode correctly pre-fills `Item Name` from `itemNameColIdx` (proves the dead-code cleanup didn't break the remaining header lookups)
+
+#### `inventorymanagement.html` — v01.11w
+##### Changed
+- Inventory table now shows 5 columns in this order: Item Name, Quantity, Barcode, Last User, Last Updated
+- Removed the Timestamp column from the inventory table and the scan entry form
+
+#### `inventorymanagement.gs` — v01.04g
+##### Changed
+- Default sheet layout now uses 5 columns (Item Name, Quantity, Barcode, Last User, Last Updated) — Timestamp column removed
 
 ## [v10.64r] — 2026-04-10 11:36:58 AM EST
 

@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 10/50`
+`Sections: 11/50`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-04-10 12:08:01 PM EST — v10.65r
+
+### Changed
+- Inventory table now shows 5 columns in this order: Item Name, Quantity, Barcode, Last User, Last Updated
+- Removed the Timestamp column from the inventory table and the scan entry form
 
 ## [v01.10w] — 2026-04-10 11:28:11 AM EST — v10.63r
 
