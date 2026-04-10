@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.08w">
+  <meta name="build-version" content="v01.09w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -794,13 +794,13 @@
       <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
     </div>
     <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
-      <input id="ld-add-col1" type="text" placeholder="Timestamp" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col2" type="text" placeholder="Barcode" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col3" type="text" placeholder="Item Name" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col4" type="text" placeholder="Quantity" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col5" type="text" placeholder="Last Updated" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <input id="ld-add-col6" type="text" placeholder="Last User" style="flex:1;min-width:80px;padding:6px 10px;font:13px/1 monospace;background:#0f1117;color:#c9d1d9;border:1px solid #2a2b3d;border-radius:6px;outline:none;" onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#2a2b3d'">
-      <button id="ld-add-row-btn" style="padding:6px 14px;background:#238636;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">Add Row</button>
+      <input id="ld-add-col1" type="hidden">
+      <input id="ld-add-col2" type="hidden">
+      <input id="ld-add-col3" type="hidden">
+      <input id="ld-add-col4" type="hidden">
+      <input id="ld-add-col5" type="hidden">
+      <input id="ld-add-col6" type="hidden">
+      <button id="ld-add-row-btn" style="display:none;">Add Row</button>
       <button id="ld-manual-entry-btn" style="padding:6px 14px;background:#1f6feb;color:#fff;border:none;border-radius:6px;font:13px/1.2 sans-serif;cursor:pointer;white-space:nowrap;">&#10133; Entry</button>
     </div>
     <div id="ld-table-view">

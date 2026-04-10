@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v10.62r] — 2026-04-09 10:27:54 PM EST
+
+> **Prompt:** "remove the fields and the add row button on the main page (shown in screenshot), the entry button can stay"
+
+### Removed
+- Removed the 6 visible input fields (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) and the Add Row button from the add-row bar — replaced with hidden inputs to preserve scan confirmation modal functionality. Only the Entry button remains visible
+
+#### `inventorymanagement.html` — v01.09w
+##### Removed
+- Removed the inline input fields and Add Row button from the toolbar — only the Entry button remains
 
 ## [v10.61r] — 2026-04-09 09:10:55 PM EST
 

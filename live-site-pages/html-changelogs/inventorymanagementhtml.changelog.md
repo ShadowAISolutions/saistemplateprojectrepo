@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 8/50`
+`Sections: 9/50`
 
 ## [Unreleased]
+
+## [v01.09w] — 2026-04-09 10:27:54 PM EST — v10.62r
+
+### Removed
+- Removed the inline input fields and Add Row button from the toolbar — use the Entry button to add items
 
 ## [v01.08w] — 2026-04-09 09:10:55 PM EST — v10.61r
 
