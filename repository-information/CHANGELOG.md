@@ -3,9 +3,16 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v10.64r] — 2026-04-10 11:36:58 AM EST
+
+> **Prompt:** *(hook-triggered cleanup — follow-up to v10.63r)*
+
+### Changed
+- Calibrated the time-estimate heuristics in `.claude/rules/chat-bookends.md` after v10.63r missed its 5m estimate by ~18 minutes. Split `~1–2m per subagent spawn` into `~1–2m per Explore subagent` and `~3–5m per Plan subagent` (Plan agents do deeper multi-section analysis). Added two new heuristics: `~60–90s for first-time Playwright install` (pip install + chromium download ~110MB) and `~30–60s per Playwright visual-verification run`. These are observed from the v10.63r response and should produce tighter estimates on future multi-phase plan-and-execute responses that include visual verification
 
 ## [v10.63r] — 2026-04-10 11:28:11 AM EST
 
