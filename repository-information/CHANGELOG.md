@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v10.60r] — 2026-04-09 09:05:22 PM EST
+
+> **Prompt:** "can you make it so that using the plus and minus buttons doesnt trigger the keyboard to popup"
+
+### Changed
+- Removed `focus()` calls from quantity stepper button handlers so tapping +/− on mobile no longer opens the on-screen keyboard
+
+#### `inventorymanagement.html` — v01.07w
+##### Changed
+- Stepper buttons no longer trigger mobile keyboard popup
 
 ## [v10.59r] — 2026-04-09 09:01:19 PM EST
 
