@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 5/50`
+`Sections: 6/50`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-04-09 09:01:19 PM EST — v10.59r
+
+### Fixed
+- Fixed quantity adjustment buttons targeting the wrong field
 
 ## [v01.05w] — 2026-04-09 08:54:31 PM EST — v10.58r
 

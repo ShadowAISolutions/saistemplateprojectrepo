@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v10.59r] — 2026-04-09 09:01:19 PM EST
+
+> **Prompt:** "the plus and minus buttons are added and clickable, but they are increasing the number in the last user field instead of the quantity field"
+
+### Fixed
+- Fixed quantity stepper buttons modifying the wrong field — `var inp` is function-scoped so the closures captured the last loop iteration's input (Last User). Wrapped handlers in an IIFE to capture the correct reference
+
+#### `inventorymanagement.html` — v01.06w
+##### Fixed
+- Fixed quantity +/− buttons targeting the wrong input field
 
 ## [v10.58r] — 2026-04-09 08:54:31 PM EST
 
