@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v10.58r] — 2026-04-09 08:54:31 PM EST
+
+> **Prompt:** "in the inventorymanagement, make the existing item menu Quantity have a + and - button to increase and decreate it, but still allow typing it in"
+
+### Added
+- Added quantity stepper buttons (−/+) to the scan confirmation modal's Quantity field in Inventory Management — buttons increment/decrement by 1 while preserving direct keyboard input
+
+#### `inventorymanagement.html` — v01.05w
+##### Added
+- Added −/+ stepper buttons flanking the Quantity input in the existing-item scan modal for quick increment/decrement
 
 ## [v10.57r] — 2026-04-09 07:59:20 PM EST
 
