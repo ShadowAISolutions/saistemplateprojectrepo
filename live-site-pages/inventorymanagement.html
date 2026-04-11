@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.14w">
+  <meta name="build-version" content="v01.15w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4427,7 +4427,7 @@
         });
         if (_ldCanEdit) {
           var thDel = document.createElement('th');
-          thDel.style.width = '40px';
+          thDel.style.width = '72px';
           thead.appendChild(thDel);
         }
         var indexedRows = _ldRows.map(function(row, i) { return { data: row, origIndex: i }; });
@@ -4479,10 +4479,21 @@
             tr.appendChild(td);
           });
           if (_ldCanEdit) {
-            var tdDel = document.createElement('td');
-            tdDel.style.textAlign = 'center';
-            tdDel.style.padding = '4px';
+            var tdAct = document.createElement('td');
+            tdAct.style.textAlign = 'center';
+            tdAct.style.padding = '4px';
+            tdAct.style.whiteSpace = 'nowrap';
             if (!isOptimisticAdd) {
+              var editBtn = document.createElement('button');
+              editBtn.textContent = '\u270F\uFE0F';
+              editBtn.title = 'Edit row';
+              editBtn.style.cssText = 'background:none;border:none;cursor:pointer;font-size:14px;opacity:0.5;padding:2px 6px;border-radius:4px;transition:opacity 0.2s,background 0.2s;margin-right:2px;';
+              editBtn.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.background = 'rgba(88,166,255,0.15)'; });
+              editBtn.addEventListener('mouseleave', function() { this.style.opacity = '0.5'; this.style.background = 'none'; });
+              editBtn.addEventListener('click', (function(idx) {
+                return function() { ldStartRowEdit(idx); };
+              })(origIdx));
+              tdAct.appendChild(editBtn);
               var delBtn = document.createElement('button');
               delBtn.textContent = '\uD83D\uDDD1\uFE0F';
               delBtn.title = 'Delete row';
@@ -4492,9 +4503,9 @@
               delBtn.addEventListener('click', (function(idx) {
                 return function() { ldDeleteRow(idx); };
               })(origIdx));
-              tdDel.appendChild(delBtn);
+              tdAct.appendChild(delBtn);
             }
-            tr.appendChild(tdDel);
+            tr.appendChild(tdAct);
           }
           if (isOptimisticAdd) {
             var overlay = document.createElement('div');
@@ -4594,6 +4605,17 @@
           }
         });
       }
+
+      // ldStartRowEdit — opens the scan-confirm modal in edit mode, pre-filled with the given row's values
+      function ldStartRowEdit(rowIndex) {
+        if (typeof rowIndex !== 'number') return;
+        var rowsSrc = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
+        if (!rowsSrc[rowIndex]) return;
+        if (typeof window._showScanConfirmModal === 'function') {
+          window._showScanConfirmModal('', 'EDIT', { rowIndex: rowIndex });
+        }
+      }
+      window.ldStartRowEdit = ldStartRowEdit;
 
       function ldRenderDashboardView(changedCells) {
         if (!ldDashGrid) return;
@@ -4959,14 +4981,20 @@
         _showScanConfirmModal(data, format);
       }
 
-      function _showScanConfirmModal(scannedData, scannedFormat) {
+      function _showScanConfirmModal(scannedData, scannedFormat, editOptions) {
         var modal = document.getElementById('ld-scan-confirm-modal');
         var tbody = document.getElementById('ld-scan-confirm-body');
         var formatLabel = document.getElementById('ld-scan-format-label');
         var titleEl = document.getElementById('ld-scan-modal-title');
         if (!modal || !tbody) return;
+        // Resolve rows via the exposed getter so tests (and debugging) can inject via window._ldGetRows
+        var _rowsForEdit = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
+        var isEdit = !!(editOptions && typeof editOptions.rowIndex === 'number' && _rowsForEdit[editOptions.rowIndex]);
+        var editRow = isEdit ? _rowsForEdit[editOptions.rowIndex] : null;
         var isManual = scannedFormat === 'MANUAL ENTRY';
-        if (formatLabel) formatLabel.textContent = scannedFormat ? scannedFormat.replace('_', ' ').toUpperCase() : 'QR CODE';
+        if (formatLabel) formatLabel.textContent = isEdit ? 'EDIT' : (scannedFormat ? scannedFormat.replace('_', ' ').toUpperCase() : 'QR CODE');
+        var confirmBtnEarly = document.getElementById('ld-scan-confirm');
+        if (confirmBtnEarly) confirmBtnEarly.textContent = isEdit ? 'Save' : 'Add Row';
         var ldHeaders = (typeof window._ldGetHeaders === 'function') ? window._ldGetHeaders() : [];
         var headers = ldHeaders.length > 0 ? ldHeaders : ['Item Name', 'Quantity', 'Barcode', 'Last User', 'Last Updated'];
         var visibleCount = headers.length;
@@ -4981,7 +5009,7 @@
         }
         var existingRow = null;
         var ldRows = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
-        if (barcodeColIdx >= 0 && scannedData) {
+        if (!isEdit && barcodeColIdx >= 0 && scannedData) {
           var scannedLower = String(scannedData).trim().toLowerCase();
           for (var ri = 0; ri < ldRows.length; ri++) {
             if (String(ldRows[ri][barcodeColIdx]).trim().toLowerCase() === scannedLower) {
@@ -4992,9 +5020,12 @@
         }
         var existingItemName = existingRow && itemNameColIdx >= 0 ? existingRow[itemNameColIdx] : '';
         var existingQty = existingRow && qtyColIdx >= 0 ? existingRow[qtyColIdx] : '';
+        var editItemName = isEdit && itemNameColIdx >= 0 ? editRow[itemNameColIdx] : '';
 
         if (titleEl) {
-          if (existingRow) {
+          if (isEdit) {
+            titleEl.textContent = 'Edit Row' + (editItemName ? ' \u2014 ' + editItemName : '');
+          } else if (existingRow) {
             titleEl.textContent = 'Existing Item' + (existingItemName ? ' \u2014 ' + existingItemName : '');
           } else {
             titleEl.textContent = isManual ? 'New Entry' : 'Scanned Item';
@@ -5027,9 +5058,13 @@
           if (existingRow) {
             if (headers[i] && headers[i].toLowerCase() === 'item name' && existingItemName) inp.value = existingItemName;
           }
+          // In edit mode, pre-fill every visible field with the current row's value (overrides the above)
+          if (isEdit && editRow) {
+            inp.value = (editRow[i] !== undefined && editRow[i] !== null) ? String(editRow[i]) : '';
+          }
           // Quantity field always gets a +/- stepper (identical between scan and manual entry)
           if (headers[i] && headers[i].toLowerCase() === 'quantity') {
-            if (existingRow) {
+            if (existingRow && !isEdit) {
               inp.value = '1';
               inp.placeholder = 'Amount to add';
             }
@@ -5055,7 +5090,7 @@
               });
             })(inp);
             tdValue.appendChild(qtyGroup);
-            if (existingRow) {
+            if (existingRow && !isEdit) {
               var qtyNote = document.createElement('div');
               qtyNote.style.cssText = 'font-size:11px;color:#8b949e;margin-top:3px;';
               qtyNote.textContent = 'Current qty: ' + existingQty + ' \u2014 enter amount to add (negative to subtract)';
@@ -5069,8 +5104,34 @@
         modal.classList.add('active');
         function onConfirm() {
           cleanup();
-          for (var k = 0; k < editInputs.length; k++) { var colInput = document.getElementById('ld-add-col' + (k + 1)); if (colInput) { colInput.value = editInputs[k].value; colInput.dispatchEvent(new Event('input')); } }
-          var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+          if (isEdit) {
+            var rowIdx = editOptions.rowIndex;
+            var oldRow = editRow || [];
+            var writes = [];
+            for (var k = 0; k < editInputs.length; k++) {
+              var hdr = (headers[k] || '').toLowerCase();
+              var newVal = editInputs[k].value;
+              // Always write Last User + Last Updated (auto-refreshed on every edit); other cells only if changed
+              if (hdr === 'last user' || hdr === 'last updated' || String(oldRow[k] !== undefined ? oldRow[k] : '') !== String(newVal)) {
+                writes.push({ col: k, val: newVal });
+              }
+            }
+            var wi = 0;
+            function doWrite() {
+              if (wi >= writes.length) return;
+              var w = writes[wi++];
+              gasCall('writeCell', [_sessionToken, rowIdx, w.col, w.val], function(result) {
+                if (result && result.liveData) _handleLiveData(result.liveData);
+                doWrite();
+              }, function(err) {
+                console.error('Edit row write failed at col ' + w.col + ':', err);
+              });
+            }
+            doWrite();
+          } else {
+            for (var k = 0; k < editInputs.length; k++) { var colInput = document.getElementById('ld-add-col' + (k + 1)); if (colInput) { colInput.value = editInputs[k].value; colInput.dispatchEvent(new Event('input')); } }
+            var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+          }
           qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
         }
         function onCancel() { cleanup(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
@@ -5139,9 +5200,9 @@
       // Wrap the scan-confirm modal opener to auto-collapse the scanner when a scan fires,
       // so the user sees the inventory table behind the confirmation modal.
       var _origShowScanConfirm = window._showScanConfirmModal;
-      window._showScanConfirmModal = function(raw, fmt) {
+      window._showScanConfirmModal = function(raw, fmt, editOptions) {
         if (qrIsMobile()) qrCollapse();
-        return _origShowScanConfirm(raw, fmt);
+        return _origShowScanConfirm(raw, fmt, editOptions);
       };
       // Escape key collapses (for tablets with external keyboards)
       document.addEventListener('keydown', function(e) {

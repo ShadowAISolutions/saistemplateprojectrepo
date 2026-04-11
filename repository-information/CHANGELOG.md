@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v10.70r] — 2026-04-11 05:19:50 PM EST
+
+> **Prompt:** "have each row also have an edit button, which will bring up similar UI to the scanning entry"
+
+### Added
+- Added a per-row edit button (✏️) to `ldRenderTableView()` in `live-site-pages/inventorymanagement.html` alongside the existing delete button. Widened the action column header from `40px` to `72px` to accommodate both buttons in the same cell (no extra column, preserves the mobile `nth-child` hide rules from v10.67r which target columns 3-5). New `ldStartRowEdit(rowIndex)` helper (exposed on `window.ldStartRowEdit`) validates the row exists via `window._ldGetRows()` and calls `window._showScanConfirmModal('', 'EDIT', { rowIndex })` to open the confirm modal in edit mode
+- Extended `_showScanConfirmModal(scannedData, scannedFormat, editOptions)` with an optional third `editOptions` parameter: when `{rowIndex: N}` is passed and `_ldGetRows()[N]` exists, `isEdit = true` activates the edit-mode branches. In edit mode: the format label shows `EDIT`, the title shows `Edit Row — {itemName}`, the confirm button text becomes `Save`, every visible input is pre-filled from the current row's values (overriding the barcode auto-fill and existing-row Item Name prefill), the Quantity field uses the actual row value (no `'1'` or `'Amount to add'` placeholder), and the "Current qty: N — enter amount to add" note is suppressed. The auto-populated hidden inputs for Last User and Last Updated still run — they get fresh values (current user email, current EST timestamp) so edits always record who/when. Resolved `editRow` via `window._ldGetRows()` instead of the private `_ldRows` so tests and debug callers can inject rows via the existing exposed getter
+- Edit confirm path: instead of routing to `ld-add-row-btn` → `addRow`, the edit branch computes a diff between `editRow` (snapshot from when the modal opened) and the current `editInputs` values. Any cell where the value changed, OR which is Last User/Last Updated (always refreshed), becomes a `writeCell` call. Writes are fired sequentially via a `doWrite()` chain — each callback triggers the next after its `liveData` response refreshes the table. Sequential chaining avoids race conditions where concurrent cache-refresh responses could render inconsistent intermediate states
+- Fixed a latent bug in the existing `_showScanConfirmModal` wrapper at line ~5203 (`window._showScanConfirmModal = function(raw, fmt) { ... return _origShowScanConfirm(raw, fmt); }`) — the wrapper only accepted 2 parameters and dropped any additional arguments. Updated to `function(raw, fmt, editOptions) { ... return _origShowScanConfirm(raw, fmt, editOptions); }` so the new `editOptions` parameter flows through. This was caught immediately by Playwright testing: the first test run showed the modal opening with `isEdit=false` even though `ldStartRowEdit(0)` was called with valid options — the wrapper was silently discarding them
+- Verified via Playwright at 390×844 mobile: (1) table renders with 3 rows each containing both an `Edit row` (✏️) button and a `Delete row` (🗑️) button in the action cell, (2) clicking the edit button opens the modal with title "Edit Row — Wata", subtitle "EDIT", confirm button "Save", pre-filled Item Name="Wata", Quantity="5" (with +/− stepper, no note), Barcode="82657500690", (3) the `+` button correctly bumps the quantity from 5 → 7, (4) calling `ldStartRowEdit(1)` on a different row updates the title to "Edit Row — Bar" and refreshes all input values with no stale state from the prior open
+
+#### `inventorymanagement.html` — v01.15w
+##### Added
+- Each row in the inventory table now has an edit button (✏️) next to the delete button. Tapping it opens the same entry form used for scanning/manual entry, pre-filled with that row's current values. The + / − buttons let you adjust the quantity directly, and Save writes the changes back to the sheet. Last User and Last Updated are refreshed automatically when you save
 
 ## [v10.69r] — 2026-04-11 05:03:25 PM EST
 

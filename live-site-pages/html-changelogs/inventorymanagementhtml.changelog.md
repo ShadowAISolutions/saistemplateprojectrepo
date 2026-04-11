@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-04-11 05:19:50 PM EST — v10.70r
+
+### Added
+- Each row in the inventory table now has an edit button (✏️) next to the delete button. Tapping it opens the same entry form used for scanning/manual entry, pre-filled with that row's current values. The + / − buttons let you adjust the quantity directly, and Save writes the changes back to the sheet. Last User and Last Updated are refreshed automatically when you save
 
 ## [v01.14w] — 2026-04-11 05:03:25 PM EST — v10.69r
 
