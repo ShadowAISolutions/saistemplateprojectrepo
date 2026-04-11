@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 18/50`
+`Sections: 19/50`
 
 ## [Unreleased]
+
+## [v01.19w] — 2026-04-11 06:53:17 PM EST — v10.75r
+
+### Added
+- New "Auto add" toggle next to the camera scanner on phones (and below the camera on desktop). When the toggle is off, scanning a barcode opens the entry form as before so you can review and confirm the quantity. When the toggle is on, scanning a known item silently adds the configured amount to that item's quantity without opening the form — useful for fast bulk-counting
+- New increment input next to the Auto add toggle, with − and + buttons. Set the increment to any positive or negative number (e.g. +1, +2, -1, -2) to control how much each scan adds or subtracts. The value persists across page reloads
+- Scanning an unknown barcode (one not yet in the inventory) while Auto add is on will still open the entry form, so you can name the new item before saving it
 
 ## [v01.18w] — 2026-04-11 06:04:15 PM EST — v10.73r
 

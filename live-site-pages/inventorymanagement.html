@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.18w">
+  <meta name="build-version" content="v01.19w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -529,7 +529,10 @@
       .qr-viewport-wrapper .qr-torch-btn { right: 6px; }
       .qr-viewport-wrapper .qr-stop-btn { left: 6px; }
       .qr-viewport-wrapper .qr-engine-badge { bottom: 6px; left: 6px; font-size: 0.5rem; padding: 2px 5px; }
-      #qr-camera-section .qr-status-bar { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 6px; max-width: none; padding: 4px 0 0; margin: 0; font-size: 0.62rem; }
+      #qr-camera-section .qr-side-panel { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; gap: 8px; align-self: stretch; padding: 0; }
+      #qr-camera-section .qr-status-bar { display: flex; flex-direction: row; align-items: center; gap: 6px; max-width: none; padding: 0; margin: 0; font-size: 0.62rem; }
+      #qr-camera-section .qr-auto-controls { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 0; margin: 0; max-width: none; font-size: 0.66rem; }
+      #qr-camera-section .qr-auto-amount-row { gap: 5px; }
       .qr-viewport-wrapper .qr-expand-hint { display: block; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid #1e1e2e; color: #8b949e; font: 600 0.58rem/1 monospace; letter-spacing: 0.05em; pointer-events: none; z-index: 15; }
       @keyframes qrScanMoveMobile {
         0%  { top: 8px; opacity: 1; }
@@ -651,6 +654,22 @@
     .qr-status-dot.found { background: #00ffcc; box-shadow: 0 0 8px #00ffcc; animation: none; }
     .qr-status-dot.error { background: #ff4466; animation: none; }
     @keyframes qrPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    /* ── Auto-scan toggle + increment input (right column on mobile, below status on desktop) ── */
+    .qr-side-panel { display: contents; }
+    .qr-auto-controls { display: flex; align-items: center; gap: 12px; padding: 6px 2px 0; margin: 0 auto; max-width: 400px; font-family: monospace; font-size: 0.7rem; color: #8b949e; }
+    .qr-auto-toggle-row { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+    .qr-toggle-switch { position: relative; display: inline-block; width: 30px; height: 16px; flex-shrink: 0; }
+    .qr-toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .qr-toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #2a2b3d; border: 1px solid #1e1e2e; transition: 0.2s; border-radius: 16px; }
+    .qr-toggle-slider::before { position: absolute; content: ''; height: 12px; width: 12px; left: 1px; bottom: 1px; background: #555570; transition: 0.2s; border-radius: 50%; }
+    .qr-toggle-switch input:checked + .qr-toggle-slider { background: rgba(0,255,204,0.25); border-color: #00ffcc; }
+    .qr-toggle-switch input:checked + .qr-toggle-slider::before { transform: translateX(13px); background: #00ffcc; box-shadow: 0 0 6px #00ffcc; }
+    .qr-auto-amount-row { display: flex; align-items: center; gap: 4px; }
+    .qr-amount-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.4); color: #c9d1d9; font-size: 0.95rem; line-height: 1; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .qr-amount-btn:active { transform: scale(0.92); }
+    #qr-auto-amount { width: 42px; height: 22px; padding: 0 4px; text-align: center; background: rgba(0,0,0,0.4); color: #c9d1d9; border: 1px solid #1e1e2e; border-radius: 4px; font-family: monospace; font-size: 0.72rem; -moz-appearance: textfield; }
+    #qr-auto-amount::-webkit-outer-spin-button, #qr-auto-amount::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .qr-auto-controls.qr-auto-disabled .qr-auto-amount-row { opacity: 0.4; pointer-events: none; }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -840,9 +859,25 @@
           <button class="qr-start-btn" id="qr-start-btn">START CAMERA</button>
         </div>
       </div>
-      <div class="qr-status-bar">
-        <div class="qr-status-dot" id="qr-status-dot"></div>
-        <span id="qr-status-text">Camera inactive</span>
+      <div class="qr-side-panel">
+        <div class="qr-status-bar">
+          <div class="qr-status-dot" id="qr-status-dot"></div>
+          <span id="qr-status-text">Camera inactive</span>
+        </div>
+        <div class="qr-auto-controls qr-auto-disabled">
+          <label class="qr-auto-toggle-row" for="qr-auto-mode-toggle">
+            <span class="qr-toggle-switch">
+              <input type="checkbox" id="qr-auto-mode-toggle">
+              <span class="qr-toggle-slider"></span>
+            </span>
+            <span class="qr-auto-label">Auto&nbsp;add</span>
+          </label>
+          <div class="qr-auto-amount-row">
+            <button type="button" class="qr-amount-btn" id="qr-amount-dec" aria-label="Decrement">&minus;</button>
+            <input type="number" id="qr-auto-amount" value="1" step="1" inputmode="numeric">
+            <button type="button" class="qr-amount-btn" id="qr-amount-inc" aria-label="Increment">+</button>
+          </div>
+        </div>
       </div>
     </div>
     <div id="ld-view-tabs">
@@ -5196,6 +5231,119 @@
     (function() {
       var manualBtn = document.getElementById('ld-manual-entry-btn');
       if (manualBtn) { manualBtn.addEventListener('click', function() { if (typeof window._showScanConfirmModal === 'function') window._showScanConfirmModal('', 'MANUAL ENTRY'); }); }
+    })();
+
+    // Auto-scan toggle + increment input — when ON, a scanned barcode that matches an
+    // existing row is auto-incremented by the configured amount, bypassing the modal.
+    // Unknown barcodes still fall through to the manual-entry modal so the user can
+    // name them. State persists in localStorage across page reloads.
+    (function() {
+      var toggleEl = document.getElementById('qr-auto-mode-toggle');
+      var amountEl = document.getElementById('qr-auto-amount');
+      var decBtn = document.getElementById('qr-amount-dec');
+      var incBtn = document.getElementById('qr-amount-inc');
+      var controlsEl = document.querySelector('.qr-auto-controls');
+      if (!toggleEl || !amountEl || !decBtn || !incBtn || !controlsEl) return;
+
+      try {
+        var savedMode = localStorage.getItem('inventory_qr_auto_mode');
+        if (savedMode === 'on') toggleEl.checked = true;
+        var savedAmount = localStorage.getItem('inventory_qr_auto_amount');
+        if (savedAmount !== null && savedAmount !== '') amountEl.value = savedAmount;
+      } catch (e) {}
+
+      function syncDisabled() {
+        if (toggleEl.checked) controlsEl.classList.remove('qr-auto-disabled');
+        else controlsEl.classList.add('qr-auto-disabled');
+      }
+      syncDisabled();
+
+      toggleEl.addEventListener('change', function() {
+        syncDisabled();
+        try { localStorage.setItem('inventory_qr_auto_mode', toggleEl.checked ? 'on' : 'off'); } catch (e) {}
+      });
+
+      function clampAmount(v) {
+        var n = parseInt(v, 10);
+        if (isNaN(n)) n = 1;
+        return n;
+      }
+      amountEl.addEventListener('input', function() {
+        try { localStorage.setItem('inventory_qr_auto_amount', amountEl.value); } catch (e) {}
+      });
+      decBtn.addEventListener('click', function() {
+        amountEl.value = String(clampAmount(amountEl.value) - 1);
+        amountEl.dispatchEvent(new Event('input'));
+      });
+      incBtn.addEventListener('click', function() {
+        amountEl.value = String(clampAmount(amountEl.value) + 1);
+        amountEl.dispatchEvent(new Event('input'));
+      });
+    })();
+
+    // Auto-scan interception — wrap _showScanConfirmModal so a real scan in auto mode
+    // bypasses the modal entirely and fires addRow directly with the increment quantity.
+    // Falls through to the modal for EDIT/MANUAL ENTRY contexts and for unknown barcodes.
+    (function() {
+      if (typeof window._showScanConfirmModal !== 'function') return;
+      var _origAutoWrap = window._showScanConfirmModal;
+      window._showScanConfirmModal = function(raw, fmt) {
+        if (fmt !== 'EDIT' && fmt !== 'MANUAL ENTRY' && raw) {
+          var toggleEl = document.getElementById('qr-auto-mode-toggle');
+          if (toggleEl && toggleEl.checked) {
+            var headers = (typeof window._ldGetHeaders === 'function') ? window._ldGetHeaders() : null;
+            var rows = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : null;
+            if (headers && rows && rows.length) {
+              var bcIdx = headers.indexOf('Barcode');
+              var nameIdx = headers.indexOf('Item Name');
+              var qtyIdx = headers.indexOf('Quantity');
+              if (bcIdx >= 0 && nameIdx >= 0 && qtyIdx >= 0) {
+                var target = String(raw);
+                var existing = null;
+                for (var i = 0; i < rows.length; i++) {
+                  if (String(rows[i][bcIdx]) === target) { existing = rows[i]; break; }
+                }
+                if (existing) {
+                  var amountEl = document.getElementById('qr-auto-amount');
+                  var amount = amountEl ? parseInt(amountEl.value, 10) : 1;
+                  if (isNaN(amount) || amount === 0) amount = 1;
+                  var itemName = String(existing[nameIdx] || '');
+                  // Mimic the modal's onConfirm flow: populate the hidden inputs and click the add button.
+                  // The GAS addRow merge-on-duplicate-barcode logic adds the increment to the existing row.
+                  var colVals = ['', '', '', '', ''];
+                  colVals[nameIdx] = itemName;
+                  colVals[qtyIdx] = String(amount);
+                  colVals[bcIdx] = target;
+                  for (var k = 0; k < 5; k++) {
+                    var colInput = document.getElementById('ld-add-col' + (k + 1));
+                    if (colInput) {
+                      colInput.value = colVals[k];
+                      colInput.dispatchEvent(new Event('input'));
+                    }
+                  }
+                  var addBtn = document.getElementById('ld-add-row-btn');
+                  if (addBtn && !addBtn.disabled) addBtn.click();
+                  // Update the status text so the user sees what just happened
+                  var statusText = document.getElementById('qr-status-text');
+                  if (statusText) {
+                    statusText.textContent = 'Auto ' + (amount >= 0 ? '+' : '') + amount + ' \u00b7 ' + (itemName || target);
+                  }
+                  // Replicate the collapse-on-scan behavior of the inner _showScanConfirmModal
+                  // wrapper (we bypassed it, so we have to mirror its side effect here)
+                  var qrW = document.getElementById('qr-viewport');
+                  if (qrW && window.matchMedia('(max-width: 600px)').matches && qrW.classList.contains('qr-expanded')) {
+                    qrW.classList.remove('qr-expanded');
+                    document.body.classList.remove('qr-fullscreen-active');
+                    try { localStorage.setItem('ld_qr_expanded_v1', '0'); } catch (e) {}
+                  }
+                  return;
+                }
+              }
+            }
+          }
+        }
+        return _origAutoWrap(raw, fmt);
+      };
     })();
 
 // PROJECT END
