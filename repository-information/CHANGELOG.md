@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v10.76r] — 2026-04-11 07:40:08 PM EST
+
+> **Prompt:** "the auto add toggle is still showing the Scanned Item Modal instead of automatically adding to the total"
+
+### Fixed
+- Fixed the v10.75r Auto-add toggle bug where scanning a known barcode while the toggle was on still opened the scan-confirm modal instead of bypassing it. **Root cause**: my v10.75r implementation wrapped `window._showScanConfirmModal` (line 5290 in `live-site-pages/inventorymanagement.html`) thinking that's what the QR scan path called. But `qrOnFound()` at line 5020-5029 calls the **local** function reference `_showScanConfirmModal(data, format)` directly via lexical scope (line 5028), not through the `window` property. So the wrapper chain — both my outer auto-mode wrapper AND the existing inner collapse-on-scan wrapper at line 5219-5223 — was completely bypassed for real scans. Only the edit-pencil path (line 4662) and manual-entry button path (line 5233) actually went through `window._showScanConfirmModal`, which is why those flows were unaffected
+- **The fix**: changed line 5028 from `_showScanConfirmModal(data, format);` to `window._showScanConfirmModal(data, format);` — a one-character addition (`window.`). This routes the QR scan call through the wrapper chain so my outer wrapper's auto-mode check fires correctly. Side effect: the existing inner wrapper at line 5219 (which collapses the scanner on mobile when a scan fires) now also actually runs on real scans — previously it was only firing for edit/manual paths despite the comment claiming "auto-collapse the scanner when a scan fires". This is the intended behavior per the comment, and it's idempotent (removing a class that's already absent is a no-op), so existing pages where users had the scanner collapsed are unaffected
+- **The lesson**: when wrapping a function exposed on `window`, verify that ALL call sites actually use `window.functionName` instead of a local reference. Function declarations in the same scope as the caller resolve via lexical scope, NOT through the `window` property — even after `window.foo = foo` exposes them. The fix would have been impossible to find without `Grep` showing both `_showScanConfirmModal` (line 5028) and `window._showScanConfirmModal` (line 4662) as distinct call patterns
+- **Functional verification** via Playwright: at 390×844 mobile, mocked `window._ldGetHeaders()` and `window._ldGetRows()` to return a known row `['Wata', 5, '82657500690', 'test@user', '...']`, registered a capture-phase click listener on `#ld-add-row-btn` to snapshot the input values at click time (before the existing bubble-phase handler clears them), then ran 3 scenarios:
+  1. Auto ON + known barcode `'82657500690'` with increment=2 → `_showScanConfirmModal` was called via `window`, modal stayed inactive, status text updated to `'Auto +2 · Wata'`, `ld-add-row-btn` was clicked, captured `ld-add-col1..5` values were `['Wata', '2', '82657500690', '', '']` ✓
+  2. Auto OFF + same barcode → modal opened, no add-row click ✓
+  3. Auto ON + unknown barcode `'UNKNOWN-BARCODE-99999'` → modal opened (fallback), no add-row click ✓
+- The HTML `<meta name="build-version">` tag was bumped from `v01.19w` → `v01.20w` to match the `inventorymanagementhtml.version.txt` bump per Pre-Commit #2
+
+#### `inventorymanagement.html` — v01.20w
+##### Fixed
+- Fixed the new "Auto add" toggle: turning it on now actually bypasses the entry form and immediately adds the configured amount when you scan a known item. The previous version had the toggle and increment input visible but the auto-add path wasn't being reached on real scans, so the entry form kept opening regardless of the toggle state
 
 ## [v10.75r] — 2026-04-11 06:53:17 PM EST
 

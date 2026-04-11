@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20w] — 2026-04-11 07:40:08 PM EST — v10.76r
+
+### Fixed
+- Fixed the new "Auto add" toggle: turning it on now actually bypasses the entry form and immediately adds the configured amount when you scan a known item. The previous version had the toggle and increment input visible but the auto-add path wasn't being reached on real scans, so the entry form kept opening regardless of the toggle state
 
 ## [v01.19w] — 2026-04-11 06:53:17 PM EST — v10.75r
 
