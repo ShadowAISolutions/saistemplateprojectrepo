@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 12/50`
+`Sections: 13/50`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-04-11 04:40:42 PM EST — v10.68r
+
+### Changed
+- Manual entry form now has the same − / + quantity adjustment buttons as the scan entry form — both entry screens now look identical, with the only difference being whether the barcode is filled in automatically (scan) or typed in manually
 
 ## [v01.12w] — 2026-04-10 01:06:37 PM EST — v10.67r
 

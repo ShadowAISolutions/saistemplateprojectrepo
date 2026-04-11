@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v10.68r] — 2026-04-11 04:40:42 PM EST
+
+> **Prompt:** "make the manual entry UI have the same plus and minus button functionality that we are using in the entry UI when we scan, so both UI should be identical other than the method and automatic population"
+
+### Changed
+- Refactored `_showScanConfirmModal()` in `live-site-pages/inventorymanagement.html` to always render the `.qty-stepper-group` (−/+ buttons + input) for the Quantity field, regardless of whether an existing row was matched. Previously, the stepper was only created inside the `if (existingRow) { ... if (hLow === 'quantity') { ... } }` branch — which meant scan-entry for a new (unknown) barcode AND manual-entry (which never has scannedData → never matches existingRow) both fell through to the plain-input fallback at the bottom of the for-loop. The fix hoists the quantity-column check out of the `existingRow` branch into its own `if (headers[i].toLowerCase() === 'quantity')` block that runs unconditionally, with the `existingRow`-specific behavior (prefill `inp.value = '1'`, `inp.placeholder = 'Amount to add'`, and the "Current qty: N — enter amount to add (negative to subtract)" note) gated behind inner `if (existingRow)` checks. All four scenarios now render identical Quantity UI: manual-new, manual-existing (theoretical — manual can't match barcode), scan-new, scan-existing. Verified via Playwright at 390×844 and 1280×800 across all four scenarios — every case shows `hasStepper: true, hasMinus: true, hasPlus: true` on the Quantity row, with the existing-item scenario retaining its pre-fill and note, and the other scenarios showing the stepper with an empty input
+
+#### `inventorymanagement.html` — v01.13w
+##### Changed
+- Manual entry form now has the same − / + quantity adjustment buttons as the scan entry form — both entry screens now look identical, with the only difference being whether the barcode is filled in automatically (scan) or typed in manually
 
 ## [v10.67r] — 2026-04-10 01:06:37 PM EST
 
