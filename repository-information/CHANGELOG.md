@@ -3,9 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v10.78r] — 2026-04-11 07:57:33 PM EST
+
+> **Prompt:** "i have entered an item with a barcode that starts with a 0  , the issue is that when writing to the spreadsheet, it automatically removes the 0 , so when i try to scan for it later, it thinks its a new item. make it so that if numbers starting with 0's are scanned in, it is stored in the spreadsheet as such"
+
+### Fixed
+- Fixed Google Sheets stripping leading zeros from barcodes written by `googleAppsScripts/Inventorymanagement/inventorymanagement.gs`. **Root cause**: Sheets' default "Automatic" cell format auto-detects digit strings as numbers, so writing `'0123456'` via `setValue` (or via `appendRow` with a string element) would convert it to the number `123456` and store the leading zero away. The next scan returning `'0123456'` would then fail to match the stored `123456` (string compare), so the same item was treated as new
+- **The fix — text format on the Barcode column**: added a new helper function `ensureBarcodeColumnIsText(sheet)` (lines 397-416 in `inventorymanagement.gs`) that:
+  - Reads the header row to find the column whose header is `'barcode'` (case-insensitive, dynamic — doesn't hardcode column index)
+  - Checks `getNumberFormat()` on the header cell. If it's already `'@'` (text), the function returns immediately — fully idempotent
+  - Otherwise, calls `setNumberFormat('@')` on the entire Barcode column (`getRange(1, h+1, sheet.getMaxRows(), 1)`) — this applies text format to the header, all current data rows, AND all future rows. Sheets inherits column-wide formats on new rows added via `appendRow` and `setValues`
+- **Wired into both write paths**:
+  - `writeCell(token, row, col, value)` (line 432) — calls `ensureBarcodeColumnIsText(sheet)` before the `setValue` so the per-row pencil-edit path can't strip a leading zero. Marked with `// PROJECT:` inline marker since this is project code inserted into a template-region function
+  - `addRow(token, valuesJSON)` (line 462) — calls `ensureBarcodeColumnIsText(sheet)` before reading `data` and before the eventual `appendRow(values)` so any new row appended preserves leading zeros. Same `// PROJECT:` marker
+- **Why this works**: when a column is text-formatted (`@`), Sheets stops auto-detecting cell types on writes to that column. Strings of digits stay as strings, leading zeros and all. The format is applied to `getMaxRows()` so every row including not-yet-existing rows inherits it. The first call of `addRow` (or `writeCell`) on a new sheet pays the one-time format cost; every subsequent call is a no-op (early return after the `getNumberFormat() === '@'` check)
+- **Existing barcode-lookup logic unchanged**: lines 469-478 of `addRow` still do `String(data[r][barcodeCol]).trim().toLowerCase() === scannedBarcode.toLowerCase()`. After this fix, NEW writes preserve leading zeros, so the comparison naturally matches `'0123456' === '0123456'` instead of failing on `'0123456' === '123456'`. No client-side comparison change is needed in the HTML page either — the existing `String(rows[i][bcIdx]) === target` check in the v10.75r auto-mode interception code becomes correct once the data is stored correctly
+- **No HTML changes**: the bug is entirely server-side. The HTML page's barcode comparison was already correct; it just needed the data to be stored correctly. `inventorymanagement.html` stays at v01.21w (no version bump)
+- **Migration concern — existing rows are NOT auto-fixed**: rows that were already written with stripped barcodes (e.g. a barcode `0123456` already stored as `123456`) cannot be recovered automatically because the original leading-zero count is lost. The user will need to manually fix those rows by either: (a) deleting them and re-scanning the original barcodes, (b) typing the correct barcode directly in the sheet cell with a leading apostrophe (`'0123456`), or (c) editing the cell in-place and pre-typing `'` before the digits. The text format applied by this fix only affects future writes
+- The GAS `VERSION` constant at line 1 was bumped from `"v01.04g"` → `"v01.05g"`, and `live-site-pages/gs-versions/inventorymanagementgs.version.txt` was bumped `|v01.04g|` → `|v01.05g|` to match (Pre-Commit #1)
+
+#### `inventorymanagement.gs` — v01.05g
+##### Fixed
+- Barcodes that start with a 0 (like `0123456`) are now stored in the spreadsheet exactly as scanned, instead of having the leading zero stripped. Previously, scanning a leading-zero barcode would write it to the sheet as a number (so `0123456` became `123456`), and re-scanning the same item later would fail to match the existing row and treat it as a new item. The Barcode column is now formatted as text on every write, preserving leading zeros forever
+- **Existing rows with already-stripped barcodes are NOT auto-fixed** — the original leading zeros can't be recovered from a value that's already been converted to a number. To fix existing items: either re-enter them with the correct barcode (delete the bad row first, or edit the cell directly in the spreadsheet) or manually retype the barcode in the Barcode column with a leading apostrophe (e.g. `'0123456`) which forces it to be treated as text
+
+#### `inventorymanagement.html` — v01.21w (no change)
+*HTML unchanged — the bug was entirely server-side; the existing client-side string comparison becomes correct once the GAS layer stores barcodes correctly*
 
 ## [v10.77r] — 2026-04-11 07:49:46 PM EST
 

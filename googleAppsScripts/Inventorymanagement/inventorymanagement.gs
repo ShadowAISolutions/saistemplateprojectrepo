@@ -1,4 +1,4 @@
-var VERSION = "v01.04g";
+var VERSION = "v01.05g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -400,6 +400,31 @@ function installEditTrigger() {
  * After writing, refreshes the cache immediately for instant feedback.
  * Returns signed response with updated live data.
  */
+/**
+ * Ensures the Barcode column in the given sheet is text-formatted ('@'),
+ * so leading zeros are preserved on every write. Sheets' default Automatic
+ * format auto-detects digit strings as numbers and strips leading zeros,
+ * which would otherwise turn '0123456' into 123456 — making the same scan
+ * fail to match later. Idempotent: skips the format call if already text.
+ * Identifies the Barcode column dynamically by header name.
+ */
+function ensureBarcodeColumnIsText(sheet) {
+  if (!sheet) return;
+  var lastCol = sheet.getLastColumn();
+  if (lastCol < 1) return;
+  var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  for (var h = 0; h < headers.length; h++) {
+    if (String(headers[h]).toLowerCase().trim() === 'barcode') {
+      var headerCell = sheet.getRange(1, h + 1);
+      if (headerCell.getNumberFormat() !== '@') {
+        // Apply text format to the entire Barcode column (header + all data rows + future rows)
+        sheet.getRange(1, h + 1, sheet.getMaxRows(), 1).setNumberFormat('@');
+      }
+      return;
+    }
+  }
+}
+
 function writeCell(token, row, col, value) {
   var user = validateSessionForData(token, 'writeCell');
   checkPermission(user, 'write', 'writeCell');
@@ -409,6 +434,10 @@ function writeCell(token, row, col, value) {
   if (!sheet) {
     return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
   }
+
+  // PROJECT: ensure the Barcode column is text-formatted before any cell write so
+  // leading zeros are preserved (writeCell can target the barcode column via the per-row edit path)
+  ensureBarcodeColumnIsText(sheet);
 
   // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2), +1 for 1-indexed
   sheet.getRange(row + 2, col + 1).setValue(value);
@@ -450,6 +479,10 @@ function addRow(token, valuesJSON) {
   if (!sheet) {
     return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
   }
+
+  // PROJECT: ensure the Barcode column is text-formatted BEFORE the appendRow below so
+  // a new row's barcode keeps its leading zeros instead of getting auto-coerced to a number
+  ensureBarcodeColumnIsText(sheet);
 
   // Check for existing barcode to prevent duplicate rows
   var data = sheet.getDataRange().getValues();
