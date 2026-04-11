@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 13/50`
+`Sections: 14/50`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-04-11 05:03:25 PM EST — v10.69r
+
+### Changed
+- Entry form (both manual and scan) no longer shows the Last User and Last Updated fields — these are always filled in automatically, so hiding them removes noise and makes the form quicker to scan. The table still displays both columns as before
 
 ## [v01.13w] — 2026-04-11 04:40:42 PM EST — v10.68r
 

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v10.69r] — 2026-04-11 05:03:25 PM EST
+
+> **Prompt:** "the entry fields for new entries, i dont need the user to see the last user and last updated field since they will always be automatic, so remove those from that UI. the table itself should still have them."
+
+### Changed
+- Hid the `Last User` and `Last Updated` rows from the `_showScanConfirmModal()` entry form in `live-site-pages/inventorymanagement.html` while keeping their values flowing through to the new row on submit. Added an early-continue intercept at the top of the for-loop (`hCurr === 'last user' || hCurr === 'last updated'`): when either header is encountered, the code creates a hidden `<input type="hidden">`, auto-populates it (current user email from `#gas-user-email.textContent` for Last User, current EST timestamp for Last Updated), pushes it to `editInputs`, and `continue`s without appending a `<tr>` to the tbody. This preserves the positional `editInputs[k] → ld-add-col(k+1)` mapping used by the confirm handler, so column N still lands in column N even though some N's never produced a visible row. Removed the now-dead auto-population lines further down in the loop (old `if (hLow === 'last updated') inp.value = ...` and `if (hLow === 'last user') { ... }`) per the Dead Code Detection Methodology — those branches are permanently unreachable after the early intercept. The table itself (`#ld-data-table`) still renders all 5 columns including Last User and Last Updated — this change only affects the add-row entry modal UI. Verified via Playwright across 4 scenarios (manual-new, scan-new, scan-existing, manual-desktop): visible modal rows reduced from 5 → 3 (Item Name, Quantity, Barcode), while the simulated confirm click populated `ld-add-col4` with `shadow@shadowaisolutions.com` and `ld-add-col5` with the current timestamp in every scenario
+
+#### `inventorymanagement.html` — v01.14w
+##### Changed
+- Entry form (both manual and scan) no longer shows the Last User and Last Updated fields — these are always filled in automatically, so hiding them removes noise and makes the form quicker to scan. The table still displays both columns as before
 
 ## [v10.68r] — 2026-04-11 04:40:42 PM EST
 
