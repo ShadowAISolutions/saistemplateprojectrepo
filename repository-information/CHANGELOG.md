@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v10.74r] — 2026-04-11 06:40:10 PM EST
+
+> **Prompt:** Calibration follow-up commit (no user prompt — automatic estimate calibration after the v10.73r push exceeded its time estimate by >2 minutes per the Estimate Calibration rule in `.claude/rules/chat-bookends.md`)
+
+### Changed
+- Bumped the Playwright visual-verification heuristic in `.claude/rules/chat-bookends.md` (Time estimate bullet) from `~30–60s per Playwright visual-verification run` to `~30–60s per single run, but expect 3–5 iterations totaling 3–6m for layout-sensitive changes`. The v10.73r mobile camera layout change took 4 visual verification iterations (initial run revealed parent `#live-data-app` was hidden, second run revealed CSS specificity bug overriding `width`/`max-width`, third run confirmed the specificity bump fix, fourth run with longer status text confirmed graceful wrapping) — each iteration cost ~30-60s for the Playwright run plus edit time. The original estimate budgeted just one visual verification pass (~1m) but reality was ~4-5m. The calibrated heuristic now reminds future estimates to budget the higher end whenever the change touches flexbox, grid, aspect-ratio, or any property that could be overridden by an existing rule later in source order
+- This calibration update only affects future estimate calculations — no user-facing behavior change, no page or GAS files touched
 
 ## [v10.73r] — 2026-04-11 06:04:15 PM EST
 
