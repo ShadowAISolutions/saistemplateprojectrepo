@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v10.73r] — 2026-04-11 06:04:15 PM EST
+
+> **Prompt:** "in the inventorymanagement, in the mobile view, make the camera area squished horizontally so that it can  fit controls to the right of it, so i think the width can match the height"
+
+### Changed
+- Reshaped the mobile camera scanner layout in `live-site-pages/inventorymanagement.html` so the camera viewport is a perfect square instead of a full-width rectangle, with the status bar relocated to a vertical column on the right side of the camera. Three CSS rules edited inside the `@media (max-width: 600px)` block, no HTML or JS changes:
+  - `#qr-camera-section` (line 519): added `display: flex; flex-direction: row; gap: 10px; align-items: flex-start` to convert the previously block-level container into a horizontal flex row. The two existing children (`.qr-viewport-wrapper` and `.qr-status-bar`) become flex items side-by-side
+  - `#qr-camera-section .qr-viewport-wrapper` (line 520): changed selector from bare `.qr-viewport-wrapper` to `#qr-camera-section .qr-viewport-wrapper` to bump specificity to (1,1,0) so it beats the desktop base rule at line 618 (specificity 0,1,0) which comes later in source order and was overriding `width`/`max-width` on mobile. Set `aspect-ratio: 1/1; width: 22vh; height: 22vh; max-width: 200px; max-height: 200px; flex: 0 0 auto; border-radius: 12px; cursor: pointer`. Both `width` and `height` use the same `22vh`/`200px` values so the box is guaranteed to be a square at any mobile viewport size — relying on `aspect-ratio` alone with `width: auto` was attempted first but failed because flex items resolve `width: auto` to fill available space before aspect-ratio kicks in. `cursor: pointer` is preserved so the tap-to-expand-to-fullscreen behavior still fires
+  - `#qr-camera-section .qr-status-bar` (line 532): selector also bumped to `#qr-camera-section .qr-status-bar` for the same specificity reason (the desktop base rule at line 648 has `margin: 0 auto; max-width: 400px` that would otherwise win). Set `flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 6px; max-width: none; padding: 4px 0 0; margin: 0; font-size: 0.62rem`. The status bar now claims all remaining horizontal space next to the square camera, stacks the dot + status text vertically top-aligned, and removes the inherited centering
+- The torch button (`.qr-torch-btn`), stop button (`.qr-stop-btn`), engine badge (`.qr-engine-badge`), and "TAP TO EXPAND" hint (`.qr-expand-hint`) remain absolutely positioned overlays inside the (now smaller) viewport — they continue to work correctly inside the 22vh square. The fullscreen-expanded mode (`.qr-viewport-wrapper.qr-expanded` at line 543) is unaffected because its `position: fixed; inset: 0` overrides the collapsed-state layout when triggered. Desktop view (`min-width: 601px`) is unchanged since all three edits live inside the mobile media query (the `#qr-camera-section` ancestor selector still scopes them correctly)
+- The HTML `<meta name="build-version">` tag was bumped from `v01.17w` → `v01.18w` to match the `inventorymanagementhtml.version.txt` bump per Pre-Commit #2
+- **CSS cascade lesson learned**: when adding override rules inside an `@media` block, verify they actually win over base rules later in the source order. CSS specificity ignores media query nesting — only selector specificity and source order matter. The original mobile media query block (lines 510–554) was placed BEFORE the desktop QR camera scanner styles (lines 617–654) in source order, so any property in the desktop rule that's also declared in the mobile rule will win on mobile too unless the mobile selector has higher specificity. The fix is to scope the mobile override under an ancestor ID like `#qr-camera-section`, bumping specificity from (0,1,0) to (1,1,0). This was discovered during Playwright visual verification — the first iteration had the camera rendering as a 360×188 rectangle on mobile because the desktop `width: 100%; max-width: 400px` was silently overriding the mobile `width: 22vh; max-width: 200px`
+- **Visual verification**: ran Playwright at 390×844 (mobile) — camera renders as 188×188 square pinned to the left of `#qr-camera-section` (left=16, top=85), status bar (160×39) sits at left=214 with a 10px gap from the camera's right edge, top-aligned with the camera. Long status text ("Scanning for QR codes — point camera at any barcode...") wraps gracefully across 3 lines in the right column without horizontal overflow. Ran at 1280×800 (desktop) — viewport is 402×402 square centered, status bar at top=491 (below the camera) — identical to pre-edit behavior
+
+#### `inventorymanagement.html` — v01.18w
+##### Changed
+- On phones, the camera scanner is now a square preview with the status display sitting beside it instead of stacked underneath, making the layout more compact and leaving room next to the camera for additional controls
 
 ## [v10.72r] — 2026-04-11 05:44:20 PM EST
 

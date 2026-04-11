@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.18w] — 2026-04-11 06:04:15 PM EST — v10.73r
+
+### Changed
+- On phones, the camera scanner is now a square preview with the status display sitting beside it instead of stacked underneath, making the layout more compact and leaving room next to the camera for additional controls
 
 ## [v01.17w] — 2026-04-11 05:44:20 PM EST — v10.72r
 

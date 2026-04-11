@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.17w">
+  <meta name="build-version" content="v01.18w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -516,8 +516,8 @@
       #ld-add-row-bar { flex-direction: column; }
       #ld-add-row-bar input { min-width: 0 !important; width: 100%; }
       /* ── Compact mobile scanner strip ── */
-      #qr-camera-section { padding: 8px 12px; }
-      .qr-viewport-wrapper { aspect-ratio: auto; height: 22vh; max-height: 200px; max-width: none; border-radius: 12px; cursor: pointer; }
+      #qr-camera-section { padding: 8px 12px; display: flex; flex-direction: row; gap: 10px; align-items: flex-start; }
+      #qr-camera-section .qr-viewport-wrapper { aspect-ratio: 1/1; width: 22vh; height: 22vh; max-width: 200px; max-height: 200px; flex: 0 0 auto; border-radius: 12px; cursor: pointer; }
       .qr-viewport-wrapper .qr-corner { width: 20px; height: 20px; }
       .qr-viewport-wrapper .qr-corner.tl { top: 8px; left: 8px; }
       .qr-viewport-wrapper .qr-corner.tr { top: 8px; right: 8px; }
@@ -529,7 +529,7 @@
       .qr-viewport-wrapper .qr-torch-btn { right: 6px; }
       .qr-viewport-wrapper .qr-stop-btn { left: 6px; }
       .qr-viewport-wrapper .qr-engine-badge { bottom: 6px; left: 6px; font-size: 0.5rem; padding: 2px 5px; }
-      .qr-status-bar { max-width: none; padding: 4px 2px 0; font-size: 0.62rem; }
+      #qr-camera-section .qr-status-bar { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 6px; max-width: none; padding: 4px 0 0; margin: 0; font-size: 0.62rem; }
       .qr-viewport-wrapper .qr-expand-hint { display: block; position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); padding: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.6); border: 1px solid #1e1e2e; color: #8b949e; font: 600 0.58rem/1 monospace; letter-spacing: 0.05em; pointer-events: none; z-index: 15; }
       @keyframes qrScanMoveMobile {
         0%  { top: 8px; opacity: 1; }
