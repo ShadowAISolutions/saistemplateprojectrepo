@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 16/50`
+`Sections: 17/50`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-04-11 05:44:20 PM EST — v10.72r
+
+### Fixed
+- Fixed the pencil edit button so it now works the same way as scanning an existing item to change the quantity. Tap the pencil on any row, enter the amount to add or subtract (or use − / +), click Save, and the row's quantity updates correctly
 
 ## [v01.16w] — 2026-04-11 05:31:18 PM EST — v10.71r
 

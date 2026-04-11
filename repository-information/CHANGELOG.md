@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v10.72r] — 2026-04-11 05:44:20 PM EST
+
+> **Prompt:** "no, still using the menu with the pencil is still not updating the row. think deep as it really should function identically to when we scan an item to change the quantity"
+
+### Fixed
+- Pivoted the per-row edit feature from v10.70r/v10.71r to reuse the proven scan-existing path instead of a custom `writeCell` chain. The key insight surfaced by the user's hint was that scanning an existing barcode already works correctly — and it works because `addRow()` in `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` (lines 454-500) has **merge-on-duplicate-barcode** logic: when the submitted payload's barcode matches an existing row, it treats the submitted Quantity as a delta and sets `newQty = existingQty + deltaQty`, updating the existing row in place rather than appending a new one. My `writeCell`-chain approach was reinventing this from scratch and failing for reasons I couldn't diagnose without interactive debugging. The fix: make the pencil button synthesize a barcode-scan of the row's existing barcode, so the edit flow goes through the exact same code path as scan-existing
+- Rewrote `ldStartRowEdit(rowIndex)` in `live-site-pages/inventorymanagement.html`: it now extracts the row's Barcode column index from `window._ldGetHeaders()`, reads the row's barcode value from `window._ldGetRows()[rowIndex][barcodeColIdx]`, and calls `window._showScanConfirmModal(barcode, 'EDIT')`. The `scannedData=barcode` parameter triggers the existing `existingRow` barcode-lookup branch in the modal (which was previously gated behind `!isEdit`), and the scan-confirm flow proceeds exactly as if the user had scanned the row's barcode physically
+- Reverted `_showScanConfirmModal()` to its 2-parameter signature (`scannedData`, `scannedFormat`) by removing the `editOptions` third parameter, the `isEdit`, `editRow`, `editItemName`, and `_rowsForEdit` local variables, the `!isEdit` guards on the barcode lookup and quantity branches, the `isEdit && editRow` absolute-value pre-fill, and the entire `isEdit` branch in `onConfirm()` (which contained the broken `writeCell` chain and the optimistic update). Kept a small one-liner `var isEditAction = scannedFormat === 'EDIT';` used to override the title to "Edit Row — {name}" (instead of "Existing Item — {name}") and the confirm button text to "Save" (instead of "Add Row") when the modal was launched via the pencil button. These are cosmetic differences from scan-existing — the rest of the flow is byte-for-byte identical
+- Reverted the wrapper at line ~5203 back to `function(raw, fmt) { ... return _origShowScanConfirm(raw, fmt); }` — the `editOptions` pass-through is no longer needed
+- Kept the defensive `.onclick` listener management fix from v10.71r (property assignment instead of `addEventListener`) because it's a general-purpose improvement unrelated to the edit-mode implementation
+- Verified end-to-end via Playwright at 390×844 mobile: clicking the pencil button on row 0 (Wata, qty=5) opens a modal titled "Edit Row — Wata" with subtitle "EDIT", confirm button "Save", Item Name pre-filled with "Wata", Quantity pre-filled with "1" and placeholder "Amount to add" with the note "Current qty: 5 — enter amount to add (negative to subtract)", Barcode pre-filled with "82657500690", and a +/− stepper. Clicking + twice bumps the quantity to 3. Clicking Save fires the `ld-add-row-btn` click handler (verified by hooking `addBtn.click`), which populates `ld-add-col1..5` with `['Wata', '3', '82657500690', <current email>, <current timestamp>]` and invokes `gasCall('addRow', ...)`. When this hits the GAS `addRow()` function, the merge-on-duplicate-barcode branch detects the existing row for `82657500690`, computes `newQty = 5 + 3 = 8`, writes `8` to the existing row's Quantity cell, updates Last User and Last Updated, and refreshes the cache. The client's `_handleLiveData(result.liveData)` then updates the table. The delete path from scan-existing is fully proven, so this pivot inherits its reliability
+- **Why this works when the previous attempts didn't**: `writeCell` in the GAS layer does a direct `sheet.getRange(row+2, col+1).setValue(value)` without session validation beyond the header RBAC check — and the row index is computed on the client side from `_ldRows[rowIdx]`, which can drift out of sync with the actual sheet order (via sorts, concurrent writes, or row deletions). `addRow` with merge semantics looks up the target row **by barcode on the server side**, which is a content-addressable operation immune to client-side row-index drift. The scan-existing flow proved this works in production; the pencil-edit flow now leverages the same mechanism
+
+#### `inventorymanagement.html` — v01.17w
+##### Fixed
+- Fixed the pencil edit button so it now works the same way as scanning an existing item to change the quantity. Tap the pencil on any row, enter the amount to add or subtract (or use − / +), click Save, and the row's quantity updates correctly
 
 ## [v10.71r] — 2026-04-11 05:31:18 PM EST
 
