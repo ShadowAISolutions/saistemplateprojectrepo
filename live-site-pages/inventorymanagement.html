@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.20w">
+  <meta name="build-version" content="v01.21w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5122,11 +5122,22 @@
             (function(qtyInp) {
               btnMinus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
-                qtyInp.value = cur - 1;
+                var next = cur - 1;
+                if (next === 0) next = -1;  // 0 isn't an option — skip past it
+                qtyInp.value = next;
               });
               btnPlus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
-                qtyInp.value = cur + 1;
+                var next = cur + 1;
+                if (next === 0) next = 1;  // 0 isn't an option — skip past it
+                qtyInp.value = next;
+              });
+              // Direct typing of 0 also blocked: if the user types 0 and tabs away, snap to 1.
+              // Empty value is left alone (the existing add-row validation handles it).
+              qtyInp.addEventListener('change', function() {
+                if (qtyInp.value === '0' || parseInt(qtyInp.value, 10) === 0) {
+                  qtyInp.value = '1';
+                }
               });
             })(inp);
             tdValue.appendChild(qtyGroup);
@@ -5249,7 +5260,11 @@
         var savedMode = localStorage.getItem('inventory_qr_auto_mode');
         if (savedMode === 'on') toggleEl.checked = true;
         var savedAmount = localStorage.getItem('inventory_qr_auto_amount');
-        if (savedAmount !== null && savedAmount !== '') amountEl.value = savedAmount;
+        if (savedAmount !== null && savedAmount !== '') {
+          var savedN = parseInt(savedAmount, 10);
+          // 0 isn't an option — fall back to 1 if a stale 0 is loaded from localStorage
+          if (!isNaN(savedN) && savedN !== 0) amountEl.value = String(savedN);
+        }
       } catch (e) {}
 
       function syncDisabled() {
@@ -5265,18 +5280,32 @@
 
       function clampAmount(v) {
         var n = parseInt(v, 10);
-        if (isNaN(n)) n = 1;
+        // 0 isn't an option — both NaN and 0 snap to 1
+        if (isNaN(n) || n === 0) n = 1;
         return n;
       }
       amountEl.addEventListener('input', function() {
         try { localStorage.setItem('inventory_qr_auto_amount', amountEl.value); } catch (e) {}
       });
+      // Direct typing of 0 also blocked: if the user types 0 (or clears the field)
+      // and tabs away, snap to 1 on blur
+      amountEl.addEventListener('change', function() {
+        var n = clampAmount(amountEl.value);
+        if (String(n) !== amountEl.value) {
+          amountEl.value = String(n);
+          try { localStorage.setItem('inventory_qr_auto_amount', amountEl.value); } catch (e) {}
+        }
+      });
       decBtn.addEventListener('click', function() {
-        amountEl.value = String(clampAmount(amountEl.value) - 1);
+        var next = clampAmount(amountEl.value) - 1;
+        if (next === 0) next = -1;  // 0 isn't an option — skip past it
+        amountEl.value = String(next);
         amountEl.dispatchEvent(new Event('input'));
       });
       incBtn.addEventListener('click', function() {
-        amountEl.value = String(clampAmount(amountEl.value) + 1);
+        var next = clampAmount(amountEl.value) + 1;
+        if (next === 0) next = 1;  // 0 isn't an option — skip past it
+        amountEl.value = String(next);
         amountEl.dispatchEvent(new Event('input'));
       });
     })();
@@ -5306,7 +5335,9 @@
                 if (existing) {
                   var amountEl = document.getElementById('qr-auto-amount');
                   var amount = amountEl ? parseInt(amountEl.value, 10) : 1;
-                  if (isNaN(amount) || amount === 0) amount = 1;
+                  // 0 isn't an option — if a stale 0 somehow leaks through, fall through to the modal
+                  // so the user sees what's happening instead of getting a silent +1
+                  if (isNaN(amount) || amount === 0) return _origAutoWrap(raw, fmt);
                   var itemName = String(existing[nameIdx] || '');
                   // Mimic the modal's onConfirm flow: populate the hidden inputs and click the add button.
                   // The GAS addRow merge-on-duplicate-barcode logic adds the increment to the existing row.

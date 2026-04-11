@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.21w] — 2026-04-11 07:49:46 PM EST — v10.77r
+
+### Changed
+- 0 is no longer an option in any of the quantity steppers (the new "Auto add" increment input next to the camera, and the existing − / + buttons in the scan/manual entry form). Pressing − when the value is 1 now jumps straight to -1 (skipping 0), and pressing + when the value is -1 now jumps straight to 1. Typing 0 directly into the field and tabbing away snaps the value back to 1. The previous Auto add behavior where setting 0 silently incremented by 1 is fixed — if the value is somehow 0 when a scan fires, the entry form now opens instead so you can see what's happening
 
 ## [v01.20w] — 2026-04-11 07:40:08 PM EST — v10.76r
 

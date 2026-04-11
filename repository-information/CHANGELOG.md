@@ -3,9 +3,49 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v10.77r] — 2026-04-11 07:49:46 PM EST
+
+> **Prompt:** "auto add when set to 0 is incrementing by 1, make it so that 0 isnt an option" (follow-up: "this applies to all add and subtract's")
+
+### Fixed
+- Fixed the v10.75r Auto-add toggle bug where setting the increment to 0 silently incremented by 1 anyway because of a `if (isNaN(amount) || amount === 0) amount = 1;` fallback in the scan interception code (line 5338 in `live-site-pages/inventorymanagement.html`). Per the user's follow-up clarification, applied the no-zero rule to **all** quantity steppers in the page — both the new auto-add increment input AND the existing scan/manual entry quantity stepper from v01.05w/v01.13w (lines 5113-5142). Two separate stepper instances, both fixed identically:
+
+#### Auto-add increment input (`#qr-auto-amount` with `#qr-amount-dec` / `#qr-amount-inc`)
+- **`clampAmount(v)` helper** (line 5277): added `n === 0` to the snap-to-1 condition. Both `NaN` and `0` now resolve to `1`. Used by the +/- handlers and the change handler
+- **`decBtn.click` handler** (line 5288): now computes `next = clampAmount(amountEl.value) - 1`, then `if (next === 0) next = -1` to skip past zero. So clicking − on `1` jumps directly to `-1` instead of stopping at `0`
+- **`incBtn.click` handler** (line 5294): mirror — `if (next === 0) next = 1`. Clicking + on `-1` jumps directly to `1`
+- **New `change` event handler** (line 5283): on blur/Enter, calls `clampAmount(amountEl.value)` and updates the field if the normalized value differs from what's in the input. This catches direct typing of `0` (snaps to `1`) and clearing the field (also snaps to `1`). Also persists the corrected value to localStorage
+- **Init from localStorage** (line 5263): when reading the saved increment value, parses with `parseInt` and skips the load if the saved value is `0` — falls back to the HTML default of `1`. Defends against stale `0` values written to localStorage by an earlier version of this code (which v10.76r-and-earlier could produce because the change handler didn't exist yet)
+- **Auto-mode scan interception fallback** (line 5338): changed from `if (isNaN(amount) || amount === 0) amount = 1;` to `if (isNaN(amount) || amount === 0) return _origAutoWrap(raw, fmt);`. If a stale `0` somehow leaks past all the UI guards and reaches the scan path, the scan now **falls through to the modal** instead of silently doing a `+1`. The user sees the entry form, sees the value they need to fix, and can correct it. This is the original bug surface — it should now be unreachable via normal use, but the defensive fallback ensures the behavior is correct even if it does happen
+
+#### Scan/manual entry modal quantity stepper (`.qty-stepper-btn.qty-minus` / `.qty-plus` inside `_showScanConfirmModal`)
+- **`btnMinus.click` handler** (line 5123): added `if (next === 0) next = -1` after computing `cur - 1`. Same skip-zero logic as auto-amount
+- **`btnPlus.click` handler** (line 5129): added `if (next === 0) next = 1` after computing `cur + 1`
+- **New `change` event handler** on the quantity input (line 5135): if the value is exactly `'0'` or `parseInt() === 0`, snaps to `'1'`. **Empty value is left alone** — for new items the modal expects the user to type a quantity, and forcing empty → 1 on every blur would be annoying. The existing add-row click handler validates the empty case downstream
+- This stepper is created fresh each time the modal opens (via the `(function(qtyInp) { ... })(inp)` IIFE inside the build loop at line 5111), so the new event listeners are attached per-instance — no need for a global listener
+
+- **Functional verification** via Playwright at 390×844 mobile, all 12 scenarios pass:
+  - Auto-amount: dec from 1 → -1 (skip 0) ✓
+  - Auto-amount: inc from -1 → 1 (skip 0) ✓
+  - Auto-amount: type 0 + blur → snaps to 1 ✓
+  - Auto-amount: clear field + blur → snaps to 1 ✓
+  - Auto-amount: change handler corrects 0 → 1 ✓
+  - Auto-mode scan with forced amount=0 → modal opens (not silent +1) ✓
+  - Modal stepper: dec from 1 → -1 ✓
+  - Modal stepper: inc from -1 → 1 ✓
+  - Modal stepper: type 0 + change → snaps to 1 ✓
+  - Modal stepper: empty + change → stays empty (correct — modal allows empty for new items) ✓
+  - Modal stepper: dec from -1 → -2 (no spurious skip) ✓
+  - Modal stepper: inc from 1 → 2 (no spurious skip) ✓
+- The HTML `<meta name="build-version">` tag was bumped from `v01.20w` → `v01.21w`
+
+#### `inventorymanagement.html` — v01.21w
+##### Changed
+- 0 is no longer an option in any of the quantity steppers (the new "Auto add" increment input next to the camera, and the existing − / + buttons in the scan/manual entry form). Pressing − when the value is 1 now jumps straight to -1 (skipping 0), and pressing + when the value is -1 now jumps straight to 1. Typing 0 directly into the field and tabbing away snaps the value back to 1. The previous Auto add behavior where setting 0 silently incremented by 1 is fixed — if the value is somehow 0 when a scan fires, the entry form now opens instead so you can see what's happening
 
 ## [v10.76r] — 2026-04-11 07:40:08 PM EST
 
