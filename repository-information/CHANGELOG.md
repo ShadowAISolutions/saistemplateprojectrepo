@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v10.71r] — 2026-04-11 05:31:18 PM EST
+
+> **Prompt:** "im clicking on the pencil and i see the UI, but modifying and saving is not changing the values in the table"
+
+### Fixed
+- Fixed the per-row edit feature from v10.70r where clicking Save in the Edit Row modal did not visibly update the table. Two independent fixes applied to `_showScanConfirmModal()` in `live-site-pages/inventorymanagement.html`:
+  - **Listener stacking** — the confirm/cancel buttons used `confirmBtn.addEventListener('click', onConfirm)` and `cancelBtn.addEventListener('click', onCancel)`, paired with `removeEventListener` calls in `cleanup()`. Because cleanup only runs on explicit Save/Cancel, if the user opened the modal via scan/entry and then re-opened via the pencil without clicking Save or Cancel first, the previous invocation's `onConfirm` was still attached and fired alongside the new one on the next Save click. The old closure captured stale `isEdit=false` state and routed through the add-row path, which would silently fail because `editInputs` positional mapping didn't match the fresh modal's state. Switched to `confirmBtn.onclick = onConfirm; cancelBtn.onclick = onCancel;` — property assignment replaces any previous handler, so only one handler is ever attached. `cleanup()` updated to null out `.onclick` instead of calling `removeEventListener`. Verified via Playwright: opening the modal twice in succession yields different `onclick` function references (proving replacement, not stacking), and clicking Save cleanly dismisses the modal with no JS errors and clears the handler
+  - **No optimistic UI update** — the edit confirm path fired `writeCell` in a sequential chain but didn't apply any local changes to `_ldRows` until the server responded AND the next data poll (`~15s` interval via `_doDataPoll`) picked up the refreshed cache. Between the Save click and the poll, the user saw no change in the table, creating the impression that Save did nothing. Added an optimistic update block that runs after computing the `writes` array and BEFORE firing the `doWrite()` chain: it iterates `writes` and applies each `{col, val}` to `_ldRows[rowIdx]` in place, then calls `ldRenderTableView({})` and `ldRenderDashboardView({})` so the table visually reflects the edit immediately. The background `writeCell` chain still runs to persist to the sheet; the next data poll re-syncs from the server state. If a `writeCell` call fails, the next poll (~15s later) reverts the optimistic change to match the server. Also removed the `_handleLiveData(result.liveData)` call from the per-write success callback to prevent flicker between optimistic state and partial server state mid-chain, and changed the per-write failure handler to continue the chain (best-effort) so a single failed cell doesn't block subsequent writes
+
+#### `inventorymanagement.html` — v01.16w
+##### Fixed
+- Fixed an issue where editing a row via the pencil button and clicking Save did not update the values in the table. Changes now reflect immediately in the table after clicking Save, and the sheet gets updated in the background
 
 ## [v10.70r] — 2026-04-11 05:19:50 PM EST
 

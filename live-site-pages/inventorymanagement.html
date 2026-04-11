@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.15w">
+  <meta name="build-version" content="v01.16w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5116,15 +5116,27 @@
                 writes.push({ col: k, val: newVal });
               }
             }
+            // Optimistic local update — apply changes to _ldRows and re-render immediately so
+            // the user sees their edits reflected in the table without waiting for the next data poll.
+            // If a server write fails, the next data poll (~15s) will re-sync from the spreadsheet.
+            if (_ldRows[rowIdx]) {
+              writes.forEach(function(w) { _ldRows[rowIdx][w.col] = w.val; });
+              ldRenderTableView({});
+              ldRenderDashboardView({});
+            }
             var wi = 0;
             function doWrite() {
               if (wi >= writes.length) return;
               var w = writes[wi++];
-              gasCall('writeCell', [_sessionToken, rowIdx, w.col, w.val], function(result) {
-                if (result && result.liveData) _handleLiveData(result.liveData);
+              gasCall('writeCell', [_sessionToken, rowIdx, w.col, w.val], function() {
+                // Skip _handleLiveData inside the chain to avoid flicker between optimistic and
+                // server states — the next data poll will confirm. Continue to the next write.
                 doWrite();
               }, function(err) {
                 console.error('Edit row write failed at col ' + w.col + ':', err);
+                // Best-effort: continue the chain even on individual failures so as many cells
+                // as possible are written.
+                doWrite();
               });
             }
             doWrite();
@@ -5135,11 +5147,14 @@
           qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
         }
         function onCancel() { cleanup(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
-        function cleanup() { modal.classList.remove('active'); confirmBtn.removeEventListener('click', onConfirm); cancelBtn.removeEventListener('click', onCancel); }
+        function cleanup() { modal.classList.remove('active'); if (confirmBtn) confirmBtn.onclick = null; if (cancelBtn) cancelBtn.onclick = null; }
         var confirmBtn = document.getElementById('ld-scan-confirm');
         var cancelBtn = document.getElementById('ld-scan-cancel');
-        if (confirmBtn) confirmBtn.addEventListener('click', onConfirm);
-        if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
+        // Use .onclick property assignment (not addEventListener) to ensure only one handler
+        // is attached at a time — prevents listener stacking when the modal is re-opened
+        // without an explicit cancel/confirm in between (e.g. scan → edit → save flow).
+        if (confirmBtn) confirmBtn.onclick = onConfirm;
+        if (cancelBtn) cancelBtn.onclick = onCancel;
       }
 
       function qrToggleTorch() {
