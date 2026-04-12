@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 26/50`
+`Sections: 27/50`
 
 ## [Unreleased]
+
+## [v01.27w] — 2026-04-12 02:55:11 PM EST — v10.85r
+
+### Changed
+- Current quantity now appears as a styled info box above the form fields instead of small text below the adjuster
+- The quantity field is labeled "Adjust Quantity" when modifying an existing item
 
 ## [v01.26w] — 2026-04-12 12:56:32 PM EST — v10.84r
 

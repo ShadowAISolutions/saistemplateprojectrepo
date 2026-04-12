@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v10.85r] — 2026-04-12 02:55:11 PM EST
+
+> **Prompt:** "you currently have the current quantity in a text area under the quantity changer. make the current quantity appear above the quantity adjuster, similar to how we are showing the barcode. change the label for Quantity in the Modal to Adjust Quantity"
+
+### Changed
+- Moved the "Current qty" display from a note below the quantity stepper to a styled display element above the table (matching the barcode display pattern), only shown for existing items
+- Changed the quantity field label from "Quantity" to "Adjust Quantity" when editing an existing item (new items still show "Quantity")
+
+#### `inventorymanagement.html` — v01.27w
+##### Changed
+- Current quantity now appears as a styled info box above the form fields instead of small text below the adjuster
+- The quantity field is labeled "Adjust Quantity" when modifying an existing item
 
 ## [v10.84r] — 2026-04-12 12:56:32 PM EST
 
