@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v10.83r] — 2026-04-11 11:43:01 PM EST
+
+> **Prompt:** "ok good. the tap to expand which is over the camera is not properly expanding since we made the mobile view"
+
+### Fixed
+- Fixed the tap-to-expand fullscreen scanner not working on mobile (≤600px). Root cause: the media query rule `#qr-camera-section .qr-viewport-wrapper` had higher CSS specificity (ID + class = 1,1,0) than the expanded override `.qr-viewport-wrapper.qr-expanded` (two classes = 0,2,0), so the media query's `max-width: 200px; max-height: 200px` constraints overrode the expanded mode's `max-width: none; max-height: none`. Fixed by adding a higher-specificity override `#qr-camera-section .qr-viewport-wrapper.qr-expanded` inside the media query that resets all constraining properties (`width: 100vw; height: 100vh; max-width: none; max-height: none; aspect-ratio: auto; flex: none; border-radius: 0`)
+
+#### `inventorymanagement.html` — v01.25w
+##### Fixed
+- Tapping the camera to expand it to full screen now works correctly — previously the camera stayed small when tapped
 
 ## [v10.82r] — 2026-04-11 11:32:19 PM EST
 

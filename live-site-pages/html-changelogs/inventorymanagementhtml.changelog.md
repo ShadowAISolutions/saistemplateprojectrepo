@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 24/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v01.25w] — 2026-04-11 11:43:01 PM EST — v10.83r
+
+### Fixed
+- Tapping the camera to expand it to full screen now works correctly — previously the camera stayed small when tapped
 
 ## [v01.24w] — 2026-04-11 11:32:19 PM EST — v10.82r
 
