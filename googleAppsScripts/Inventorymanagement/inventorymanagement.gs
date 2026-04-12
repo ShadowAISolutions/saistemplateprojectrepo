@@ -1,4 +1,4 @@
-var VERSION = "v01.05g";
+var VERSION = "v01.06g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -439,8 +439,28 @@ function writeCell(token, row, col, value) {
   // leading zeros are preserved (writeCell can target the barcode column via the per-row edit path)
   ensureBarcodeColumnIsText(sheet);
 
+  // PROJECT: if writing to the barcode column, use an explicit format → flush → value
+  // sequence to preserve leading zeros. The column-wide format alone (set above) isn't
+  // enough because setValue may coerce digit strings to numbers before consulting the
+  // format. Find the barcode column index by header lookup, and apply the sequence
+  // conditionally so non-barcode writes are unchanged.
+  var headerRowVals = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var isBarcodeWrite = false;
+  for (var bch = 0; bch < headerRowVals.length; bch++) {
+    if (String(headerRowVals[bch]).toLowerCase().trim() === 'barcode' && bch === col) {
+      isBarcodeWrite = true;
+      break;
+    }
+  }
   // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2), +1 for 1-indexed
-  sheet.getRange(row + 2, col + 1).setValue(value);
+  var targetCell = sheet.getRange(row + 2, col + 1);
+  if (isBarcodeWrite) {
+    targetCell.setNumberFormat('@');
+    SpreadsheetApp.flush();
+    targetCell.setValue(String(value));
+  } else {
+    targetCell.setValue(value);
+  }
 
   // Refresh cache immediately for instant feedback (onEditInstallable will also fire)
   refreshDataCache();
@@ -527,8 +547,24 @@ function addRow(token, valuesJSON) {
     }
     actionType = 'update_quantity';
   } else {
-    // New barcode — append as new row
-    sheet.appendRow(values);
+    // New barcode — append the row with the barcode cell EMPTY first, to avoid Sheets'
+    // automatic digit-string-to-number coercion at appendRow time. Then re-write the
+    // barcode cell separately with an explicit format → flush → value sequence so the
+    // leading zeros are preserved. v01.05g set the column format to '@' and that wasn't
+    // enough — appendRow's value parser still coerced the JS string to a number. The
+    // SpreadsheetApp.flush() between setNumberFormat and setValue forces the per-cell
+    // format change to commit before the value is parsed.
+    var rowValsForAppend = values.slice();
+    if (barcodeCol >= 0) rowValsForAppend[barcodeCol] = '';
+    sheet.appendRow(rowValsForAppend);
+    if (barcodeCol >= 0 && values[barcodeCol] !== undefined && values[barcodeCol] !== null
+        && String(values[barcodeCol]).length > 0) {
+      var newRowNum = sheet.getLastRow();
+      var bcCell = sheet.getRange(newRowNum, barcodeCol + 1);
+      bcCell.setNumberFormat('@');
+      SpreadsheetApp.flush();
+      bcCell.setValue(String(values[barcodeCol]));
+    }
     actionType = 'add_row';
   }
 

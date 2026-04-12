@@ -3,9 +3,34 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v10.79r] — 2026-04-12 08:10:10 PM EST
+
+> **Prompt:** "unfortunately its still removing the leading 0's in the spreadsheet"
+
+### Fixed
+- Second attempt at the v10.78r/v01.05g leading-zero preservation fix in `googleAppsScripts/Inventorymanagement/inventorymanagement.gs`. The v01.05g approach (set the entire Barcode column's number format to `'@'` via `ensureBarcodeColumnIsText` before each write) **didn't work** — the user reported that newly-scanned barcodes with leading zeros were still being stripped
+- **Root cause hypothesis** (high confidence): `sheet.appendRow(values)` performs JS-value type coercion at write-time, **before** consulting the cell's number format. So even with the column format set to `'@'`, when `appendRow` receives the JS string `'0123456'`, it parses the digit string as a number `123456` first, then writes that number to the cell. The cell's text format is only applied to the cell **after** the value has been parsed — too late. This is a known Google Sheets API quirk: cell formats are for display, not for input parsing
+- **The fix — separate the barcode write with an explicit format → flush → value sequence**:
+  - **`addRow()` new-row path** (line 549, replaced the `sheet.appendRow(values); actionType = 'add_row';` block): now (1) builds `rowValsForAppend = values.slice()` and zeros out `rowValsForAppend[barcodeCol]` so the barcode cell is empty during the row creation (no digit string → no coercion), (2) calls `sheet.appendRow(rowValsForAppend)` which atomically creates the row with all the non-barcode columns populated, (3) reads back `sheet.getLastRow()` to find the new row number, (4) calls `bcCell.setNumberFormat('@')` on the **specific** barcode cell of the new row, (5) calls `SpreadsheetApp.flush()` — **this is the critical step v01.05g was missing** — to force the format change to commit before the next operation, then (6) calls `bcCell.setValue(String(values[barcodeCol]))` with the actual barcode. Because the format is committed before the `setValue`, Sheets parses the value with text format already in place and stores it as text with leading zeros preserved
+  - **`writeCell()` barcode-conditional path** (line 442, after the existing `ensureBarcodeColumnIsText` call): added a header lookup to determine if the target column index `col` matches the Barcode column. If yes, applies the same `setNumberFormat('@')` → `SpreadsheetApp.flush()` → `setValue(String(value))` sequence on the target cell. If no (any other column), the existing single `setValue(value)` is used so non-barcode writes are unchanged. Header lookup is local to writeCell — uses `sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]` and iterates with a separate variable name `bch` to avoid shadowing the existing `h` loop variable elsewhere in addRow
+- **`appendRow` is still used for race safety** — `appendRow` is atomic against concurrent writes from other users (it computes the next empty row and writes in a single operation). Replacing it with manual `getLastRow()` + `setValues` would introduce a race condition where two simultaneous addRows could compute the same `nextRow`. The follow-up barcode `setValue` could in theory race in a similar way, but the worst case is that the wrong row gets the barcode update — extremely unlikely given the request volume of this app and not catastrophic
+- **`ensureBarcodeColumnIsText` is kept** as defense-in-depth — it still runs at the start of both `addRow` and `writeCell`, applying text format to the entire Barcode column. The per-cell format-flush-value sequence is the **guaranteed** path; the column-wide format is the baseline that helps with future code paths and ensures reads return strings consistently
+- **Existing barcode-lookup logic unchanged** (lines 502-511 of `addRow`): still does `String(data[r][barcodeCol]).trim().toLowerCase() === scannedBarcode.toLowerCase()`. After this fix, NEW writes preserve leading zeros, so the comparison correctly matches `'0123456' === '0123456'` instead of failing on `'0123456' === '123456'`. No comparison change needed
+- **No HTML changes** — `inventorymanagement.html` stays at v01.21w. The bug is purely server-side
+- **Migration concern, repeated from v01.05g**: rows that were already written with stripped barcodes cannot be auto-fixed because the original leading-zero count is unrecoverable. User must manually correct affected rows by either re-entering them or editing the cell directly with a leading apostrophe (`'0123456`)
+- **If this fix STILL fails**, the next escalations are: (a) add the leading apostrophe trick as a third defense layer (`bcCell.setValue("'" + String(...))` — uncertain whether the apostrophe is consumed via Apps Script `setValue`), or (b) ask the user to share what's actually being stored in the cell so we can diagnose Sheets' actual behavior
+- The GAS `VERSION` constant at line 1 was bumped from `"v01.05g"` → `"v01.06g"`, and `live-site-pages/gs-versions/inventorymanagementgs.version.txt` was bumped `|v01.05g|` → `|v01.06g|` to match (Pre-Commit #1)
+
+#### `inventorymanagement.gs` — v01.06g
+##### Fixed
+- Fixed leading zeros in barcodes still being stripped after the v01.05g attempt — that fix set the column format to text but Sheets' value parser was still coercing digit strings to numbers before the format was checked. The new approach writes new rows with the barcode cell empty first, then re-writes just the barcode cell with an explicit text-format-then-value sequence so leading zeros are reliably preserved. Per-row edits via the pencil button get the same treatment when targeting the barcode column
+
+#### `inventorymanagement.html` — v01.21w (no change)
+*HTML unchanged — the bug is entirely server-side; the existing client-side string comparisons become correct once the GAS layer stores barcodes correctly*
 
 ## [v10.78r] — 2026-04-11 07:57:33 PM EST
 
