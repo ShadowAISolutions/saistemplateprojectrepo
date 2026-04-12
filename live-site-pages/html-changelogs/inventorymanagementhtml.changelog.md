@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 29/50`
+`Sections: 30/50`
 
 ## [Unreleased]
+
+## [v01.30w] — 2026-04-12 03:58:45 PM EST — v10.88r
+
+### Changed
+- The confirm button now says "Update" when adjusting an existing item, and "Add Row" only when adding a new item
 
 ## [v01.29w] — 2026-04-12 03:51:02 PM EST — v10.87r
 

@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v10.88r] — 2026-04-12 03:58:45 PM EST
+
+> **Prompt:** "the green buttons that add row, doesnt make sense if we are adjusting the quantity of an existing item, add row should be if we are adding a new item."
+
+### Changed
+- Changed the confirm button text in the item modal to be context-aware: "Add Row" for new items, "Update" for scanned duplicates, "Save" for edit-row actions (previously showed "Add Row" for both new items and scanned duplicates)
+
+#### `inventorymanagement.html` — v01.30w
+##### Changed
+- The confirm button now says "Update" when adjusting an existing item's quantity, and "Add Row" only for new items
 
 ## [v10.87r] — 2026-04-12 03:51:02 PM EST
 
