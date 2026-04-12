@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 34/50`
+`Sections: 35/50`
 
 ## [Unreleased]
+
+## [v01.35w] — 2026-04-12 05:54:02 PM EST — v10.94r
+
+### Fixed
+- Image preview now appears after selecting a photo for upload
+- Item thumbnails now load correctly in the inventory table
 
 ## [v01.34w] — 2026-04-12 05:25:45 PM EST — v10.92r
 

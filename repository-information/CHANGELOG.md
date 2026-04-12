@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v10.94r] — 2026-04-12 05:54:02 PM EST
+
+> **Prompt:** "ok well at this point, we need to fix the fact that uploading an image is allowing me to select an image, but its not showing it in the image preview before saving, and therefore when i click save its not actually doing anything"
+
+### Fixed
+- Image upload preview not showing — CSP `img-src` was missing `blob:` (blocked `URL.createObjectURL` used by the compression utility) and `https://drive.google.com` (blocked Drive thumbnail URLs in table/lightbox)
+
+#### `inventorymanagement.html` — v01.35w
+
+##### Fixed
+- Image preview now appears after selecting a photo
+- Item thumbnails now load correctly in the table
 
 ## [v10.93r] — 2026-04-12 05:44:53 PM EST
 
