@@ -3,9 +3,20 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23w] — 2026-04-11 11:11:17 PM EST — v10.81r
+
+### Added
+- You can now scan items rapidly without waiting for each save to complete — scanned items are queued and saved in the background one at a time
+- A blue "queued" badge appears showing how many items are waiting to be saved
+- Each queued item appears in the table immediately with a "Queued" or "Sending" indicator
+- If a save fails, a red notification appears with the item details — remaining items continue saving
+
+### Changed
+- Auto-scan mode now queues items instantly instead of waiting for the previous save to finish
 
 ## [v01.22w] — 2026-04-12 08:16:30 PM EST — v10.80r
 

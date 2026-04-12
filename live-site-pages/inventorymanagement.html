@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.22w">
+  <meta name="build-version" content="v01.23w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -929,6 +929,10 @@
         <button class="btn-confirm" id="ld-scan-confirm">Add Row</button>
       </div>
     </div>
+  </div>
+  <!-- Scan queue badge — shows pending count during rapid scanning -->
+  <div id="scan-queue-badge" style="display:none;position:fixed;bottom:80px;right:16px;z-index:10000;background:#1f6feb;color:#fff;border-radius:20px;padding:4px 12px;font:600 12px/1.4 sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;">
+    <span id="scan-queue-count">0</span> queued
   </div>
 <!-- ══════════════ -->
 <!-- PROJECT END -->
@@ -4371,6 +4375,11 @@
       var _ldCanEdit = false;
       var _addRowPending = false;
       var _addRowPendingIndex = undefined;
+      // Scan queue — allows rapid scanning without waiting for each save
+      var _addRowPendingIndices = new Set(); // Tracks multiple optimistic rows (queue + direct)
+      var _scanQueue = [];                   // FIFO queue of {id, values, status, error, optimisticIndex}
+      var _scanQueueProcessing = false;      // True while a gasCall is in-flight for a queued item
+      var _scanQueueIdCounter = 0;           // Monotonic ID for queue entries
       var _deleteRowPending = null;
       var _gasDataPollInterval = null;
       var _sessionToken = ''; // Set after auth
@@ -4478,7 +4487,7 @@
         indexedRows.forEach(function(entry) {
           var row = entry.data;
           var origIdx = entry.origIndex;
-          var isOptimisticAdd = (_addRowPendingIndex !== undefined && origIdx === _addRowPendingIndex);
+          var isOptimisticAdd = (_addRowPendingIndex !== undefined && origIdx === _addRowPendingIndex) || _addRowPendingIndices.has(origIdx);
           var tr = document.createElement('tr');
           if (isOptimisticAdd) {
             tr.style.opacity = '0.35';
@@ -4544,7 +4553,23 @@
           }
           if (isOptimisticAdd) {
             var overlay = document.createElement('div');
-            overlay.textContent = 'Sending\u2026';
+            // Determine queue status for this optimistic row
+            var qOverlayText = 'Sending\u2026';
+            for (var qi = 0; qi < _scanQueue.length; qi++) {
+              if (_scanQueue[qi].optimisticIndex === origIdx) {
+                if (_scanQueue[qi].status === 'sending') qOverlayText = 'Sending\u2026';
+                else if (_scanQueue[qi].status === 'queued') {
+                  var qPos = 0;
+                  for (var qj = 0; qj < _scanQueue.length; qj++) {
+                    if (_scanQueue[qj].status === 'queued' || _scanQueue[qj].status === 'sending') qPos++;
+                    if (_scanQueue[qj] === _scanQueue[qi]) break;
+                  }
+                  qOverlayText = 'Queued (#' + qPos + ')';
+                }
+                break;
+              }
+            }
+            overlay.textContent = qOverlayText;
             overlay.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#58a6ff;font:600 13px/1 sans-serif;letter-spacing:0.5px;pointer-events:none;';
             tr.appendChild(overlay);
           }
@@ -4760,6 +4785,11 @@
 
       function _doDataPoll() {
         if (_dataPollInFlight) return;
+        // Skip data poll while scan queue is processing to prevent liveData from clobbering optimistic rows
+        if (_scanQueue.length > 0) {
+          _gasDataPollTimer = setTimeout(_doDataPoll, DATA_POLL_INTERVAL);
+          return;
+        }
         _dataPollInFlight = true;
         _updatePollDisplay();
         gasCall('getAuthenticatedData', [_sessionToken], function(data) {
@@ -4891,6 +4921,132 @@
         });
       })();
 
+      // ── Scan Queue — allows rapid scanning without waiting for each save ──
+      function _enqueueScanItem(values) {
+        var entry = {
+          id: ++_scanQueueIdCounter,
+          values: values.map(function(v) { return String(v); }),
+          status: 'queued',
+          error: null,
+          optimisticIndex: -1
+        };
+        // Optimistic UI: add row to _ldRows immediately
+        entry.optimisticIndex = _ldRows.length;
+        _ldRows.push(entry.values);
+        _addRowPendingIndices.add(entry.optimisticIndex);
+        _scanQueue.push(entry);
+        if (ldEmptyState) ldEmptyState.style.display = 'none';
+        ldRenderTableView({});
+        ldRenderDashboardView({});
+        _updateQueueBadge();
+        // Kick the processor if not already running
+        if (!_scanQueueProcessing) _processQueue();
+      }
+
+      function _processQueue() {
+        // Find the first 'queued' entry
+        var next = null;
+        for (var i = 0; i < _scanQueue.length; i++) {
+          if (_scanQueue[i].status === 'queued') { next = _scanQueue[i]; break; }
+        }
+        if (!next) {
+          _scanQueueProcessing = false;
+          _updateQueueBadge();
+          return;
+        }
+        _scanQueueProcessing = true;
+        next.status = 'sending';
+        _updateQueueBadge();
+        ldRenderTableView({});
+        gasCall('addRow', [_sessionToken, JSON.stringify(next.values)], function(result) {
+          next.status = 'done';
+          _addRowPendingIndices.delete(next.optimisticIndex);
+          if (result && result.liveData) {
+            _handleLiveData(result.liveData);
+            // After liveData overwrites _ldRows, re-insert optimistic rows for remaining items
+            _reinsertOptimisticRows();
+          }
+          _pruneCompletedEntries();
+          _updateQueueBadge();
+          _processQueue();
+        }, function(err) {
+          console.error('Scan queue addRow failed:', err);
+          next.status = 'error';
+          next.error = String(err);
+          _addRowPendingIndices.delete(next.optimisticIndex);
+          _showQueueError(next);
+          _processQueue();
+        });
+      }
+
+      function _reinsertOptimisticRows() {
+        _addRowPendingIndices.clear();
+        for (var i = 0; i < _scanQueue.length; i++) {
+          var entry = _scanQueue[i];
+          if (entry.status === 'queued' || entry.status === 'sending') {
+            entry.optimisticIndex = _ldRows.length;
+            _ldRows.push(entry.values);
+            _addRowPendingIndices.add(entry.optimisticIndex);
+          }
+        }
+        ldRenderTableView({});
+        ldRenderDashboardView({});
+      }
+
+      function _pruneCompletedEntries() {
+        while (_scanQueue.length > 0 && _scanQueue[0].status === 'done') {
+          _scanQueue.shift();
+        }
+      }
+
+      function _updateQueueBadge() {
+        var badge = document.getElementById('scan-queue-badge');
+        var countEl = document.getElementById('scan-queue-count');
+        if (!badge || !countEl) return;
+        var pending = 0;
+        for (var i = 0; i < _scanQueue.length; i++) {
+          if (_scanQueue[i].status === 'queued' || _scanQueue[i].status === 'sending') pending++;
+        }
+        if (pending > 0) {
+          countEl.textContent = String(pending);
+          badge.style.display = '';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+
+      function _showQueueError(entry) {
+        // Remove the failed optimistic row from _ldRows
+        if (entry.optimisticIndex >= 0 && entry.optimisticIndex < _ldRows.length) {
+          _ldRows.splice(entry.optimisticIndex, 1);
+          // Adjust indices of remaining queue entries after the removed row
+          for (var i = 0; i < _scanQueue.length; i++) {
+            if (_scanQueue[i].optimisticIndex > entry.optimisticIndex) {
+              _addRowPendingIndices.delete(_scanQueue[i].optimisticIndex);
+              _scanQueue[i].optimisticIndex--;
+              _addRowPendingIndices.add(_scanQueue[i].optimisticIndex);
+            }
+          }
+        }
+        // Remove error entry from queue
+        var idx = _scanQueue.indexOf(entry);
+        if (idx >= 0) _scanQueue.splice(idx, 1);
+        ldRenderTableView({});
+        ldRenderDashboardView({});
+        if (ldEmptyState) ldEmptyState.style.display = _ldRows.length === 0 ? 'flex' : 'none';
+        // Show toast notification
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:10002;background:#da3633;color:#fff;padding:10px 20px;border-radius:8px;font:13px/1.4 sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.4);max-width:90%;text-align:center;';
+        var barcodeCol = -1;
+        for (var h = 0; h < _ldHeaders.length; h++) {
+          if (_ldHeaders[h].toLowerCase() === 'barcode') { barcodeCol = h; break; }
+        }
+        var label = barcodeCol >= 0 && entry.values[barcodeCol] ? entry.values[barcodeCol] : 'Item #' + entry.id;
+        toast.textContent = 'Save failed for ' + label + ': ' + (entry.error || 'Unknown error');
+        document.body.appendChild(toast);
+        setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 5000);
+      }
+
       // Expose activation function for the auth flow
       window._showLiveDataApp = function(email, permissions, token) {
         _sessionToken = token || '';
@@ -4922,6 +5078,7 @@
       // Expose headers and rows for QR scanner confirmation modal (cross-IIFE access)
       window._ldGetHeaders = function() { return _ldHeaders; };
       window._ldGetRows = function() { return _ldRows; };
+      window._enqueueScanItem = _enqueueScanItem;
     })();
 
     // ── QR Camera Scanner (native BarcodeDetector only — no external dependencies) ──
@@ -5157,8 +5314,15 @@
         modal.classList.add('active');
         function onConfirm() {
           cleanup();
-          for (var k = 0; k < editInputs.length; k++) { var colInput = document.getElementById('ld-add-col' + (k + 1)); if (colInput) { colInput.value = editInputs[k].value; colInput.dispatchEvent(new Event('input')); } }
-          var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+          var values = [];
+          for (var k = 0; k < editInputs.length; k++) { values.push(editInputs[k].value); }
+          if (typeof window._enqueueScanItem === 'function') {
+            window._enqueueScanItem(values);
+          } else {
+            // Fallback: populate hidden inputs and click add-row button (legacy path)
+            for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
+            var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+          }
           qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
         }
         function onCancel() { cleanup(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
@@ -5341,21 +5505,22 @@
                   // so the user sees what's happening instead of getting a silent +1
                   if (isNaN(amount) || amount === 0) return _origAutoWrap(raw, fmt);
                   var itemName = String(existing[nameIdx] || '');
-                  // Mimic the modal's onConfirm flow: populate the hidden inputs and click the add button.
+                  // Enqueue the scan instead of blocking on the add-row button.
                   // The GAS addRow merge-on-duplicate-barcode logic adds the increment to the existing row.
                   var colVals = ['', '', '', '', ''];
                   colVals[nameIdx] = itemName;
                   colVals[qtyIdx] = String(amount);
                   colVals[bcIdx] = target;
-                  for (var k = 0; k < 5; k++) {
-                    var colInput = document.getElementById('ld-add-col' + (k + 1));
-                    if (colInput) {
-                      colInput.value = colVals[k];
-                      colInput.dispatchEvent(new Event('input'));
+                  if (typeof window._enqueueScanItem === 'function') {
+                    window._enqueueScanItem(colVals);
+                  } else {
+                    for (var k = 0; k < 5; k++) {
+                      var colInput = document.getElementById('ld-add-col' + (k + 1));
+                      if (colInput) { colInput.value = colVals[k]; colInput.dispatchEvent(new Event('input')); }
                     }
+                    var addBtn = document.getElementById('ld-add-row-btn');
+                    if (addBtn && !addBtn.disabled) addBtn.click();
                   }
-                  var addBtn = document.getElementById('ld-add-row-btn');
-                  if (addBtn && !addBtn.disabled) addBtn.click();
                   // Update the status text so the user sees what just happened
                   var statusText = document.getElementById('qr-status-text');
                   if (statusText) {

@@ -3,9 +3,36 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v10.81r] — 2026-04-11 11:11:17 PM EST
+
+> **Prompt:** "in the inventory management, can you come up with a method so that we can queue automatic scans so that we can scan quickly instead of having to wait for it to save first."
+
+### Added
+- Implemented a scan queue system in `live-site-pages/inventorymanagement.html` that decouples barcode scanning from saving. Users can now scan and confirm items rapidly without waiting for each save to complete — saves process sequentially in the background while the user continues scanning
+- New `_enqueueScanItem()` function routes all scan confirmations (both manual modal and auto-scan mode) through a FIFO queue instead of directly blocking on the Add Row button
+- New `_processQueue()` drains queued items one at a time via `gasCall('addRow', ...)`, with `_reinsertOptimisticRows()` to maintain UI consistency after each `liveData` refresh
+- Floating queue badge (`#scan-queue-badge`) shows the number of pending items during rapid scanning — auto-hides when the queue is empty
+- Optimistic row overlays now show "Queued (#N)" for waiting items and "Sending…" for the item currently being saved, replacing the previous single "Sending…" overlay
+- Error toast notification (`_showQueueError()`) for individual failed saves — surfaces the barcode/item name and error, removes the failed optimistic row, and continues processing remaining queue items
+
+### Changed
+- Data polling (`_doDataPoll`) is suppressed while the scan queue has items, preventing `_handleLiveData` from overwriting optimistic rows mid-queue
+- Optimistic row detection changed from single-index (`_addRowPendingIndex`) to a Set (`_addRowPendingIndices`) to support multiple simultaneous optimistic rows
+- Auto-scan mode now enqueues items directly via `_enqueueScanItem()` instead of blocking on the Add Row button — rapid auto-scanning is never blocked by a pending save
+- Modal `onConfirm()` now collects values and calls `_enqueueScanItem()` instead of populating hidden inputs and clicking the Add Row button
+
+#### `inventorymanagement.html` — v01.23w
+##### Added
+- You can now scan items rapidly without waiting for each save to complete — scanned items are queued and saved in the background one at a time
+- A blue "queued" badge appears showing how many items are waiting to be saved
+- Each queued item appears in the table immediately with a "Queued" or "Sending" indicator
+- If a save fails, a red notification appears with the item details — remaining items continue saving
+##### Changed
+- Auto-scan mode now queues items instantly instead of waiting for the previous save to finish
 
 ## [v10.80r] — 2026-04-12 08:16:30 PM EST
 
