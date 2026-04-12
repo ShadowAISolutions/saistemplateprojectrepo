@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v10.96r] — 2026-04-12 06:06:52 PM EST
+
+> **Prompt:** "the quantity is updating, but the image is not being saved, lets focus on fixing that. could it be the compression you are trying to do?"
+
+### Changed
+- Added `[IMG]` console logging to the image upload flow in `inventorymanagement.html` for debugging — logs base64 size, token presence, upload success/failure, and updateRowImage results
+
+#### `inventorymanagement.html` — v01.37w
+
+##### Changed
+- Minor internal improvements
 
 ## [v10.95r] — 2026-04-12 06:01:51 PM EST
 

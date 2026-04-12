@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 36/50`
+`Sections: 37/50`
 
 ## [Unreleased]
+
+## [v01.37w] — 2026-04-12 06:06:52 PM EST — v10.96r
+
+### Changed
+- Minor internal improvements
 
 ## [v01.36w] — 2026-04-12 06:01:51 PM EST — v10.95r
 
