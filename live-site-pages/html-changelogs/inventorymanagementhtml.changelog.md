@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.24w] — 2026-04-11 11:32:19 PM EST — v10.82r
+
+### Changed
+- The flashlight, stop camera, and manual entry buttons now appear next to the camera instead of overlaying it — easier to reach and always visible
 
 ## [v01.23w] — 2026-04-11 11:11:17 PM EST — v10.81r
 

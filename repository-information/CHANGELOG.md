@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v10.82r] — 2026-04-11 11:32:19 PM EST
+
+> **Prompt:** "i want to move a bunch of controls to the right of the camera in the space we opened up. move the flashlight, turn off camera, and entry buttons there"
+
+### Changed
+- Moved the flashlight (torch), stop camera, and manual entry buttons from their previous locations (torch/stop were absolute-positioned overlays inside `.qr-viewport-wrapper`; entry was in `#ld-add-row-bar`) to a new `.qr-action-btns` row inside `.qr-side-panel`, positioned at the bottom of the side panel using `margin-top: auto`
+- Updated CSS for `.qr-torch-btn` and `.qr-stop-btn` — removed `position: absolute` and positional properties (`bottom`, `left`, `right`, `z-index`) since the buttons are now in normal document flow within the side panel
+- Added `body.qr-fullscreen-active .qr-action-btns` CSS rule to position the action buttons as a fixed overlay at the bottom of the screen during expanded (fullscreen) scanner mode
+
+#### `inventorymanagement.html` — v01.24w
+##### Changed
+- The flashlight, stop camera, and manual entry buttons now appear next to the camera instead of overlaying it — easier to reach and always visible
 
 ## [v10.81r] — 2026-04-11 11:11:17 PM EST
 
