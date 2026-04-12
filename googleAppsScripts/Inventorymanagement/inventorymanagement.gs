@@ -1,4 +1,4 @@
-var VERSION = "v01.08g";
+var VERSION = "v01.09g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -325,6 +325,17 @@ function refreshDataCache() {
       // Clear stale cache so old data doesn't persist
       CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
     }
+    // Auto-add Image header if it doesn't exist yet
+    var existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var hasImageCol = false;
+    for (var ih = 0; ih < existingHeaders.length; ih++) {
+      if (String(existingHeaders[ih]).toLowerCase().trim() === 'image') { hasImageCol = true; break; }
+    }
+    if (!hasImageCol) {
+      var nextCol = sheet.getLastColumn() + 1;
+      sheet.getRange(1, nextCol).setValue('Image');
+    }
+
     var data = sheet.getDataRange().getValues();
     var headers = data[0] || [];
     var rows = data.slice(1);

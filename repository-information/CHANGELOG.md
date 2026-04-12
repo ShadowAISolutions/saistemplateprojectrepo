@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v10.93r] — 2026-04-12 05:44:53 PM EST
+
+> **Prompt:** "ok i changed it, and i even manually added the Image header. but i want it to automatically make it if its not already there, not require me to make the header"
+
+### Changed
+- `refreshDataCache()` now auto-adds the "Image" header column to existing spreadsheets if missing — no manual setup required
+
+#### `inventorymanagement.gs` — v01.09g
+
+##### Changed
+- Image column is automatically created when the sheet is loaded if the header doesn't exist yet
 
 ## [v10.92r] — 2026-04-12 05:25:45 PM EST
 
