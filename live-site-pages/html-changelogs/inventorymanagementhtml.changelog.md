@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 37/50`
+`Sections: 38/50`
 
 ## [Unreleased]
+
+## [v01.38w] — 2026-04-12 07:50:42 PM EST — v10.99r
+
+### Changed
+- Image upload and item save now happen in a single server call instead of three separate calls
+- More reliable image handling when adding items with photos
 
 ## [v01.37w] — 2026-04-12 06:06:52 PM EST — v10.96r
 

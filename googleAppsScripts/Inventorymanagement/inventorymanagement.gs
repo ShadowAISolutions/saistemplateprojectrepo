@@ -1,4 +1,4 @@
-var VERSION = "v01.10g";
+var VERSION = "v01.11g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -495,7 +495,7 @@ function writeCell(token, row, col, value) {
  * After writing, refreshes the cache immediately for instant feedback.
  * Returns signed response with updated live data.
  */
-function addRow(token, valuesJSON) {
+function addRow(token, valuesJSON, imageBase64, imageFileName) {
   var user = validateSessionForData(token, 'addRow');
   checkPermission(user, 'write', 'addRow');
 
@@ -583,6 +583,40 @@ function addRow(token, valuesJSON) {
       bcCell.setValue(String(values[barcodeCol]));
     }
     actionType = 'add_row';
+  }
+
+  // PROJECT: Inline image upload — when imageBase64 is provided, upload to Drive and set on the row
+  if (imageBase64) {
+    var imgCol = -1;
+    for (var ih = 0; ih < headers.length; ih++) {
+      if (String(headers[ih]).toLowerCase().trim() === 'image') { imgCol = ih; break; }
+    }
+    if (imgCol >= 0) {
+      try {
+        var newFileId = _uploadImageToDrive(imageBase64, imageFileName, user.email);
+        if (newFileId) {
+          var imgTargetRow;
+          if (actionType === 'add_row') {
+            imgTargetRow = sheet.getLastRow();
+          } else if (existingRowIndex >= 0) {
+            imgTargetRow = existingRowIndex + 1;
+          }
+          if (imgTargetRow) {
+            // Delete old image if the row already had one (barcode merge case)
+            if (existingRowIndex >= 0) {
+              var oldImgId = String(data[existingRowIndex][imgCol] || '').trim();
+              if (oldImgId && oldImgId !== newFileId) {
+                _trashDriveFile(oldImgId);
+              }
+            }
+            sheet.getRange(imgTargetRow, imgCol + 1).setValue(newFileId);
+          }
+        }
+      } catch (imgErr) {
+        Logger.log('addRow inline image error: ' + imgErr.message);
+        // Image upload failed — row is still saved, just without image
+      }
+    }
   }
 
   // Refresh cache immediately for instant feedback
@@ -740,41 +774,11 @@ function uploadImage(token, base64Data, fileName) {
     return signMessage({ type: 'gas-write-error', error: 'no_image_data' }, user.messageKey || '');
   }
 
-  var folderId = getOrCreateImageFolder();
-  var decoded = Utilities.base64Decode(base64Data);
-  var blob = Utilities.newBlob(decoded, 'image/jpeg', fileName || 'inventory_image.jpg');
-
-  // Multipart upload: metadata + file content
-  var boundary = 'img_upload_boundary_' + Date.now();
-  var metadata = JSON.stringify({ name: fileName || 'inventory_image.jpg', parents: [folderId] });
-  var requestBody = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + metadata + '\r\n--' + boundary + '\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: base64\r\n\r\n' + base64Data + '\r\n--' + boundary + '--';
-
-  var uploadResp = UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
-    method: 'post',
-    headers: _driveApiHeaders(),
-    contentType: 'multipart/related; boundary=' + boundary,
-    payload: Utilities.newBlob(requestBody).getBytes(),
-    muteHttpExceptions: true
-  });
-
-  if (uploadResp.getResponseCode() !== 200) {
-    Logger.log('uploadImage error: ' + uploadResp.getContentText());
-    return signMessage({ type: 'gas-write-error', error: 'upload_failed: ' + uploadResp.getResponseCode() }, user.messageKey || '');
+  var fileId = _uploadImageToDrive(base64Data, fileName, user.email);
+  if (!fileId) {
+    return signMessage({ type: 'gas-write-error', error: 'upload_failed' }, user.messageKey || '');
   }
 
-  var uploadData = JSON.parse(uploadResp.getContentText());
-  var fileId = uploadData.id;
-
-  // Set sharing: anyone with link can view
-  UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
-    method: 'post',
-    headers: _driveApiHeaders(),
-    contentType: 'application/json',
-    payload: JSON.stringify({ role: 'reader', type: 'anyone' }),
-    muteHttpExceptions: true
-  });
-
-  auditLog('data_write', user.email, 'upload_image', { fileId: fileId, fileName: fileName });
   return signMessage({ type: 'gas-image-uploaded', fileId: fileId }, user.messageKey || '');
 }
 
@@ -808,27 +812,19 @@ function deleteImage(token, fileId) {
   var user = validateSessionForData(token, 'deleteImage');
   checkPermission(user, 'write', 'deleteImage');
 
-  if (fileId) {
-    try {
-      UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
-        method: 'patch',
-        headers: _driveApiHeaders(),
-        contentType: 'application/json',
-        payload: JSON.stringify({ trashed: true }),
-        muteHttpExceptions: true
-      });
-    } catch (e) { Logger.log('deleteImage: ' + e.message); }
-  }
+  _trashDriveFile(fileId);
   auditLog('data_write', user.email, 'delete_image', { fileId: fileId });
   return signMessage({ type: 'gas-image-deleted' }, user.messageKey || '');
 }
 
 /**
- * updateRowImage(token, rowIndex, fileId) — updates the Image column for a given row.
+ * updateRowImage(token, rowIndex, fileId, imageBase64, imageFileName) — updates the Image column for a given row.
  * Used when editing an existing item to add, replace, or remove its image.
+ * When imageBase64 is provided, uploads the image to Drive first and uses the resulting fileId.
+ * When imageBase64 is not provided, uses the fileId parameter directly (original behavior).
  * Pass empty string as fileId to remove the image reference.
  */
-function updateRowImage(token, rowIndex, fileId) {
+function updateRowImage(token, rowIndex, fileId, imageBase64, imageFileName) {
   var user = validateSessionForData(token, 'updateRowImage');
   checkPermission(user, 'write', 'updateRowImage');
 
@@ -857,6 +853,19 @@ function updateRowImage(token, rowIndex, fileId) {
     return signMessage({ type: 'gas-write-error', error: 'row_out_of_range' }, user.messageKey || '');
   }
 
+  // If imageBase64 provided, upload first and use the resulting fileId
+  if (imageBase64) {
+    var uploadedId = _uploadImageToDrive(imageBase64, imageFileName, user.email);
+    if (uploadedId) {
+      // Trash old image if the row had one
+      var oldCellValue = String(sheet.getRange(sheetRow, imgCol + 1).getValue() || '').trim();
+      if (oldCellValue && oldCellValue !== uploadedId) {
+        _trashDriveFile(oldCellValue);
+      }
+      fileId = uploadedId;
+    }
+  }
+
   sheet.getRange(sheetRow, imgCol + 1).setValue(fileId || '');
   refreshDataCache();
 
@@ -864,6 +873,67 @@ function updateRowImage(token, rowIndex, fileId) {
   var result = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   result.liveData = getCachedData();
   return result;
+}
+
+/**
+ * _uploadImageToDrive(base64Data, fileName, userEmail) — uploads a base64-encoded image to Google Drive.
+ * Returns the fileId on success, or empty string on failure.
+ * Extracted from uploadImage() for reuse by addRow and updateRowImage.
+ */
+function _uploadImageToDrive(base64Data, fileName, userEmail) {
+  if (!base64Data) return '';
+
+  var folderId = getOrCreateImageFolder();
+  var boundary = 'img_upload_boundary_' + Date.now();
+  var metadata = JSON.stringify({ name: fileName || 'inventory_image.jpg', parents: [folderId] });
+  var requestBody = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + metadata + '\r\n--' + boundary + '\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: base64\r\n\r\n' + base64Data + '\r\n--' + boundary + '--';
+
+  var uploadResp = UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+    method: 'post',
+    headers: _driveApiHeaders(),
+    contentType: 'multipart/related; boundary=' + boundary,
+    payload: Utilities.newBlob(requestBody).getBytes(),
+    muteHttpExceptions: true
+  });
+
+  if (uploadResp.getResponseCode() !== 200) {
+    Logger.log('_uploadImageToDrive error: ' + uploadResp.getContentText());
+    return '';
+  }
+
+  var uploadData = JSON.parse(uploadResp.getContentText());
+  var fileId = uploadData.id;
+
+  // Set sharing: anyone with link can view
+  UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+    method: 'post',
+    headers: _driveApiHeaders(),
+    contentType: 'application/json',
+    payload: JSON.stringify({ role: 'reader', type: 'anyone' }),
+    muteHttpExceptions: true
+  });
+
+  if (userEmail) {
+    auditLog('data_write', userEmail, 'upload_image', { fileId: fileId, fileName: fileName });
+  }
+  return fileId;
+}
+
+/**
+ * _trashDriveFile(fileId) — trashes a Drive file (recoverable for 30 days).
+ * Extracted from deleteImage() for reuse by addRow and updateRowImage.
+ */
+function _trashDriveFile(fileId) {
+  if (!fileId) return;
+  try {
+    UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
+      method: 'patch',
+      headers: _driveApiHeaders(),
+      contentType: 'application/json',
+      payload: JSON.stringify({ trashed: true }),
+      muteHttpExceptions: true
+    });
+  } catch (e) { Logger.log('_trashDriveFile: ' + e.message); }
 }
 
 // ══════════════

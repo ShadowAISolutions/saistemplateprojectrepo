@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.37w">
+  <meta name="build-version" content="v01.38w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5080,10 +5080,12 @@
       })();
 
       // ── Scan Queue — allows rapid scanning without waiting for each save ──
-      function _enqueueScanItem(values) {
+      function _enqueueScanItem(values, imageBase64, imageFileName) {
         var entry = {
           id: ++_scanQueueIdCounter,
           values: values.map(function(v) { return String(v); }),
+          imageBase64: imageBase64 || null,
+          imageFileName: imageFileName || '',
           status: 'queued',
           error: null,
           optimisticIndex: -1
@@ -5116,7 +5118,7 @@
         next.status = 'sending';
         _updateQueueBadge();
         ldRenderTableView({});
-        gasCall('addRow', [_sessionToken, JSON.stringify(next.values)], function(result) {
+        gasCall('addRow', [_sessionToken, JSON.stringify(next.values), next.imageBase64 || '', next.imageFileName || ''], function(result) {
           next.status = 'done';
           _addRowPendingIndices.delete(next.optimisticIndex);
           if (result && result.liveData) {
@@ -5536,79 +5538,55 @@
           var values = [];
           for (var k = 0; k < editInputs.length; k++) { values.push(editInputs[k].value); }
 
-          // Handle image upload before saving the row
+          // Capture image state
           var pendingImg = (typeof window._imgGetPendingBase64 === 'function') ? window._imgGetPendingBase64() : null;
           var oldFileId = (typeof window._imgGetExistingFileId === 'function') ? window._imgGetExistingFileId() : '';
 
-          function proceedWithSave(imgFileId) {
-            // Set Image column value
-            if (imgColIdx >= 0 && imgColIdx < values.length) values[imgColIdx] = imgFileId || '';
-            // For edit mode on existing rows, also update the image column separately
-            if (isEditAction && existingRow && imgColIdx >= 0) {
-              var newImgId = imgFileId || '';
-              var oldImgId = oldFileId || '';
-              if (newImgId !== oldImgId) {
-                var sessionTok = _sessionToken || '';
-                if (sessionTok) {
-                  gasCall('updateRowImage', [sessionTok, existingRowIndex, newImgId], function() {}, function() {});
-                  if (oldImgId && newImgId !== oldImgId) {
-                    gasCall('deleteImage', [sessionTok, oldImgId], function() {}, function() {});
-                  }
-                }
-              }
-            }
-            if (typeof window._enqueueScanItem === 'function') {
-              window._enqueueScanItem(values);
-            } else {
-              for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
-              var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
-            }
-            qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
+          // Set Image column to old fileId or empty — server will overwrite with new fileId after upload
+          if (imgColIdx >= 0 && imgColIdx < values.length) values[imgColIdx] = oldFileId || '';
+
+          // Build image filename if we have a pending image
+          var imgFileName = '';
+          if (pendingImg) {
+            var barVal = barcodeColIdx >= 0 ? (values[barcodeColIdx] || 'item') : 'item';
+            imgFileName = 'inv_' + String(barVal).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '_' + Date.now() + '.jpg';
+            console.log('[IMG] Bundling image with addRow:', imgFileName, '~' + Math.round(pendingImg.length / 1024) + 'KB base64');
           }
 
-          // Save the row immediately — image upload happens in the background afterward
-          proceedWithSave(oldFileId);
-
-          // Upload image in background and update the row's Image column after success
-          if (pendingImg) {
-            console.log('[IMG] pendingImg length:', pendingImg.length, 'bytes (~' + Math.round(pendingImg.length / 1024) + 'KB base64)');
-            var barVal = barcodeColIdx >= 0 ? (values[barcodeColIdx] || 'item') : 'item';
-            var imgFileName = 'inv_' + String(barVal).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '_' + Date.now() + '.jpg';
-            var imgToken = window._ldGetSessionToken ? window._ldGetSessionToken() : '';
-            console.log('[IMG] Uploading image:', imgFileName, 'token present:', !!imgToken);
-            (function(pendingBase64, oldFid, fileName, tok) {
-              gasCall('uploadImage', [tok, pendingBase64, fileName], function(resp) {
-                console.log('[IMG] Upload success:', JSON.stringify(resp));
-                var fid = (resp && resp.fileId) ? resp.fileId : '';
-                if (fid) {
-                  if (existingRowIndex >= 0 && tok) {
-                    console.log('[IMG] Updating existing row', existingRowIndex, 'with fileId:', fid);
-                    gasCall('updateRowImage', [tok, existingRowIndex, fid], function(r) { console.log('[IMG] updateRowImage OK:', JSON.stringify(r)); }, function(e) { console.warn('[IMG] updateRowImage failed:', e); });
-                  }
-                  if (existingRowIndex < 0 && tok) {
-                    var currentRows = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
-                    console.log('[IMG] New row — updating last row index', currentRows.length - 1, 'with fileId:', fid);
-                    if (currentRows.length > 0) {
-                      gasCall('updateRowImage', [tok, currentRows.length - 1, fid], function(r) { console.log('[IMG] updateRowImage OK:', JSON.stringify(r)); }, function(e) { console.warn('[IMG] updateRowImage failed:', e); });
-                    }
-                  }
-                  if (oldFid && fid !== oldFid && tok) {
-                    gasCall('deleteImage', [tok, oldFid], function() {}, function() {});
-                  }
-                }
-              }, function(err) {
-                console.warn('[IMG] Upload FAILED:', err);
-              });
-            })(pendingImg, oldFileId, imgFileName, imgToken);
-          } else if (!pendingImg && oldFileId === '' && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
-            // User removed existing image
+          // Handle image removal (user had an image, explicitly removed it, no new image)
+          if (!pendingImg && oldFileId === '' && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
+            // User removed existing image — use updateRowImage to clear it and trash the old file
             var removedId = String(existingRow[imgColIdx]).trim();
             var sessTok = window._ldGetSessionToken ? window._ldGetSessionToken() : '';
             if (sessTok && removedId) {
-              gasCall('deleteImage', [sessTok, removedId], function() {}, function() {});
               gasCall('updateRowImage', [sessTok, existingRowIndex, ''], function() {}, function() {});
+              gasCall('deleteImage', [sessTok, removedId], function() {}, function() {});
             }
+            if (imgColIdx >= 0 && imgColIdx < values.length) values[imgColIdx] = '';
           }
+
+          // For edit mode with a new image, use updateRowImage with image data (combined upload+set)
+          if (isEditAction && existingRow && imgColIdx >= 0 && pendingImg) {
+            var editTok = _sessionToken || '';
+            if (editTok) {
+              gasCall('updateRowImage', [editTok, existingRowIndex, '', pendingImg, imgFileName],
+                function(r) { console.log('[IMG] updateRowImage (combined) OK:', JSON.stringify(r)); },
+                function(e) { console.warn('[IMG] updateRowImage (combined) failed:', e); }
+              );
+            }
+            // Clear the pending image — it's handled by updateRowImage, not by addRow
+            pendingImg = null;
+            imgFileName = '';
+          }
+
+          // Enqueue: addRow handles row add/merge + optional image upload in one call
+          if (typeof window._enqueueScanItem === 'function') {
+            window._enqueueScanItem(values, pendingImg, imgFileName);
+          } else {
+            for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
+            var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+          }
+          qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
         }
         function onCancel() { cleanup(); if (typeof window._imgClearPreview === 'function') window._imgClearPreview(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
         function cleanup() { modal.classList.remove('active'); if (confirmBtn) confirmBtn.onclick = null; if (cancelBtn) cancelBtn.onclick = null; }

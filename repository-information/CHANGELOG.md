@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v10.99r] — 2026-04-12 07:50:42 PM EST
+
+> **Prompt:** "in the inventorymanagement, can you make the image upload and the item update happen in the same execution, right now im seeing addrow,uploadimage, and updaterowimage all happening separately. push back if not a good idea"
+
+### Changed
+- Combined the 3-step image upload flow (addRow → uploadImage → updateRowImage) into a single server-side execution for inventory management
+- Modified `addRow` to accept optional `imageBase64`/`imageFileName` parameters — when provided, uploads the image to Drive and sets the Image column on the row in one call
+- Modified `updateRowImage` to accept optional `imageBase64`/`imageFileName` parameters for edit-mode image changes in a single call
+- Extracted `_uploadImageToDrive()` and `_trashDriveFile()` reusable helpers from the existing `uploadImage`/`deleteImage` functions
+- Refactored `uploadImage` and `deleteImage` to use the new helpers (backward compatible)
+- Modified client-side scan queue to carry image data and pass it through the `addRow` call instead of making separate background calls
+- Removed the background uploadImage → updateRowImage chain from the scan confirm handler
+- Eliminated the fragile `currentRows.length - 1` row index guessing for new rows — server now knows the exact row index
+
+#### `inventorymanagement.gs` — v01.11g
+
+##### Changed
+- Image upload and item save now happen in a single server call instead of three separate calls
+- Faster and more reliable image handling with no risk of orphaned images
+
+#### `inventorymanagement.html` — v01.38w
+
+##### Changed
+- Image upload and item save now happen in a single server call instead of three separate calls
+- More reliable image handling when adding items with photos
 
 ## [v10.98r] — 2026-04-12 07:06:44 PM EST
 
