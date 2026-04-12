@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.33w">
+  <meta name="build-version" content="v01.34w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -523,13 +523,18 @@
       .ld-dash-card .card-value { font-size: 22px; }
       #ld-data-table { font-size: 12px; }
       #ld-data-table td { padding: 8px 8px; }
-      /* Hide non-essential columns on mobile — show only Item Name and Quantity */
-      #ld-data-table th:nth-child(3),
+      /* Hide non-essential columns on mobile — show only Image, Item Name and Quantity */
+      /* Image column is prepended as first visual column, shifting nth-child indices by 1 */
       #ld-data-table th:nth-child(4),
-      #ld-data-table th:nth-child(5) { display: none; }
+      #ld-data-table th:nth-child(5),
+      #ld-data-table th:nth-child(6) { display: none; }
       #ld-data-table td[data-col="2"],
       #ld-data-table td[data-col="3"],
       #ld-data-table td[data-col="4"] { display: none; }
+      /* Image column mobile sizing */
+      #ld-data-table td.ld-img-cell img { width: 32px; height: 32px; }
+      .ld-img-placeholder { width: 32px; height: 32px; font-size: 14px; }
+      #ld-data-table td.ld-img-cell { width: 40px; }
       #ld-add-row-bar { flex-direction: column; }
       #ld-add-row-bar input { min-width: 0 !important; width: 100%; }
       /* ── Compact mobile scanner strip ── */
@@ -693,6 +698,42 @@
     #qr-auto-amount { width: 42px; height: 22px; padding: 0 4px; text-align: center; background: rgba(0,0,0,0.4); color: #c9d1d9; border: 1px solid #1e1e2e; border-radius: 4px; font-family: monospace; font-size: 0.72rem; -moz-appearance: textfield; }
     #qr-auto-amount::-webkit-outer-spin-button, #qr-auto-amount::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .qr-auto-controls.qr-auto-disabled .qr-auto-amount-row { opacity: 0.4; pointer-events: none; }
+
+    /* ── Image column & lightbox ── */
+    #ld-data-table td.ld-img-cell { padding: 4px; text-align: center; width: 48px; vertical-align: middle; }
+    #ld-data-table th.ld-img-header { width: 48px; text-align: center; cursor: default; }
+    #ld-data-table td.ld-img-cell img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 1px solid #30363d; transition: border-color 0.2s; display: block; margin: 0 auto; }
+    #ld-data-table td.ld-img-cell img:hover { border-color: #58a6ff; }
+    .ld-img-placeholder { width: 40px; height: 40px; border-radius: 4px; background: #21262d; display: inline-flex; align-items: center; justify-content: center; color: #484f58; font-size: 18px; border: 1px solid #30363d; }
+    /* Lightbox overlay */
+    #ld-image-lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10005; align-items: center; justify-content: center; }
+    #ld-image-lightbox.active { display: flex; }
+    .lightbox-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); }
+    .lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; display: flex; align-items: center; justify-content: center; }
+    .lightbox-content img { max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .lightbox-close { position: absolute; top: -12px; right: -12px; width: 32px; height: 32px; border-radius: 50%; background: #30363d; color: #c9d1d9; border: none; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1; }
+    .lightbox-close:hover { background: #da3633; color: #fff; }
+    /* Delete modal image preview */
+    #ld-delete-img-preview { max-width: 120px; max-height: 120px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #30363d; display: none; }
+    /* Scan modal image section */
+    .scan-image-section { margin: 8px 0; text-align: center; }
+    .scan-image-preview { width: 120px; height: 120px; margin: 0 auto 8px; border-radius: 8px; overflow: hidden; border: 1px solid #30363d; background: #0d1117; display: flex; align-items: center; justify-content: center; }
+    .scan-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .scan-image-placeholder { color: #484f58; font-size: 11px; }
+    .scan-image-btns { display: flex; gap: 8px; justify-content: center; }
+    .scan-image-btn { padding: 4px 12px; border-radius: 6px; border: 1px solid #30363d; background: #21262d; color: #c9d1d9; font-size: 11px; cursor: pointer; touch-action: manipulation; }
+    .scan-image-btn:hover { background: #30363d; }
+    .scan-image-btn.scan-image-remove { color: #f85149; border-color: #f85149; }
+    /* Camera capture overlay for desktop */
+    #ld-camera-capture-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10006; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+    #ld-camera-capture-overlay.active { display: flex; }
+    #ld-camera-capture-video { max-width: 90vw; max-height: 70vh; border-radius: 8px; border: 2px solid #30363d; }
+    .camera-capture-btns { display: flex; gap: 12px; }
+    .camera-capture-btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; touch-action: manipulation; }
+    .camera-capture-snap { background: #238636; color: #fff; }
+    .camera-capture-snap:hover { background: #2ea043; }
+    .camera-capture-cancel { background: #30363d; color: #c9d1d9; }
+    .camera-capture-cancel:hover { background: #484f58; }
 /* ══════════════ */
 /* PROJECT END */
 /* ══════════════ */
@@ -933,6 +974,7 @@
     <div class="modal-box">
       <div class="modal-title">Delete Row</div>
       <div class="modal-msg">Are you sure you want to delete this row?</div>
+      <img id="ld-delete-img-preview" alt="Item image">
       <div class="modal-preview" id="ld-delete-preview"></div>
       <div class="modal-btns">
         <button class="btn-cancel" id="ld-delete-cancel">Cancel</button>
@@ -951,6 +993,18 @@
       <table class="scan-data-table">
         <tbody id="ld-scan-confirm-body"></tbody>
       </table>
+      <div class="scan-image-section" id="ld-scan-image-section">
+        <div class="scan-image-preview" id="ld-scan-image-preview">
+          <img id="ld-scan-image-img" style="display:none;" alt="Item image">
+          <div class="scan-image-placeholder" id="ld-scan-image-placeholder">No image</div>
+        </div>
+        <div class="scan-image-btns">
+          <button type="button" class="scan-image-btn" id="ld-scan-image-upload">📤 Upload</button>
+          <button type="button" class="scan-image-btn" id="ld-scan-image-capture">📷 Camera</button>
+          <button type="button" class="scan-image-btn scan-image-remove" id="ld-scan-image-remove" style="display:none;">🗑️ Remove</button>
+        </div>
+        <input type="file" id="ld-scan-image-file" accept="image/*" style="display:none;">
+      </div>
       <div class="modal-btns">
         <button class="btn-cancel" id="ld-scan-cancel">Cancel</button>
         <button class="btn-confirm" id="ld-scan-confirm">Add Row</button>
@@ -961,6 +1015,25 @@
   <div id="scan-queue-badge" style="display:none;position:fixed;bottom:80px;right:16px;z-index:10000;background:#1f6feb;color:#fff;border-radius:20px;padding:4px 12px;font:600 12px/1.4 sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.3);pointer-events:none;">
     <span id="scan-queue-count">0</span> queued
   </div>
+
+  <!-- Image lightbox overlay -->
+  <div id="ld-image-lightbox">
+    <div class="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <img id="ld-lightbox-img" src="" alt="Item image">
+      <button class="lightbox-close">&times;</button>
+    </div>
+  </div>
+
+  <!-- Camera capture overlay (desktop) -->
+  <div id="ld-camera-capture-overlay">
+    <video id="ld-camera-capture-video" autoplay playsinline></video>
+    <div class="camera-capture-btns">
+      <button class="camera-capture-btn camera-capture-snap" id="ld-camera-snap">📷 Take Photo</button>
+      <button class="camera-capture-btn camera-capture-cancel" id="ld-camera-cancel">Cancel</button>
+    </div>
+  </div>
+
 <!-- ══════════════ -->
 <!-- PROJECT END -->
 <!-- ══════════════ -->
@@ -4482,7 +4555,20 @@
         var thead = ldDataTable.querySelector('thead tr');
         var tbody = ldDataTable.querySelector('tbody');
         thead.innerHTML = '';
+        // Detect Image column index
+        var _imgColIdx = -1;
+        for (var _hi = 0; _hi < _ldHeaders.length; _hi++) {
+          if (_ldHeaders[_hi].toLowerCase().trim() === 'image') { _imgColIdx = _hi; break; }
+        }
+        // Prepend Image column header
+        if (_imgColIdx >= 0) {
+          var thImg = document.createElement('th');
+          thImg.className = 'ld-img-header';
+          thImg.textContent = '\uD83D\uDCF7';
+          thead.appendChild(thImg);
+        }
         _ldHeaders.forEach(function(h, ci) {
+          if (ci === _imgColIdx) return; // skip Image from normal headers
           var th = document.createElement('th');
           th.textContent = h;
           var arrow = document.createElement('span');
@@ -4521,7 +4607,35 @@
             tr.style.pointerEvents = 'none';
             tr.style.position = 'relative';
           }
+          // Prepend Image cell
+          if (_imgColIdx >= 0) {
+            var imgTd = document.createElement('td');
+            imgTd.className = 'ld-img-cell';
+            imgTd.setAttribute('data-row', origIdx);
+            var imgFileId = (_imgColIdx < row.length) ? String(row[_imgColIdx] || '').trim() : '';
+            if (imgFileId) {
+              var imgEl = document.createElement('img');
+              imgEl.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(imgFileId) + '&sz=w80';
+              imgEl.loading = 'lazy';
+              imgEl.alt = 'Item image';
+              imgEl.onerror = function() { this.style.display = 'none'; this.nextSibling && (this.nextSibling.style.display = ''); };
+              imgEl.addEventListener('click', (function(fid) { return function(e) { e.stopPropagation(); openImageLightbox(fid); }; })(imgFileId));
+              var phHidden = document.createElement('div');
+              phHidden.className = 'ld-img-placeholder';
+              phHidden.textContent = '\uD83D\uDCF7';
+              phHidden.style.display = 'none';
+              imgTd.appendChild(imgEl);
+              imgTd.appendChild(phHidden);
+            } else {
+              var ph = document.createElement('div');
+              ph.className = 'ld-img-placeholder';
+              ph.textContent = '\uD83D\uDCF7';
+              imgTd.appendChild(ph);
+            }
+            tr.appendChild(imgTd);
+          }
           row.forEach(function(val, ci) {
+            if (ci === _imgColIdx) return; // skip Image column from normal cells
             var td = document.createElement('td');
             td.textContent = val;
             td.setAttribute('data-row', origIdx);
@@ -4613,7 +4727,24 @@
         var cancelBtn = document.getElementById('ld-delete-cancel');
         var confirmBtn = document.getElementById('ld-delete-confirm');
         var previewParts = [];
+        // Detect image column for delete modal preview
+        var delImgColIdx = -1;
+        for (var dhi = 0; dhi < _ldHeaders.length; dhi++) {
+          if (_ldHeaders[dhi].toLowerCase().trim() === 'image') { delImgColIdx = dhi; break; }
+        }
+        var delImgPreview = document.getElementById('ld-delete-img-preview');
+        if (delImgPreview) {
+          var delImgFileId = delImgColIdx >= 0 ? String(deletedRow[delImgColIdx] || '').trim() : '';
+          if (delImgFileId) {
+            delImgPreview.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(delImgFileId) + '&sz=w240';
+            delImgPreview.style.display = 'block';
+          } else {
+            delImgPreview.style.display = 'none';
+            delImgPreview.src = '';
+          }
+        }
         _ldHeaders.forEach(function(h, ci) {
+          if (ci === delImgColIdx) return; // skip Image from text preview
           previewParts.push(h + ': ' + (deletedRow[ci] || '\u2014'));
         });
         preview.textContent = previewParts.join(' \u2022 ');
@@ -5252,6 +5383,24 @@
             }
           }
         }
+        // Detect Image column
+        var imgColIdx = -1;
+        for (var ici = 0; ici < headers.length; ici++) {
+          if (headers[ici].toLowerCase().trim() === 'image') { imgColIdx = ici; break; }
+        }
+        // Reset image state for new modal open
+        if (typeof window._imgClearPreview === 'function') window._imgClearPreview();
+        if (typeof window._imgSetPendingBase64 === 'function') window._imgSetPendingBase64(null);
+        if (typeof window._imgSetExistingFileId === 'function') window._imgSetExistingFileId('');
+        // Pre-fill existing image in edit mode
+        if (existingRow && imgColIdx >= 0) {
+          var existImgId = String(existingRow[imgColIdx] || '').trim();
+          if (existImgId && typeof window._imgShowExisting === 'function') window._imgShowExisting(existImgId);
+        }
+        // Hide image section if user lacks edit permissions
+        var imgSection = document.getElementById('ld-scan-image-section');
+        if (imgSection) imgSection.style.display = '';
+
         var existingItemName = existingRow && itemNameColIdx >= 0 ? existingRow[itemNameColIdx] : '';
         var existingQty = existingRow && qtyColIdx >= 0 ? existingRow[qtyColIdx] : '';
         if (qtyDisplay) qtyDisplay.textContent = existingRow ? 'Current Qty: ' + existingQty : '';
@@ -5278,6 +5427,12 @@
           // Last User and Last Updated are always auto-populated — don't show them in the entry UI,
           // but still create the input and push to editInputs so the positional column mapping stays correct
           var hCurr = (headers[i] || '').toLowerCase();
+          // Skip Image column — handled by the image upload/capture UI
+          if (hCurr === 'image') {
+            var imgInp = document.createElement('input'); imgInp.type = 'hidden'; imgInp.value = '';
+            editInputs.push(imgInp);
+            continue;
+          }
           if (hCurr === 'last user' || hCurr === 'last updated') {
             var autoInp = document.createElement('input'); autoInp.type = 'hidden';
             if (hCurr === 'last updated') {
@@ -5379,16 +5534,65 @@
           cleanup();
           var values = [];
           for (var k = 0; k < editInputs.length; k++) { values.push(editInputs[k].value); }
-          if (typeof window._enqueueScanItem === 'function') {
-            window._enqueueScanItem(values);
-          } else {
-            // Fallback: populate hidden inputs and click add-row button (legacy path)
-            for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
-            var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+
+          // Handle image upload before saving the row
+          var pendingImg = (typeof window._imgGetPendingBase64 === 'function') ? window._imgGetPendingBase64() : null;
+          var oldFileId = (typeof window._imgGetExistingFileId === 'function') ? window._imgGetExistingFileId() : '';
+
+          function proceedWithSave(imgFileId) {
+            // Set Image column value
+            if (imgColIdx >= 0 && imgColIdx < values.length) values[imgColIdx] = imgFileId || '';
+            // For edit mode on existing rows, also update the image column separately
+            if (isEditAction && existingRow && imgColIdx >= 0) {
+              var newImgId = imgFileId || '';
+              var oldImgId = oldFileId || '';
+              if (newImgId !== oldImgId) {
+                var sessionTok = _sessionToken || '';
+                if (sessionTok) {
+                  gasCall('updateRowImage', [sessionTok, existingRowIndex, newImgId], function() {}, function() {});
+                  if (oldImgId && newImgId !== oldImgId) {
+                    gasCall('deleteImage', [sessionTok, oldImgId], function() {}, function() {});
+                  }
+                }
+              }
+            }
+            if (typeof window._enqueueScanItem === 'function') {
+              window._enqueueScanItem(values);
+            } else {
+              for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
+              var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
+            }
+            qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
           }
-          qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
+
+          if (pendingImg) {
+            var sessionToken = _sessionToken || '';
+            var barVal = barcodeColIdx >= 0 ? (values[barcodeColIdx] || 'item') : 'item';
+            var imgFileName = 'inv_' + String(barVal).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '_' + Date.now() + '.jpg';
+            gasCall('uploadImage', [sessionToken, pendingImg, imgFileName], function(resp) {
+              var fid = (resp && resp.fileId) ? resp.fileId : '';
+              // Delete old image if replacing
+              if (oldFileId && fid && oldFileId !== fid && sessionToken) {
+                gasCall('deleteImage', [sessionToken, oldFileId], function() {}, function() {});
+              }
+              proceedWithSave(fid);
+            }, function(err) {
+              console.warn('Image upload failed:', err);
+              proceedWithSave(oldFileId); // proceed without new image
+            });
+          } else if (!pendingImg && !oldFileId && (typeof window._imgGetExistingFileId === 'function') && window._imgGetExistingFileId() === '' && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
+            // User removed existing image
+            var removedId = String(existingRow[imgColIdx]).trim();
+            var sessTok = _sessionToken || '';
+            if (sessTok && removedId) {
+              gasCall('deleteImage', [sessTok, removedId], function() {}, function() {});
+            }
+            proceedWithSave('');
+          } else {
+            proceedWithSave(oldFileId);
+          }
         }
-        function onCancel() { cleanup(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
+        function onCancel() { cleanup(); if (typeof window._imgClearPreview === 'function') window._imgClearPreview(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
         function cleanup() { modal.classList.remove('active'); if (confirmBtn) confirmBtn.onclick = null; if (cancelBtn) cancelBtn.onclick = null; }
         var confirmBtn = document.getElementById('ld-scan-confirm');
         var cancelBtn = document.getElementById('ld-scan-cancel');
@@ -5604,6 +5808,188 @@
           }
         }
         return _origAutoWrap(raw, fmt);
+      };
+    })();
+
+    // ── Image Lightbox ──
+    function openImageLightbox(fileId) {
+      var lightbox = document.getElementById('ld-image-lightbox');
+      var img = document.getElementById('ld-lightbox-img');
+      if (!lightbox || !img) return;
+      img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(fileId) + '&sz=w800';
+      lightbox.classList.add('active');
+    }
+    function closeImageLightbox() {
+      var lightbox = document.getElementById('ld-image-lightbox');
+      if (lightbox) lightbox.classList.remove('active');
+      var img = document.getElementById('ld-lightbox-img');
+      if (img) img.src = '';
+    }
+    (function() {
+      var lb = document.getElementById('ld-image-lightbox');
+      if (!lb) return;
+      lb.querySelector('.lightbox-backdrop').addEventListener('click', closeImageLightbox);
+      lb.querySelector('.lightbox-close').addEventListener('click', closeImageLightbox);
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && lb.classList.contains('active')) closeImageLightbox(); });
+    })();
+
+    // ── Image Compression Utility ──
+    function compressImage(fileOrBlob, callback) {
+      var img = new Image();
+      var url = URL.createObjectURL(fileOrBlob);
+      img.onload = function() {
+        URL.revokeObjectURL(url);
+        var MAX_DIM = 800;
+        var w = img.width, h = img.height;
+        if (w > MAX_DIM || h > MAX_DIM) {
+          var scale = MAX_DIM / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        var base64 = dataUrl.split(',')[1];
+        callback(base64, w, h);
+      };
+      img.onerror = function() { URL.revokeObjectURL(url); callback(null); };
+      img.src = url;
+    }
+
+    // ── Image Upload/Capture in Scan Modal ──
+    (function() {
+      var _pendingImageBase64 = null;
+      var _existingImageFileId = '';
+
+      var uploadBtn = document.getElementById('ld-scan-image-upload');
+      var captureBtn = document.getElementById('ld-scan-image-capture');
+      var removeBtn = document.getElementById('ld-scan-image-remove');
+      var fileInput = document.getElementById('ld-scan-image-file');
+      var previewImg = document.getElementById('ld-scan-image-img');
+      var placeholder = document.getElementById('ld-scan-image-placeholder');
+
+      function showPreview(base64) {
+        if (previewImg) { previewImg.src = 'data:image/jpeg;base64,' + base64; previewImg.style.display = 'block'; }
+        if (placeholder) placeholder.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = '';
+      }
+      function clearPreview() {
+        _pendingImageBase64 = null;
+        if (previewImg) { previewImg.src = ''; previewImg.style.display = 'none'; }
+        if (placeholder) { placeholder.style.display = ''; placeholder.textContent = 'No image'; }
+        if (removeBtn) removeBtn.style.display = 'none';
+      }
+
+      // Upload from file
+      if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', function() { fileInput.value = ''; fileInput.click(); });
+        fileInput.addEventListener('change', function() {
+          if (!fileInput.files || !fileInput.files[0]) return;
+          compressImage(fileInput.files[0], function(base64) {
+            if (!base64) return;
+            _pendingImageBase64 = base64;
+            showPreview(base64);
+          });
+        });
+      }
+
+      // Camera capture
+      if (captureBtn) {
+        captureBtn.addEventListener('click', function() {
+          // On mobile, use a file input with capture attribute
+          var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+          if (isMobile) {
+            var captureInput = document.createElement('input');
+            captureInput.type = 'file';
+            captureInput.accept = 'image/*';
+            captureInput.setAttribute('capture', 'environment');
+            captureInput.addEventListener('change', function() {
+              if (!captureInput.files || !captureInput.files[0]) return;
+              compressImage(captureInput.files[0], function(base64) {
+                if (!base64) return;
+                _pendingImageBase64 = base64;
+                showPreview(base64);
+              });
+            });
+            captureInput.click();
+            return;
+          }
+          // Desktop: use getUserMedia overlay
+          var overlay = document.getElementById('ld-camera-capture-overlay');
+          var video = document.getElementById('ld-camera-capture-video');
+          var snapBtn = document.getElementById('ld-camera-snap');
+          var cancelBtn = document.getElementById('ld-camera-cancel');
+          if (!overlay || !video) return;
+          var captureStream = null;
+          navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } })
+            .then(function(stream) {
+              captureStream = stream;
+              video.srcObject = stream;
+              overlay.classList.add('active');
+            })
+            .catch(function() {
+              // Fallback: try without exact facingMode
+              return navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
+            })
+            .then(function(stream) {
+              if (!captureStream && stream) {
+                captureStream = stream;
+                video.srcObject = stream;
+                overlay.classList.add('active');
+              }
+            })
+            .catch(function(err) { console.warn('Camera error:', err); });
+
+          function stopCapture() {
+            if (captureStream) { captureStream.getTracks().forEach(function(t) { t.stop(); }); captureStream = null; }
+            video.srcObject = null;
+            overlay.classList.remove('active');
+          }
+          var snapHandler = function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            stopCapture();
+            canvas.toBlob(function(blob) {
+              if (!blob) return;
+              compressImage(blob, function(base64) {
+                if (!base64) return;
+                _pendingImageBase64 = base64;
+                showPreview(base64);
+              });
+            }, 'image/jpeg', 0.9);
+          };
+          var cancelHandler = function() { stopCapture(); };
+          // Clone buttons to prevent stacking listeners
+          if (snapBtn) { var ns = snapBtn.cloneNode(true); snapBtn.parentNode.replaceChild(ns, snapBtn); ns.addEventListener('click', snapHandler); }
+          if (cancelBtn) { var nc = cancelBtn.cloneNode(true); cancelBtn.parentNode.replaceChild(nc, cancelBtn); nc.addEventListener('click', cancelHandler); }
+        });
+      }
+
+      // Remove image
+      if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+          _pendingImageBase64 = null;
+          _existingImageFileId = '';
+          clearPreview();
+        });
+      }
+
+      // Expose for scan modal integration
+      window._imgGetPendingBase64 = function() { return _pendingImageBase64; };
+      window._imgSetPendingBase64 = function(v) { _pendingImageBase64 = v; };
+      window._imgGetExistingFileId = function() { return _existingImageFileId; };
+      window._imgSetExistingFileId = function(v) { _existingImageFileId = v; };
+      window._imgShowPreview = showPreview;
+      window._imgClearPreview = clearPreview;
+      window._imgShowExisting = function(fileId) {
+        _existingImageFileId = fileId;
+        if (previewImg) { previewImg.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(fileId) + '&sz=w240'; previewImg.style.display = 'block'; }
+        if (placeholder) placeholder.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = '';
       };
     })();
 

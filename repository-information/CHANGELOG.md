@@ -3,9 +3,48 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v10.92r] — 2026-04-12 05:25:45 PM EST
+
+> **Prompt:** "in the inventorymanagement, when making/editing an entry, i want there to be an option to either upload an image or take a picture to create an image for the item. in the table itself, the user should be able to click on a cell to see the image which is assigned to that item. also when adding/removing, the user should be able to see the image in the modal. ask clarifying questions you have about accomplishing this."
+
+### Added
+- Image upload/capture functionality for inventory items — users can upload from device or take a photo with camera
+- Google Drive storage backend for inventory images with client-side compression (max 800px, JPEG 60%)
+- Thumbnail column in the inventory table showing 40x40px image previews (32px on mobile)
+- Full-size image lightbox overlay when clicking a thumbnail in the table
+- Image preview in the delete confirmation modal
+- Image preview and upload/capture buttons in the add/edit scan-confirm modal
+- Desktop camera capture overlay with getUserMedia for taking photos on desktop browsers
+- Mobile camera capture via native `capture="environment"` file input
+
+#### `inventorymanagement.html` — v01.34w
+
+##### Added
+- Image thumbnail column (first visual column) with Drive thumbnail CDN integration
+- Image lightbox overlay (dark theme, z-index 10005) for full-size viewing
+- Image preview in delete confirmation modal
+- Upload/capture image section in scan-confirm modal with preview, upload, camera, and remove buttons
+- Client-side image compression utility (max 800px, JPEG 60% quality)
+- Camera capture overlay for desktop browsers
+- CSS for image cells, lightbox, camera overlay, and mobile responsive thumbnails
+
+#### `inventorymanagement.gs` — v01.08g
+
+##### Added
+- `getOrCreateImageFolder()` — lazy-creates a Drive folder for image storage with CacheService caching
+- `uploadImage(token, base64Data, fileName)` — uploads compressed JPEG to Drive with ANYONE_WITH_LINK sharing
+- `getImageThumbnail(token, fileId)` — fallback proxy to serve images via GAS when Drive URLs are inaccessible
+- `deleteImage(token, fileId)` — soft-deletes Drive images (recoverable 30 days)
+- `updateRowImage(token, rowIndex, fileId)` — updates the Image column for an existing row
+- `IMAGE_FOLDER_NAME` config variable for Drive folder name
+- Image column in auto-create sheet headers
+
+##### Changed
+- `deleteRow` now cleans up Drive images before deleting a row (prevents orphaned files)
 
 ## [v10.91r] — 2026-04-12 04:45:19 PM EST
 

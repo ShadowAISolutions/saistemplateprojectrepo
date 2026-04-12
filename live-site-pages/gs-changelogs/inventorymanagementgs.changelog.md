@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 7/50`
+`Sections: 8/50`
 
 ## [Unreleased]
+
+## [v01.08g] — 2026-04-12 05:25:45 PM EST — v10.92r
+
+### Added
+- Image storage for inventory items — photos are saved securely and linked to each item
+- Images are automatically cleaned up when an item is deleted
 
 ## [v01.07g] — 2026-04-12 03:07:57 PM EST — v10.86r
 

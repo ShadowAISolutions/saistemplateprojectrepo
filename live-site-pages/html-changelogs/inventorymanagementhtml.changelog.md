@@ -3,9 +3,18 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 33/50`
+`Sections: 34/50`
 
 ## [Unreleased]
+
+## [v01.34w] — 2026-04-12 05:25:45 PM EST — v10.92r
+
+### Added
+- Item images — upload a photo or take a picture when adding or editing inventory items
+- Image thumbnails now appear in the table for quick visual identification
+- Tap a thumbnail to view the full-size image in an overlay
+- Image preview shown when deleting an item so you can confirm the right item
+- Camera capture button for taking photos directly from your device
 
 ## [v01.33w] — 2026-04-12 04:45:19 PM EST — v10.91r
 

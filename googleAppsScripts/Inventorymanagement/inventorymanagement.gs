@@ -1,4 +1,4 @@
-var VERSION = "v01.07g";
+var VERSION = "v01.08g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -37,6 +37,7 @@ var ACL_SHEET_NAME = "Access";
 var ACL_PAGE_NAME  = "inventorymanagement";
 var PORTAL_ICON    = "📦";
 var PORTAL_DESCRIPTION = "Inventory Management application.";
+var IMAGE_FOLDER_NAME = 'InventoryManagement_Images';
 
 // Unified toggleable auth configuration (see 6-UNIFIED-TOGGLEABLE-AUTH-PATTERN.md)
 // Select a preset, then apply per-project overrides.
@@ -320,7 +321,7 @@ function refreshDataCache() {
     if (!sheet) {
       // Auto-create the sheet with default headers if it was deleted
       sheet = ss.insertSheet(SHEET_NAME);
-      sheet.getRange(1, 1, 1, 5).setValues([['Item Name', 'Quantity', 'Barcode', 'Last User', 'Last Updated']]);
+      sheet.getRange(1, 1, 1, 6).setValues([['Item Name', 'Quantity', 'Barcode', 'Last User', 'Last Updated', 'Image']]);
       // Clear stale cache so old data doesn't persist
       CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
     }
@@ -624,6 +625,21 @@ function deleteRow(token, rowIndex) {
     return signMessage({ type: 'gas-write-error', error: 'row_out_of_range' }, user.messageKey || '');
   }
 
+  // PROJECT: Clean up Drive image before deleting row
+  try {
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var imgCol = -1;
+    for (var hi = 0; hi < headers.length; hi++) {
+      if (String(headers[hi]).toLowerCase().trim() === 'image') { imgCol = hi; break; }
+    }
+    if (imgCol >= 0) {
+      var imgFileId = String(sheet.getRange(sheetRow, imgCol + 1).getValue()).trim();
+      if (imgFileId) {
+        try { DriveApp.getFileById(imgFileId).setTrashed(true); } catch (de) { Logger.log('deleteRow image cleanup: ' + de.message); }
+      }
+    }
+  } catch (imgErr) { Logger.log('deleteRow image lookup: ' + imgErr.message); }
+
   sheet.deleteRow(sheetRow);
 
   // Refresh cache immediately for instant feedback
@@ -636,6 +652,132 @@ function deleteRow(token, rowIndex) {
   var deleteResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   deleteResult.liveData = getCachedData();
   return deleteResult;
+}
+
+// ── Image Management (Google Drive) ──
+
+/**
+ * getOrCreateImageFolder() — returns a Drive Folder for storing inventory images.
+ * Uses CacheService to avoid repeated Drive lookups. Creates the folder on first call.
+ */
+function getOrCreateImageFolder() {
+  var cache = CacheService.getScriptCache();
+  var cachedId = cache.get('image_folder_id');
+  if (cachedId) {
+    try { return DriveApp.getFolderById(cachedId); } catch (e) { /* folder deleted, recreate */ }
+  }
+  var folders = DriveApp.getFoldersByName(IMAGE_FOLDER_NAME);
+  var folder;
+  if (folders.hasNext()) {
+    folder = folders.next();
+  } else {
+    folder = DriveApp.createFolder(IMAGE_FOLDER_NAME);
+  }
+  cache.put('image_folder_id', folder.getId(), 21600);
+  return folder;
+}
+
+/**
+ * uploadImage(token, base64Data, fileName) — uploads a compressed JPEG to Google Drive.
+ * The image is stored in a dedicated folder with ANYONE_WITH_LINK viewing permission
+ * so that Drive thumbnail URLs work without additional GAS calls.
+ * Returns the Drive file ID for storage in the spreadsheet's Image column.
+ */
+function uploadImage(token, base64Data, fileName) {
+  var user = validateSessionForData(token, 'uploadImage');
+  checkPermission(user, 'write', 'uploadImage');
+
+  if (!base64Data) {
+    return signMessage({ type: 'gas-write-error', error: 'no_image_data' }, user.messageKey || '');
+  }
+
+  var decoded = Utilities.base64Decode(base64Data);
+  var blob = Utilities.newBlob(decoded, 'image/jpeg', fileName || 'inventory_image.jpg');
+  var folder = getOrCreateImageFolder();
+  var file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  var fileId = file.getId();
+  auditLog('data_write', user.email, 'upload_image', { fileId: fileId, fileName: fileName });
+  return signMessage({ type: 'gas-image-uploaded', fileId: fileId }, user.messageKey || '');
+}
+
+/**
+ * getImageThumbnail(token, fileId) — fetches an image from Drive and returns it as base64.
+ * Fallback for when Drive thumbnail URLs are not accessible (e.g. private Drive).
+ * Normally, the HTML layer uses Drive's thumbnail service URL directly.
+ */
+function getImageThumbnail(token, fileId) {
+  var user = validateSessionForData(token, 'getImageThumbnail');
+  checkPermission(user, 'read', 'getImageThumbnail');
+
+  if (!fileId) return { type: 'gas-image-data', data: null };
+  try {
+    var file = DriveApp.getFileById(fileId);
+    var blob = file.getBlob();
+    var base64 = Utilities.base64Encode(blob.getBytes());
+    return { type: 'gas-image-data', fileId: fileId, data: base64, mimeType: blob.getContentType() };
+  } catch (e) {
+    return { type: 'gas-image-data', fileId: fileId, data: null, error: e.message };
+  }
+}
+
+/**
+ * deleteImage(token, fileId) — trashes a Drive image file (recoverable for 30 days).
+ * Called when a row is deleted or when a user removes/replaces an item's image.
+ */
+function deleteImage(token, fileId) {
+  var user = validateSessionForData(token, 'deleteImage');
+  checkPermission(user, 'write', 'deleteImage');
+
+  if (fileId) {
+    try { DriveApp.getFileById(fileId).setTrashed(true); } catch (e) { Logger.log('deleteImage: ' + e.message); }
+  }
+  auditLog('data_write', user.email, 'delete_image', { fileId: fileId });
+  return signMessage({ type: 'gas-image-deleted' }, user.messageKey || '');
+}
+
+/**
+ * updateRowImage(token, rowIndex, fileId) — updates the Image column for a given row.
+ * Used when editing an existing item to add, replace, or remove its image.
+ * Pass empty string as fileId to remove the image reference.
+ */
+function updateRowImage(token, rowIndex, fileId) {
+  var user = validateSessionForData(token, 'updateRowImage');
+  checkPermission(user, 'write', 'updateRowImage');
+
+  rowIndex = parseInt(rowIndex, 10);
+  if (isNaN(rowIndex) || rowIndex < 0) {
+    return signMessage({ type: 'gas-write-error', error: 'invalid_row_index' }, user.messageKey || '');
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    return signMessage({ type: 'gas-write-error', error: 'sheet_not_found' }, user.messageKey || '');
+  }
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var imgCol = -1;
+  for (var h = 0; h < headers.length; h++) {
+    if (String(headers[h]).toLowerCase().trim() === 'image') { imgCol = h; break; }
+  }
+  if (imgCol < 0) {
+    return signMessage({ type: 'gas-write-error', error: 'no_image_column' }, user.messageKey || '');
+  }
+
+  var sheetRow = rowIndex + 2;
+  if (sheetRow > sheet.getLastRow()) {
+    return signMessage({ type: 'gas-write-error', error: 'row_out_of_range' }, user.messageKey || '');
+  }
+
+  sheet.getRange(sheetRow, imgCol + 1).setValue(fileId || '');
+  refreshDataCache();
+
+  auditLog('data_write', user.email, 'update_row_image', { row: rowIndex, fileId: fileId });
+  var result = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  result.liveData = getCachedData();
+  return result;
 }
 
 // ══════════════
