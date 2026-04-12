@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.30w">
+  <meta name="build-version" content="v01.31w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -638,8 +638,8 @@
     .asp-kick { background: none; border: 1px solid #ef5350; color: #ef5350; cursor: pointer; font: 10px/1 monospace; padding: 2px 8px; border-radius: 3px; margin-top: 6px; }
     .asp-kick:hover { background: rgba(239,83,80,0.15); }
     /* ── QR Camera Scanner ── */
-    #qr-camera-section { padding: 12px 16px; border-bottom: 1px solid #2a2b3d; background: #161b22; }
-    .qr-viewport-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid #1e1e2e; }
+    #qr-camera-section { padding: 12px 16px; border-bottom: 1px solid #2a2b3d; background: #161b22; display: flex; flex-direction: row; gap: 10px; align-items: flex-start; }
+    .qr-viewport-wrapper { position: relative; width: 100%; max-width: 400px; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden; background: #000; border: 1px solid #1e1e2e; flex: 0 0 auto; }
     #qr-camera-section video { width: 100%; height: 100%; object-fit: cover; display: block; }
     #qr-proc-canvas { display: none; }
     .qr-corner { position: absolute; width: 28px; height: 28px; z-index: 10; pointer-events: none; }
@@ -664,20 +664,22 @@
     .qr-start-btn:disabled { opacity: 0.4; cursor: default; }
     .qr-engine-badge { position: absolute; bottom: 10px; left: 10px; font-family: monospace; font-size: 0.55rem; padding: 3px 7px; border-radius: 20px; background: rgba(0,0,0,0.6); color: #555570; z-index: 15; border: 1px solid #1e1e2e; }
     .qr-engine-badge.native { color: #00ffcc; border-color: #00ffcc; }
-    .qr-torch-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #555570; font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; }
+    .qr-torch-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #555570; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; }
     .qr-torch-btn:active { transform: scale(0.9); }
     .qr-torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
-    .qr-stop-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #ff6b6b; font-size: 1.1rem; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; }
+    .qr-stop-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #ff6b6b; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; }
     .qr-stop-btn:active { transform: scale(0.9); }
-    .qr-status-bar { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 0.68rem; color: #555570; padding: 8px 2px 0; max-width: 400px; margin: 0 auto; }
+    .qr-status-bar { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 0.68rem; color: #555570; padding: 0; }
     .qr-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555570; flex-shrink: 0; transition: background 0.3s; }
     .qr-status-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; animation: qrPulse 1.5s ease-in-out infinite; }
     .qr-status-dot.found { background: #00ffcc; box-shadow: 0 0 8px #00ffcc; animation: none; }
     .qr-status-dot.error { background: #ff4466; animation: none; }
     @keyframes qrPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
     /* ── Auto-scan toggle + increment input (right column on mobile, below status on desktop) ── */
-    .qr-side-panel { display: contents; }
-    .qr-auto-controls { display: flex; align-items: center; gap: 12px; padding: 6px 2px 0; margin: 0 auto; max-width: 400px; font-family: monospace; font-size: 0.7rem; color: #8b949e; }
+    .qr-side-panel { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; gap: 8px; align-self: stretch; }
+    .qr-action-btns { display: flex; flex-direction: row; gap: 6px; margin-top: auto; }
+    .qr-action-btns #ld-manual-entry-btn { padding: 6px 10px; background: #1f6feb; color: #fff; border: none; border-radius: 6px; font: 600 11px/1.2 sans-serif; cursor: pointer; white-space: nowrap; flex: 1 1 auto; min-width: 0; }
+    .qr-auto-controls { display: flex; align-items: center; gap: 12px; padding: 0; font-family: monospace; font-size: 0.7rem; color: #8b949e; }
     .qr-auto-toggle-row { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
     .qr-toggle-switch { position: relative; display: inline-block; width: 30px; height: 16px; flex-shrink: 0; }
     .qr-toggle-switch input { opacity: 0; width: 0; height: 0; }

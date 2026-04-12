@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 30/50`
+`Sections: 31/50`
 
 ## [Unreleased]
+
+## [v01.31w] — 2026-04-12 04:19:15 PM EST — v10.89r
+
+### Changed
+- Scanner controls now appear to the right of the camera on desktop, matching the mobile layout
 
 ## [v01.30w] — 2026-04-12 03:58:45 PM EST — v10.88r
 

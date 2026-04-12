@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v10.89r] — 2026-04-12 04:19:15 PM EST
+
+> **Prompt:** "make the desktop view much more similar to the mobile view, in that the controls can be to the right of the camera area"
+
+### Changed
+- Unified desktop and mobile camera section layouts — desktop now uses the same horizontal flex layout as mobile, with camera on the left and controls (status, auto-add toggle, action buttons) to the right. Previously desktop stacked everything vertically with controls hidden
+- Made flashlight, stop camera, and manual entry buttons visible on desktop (previously `display: none` on desktop, only shown on mobile)
+- Side panel now uses `display: flex` on desktop instead of `display: contents` — acts as a proper layout container at all screen sizes
+
+#### `inventorymanagement.html` — v01.31w
+##### Changed
+- Scanner controls now appear to the right of the camera on desktop, matching the mobile layout
 
 ## [v10.88r] — 2026-04-12 03:58:45 PM EST
 
