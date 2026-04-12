@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v10.84r] — 2026-04-12 12:56:32 PM EST
+
+> **Prompt:** "in the inventory management, in the item modal, instead of barcode being a field we can edit, have it as text under the modal title. and when adding a new item, allow 0 but no negatives. when editing an already existing item, negatives while allowed should stop allowing decreasing further when the quantity will go below 0"
+
+### Changed
+- Moved barcode from an editable input field to static text display under the modal title in the item modal. For scan and edit modes, barcode is shown as non-editable text; for manual entry, it remains an editable field in the table
+- Updated quantity validation: new items now allow 0 but disallow negative values (stepper and typed input both clamp at 0). Existing items allow negative delta but clamp so the resulting quantity never goes below 0 (e.g. if current qty is 5, minimum delta is -5)
+- Updated the existing item quantity note to show the minimum allowed delta value
+
+#### `inventorymanagement.html` — v01.26w
+##### Changed
+- Barcode now appears as non-editable text under the modal title instead of as an editable field in the table
+- When adding a new item, quantity can be set to 0 but not below (previously 0 was skipped)
+- When editing an existing item, negative quantities are clamped so the total doesn't go below 0
 
 ## [v10.83r] — 2026-04-11 11:43:01 PM EST
 

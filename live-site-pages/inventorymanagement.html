@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.25w">
+  <meta name="build-version" content="v01.26w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -460,6 +460,12 @@
     }
     #ld-scan-confirm-modal .modal-title { font-size: 16px; font-weight: 700; color: #58a6ff; margin-bottom: 4px; }
     #ld-scan-confirm-modal .modal-subtitle { font-size: 12px; color: #8b949e; margin-bottom: 12px; }
+    #ld-scan-confirm-modal .modal-barcode-display {
+      font-size: 14px; font-family: monospace; color: #c9d1d9;
+      background: #0f1117; border: 1px solid #2a2b3d; border-radius: 6px;
+      padding: 6px 12px; margin-bottom: 12px; word-break: break-all;
+    }
+    #ld-scan-confirm-modal .modal-barcode-display:empty { display: none; }
     #ld-scan-confirm-modal .scan-data-table {
       width: 100%; border-collapse: collapse; margin-bottom: 16px; text-align: left;
     }
@@ -927,6 +933,7 @@
     <div class="modal-box">
       <div class="modal-title" id="ld-scan-modal-title">Scanned Item</div>
       <div class="modal-subtitle" id="ld-scan-format-label"></div>
+      <div class="modal-barcode-display" id="ld-scan-barcode-display"></div>
       <table class="scan-data-table">
         <tbody id="ld-scan-confirm-body"></tbody>
       </table>
@@ -5200,6 +5207,8 @@
         var isManual = scannedFormat === 'MANUAL ENTRY';
         var isEditAction = scannedFormat === 'EDIT';
         if (formatLabel) formatLabel.textContent = scannedFormat ? scannedFormat.replace('_', ' ').toUpperCase() : 'QR CODE';
+        var barcodeDisplay = document.getElementById('ld-scan-barcode-display');
+        if (barcodeDisplay) barcodeDisplay.textContent = scannedData || '';
         var confirmBtnEarly = document.getElementById('ld-scan-confirm');
         if (confirmBtnEarly) confirmBtnEarly.textContent = isEditAction ? 'Save' : 'Add Row';
         var ldHeaders = (typeof window._ldGetHeaders === 'function') ? window._ldGetHeaders() : [];
@@ -5256,6 +5265,14 @@
             editInputs.push(autoInp);
             continue;
           }
+          if (hCurr === 'barcode' && !isManual) {
+            // Scan or edit: barcode known — hidden input, shown as text above title
+            var barcodeInp = document.createElement('input');
+            barcodeInp.type = 'hidden';
+            barcodeInp.value = scannedData || '';
+            editInputs.push(barcodeInp);
+            continue;
+          }
           var tr = document.createElement('tr');
           var tdLabel = document.createElement('td'); tdLabel.textContent = headers[i];
           var tdValue = document.createElement('td');
@@ -5284,32 +5301,37 @@
             qtyGroup.appendChild(btnMinus);
             qtyGroup.appendChild(inp);
             qtyGroup.appendChild(btnPlus);
-            (function(qtyInp) {
+            (function(qtyInp, isExisting, maxNeg) {
               btnMinus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
                 var next = cur - 1;
-                if (next === 0) next = -1;  // 0 isn't an option — skip past it
+                if (isExisting) {
+                  if (next < -maxNeg) next = -maxNeg;
+                } else {
+                  if (next < 0) next = 0;
+                }
                 qtyInp.value = next;
               });
               btnPlus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
-                var next = cur + 1;
-                if (next === 0) next = 1;  // 0 isn't an option — skip past it
-                qtyInp.value = next;
+                qtyInp.value = cur + 1;
               });
-              // Direct typing of 0 also blocked: if the user types 0 and tabs away, snap to 1.
-              // Empty value is left alone (the existing add-row validation handles it).
               qtyInp.addEventListener('change', function() {
-                if (qtyInp.value === '0' || parseInt(qtyInp.value, 10) === 0) {
-                  qtyInp.value = '1';
+                var val = parseInt(qtyInp.value, 10);
+                if (isNaN(val)) return;
+                if (isExisting) {
+                  if (val < -maxNeg) qtyInp.value = String(-maxNeg);
+                } else {
+                  if (val < 0) qtyInp.value = '0';
                 }
               });
-            })(inp);
+            })(inp, !!existingRow, existingRow ? parseInt(existingQty, 10) || 0 : 0);
             tdValue.appendChild(qtyGroup);
             if (existingRow) {
               var qtyNote = document.createElement('div');
               qtyNote.style.cssText = 'font-size:11px;color:#8b949e;margin-top:3px;';
-              qtyNote.textContent = 'Current qty: ' + existingQty + ' \u2014 enter amount to add (negative to subtract)';
+              var parsedExistingQty = parseInt(existingQty, 10) || 0;
+              qtyNote.textContent = 'Current qty: ' + existingQty + ' \u2014 enter amount to add/subtract (min: \u2212' + parsedExistingQty + ')';
               tdValue.appendChild(qtyNote);
             }
             editInputs.push(inp); tr.appendChild(tdLabel); tr.appendChild(tdValue); tbody.appendChild(tr);

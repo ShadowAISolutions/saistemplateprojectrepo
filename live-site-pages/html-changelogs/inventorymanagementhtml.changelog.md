@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 25/50`
+`Sections: 26/50`
 
 ## [Unreleased]
+
+## [v01.26w] — 2026-04-12 12:56:32 PM EST — v10.84r
+
+### Changed
+- Barcode now appears as non-editable text under the modal title instead of as an editable field
+- When adding a new item, quantity can be set to 0 but not below zero
+- When editing an existing item, the minus button and typed values stop when the total quantity would go below 0
 
 ## [v01.25w] — 2026-04-11 11:43:01 PM EST — v10.83r
 
