@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v10.87r] — 2026-04-12 03:51:02 PM EST
+
+> **Prompt:** "ok ur right it just took a while to clear cache. now, can you have it show below the adjust quantity in a similar manner to the current quantity, the total amount that we will have if the adjust quantity goes through"
+
+### Added
+- Added a live-updating "New Total" display below the Adjust Quantity stepper in the item modal, showing the projected total (current qty + delta) as the user adjusts the value. Only visible for existing items. Updates on every stepper click and typed input change
+
+#### `inventorymanagement.html` — v01.29w
+##### Added
+- "New Total" preview below the quantity adjuster shows the projected total in real time
 
 ## [v10.86r] — 2026-04-12 03:07:57 PM EST
 

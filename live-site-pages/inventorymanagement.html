@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.28w">
+  <meta name="build-version" content="v01.29w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -472,6 +472,11 @@
       padding: 6px 12px; margin-bottom: 12px; word-break: break-all;
     }
     #ld-scan-confirm-modal .modal-qty-display:empty { display: none; }
+    #ld-scan-confirm-modal .qty-total-display {
+      font-size: 12px; font-family: monospace; color: #c9d1d9;
+      background: #0f1117; border: 1px solid #2a2b3d; border-radius: 4px;
+      padding: 4px 8px; margin-top: 4px; text-align: center;
+    }
     #ld-scan-confirm-modal .scan-data-table {
       width: 100%; border-collapse: collapse; margin-bottom: 16px; text-align: left;
     }
@@ -5313,7 +5318,17 @@
             qtyGroup.appendChild(btnMinus);
             qtyGroup.appendChild(inp);
             qtyGroup.appendChild(btnPlus);
-            (function(qtyInp, isExisting, maxNeg) {
+            var totalDisplay = null;
+            if (existingRow) {
+              totalDisplay = document.createElement('div');
+              totalDisplay.className = 'qty-total-display';
+            }
+            (function(qtyInp, isExisting, maxNeg, totalEl) {
+              function updateTotal() {
+                if (!totalEl) return;
+                var delta = parseInt(qtyInp.value, 10) || 0;
+                totalEl.textContent = 'New Total: ' + (maxNeg + delta);
+              }
               btnMinus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
                 var next = cur - 1;
@@ -5323,10 +5338,12 @@
                   if (next < 0) next = 0;
                 }
                 qtyInp.value = next;
+                updateTotal();
               });
               btnPlus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
                 qtyInp.value = cur + 1;
+                updateTotal();
               });
               qtyInp.addEventListener('change', function() {
                 var val = parseInt(qtyInp.value, 10);
@@ -5336,9 +5353,13 @@
                 } else {
                   if (val < 0) qtyInp.value = '0';
                 }
+                updateTotal();
               });
-            })(inp, !!existingRow, existingRow ? parseInt(existingQty, 10) || 0 : 0);
+              qtyInp.addEventListener('input', function() { updateTotal(); });
+              updateTotal();
+            })(inp, !!existingRow, existingRow ? parseInt(existingQty, 10) || 0 : 0, totalDisplay);
             tdValue.appendChild(qtyGroup);
+            if (totalDisplay) tdValue.appendChild(totalDisplay);
             editInputs.push(inp); tr.appendChild(tdLabel); tr.appendChild(tdValue); tbody.appendChild(tr);
             continue;
           }

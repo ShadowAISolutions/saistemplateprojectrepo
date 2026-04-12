@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 28/50`
+`Sections: 29/50`
 
 ## [Unreleased]
+
+## [v01.29w] — 2026-04-12 03:51:02 PM EST — v10.87r
+
+### Added
+- "New Total" preview below the quantity adjuster shows the projected total in real time when editing an existing item
 
 ## [v01.28w] — 2026-04-12 03:07:57 PM EST — v10.86r
 
