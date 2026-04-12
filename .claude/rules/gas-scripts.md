@@ -173,14 +173,15 @@ Apps Script has a hard 200 version limit. The API does NOT support deleting vers
    ```
 3. Create or use a GCP project where you have Owner access
 4. Enable Apps Script API in GCP project (APIs & Services → Library)
-5. Link GCP project in Apps Script (Project Settings → Change project)
-6. Enable Apps Script API at script.google.com/home/usersettings
-7. Deploy as Web app (Deploy → New deployment → Web app → Anyone)
-8. Copy Deployment ID into `DEPLOYMENT_ID` in the `.gs` file
-9. Set `GITHUB_TOKEN` in Script Properties: Key: `GITHUB_TOKEN`, Value: `github_pat_...` token (fine-grained token with "Public repositories" read-only access)
-10. Run any function from editor to trigger OAuth authorization
-11. If using Google Sheets: create spreadsheet, copy ID into `SPREADSHEET_ID`
-12. If using installable trigger for sheet caching: Apps Script editor → Triggers → + Add Trigger → Function: `onEditWriteB1ToCache`, Event source: From spreadsheet, Event type: On edit
+5. If using Google Drive (e.g. image uploads): enable **Google Drive API** in the same GCP project (APIs & Services → Library → search "Google Drive API" → Enable). Without this, `UrlFetchApp` calls to `googleapis.com/drive/v3/` fail with permission errors even when `oauthScopes` includes `drive`
+6. Link GCP project in Apps Script (Project Settings → Change project)
+7. Enable Apps Script API at script.google.com/home/usersettings
+8. Deploy as Web app (Deploy → New deployment → Web app → Anyone)
+9. Copy Deployment ID into `DEPLOYMENT_ID` in the `.gs` file
+10. Set `GITHUB_TOKEN` in Script Properties: Key: `GITHUB_TOKEN`, Value: `github_pat_...` token (fine-grained token with "Public repositories" read-only access)
+11. Run any function from editor to trigger OAuth authorization
+12. If using Google Sheets: create spreadsheet, copy ID into `SPREADSHEET_ID`
+13. If using installable trigger for sheet caching: Apps Script editor → Triggers → + Add Trigger → Function: `onEditWriteB1ToCache`, Event source: From spreadsheet, Event type: On edit
 
 ## GAS Webhook Auto-Deploy (Confirmed Working)
 
