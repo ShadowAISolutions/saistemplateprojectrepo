@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 32/50`
+`Sections: 33/50`
 
 ## [Unreleased]
+
+## [v01.33w] — 2026-04-12 04:45:19 PM EST — v10.91r
+
+### Changed
+- Scanner area centered horizontally on desktop
 
 ## [v01.32w] — 2026-04-12 04:39:49 PM EST — v10.90r
 
