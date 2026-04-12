@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.22w] — 2026-04-12 08:16:30 PM EST — v10.80r
+
+### Changed
+- The Quantity field in the entry form now defaults to `1` for new items (previously it was blank). For existing items it already defaulted to `1` as the delta to add — both contexts are now consistent. You can still type any value or use the − / + buttons to adjust before saving
 
 ## [v01.21w] — 2026-04-11 07:49:46 PM EST — v10.77r
 

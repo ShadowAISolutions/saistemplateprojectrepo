@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v10.80r] — 2026-04-12 08:16:30 PM EST
+
+> **Prompt:** "ok that worked. make the default quantity number in the entry fields positive 1 instead of blank"
+
+### Changed
+- Updated the Quantity field default in `_showScanConfirmModal` (line 5106 in `live-site-pages/inventorymanagement.html`) so the input value defaults to `'1'` for new items as well as existing items. Previously, only the existing-item path (`if (existingRow) { inp.value = '1'; inp.placeholder = 'Amount to add'; }`) set a default — new items got an empty input. Moved `inp.value = '1'` outside the `if (existingRow)` block so both contexts get the default; the placeholder override (`'Amount to add'`) stays inside the existing-item branch since it only makes sense for the delta-add semantics
+- Verified end-to-end via Playwright at 390×844 mobile across both modal contexts:
+  - **New item** (`window._showScanConfirmModal('', 'MANUAL ENTRY')`): quantity input renders with value `'1'` and the default `'Quantity'` placeholder ✓
+  - **Existing item** (`window._showScanConfirmModal('82657500690', 'qr_code')` with mocked existing row for that barcode): quantity input renders with value `'1'` and placeholder `'Amount to add'` ✓
+- The HTML `<meta name="build-version">` tag was bumped from `v01.21w` → `v01.22w` to match the `inventorymanagementhtml.version.txt` bump per Pre-Commit #2
+
+#### `inventorymanagement.html` — v01.22w
+##### Changed
+- The Quantity field in the entry form now defaults to `1` for new items (previously it was blank). For existing items it already defaulted to `1` as the delta to add — both contexts are now consistent. You can still type any value or use the − / + buttons to adjust before saving
 
 ## [v10.79r] — 2026-04-12 08:10:10 PM EST
 
