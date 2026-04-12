@@ -4,6 +4,42 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-12 04:51:15 PM EST
+**Repo version:** v10.91r
+**Branch this session:** `claude/item-modal-barcode-quantity-PjfIa`
+
+### What was done
+- **Inventory management item modal improvements — 8 commits on branch `claude/item-modal-barcode-quantity-PjfIa`.** All work touched `live-site-pages/inventorymanagement.html`, with one commit also touching `googleAppsScripts/Inventorymanagement/inventorymanagement.gs`:
+  - **v10.84r v01.26w — Barcode as text + quantity validation** — Plan-mode flow. Moved barcode from editable table field to static text display under the modal title (new `<div class="modal-barcode-display">` with `:empty` CSS auto-hide for manual entry). Added context-aware quantity validation: new items allow 0 but no negatives; existing items allow negatives but clamp at `-existingQty` so total never goes below 0. Manual entry still gets editable barcode field via fallthrough
+  - **v10.85r v01.27w — Current Qty display + Adjust Quantity label** — Moved "Current qty" from small note text below stepper to a styled display box (`<div class="modal-qty-display">`) above the table, matching the barcode display pattern. Changed quantity label to "Adjust Quantity" for existing items. Removed old qtyNote div
+  - **v10.86r v01.07g v01.28w — Edit row defaults + item name fix** — Default qty to 0 (not 1) when using pencil edit action. Fixed item name not updating when editing: added `itemNameCol` detection and write in GAS `addRow` function's existing-row path
+  - **v10.87r v01.29w — Live New Total preview** — Added `<div class="qty-total-display">` below the Adjust Quantity stepper showing "New Total: X" that updates in real-time on stepper clicks and typed input. Uses `updateTotal()` function in the IIFE closure with `input` + `change` event listeners
+  - **v10.88r v01.30w — Context-aware confirm button** — Changed confirm button from "Add Row" for everything to: "Add Row" for new items, "Update" for scanned duplicates, "Save" for edit-row actions. Moved button text assignment to after `existingRow` is resolved
+  - **v10.89r v01.31w — Unified desktop/mobile layout** — Changed desktop CSS to match mobile's horizontal flex layout: camera on left, controls to the right. Changed `.qr-side-panel` from `display: contents` to `display: flex`. Made torch/stop buttons visible on desktop (`display: flex` instead of `display: none`). Added `.qr-action-btns` and `#ld-manual-entry-btn` default styling
+  - **v10.90r v01.32w — Constrain scanner section width** — Added `max-width: 600px` to `#qr-camera-section`. Changed entry button from `flex: 1 1 auto` to `flex: 0 0 auto` on desktop to prevent it stretching across the page
+  - **v10.91r v01.33w — Center scanner section** — Added `margin: 0 auto` to center the scanner area on desktop. Also performed CHANGELOG archive rotation (34 sections from 2026-04-08 moved to archive, counter 67/100)
+
+### Where we left off
+- All 8 commits pushed and merged. No outstanding bugs reported
+- The item modal now has: barcode as text under title, current qty display above table, adjust quantity stepper with live new total preview, context-aware confirm button (Add Row / Update / Save)
+- Desktop layout now matches mobile: camera left, controls right, centered with max-width 600px
+
+### Key decisions made
+- **Barcode stays editable for manual entry only** — when `isManual` is true, the barcode field falls through to the normal editable input. For scan/edit, it's a hidden input + static text display
+- **Quantity validation is context-aware** — new items: min 0; existing items: min `-existingQty`. Edit action defaults qty to 0 (no change), scan duplicate defaults to 1 (add one more)
+- **Desktop layout unified with mobile** — `display: contents` on `.qr-side-panel` replaced with `display: flex` at all breakpoints. Mobile media query still overrides sizes (smaller camera, different font sizes) but the structural layout is the same
+
+### Active context
+- **Repo version:** v10.91r
+- **`inventorymanagement.html`:** v01.33w
+- **`inventorymanagement.gs`:** v01.07g
+- **TODO items:** Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- **No active reminders**
+- **Toggle states:** `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- **CHANGELOG counter:** 67/100
+
+## Previous Sessions
+
 **Date:** 2026-04-12 08:20:55 PM EST
 **Repo version:** v10.80r
 **Branch this session:** `claude/fix-mobile-camera-layout-Yjhmb`
@@ -60,38 +96,3 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 - **Estimate calibration heuristic v01.05g lesson**: when wrapping/depending on a Sheets API behavior, verify the SPECIFIC API call (appendRow vs setValue vs setValues) honors the cell format. The v01.05g attempt failed because `appendRow` doesn't, even though `setValue` (with explicit pre-format + flush) does
 - **Open issues carried forward from prior sessions:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1
 - **Playwright browsers already installed** at `/opt/pw-browsers/chromium_headless_shell-1208`. Playwright 1.58.0 is pip-installed. Future sessions don't need reinstallation
-
-## Previous Sessions
-
-**Date:** 2026-04-11 05:49:53 PM EST
-**Repo version:** v10.72r
-
-### What was done
-- **Inventory management UI arc — 6 commits across 5 user requests on branch `claude/mobile-inventory-columns-zEokg`.** Continued from the prior session's Timestamp-column removal, all work on `live-site-pages/inventorymanagement.html`:
-  - **v10.67r v01.12w — Mobile column hide** — Added mobile-only CSS inside the existing `@media (max-width: 600px)` block that hides columns 2-4 (Barcode, Last User, Last Updated) via `th:nth-child(3|4|5)` and `td[data-col="2"|"3"|"4"]` selectors. Only Item Name, Quantity, and the delete-action column remain visible on phones
-  - **v10.68r v01.13w — Stepper on all entry modes** — Refactored `_showScanConfirmModal()` so the +/− quantity stepper always renders for the Quantity field, not just the scan-existing-duplicate case. Manual entry and scan-new now render identical stepper UI to scan-existing
-  - **v10.69r v01.14w — Hide Last User / Last Updated from entry modal** — Added an early-continue intercept at the top of the `for` loop in `_showScanConfirmModal`: when the current header is `last user` or `last updated`, create a hidden `<input type="hidden">`, auto-populate it, and `continue` without appending a visible `<tr>` to the tbody. Preserves the positional `editInputs[k] → ld-add-col(k+1)` mapping
-  - **v10.70r v01.15w — Per-row edit button (INITIAL ATTEMPT, BROKEN)** — Added per-row edit button (✏️) next to delete button. Extended `_showScanConfirmModal` with a third `editOptions` parameter that fired a sequential `writeCell` chain on Save. Did not work in production
-  - **v10.71r v01.16w — Attempted fix (STILL BROKEN)** — Defensive fixes: (1) `.onclick` property assignment instead of `addEventListener` to prevent listener stacking, (2) optimistic local update of `_ldRows[rowIdx]` + re-render. Neither resolved the issue
-  - **v10.72r v01.17w — PIVOT: reuse scan-existing path via barcode-scan synthesis (FIXED)** — User's hint "it really should function identically to when we scan an item to change the quantity" pointed at the root cause. The GAS `addRow()` has merge-on-duplicate-barcode logic that does content-addressable lookup on the server side. Rewrote `ldStartRowEdit` to call `_showScanConfirmModal(barcode, 'EDIT')` — passing the row's barcode as `scannedData`. This triggers the existing barcode-lookup branch and the scan-confirm flow proceeds byte-for-byte identically to scan-existing. Reverted the `editOptions` parameter and all `isEdit` branches (~90 lines removed). Added one-liner `isEditAction = scannedFormat === 'EDIT'` for cosmetic title/button overrides only
-
-### Where we left off
-- All 6 commits pushed and merged. Edit-row feature confirmed working in this session's followup (the user kept building on it without reporting issues)
-
-### Key decisions made
-- **Content-addressable server-side lookup beats client-side positional indexing** — `writeCell(row, col)` addresses cells by client-side row index, which can drift out of sync with the sheet. `addRow` with merge-on-barcode is content-addressable on the server: it looks up the target row by barcode value in real-time
-- **Reuse proven paths over reinventing machinery** — v10.70r tried to build a parallel write path; v10.72r realized the scan-existing path already does exactly what's needed and pivoted to reuse it via barcode-scan synthesis
-- **Cosmetic labels are cheap, behavioral identity is precious** — kept "Edit Row — {name}" title and "Save" button via a one-line check while reusing 100% of the scan-existing behavior
-- **GAS addRow merge-on-barcode behavior** — at `googleAppsScripts/Inventorymanagement/inventorymanagement.gs:454-500`: iterates headers to find barcodeCol/qtyCol/lastUpdatedCol/lastUserCol, looks up existing row by barcode (case-insensitive), and if found does `newQty = existingQty + deltaQty`. This is the proven mechanism scan-existing uses and that the pencil-edit now reuses
-
-### Active context
-- Repo version: v10.72r
-- `inventorymanagement.html`: v01.17w
-- `inventorymanagement.gs`: v01.04g
-- TODO items: Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- No active reminders
-- `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-- **Branch this session:** `claude/mobile-inventory-columns-zEokg`
-- **Open issues carried forward from prior sessions:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1
-
-Developed by: ShadowAISolutions
