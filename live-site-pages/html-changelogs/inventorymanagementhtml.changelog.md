@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 35/50`
+`Sections: 36/50`
 
 ## [Unreleased]
+
+## [v01.36w] — 2026-04-12 06:01:51 PM EST — v10.95r
+
+### Fixed
+- Items now save immediately when clicking Save or Add Row, even with an image attached
+- Image uploads happen in the background and are linked to the item automatically
 
 ## [v01.35w] — 2026-04-12 05:54:02 PM EST — v10.94r
 

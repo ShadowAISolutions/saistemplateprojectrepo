@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v10.95r] — 2026-04-12 06:01:51 PM EST
+
+> **Prompt:** "ok when uploading i now see the image in the preview. saving however isnt doing anything, its acting as if im closing the modal without sending/saving"
+
+### Fixed
+- Scan-confirm modal save button now works with image uploads — row saves immediately while image uploads in the background. Previously the save was blocked by the async image upload RPC call (30s timeout), causing the modal to close without any visible save action
+- Exposed `_sessionToken` via `window._ldGetSessionToken()` so the image upload code (outside the inventory IIFE) can access the authenticated session token
+
+#### `inventorymanagement.html` — v01.36w
+
+##### Fixed
+- Items now save immediately when clicking Save/Add Row, even with an image attached
+- Image is uploaded in the background and linked to the item after upload completes
 
 ## [v10.94r] — 2026-04-12 05:54:02 PM EST
 
