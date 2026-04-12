@@ -1,4 +1,4 @@
-var VERSION = "v01.06g";
+var VERSION = "v01.07g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -511,12 +511,14 @@ function addRow(token, valuesJSON) {
   var qtyCol = -1;
   var lastUpdatedCol = -1;
   var lastUserCol = -1;
+  var itemNameCol = -1;
   for (var h = 0; h < headers.length; h++) {
     var hLower = String(headers[h]).toLowerCase().trim();
     if (hLower === 'barcode') barcodeCol = h;
     else if (hLower === 'quantity') qtyCol = h;
     else if (hLower === 'last updated') lastUpdatedCol = h;
     else if (hLower === 'last user') lastUserCol = h;
+    else if (hLower === 'item name') itemNameCol = h;
   }
 
   var scannedBarcode = (barcodeCol >= 0 && values[barcodeCol]) ? String(values[barcodeCol]).trim() : '';
@@ -539,6 +541,9 @@ function addRow(token, valuesJSON) {
     var deltaQty = parseFloat(values[qtyCol]) || 0;
     var newQty = existingQty + deltaQty;
     sheet.getRange(sheetRow, qtyCol + 1).setValue(newQty);
+    if (itemNameCol >= 0 && values[itemNameCol]) {
+      sheet.getRange(sheetRow, itemNameCol + 1).setValue(values[itemNameCol]);
+    }
     if (lastUpdatedCol >= 0 && values[lastUpdatedCol]) {
       sheet.getRange(sheetRow, lastUpdatedCol + 1).setValue(values[lastUpdatedCol]);
     }

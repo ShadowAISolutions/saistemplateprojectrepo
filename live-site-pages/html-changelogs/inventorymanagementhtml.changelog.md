@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 27/50`
+`Sections: 28/50`
 
 ## [Unreleased]
+
+## [v01.28w] — 2026-04-12 03:07:57 PM EST — v10.86r
+
+### Changed
+- Adjust Quantity now defaults to 0 when editing an existing item via the pencil button
 
 ## [v01.27w] — 2026-04-12 02:55:11 PM EST — v10.85r
 

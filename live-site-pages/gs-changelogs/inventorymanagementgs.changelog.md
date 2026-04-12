@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 6/50`
+`Sections: 7/50`
 
 ## [Unreleased]
+
+## [v01.07g] — 2026-04-12 03:07:57 PM EST — v10.86r
+
+### Fixed
+- Changing an item's name via the edit button now saves correctly
 
 ## [v01.06g] — 2026-04-12 08:10:10 PM EST — v10.79r
 

@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v10.86r] — 2026-04-12 03:07:57 PM EST
+
+> **Prompt:** "when using the edit row feature with the pencil, the adjust quantity should default to 0. also the item name when i try changing it from there, doesnt actually update the item name, fix that."
+
+### Fixed
+- Fixed item name not updating when editing an existing row via the pencil button — the GAS backend `addRow` function now writes the submitted Item Name value to the sheet when updating an existing row (previously only quantity, Last Updated, and Last User were written)
+
+### Changed
+- The Adjust Quantity field now defaults to 0 (no change) when using the edit row pencil button, instead of 1
+
+#### `inventorymanagement.html` — v01.28w
+##### Changed
+- Adjust Quantity defaults to 0 when editing an existing item via the pencil button
+
+#### `inventorymanagement.gs` — v01.07g
+##### Fixed
+- Changing an item's name via the edit button now saves correctly
 
 ## [v10.85r] — 2026-04-12 02:55:11 PM EST
 
