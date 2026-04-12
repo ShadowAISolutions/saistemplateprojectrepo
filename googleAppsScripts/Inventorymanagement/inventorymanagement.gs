@@ -1,4 +1,4 @@
-var VERSION = "v01.09g";
+var VERSION = "v01.10g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -646,7 +646,12 @@ function deleteRow(token, rowIndex) {
     if (imgCol >= 0) {
       var imgFileId = String(sheet.getRange(sheetRow, imgCol + 1).getValue()).trim();
       if (imgFileId) {
-        try { DriveApp.getFileById(imgFileId).setTrashed(true); } catch (de) { Logger.log('deleteRow image cleanup: ' + de.message); }
+        try {
+          UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + imgFileId, {
+            method: 'patch', headers: _driveApiHeaders(), contentType: 'application/json',
+            payload: JSON.stringify({ trashed: true }), muteHttpExceptions: true
+          });
+        } catch (de) { Logger.log('deleteRow image cleanup: ' + de.message); }
       }
     }
   } catch (imgErr) { Logger.log('deleteRow image lookup: ' + imgErr.message); }
@@ -665,34 +670,67 @@ function deleteRow(token, rowIndex) {
   return deleteResult;
 }
 
-// ── Image Management (Google Drive) ──
+// ── Image Management (Google Drive via REST API) ──
+// Uses UrlFetchApp + Drive REST API v3 instead of DriveApp service
+// to avoid DriveApp scope authorization issues. The script's existing
+// script.external_request scope + ScriptApp.getOAuthToken() is sufficient.
 
 /**
- * getOrCreateImageFolder() — returns a Drive Folder for storing inventory images.
+ * _driveApiHeaders() — returns authorization headers for Drive REST API calls.
+ */
+function _driveApiHeaders() {
+  return { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() };
+}
+
+/**
+ * getOrCreateImageFolder() — returns the folder ID for storing inventory images.
  * Uses CacheService to avoid repeated Drive lookups. Creates the folder on first call.
+ * Uses Drive REST API v3 via UrlFetchApp (no DriveApp dependency).
  */
 function getOrCreateImageFolder() {
   var cache = CacheService.getScriptCache();
   var cachedId = cache.get('image_folder_id');
   if (cachedId) {
-    try { return DriveApp.getFolderById(cachedId); } catch (e) { /* folder deleted, recreate */ }
+    // Verify folder still exists
+    try {
+      var checkResp = UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + cachedId + '?fields=id,trashed', { headers: _driveApiHeaders(), muteHttpExceptions: true });
+      if (checkResp.getResponseCode() === 200) {
+        var checkData = JSON.parse(checkResp.getContentText());
+        if (!checkData.trashed) return cachedId;
+      }
+    } catch (e) { /* cache stale, search below */ }
   }
-  var folders = DriveApp.getFoldersByName(IMAGE_FOLDER_NAME);
-  var folder;
-  if (folders.hasNext()) {
-    folder = folders.next();
-  } else {
-    folder = DriveApp.createFolder(IMAGE_FOLDER_NAME);
+  // Search for existing folder by name
+  var query = "name='" + IMAGE_FOLDER_NAME + "' and mimeType='application/vnd.google-apps.folder' and trashed=false";
+  var searchResp = UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(query) + '&fields=files(id)', { headers: _driveApiHeaders(), muteHttpExceptions: true });
+  if (searchResp.getResponseCode() === 200) {
+    var searchData = JSON.parse(searchResp.getContentText());
+    if (searchData.files && searchData.files.length > 0) {
+      var folderId = searchData.files[0].id;
+      cache.put('image_folder_id', folderId, 21600);
+      return folderId;
+    }
   }
-  cache.put('image_folder_id', folder.getId(), 21600);
-  return folder;
+  // Create new folder
+  var createResp = UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files', {
+    method: 'post',
+    headers: _driveApiHeaders(),
+    contentType: 'application/json',
+    payload: JSON.stringify({ name: IMAGE_FOLDER_NAME, mimeType: 'application/vnd.google-apps.folder' }),
+    muteHttpExceptions: true
+  });
+  if (createResp.getResponseCode() === 200) {
+    var createData = JSON.parse(createResp.getContentText());
+    cache.put('image_folder_id', createData.id, 21600);
+    return createData.id;
+  }
+  throw new Error('Failed to create image folder: ' + createResp.getContentText());
 }
 
 /**
  * uploadImage(token, base64Data, fileName) — uploads a compressed JPEG to Google Drive.
- * The image is stored in a dedicated folder with ANYONE_WITH_LINK viewing permission
- * so that Drive thumbnail URLs work without additional GAS calls.
- * Returns the Drive file ID for storage in the spreadsheet's Image column.
+ * Uses Drive REST API v3 multipart upload via UrlFetchApp.
+ * Sets sharing to anyone-with-link so thumbnail URLs work without GAS proxy calls.
  */
 function uploadImage(token, base64Data, fileName) {
   var user = validateSessionForData(token, 'uploadImage');
@@ -702,21 +740,48 @@ function uploadImage(token, base64Data, fileName) {
     return signMessage({ type: 'gas-write-error', error: 'no_image_data' }, user.messageKey || '');
   }
 
+  var folderId = getOrCreateImageFolder();
   var decoded = Utilities.base64Decode(base64Data);
   var blob = Utilities.newBlob(decoded, 'image/jpeg', fileName || 'inventory_image.jpg');
-  var folder = getOrCreateImageFolder();
-  var file = folder.createFile(blob);
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
-  var fileId = file.getId();
+  // Multipart upload: metadata + file content
+  var boundary = 'img_upload_boundary_' + Date.now();
+  var metadata = JSON.stringify({ name: fileName || 'inventory_image.jpg', parents: [folderId] });
+  var requestBody = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + metadata + '\r\n--' + boundary + '\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: base64\r\n\r\n' + base64Data + '\r\n--' + boundary + '--';
+
+  var uploadResp = UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
+    method: 'post',
+    headers: _driveApiHeaders(),
+    contentType: 'multipart/related; boundary=' + boundary,
+    payload: Utilities.newBlob(requestBody).getBytes(),
+    muteHttpExceptions: true
+  });
+
+  if (uploadResp.getResponseCode() !== 200) {
+    Logger.log('uploadImage error: ' + uploadResp.getContentText());
+    return signMessage({ type: 'gas-write-error', error: 'upload_failed: ' + uploadResp.getResponseCode() }, user.messageKey || '');
+  }
+
+  var uploadData = JSON.parse(uploadResp.getContentText());
+  var fileId = uploadData.id;
+
+  // Set sharing: anyone with link can view
+  UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '/permissions', {
+    method: 'post',
+    headers: _driveApiHeaders(),
+    contentType: 'application/json',
+    payload: JSON.stringify({ role: 'reader', type: 'anyone' }),
+    muteHttpExceptions: true
+  });
+
   auditLog('data_write', user.email, 'upload_image', { fileId: fileId, fileName: fileName });
   return signMessage({ type: 'gas-image-uploaded', fileId: fileId }, user.messageKey || '');
 }
 
 /**
  * getImageThumbnail(token, fileId) — fetches an image from Drive and returns it as base64.
- * Fallback for when Drive thumbnail URLs are not accessible (e.g. private Drive).
- * Normally, the HTML layer uses Drive's thumbnail service URL directly.
+ * Fallback for when Drive thumbnail URLs are not accessible.
+ * Uses Drive REST API v3 via UrlFetchApp.
  */
 function getImageThumbnail(token, fileId) {
   var user = validateSessionForData(token, 'getImageThumbnail');
@@ -724,10 +789,12 @@ function getImageThumbnail(token, fileId) {
 
   if (!fileId) return { type: 'gas-image-data', data: null };
   try {
-    var file = DriveApp.getFileById(fileId);
-    var blob = file.getBlob();
-    var base64 = Utilities.base64Encode(blob.getBytes());
-    return { type: 'gas-image-data', fileId: fileId, data: base64, mimeType: blob.getContentType() };
+    var resp = UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', { headers: _driveApiHeaders(), muteHttpExceptions: true });
+    if (resp.getResponseCode() === 200) {
+      var base64 = Utilities.base64Encode(resp.getContent());
+      return { type: 'gas-image-data', fileId: fileId, data: base64, mimeType: resp.getHeaders()['Content-Type'] || 'image/jpeg' };
+    }
+    return { type: 'gas-image-data', fileId: fileId, data: null, error: 'HTTP ' + resp.getResponseCode() };
   } catch (e) {
     return { type: 'gas-image-data', fileId: fileId, data: null, error: e.message };
   }
@@ -735,14 +802,22 @@ function getImageThumbnail(token, fileId) {
 
 /**
  * deleteImage(token, fileId) — trashes a Drive image file (recoverable for 30 days).
- * Called when a row is deleted or when a user removes/replaces an item's image.
+ * Uses Drive REST API v3 via UrlFetchApp.
  */
 function deleteImage(token, fileId) {
   var user = validateSessionForData(token, 'deleteImage');
   checkPermission(user, 'write', 'deleteImage');
 
   if (fileId) {
-    try { DriveApp.getFileById(fileId).setTrashed(true); } catch (e) { Logger.log('deleteImage: ' + e.message); }
+    try {
+      UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
+        method: 'patch',
+        headers: _driveApiHeaders(),
+        contentType: 'application/json',
+        payload: JSON.stringify({ trashed: true }),
+        muteHttpExceptions: true
+      });
+    } catch (e) { Logger.log('deleteImage: ' + e.message); }
   }
   auditLog('data_write', user.email, 'delete_image', { fileId: fileId });
   return signMessage({ type: 'gas-image-deleted' }, user.messageKey || '');

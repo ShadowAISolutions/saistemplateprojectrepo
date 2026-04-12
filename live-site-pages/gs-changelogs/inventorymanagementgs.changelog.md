@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 9/50`
+`Sections: 10/50`
 
 ## [Unreleased]
+
+## [v01.10g] — 2026-04-12 06:56:53 PM EST — v10.97r
+
+### Fixed
+- Fixed image upload permission errors — images should now save successfully
 
 ## [v01.09g] — 2026-04-12 05:44:53 PM EST — v10.93r
 

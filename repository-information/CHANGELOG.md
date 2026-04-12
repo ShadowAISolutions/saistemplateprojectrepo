@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 72/100`
+`Sections: 73/100`
 
 ## [Unreleased]
+
+## [v10.97r] — 2026-04-12 06:56:53 PM EST
+
+> **Prompt:** "i have already done that come up with something else"
+
+### Changed
+- Replaced all `DriveApp` calls with Drive REST API v3 via `UrlFetchApp` in `inventorymanagement.gs` — bypasses `DriveApp` service authorization issues entirely. Uses `ScriptApp.getOAuthToken()` + `UrlFetchApp.fetch()` for folder creation, image upload (multipart), sharing permissions, image retrieval, and trash operations
+
+#### `inventorymanagement.gs` — v01.10g
+
+##### Changed
+- Image storage now uses a different backend approach that avoids the permission errors seen in previous versions
 
 ## [v10.96r] — 2026-04-12 06:06:52 PM EST
 
