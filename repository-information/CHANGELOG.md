@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v10.90r] — 2026-04-12 04:39:49 PM EST
+
+> **Prompt:** "elements need to make sense, the entry button size should be limited for example"
+
+### Fixed
+- Constrained the camera scanner section to `max-width: 600px` so it doesn't stretch across the full viewport on wide desktop screens
+- Changed the manual entry button from `flex: 1 1 auto` (fills all remaining space) to `flex: 0 0 auto` (compact, content-sized) on desktop. Mobile media query still lets it grow to fill the narrow side panel
+
+#### `inventorymanagement.html` — v01.32w
+##### Fixed
+- Scanner controls area no longer stretches across the full screen on desktop — contained to a reasonable width
 
 ## [v10.89r] — 2026-04-12 04:19:15 PM EST
 
