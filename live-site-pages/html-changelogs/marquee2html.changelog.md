@@ -1,8 +1,13 @@
 # marquee2.html Changelog
 
-`Sections: 8/100`
+`Sections: 9/100`
 
 ## [Unreleased]
+
+## [v01.09w] — 2026-04-13 06:55:25 PM EST — v11.38r
+
+### Changed
+- Speed slider now shows frame rate with a default marker at 30 fps
 
 ## [v01.08w] — 2026-04-13 06:51:07 PM EST — v11.37r
 

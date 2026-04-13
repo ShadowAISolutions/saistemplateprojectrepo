@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v11.38r] — 2026-04-13 06:55:25 PM EST
+
+> **Prompt:** "im assuming that the speed of the animation is based on frame rate, so make the slider be in terms of frame rate, also show a tick where the default frame rate is set to" / "you can still also mention the seconds"
+
+### Changed
+- Converted speed slider on both `marquee1.html` and `marquee2.html` from duration-based (seconds) to FPS-based — range 5–60 fps, display shows both FPS and equivalent duration (e.g. "30 fps (1.2s)")
+- Added green tick mark on the slider track at the default 30 fps position with a label
+
+#### `marquee1.html` — v01.10w
+
+##### Changed
+- Speed slider now shows frame rate with a default marker at 30 fps
+
+#### `marquee2.html` — v01.09w
+
+##### Changed
+- Speed slider now shows frame rate with a default marker at 30 fps
 
 ## [v11.37r] — 2026-04-13 06:51:07 PM EST
 
