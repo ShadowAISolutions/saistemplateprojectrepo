@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v11.12r] — 2026-04-13 08:00:01 AM EST
+
+> **Prompt:** "for some reason you used All Categorys, thats not how you spell the plural of category. also in the mobile view im seeing a glimpse of the category column, but it only needs to show the thumbnail, item name, and quantity columns for now"
+
+### Fixed
+- Fixed "All Categorys" typo → "All Categories" in the filter dropdown repopulation — replaced naive `key + 's'` pluralization with an explicit lookup map
+- Fixed mobile column hiding to be column-order-agnostic — now hides all `td[data-col]` except Item Name (0) and Quantity (1), and all `th` from 4th onward (except the actions column). Works regardless of whether Location/Category were added before or after the original columns in the spreadsheet
+
+#### `inventorymanagement.html` — v01.49w
+
+##### Fixed
+- Category filter dropdown now correctly shows "All Categories" instead of "All Categorys"
+- Mobile view now only shows thumbnail, item name, and quantity — all other columns are properly hidden regardless of column order
 
 ## [v11.11r] — 2026-04-13 07:53:31 AM EST
 
