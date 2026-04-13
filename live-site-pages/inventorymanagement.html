@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.53w">
+  <meta name="build-version" content="v01.54w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -455,6 +455,65 @@
     .ld-dash-card .card-value.changed { color: #3fb950; }
     @keyframes ld-card-flash { 0% { border-color: #3fb950; box-shadow: 0 0 12px rgba(63,185,80,0.3); } 100% { border-color: #2a2b3d; box-shadow: none; } }
     .ld-card-changed { animation: ld-card-flash 1.5s ease-out; }
+    /* ── History View ── */
+    #ld-history-view { flex: 1; overflow: auto; padding: 16px; display: none; flex-direction: column; }
+    #ld-history-filters {
+      display: flex; align-items: center; gap: 8px; padding: 0 0 12px 0;
+      flex-wrap: wrap; flex-shrink: 0;
+    }
+    #ld-history-search-wrap { position: relative; flex: 1; min-width: 140px; max-width: 280px; }
+    #ld-history-search {
+      width: 100%; padding: 6px 10px; font-size: 13px; background: #0d1117;
+      border: 1px solid #30363d; border-radius: 6px; color: #c9d1d9;
+      outline: none; box-sizing: border-box;
+    }
+    #ld-history-search:focus { border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+    #ld-history-date-from, #ld-history-date-to {
+      padding: 5px 8px; font-size: 12px; background: #0d1117; border: 1px solid #30363d;
+      border-radius: 6px; color: #c9d1d9; outline: none;
+    }
+    #ld-history-date-from:focus, #ld-history-date-to:focus { border-color: #58a6ff; }
+    #ld-history-export-btn, #ld-history-refresh-btn {
+      padding: 5px 12px; font-size: 12px; background: #21262d; border: 1px solid #30363d;
+      border-radius: 6px; color: #c9d1d9; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    #ld-history-export-btn:hover, #ld-history-refresh-btn:hover { border-color: #58a6ff; color: #e1e4e8; }
+    #ld-history-count { font-size: 12px; color: #8b949e; white-space: nowrap; margin-left: auto; }
+    #ld-history-table-wrap { overflow: auto; flex: 1; }
+    #ld-history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    #ld-history-table th {
+      position: sticky; top: 0; background: #161b22; color: #8b949e; padding: 10px 12px;
+      text-align: left; border-bottom: 2px solid #2a2b3d; white-space: nowrap; font-weight: 600; z-index: 1;
+    }
+    #ld-history-table td { padding: 8px 12px; border-bottom: 1px solid #1e2030; color: #c9d1d9; }
+    #ld-history-table tr:hover td { background: rgba(88,166,255,0.05); }
+    .history-action {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .history-action-new { background: rgba(46,160,67,0.15); color: #3fb950; }
+    .history-action-add { background: rgba(46,160,67,0.15); color: #3fb950; }
+    .history-action-sub { background: rgba(210,153,34,0.15); color: #d29922; }
+    .history-action-edit { background: rgba(88,166,255,0.15); color: #58a6ff; }
+    .history-action-delete { background: rgba(248,81,73,0.15); color: #f85149; }
+    .history-qty-pos { color: #3fb950; font-weight: 600; }
+    .history-qty-neg { color: #f85149; font-weight: 600; }
+    .history-qty-na { color: #6e7681; }
+    .history-detail-row td { padding: 4px 12px 8px 12px; border-bottom: 1px solid #1e2030; }
+    .history-detail-text { font-size: 11px; color: #8b949e; font-style: italic; padding-left: 4px; }
+    #ld-history-load-more { text-align: center; padding: 16px; }
+    #ld-history-more-btn {
+      background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+      padding: 8px 24px; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    }
+    #ld-history-more-btn:hover { border-color: #58a6ff; color: #e1e4e8; }
+    #ld-history-empty { text-align: center; padding: 40px; color: #6e7681; font-size: 14px; }
+    #ld-history-loading { text-align: center; padding: 40px; color: #8b949e; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .ld-history-spinner {
+      width: 16px; height: 16px; border: 2px solid #30363d; border-top-color: #58a6ff;
+      border-radius: 50%; animation: ld-hist-spin 0.8s linear infinite;
+    }
+    @keyframes ld-hist-spin { to { transform: rotate(360deg); } }
     #ld-empty-state { display: flex; flex: 1; align-items: center; justify-content: center; color: #6e7681; font-size: 14px; text-align: center; padding: 40px; }
     #ld-data-table td, #ld-data-table th, button, .ld-view-tab { touch-action: manipulation; }
     /* Delete confirmation modal */
@@ -1001,6 +1060,7 @@
     </div>
     <div id="ld-view-tabs">
       <button class="ld-view-tab active" data-view="table">Table</button>
+      <button class="ld-view-tab" data-view="history">History</button>
       <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
     </div>
     <div id="ld-search-bar">
@@ -1025,6 +1085,50 @@
     </div>
     <div id="ld-table-view">
       <table id="ld-data-table"><thead><tr></tr></thead><tbody></tbody></table>
+    </div>
+    <div id="ld-history-view">
+      <div id="ld-history-filters">
+        <select id="ld-history-action-filter" class="ld-filter-select">
+          <option value="">All Actions</option>
+          <option value="NEW">NEW</option>
+          <option value="ADD">ADD</option>
+          <option value="SUB">SUB</option>
+          <option value="EDIT">EDIT</option>
+          <option value="DELETE">DELETE</option>
+        </select>
+        <div id="ld-history-search-wrap">
+          <input type="text" id="ld-history-search" placeholder="Search item name or barcode..." autocomplete="off" spellcheck="false">
+        </div>
+        <input type="date" id="ld-history-date-from" title="From date">
+        <input type="date" id="ld-history-date-to" title="To date">
+        <button id="ld-history-export-btn" title="Export to CSV">&#x2B07; CSV</button>
+        <button id="ld-history-refresh-btn" title="Refresh history">&#x21BB;</button>
+        <span id="ld-history-count"></span>
+      </div>
+      <div id="ld-history-table-wrap">
+        <table id="ld-history-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>User</th>
+              <th>Action</th>
+              <th>ID</th>
+              <th>Barcode</th>
+              <th>Item Name</th>
+              <th>Qty Change</th>
+              <th>New Qty</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="ld-history-load-more" style="display:none;">
+        <button id="ld-history-more-btn">Load More</button>
+      </div>
+      <div id="ld-history-empty" style="display:none;">No history entries found.</div>
+      <div id="ld-history-loading" style="display:none;">
+        <div class="ld-history-spinner"></div> Loading history...
+      </div>
     </div>
     <div id="ld-dashboard-view">
       <div id="ld-dashboard-grid"></div>
@@ -4596,6 +4700,7 @@
       }
 
       // Tab switching
+      var ldHistoryView = document.getElementById('ld-history-view');
       var ldTabs = document.querySelectorAll('.ld-view-tab');
       for (var ti = 0; ti < ldTabs.length; ti++) {
         ldTabs[ti].addEventListener('click', function() {
@@ -4603,12 +4708,236 @@
           this.classList.add('active');
           _ldCurrentView = this.getAttribute('data-view');
           ldTableView.style.display = _ldCurrentView === 'table' ? 'block' : 'none';
+          if (ldHistoryView) ldHistoryView.style.display = _ldCurrentView === 'history' ? 'flex' : 'none';
           ldDashView.style.display = _ldCurrentView === 'dashboard' ? 'block' : 'none';
           if (ldSearchBar) ldSearchBar.style.display = _ldCurrentView === 'table' ? 'flex' : 'none';
+          // Lazy-load history on first tab switch
+          if (_ldCurrentView === 'history' && !_historyLoaded && !_historyLoading) {
+            ldFetchHistory(false);
+          }
         });
       }
       // Show search bar on initial load (table tab is active by default)
       if (ldSearchBar) ldSearchBar.style.display = 'flex';
+
+      // ── History Tab ──────────────────────────────────────────────────
+      var _historyLoaded = false;
+      var _historyLoading = false;
+      var _historyRows = [];
+      var _historyTotal = 0;
+      var _historyOffset = 0;
+      var _historyPageSize = 50;
+      var _historyDebounce = null;
+
+      var ldHistTbody = ldHistoryView ? ldHistoryView.querySelector('#ld-history-table tbody') : null;
+      var ldHistCount = document.getElementById('ld-history-count');
+      var ldHistEmpty = document.getElementById('ld-history-empty');
+      var ldHistLoading = document.getElementById('ld-history-loading');
+      var ldHistLoadMore = document.getElementById('ld-history-load-more');
+      var ldHistMoreBtn = document.getElementById('ld-history-more-btn');
+      var ldHistRefresh = document.getElementById('ld-history-refresh-btn');
+      var ldHistExport = document.getElementById('ld-history-export-btn');
+      var ldHistActionFilter = document.getElementById('ld-history-action-filter');
+      var ldHistSearch = document.getElementById('ld-history-search');
+      var ldHistDateFrom = document.getElementById('ld-history-date-from');
+      var ldHistDateTo = document.getElementById('ld-history-date-to');
+
+      function ldGetHistoryFilters() {
+        return {
+          action: ldHistActionFilter ? ldHistActionFilter.value : '',
+          search: ldHistSearch ? ldHistSearch.value.trim() : '',
+          dateFrom: ldHistDateFrom ? ldHistDateFrom.value : '',
+          dateTo: ldHistDateTo ? ldHistDateTo.value : ''
+        };
+      }
+
+      function ldFetchHistory(append) {
+        if (_historyLoading) return;
+        _historyLoading = true;
+        if (!append) { _historyOffset = 0; _historyRows = []; }
+        if (ldHistLoading) ldHistLoading.style.display = 'flex';
+        if (ldHistEmpty) ldHistEmpty.style.display = 'none';
+        var filters = ldGetHistoryFilters();
+        gasCall('getInventoryHistory', [_sessionToken, _historyOffset, _historyPageSize, JSON.stringify(filters)], function(result) {
+          _historyLoading = false;
+          _historyLoaded = true;
+          if (ldHistLoading) ldHistLoading.style.display = 'none';
+          if (!result) return;
+          var rows = result.rows || [];
+          if (append) {
+            _historyRows = _historyRows.concat(rows);
+          } else {
+            _historyRows = rows;
+          }
+          _historyTotal = result.total || 0;
+          _historyOffset = _historyRows.length;
+          ldRenderHistory();
+        }, function(err) {
+          _historyLoading = false;
+          if (ldHistLoading) ldHistLoading.style.display = 'none';
+          console.error('History fetch failed:', err);
+        });
+      }
+
+      function ldFormatHistoryTs(isoStr) {
+        try {
+          var d = new Date(isoStr);
+          if (isNaN(d.getTime())) return String(isoStr);
+          return d.toLocaleString('en-US', {
+            month: '2-digit', day: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+          });
+        } catch (e) { return String(isoStr); }
+      }
+
+      function ldRenderHistory() {
+        if (!ldHistTbody) return;
+        ldHistTbody.innerHTML = '';
+        if (_historyRows.length === 0) {
+          if (ldHistEmpty) ldHistEmpty.style.display = 'block';
+          if (ldHistLoadMore) ldHistLoadMore.style.display = 'none';
+          if (ldHistCount) ldHistCount.textContent = '';
+          return;
+        }
+        if (ldHistEmpty) ldHistEmpty.style.display = 'none';
+        for (var hi = 0; hi < _historyRows.length; hi++) {
+          var row = _historyRows[hi];
+          var tr = document.createElement('tr');
+          // Timestamp
+          var tdTs = document.createElement('td');
+          tdTs.textContent = ldFormatHistoryTs(row[0]);
+          tdTs.style.whiteSpace = 'nowrap';
+          tdTs.style.fontSize = '12px';
+          tr.appendChild(tdTs);
+          // User
+          var tdUser = document.createElement('td');
+          var emailStr = String(row[1] || '');
+          tdUser.textContent = emailStr.indexOf('@') > 0 ? emailStr.split('@')[0] : emailStr;
+          tdUser.title = emailStr;
+          tdUser.style.maxWidth = '120px';
+          tdUser.style.overflow = 'hidden';
+          tdUser.style.textOverflow = 'ellipsis';
+          tdUser.style.whiteSpace = 'nowrap';
+          tr.appendChild(tdUser);
+          // Action badge
+          var tdAction = document.createElement('td');
+          var badge = document.createElement('span');
+          var actionStr = String(row[2] || '').toUpperCase();
+          badge.className = 'history-action history-action-' + actionStr.toLowerCase();
+          badge.textContent = actionStr;
+          tdAction.appendChild(badge);
+          tr.appendChild(tdAction);
+          // ID (truncated)
+          var tdId = document.createElement('td');
+          var idStr = String(row[3] || '');
+          tdId.textContent = idStr.length > 8 ? idStr.substring(0, 8) + '\u2026' : idStr;
+          tdId.title = idStr;
+          tdId.style.fontSize = '12px';
+          tdId.style.color = '#6e7681';
+          tr.appendChild(tdId);
+          // Barcode
+          var tdBarcode = document.createElement('td');
+          tdBarcode.textContent = row[4] || '\u2014';
+          tr.appendChild(tdBarcode);
+          // Item Name
+          var tdName = document.createElement('td');
+          tdName.textContent = row[5] || '\u2014';
+          tdName.style.maxWidth = '180px';
+          tdName.style.overflow = 'hidden';
+          tdName.style.textOverflow = 'ellipsis';
+          tdName.style.whiteSpace = 'nowrap';
+          tdName.title = String(row[5] || '');
+          tr.appendChild(tdName);
+          // Qty Change
+          var tdQty = document.createElement('td');
+          var qc = parseFloat(row[6]);
+          if (!isNaN(qc) && qc !== 0) {
+            tdQty.textContent = (qc > 0 ? '+' : '') + qc;
+            tdQty.className = qc > 0 ? 'history-qty-pos' : 'history-qty-neg';
+          } else if (row[6] === '' || row[6] === undefined || row[6] === null) {
+            tdQty.textContent = '\u2014';
+            tdQty.className = 'history-qty-na';
+          } else {
+            tdQty.textContent = String(row[6]);
+            tdQty.className = 'history-qty-na';
+          }
+          tr.appendChild(tdQty);
+          // New Qty
+          var tdNewQty = document.createElement('td');
+          tdNewQty.textContent = (row[7] !== '' && row[7] !== undefined && row[7] !== null) ? String(row[7]) : '\u2014';
+          tr.appendChild(tdNewQty);
+          ldHistTbody.appendChild(tr);
+          // EDIT detail sub-row
+          if (actionStr === 'EDIT' && row[8]) {
+            try {
+              var detail = typeof row[8] === 'string' ? JSON.parse(row[8]) : row[8];
+              if (detail && detail.field) {
+                var detailTr = document.createElement('tr');
+                detailTr.className = 'history-detail-row';
+                var detailTd = document.createElement('td');
+                detailTd.colSpan = 8;
+                var detailSpan = document.createElement('span');
+                detailSpan.className = 'history-detail-text';
+                detailSpan.textContent = '\u2514 ' + detail.field + ': ' + String(detail.old || '') + ' \u2192 ' + String(detail['new'] || '');
+                detailTd.appendChild(detailSpan);
+                detailTr.appendChild(detailTd);
+                ldHistTbody.appendChild(detailTr);
+              }
+            } catch (e) { /* ignore parse errors */ }
+          }
+        }
+        // Count
+        if (ldHistCount) {
+          ldHistCount.textContent = 'Showing ' + _historyRows.length + ' of ' + _historyTotal;
+        }
+        // Load more
+        if (ldHistLoadMore) {
+          ldHistLoadMore.style.display = (_historyRows.length < _historyTotal) ? 'block' : 'none';
+        }
+      }
+
+      function ldExportHistoryCSV() {
+        if (!_sessionToken) return;
+        var filters = ldGetHistoryFilters();
+        gasCall('exportInventoryHistory', [_sessionToken, JSON.stringify(filters)], function(result) {
+          if (!result || !result.rows) return;
+          var headers = result.headers || ['Timestamp', 'User', 'Action', 'ID', 'Barcode', 'Item Name', 'Qty Change', 'New Qty', 'Details'];
+          var csvLines = [headers.join(',')];
+          for (var ei = 0; ei < result.rows.length; ei++) {
+            var csvRow = result.rows[ei].map(function(cell) {
+              var s = String(cell === null || cell === undefined ? '' : cell);
+              if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0) {
+                return '"' + s.replace(/"/g, '""') + '"';
+              }
+              return s;
+            });
+            csvLines.push(csvRow.join(','));
+          }
+          var blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'inventory-history-' + new Date().toISOString().slice(0, 10) + '.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, function(err) {
+          console.error('History export failed:', err);
+        });
+      }
+
+      // History filter event listeners
+      if (ldHistMoreBtn) ldHistMoreBtn.addEventListener('click', function() { ldFetchHistory(true); });
+      if (ldHistRefresh) ldHistRefresh.addEventListener('click', function() { ldFetchHistory(false); });
+      if (ldHistExport) ldHistExport.addEventListener('click', ldExportHistoryCSV);
+      if (ldHistActionFilter) ldHistActionFilter.addEventListener('change', function() { ldFetchHistory(false); });
+      if (ldHistDateFrom) ldHistDateFrom.addEventListener('change', function() { ldFetchHistory(false); });
+      if (ldHistDateTo) ldHistDateTo.addEventListener('change', function() { ldFetchHistory(false); });
+      if (ldHistSearch) ldHistSearch.addEventListener('input', function() {
+        clearTimeout(_historyDebounce);
+        _historyDebounce = setTimeout(function() { ldFetchHistory(false); }, 300);
+      });
 
       // Search input handling
       var _searchDebounceTimer = null;

@@ -3,9 +3,19 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 44/50`
+`Sections: 45/50`
 
 ## [Unreleased]
+
+## [v01.54w] — 2026-04-13 09:53:49 AM EST — v11.17r
+
+### Added
+- New History tab between Table and Dashboard for viewing inventory action log
+- Filter bar with action type, search, date range, export, and refresh controls
+- Color-coded action badges and quantity change indicators
+- Expandable detail rows for edit actions showing what changed
+- CSV export of filtered history data
+- "Load More" pagination for browsing large history sets
 
 ## [v01.53w] — 2026-04-13 08:52:46 AM EST — v11.16r
 

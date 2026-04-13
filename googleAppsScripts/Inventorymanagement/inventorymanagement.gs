@@ -1,4 +1,4 @@
-var VERSION = "v01.21g";
+var VERSION = "v01.22g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -483,6 +483,19 @@ function writeCell(token, row, col, value) {
   }
   // +2 for header row offset (row 0 = data row 0 = spreadsheet row 2), +1 for 1-indexed
   var targetCell = sheet.getRange(row + 2, col + 1);
+
+  // PROJECT: Capture old value and row context for history logging
+  var oldCellValue = targetCell.getValue();
+  var wcRowData = sheet.getRange(row + 2, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var wcIdCol = -1, wcBarcodeCol = -1, wcItemNameCol = -1, wcQtyCol = -1;
+  for (var wch = 0; wch < headerRowVals.length; wch++) {
+    var wcHdr = String(headerRowVals[wch]).toLowerCase().trim();
+    if (wcHdr === 'id') wcIdCol = wch;
+    else if (wcHdr === 'barcode') wcBarcodeCol = wch;
+    else if (wcHdr === 'item name') wcItemNameCol = wch;
+    else if (wcHdr === 'quantity') wcQtyCol = wch;
+  }
+
   if (isBarcodeWrite) {
     targetCell.setNumberFormat('@');
     SpreadsheetApp.flush();
@@ -497,6 +510,31 @@ function writeCell(token, row, col, value) {
   auditLog('data_write', user.email, 'cell_edit', {
     row: row, col: col, sheet: SHEET_NAME
   });
+
+  // PROJECT: Log to inventory history
+  var wcItemId = (wcIdCol >= 0) ? String(wcRowData[wcIdCol] || '') : '';
+  var wcBarcode = (wcBarcodeCol >= 0) ? String(wcRowData[wcBarcodeCol] || '') : '';
+  var wcItemName = (wcItemNameCol >= 0) ? String(wcRowData[wcItemNameCol] || '') : '';
+  if (col === wcQtyCol && wcQtyCol >= 0) {
+    // Quantity column edit — determine ADD or SUB
+    var wcOldQty = parseFloat(oldCellValue) || 0;
+    var wcNewQty = parseFloat(value) || 0;
+    var wcQtyDelta = wcNewQty - wcOldQty;
+    if (wcQtyDelta !== 0) {
+      logInventoryHistory(user.email, wcQtyDelta > 0 ? 'ADD' : 'SUB', {
+        id: wcItemId, barcode: wcBarcode, itemName: wcItemName,
+        qtyChange: wcQtyDelta, newQty: wcNewQty
+      }, '');
+    }
+  } else {
+    // Non-quantity field edit
+    var wcFieldName = (col >= 0 && col < headerRowVals.length) ? String(headerRowVals[col]) : 'Column ' + col;
+    var wcCurrentQty = (wcQtyCol >= 0) ? (parseFloat(wcRowData[wcQtyCol]) || 0) : '';
+    logInventoryHistory(user.email, 'EDIT', {
+      id: wcItemId, barcode: wcBarcode, itemName: wcItemName,
+      qtyChange: '', newQty: wcCurrentQty
+    }, JSON.stringify({ field: wcFieldName, old: String(oldCellValue), new: String(value) }));
+  }
 
   var writeResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   // Attach liveData AFTER signing — nested objects cause HMAC mismatch
@@ -661,6 +699,24 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     cols: values.length, sheet: SHEET_NAME, barcode: scannedBarcode
   });
 
+  // PROJECT: Log to inventory history
+  if (actionType === 'add_row') {
+    var newItemId = (idCol >= 0) ? String(rowValsForAppend[idCol] || '') : '';
+    var newItemName = (itemNameCol >= 0) ? String(values[itemNameCol] || '') : '';
+    var newItemQty = (qtyCol >= 0) ? (parseFloat(values[qtyCol]) || 0) : 0;
+    logInventoryHistory(user.email, 'NEW', {
+      id: newItemId, barcode: scannedBarcode, itemName: newItemName,
+      qtyChange: newItemQty, newQty: newItemQty
+    }, '');
+  } else if (actionType === 'update_quantity') {
+    var existItemId = (idCol >= 0) ? String(data[existingRowIndex][idCol] || '') : '';
+    var existItemName = (itemNameCol >= 0) ? String(data[existingRowIndex][itemNameCol] || '') : '';
+    logInventoryHistory(user.email, 'ADD', {
+      id: existItemId, barcode: scannedBarcode, itemName: existItemName,
+      qtyChange: deltaQty, newQty: newQty
+    }, '');
+  }
+
   var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   if (uploadedFileId) { addResult.fileId = uploadedFileId; }
   addResult.liveData = getCachedData();
@@ -706,13 +762,21 @@ function deleteRow(token, rowIndex) {
     return signMessage({ type: 'gas-write-error', error: 'row_out_of_range' }, user.messageKey || '');
   }
 
+  // PROJECT: Capture row data for history logging BEFORE deletion
+  var delHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var delRowData = sheet.getRange(sheetRow, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var delIdCol = -1, delBarcodeCol = -1, delItemNameCol = -1, delQtyCol = -1, imgCol = -1;
+  for (var hi = 0; hi < delHeaders.length; hi++) {
+    var delHdr = String(delHeaders[hi]).toLowerCase().trim();
+    if (delHdr === 'id') delIdCol = hi;
+    else if (delHdr === 'barcode') delBarcodeCol = hi;
+    else if (delHdr === 'item name') delItemNameCol = hi;
+    else if (delHdr === 'quantity') delQtyCol = hi;
+    else if (delHdr === 'image') imgCol = hi;
+  }
+
   // PROJECT: Clean up Drive image before deleting row
   try {
-    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    var imgCol = -1;
-    for (var hi = 0; hi < headers.length; hi++) {
-      if (String(headers[hi]).toLowerCase().trim() === 'image') { imgCol = hi; break; }
-    }
     if (imgCol >= 0) {
       var imgFileId = String(sheet.getRange(sheetRow, imgCol + 1).getValue()).trim();
       if (imgFileId) {
@@ -734,6 +798,16 @@ function deleteRow(token, rowIndex) {
   auditLog('data_write', user.email, 'delete_row', {
     row: rowIndex, sheet: SHEET_NAME
   });
+
+  // PROJECT: Log to inventory history
+  var delItemId = (delIdCol >= 0) ? String(delRowData[delIdCol] || '') : '';
+  var delBarcode = (delBarcodeCol >= 0) ? String(delRowData[delBarcodeCol] || '') : '';
+  var delItemName = (delItemNameCol >= 0) ? String(delRowData[delItemNameCol] || '') : '';
+  var delQty = (delQtyCol >= 0) ? (parseFloat(delRowData[delQtyCol]) || 0) : 0;
+  logInventoryHistory(user.email, 'DELETE', {
+    id: delItemId, barcode: delBarcode, itemName: delItemName,
+    qtyChange: -delQty, newQty: 0
+  }, '');
 
   var deleteResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
   deleteResult.liveData = getCachedData();
@@ -1030,6 +1104,211 @@ function ensureDropdownSheet() {
   for (var dc = 0; dc < defaultCategories.length; dc++) {
     ddSheet.getRange(dc + 2, 2).setValue(defaultCategories[dc]);
   }
+}
+
+/**
+ * ── Inventory History ──────────────────────────────────────────────────
+ * Dedicated sheet for tracking all inventory actions in a user-friendly format.
+ * Independent of HIPAA audit logs — always active, always written.
+ * Columns: Timestamp, User, Action, ID, Barcode, Item Name, Qty Change, New Qty, Details
+ * Capped at 5000 entries — oldest rows auto-trimmed on each write.
+ */
+var HISTORY_SHEET_NAME = 'InventoryHistory';
+var HISTORY_MAX_ROWS = 5000;
+
+function ensureHistorySheet() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var hs = ss.getSheetByName(HISTORY_SHEET_NAME);
+  if (hs) return hs;
+  try {
+    hs = ss.insertSheet(HISTORY_SHEET_NAME);
+  } catch (e) {
+    // Race condition: another thread created it between check and insert
+    hs = ss.getSheetByName(HISTORY_SHEET_NAME);
+    if (hs) return hs;
+    throw e;
+  }
+  hs.getRange(1, 1, 1, 9).setValues([['Timestamp', 'User', 'Action', 'ID', 'Barcode', 'Item Name', 'Qty Change', 'New Qty', 'Details']]);
+  hs.setFrozenRows(1);
+  hs.getRange(1, 1, 1, 9).setFontWeight('bold');
+  return hs;
+}
+
+/**
+ * logInventoryHistory() — appends a history entry and trims if over cap.
+ * Called from saveRow(), writeCell(), deleteRow(). Wrapped in try/catch
+ * so history logging failures never break the write operation itself.
+ *
+ * @param {string} userEmail - User's email address
+ * @param {string} action - One of: NEW, ADD, SUB, EDIT, DELETE
+ * @param {Object} rowData - {id, barcode, itemName, qtyChange, newQty}
+ * @param {string} details - JSON string for EDIT actions, empty otherwise
+ */
+function logInventoryHistory(userEmail, action, rowData, details) {
+  try {
+    var hs = ensureHistorySheet();
+    hs.appendRow([
+      new Date(),
+      userEmail,
+      action,
+      rowData.id || '',
+      rowData.barcode || '',
+      rowData.itemName || '',
+      rowData.qtyChange !== undefined && rowData.qtyChange !== '' ? rowData.qtyChange : '',
+      rowData.newQty !== undefined && rowData.newQty !== '' ? rowData.newQty : '',
+      details || ''
+    ]);
+    // Trim oldest rows if over cap (header + HISTORY_MAX_ROWS)
+    var lastRow = hs.getLastRow();
+    if (lastRow > HISTORY_MAX_ROWS + 1) {
+      var excess = lastRow - HISTORY_MAX_ROWS - 1;
+      hs.deleteRows(2, excess);
+    }
+  } catch (e) {
+    Logger.log('logInventoryHistory error: ' + e.message);
+  }
+}
+
+/**
+ * getInventoryHistory(token, offset, limit, filtersJSON) — returns paginated history.
+ * Exposed via RPC bridge. Reads InventoryHistory sheet, applies optional filters,
+ * and returns rows in reverse chronological order (newest first).
+ *
+ * @param {string} token - Session token
+ * @param {number} offset - 0-based offset for pagination
+ * @param {number} limit - Number of rows to return (default 50)
+ * @param {string} filtersJSON - Optional JSON string: {action, search, dateFrom, dateTo}
+ * @returns {Object} {rows: [...], total: N, hasMore: boolean}
+ */
+function getInventoryHistory(token, offset, limit, filtersJSON) {
+  var user = validateSessionForData(token, 'getInventoryHistory');
+  checkPermission(user, 'read', 'getInventoryHistory');
+
+  offset = parseInt(offset, 10) || 0;
+  limit = parseInt(limit, 10) || 50;
+  if (limit > 200) limit = 200; // Safety cap
+
+  var filters = {};
+  if (filtersJSON) {
+    try { filters = JSON.parse(filtersJSON); } catch (e) { /* ignore bad JSON */ }
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var hs = ss.getSheetByName(HISTORY_SHEET_NAME);
+  if (!hs || hs.getLastRow() < 2) {
+    return signMessage({ type: 'gas-history-result', rows: [], total: 0, hasMore: false }, user.messageKey || '');
+  }
+
+  var data = hs.getRange(2, 1, hs.getLastRow() - 1, 9).getValues();
+  // Reverse for newest-first
+  data.reverse();
+
+  // Apply filters
+  if (filters.action && filters.action !== '' && filters.action !== 'ALL') {
+    var fa = filters.action.toUpperCase();
+    data = data.filter(function(r) { return String(r[2]).toUpperCase() === fa; });
+  }
+  if (filters.search && filters.search.trim() !== '') {
+    var searchLower = filters.search.trim().toLowerCase();
+    data = data.filter(function(r) {
+      return String(r[4]).toLowerCase().indexOf(searchLower) >= 0 ||
+             String(r[5]).toLowerCase().indexOf(searchLower) >= 0;
+    });
+  }
+  if (filters.dateFrom) {
+    var dfrom = new Date(filters.dateFrom);
+    if (!isNaN(dfrom.getTime())) {
+      dfrom.setHours(0, 0, 0, 0);
+      data = data.filter(function(r) { return new Date(r[0]) >= dfrom; });
+    }
+  }
+  if (filters.dateTo) {
+    var dto = new Date(filters.dateTo);
+    if (!isNaN(dto.getTime())) {
+      dto.setHours(23, 59, 59, 999);
+      data = data.filter(function(r) { return new Date(r[0]) <= dto; });
+    }
+  }
+
+  var total = data.length;
+  var sliced = data.slice(offset, offset + limit);
+  // Convert Date objects to ISO strings for JSON serialization
+  sliced = sliced.map(function(r) {
+    var row = r.slice();
+    if (row[0] instanceof Date) row[0] = row[0].toISOString();
+    return row;
+  });
+
+  var result = signMessage({
+    type: 'gas-history-result',
+    rows: sliced,
+    total: total,
+    hasMore: (offset + limit) < total
+  }, user.messageKey || '');
+  return result;
+}
+
+/**
+ * exportInventoryHistory(token, filtersJSON) — returns ALL matching history rows for CSV export.
+ * Same filter logic as getInventoryHistory but no pagination.
+ */
+function exportInventoryHistory(token, filtersJSON) {
+  var user = validateSessionForData(token, 'exportInventoryHistory');
+  checkPermission(user, 'read', 'exportInventoryHistory');
+
+  var filters = {};
+  if (filtersJSON) {
+    try { filters = JSON.parse(filtersJSON); } catch (e) { /* ignore */ }
+  }
+
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var hs = ss.getSheetByName(HISTORY_SHEET_NAME);
+  if (!hs || hs.getLastRow() < 2) {
+    return signMessage({ type: 'gas-history-export', rows: [], headers: [] }, user.messageKey || '');
+  }
+
+  var data = hs.getRange(2, 1, hs.getLastRow() - 1, 9).getValues();
+  data.reverse();
+
+  // Apply same filters
+  if (filters.action && filters.action !== '' && filters.action !== 'ALL') {
+    var fa = filters.action.toUpperCase();
+    data = data.filter(function(r) { return String(r[2]).toUpperCase() === fa; });
+  }
+  if (filters.search && filters.search.trim() !== '') {
+    var sl = filters.search.trim().toLowerCase();
+    data = data.filter(function(r) {
+      return String(r[4]).toLowerCase().indexOf(sl) >= 0 ||
+             String(r[5]).toLowerCase().indexOf(sl) >= 0;
+    });
+  }
+  if (filters.dateFrom) {
+    var dfrom = new Date(filters.dateFrom);
+    if (!isNaN(dfrom.getTime())) {
+      dfrom.setHours(0, 0, 0, 0);
+      data = data.filter(function(r) { return new Date(r[0]) >= dfrom; });
+    }
+  }
+  if (filters.dateTo) {
+    var dto = new Date(filters.dateTo);
+    if (!isNaN(dto.getTime())) {
+      dto.setHours(23, 59, 59, 999);
+      data = data.filter(function(r) { return new Date(r[0]) <= dto; });
+    }
+  }
+
+  data = data.map(function(r) {
+    var row = r.slice();
+    if (row[0] instanceof Date) row[0] = row[0].toISOString();
+    return row;
+  });
+
+  var result = signMessage({
+    type: 'gas-history-export',
+    rows: data,
+    headers: ['Timestamp', 'User', 'Action', 'ID', 'Barcode', 'Item Name', 'Qty Change', 'New Qty', 'Details']
+  }, user.messageKey || '');
+  return result;
 }
 
 /**

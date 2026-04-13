@@ -3,9 +3,44 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 92/100`
+`Sections: 93/100`
 
 ## [Unreleased]
+
+## [v11.17r] — 2026-04-13 09:53:49 AM EST
+
+> **Prompt:** "in the inventorymanagement, add another tab between the table and dashboard tabs which is a History view, make it include the following features. Shows all inventory actions in reverse chronological order (newest first) Columns: Timestamp, User, Action, ID, Barcode, Item Name, Qty Change, New Qty Actions logged: NEW, ADD, SUB, EDIT, DELETE . ask clarifying questions and if you can think of other useful features you may propose them"
+
+### Added
+- Added History tab to inventory management between Table and Dashboard tabs
+- Added `InventoryHistory` dedicated spreadsheet sheet with auto-creation and 5000-entry cap
+- Added `logInventoryHistory()` GAS function that logs every inventory action (NEW, ADD, SUB, EDIT, DELETE) with timestamp, user, item context, qty change, and new qty
+- Added `getInventoryHistory()` GAS endpoint with pagination, action type filtering, date range filtering, and text search (barcode/item name)
+- Added `exportInventoryHistory()` GAS endpoint for CSV export of filtered history
+- Added history logging hooks into `saveRow()` (NEW/ADD), `writeCell()` (ADD/SUB/EDIT with old→new detail), and `deleteRow()` (DELETE)
+- Added color-coded action badges in history view (green=NEW/ADD, amber=SUB, blue=EDIT, red=DELETE)
+- Added EDIT detail sub-rows showing field name and old→new values
+- Added filter bar with action type dropdown, search input, date range pickers, CSV export button, and refresh button
+- Added "Load More" pagination (50 entries per page, on-demand fetch)
+
+#### `inventorymanagement.html` — v01.54w
+
+##### Added
+- New History tab between Table and Dashboard for viewing inventory action log
+- Filter bar with action type, search, date range, export, and refresh controls
+- Color-coded action badges and quantity change indicators
+- Expandable detail rows for edit actions showing what changed
+- CSV export of filtered history data
+- "Load More" pagination for browsing large history sets
+
+#### `inventorymanagement.gs` — v01.22g
+
+##### Added
+- Inventory history tracking system with dedicated InventoryHistory sheet
+- Automatic logging of all inventory operations: new items, quantity additions, quantity subtractions, field edits (with old/new values), and deletions
+- Paginated history retrieval with filtering by action type, date range, and search text
+- Full history export endpoint for CSV download
+- 5000-entry cap with automatic cleanup of oldest entries
 
 ## [v11.16r] — 2026-04-13 08:52:46 AM EST
 

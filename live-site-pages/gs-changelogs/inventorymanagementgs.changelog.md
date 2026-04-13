@@ -3,9 +3,18 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 21/50`
+`Sections: 22/50`
 
 ## [Unreleased]
+
+## [v01.22g] — 2026-04-13 09:53:49 AM EST — v11.17r
+
+### Added
+- Inventory history tracking system with dedicated InventoryHistory sheet
+- Automatic logging of all inventory operations: new items, quantity additions, subtractions, field edits, and deletions
+- Paginated history retrieval with filtering by action type, date range, and search
+- Full history export for CSV download
+- 5000-entry cap with automatic cleanup of oldest entries
 
 ## [v01.21g] — 2026-04-13 08:43:50 AM EST — v11.15r
 
