@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v11.06r] — 2026-04-12 09:33:23 PM EST
+
+> **Prompt:** "ok finally thats working. now, when we remove an image, its still doing delete image, updaterowimage, and add row. can those also be consolidated?"
+
+### Changed
+- Consolidated `deleteImage` + `updateRowImage` into the `addRow` call by adding a `clearImageId` parameter — when provided, clears the image column and trashes the old Drive file in the same execution
+- Removed separate `deleteImage` and `updateRowImage` calls from the image removal flow and the edit-mode image change flow
+- All image operations (upload, removal, clearing) now go through the scan queue as part of `addRow`
+
+#### `inventorymanagement.html` — v01.44w
+
+##### Changed
+- Image removal now uses a single server call instead of three separate calls
+
+#### `inventorymanagement.gs` — v01.16g
+
+##### Changed
+- `addRow()` now accepts an optional `clearImageId` parameter to clear and trash images in the same execution
 
 ## [v11.05r] — 2026-04-12 09:22:44 PM EST
 

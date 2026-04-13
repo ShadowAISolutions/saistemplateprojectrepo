@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.43w">
+  <meta name="build-version" content="v01.44w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5117,11 +5117,15 @@
         next.status = 'sending';
         _updateQueueBadge();
         ldRenderTableView({});
-        // Build addRow args — include image data if present (consolidated upload)
+        // Build addRow args — include image data if present (consolidated upload/removal)
         var addRowArgs = [_sessionToken, JSON.stringify(next.values)];
         if (next.imgData && next.imgData.base64) {
           addRowArgs.push(next.imgData.base64);
           addRowArgs.push(next.imgData.fileName);
+        } else if (next.imgData && next.imgData.clearImageId) {
+          addRowArgs.push(null);  // no base64Data
+          addRowArgs.push(null);  // no fileName
+          addRowArgs.push(next.imgData.clearImageId);
         }
         gasCall('addRow', addRowArgs, function(result) {
           next.status = 'done';
@@ -5130,11 +5134,6 @@
             _handleLiveData(result.liveData);
             // After liveData overwrites _ldRows, re-insert optimistic rows for remaining items
             _reinsertOptimisticRows();
-          }
-          // Clean up old image if a new one was uploaded
-          if (next.imgData && next.imgData.oldFileId && result && result.fileId
-              && next.imgData.oldFileId !== result.fileId) {
-            gasCall('deleteImage', [_sessionToken, next.imgData.oldFileId], function() {}, function() {});
           }
           _pruneCompletedEntries();
           _updateQueueBadge();
@@ -5555,26 +5554,20 @@
           function proceedWithSave(imgFileId) {
             // Set Image column value
             if (imgColIdx >= 0 && imgColIdx < values.length) values[imgColIdx] = imgFileId || '';
-            // For edit mode on existing rows, also update the image column separately
-            if (isEditAction && existingRow && imgColIdx >= 0) {
-              var newImgId = imgFileId || '';
-              var oldImgId = oldFileId || '';
-              if (newImgId !== oldImgId) {
-                var sessionTok = _sessionToken || '';
-                if (sessionTok) {
-                  gasCall('updateRowImage', [sessionTok, existingRowIndex, newImgId], function() {}, function() {});
-                  if (oldImgId && newImgId !== oldImgId) {
-                    gasCall('deleteImage', [sessionTok, oldImgId], function() {}, function() {});
-                  }
-                }
-              }
-            }
-            // Build image data for consolidated addRow call (image uploaded server-side in one execution)
+            // Build image data for consolidated addRow call — handles upload, removal, and edit-mode changes
             var imgData = null;
             if (pendingImg) {
+              // New image to upload
               var barVal = barcodeColIdx >= 0 ? (values[barcodeColIdx] || 'item') : 'item';
               var imgFileName = 'inv_' + String(barVal).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '_' + Date.now() + '.jpg';
               imgData = { base64: pendingImg, fileName: imgFileName, oldFileId: oldFileId };
+            } else if (!pendingImg && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
+              // Existing row had an image — check if user removed it
+              var existingImgId = String(existingRow[imgColIdx]).trim();
+              if (oldFileId === '' || (oldFileId !== existingImgId)) {
+                // Image was cleared — tell server to clear column and trash the Drive file
+                imgData = { clearImageId: existingImgId };
+              }
             }
             if (typeof window._enqueueScanItem === 'function') {
               window._enqueueScanItem(values, imgData);
@@ -5585,18 +5578,8 @@
             qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
           }
 
-          // Save the row — image upload is consolidated into the addRow call via the scan queue
+          // Save the row — all image operations consolidated into the addRow call via the scan queue
           proceedWithSave(oldFileId);
-
-          // Handle image removal (user cleared existing image, no new image pending)
-          if (!pendingImg && oldFileId === '' && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
-            var removedId = String(existingRow[imgColIdx]).trim();
-            var sessTok = window._ldGetSessionToken ? window._ldGetSessionToken() : '';
-            if (sessTok && removedId) {
-              gasCall('deleteImage', [sessTok, removedId], function() {}, function() {});
-              gasCall('updateRowImage', [sessTok, existingRowIndex, ''], function() {}, function() {});
-            }
-          }
         }
         function onCancel() { cleanup(); if (typeof window._imgClearPreview === 'function') window._imgClearPreview(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
         function cleanup() { modal.classList.remove('active'); if (confirmBtn) confirmBtn.onclick = null; if (cancelBtn) cancelBtn.onclick = null; }

@@ -1,4 +1,4 @@
-var VERSION = "v01.15g";
+var VERSION = "v01.16g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -496,10 +496,11 @@ function writeCell(token, row, col, value) {
  * Returns signed response with updated live data.
  *
  * Optional image parameters: if base64Data and fileName are provided, uploads
- * the image to Google Drive and sets the fileId on the row's Image column —
- * consolidating the addRow + uploadImage calls into a single execution.
+ * the image to Google Drive and sets the fileId on the row's Image column.
+ * If clearImageId is provided (without base64Data), clears the image column
+ * and trashes the old Drive file — consolidating deleteImage + updateRowImage.
  */
-function addRow(token, valuesJSON, base64Data, fileName) {
+function addRow(token, valuesJSON, base64Data, fileName, clearImageId) {
   var user = validateSessionForData(token, 'addRow');
   checkPermission(user, 'write', 'addRow');
 
@@ -610,6 +611,18 @@ function addRow(token, valuesJSON, base64Data, fileName) {
       }
       auditLog('data_write', user.email, 'upload_image_with_row', { row: imgSheetRow, fileId: fileId });
     }
+  } else if (clearImageId) {
+    // PROJECT: Image removal — consolidates deleteImage + updateRowImage into addRow
+    var clrSheetRow = (actionType === 'update_quantity') ? (existingRowIndex + 1) : sheet.getLastRow();
+    var clrImgCol = -1;
+    for (var hc = 0; hc < headers.length; hc++) {
+      if (String(headers[hc]).toLowerCase().trim() === 'image') { clrImgCol = hc; break; }
+    }
+    if (clrImgCol >= 0 && clrSheetRow <= sheet.getLastRow()) {
+      sheet.getRange(clrSheetRow, clrImgCol + 1).setValue('');
+    }
+    _trashDriveFile(clearImageId);
+    auditLog('data_write', user.email, 'clear_image_with_row', { row: clrSheetRow, clearedFileId: clearImageId });
   }
 
   // Refresh cache immediately for instant feedback

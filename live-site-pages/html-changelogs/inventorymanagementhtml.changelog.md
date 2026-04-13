@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v01.44w] — 2026-04-12 09:33:23 PM EST — v11.06r
+
+### Changed
+- Image removal now uses a single server call instead of three separate calls
 
 ## [v01.43w] — 2026-04-12 09:22:44 PM EST — v11.05r
 
