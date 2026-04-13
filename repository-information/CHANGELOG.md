@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v11.21r] — 2026-04-13 10:24:47 AM EST
+
+> **Prompt:** "also make it so that if the user has not entered any changes, then the save/add button doesnt show"
+
+### Added
+- Scan confirm modal now hides the Save/Update/Add Row button until the user makes a meaningful change — captures initial values on modal open and compares on every input event
+- For new items: button appears once Item Name has text
+- For existing items: button appears only when at least one user-editable field differs from its pre-filled value (and Item Name is non-empty)
+- Quantity stepper +/- buttons now dispatch `input` events so change detection picks them up
+
+#### `inventorymanagement.html` — v01.57w
+
+##### Added
+- Save/Add button in scan confirm modal hidden until user makes changes
 
 ## [v11.20r] — 2026-04-13 10:17:23 AM EST
 

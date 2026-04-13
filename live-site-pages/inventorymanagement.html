@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.56w">
+  <meta name="build-version" content="v01.57w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -6156,11 +6156,13 @@
                 }
                 qtyInp.value = next;
                 updateTotal();
+                qtyInp.dispatchEvent(new Event('input'));
               });
               btnPlus.addEventListener('click', function() {
                 var cur = parseInt(qtyInp.value, 10); if (isNaN(cur)) cur = 0;
                 qtyInp.value = cur + 1;
                 updateTotal();
+                qtyInp.dispatchEvent(new Event('input'));
               });
               qtyInp.addEventListener('change', function() {
                 var val = parseInt(qtyInp.value, 10);
@@ -6182,6 +6184,42 @@
           }
           editInputs.push(inp); tdValue.appendChild(inp); tr.appendChild(tdLabel); tr.appendChild(tdValue); tbody.appendChild(tr);
         }
+        // ── Change detection: hide confirm button until user makes a meaningful change ──
+        var _initialValues = [];
+        var _skipDetect = {}; // Indices of system fields to ignore in change detection
+        for (var si = 0; si < editInputs.length && si < headers.length; si++) {
+          var sHdr = (headers[si] || '').toLowerCase().trim();
+          if (sHdr === 'last updated' || sHdr === 'last user' || sHdr === 'image' || sHdr === 'id') {
+            _skipDetect[si] = true;
+          }
+          _initialValues.push(editInputs[si].value);
+        }
+        function _updateConfirmBtnState() {
+          if (!confirmBtnEarly) return;
+          var hasItemName = false;
+          var hasChange = false;
+          for (var ci = 0; ci < editInputs.length && ci < headers.length; ci++) {
+            if (_skipDetect[ci]) continue;
+            var cHdr = (headers[ci] || '').toLowerCase().trim();
+            if (cHdr === 'item name') {
+              hasItemName = editInputs[ci].value.trim() !== '';
+            }
+            if (editInputs[ci].value !== _initialValues[ci]) {
+              hasChange = true;
+            }
+          }
+          // For new items: require Item Name. For existing: require at least one change AND Item Name.
+          var canSubmit = hasItemName && (existingRow ? hasChange : true);
+          confirmBtnEarly.style.display = canSubmit ? '' : 'none';
+        }
+        // Attach listeners to all user-editable inputs
+        for (var li = 0; li < editInputs.length; li++) {
+          if (_skipDetect[li]) continue;
+          editInputs[li].addEventListener('input', _updateConfirmBtnState);
+          editInputs[li].addEventListener('change', _updateConfirmBtnState);
+        }
+        _updateConfirmBtnState(); // Set initial state
+
         modal.classList.add('active');
         function onConfirm() {
           // Validate Item Name is not empty

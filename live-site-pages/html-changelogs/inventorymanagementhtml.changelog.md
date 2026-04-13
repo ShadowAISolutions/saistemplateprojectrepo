@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v01.57w] — 2026-04-13 10:24:47 AM EST — v11.21r
+
+### Added
+- Save/Add button in scan confirm modal hidden until user makes changes
 
 ## [v01.56w] — 2026-04-13 10:17:23 AM EST — v11.20r
 
