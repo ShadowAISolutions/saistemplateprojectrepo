@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="build-version" content="v01.00w">
+<title>Police &amp; Fire Clinic — Loading</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0B1D3A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .loading-wrapper {
+    text-align: center;
+  }
+
+  .loading-text {
+    color: #D4A843;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    animation: textPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes textPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /*
+     Sprite sheet: 4392 x 2736
+     Grid: 6 columns x 6 rows = 36 frames
+     Each frame: 732 x 456
+  */
+  .dog {
+    width: 732px;
+    height: 456px;
+    transform: scale(0.4);
+    transform-origin: top center;
+    background: url('dog-trot-36.png') 0 0 no-repeat;
+    background-size: 4392px 2736px;
+    animation: spriteFrames 1.2s steps(1) infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spriteFrames {
+    0%       { background-position: 0px 0px; }
+    2.778%   { background-position: -732px 0px; }
+    5.556%   { background-position: -1464px 0px; }
+    8.333%   { background-position: -2196px 0px; }
+    11.111%  { background-position: -2928px 0px; }
+    13.889%  { background-position: -3660px 0px; }
+    16.667%  { background-position: 0px -456px; }
+    19.444%  { background-position: -732px -456px; }
+    22.222%  { background-position: -1464px -456px; }
+    25.0%    { background-position: -2196px -456px; }
+    27.778%  { background-position: -2928px -456px; }
+    30.556%  { background-position: -3660px -456px; }
+    33.333%  { background-position: 0px -912px; }
+    36.111%  { background-position: -732px -912px; }
+    38.889%  { background-position: -1464px -912px; }
+    41.667%  { background-position: -2196px -912px; }
+    44.444%  { background-position: -2928px -912px; }
+    47.222%  { background-position: -3660px -912px; }
+    50.0%    { background-position: 0px -1368px; }
+    52.778%  { background-position: -732px -1368px; }
+    55.556%  { background-position: -1464px -1368px; }
+    58.333%  { background-position: -2196px -1368px; }
+    61.111%  { background-position: -2928px -1368px; }
+    63.889%  { background-position: -3660px -1368px; }
+    66.667%  { background-position: 0px -1824px; }
+    69.444%  { background-position: -732px -1824px; }
+    72.222%  { background-position: -1464px -1824px; }
+    75.0%    { background-position: -2196px -1824px; }
+    77.778%  { background-position: -2928px -1824px; }
+    80.556%  { background-position: -3660px -1824px; }
+    83.333%  { background-position: 0px -2280px; }
+    86.111%  { background-position: -732px -2280px; }
+    88.889%  { background-position: -1464px -2280px; }
+    91.667%  { background-position: -2196px -2280px; }
+    94.444%  { background-position: -2928px -2280px; }
+    97.222%  { background-position: -3660px -2280px; }
+  }
+
+  /* ── Progress bar ── */
+  .progress-track {
+    width: 200px;
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    margin: -80px auto 0;
+    overflow: hidden;
+  }
+  .progress-bar {
+    width: 40%;
+    height: 100%;
+    background: #D4A843;
+    border-radius: 3px;
+    animation: progressSlide 2s ease-in-out infinite;
+  }
+  @keyframes progressSlide {
+    0%   { transform: translateX(-100%); }
+    50%  { transform: translateX(200%); }
+    100% { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-wrapper">
+  <div class="loading-text">Loading…</div>
+  <div class="dog"></div>
+  <div class="progress-track">
+    <div class="progress-bar"></div>
+  </div>
+</div>
+
+</body>
+</html>
+<!-- Developed by: ShadowAISolutions -->

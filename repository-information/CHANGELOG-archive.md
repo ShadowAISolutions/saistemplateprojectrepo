@@ -77,6 +77,565 @@ If ANY lines appear (sections without SHA links), the rotation is incomplete —
 
 ---
 
+## [v10.62r] — 2026-04-09 10:27:54 PM EST — [e3cacef6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e3cacef6)
+
+> **Prompt:** "remove the fields and the add row button on the main page (shown in screenshot), the entry button can stay"
+
+### Removed
+- Removed the 6 visible input fields (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) and the Add Row button from the add-row bar — replaced with hidden inputs to preserve scan confirmation modal functionality. Only the Entry button remains visible
+
+#### `inventorymanagement.html` — v01.09w
+##### Removed
+- Removed the inline input fields and Add Row button from the toolbar — only the Entry button remains
+
+## [v10.61r] — 2026-04-09 09:10:55 PM EST — [32ef533a](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/32ef533a)
+
+> **Prompt:** "ok good. the add row buttons should also not trigger the keyboard to open"
+
+### Changed
+- Removed auto-focus from the Add Row button handler (no longer focuses the first input after submission) and from the scan confirmation modal (no longer focuses the first empty input when the modal opens) — prevents mobile keyboard from popping up
+
+#### `inventorymanagement.html` — v01.08w
+##### Changed
+- Add Row and Entry buttons no longer trigger mobile keyboard popup
+
+## [v10.60r] — 2026-04-09 09:05:22 PM EST — [119f32b0](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/119f32b0)
+
+> **Prompt:** "can you make it so that using the plus and minus buttons doesnt trigger the keyboard to popup"
+
+### Changed
+- Removed `focus()` calls from quantity stepper button handlers so tapping +/− on mobile no longer opens the on-screen keyboard
+
+#### `inventorymanagement.html` — v01.07w
+##### Changed
+- Stepper buttons no longer trigger mobile keyboard popup
+
+## [v10.59r] — 2026-04-09 09:01:19 PM EST — [24ff1813](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/24ff1813)
+
+> **Prompt:** "the plus and minus buttons are added and clickable, but they are increasing the number in the last user field instead of the quantity field"
+
+### Fixed
+- Fixed quantity stepper buttons modifying the wrong field — `var inp` is function-scoped so the closures captured the last loop iteration's input (Last User). Wrapped handlers in an IIFE to capture the correct reference
+
+#### `inventorymanagement.html` — v01.06w
+##### Fixed
+- Fixed quantity +/− buttons targeting the wrong input field
+
+## [v10.58r] — 2026-04-09 08:54:31 PM EST — [17a8e3a7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/17a8e3a7)
+
+> **Prompt:** "in the inventorymanagement, make the existing item menu Quantity have a + and - button to increase and decreate it, but still allow typing it in"
+
+### Added
+- Added quantity stepper buttons (−/+) to the scan confirmation modal's Quantity field in Inventory Management — buttons increment/decrement by 1 while preserving direct keyboard input
+
+#### `inventorymanagement.html` — v01.05w
+##### Added
+- Added −/+ stepper buttons flanking the Quantity input in the existing-item scan modal for quick increment/decrement
+
+## [v10.57r] — 2026-04-09 07:59:20 PM EST — [09e56627](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/09e56627)
+
+> **Prompt:** "after the last change, scanning is not showing the gui to add entries"
+
+### Fixed
+- Fixed scan confirmation modal not appearing — `_ldRows` was referenced directly from the QR scanner scope but is a local variable inside the Live Data App IIFE. Added `window._ldGetRows` accessor (matching existing `_ldGetHeaders` pattern) and updated the barcode lookup to use it
+
+#### `inventorymanagement.html` — v01.04w
+##### Fixed
+- Fixed scan confirmation modal crash caused by cross-scope variable access
+
+## [v10.56r] — 2026-04-09 07:46:26 PM EST — [cd47e555](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/cd47e555)
+
+> **Prompt:** "in the inventorymanagement, when making a new entry when scanning, have it check to see if the barcode being scanned is already in our data. if so, then the quantity should increase/decrease the quantity of the row, instead of making new row. if the barcode is new, then it can be a new row"
+
+### Changed
+- Inventory management barcode scanning now checks for existing barcodes before creating new rows — duplicate barcodes update the existing row's quantity instead of appending a new row
+- Scan confirmation modal shows "Existing Item" title with current quantity info when a duplicate barcode is detected, pre-fills Item Name and Timestamp from existing row, and defaults quantity to 1 for quick increment
+- GAS backend `addRow()` performs authoritative duplicate barcode check against the spreadsheet to handle concurrent users correctly
+
+#### `inventorymanagement.html` — v01.03w
+##### Changed
+- Scan modal now detects existing barcodes and shows current quantity with item name pre-filled
+
+#### `inventorymanagement.gs` — v01.03g
+##### Changed
+- Add row now checks for duplicate barcodes and updates existing row quantity instead of creating duplicates
+
+## [v10.55r] — 2026-04-09 07:08:19 PM EST — [59e9777f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/59e9777f)
+
+> **Prompt:** "update the html toggle for all the updated html UI"
+
+### Fixed
+- Added inventory UI elements (`live-data-app`, `admin-badge`, `admin-dropdown-gas`, `admin-panel-overlay`, `gas-version-display`, `gas-user-email`) to the HTML layer toggle list so they correctly hide/show with the HTML toggle button
+
+#### `inventorymanagement.html` — v01.02w
+##### Fixed
+- HTML toggle now correctly includes all inventory interface elements
+
+## [v10.54r] — 2026-04-09 07:00:50 PM EST — [8f38edc6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8f38edc6)
+
+> **Prompt:** "verify that you properly copied everything, it says waiting for data and stuck on updating"
+
+### Fixed
+- Fixed inventory management data polling stuck on "Updating..." by replacing the standard GAS session page with the worker RPC bridge (PROJECT OVERRIDE in doGet's session route). Without this, the nonce-based iframe load returned the old GAS UI template instead of the RPC bridge, so `gasCall()` postMessages never reached `google.script.run` and data polling never got responses
+
+#### `inventorymanagement.gs` — v01.02g
+##### Fixed
+- Fixed data loading — app now connects to the spreadsheet correctly
+
+## [v10.53r] — 2026-04-09 06:46:36 PM EST — [ff59871e](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/ff59871e)
+
+> **Prompt:** "the inventorymanagement, setup the user interface and the way it interacts with the spreadsheet like the testauthhtml1 . ask clarifying questions as needed"
+
+### Added
+- Full inventory management UI with live data table (sortable columns, inline cell editing, add/delete rows, 15s data polling, connection status indicator)
+- Dashboard view with summary stat cards
+- QR/barcode camera scanner (native BarcodeDetector API) with scan confirmation modal and manual entry button
+- GAS backend CRUD functions (getAuthenticatedData, writeCell, addRow, deleteRow) with CacheService data caching, RBAC permission checks, and audit logging
+- Worker RPC bridge (postMessage-based google.script.run proxy for HTML-layer UI calls)
+- Data poll action handler (lightweight session validation + cached data return)
+- Admin badge and panel for admin-role users
+
+#### `inventorymanagement.html` — v01.01w
+##### Added
+- Live data table with inline editing and barcode scanner
+- Dashboard view with inventory summary cards
+- Dark theme UI matching the testauthhtml1 design
+
+#### `inventorymanagement.gs` — v01.01g
+##### Added
+- Spreadsheet CRUD operations with session validation and audit logging
+- CacheService-based data caching with installable edit trigger
+- Worker RPC bridge for HTML-layer communication
+
+## [v10.52r] — 2026-04-09 06:13:37 PM EST — [e5513402](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e5513402)
+
+> **Prompt:** "reset the inventorymanagement environment to how it was when it was first created, keeping the ID's instead of the placeholders"
+
+### Changed
+- Reset inventorymanagement environment to initial template state — HTML page (v01.25w → v01.00w), GAS script (v01.06g → v01.00g), version files, and changelogs all restored to clean "just created" state from auth templates while preserving real deployment IDs, spreadsheet IDs, and CLIENT_ID
+
+#### `inventorymanagement.html` — v01.00w
+
+##### Changed
+- Page reset to initial template state
+
+#### `inventorymanagement.gs` — v01.00g
+
+##### Changed
+- Script reset to initial template state
+
+## [v10.51r] — 2026-04-09 05:49:13 PM EST — [0101eb83](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0101eb83)
+
+> **Prompt:** "if the camera already has user permission, then have it auto turn on instead of requiring press start camera, but also add a button next to the flashlight toggle to turn off the camera"
+
+### Added
+- Camera auto-start: if camera permission is already granted, the QR scanner starts automatically without requiring the user to tap "START CAMERA"
+- Stop camera button (✖) positioned bottom-left of the viewport — stops the camera stream and returns to the start screen
+
+#### `testauthhtml1.html` — v01.18w
+
+##### Added
+- Camera auto-starts when permission is already granted — no need to tap "START CAMERA"
+- Stop camera button (✖) next to the flashlight toggle to turn off the camera
+
+## [v10.50r] — 2026-04-09 05:41:32 PM EST — [b64ca543](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b64ca543)
+
+> **Prompt:** "add a button that opens up the same UI for entering data when we scan something, so that we can use it without requiring scanning something."
+
+### Added
+- "➕ Entry" manual entry button in the add-row bar that opens the scan confirmation modal without requiring a barcode scan — all fields are available for manual input with Last Updated and Last User auto-filled
+- Modal title dynamically switches between "Scanned Item" (scan flow) and "New Entry" (manual flow) based on how it was opened
+- Exposed `_showScanConfirmModal` on `window` for cross-IIFE access from the manual entry button
+
+#### `testauthhtml1.html` — v01.17w
+
+##### Added
+- Manual entry button for adding rows without scanning a barcode — opens the same confirmation dialog with all fields editable
+
+## [v10.49r] — 2026-04-09 05:24:29 PM EST — [509b57d9](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/509b57d9)
+
+> **Prompt:** "for the testauthhtml1 , make the scanned item (QR code) UI where we add the information and then add row include the last updated time and the last user"
+
+### Changed
+- Scan confirmation modal now auto-fills "Last Updated" with the current timestamp and "Last User" with the signed-in user's email when a barcode is scanned
+- Add-row bar auto-fills "Last Updated" and "Last User" fields when activated, when headers arrive from GAS data, and after each successful row addition
+
+#### `testauthhtml1.html` — v01.16w
+
+##### Changed
+- Scan confirmation dialog and add-row bar now auto-populate "Last Updated" (current time) and "Last User" (signed-in email)
+
+## [v10.48r] — 2026-04-09 05:08:09 PM EST — [7931f84c](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7931f84c)
+
+> **Prompt:** "it should also apply to gas files also because we are mainly writing our html inside of the gas files"
+
+### Changed
+- Visual verification rule now covers GAS scripts (`.gs` files) — `doGet()` serves HTML and most user-facing UI is written inside `.gs` files, so they are a primary trigger for visual testing
+- Added "Visual Verification After GAS UI Changes" section to `.claude/rules/gas-scripts.md` with cross-reference to the full rule in `html-pages.md`
+- Updated Visual Test Command in CLAUDE.md to mention GAS files as primary targets
+- Updated trigger list in `html-pages.md` to include `.gs` file scenarios (doGet HTML output, getAppData UI content, admin panels, data tables)
+
+## [v10.47r] — 2026-04-09 05:04:47 PM EST — [f26732ab](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/f26732ab)
+
+> **Prompt:** "make it into a Repo Workflow Command , and also add it to the claude.md or whichever .md file you deem ideal for this as a rule, i.e. "From now on, after making any visual/UI change to an HTML page, use Playwright to take a screenshot and verify it looks correct before committing.""
+
+### Added
+- Visual Test Command in CLAUDE.md — on-demand Playwright-based visual verification of HTML pages (`visual test`, `screenshot it`, `test it`)
+- Automatic visual verification rule in `.claude/rules/html-pages.md` — Playwright screenshot and visual inspection runs automatically after UI changes before committing
+- Reference Files entry for the new visual verification rule
+
+## [v10.46r] — 2026-04-09 04:54:57 PM EST — [34418103](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/34418103)
+
+> **Prompt:** "i dont see any popup/UI/GUI/window when scanning"
+
+### Fixed
+- Scan confirmation modal was not appearing because `_ldHeaders` was scoped to the Live Data App IIFE and inaccessible from the QR Scanner IIFE — exposed via `window._ldGetHeaders()` cross-IIFE accessor
+
+#### `testauthhtml1.html` — v01.15w
+
+##### Fixed
+- Scan confirmation dialog now appears correctly after scanning a barcode
+
+## [v10.45r] — 2026-04-09 04:44:43 PM EST — [bb6e0cf7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/bb6e0cf7)
+
+> **Prompt:** "in the testauthhtml1, after an item is scanned, instead of immediately adding it to the table, show a gui to show the data that is going to be entered, and let the user confirm or cancel the entry"
+
+### Changed
+- QR scanner now shows a confirmation modal after scanning instead of immediately adding to the table — user can review/edit all fields and confirm or cancel
+
+#### `testauthhtml1.html` — v01.14w
+
+##### Changed
+- Scan confirmation dialog with editable fields shown after each scan
+
+## [v10.44r] — 2026-04-09 04:34:01 PM EST — [8e39d7f6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8e39d7f6)
+
+> **Prompt:** "undo the last change you made"
+
+### Removed
+- Reverted smart scan dialog (v10.43r) — removed barcode lookup, new-item dialog, quantity-update dialog from QR scanner; restored simple scan-to-add-row behavior
+
+#### `testauthhtml1.html` — v01.13w
+
+##### Removed
+- Reverted scan dialog — scanning directly adds to the barcode input and clicks Add Row
+
+## [v10.43r] — 2026-04-09 04:26:39 PM EST — [e3a601f8](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e3a601f8)
+
+> **Prompt:** "make it so that when the user scans an item it first checks to see if the barcode is already on the table. if it is not, then it asks the user what the item name is and the quantity; the timestamp, last updated, and last user should automatically be added to the table. if it is already in the table, then it asks how many to add or remove from that entry in the table."
+
+### Changed
+- QR scanner now checks if scanned barcode already exists in the table before adding
+- New items: prompts for Item Name and Quantity via custom dialog, auto-fills Timestamp, Last Updated, and Last User
+- Existing items: prompts how many to add or remove from current quantity, updates the row via `writeCell` RPC
+- Also auto-updates Last Updated and Last User columns when adjusting quantity on existing items
+
+#### `testauthhtml1.html` — v01.12w
+
+##### Changed
+- Scanning a new barcode now prompts for item name and quantity before adding
+- Scanning an existing barcode shows current quantity and lets you add or remove stock
+- Timestamp, last updated, and last user are auto-filled on all scan actions
+
+## [v10.42r] — 2026-04-09 03:03:37 PM EST — [7a0d8165](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7a0d8165)
+
+> **Prompt:** "its not letting me click on the button, im using chrome"
+
+### Fixed
+- Improved QR camera scanner unsupported-browser messaging — now clearly states "QR scanning requires Chrome on Android" instead of misleading "Use Chrome/Edge" button, and shows "Open this page on your phone to scan" in status bar
+
+#### `testauthhtml1.html` — v01.11w
+
+##### Fixed
+- Clearer messaging when QR scanning is not available on the current device
+
+## [v10.41r] — 2026-04-09 02:55:42 PM EST — [e33bc696](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e33bc696)
+
+> **Prompt:** "to the top portion of the testauthhtml1 , add ONLY the camera portion of the qr-scanner6.html , so that when the user scans something, it functions the same as if the user had used the add row button."
+
+### Added
+- QR/barcode camera scanner to the top of testauthhtml1 Live Data app — uses native BarcodeDetector API only (no external dependencies), scans populate the Barcode input and auto-trigger Add Row
+- Camera includes viewport with corner decorations, scan line animation, flash effect, torch/flashlight toggle, engine badge, start screen overlay, and status bar
+- Permission gating — camera section only visible when user has write permissions
+
+#### `testauthhtml1.html` — v01.10w
+
+##### Added
+- QR/barcode camera scanner at the top of the data view — scanned codes auto-add rows
+- Visual feedback on scan: flash effect, haptic vibration, animated scan line
+- Torch/flashlight toggle for low-light scanning
+- Graceful degradation for browsers without native BarcodeDetector
+
+## [v10.40r] — 2026-04-09 02:25:59 PM EST — [d15b9f79](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d15b9f79)
+
+> **Prompt:** "i deleted the Live_Sheet tab but its not automatically creating it, its still showing the old data for some reason with the old columns"
+
+### Fixed
+- `refreshDataCache()` silently returned when `Live_Sheet` tab was missing (`if (!sheet) return`) without clearing the stale 6-hour CacheService entry — old data persisted indefinitely after the sheet was deleted
+- Added auto-creation: when the sheet tab doesn't exist, `refreshDataCache()` now creates it with the correct 6-column headers (Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User) and clears the stale cache before proceeding to re-read
+
+#### `testauthhtml1.gs` — v01.03g
+##### Fixed
+- Data sheet now auto-creates with correct headers if deleted, and stale cached data is cleared
+
+## [v10.39r] — 2026-04-09 02:19:59 PM EST — [0977fe52](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/0977fe52)
+
+> **Prompt:** "change the columns to be Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User"
+
+### Changed
+- Updated add-row input bar from 4 generic column inputs to 6 inputs with placeholders matching the spreadsheet columns: Timestamp, Barcode, Item Name, Quantity, Last Updated, Last User
+- Updated JS `inputs` array to reference all 6 input elements
+
+#### `testauthhtml1.html` — v01.09w
+##### Changed
+- Add row bar now shows 6 input fields matching the data columns
+
+## [v10.38r] — 2026-04-09 01:58:03 PM EST — [fc8d56c4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/fc8d56c4)
+
+> **Prompt:** "make the data come up on startup because i only see the data after the first 15 second poll"
+
+### Fixed
+- Live Data App data poll delay — `_startGasDataPoll()` scheduled the first `_doDataPoll()` call after a 15-second `setTimeout` instead of calling it immediately, causing the "Waiting for data..." state to persist until the first poll fired
+
+#### `testauthhtml1.html` — v01.08w
+##### Fixed
+- Data now loads immediately after signing in instead of waiting 15 seconds
+
+## [v10.37r] — 2026-04-09 01:38:06 PM EST — [d3d2a66f](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/d3d2a66f)
+
+> **Prompt:** "since we still need the gas layer, the gas version pill should be re-added"
+
+### Added
+- Re-added GAS version pill (`#gas-pill`) with countdown dot, version polling via `gs.version.txt`, and "Code Ready" splash on GAS update
+- Re-added GAS changelog popup (`#gcl-overlay`) with click-to-view on the GAS pill
+- Re-added all associated CSS for `#gas-pill`, `#gcl-overlay`, `#gcl-popup`, `#gcl-header`, `#gcl-body`
+
+#### `testauthhtml1.html` — v01.07w
+##### Added
+- GAS version indicator pill restored — shows current GAS version with auto-refresh polling
+- GAS changelog popup restored — click the GAS pill to view changelog
+
+## [v10.36r] — 2026-04-09 01:29:29 PM EST — [5a635557](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5a635557)
+
+> **Prompt:** "the html toggle should toggle the newly added live data visual UI"
+
+### Fixed
+- HTML layer toggle did not hide/show the Live Data App UI — `#live-data-app` was missing from the `_htmlLayerEls` toggle list
+
+#### `testauthhtml1.html` — v01.06w
+##### Fixed
+- HTML layer toggle now includes the Live Data App container in the toggle list
+
+## [v10.35r] — 2026-04-09 01:13:55 PM EST — [102e4826](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/102e4826)
+
+> **Prompt:** "i can see the column fields but still waiting for data"
+
+### Fixed
+- RPC bridge was sending postMessage to `gasApp.contentWindow` (the outer Google shell iframe) instead of `_gasSandboxSource` (the inner sandbox where the worker script runs). GAS double-iframe architecture: `contentWindow` is the outer shell, `event.source` from `gas-auth-ok` is the inner sandbox. Messages to the outer shell never reach the worker script
+
+#### `testauthhtml1.html` — v01.05w
+##### Fixed
+- Data now loads from the server — live table and dashboard populate correctly
+
+## [v10.34r] — 2026-04-09 01:09:33 PM EST — [5d9d7a7b](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/5d9d7a7b)
+
+> **Prompt:** "data is not loading"
+
+### Fixed
+- Script crash caused by null SSO indicator element reference — the SSO indicator HTML was removed during GAS→HTML migration but the `addEventListener` call at line 3848 wasn't null-checked, causing a `TypeError: Cannot read properties of null` that halted all subsequent JS (including Live Data App IIFE, HTML layer toggle, and RPC response handler)
+- Added `gas-rpc-result`, `gas-rpc-error`, `gas-worker-ready` to the postMessage allowlist and signature-exempt list to prevent false security event logging
+
+#### `testauthhtml1.html` — v01.04w
+##### Fixed
+- Data now loads correctly after signing in
+
+## [v10.33r] — 2026-04-09 01:04:10 PM EST — [63bf0abc](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/63bf0abc)
+
+> **Prompt:** "the screenshot is what i see now, i dont see that live data table"
+
+### Fixed
+- Live Data App not showing after authentication — added direct DOM activation fallback in `showApp()` and changed empty state to `display: flex` by default so "Waiting for data..." is visible immediately
+
+#### `testauthhtml1.html` — v01.03w
+##### Fixed
+- Application content now appears immediately after signing in
+
+## [v10.32r] — 2026-04-09 12:50:45 PM EST — [912b33d7](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/912b33d7)
+
+> **Prompt:** "for our testauthhtml1 , i want you to move all of the html that we have in the gas layer to the hmtl layer, and then completely remove the gas layer.  there should not be any gas iframes or layers in the testauthhtml1"
+
+### Changed
+- Migrated all GAS-layer visual HTML/CSS/JS content to the HTML layer for `testauthhtml1` — the Live Data App (table/dashboard views, data polling, cell editing, row add/delete) now renders entirely in the HTML page
+- Replaced visible full-screen GAS iframe with a hidden RPC worker iframe (0×0 pixels) that acts as a `google.script.run` proxy via postMessage
+- Added `gasCall()` RPC bridge function to the HTML layer for server-side function calls
+- Changed auth flow to load `?action=worker&session=TOKEN` instead of `?session=TOKEN` (loads worker instead of full GAS UI)
+- Activated Live Data App directly from `showApp()` instead of via `ld-init` postMessage
+
+### Removed
+- Visible GAS iframe overlay (full-screen `z-index:1` iframe replaced with hidden worker)
+- GAS pill (version indicator with countdown dot)
+- GAS changelog overlay popup
+- GAS layer toggle button
+- SSO indicator
+- GAS version polling IIFE (~160 lines of JS)
+- GAS doGet() HTML template (~1,450 lines of inline HTML/CSS/JS removed from `.gs` file)
+
+#### `testauthhtml1.html` — v01.02w
+##### Changed
+- All application content now renders directly in the HTML page instead of in a GAS iframe
+- Data table and dashboard views load faster with direct HTML rendering
+##### Removed
+- Visible GAS layer overlay removed — application runs natively in the page
+
+#### `testauthhtml1.gs` — v01.02g
+##### Changed
+- Session route now returns lightweight RPC worker page instead of full application UI
+- Added `?action=worker` route for postMessage-based function call proxying
+
+## [v10.31r] — 2026-04-09 11:30:10 AM EST — [09380cc5](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/09380cc5)
+
+> **Prompt:** "for the testauthhtml1 , the new deployment id is AKfycbzPUkD3W7y3oGRRMKVt8Vl3ohGg_57SouUHKbbtYhtK7Ran-0SS4vVvft6_GR2YIRqDSg , the spreadsheet id is 1x_1aG2H1x8JfDbq6-uY8Hdz6PvzIeZLFFEw4vNe4oes . since this is a new page, do any necessary changes to the ACL and other interconnected settings, if you need more info from me let me know"
+
+### Changed
+- Updated `testauthhtml1` environment with its own GAS deployment — new `DEPLOYMENT_ID` and `SPREADSHEET_ID` replacing the shared values copied from `testauthgas1`
+- Synced config to `testauthhtml1.gs` (`DEPLOYMENT_ID`, `SPREADSHEET_ID`), `testauthhtml1.html` (encoded `var _e`), and workflow deploy step webhook URL
+
+#### `testauthhtml1.html` — v01.01w
+##### Changed
+- Updated GAS iframe to connect to the new dedicated deployment
+
+#### `testauthhtml1.gs` — v01.01g
+##### Changed
+- Updated deployment ID and spreadsheet ID to own GAS project values
+
+## [v10.30r] — 2026-04-09 10:57:44 AM EST — [b83bc5a2](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/b83bc5a2)
+
+> **Prompt:** "make an identical copy of the testauthgas1 environment, but name it testauthhtml1"
+
+### Added
+- Created `testauthhtml1` environment as an identical copy of `testauthgas1` — HTML page, GAS script, config, version files, changelogs, changelog archives, diagram, workflow deploy step, GAS Projects table registration, README tree entries, and REPO-ARCHITECTURE.md nodes
+
+## [v10.29r] — 2026-04-09 10:48:40 AM EST — [060a1890](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/060a1890)
+
+> **Prompt:** "rename the testauth1 environment to testauthgas1"
+
+### Changed
+- Renamed `testauth1` environment to `testauthgas1` across entire repo — HTML page, GAS script, config, version files, changelogs, diagrams, workflow deploy steps, rules files, README tree, REPO-ARCHITECTURE.md, archive docs, test files, and backup files
+
+#### `testauthgas1.html` — v04.00w
+
+##### Changed
+- Environment renamed from testauth1 to testauthgas1
+
+#### `testauthgas1.gs` — v02.61g
+
+##### Changed
+- Environment renamed from testauth1 to testauthgas1
+
+## [v10.28r] — 2026-04-09 09:59:32 AM EST — [347e8558](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/347e8558)
+
+> **Prompt:** "fix it but it should be a single gas call, no parallel"
+
+### Fixed
+- Data poll now makes a single GAS call (`getInventoryData`) returning both inventory + history, instead of 2 parallel calls that could cause one to fail and block the other
+- GAS upsert now uses a single `setValues()` batch call instead of 4 individual `setValue()` calls, reducing Sheets API overhead ~4x on restock operations
+
+### Changed
+- Merged GAS `processGetQrEntries` + `processGetQrHistory` into single `processGetInventoryData` endpoint
+- Removed separate `getQrHistory` doPost handler (consolidated into `getInventoryData`)
+
+#### `inventorymanagement.html` — v01.25w
+
+##### Fixed
+- Inventory data now loads reliably on first attempt — single GAS call eliminates the race condition where parallel calls could fail together
+
+#### `inventorymanagement.gs` — v01.06g
+
+##### Fixed
+- Restock operations are faster — batch cell update instead of 4 individual writes
+- Single data endpoint returns both inventory and history, halving the number of server calls per poll cycle
+
+## [v10.27r] — 2026-04-09 09:47:10 AM EST — [8d31d752](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/8d31d752)
+
+> **Prompt:** "make it so that one a barcode is added to the inventory, scanning it/adding the same one interacts with the quantity, not make a new entry. but each change should be logged in the history (different tab), for timestamp, user, action, barcode, item name, quantity change, and new quantity."
+
+### Changed
+- GAS `processAddQrEntry` now performs upsert: if barcode already exists, adds to existing quantity instead of creating a duplicate row
+- GAS `processAddQrEntry` returns `action` ('Add' or 'Restock') and `newQuantity` so the frontend can show appropriate feedback
+- Optimistic add on HTML now checks `_inventoryEntries` for existing barcode and updates quantity in-place (upsert) instead of always appending
+
+### Added
+- History logging: every add, restock, and delete writes a row to a `History` sheet (Timestamp, User, Action, Barcode, Item Name, Qty Change, New Qty)
+- GAS `processGetQrHistory` endpoint to fetch recent history entries
+- GAS `doPost` handler for `action=getQrHistory`
+- GAS `processDeleteQrEntry` now logs deletion to the History sheet before removing the row
+- HTML data poll now fetches both inventory and history in parallel, rendering the History tab with real server data
+- GAS `_logHistory` helper function for consistent history logging across add/restock/delete
+
+#### `inventorymanagement.html` — v01.24w
+
+##### Changed
+- Adding a scanned barcode that already exists now increases the existing item's quantity instead of creating a duplicate
+- Toast message changes to "Restocked!" when updating an existing item
+- History tab now shows real data from the server (was previously empty/placeholder)
+
+#### `inventorymanagement.gs` — v01.05g
+
+##### Changed
+- Adding items with the same barcode now increases quantity on the existing entry instead of creating duplicates
+- Item name is preserved from the first entry; updated only if the existing name was blank
+
+##### Added
+- Change history tracking — every add, restock, and delete is logged with timestamp, user, action, and quantity details
+- History data retrieval endpoint for the History tab
+
+## [v10.26r] — 2026-04-09 09:33:59 AM EST — [7df36386](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/7df36386)
+
+> **Prompt:** "refer to the testauthgas1 for the method of optimistic data, and apply the same method to the inventorymanagement, ask clarifying questions if its not quite clear"
+
+### Added
+- Optimistic data rendering for inventory management — new entries appear instantly in the table (dimmed with "Sending…" overlay) before server confirmation, matching testauthgas1's pattern
+- Delete functionality for inventory entries — each row gets a × button with confirmation modal and optimistic "Deleting…" overlay
+- Cell change flash animation — cells that change between polls flash green (1.5s), helping multi-user awareness
+- GAS backend `processDeleteQrEntry` endpoint for deleting inventory rows by sheet index
+- `_rowIndex` field in GAS `processGetQrEntries` response for accurate delete targeting
+
+### Changed
+- Inventory table now renders from a persistent local data array (`_inventoryEntries`) instead of directly from server response, enabling optimistic inserts and change detection
+- Data reconciliation replaces the entire local array on each poll, automatically clearing optimistic entries
+
+#### `inventorymanagement.html` — v01.23w
+
+##### Added
+- Optimistic add rendering — new items appear immediately at 35% opacity with "Sending…" overlay
+- Delete button (×) per inventory row with dark-themed confirmation modal
+- Optimistic delete rendering — row dims with "Deleting…" overlay, restores on failure
+- Cell-level change detection with green flash animation between polls
+- Local data array and reconciliation logic matching testauthgas1's pattern
+
+#### `inventorymanagement.gs` — v01.04g
+
+##### Added
+- `processDeleteQrEntry` function for deleting inventory entries by row index
+- `deleteQrEntry` action handler in `doPost`
+- `_rowIndex` field in `processGetQrEntries` response entries for delete targeting
+
+## [v10.25r] — 2026-04-09 08:20:11 AM EST — [e487ff8d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e487ff8d)
+
+> **Prompt:** "in the inventorymanagement, make it so that the user can add items manually to the inventory"
+
+### Added
+- Manual item entry form on inventory management page — users can now add items without scanning by entering barcode/ID, item name, and quantity via a collapsible form
+
+#### `inventorymanagement.html` — v01.22w
+
+##### Added
+- "Add Item Manually" toggle button below the image upload row
+- Collapsible manual entry form with barcode/ID, item name, and quantity fields
+- `addManualEntryToSheet()` function that sends manual entries to the same GAS backend endpoint
+- Form validation requiring at least a barcode or item name, and quantity ≥ 1
+- Form auto-clears after successful submission with immediate data poll refresh
+
 ## [v09.90r] — 2026-04-07 10:31:24 PM EST — [SHA unavailable]
 
 > **Prompt:** "the program portal itself can be excluded since we are already in it, so how do you suggest we do that" / "yes"
