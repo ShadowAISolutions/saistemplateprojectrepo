@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 63/100`
+`Sections: 64/100`
 
 ## [Unreleased]
+
+## [v11.26r] — 2026-04-13 05:12:47 PM EST
+
+> **Prompt:** "i put the image in the live-site-pages/images, and the image is called dog-marquee1.png"
+
+### Changed
+- Updated sprite sheet image path in `marquee1.html` from `dog-trot-36.png` to `images/dog-marquee1.png` to match actual file location
+
+#### `marquee1.html` — v01.01w
+
+##### Changed
+- Sprite animation now loads from the correct image location
 
 ## [v11.25r] — 2026-04-13 05:03:03 PM EST
 

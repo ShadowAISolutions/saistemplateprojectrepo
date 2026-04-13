@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-13 05:03:03 PM EST` · Repo version: `v11.25r`
+Last updated: `2026-04-13 05:12:47 PM EST` · Repo version: `v11.26r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -63,7 +63,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/inventorymanagement.html">inventorymanagement.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/inventorymanagement.html">🌐</a>🟢 · <a href="https://docs.google.com/spreadsheets/d/1_dtm8U7uIug4aUcD4KD9ylwzZvm05xWBtXMrikWi8Pg/">📊</a> · ◽ · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/googleAppsScripts/Inventorymanagement/inventorymanagement.gs">⛽</a> · ◽  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/inventorymanagementhtml.changelog.md">v01.59w</a> · <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/gs-changelogs/inventorymanagementgs.changelog.md">v01.26g</a> | [template · modified] Inventory Management page
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/marquee1.html">marquee1.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/marquee1.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/marquee1html.changelog.md">v01.00w</a> · vNoGASg | [template] Police dog loading/splash page with sprite animation
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/marquee1.html">marquee1.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/marquee1.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/marquee1html.changelog.md">v01.01w</a> · vNoGASg | [template] Police dog loading/splash page with sprite animation
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>
