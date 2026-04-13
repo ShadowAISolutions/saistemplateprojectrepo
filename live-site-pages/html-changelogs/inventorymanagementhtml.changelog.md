@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.50w] — 2026-04-13 08:15:01 AM EST — v11.13r
+
+### Added
+- "Clear All" button to reset search text, location filter, category filter, and column sorting at once
+- Colored stock health indicator next to each item's quantity — green (healthy), yellow (low stock), red (out of stock), grey (no threshold set)
 
 ## [v01.49w] — 2026-04-13 08:00:01 AM EST — v11.12r
 

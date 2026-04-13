@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 19/50`
+`Sections: 20/50`
 
 ## [Unreleased]
+
+## [v01.20g] — 2026-04-13 08:15:01 AM EST — v11.13r
+
+### Added
+- "Low Stock Threshold" column automatically added to inventory data for tracking stock levels
 
 ## [v01.19g] — 2026-04-13 07:44:46 AM EST — v11.10r
 

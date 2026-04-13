@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v11.13r] — 2026-04-13 08:15:01 AM EST
+
+> **Prompt:** "add a button to clear search/sorting fields, also give each item a low stock threshold column, where that column will have a colored stock health."
+
+### Added
+- Added "Clear All" button in the search/filter bar that resets text search, Location filter, Category filter, and column sorting in one click — only visible when any filter or sort is active
+- Added "Low Stock Threshold" column to the inventory data model — auto-added to existing spreadsheets, included in default header initialization
+- Added colored stock health indicator (dot) on the Quantity column: green (above threshold), yellow (at or below threshold), red (zero or negative), grey (no threshold set). Dot tooltip shows the threshold value
+
+#### `inventorymanagement.html` — v01.50w
+
+##### Added
+- "Clear All" button to reset all search, filter, and sort state
+- Colored stock health dots next to quantity values based on the item's low stock threshold
+
+#### `inventorymanagement.gs` — v01.20g
+
+##### Added
+- "Low Stock Threshold" column auto-added to existing spreadsheets
 
 ## [v11.12r] — 2026-04-13 08:00:01 AM EST
 

@@ -1,4 +1,4 @@
-var VERSION = "v01.19g";
+var VERSION = "v01.20g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -321,20 +321,22 @@ function refreshDataCache() {
     if (!sheet) {
       // Auto-create the sheet with default headers if it was deleted
       sheet = ss.insertSheet(SHEET_NAME);
-      sheet.getRange(1, 1, 1, 8).setValues([['Item Name', 'Quantity', 'Barcode', 'Location', 'Category', 'Last User', 'Last Updated', 'Image']]);
+      sheet.getRange(1, 1, 1, 9).setValues([['Item Name', 'Quantity', 'Barcode', 'Location', 'Category', 'Low Stock Threshold', 'Last User', 'Last Updated', 'Image']]);
       // Clear stale cache so old data doesn't persist
       CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
     }
     // Auto-add Location and Category headers if they don't exist yet
     var existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    var hasLocation = false, hasCategory = false;
+    var hasLocation = false, hasCategory = false, hasThreshold = false;
     for (var dh = 0; dh < existingHeaders.length; dh++) {
       var dhLow = String(existingHeaders[dh]).toLowerCase().trim();
       if (dhLow === 'location') hasLocation = true;
       if (dhLow === 'category') hasCategory = true;
+      if (dhLow === 'low stock threshold') hasThreshold = true;
     }
     if (!hasLocation) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Location'); }
     if (!hasCategory) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Category'); }
+    if (!hasThreshold) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Low Stock Threshold'); }
     // Re-read headers after potential additions
     existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     // Auto-add Image header if it doesn't exist yet
