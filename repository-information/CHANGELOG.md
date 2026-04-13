@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 67/100`
+`Sections: 68/100`
 
 ## [Unreleased]
+
+## [v11.30r] — 2026-04-13 05:47:48 PM EST
+
+> **Prompt:** "the marquee2 is a different size, so you have to modify it to work. attaching it again"
+
+### Fixed
+- Fixed `marquee2.html` sprite grid from 7×5 to 6×6 — image is 1620×1062 (270×177 per frame), same grid layout as marquee1 but smaller pixel dimensions
+
+#### `marquee2.html` — v01.01w
+
+##### Fixed
+- Sprite animation now uses the correct grid layout for the dog image
 
 ## [v11.29r] — 2026-04-13 05:41:57 PM EST
 
