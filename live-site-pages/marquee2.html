@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.02w">
+<meta name="build-version" content="v01.03w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -124,35 +124,31 @@
   #version-indicator .dot.error    { background: #ef5350; }
   @keyframes viPulse { from { opacity: 1; } to { opacity: 0.4; } }
 
-  /* ── Measuring ruler ── */
+  /* ── Measuring ruler (centered bars) ── */
   .ruler {
+    width: 420px;
+    margin: 0.5rem auto 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .ruler .bar {
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
     position: relative;
-    width: 372px;
-    height: 40px;
-    margin: 0 auto 1rem;
-    border-bottom: 2px solid #ccc;
   }
-  .ruler .tick {
+  .ruler .bar span {
     position: absolute;
-    bottom: 0;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-  .ruler .tick::before {
-    content: '';
-    display: block;
-    width: 1px;
-    height: 18px;
-    background: #e53935;
-    margin: 0 auto 2px;
-  }
-  .ruler .tick span {
+    right: -30px;
+    top: -2px;
     font-size: 9px;
     color: #999;
     white-space: nowrap;
   }
-  .ruler .tick.current::before { background: #2e7d32; width: 2px; height: 24px; }
-  .ruler .tick.current span { color: #2e7d32; font-weight: 700; font-size: 10px; }
+  .ruler .bar.current { background: #2e7d32; height: 8px; }
+  .ruler .bar.current span { color: #2e7d32; font-weight: 700; font-size: 10px; }
 </style>
 </head>
 <body>
@@ -163,16 +159,16 @@
   <div class="signin-heading">Signing in…</div>
   <div class="dog-wrap"><div class="dog"></div></div>
   <div class="ruler">
-    <div class="tick" style="left:80px"><span>80</span></div>
-    <div class="tick" style="left:100px"><span>100</span></div>
-    <div class="tick current" style="left:132px"><span>132 ★</span></div>
-    <div class="tick" style="left:150px"><span>150</span></div>
-    <div class="tick" style="left:180px"><span>180</span></div>
-    <div class="tick" style="left:200px"><span>200</span></div>
-    <div class="tick" style="left:250px"><span>250</span></div>
-    <div class="tick" style="left:270px"><span>270</span></div>
-    <div class="tick" style="left:300px"><span>300</span></div>
-    <div class="tick" style="left:372px"><span>372</span></div>
+    <div class="bar" style="width:80px"><span>80</span></div>
+    <div class="bar" style="width:100px"><span>100</span></div>
+    <div class="bar current" style="width:132px"><span>132 ★</span></div>
+    <div class="bar" style="width:150px"><span>150</span></div>
+    <div class="bar" style="width:180px"><span>180</span></div>
+    <div class="bar" style="width:200px"><span>200</span></div>
+    <div class="bar" style="width:250px"><span>250</span></div>
+    <div class="bar" style="width:270px"><span>270</span></div>
+    <div class="bar" style="width:300px"><span>300</span></div>
+    <div class="bar" style="width:372px"><span>372</span></div>
   </div>
   <div class="steps">
     <!-- Step 1 -->

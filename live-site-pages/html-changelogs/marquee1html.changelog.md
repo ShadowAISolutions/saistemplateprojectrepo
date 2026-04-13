@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 5/100`
+`Sections: 6/100`
 
 ## [Unreleased]
+
+## [v01.06w] — 2026-04-13 06:08:04 PM EST — v11.32r
+
+### Changed
+- Ruler bars now expand symmetrically from center for intuitive width comparison
 
 ## [v01.05w] — 2026-04-13 06:02:44 PM EST — v11.31r
 

@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 69/100`
+`Sections: 70/100`
 
 ## [Unreleased]
+
+## [v11.32r] — 2026-04-13 06:08:04 PM EST
+
+> **Prompt:** "no but i want the ruler to go outwards from the center so that i can tell up to where the image will end up width wise"
+
+### Changed
+- Redesigned measuring ruler on both `marquee1.html` and `marquee2.html` — replaced left-aligned tick marks with centered horizontal bars that expand outward from center, so each bar visually shows how wide the dog sprite would be at that DISPLAY_W value
+
+#### `marquee1.html` — v01.06w
+
+##### Changed
+- Ruler bars now expand symmetrically from center for intuitive width comparison
+
+#### `marquee2.html` — v01.03w
+
+##### Changed
+- Ruler bars now expand symmetrically from center for intuitive width comparison
 
 ## [v11.31r] — 2026-04-13 06:02:44 PM EST
 
