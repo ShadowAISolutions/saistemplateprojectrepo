@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.38w">
+  <meta name="build-version" content="v01.39w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5080,12 +5080,13 @@
       })();
 
       // ── Scan Queue — allows rapid scanning without waiting for each save ──
-      function _enqueueScanItem(values, imageBase64, imageFileName) {
+      function _enqueueScanItem(values, imageBase64, imageFileName, existingRowIdx) {
         var entry = {
           id: ++_scanQueueIdCounter,
           values: values.map(function(v) { return String(v); }),
           imageBase64: imageBase64 || null,
           imageFileName: imageFileName || '',
+          existingRowIndex: (typeof existingRowIdx === 'number') ? existingRowIdx : -1,
           status: 'queued',
           error: null,
           optimisticIndex: -1
@@ -5118,13 +5119,27 @@
         next.status = 'sending';
         _updateQueueBadge();
         ldRenderTableView({});
-        gasCall('addRow', [_sessionToken, JSON.stringify(next.values), next.imageBase64 || '', next.imageFileName || ''], function(result) {
+        gasCall('addRow', [_sessionToken, JSON.stringify(next.values)], function(result) {
           next.status = 'done';
           _addRowPendingIndices.delete(next.optimisticIndex);
           if (result && result.liveData) {
             _handleLiveData(result.liveData);
             // After liveData overwrites _ldRows, re-insert optimistic rows for remaining items
             _reinsertOptimisticRows();
+          }
+          // After addRow succeeds, upload image in a single combined call (upload + set on row)
+          if (next.imageBase64) {
+            var imgRowIdx = (result && result.liveData && result.liveData.rows) ? result.liveData.rows.length - 1 : -1;
+            if (next.existingRowIndex >= 0) imgRowIdx = next.existingRowIndex;
+            if (imgRowIdx >= 0) {
+              gasCall('updateRowImage', [_sessionToken, imgRowIdx, '', next.imageBase64, next.imageFileName],
+                function(r) {
+                  console.log('[IMG] updateRowImage (post-addRow) OK');
+                  if (r && r.liveData) { _handleLiveData(r.liveData); }
+                },
+                function(e) { console.warn('[IMG] updateRowImage (post-addRow) failed:', e); }
+              );
+            }
           }
           _pruneCompletedEntries();
           _updateQueueBadge();
@@ -5579,9 +5594,9 @@
             imgFileName = '';
           }
 
-          // Enqueue: addRow handles row add/merge + optional image upload in one call
+          // Enqueue: addRow saves the row first, then image upload follows as a second call
           if (typeof window._enqueueScanItem === 'function') {
-            window._enqueueScanItem(values, pendingImg, imgFileName);
+            window._enqueueScanItem(values, pendingImg, imgFileName, existingRowIndex);
           } else {
             for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
             var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();

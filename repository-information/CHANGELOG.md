@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 75/100`
+`Sections: 76/100`
 
 ## [Unreleased]
+
+## [v11.00r] — 2026-04-12 08:04:20 PM EST
+
+> **Prompt:** "unfortunately when i upload an image and save, its not processing it. the optimistic row isnt showing when i do that either."
+
+### Fixed
+- Fixed image upload not processing and optimistic row not showing when adding items with images — changed approach from sending base64 image data inside the `addRow` GAS call (which could fail due to payload size through the PostMessage RPC bridge) to a 2-step flow: `addRow` saves the row first (fast, lightweight), then `updateRowImage` handles image upload+set as a follow-up call after row is confirmed
+- Reverted `addRow` GAS function to original 2-param signature — image data no longer passed through `addRow`
+- Image upload now uses server-confirmed row index instead of client-side guess, fixing the fragile `currentRows.length - 1` approach
+
+#### `inventorymanagement.gs` — v01.12g
+
+##### Fixed
+- Fixed image upload reliability — images now process correctly when adding items
+
+#### `inventorymanagement.html` — v01.39w
+
+##### Fixed
+- Fixed items not appearing in the list when adding with a photo attached
+- Photos now upload reliably after the item is saved
 
 ## [v10.99r] — 2026-04-12 07:50:42 PM EST
 

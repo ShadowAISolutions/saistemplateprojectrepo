@@ -1,4 +1,4 @@
-var VERSION = "v01.11g";
+var VERSION = "v01.12g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -495,7 +495,7 @@ function writeCell(token, row, col, value) {
  * After writing, refreshes the cache immediately for instant feedback.
  * Returns signed response with updated live data.
  */
-function addRow(token, valuesJSON, imageBase64, imageFileName) {
+function addRow(token, valuesJSON) {
   var user = validateSessionForData(token, 'addRow');
   checkPermission(user, 'write', 'addRow');
 
@@ -583,40 +583,6 @@ function addRow(token, valuesJSON, imageBase64, imageFileName) {
       bcCell.setValue(String(values[barcodeCol]));
     }
     actionType = 'add_row';
-  }
-
-  // PROJECT: Inline image upload — when imageBase64 is provided, upload to Drive and set on the row
-  if (imageBase64) {
-    var imgCol = -1;
-    for (var ih = 0; ih < headers.length; ih++) {
-      if (String(headers[ih]).toLowerCase().trim() === 'image') { imgCol = ih; break; }
-    }
-    if (imgCol >= 0) {
-      try {
-        var newFileId = _uploadImageToDrive(imageBase64, imageFileName, user.email);
-        if (newFileId) {
-          var imgTargetRow;
-          if (actionType === 'add_row') {
-            imgTargetRow = sheet.getLastRow();
-          } else if (existingRowIndex >= 0) {
-            imgTargetRow = existingRowIndex + 1;
-          }
-          if (imgTargetRow) {
-            // Delete old image if the row already had one (barcode merge case)
-            if (existingRowIndex >= 0) {
-              var oldImgId = String(data[existingRowIndex][imgCol] || '').trim();
-              if (oldImgId && oldImgId !== newFileId) {
-                _trashDriveFile(oldImgId);
-              }
-            }
-            sheet.getRange(imgTargetRow, imgCol + 1).setValue(newFileId);
-          }
-        }
-      } catch (imgErr) {
-        Logger.log('addRow inline image error: ' + imgErr.message);
-        // Image upload failed — row is still saved, just without image
-      }
-    }
   }
 
   // Refresh cache immediately for instant feedback
