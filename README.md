@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-13 06:24:53 PM EST` · Repo version: `v11.35r`
+Last updated: `2026-04-13 06:42:39 PM EST` · Repo version: `v11.36r`
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
@@ -65,7 +65,7 @@ Initialize your repository and Claude will update the live site link and QR code
 │   │
 │   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/marquee1.html">marquee1.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/marquee1.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/marquee1html.changelog.md">v01.08w</a> · vNoGASg | [template] Police dog loading/splash page with sprite animation (6×6 grid)
 │   │
-│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/marquee2.html">marquee2.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/marquee2.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/marquee2html.changelog.md">v01.06w</a> · vNoGASg | [template] Police dog loading/splash page with sprite animation (7×5 grid)
+│   ├── <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/marquee2.html">marquee2.html</a>  →  <a href="https://ShadowAISolutions.github.io/saistemplateprojectrepo/marquee2.html">🌐</a>  — <a href="https://github.com/ShadowAISolutions/saistemplateprojectrepo/blob/main/live-site-pages/html-changelogs/marquee2html.changelog.md">v01.07w</a> · vNoGASg | [template] Police dog loading/splash page with sprite animation (7×5 grid)
 │   │
 │   <b>│ ─ External Sites (Placeholder) ────────────────────────────────────────────</b>
 │   │   <i>(No external-site pages yet)</i>

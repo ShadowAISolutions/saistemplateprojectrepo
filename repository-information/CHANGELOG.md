@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 73/100`
+`Sections: 74/100`
 
 ## [Unreleased]
+
+## [v11.36r] — 2026-04-13 06:42:39 PM EST
+
+> **Prompt:** "lets try 160 with marquee 2"
+
+### Changed
+- Changed `marquee2.html` DISPLAY_W from 200 to 160, added 160px bar to ruler as current highlight
+
+#### `marquee2.html` — v01.07w
+
+##### Changed
+- Sprite animation now renders at 160px wide
 
 ## [v11.35r] — 2026-04-13 06:24:53 PM EST
 

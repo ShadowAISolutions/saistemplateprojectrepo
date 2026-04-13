@@ -1,8 +1,13 @@
 # marquee2.html Changelog
 
-`Sections: 6/100`
+`Sections: 7/100`
 
 ## [Unreleased]
+
+## [v01.07w] — 2026-04-13 06:42:39 PM EST — v11.36r
+
+### Changed
+- Sprite animation now renders at 160px wide
 
 ## [v01.06w] — 2026-04-13 06:24:53 PM EST — v11.35r
 
