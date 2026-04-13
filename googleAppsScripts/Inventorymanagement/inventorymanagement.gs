@@ -1,4 +1,4 @@
-var VERSION = "v01.17g";
+var VERSION = "v01.18g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -321,12 +321,23 @@ function refreshDataCache() {
     if (!sheet) {
       // Auto-create the sheet with default headers if it was deleted
       sheet = ss.insertSheet(SHEET_NAME);
-      sheet.getRange(1, 1, 1, 6).setValues([['Item Name', 'Quantity', 'Barcode', 'Last User', 'Last Updated', 'Image']]);
+      sheet.getRange(1, 1, 1, 8).setValues([['Item Name', 'Quantity', 'Barcode', 'Location', 'Category', 'Last User', 'Last Updated', 'Image']]);
       // Clear stale cache so old data doesn't persist
       CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
     }
-    // Auto-add Image header if it doesn't exist yet
+    // Auto-add Location and Category headers if they don't exist yet
     var existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var hasLocation = false, hasCategory = false;
+    for (var dh = 0; dh < existingHeaders.length; dh++) {
+      var dhLow = String(existingHeaders[dh]).toLowerCase().trim();
+      if (dhLow === 'location') hasLocation = true;
+      if (dhLow === 'category') hasCategory = true;
+    }
+    if (!hasLocation) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Location'); }
+    if (!hasCategory) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Category'); }
+    // Re-read headers after potential additions
+    existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    // Auto-add Image header if it doesn't exist yet
     var hasImageCol = false;
     for (var ih = 0; ih < existingHeaders.length; ih++) {
       if (String(existingHeaders[ih]).toLowerCase().trim() === 'image') { hasImageCol = true; break; }
@@ -336,10 +347,12 @@ function refreshDataCache() {
       sheet.getRange(1, nextCol).setValue('Image');
     }
 
+    ensureDropdownSheet();
     var data = sheet.getDataRange().getValues();
     var headers = data[0] || [];
     var rows = data.slice(1);
-    var result = JSON.stringify({ headers: headers, rows: rows, ts: Date.now() });
+    var dropdowns = getDropdownOptions();
+    var result = JSON.stringify({ headers: headers, rows: rows, ts: Date.now(), dropdowns: dropdowns });
     // 100KB CacheService limit per key — large sheets may need chunking in the future
     // 21600s (6h) TTL — heartbeat reads re-up this TTL so it never expires while viewers
     // are present. The long TTL is a safety net for gaps between the last viewer leaving
@@ -978,6 +991,66 @@ function _trashDriveFile(fileId) {
       muteHttpExceptions: true
     });
   } catch (e) { Logger.log('_trashDriveFile: ' + e.message); }
+}
+
+/**
+ * ensureDropdownSheet() — auto-creates the "Dropdowns" tab with default values
+ * if it doesn't exist. Called during refreshDataCache() so it's created on first use.
+ * Column A = Location options, Column B = Category options.
+ * Users can edit these lists directly in the spreadsheet to customize their options.
+ */
+var DROPDOWN_SHEET_NAME = 'Dropdowns';
+function ensureDropdownSheet() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var ddSheet = ss.getSheetByName(DROPDOWN_SHEET_NAME);
+  if (ddSheet) return;
+  ddSheet = ss.insertSheet(DROPDOWN_SHEET_NAME);
+  ddSheet.getRange(1, 1).setValue('Location');
+  ddSheet.getRange(1, 2).setValue('Category');
+  var defaultLocations = ['Warehouse A', 'Warehouse B', 'Storage Room', 'Front Desk', 'Back Office'];
+  var defaultCategories = ['Electronics', 'Office Supplies', 'Medical', 'Cleaning', 'Food & Beverage'];
+  for (var dl = 0; dl < defaultLocations.length; dl++) {
+    ddSheet.getRange(dl + 2, 1).setValue(defaultLocations[dl]);
+  }
+  for (var dc = 0; dc < defaultCategories.length; dc++) {
+    ddSheet.getRange(dc + 2, 2).setValue(defaultCategories[dc]);
+  }
+}
+
+/**
+ * getDropdownOptions() — reads the Dropdowns tab and returns arrays of options.
+ * Uses CacheService to avoid reading the sheet on every poll.
+ * Returns { Location: [...], Category: [...] } or empty arrays if tab not found.
+ */
+function getDropdownOptions() {
+  var cache = CacheService.getScriptCache();
+  var cacheKey = 'dropdown_options';
+  var cached = cache.get(cacheKey);
+  if (cached) return JSON.parse(cached);
+  try {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var ddSheet = ss.getSheetByName(DROPDOWN_SHEET_NAME);
+    if (!ddSheet) { ensureDropdownSheet(); ddSheet = ss.getSheetByName(DROPDOWN_SHEET_NAME); }
+    if (!ddSheet) return { Location: [], Category: [] };
+    var data = ddSheet.getDataRange().getValues();
+    var headers = data[0] || [];
+    var result = {};
+    for (var c = 0; c < headers.length; c++) {
+      var colName = String(headers[c]).trim();
+      if (!colName) continue;
+      var opts = [];
+      for (var r = 1; r < data.length; r++) {
+        var val = String(data[r][c] || '').trim();
+        if (val) opts.push(val);
+      }
+      result[colName] = opts;
+    }
+    cache.put(cacheKey, JSON.stringify(result), 300);
+    return result;
+  } catch (e) {
+    Logger.log('getDropdownOptions error: ' + e.message);
+    return { Location: [], Category: [] };
+  }
 }
 
 // ══════════════

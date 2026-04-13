@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.46w">
+  <meta name="build-version" content="v01.47w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -514,6 +514,17 @@
       box-sizing: border-box;
     }
     #ld-scan-confirm-modal .scan-data-table input.scan-edit-input:focus { border-color: #58a6ff; }
+    #ld-scan-confirm-modal .scan-data-table select.scan-edit-select {
+      width: 100%; padding: 4px 8px; font: 13px/1.2 monospace; background: #0f1117;
+      color: #c9d1d9; border: 1px solid #2a2b3d; border-radius: 4px; outline: none;
+      box-sizing: border-box; cursor: pointer;
+    }
+    #ld-scan-confirm-modal .scan-data-table select.scan-edit-select:focus { border-color: #58a6ff; }
+    #ld-data-table td.editing select {
+      width: 100%; padding: 6px 8px; font-size: 13px; font-family: inherit;
+      background: #161b22; color: #c9d1d9; border: 1px solid #58a6ff;
+      border-radius: 4px; outline: none; cursor: pointer;
+    }
     #ld-scan-confirm-modal .qty-stepper-group { display: flex; align-items: center; gap: 0; }
     #ld-scan-confirm-modal .qty-stepper-group input.scan-edit-input { flex: 1; border-radius: 0; text-align: center; -moz-appearance: textfield; }
     #ld-scan-confirm-modal .qty-stepper-group input.scan-edit-input::-webkit-inner-spin-button,
@@ -547,12 +558,17 @@
       #ld-data-table td { padding: 8px 8px; }
       /* Hide non-essential columns on mobile — show only Image, Item Name and Quantity */
       /* Image column is prepended as first visual column, shifting nth-child indices by 1 */
+      /* data-col indices: Barcode=2, Location=3, Category=4, Last User=5, Last Updated=6 */
       #ld-data-table th:nth-child(4),
       #ld-data-table th:nth-child(5),
-      #ld-data-table th:nth-child(6) { display: none; }
+      #ld-data-table th:nth-child(6),
+      #ld-data-table th:nth-child(7),
+      #ld-data-table th:nth-child(8) { display: none; }
       #ld-data-table td[data-col="2"],
       #ld-data-table td[data-col="3"],
-      #ld-data-table td[data-col="4"] { display: none; }
+      #ld-data-table td[data-col="4"],
+      #ld-data-table td[data-col="5"],
+      #ld-data-table td[data-col="6"] { display: none; }
       /* Image column mobile sizing */
       #ld-data-table td.ld-img-cell img { width: 32px; height: 32px; }
       .ld-img-placeholder { width: 32px; height: 32px; font-size: 14px; }
@@ -4500,6 +4516,7 @@
       var _ldSortCol = -1;
       var _ldSortAsc = true;
       var _ldSearchTerm = '';
+      var _ldDropdownOptions = {};
       var _ldHeaders = [];
       var _ldRows = [];
       var _ldLastDataTs = 0;
@@ -4898,15 +4915,33 @@
       function ldStartCellEdit(td, row, col, currentVal) {
         if (td.classList.contains('editing')) return;
         td.classList.add('editing');
-        var input = document.createElement('input');
-        input.type = 'text';
-        input.value = currentVal;
         td.textContent = '';
-        td.appendChild(input);
-        input.focus();
-        input.select();
+        // Check if this column is a dropdown column
+        var colHeader = (_ldHeaders[col] || '').toLowerCase().trim();
+        var ddOpts = _ldDropdownOptions || {};
+        var ddKey = null;
+        if (colHeader === 'location') ddKey = 'Location';
+        else if (colHeader === 'category') ddKey = 'Category';
+        var editEl;
+        if (ddKey && ddOpts[ddKey] && ddOpts[ddKey].length > 0) {
+          editEl = document.createElement('select');
+          var emptyOpt = document.createElement('option'); emptyOpt.value = ''; emptyOpt.textContent = '— Select —';
+          editEl.appendChild(emptyOpt);
+          ddOpts[ddKey].forEach(function(optVal) {
+            var opt = document.createElement('option'); opt.value = optVal; opt.textContent = optVal;
+            editEl.appendChild(opt);
+          });
+          editEl.value = currentVal;
+        } else {
+          editEl = document.createElement('input');
+          editEl.type = 'text';
+          editEl.value = currentVal;
+        }
+        td.appendChild(editEl);
+        editEl.focus();
+        if (editEl.select) editEl.select();
         function commitEdit() {
-          var newVal = input.value;
+          var newVal = editEl.value;
           td.classList.remove('editing');
           td.textContent = newVal;
           if (newVal !== currentVal) {
@@ -4918,14 +4953,15 @@
             });
           }
         }
-        input.addEventListener('blur', commitEdit);
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') { input.blur(); }
+        editEl.addEventListener('blur', commitEdit);
+        editEl.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') { editEl.blur(); }
           if (e.key === 'Escape') {
             td.classList.remove('editing');
             td.textContent = currentVal;
           }
         });
+        if (ddKey) editEl.addEventListener('change', function() { editEl.blur(); });
       }
 
       // ldStartRowEdit — opens the scan-confirm modal by synthesizing a barcode-scan of the row's
@@ -4997,6 +5033,7 @@
         if (!data || !data.headers) return;
         _ldLastDataTs = Date.now();
         ldSetConnectionStatus('live');
+        if (data.dropdowns) _ldDropdownOptions = data.dropdowns;
         var currentJSON = JSON.stringify(data);
         if (currentJSON !== _ldPrevDataJSON) {
           var changedCells = ldDetectChanges(data.headers, data.rows);
@@ -5351,6 +5388,7 @@
       // Expose headers and rows for QR scanner confirmation modal (cross-IIFE access)
       window._ldGetHeaders = function() { return _ldHeaders; };
       window._ldGetRows = function() { return _ldRows; };
+      window._ldGetDropdownOptions = function() { return _ldDropdownOptions; };
       window._ldGetSessionToken = function() { return _sessionToken; };
       window._enqueueScanItem = _enqueueScanItem;
     })();
@@ -5566,6 +5604,26 @@
             barcodeInp.type = 'hidden';
             barcodeInp.value = scannedData || '';
             editInputs.push(barcodeInp);
+            continue;
+          }
+          // Dropdown columns — Location and Category use <select> elements
+          var ddOpts = (typeof window._ldGetDropdownOptions === 'function') ? window._ldGetDropdownOptions() : {};
+          var ddKey = null;
+          if (hCurr === 'location') ddKey = 'Location';
+          else if (hCurr === 'category') ddKey = 'Category';
+          if (ddKey && ddOpts[ddKey] && ddOpts[ddKey].length > 0) {
+            var trDD = document.createElement('tr');
+            var tdLabelDD = document.createElement('td'); tdLabelDD.textContent = headers[i];
+            var tdValueDD = document.createElement('td');
+            var sel = document.createElement('select'); sel.className = 'scan-edit-select';
+            var emptyOpt = document.createElement('option'); emptyOpt.value = ''; emptyOpt.textContent = '— Select ' + headers[i] + ' —';
+            sel.appendChild(emptyOpt);
+            ddOpts[ddKey].forEach(function(optVal) {
+              var opt = document.createElement('option'); opt.value = optVal; opt.textContent = optVal;
+              sel.appendChild(opt);
+            });
+            if (existingRow && existingRow[i]) sel.value = String(existingRow[i]);
+            editInputs.push(sel); tdValueDD.appendChild(sel); trDD.appendChild(tdLabelDD); trDD.appendChild(tdValueDD); tbody.appendChild(trDD);
             continue;
           }
           var tr = document.createElement('tr');

@@ -3,9 +3,37 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v11.09r] — 2026-04-13 07:35:37 AM EST
+
+> **Prompt:** "add 2 new columns, Location and Category. these should be dropdowns. make some default samples to test functionality, but these should be controlled in their own tab in the spreadsheet, auto create it."
+
+### Added
+- Added Location and Category columns to the inventory management data model with dropdown selection support
+- GAS backend auto-creates a "Dropdowns" tab in the spreadsheet with default Location options (Warehouse A, Warehouse B, Storage Room, Front Desk, Back Office) and Category options (Electronics, Office Supplies, Medical, Cleaning, Food & Beverage)
+- Dropdown options are served to the frontend via `getCachedData()` and cached for 5 minutes in CacheService
+- Auto-adds Location and Category headers to existing spreadsheets that don't have them yet
+- Scan entry form renders `<select>` dropdowns for Location and Category columns, pre-filled when editing existing items
+- Inline table cell editing renders `<select>` dropdowns for Location and Category columns instead of text inputs
+- Dropdown selection auto-commits on change (no need to press Enter)
+
+#### `inventorymanagement.html` — v01.47w
+
+##### Added
+- Dropdown select elements in scan entry form and inline table editing for Location and Category columns
+- CSS styling for select elements matching the dark theme
+- Mobile column hiding updated to include Location and Category columns
+
+#### `inventorymanagement.gs` — v01.18g
+
+##### Added
+- `ensureDropdownSheet()` function to auto-create the "Dropdowns" tab with default values
+- `getDropdownOptions()` function to read dropdown values from the spreadsheet with caching
+- Location and Category headers auto-added to existing data sheets
+- Dropdown data included in cached data responses
 
 ## [v11.08r] — 2026-04-13 07:14:34 AM EST
 

@@ -3,9 +3,16 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 17/50`
+`Sections: 18/50`
 
 ## [Unreleased]
+
+## [v01.18g] — 2026-04-13 07:35:37 AM EST — v11.09r
+
+### Added
+- Location and Category columns automatically added to inventory data
+- Dropdown options managed via a dedicated spreadsheet tab — auto-created with default options on first use
+- Dropdown values cached for fast loading
 
 ## [v01.17g] — 2026-04-12 09:43:43 PM EST — v11.07r
 

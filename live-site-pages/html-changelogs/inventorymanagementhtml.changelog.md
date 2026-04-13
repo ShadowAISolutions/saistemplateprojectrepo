@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v01.47w] — 2026-04-13 07:35:37 AM EST — v11.09r
+
+### Added
+- Location and Category columns with dropdown selection — choose from predefined options when adding or editing items
+- Dropdown options are managed in a separate spreadsheet tab and can be customized by the admin
 
 ## [v01.46w] — 2026-04-13 07:14:34 AM EST — v11.08r
 
