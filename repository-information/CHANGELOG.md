@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v11.04r] — 2026-04-12 08:34:51 PM EST
+
+> **Prompt:** "ok i added the scope, and it is working, but once again we are back to having addrow, uploadimage, and updaterowimage, why are we back at this again"
+
+### Changed
+- Combined `uploadImage` + `updateRowImage` into a single `uploadImage` call by passing `rowIndex` to `uploadImage` — server uploads to Drive AND sets the image on the row in one execution. Removes the separate `updateRowImage` callback from the client-side image handler
+- Flow is now: `addRow` (row save) + `uploadImage` with `rowIndex` (upload + set) — 2 calls instead of 3
+
+#### `inventorymanagement.html` — v01.42w
+
+##### Changed
+- Image upload and row assignment now happen in a single server call instead of two separate calls
 
 ## [v11.03r] — 2026-04-12 08:29:48 PM EST
 
