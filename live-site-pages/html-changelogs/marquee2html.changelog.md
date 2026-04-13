@@ -1,8 +1,13 @@
 # marquee2.html Changelog
 
-`Sections: 3/100`
+`Sections: 4/100`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-04-13 06:13:38 PM EST — v11.33r
+
+### Fixed
+- Width ruler bars now properly centered on the page
 
 ## [v01.03w] — 2026-04-13 06:08:04 PM EST — v11.32r
 

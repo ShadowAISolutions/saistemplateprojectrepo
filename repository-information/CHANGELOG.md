@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 70/100`
+`Sections: 71/100`
 
 ## [Unreleased]
+
+## [v11.33r] — 2026-04-13 06:13:38 PM EST
+
+> **Prompt:** "the ruler is not centered. fix that."
+
+### Fixed
+- Fixed ruler centering on both `marquee1.html` and `marquee2.html` — replaced absolute-positioned labels with flexbox bar-row layout using `justify-content: center`, ensuring each bar + label pair is horizontally centered within the content area
+
+#### `marquee1.html` — v01.07w
+
+##### Fixed
+- Width ruler bars now properly centered on the page
+
+#### `marquee2.html` — v01.04w
+
+##### Fixed
+- Width ruler bars now properly centered on the page
 
 ## [v11.32r] — 2026-04-13 06:08:04 PM EST
 
