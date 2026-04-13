@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.59w] — 2026-04-13 11:00:42 AM EST — v11.24r
+
+### Fixed
+- Internal ID no longer appears in the barcode display when editing items without barcodes
 
 ## [v01.58w] — 2026-04-13 10:54:46 AM EST — v11.23r
 

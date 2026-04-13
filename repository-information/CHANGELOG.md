@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v11.24r] — 2026-04-13 11:00:42 AM EST
+
+> **Prompt:** "but i dont want the user to see the ID on the frontend. come up with a better method because if its missing we need the user to be able to input it later on. its not a requirement though"
+
+### Fixed
+- Reverted passing item ID as `scannedData` for barcode-less edits — the ID was leaking into the barcode display area of the modal. Now `scannedData` is always the barcode (empty when missing)
+- Removed the ID-based fallback lookup (no longer needed since the wrapper fix correctly forwards `editRowIndex`)
+- Barcode-less items now edit cleanly: barcode display is empty, barcode input field is empty (user can fill it in optionally), existing data pre-populates via `editRowIndex`
+
+#### `inventorymanagement.html` — v01.59w
+
+##### Fixed
+- Internal ID no longer appears in the barcode display when editing items without barcodes
 
 ## [v11.23r] — 2026-04-13 10:54:46 AM EST
 
