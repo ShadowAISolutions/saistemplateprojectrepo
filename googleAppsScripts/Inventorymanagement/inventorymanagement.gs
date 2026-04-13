@@ -1,4 +1,4 @@
-var VERSION = "v01.18g";
+var VERSION = "v01.19g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -566,20 +566,18 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
 
   var actionType;
   if (existingRowIndex >= 0 && qtyCol >= 0) {
-    // Duplicate barcode found — update existing row quantity
+    // Duplicate barcode found — update existing row
     var sheetRow = existingRowIndex + 1; // +1 because getValues() is 0-indexed but getRange() is 1-indexed
     var existingQty = parseFloat(data[existingRowIndex][qtyCol]) || 0;
     var deltaQty = parseFloat(values[qtyCol]) || 0;
     var newQty = existingQty + deltaQty;
     sheet.getRange(sheetRow, qtyCol + 1).setValue(newQty);
-    if (itemNameCol >= 0 && values[itemNameCol]) {
-      sheet.getRange(sheetRow, itemNameCol + 1).setValue(values[itemNameCol]);
-    }
-    if (lastUpdatedCol >= 0 && values[lastUpdatedCol]) {
-      sheet.getRange(sheetRow, lastUpdatedCol + 1).setValue(values[lastUpdatedCol]);
-    }
-    if (lastUserCol >= 0 && values[lastUserCol]) {
-      sheet.getRange(sheetRow, lastUserCol + 1).setValue(values[lastUserCol]);
+    // Write all other columns from values (skip barcode — unchanged; skip quantity — handled above)
+    for (var uc = 0; uc < values.length; uc++) {
+      if (uc === barcodeCol || uc === qtyCol) continue;
+      if (values[uc] !== undefined && values[uc] !== null && String(values[uc]) !== '') {
+        sheet.getRange(sheetRow, uc + 1).setValue(values[uc]);
+      }
     }
     actionType = 'update_quantity';
   } else {
