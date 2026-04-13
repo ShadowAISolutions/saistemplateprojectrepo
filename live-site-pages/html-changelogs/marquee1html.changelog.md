@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 2/100`
+`Sections: 3/100`
 
 ## [Unreleased]
+
+## [v01.03w] — 2026-04-13 05:28:46 PM EST — v11.28r
+
+### Fixed
+- Dog sprite animation now centered horizontally like the original spinner
 
 ## [v01.02w] — 2026-04-13 05:24:01 PM EST — v11.27r
 

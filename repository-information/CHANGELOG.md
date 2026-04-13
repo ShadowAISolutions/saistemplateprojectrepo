@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 65/100`
+`Sections: 66/100`
 
 ## [Unreleased]
+
+## [v11.28r] — 2026-04-13 05:28:46 PM EST
+
+> **Prompt:** "its off to the side, center it like where the spinner was"
+
+### Fixed
+- Centered the dog sprite animation in `marquee1.html` — added a wrapper div sized to the scaled dimensions (132×82px) with overflow hidden and auto margins, changed transform-origin to top-left so the sprite scales within the wrapper boundaries
+
+#### `marquee1.html` — v01.03w
+
+##### Fixed
+- Dog sprite animation now centered horizontally like the original spinner
 
 ## [v11.27r] — 2026-04-13 05:24:01 PM EST
 

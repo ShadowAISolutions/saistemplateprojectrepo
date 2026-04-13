@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.02w">
+<meta name="build-version" content="v01.03w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -45,15 +45,20 @@
   }
 
   /* ── Dog sprite (replaces spinner) ── */
+  .dog-wrap {
+    width: 132px;   /* 732 × 0.18 */
+    height: 82px;   /* 456 × 0.18 */
+    overflow: hidden;
+    margin: 0.5rem auto 1rem;
+  }
   .dog {
     width: 732px;
     height: 456px;
     transform: scale(0.18);
-    transform-origin: top center;
+    transform-origin: top left;
     background: url('images/dog-marquee1.png') 0 0 no-repeat;
     background-size: 4392px 2736px;
     animation: spriteFrames 1.2s steps(1) infinite;
-    margin: 0 auto -280px;
   }
 
   @keyframes spriteFrames {
@@ -149,7 +154,7 @@
   <img class="logo" src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt="Logo">
   <div class="app-title">Program Portal</div>
   <div class="signin-heading">Signing in…</div>
-  <div class="dog"></div>
+  <div class="dog-wrap"><div class="dog"></div></div>
   <div class="steps">
     <!-- Step 1 -->
     <div class="step" data-step="1">
