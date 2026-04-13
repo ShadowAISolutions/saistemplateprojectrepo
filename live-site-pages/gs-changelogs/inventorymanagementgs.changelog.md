@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 23/50`
+`Sections: 24/50`
 
 ## [Unreleased]
+
+## [v01.24g] — 2026-04-13 10:10:48 AM EST — v11.19r
+
+### Fixed
+- Each save operation now creates exactly one history entry instead of multiple
+- System-generated field updates no longer appear in history
 
 ## [v01.23g] — 2026-04-13 10:02:09 AM EST — v11.18r
 

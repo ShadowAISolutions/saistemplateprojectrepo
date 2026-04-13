@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.54w">
+  <meta name="build-version" content="v01.55w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4867,19 +4867,25 @@
           tdNewQty.textContent = (row[7] !== '' && row[7] !== undefined && row[7] !== null) ? String(row[7]) : '\u2014';
           tr.appendChild(tdNewQty);
           ldHistTbody.appendChild(tr);
-          // EDIT detail sub-row
-          if (actionStr === 'EDIT' && row[8]) {
+          // Detail sub-row — shows field changes for any action with details
+          if (row[8]) {
             try {
-              var detail = typeof row[8] === 'string' ? JSON.parse(row[8]) : row[8];
-              if (detail && detail.field) {
+              var detailRaw = typeof row[8] === 'string' ? JSON.parse(row[8]) : row[8];
+              // Normalize: single object → array, or already an array
+              var changes = Array.isArray(detailRaw) ? detailRaw : (detailRaw && detailRaw.field ? [detailRaw] : []);
+              if (changes.length > 0) {
                 var detailTr = document.createElement('tr');
                 detailTr.className = 'history-detail-row';
                 var detailTd = document.createElement('td');
                 detailTd.colSpan = 8;
-                var detailSpan = document.createElement('span');
-                detailSpan.className = 'history-detail-text';
-                detailSpan.textContent = '\u2514 ' + detail.field + ': ' + String(detail.old || '') + ' \u2192 ' + String(detail['new'] || '');
-                detailTd.appendChild(detailSpan);
+                for (var ci = 0; ci < changes.length; ci++) {
+                  var ch = changes[ci];
+                  var detailSpan = document.createElement('span');
+                  detailSpan.className = 'history-detail-text';
+                  detailSpan.textContent = '\u2514 ' + (ch.field || '') + ': ' + String(ch.old || '') + ' \u2192 ' + String(ch['new'] || '');
+                  detailTd.appendChild(detailSpan);
+                  if (ci < changes.length - 1) detailTd.appendChild(document.createElement('br'));
+                }
                 detailTr.appendChild(detailTd);
                 ldHistTbody.appendChild(detailTr);
               }

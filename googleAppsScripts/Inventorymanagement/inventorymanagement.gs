@@ -1,4 +1,4 @@
-var VERSION = "v01.23g";
+var VERSION = "v01.24g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -527,13 +527,16 @@ function writeCell(token, row, col, value) {
       }, '');
     }
   } else {
-    // Non-quantity field edit
+    // Non-quantity field edit — skip system-managed fields
     var wcFieldName = (col >= 0 && col < headerRowVals.length) ? String(headerRowVals[col]) : 'Column ' + col;
-    var wcCurrentQty = (wcQtyCol >= 0) ? (parseFloat(wcRowData[wcQtyCol]) || 0) : '';
-    logInventoryHistory(user.email, 'EDIT', {
-      id: wcItemId, barcode: wcBarcode, itemName: wcItemName,
-      qtyChange: '', newQty: wcCurrentQty
-    }, JSON.stringify({ field: wcFieldName, old: String(oldCellValue), new: String(value) }));
+    var wcSkipFields = { 'last updated': true, 'last user': true, 'image': true, 'id': true };
+    if (!wcSkipFields[wcFieldName.toLowerCase().trim()]) {
+      var wcCurrentQty = (wcQtyCol >= 0) ? (parseFloat(wcRowData[wcQtyCol]) || 0) : '';
+      logInventoryHistory(user.email, 'EDIT', {
+        id: wcItemId, barcode: wcBarcode, itemName: wcItemName,
+        qtyChange: '', newQty: wcCurrentQty
+      }, JSON.stringify([{ field: wcFieldName, old: String(oldCellValue), new: String(value) }]));
+    }
   }
 
   var writeResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
@@ -699,7 +702,7 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     cols: values.length, sheet: SHEET_NAME, barcode: scannedBarcode
   });
 
-  // PROJECT: Log to inventory history
+  // PROJECT: Log to inventory history — one consolidated entry per save operation
   if (actionType === 'add_row') {
     var newItemId = (idCol >= 0) ? String(rowValsForAppend[idCol] || '') : '';
     var newItemName = (itemNameCol >= 0) ? String(values[itemNameCol] || '') : '';
@@ -711,26 +714,39 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
   } else if (actionType === 'update_quantity') {
     var existItemId = (idCol >= 0) ? String(data[existingRowIndex][idCol] || '') : '';
     var existItemName = (itemNameCol >= 0) ? String(data[existingRowIndex][itemNameCol] || '') : '';
-    // Determine ADD vs SUB based on delta direction
-    var saveRowQtyAction = deltaQty >= 0 ? 'ADD' : 'SUB';
-    logInventoryHistory(user.email, saveRowQtyAction, {
-      id: existItemId, barcode: scannedBarcode, itemName: existItemName,
-      qtyChange: deltaQty, newQty: newQty
-    }, '');
-    // Also log field-level changes for non-qty/non-barcode columns that changed
+    // Collect all field-level changes (skip system-managed fields)
+    var fieldChanges = [];
     var existingRow = data[existingRowIndex];
+    var skipFields = { 'last updated': true, 'last user': true, 'image': true };
     for (var fc = 0; fc < values.length; fc++) {
-      if (fc === barcodeCol || fc === qtyCol) continue;
+      if (fc === barcodeCol || fc === qtyCol || fc === idCol) continue;
       if (values[fc] === undefined || values[fc] === null || String(values[fc]) === '') continue;
+      var hdrName = (fc < headers.length) ? String(headers[fc]) : '';
+      if (skipFields[hdrName.toLowerCase().trim()]) continue;
       var oldFieldVal = String(existingRow[fc] || '');
       var newFieldVal = String(values[fc]);
       if (oldFieldVal !== newFieldVal) {
-        var fieldName = (fc < headers.length) ? String(headers[fc]) : 'Column ' + fc;
-        logInventoryHistory(user.email, 'EDIT', {
-          id: existItemId, barcode: scannedBarcode, itemName: existItemName,
-          qtyChange: '', newQty: newQty
-        }, JSON.stringify({ field: fieldName, old: oldFieldVal, new: newFieldVal }));
+        fieldChanges.push({ field: hdrName, old: oldFieldVal, new: newFieldVal });
       }
+    }
+    // Determine primary action: qty change takes priority, otherwise EDIT
+    var saveRowAction = 'EDIT';
+    var saveRowQtyChange = '';
+    if (deltaQty !== 0) {
+      saveRowAction = deltaQty > 0 ? 'ADD' : 'SUB';
+      saveRowQtyChange = deltaQty;
+    }
+    // Build consolidated details: qty change + all field changes in one JSON array
+    var detailsStr = '';
+    if (fieldChanges.length > 0) {
+      detailsStr = JSON.stringify(fieldChanges);
+    }
+    // Only log if something actually changed (qty or fields)
+    if (deltaQty !== 0 || fieldChanges.length > 0) {
+      logInventoryHistory(user.email, saveRowAction, {
+        id: existItemId, barcode: scannedBarcode, itemName: existItemName,
+        qtyChange: saveRowQtyChange, newQty: newQty
+      }, detailsStr);
     }
   }
 

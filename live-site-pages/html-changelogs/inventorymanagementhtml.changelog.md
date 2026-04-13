@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.55w] — 2026-04-13 10:10:48 AM EST — v11.19r
+
+### Fixed
+- History detail rows now show all field changes from a single save on separate lines within one entry
 
 ## [v01.54w] — 2026-04-13 09:53:49 AM EST — v11.17r
 

@@ -3,9 +3,30 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v11.19r] — 2026-04-13 10:10:48 AM EST
+
+> **Prompt:** "its making a second timestamp for the editing of the timestamps, are we really doing two actions separately? regardless it should be a single entry in the history for each save, not per action, so all actions taken should be accounted for"
+
+### Fixed
+- Consolidated `saveRow()` history logging into one entry per save — qty change + all field changes are now a single row with a JSON array in the Details column, instead of separate entries per field
+- Excluded system-managed fields (Last Updated, Last User, Image) from history logging — these are auto-set, not user actions
+- Updated `writeCell()` to also skip system-managed fields in EDIT logging
+- Updated frontend detail sub-row rendering to handle consolidated array format (shows multiple field changes on separate lines within one row)
+
+#### `inventorymanagement.html` — v01.55w
+
+##### Fixed
+- History detail rows now show all field changes from a single save on separate lines within one entry
+
+#### `inventorymanagement.gs` — v01.24g
+
+##### Fixed
+- Each save operation now creates exactly one history entry instead of multiple
+- System-generated field updates no longer appear in history
 
 ## [v11.18r] — 2026-04-13 10:02:09 AM EST
 
