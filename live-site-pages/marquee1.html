@@ -3,52 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.01w">
+<meta name="build-version" content="v01.02w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #0B1D3A;
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    overflow: hidden;
     font-family: system-ui, -apple-system, sans-serif;
+    color: #333;
   }
 
-  .loading-wrapper {
+  .signin-wrapper {
     text-align: center;
+    max-width: 420px;
+    width: 100%;
+    padding: 2rem 1.5rem;
   }
 
-  .loading-text {
-    color: #D4A843;
-    font-size: 0.85rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    animation: textPulse 1.8s ease-in-out infinite;
+  /* ── Logo & title ── */
+  .logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 0.75rem;
   }
-  @keyframes textPulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
+  .app-title {
+    color: #2e7d32;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+  }
+  .signin-heading {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #444;
+    margin-bottom: 0.5rem;
   }
 
-  /*
-     Sprite sheet: 4392 x 2736
-     Grid: 6 columns x 6 rows = 36 frames
-     Each frame: 732 x 456
-  */
+  /* ── Dog sprite (replaces spinner) ── */
   .dog {
     width: 732px;
     height: 456px;
-    transform: scale(0.4);
+    transform: scale(0.18);
     transform-origin: top center;
     background: url('images/dog-marquee1.png') 0 0 no-repeat;
     background-size: 4392px 2736px;
     animation: spriteFrames 1.2s steps(1) infinite;
-    margin: 0 auto;
+    margin: 0 auto -280px;
   }
 
   @keyframes spriteFrames {
@@ -90,38 +95,215 @@
     97.222%  { background-position: -3660px -2280px; }
   }
 
-  /* ── Progress bar ── */
-  .progress-track {
-    width: 200px;
-    height: 3px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 3px;
-    margin: -80px auto 0;
-    overflow: hidden;
+  /* ── Progress steps ── */
+  .steps {
+    text-align: left;
+    margin-top: 1rem;
   }
-  .progress-bar {
-    width: 40%;
-    height: 100%;
-    background: #D4A843;
-    border-radius: 3px;
-    animation: progressSlide 2s ease-in-out infinite;
+  .step {
+    display: flex;
+    align-items: baseline;
+    padding: 0.2rem 0;
+    font-size: 0.9rem;
+    color: #999;
+    transition: color 0.3s;
   }
-  @keyframes progressSlide {
-    0%   { transform: translateX(-100%); }
-    50%  { transform: translateX(200%); }
-    100% { transform: translateX(-100%); }
+  .step.active { color: #1976d2; }
+  .step.done   { color: #333; }
+  .step .icon {
+    width: 1.2rem;
+    flex-shrink: 0;
+    text-align: center;
+    margin-right: 0.5rem;
+  }
+  .step.done .icon { color: #2e7d32; }
+  .step.active .icon { color: #1976d2; }
+  .step .time {
+    margin-left: auto;
+    padding-left: 1rem;
+    font-size: 0.8rem;
+    color: #aaa;
+    white-space: nowrap;
+  }
+  .step.done .time { color: #999; }
+  .step.active .time { color: #1976d2; }
+  .sub-steps {
+    padding-left: 1.7rem;
+  }
+  .sub-steps .step {
+    font-size: 0.82rem;
+  }
+  .step .label { flex: 1; }
+  .group-time {
+    font-size: 0.75rem;
+    color: #aaa;
+    text-align: right;
+    padding: 0.1rem 0 0.2rem;
+    font-style: italic;
   }
 </style>
 </head>
 <body>
 
-<div class="loading-wrapper">
-  <div class="loading-text">Loading…</div>
+<div class="signin-wrapper">
+  <img class="logo" src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt="Logo">
+  <div class="app-title">Program Portal</div>
+  <div class="signin-heading">Signing in…</div>
   <div class="dog"></div>
-  <div class="progress-track">
-    <div class="progress-bar"></div>
+  <div class="steps">
+    <!-- Step 1 -->
+    <div class="step" data-step="1">
+      <span class="icon">○</span>
+      <span class="label">Requesting sign-in from Google</span>
+      <span class="time"></span>
+    </div>
+    <!-- Step 2 (group) -->
+    <div class="step" data-step="2">
+      <span class="icon">○</span>
+      <span class="label">Exchanging credentials with server</span>
+      <span class="time"></span>
+    </div>
+    <div class="sub-steps" data-parent="2">
+      <div class="step" data-step="2a">
+        <span class="icon">○</span>
+        <span class="label">Connecting to server</span>
+        <span class="time"></span>
+      </div>
+      <div class="step" data-step="2b">
+        <span class="icon">○</span>
+        <span class="label">Sending credentials</span>
+        <span class="time"></span>
+      </div>
+      <div class="step" data-step="2c">
+        <span class="icon">○</span>
+        <span class="label">Server authenticating</span>
+        <span class="time"></span>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="step" data-step="3">
+      <span class="icon">○</span>
+      <span class="label">Setting up your secure session</span>
+      <span class="time"></span>
+    </div>
+    <!-- Step 4 (group) -->
+    <div class="step" data-step="4">
+      <span class="icon">○</span>
+      <span class="label">Loading the application</span>
+      <span class="time"></span>
+    </div>
+    <div class="sub-steps" data-parent="4">
+      <div class="step" data-step="4a">
+        <span class="icon">○</span>
+        <span class="label">Preparing interface</span>
+        <span class="time"></span>
+      </div>
+      <div class="step" data-step="4b">
+        <span class="icon">○</span>
+        <span class="label">Initializing</span>
+        <span class="time"></span>
+      </div>
+    </div>
+    <!-- Step 5 -->
+    <div class="step" data-step="5">
+      <span class="icon">○</span>
+      <span class="label">Sign-in complete</span>
+      <span class="time"></span>
+    </div>
   </div>
 </div>
+
+<script>
+(function() {
+  var steps = [
+    { id: '1',  delay: 500,  duration: 300  },
+    { id: '2',  delay: 200,  duration: 0, group: true },
+    { id: '2a', delay: 200,  duration: 2000 },
+    { id: '2b', delay: 200,  duration: 300  },
+    { id: '2c', delay: 200,  duration: 3000 },
+    { id: '3',  delay: 200,  duration: 400  },
+    { id: '4',  delay: 200,  duration: 0, group: true },
+    { id: '4a', delay: 200,  duration: 1500 },
+    { id: '4b', delay: 200,  duration: 800  },
+    { id: '5',  delay: 300,  duration: 0, final: true }
+  ];
+
+  var totalStart = performance.now();
+
+  function fmt(ms) {
+    return (ms / 1000).toFixed(1) + 's';
+  }
+
+  function getEl(id) {
+    return document.querySelector('[data-step="' + id + '"]');
+  }
+
+  function setActive(id) {
+    var el = getEl(id);
+    if (!el) return;
+    el.classList.add('active');
+    el.querySelector('.icon').textContent = '●';
+  }
+
+  function setDone(id, elapsed) {
+    var el = getEl(id);
+    if (!el) return;
+    el.classList.remove('active');
+    el.classList.add('done');
+    el.querySelector('.icon').textContent = '✓';
+    if (elapsed !== undefined) {
+      el.querySelector('.time').textContent = fmt(elapsed);
+    }
+  }
+
+  function run(index, groupStart) {
+    if (index >= steps.length) return;
+    var s = steps[index];
+    var el = getEl(s.id);
+
+    setTimeout(function() {
+      setActive(s.id);
+      var stepStart = performance.now();
+
+      if (s.final) {
+        var totalTime = performance.now() - totalStart;
+        setTimeout(function() {
+          setDone(s.id);
+          el.querySelector('.time').textContent = fmt(totalTime) + ' total';
+          document.querySelector('.signin-heading').textContent = 'Signed in!';
+          document.querySelector('.dog').style.animationPlayState = 'paused';
+        }, 500);
+        return;
+      }
+
+      if (s.group) {
+        run(index + 1, performance.now());
+        return;
+      }
+
+      setTimeout(function() {
+        var elapsed = performance.now() - stepStart;
+        setDone(s.id, elapsed);
+
+        // If this is the last sub-step of a group, mark the parent done
+        var next = steps[index + 1];
+        var isLastInGroup = !next || (!next.id.startsWith(s.id.charAt(0)) || next.id.length <= 1);
+        if (s.id.length > 1 && isLastInGroup) {
+          var parentId = s.id.charAt(0);
+          var groupElapsed = performance.now() - (groupStart || stepStart);
+          setDone(parentId, groupElapsed);
+          var timeEl = getEl(parentId).querySelector('.time');
+          timeEl.textContent = fmt(groupElapsed) + ' group';
+        }
+
+        run(index + 1, groupStart);
+      }, s.duration);
+    }, s.delay);
+  }
+
+  run(0);
+})();
+</script>
 
 </body>
 </html>

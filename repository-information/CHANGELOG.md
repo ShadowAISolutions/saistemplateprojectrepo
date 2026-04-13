@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 64/100`
+`Sections: 65/100`
 
 ## [Unreleased]
+
+## [v11.27r] — 2026-04-13 05:24:01 PM EST
+
+> **Prompt:** "the marquee1, set it up how we have the sign in page on our other pages visually only (example shown in screenshot), u dont have to wire it up for logging in i just want it visually set up like it so i can start testing the animation to replace the spinning loading indicator on all other projects once i like the result."
+
+### Changed
+- Redesigned `marquee1.html` to match the sign-in page layout — white background, logo, app title, "Signing in..." heading, step-by-step progress indicators with auto-animated timers
+- Dog sprite animation now replaces the spinning circle loader
+- Added simulated sign-in flow with 5 main steps and sub-steps that auto-progress with timing display
+
+#### `marquee1.html` — v01.02w
+
+##### Changed
+- New sign-in page layout with logo, title, and animated progress steps
+- Dog sprite animation replaces the spinning loading indicator
+- Steps auto-play through to simulate the sign-in flow with timing
 
 ## [v11.26r] — 2026-04-13 05:12:47 PM EST
 
