@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v01.58w] — 2026-04-13 10:54:46 AM EST — v11.23r
+
+### Fixed
+- Editing items without barcodes now correctly shows existing data in the edit form
 
 ## [v01.57w] — 2026-04-13 10:24:47 AM EST — v11.21r
 

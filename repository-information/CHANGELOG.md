@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v11.23r] — 2026-04-13 10:54:46 AM EST
+
+> **Prompt:** "im noticing that if an item doesnt have an associated barcode, when i try to edit it, its acting as if its a blank item instead of populating the portions that it does have, how do you suggest we address this"
+
+### Fixed
+- Fixed two `_showScanConfirmModal` wrapper functions (tap-to-expand and auto-scan) that dropped the `editRowIndex` parameter — barcode-less items now correctly pre-populate the edit modal
+- Added ID-based fallback lookup in `_showScanConfirmModal`: if both row-index and barcode lookups fail, searches by ID column (matches GAS backend behavior)
+- `ldStartRowEdit()` now passes the item's ID as `scannedData` when no barcode exists, enabling the ID fallback
+
+#### `inventorymanagement.html` — v01.58w
+
+##### Fixed
+- Editing items without barcodes now correctly shows existing data in the edit form
 
 ## [v11.22r] — 2026-04-13 10:30:43 AM EST
 
