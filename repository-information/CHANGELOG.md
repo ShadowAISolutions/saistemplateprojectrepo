@@ -3,9 +3,35 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 74/100`
+`Sections: 75/100`
 
 ## [Unreleased]
+
+## [v11.37r] — 2026-04-13 06:51:07 PM EST
+
+> **Prompt:** "can you make the animation keep going, right now it stops even after sign in complete. also can you add a slider to adjust the speed which the animation happens, these should apply to both marquee"
+
+### Changed
+- Dog sprite animation now continues running after sign-in complete on both `marquee1.html` and `marquee2.html` — removed `animationPlayState = 'paused'` from the final step handler
+
+### Added
+- Speed slider on both marquee pages — range input (0.3s–3.0s) adjusts sprite animation duration in real-time, with current value displayed next to the slider
+
+#### `marquee1.html` — v01.09w
+
+##### Added
+- Speed slider to adjust animation speed in real-time
+
+##### Changed
+- Dog animation continues running after sign-in steps complete
+
+#### `marquee2.html` — v01.08w
+
+##### Added
+- Speed slider to adjust animation speed in real-time
+
+##### Changed
+- Dog animation continues running after sign-in steps complete
 
 ## [v11.36r] — 2026-04-13 06:42:39 PM EST
 

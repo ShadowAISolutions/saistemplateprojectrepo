@@ -1,8 +1,16 @@
 # marquee2.html Changelog
 
-`Sections: 7/100`
+`Sections: 8/100`
 
 ## [Unreleased]
+
+## [v01.08w] — 2026-04-13 06:51:07 PM EST — v11.37r
+
+### Added
+- Speed slider to adjust animation speed in real-time
+
+### Changed
+- Dog animation continues running after sign-in steps complete
 
 ## [v01.07w] — 2026-04-13 06:42:39 PM EST — v11.36r
 
