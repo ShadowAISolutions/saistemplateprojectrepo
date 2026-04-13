@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.47w">
+  <meta name="build-version" content="v01.48w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -397,6 +397,12 @@
     }
     #ld-search-clear:hover { color: #e1e4e8; }
     #ld-search-count { font-size: 11px; color: #6e7681; white-space: nowrap; }
+    .ld-filter-select {
+      padding: 6px 8px; font-size: 12px; font-family: inherit;
+      background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px;
+      outline: none; cursor: pointer; max-width: 160px;
+    }
+    .ld-filter-select:focus { border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
     #ld-table-view { flex: 1; overflow: auto; padding: 16px; }
     #ld-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     #ld-data-table th {
@@ -549,9 +555,10 @@
     #ld-scan-confirm-modal .btn-confirm:hover { background: #2ea043; }
     @media (max-width: 600px) {
       #ld-header { padding: 10px 12px; }
-      #ld-search-bar { padding: 6px 12px; }
+      #ld-search-bar { padding: 6px 12px; flex-wrap: wrap; }
       #ld-search-wrap { max-width: none; }
       #ld-search-input { font-size: 12px; padding: 7px 30px 7px 28px; }
+      .ld-filter-select { max-width: none; flex: 1; min-width: 0; font-size: 11px; }
       #ld-dashboard-grid { grid-template-columns: 1fr; }
       .ld-dash-card .card-value { font-size: 22px; }
       #ld-data-table { font-size: 12px; }
@@ -996,6 +1003,8 @@
         <input type="text" id="ld-search-input" placeholder="Search by item name..." autocomplete="off" spellcheck="false">
         <button type="button" id="ld-search-clear" aria-label="Clear search">&times;</button>
       </div>
+      <select id="ld-filter-location" class="ld-filter-select"><option value="">All Locations</option></select>
+      <select id="ld-filter-category" class="ld-filter-select"><option value="">All Categories</option></select>
       <span id="ld-search-count"></span>
     </div>
     <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -4516,6 +4525,8 @@
       var _ldSortCol = -1;
       var _ldSortAsc = true;
       var _ldSearchTerm = '';
+      var _ldFilterLocation = '';
+      var _ldFilterCategory = '';
       var _ldDropdownOptions = {};
       var _ldHeaders = [];
       var _ldRows = [];
@@ -4546,6 +4557,8 @@
       var ldSearchInput = document.getElementById('ld-search-input');
       var ldSearchClear = document.getElementById('ld-search-clear');
       var ldSearchCount = document.getElementById('ld-search-count');
+      var ldFilterLocation = document.getElementById('ld-filter-location');
+      var ldFilterCategory = document.getElementById('ld-filter-category');
 
       function ldSetConnectionStatus(state) {
         if (!ldConnDot) return;
@@ -4621,6 +4634,38 @@
         });
       }
 
+      // Filter dropdown handling — populate options from _ldDropdownOptions
+      function _populateFilterDropdowns() {
+        var dd = _ldDropdownOptions || {};
+        [['Location', ldFilterLocation], ['Category', ldFilterCategory]].forEach(function(pair) {
+          var key = pair[0], sel = pair[1];
+          if (!sel) return;
+          var current = sel.value;
+          var opts = dd[key] || [];
+          sel.innerHTML = '';
+          var allOpt = document.createElement('option');
+          allOpt.value = ''; allOpt.textContent = 'All ' + key + 's';
+          sel.appendChild(allOpt);
+          opts.forEach(function(v) {
+            var o = document.createElement('option'); o.value = v; o.textContent = v;
+            sel.appendChild(o);
+          });
+          sel.value = current;
+        });
+      }
+      if (ldFilterLocation) {
+        ldFilterLocation.addEventListener('change', function() {
+          _ldFilterLocation = ldFilterLocation.value;
+          ldRenderTableView({});
+        });
+      }
+      if (ldFilterCategory) {
+        ldFilterCategory.addEventListener('change', function() {
+          _ldFilterCategory = ldFilterCategory.value;
+          ldRenderTableView({});
+        });
+      }
+
       function ldDetectChanges(headers, rows) {
         var changed = {};
         var newCells = {};
@@ -4684,22 +4729,34 @@
             return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
           });
         }
-        // Search filter by item name
+        // Search and filter
         var _totalBeforeFilter = indexedRows.length;
-        if (_ldSearchTerm) {
-          var _nameColIdx = -1;
-          for (var _ni = 0; _ni < _ldHeaders.length; _ni++) {
-            if (_ldHeaders[_ni].toLowerCase().trim() === 'item name') { _nameColIdx = _ni; break; }
-          }
-          if (_nameColIdx >= 0) {
-            var _searchLower = _ldSearchTerm.toLowerCase();
-            indexedRows = indexedRows.filter(function(entry) {
-              return (entry.data[_nameColIdx] || '').toLowerCase().indexOf(_searchLower) >= 0;
-            });
-          }
+        var _nameColIdx = -1, _locColIdx = -1, _catColIdx = -1;
+        for (var _fi = 0; _fi < _ldHeaders.length; _fi++) {
+          var _fh = _ldHeaders[_fi].toLowerCase().trim();
+          if (_fh === 'item name') _nameColIdx = _fi;
+          else if (_fh === 'location') _locColIdx = _fi;
+          else if (_fh === 'category') _catColIdx = _fi;
+        }
+        var _hasAnyFilter = _ldSearchTerm || _ldFilterLocation || _ldFilterCategory;
+        if (_ldSearchTerm && _nameColIdx >= 0) {
+          var _searchLower = _ldSearchTerm.toLowerCase();
+          indexedRows = indexedRows.filter(function(entry) {
+            return (entry.data[_nameColIdx] || '').toLowerCase().indexOf(_searchLower) >= 0;
+          });
+        }
+        if (_ldFilterLocation && _locColIdx >= 0) {
+          indexedRows = indexedRows.filter(function(entry) {
+            return (entry.data[_locColIdx] || '') === _ldFilterLocation;
+          });
+        }
+        if (_ldFilterCategory && _catColIdx >= 0) {
+          indexedRows = indexedRows.filter(function(entry) {
+            return (entry.data[_catColIdx] || '') === _ldFilterCategory;
+          });
         }
         if (ldSearchCount) {
-          if (_ldSearchTerm) {
+          if (_hasAnyFilter) {
             ldSearchCount.textContent = indexedRows.length + ' of ' + _totalBeforeFilter;
             ldSearchCount.style.display = '';
           } else {
@@ -4708,12 +4765,12 @@
           }
         }
         tbody.innerHTML = '';
-        if (_ldSearchTerm && indexedRows.length === 0) {
+        if (_hasAnyFilter && indexedRows.length === 0) {
           var noResultTr = document.createElement('tr');
           var noResultTd = document.createElement('td');
           noResultTd.colSpan = thead.children.length;
           noResultTd.style.cssText = 'text-align:center;padding:32px 16px;color:#6e7681;font-size:13px;';
-          noResultTd.textContent = 'No items match \u201C' + _ldSearchTerm + '\u201D';
+          noResultTd.textContent = 'No items match the current filters';
           noResultTr.appendChild(noResultTd);
           tbody.appendChild(noResultTr);
           return;
@@ -5033,7 +5090,7 @@
         if (!data || !data.headers) return;
         _ldLastDataTs = Date.now();
         ldSetConnectionStatus('live');
-        if (data.dropdowns) _ldDropdownOptions = data.dropdowns;
+        if (data.dropdowns) { _ldDropdownOptions = data.dropdowns; _populateFilterDropdowns(); }
         var currentJSON = JSON.stringify(data);
         if (currentJSON !== _ldPrevDataJSON) {
           var changedCells = ldDetectChanges(data.headers, data.rows);

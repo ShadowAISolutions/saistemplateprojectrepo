@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v11.11r] — 2026-04-13 07:53:31 AM EST
+
+> **Prompt:** "let the user also filter by location and category, same area where they search byu item name, but these should be dropdown selections"
+
+### Added
+- Added Location and Category dropdown filters alongside the search bar in the inventory management page — populated from the Dropdowns spreadsheet tab via `_ldDropdownOptions`
+- Filters work in combination: search by name + filter by location + filter by category all stack together
+- Result count shows "X of Y" when any filter is active
+- Empty state message when no items match the current filters
+- Filter dropdowns auto-populate when dropdown options arrive from the GAS backend
+
+#### `inventorymanagement.html` — v01.48w
+
+##### Added
+- Location and Category filter dropdowns in the search bar area
+- Filter dropdowns populated from spreadsheet-managed options
+- Combined filtering: text search + location + category filters stack
 
 ## [v11.10r] — 2026-04-13 07:44:46 AM EST
 

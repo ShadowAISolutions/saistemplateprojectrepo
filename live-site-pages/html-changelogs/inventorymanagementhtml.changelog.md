@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 47/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v01.48w] — 2026-04-13 07:53:31 AM EST — v11.11r
+
+### Added
+- Filter by Location and Category using dropdown menus next to the search bar
+- Filters stack with text search — combine all three to narrow results quickly
 
 ## [v01.47w] — 2026-04-13 07:35:37 AM EST — v11.09r
 
