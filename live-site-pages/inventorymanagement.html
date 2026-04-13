@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.42w">
+  <meta name="build-version" content="v01.43w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5080,10 +5080,11 @@
       })();
 
       // ── Scan Queue — allows rapid scanning without waiting for each save ──
-      function _enqueueScanItem(values) {
+      function _enqueueScanItem(values, imgData) {
         var entry = {
           id: ++_scanQueueIdCounter,
           values: values.map(function(v) { return String(v); }),
+          imgData: imgData || null,
           status: 'queued',
           error: null,
           optimisticIndex: -1
@@ -5116,13 +5117,24 @@
         next.status = 'sending';
         _updateQueueBadge();
         ldRenderTableView({});
-        gasCall('addRow', [_sessionToken, JSON.stringify(next.values)], function(result) {
+        // Build addRow args — include image data if present (consolidated upload)
+        var addRowArgs = [_sessionToken, JSON.stringify(next.values)];
+        if (next.imgData && next.imgData.base64) {
+          addRowArgs.push(next.imgData.base64);
+          addRowArgs.push(next.imgData.fileName);
+        }
+        gasCall('addRow', addRowArgs, function(result) {
           next.status = 'done';
           _addRowPendingIndices.delete(next.optimisticIndex);
           if (result && result.liveData) {
             _handleLiveData(result.liveData);
             // After liveData overwrites _ldRows, re-insert optimistic rows for remaining items
             _reinsertOptimisticRows();
+          }
+          // Clean up old image if a new one was uploaded
+          if (next.imgData && next.imgData.oldFileId && result && result.fileId
+              && next.imgData.oldFileId !== result.fileId) {
+            gasCall('deleteImage', [_sessionToken, next.imgData.oldFileId], function() {}, function() {});
           }
           _pruneCompletedEntries();
           _updateQueueBadge();
@@ -5557,8 +5569,15 @@
                 }
               }
             }
+            // Build image data for consolidated addRow call (image uploaded server-side in one execution)
+            var imgData = null;
+            if (pendingImg) {
+              var barVal = barcodeColIdx >= 0 ? (values[barcodeColIdx] || 'item') : 'item';
+              var imgFileName = 'inv_' + String(barVal).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '_' + Date.now() + '.jpg';
+              imgData = { base64: pendingImg, fileName: imgFileName, oldFileId: oldFileId };
+            }
             if (typeof window._enqueueScanItem === 'function') {
-              window._enqueueScanItem(values);
+              window._enqueueScanItem(values, imgData);
             } else {
               for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
               var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();
@@ -5566,37 +5585,11 @@
             qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
           }
 
-          // Save the row immediately — image upload happens in the background afterward
+          // Save the row — image upload is consolidated into the addRow call via the scan queue
           proceedWithSave(oldFileId);
 
-          // Upload image in background and set on the row in one server call (combined uploadImage + updateRowImage)
-          if (pendingImg) {
-            console.log('[IMG] pendingImg length:', pendingImg.length, 'bytes (~' + Math.round(pendingImg.length / 1024) + 'KB base64)');
-            var barVal = barcodeColIdx >= 0 ? (values[barcodeColIdx] || 'item') : 'item';
-            var imgFileName = 'inv_' + String(barVal).replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '_' + Date.now() + '.jpg';
-            var imgToken = window._ldGetSessionToken ? window._ldGetSessionToken() : '';
-            console.log('[IMG] Uploading image:', imgFileName, 'token present:', !!imgToken);
-            (function(pendingBase64, oldFid, fileName, tok) {
-              // Determine row index for combined upload+set
-              var rowIdx = existingRowIndex;
-              if (rowIdx < 0) {
-                var currentRows = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
-                rowIdx = currentRows.length > 0 ? currentRows.length - 1 : -1;
-              }
-              console.log('[IMG] Combined uploadImage + set on row:', rowIdx);
-              // uploadImage with rowIndex — uploads to Drive AND sets fileId on the row in one execution
-              gasCall('uploadImage', [tok, pendingBase64, fileName, rowIdx], function(resp) {
-                console.log('[IMG] uploadImage OK:', JSON.stringify(resp));
-                if (resp && resp.liveData) { _handleLiveData(resp.liveData); }
-                if (oldFid && resp && resp.fileId && oldFid !== resp.fileId && tok) {
-                  gasCall('deleteImage', [tok, oldFid], function() {}, function() {});
-                }
-              }, function(err) {
-                console.warn('[IMG] uploadImage FAILED:', err);
-              });
-            })(pendingImg, oldFileId, imgFileName, imgToken);
-          } else if (!pendingImg && oldFileId === '' && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
-            // User removed existing image
+          // Handle image removal (user cleared existing image, no new image pending)
+          if (!pendingImg && oldFileId === '' && existingRow && imgColIdx >= 0 && String(existingRow[imgColIdx] || '').trim()) {
             var removedId = String(existingRow[imgColIdx]).trim();
             var sessTok = window._ldGetSessionToken ? window._ldGetSessionToken() : '';
             if (sessTok && removedId) {

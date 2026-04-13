@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 42/50`
+`Sections: 43/50`
 
 ## [Unreleased]
+
+## [v01.43w] — 2026-04-12 09:22:44 PM EST — v11.05r
+
+### Changed
+- Image upload during scan-to-add is now handled in a single server call instead of two separate calls
 
 ## [v01.42w] — 2026-04-12 08:34:51 PM EST — v11.04r
 

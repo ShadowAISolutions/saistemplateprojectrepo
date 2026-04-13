@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 14/50`
+`Sections: 15/50`
 
 ## [Unreleased]
+
+## [v01.15g] — 2026-04-12 09:22:44 PM EST — v11.05r
+
+### Changed
+- Adding items with photos now uses a single server call for faster processing
 
 ## [v01.14g] — 2026-04-12 08:29:48 PM EST — v11.03r
 

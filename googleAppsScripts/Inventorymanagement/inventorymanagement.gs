@@ -1,4 +1,4 @@
-var VERSION = "v01.14g";
+var VERSION = "v01.15g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -494,8 +494,12 @@ function writeCell(token, row, col, value) {
  * Validates the session first (requires 'write' permission via RBAC).
  * After writing, refreshes the cache immediately for instant feedback.
  * Returns signed response with updated live data.
+ *
+ * Optional image parameters: if base64Data and fileName are provided, uploads
+ * the image to Google Drive and sets the fileId on the row's Image column —
+ * consolidating the addRow + uploadImage calls into a single execution.
  */
-function addRow(token, valuesJSON) {
+function addRow(token, valuesJSON, base64Data, fileName) {
   var user = validateSessionForData(token, 'addRow');
   checkPermission(user, 'write', 'addRow');
 
@@ -585,6 +589,29 @@ function addRow(token, valuesJSON) {
     actionType = 'add_row';
   }
 
+  // PROJECT: Optional image upload — consolidates addRow + uploadImage into one call
+  var uploadedFileId = '';
+  if (base64Data && fileName) {
+    var fileId = _uploadImageToDrive(base64Data, fileName, user.email);
+    if (fileId) {
+      uploadedFileId = fileId;
+      // Determine which sheet row was just written
+      var imgSheetRow = (actionType === 'update_quantity') ? (existingRowIndex + 1) : sheet.getLastRow();
+      // Find the Image column
+      var imgCol = -1;
+      for (var hi = 0; hi < headers.length; hi++) {
+        if (String(headers[hi]).toLowerCase().trim() === 'image') { imgCol = hi; break; }
+      }
+      if (imgCol >= 0 && imgSheetRow <= sheet.getLastRow()) {
+        // Trash old image if the row had one
+        var oldImgVal = String(sheet.getRange(imgSheetRow, imgCol + 1).getValue() || '').trim();
+        if (oldImgVal && oldImgVal !== fileId) { _trashDriveFile(oldImgVal); }
+        sheet.getRange(imgSheetRow, imgCol + 1).setValue(fileId);
+      }
+      auditLog('data_write', user.email, 'upload_image_with_row', { row: imgSheetRow, fileId: fileId });
+    }
+  }
+
   // Refresh cache immediately for instant feedback
   refreshDataCache();
 
@@ -593,6 +620,7 @@ function addRow(token, valuesJSON) {
   });
 
   var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
+  if (uploadedFileId) { addResult.fileId = uploadedFileId; }
   addResult.liveData = getCachedData();
   return addResult;
 }

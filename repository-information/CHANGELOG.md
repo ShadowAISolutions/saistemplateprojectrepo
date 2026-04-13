@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v11.05r] — 2026-04-12 09:22:44 PM EST
+
+> **Prompt:** "in inventorymanagement, when uploading the image, why is it doing two gas calls for add row and uploadimage, were we not able to consolidate them into a single call?"
+
+### Changed
+- Consolidated `addRow` + `uploadImage` into a single GAS call by extending `addRow()` to accept optional `base64Data` and `fileName` parameters — image is uploaded to Drive and set on the row in the same execution context
+- Image data now travels through the scan queue alongside row values, eliminating the separate background `uploadImage` call
+- Row index for image placement is determined server-side (eliminates client-side race condition where `rowIdx` could become stale between the two calls)
+- Single session validation, permission check, and cache refresh instead of two
+
+#### `inventorymanagement.html` — v01.43w
+
+##### Changed
+- Image upload during scan-to-add is now handled in a single server call instead of two separate calls
+
+#### `inventorymanagement.gs` — v01.15g
+
+##### Changed
+- `addRow()` now accepts optional image parameters (`base64Data`, `fileName`) to upload and attach an image in the same execution
 
 ## [v11.04r] — 2026-04-12 08:34:51 PM EST
 
