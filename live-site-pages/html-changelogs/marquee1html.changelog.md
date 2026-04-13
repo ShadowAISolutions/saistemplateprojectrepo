@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 3/100`
+`Sections: 4/100`
 
 ## [Unreleased]
+
+## [v01.04w] — 2026-04-13 05:41:57 PM EST — v11.29r
+
+### Added
+- Version indicator showing current page version with auto-refresh capability
 
 ## [v01.03w] — 2026-04-13 05:28:46 PM EST — v11.28r
 

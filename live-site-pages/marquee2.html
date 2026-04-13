@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.04w">
+<meta name="build-version" content="v01.00w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,60 +44,16 @@
     margin-bottom: 0.5rem;
   }
 
-  /* ── Dog sprite (replaces spinner) ── */
+  /* ── Dog sprite (replaces spinner) — sized dynamically by JS ── */
   .dog-wrap {
-    width: 132px;   /* 732 × 0.18 */
-    height: 82px;   /* 456 × 0.18 */
+    width: 132px;
+    height: 82px;
     overflow: hidden;
     margin: 0.5rem auto 1rem;
   }
   .dog {
-    width: 732px;
-    height: 456px;
-    transform: scale(0.18);
     transform-origin: top left;
-    background: url('images/dog-marquee1.png') 0 0 no-repeat;
-    background-size: 4392px 2736px;
-    animation: spriteFrames 1.2s steps(1) infinite;
-  }
-
-  @keyframes spriteFrames {
-    0%       { background-position: 0px 0px; }
-    2.778%   { background-position: -732px 0px; }
-    5.556%   { background-position: -1464px 0px; }
-    8.333%   { background-position: -2196px 0px; }
-    11.111%  { background-position: -2928px 0px; }
-    13.889%  { background-position: -3660px 0px; }
-    16.667%  { background-position: 0px -456px; }
-    19.444%  { background-position: -732px -456px; }
-    22.222%  { background-position: -1464px -456px; }
-    25.0%    { background-position: -2196px -456px; }
-    27.778%  { background-position: -2928px -456px; }
-    30.556%  { background-position: -3660px -456px; }
-    33.333%  { background-position: 0px -912px; }
-    36.111%  { background-position: -732px -912px; }
-    38.889%  { background-position: -1464px -912px; }
-    41.667%  { background-position: -2196px -912px; }
-    44.444%  { background-position: -2928px -912px; }
-    47.222%  { background-position: -3660px -912px; }
-    50.0%    { background-position: 0px -1368px; }
-    52.778%  { background-position: -732px -1368px; }
-    55.556%  { background-position: -1464px -1368px; }
-    58.333%  { background-position: -2196px -1368px; }
-    61.111%  { background-position: -2928px -1368px; }
-    63.889%  { background-position: -3660px -1368px; }
-    66.667%  { background-position: 0px -1824px; }
-    69.444%  { background-position: -732px -1824px; }
-    72.222%  { background-position: -1464px -1824px; }
-    75.0%    { background-position: -2196px -1824px; }
-    77.778%  { background-position: -2928px -1824px; }
-    80.556%  { background-position: -3660px -1824px; }
-    83.333%  { background-position: 0px -2280px; }
-    86.111%  { background-position: -732px -2280px; }
-    88.889%  { background-position: -1464px -2280px; }
-    91.667%  { background-position: -2196px -2280px; }
-    94.444%  { background-position: -2928px -2280px; }
-    97.222%  { background-position: -3660px -2280px; }
+    background: url('images/dog-marquee2.png') 0 0 no-repeat;
   }
 
   /* ── Progress steps ── */
@@ -240,6 +196,39 @@
 </div>
 
 <script>
+// ── Dynamic sprite sheet setup (7 cols × 5 rows = 35 frames) ──
+(function() {
+  var COLS = 7, ROWS = 5, TOTAL_FRAMES = COLS * ROWS;
+  var DISPLAY_W = 132, ANIM_DURATION = 1.2;
+  var img = new Image();
+  img.src = 'images/dog-marquee2.png';
+  img.onload = function() {
+    var fw = img.naturalWidth / COLS, fh = img.naturalHeight / ROWS;
+    var scale = DISPLAY_W / fw;
+    var displayH = Math.round(fh * scale);
+    var wrap = document.querySelector('.dog-wrap');
+    var dog = document.querySelector('.dog');
+    wrap.style.width = DISPLAY_W + 'px';
+    wrap.style.height = displayH + 'px';
+    dog.style.width = fw + 'px';
+    dog.style.height = fh + 'px';
+    dog.style.backgroundSize = img.naturalWidth + 'px ' + img.naturalHeight + 'px';
+    dog.style.transform = 'scale(' + scale + ')';
+    // Generate keyframes
+    var kf = '@keyframes spriteFrames {\n';
+    for (var i = 0; i < TOTAL_FRAMES; i++) {
+      var col = i % COLS, row = Math.floor(i / COLS);
+      var pct = ((i / TOTAL_FRAMES) * 100).toFixed(3);
+      kf += '  ' + pct + '% { background-position: -' + (col * fw) + 'px -' + (row * fh) + 'px; }\n';
+    }
+    kf += '}';
+    var style = document.createElement('style');
+    style.textContent = kf;
+    document.head.appendChild(style);
+    dog.style.animation = 'spriteFrames ' + ANIM_DURATION + 's steps(1) infinite';
+  };
+})();
+
 (function() {
   var steps = [
     { id: '1',  delay: 500,  duration: 300  },

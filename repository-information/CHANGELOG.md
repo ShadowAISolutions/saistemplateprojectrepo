@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 66/100`
+`Sections: 67/100`
 
 ## [Unreleased]
+
+## [v11.29r] — 2026-04-13 05:41:57 PM EST
+
+> **Prompt:** "make the marquee1 have the default new html template auto refresh version features. then make an identical copy of it called marquee2 , the difference is that the image will be called dog-marquee2.png , same location, but different dimensions, i've attached the one i will use."
+
+### Added
+- Added auto-refresh version polling to `marquee1.html` — version indicator pill (bottom-right), 10-second polling of `marquee1html.version.txt`, auto-reload on version change
+- New `marquee2.html` — identical sign-in page layout as marquee1, with `dog-marquee2.png` sprite (7×5 grid, 35 frames) and JavaScript-based dynamic sprite sizing that auto-detects image dimensions on load
+
+#### `marquee1.html` — v01.04w
+
+##### Added
+- Version indicator pill with auto-refresh polling
+
+#### `marquee2.html` — v01.00w (new page)
+
+##### Added
+- Sign-in page layout with animated police dog sprite (7×5 grid, auto-sized)
+- Version indicator pill with auto-refresh polling
+- Simulated sign-in progress steps
 
 ## [v11.28r] — 2026-04-13 05:28:46 PM EST
 
