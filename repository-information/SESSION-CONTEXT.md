@@ -4,57 +4,63 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-13 09:05:00 AM EST
+**Repo version:** v11.16r
+**Branch this session:** `claude/add-inventory-search-rNLHK`
+
+### What was done
+- **9 pushes on branch `claude/add-inventory-search-rNLHK` — major inventory management feature sprint:**
+  - **v11.08r v01.46w — Search by item name** — added real-time search bar with debounced input, result count, and empty-state message. Client-side filtering on `_ldRows` inside `ldRenderTableView()`
+  - **v11.09r v01.18g v01.47w — Location & Category dropdown columns** — added two new columns with `<select>` dropdowns in both the scan entry form and inline table editing. GAS auto-creates a "Dropdowns" tab in the spreadsheet with default values (5 locations, 5 categories). Options served to frontend via `getCachedData()` with 5-min cache
+  - **v11.10r v01.19g — Fix dropdown save bug** — the GAS `saveRow` merge path only wrote hardcoded columns (qty, name, user, timestamp), dropping Location/Category. Replaced with generic loop that writes all columns
+  - **v11.11r v01.48w — Location & Category filter dropdowns** — added filter `<select>` elements in the search bar that stack with text search (AND logic)
+  - **v11.12r v01.49w — Fix typo + mobile columns** — fixed "All Categorys" → "All Categories" (naive pluralization), rewrote mobile CSS to be column-order-agnostic
+  - **v11.13r v01.20g v01.50w — Clear All button + stock health** — added "Clear All" button (resets search, filters, sort), added "Low Stock Threshold" column with colored dot indicator (green/yellow/red/grey) on Quantity cells
+  - **v11.14r v01.51w — Fix edit pre-fill** — generic pre-fill for all columns when editing existing rows (not just Item Name)
+  - **v11.15r v01.21g v01.52w — Auto-generated ID column** — added UUID-based "ID" column as universal item identifier. GAS `saveRow` matches by ID first, then barcode. Eliminates barcode requirement for editing. ID hidden from UI
+  - **v11.16r v01.53w — Fix ID column visibility** — moved `_idColIdx` detection before header loop, updated mobile CSS `data-col` filter from "0"/"1" to "1"/"2"
+
+### Where we left off
+- All 9 pushes merged via auto-merge workflow. The inventory management page now has:
+  - **Search**: text search by item name with debounced real-time filtering
+  - **Filters**: Location and Category dropdown filters that stack with search
+  - **Clear All**: resets search, filters, and sort state
+  - **Columns**: ID (hidden, auto-UUID), Item Name, Quantity, Barcode, Location (dropdown), Category (dropdown), Low Stock Threshold, Last User, Last Updated, Image
+  - **Stock health**: colored dot on Quantity column (green > threshold, yellow <= threshold, red = 0, grey = no threshold)
+  - **ID-based editing**: items can be edited regardless of whether they have a barcode
+  - **Dropdowns tab**: auto-created in spreadsheet with customizable Location and Category options
+- Page changelog rotated: 9 oldest sections (v01.01w–v01.09w) moved to archive (42/50 now)
+
+### Key decisions made
+- **ID column instead of row-index passing** — user suggested a universal ID column when the barcode-less edit bug was hit. This is far better than the initial approach of passing sheet row indices, which is fragile and race-prone
+- **Generic column update loop in saveRow** — replaced hardcoded column-by-column setValue calls with a loop over all values (skipping barcode and quantity). Future-proofs the merge path for any new columns
+- **Column-order-agnostic mobile CSS** — after repeatedly hitting mobile column issues when new columns were added, switched to a negation pattern (`not([data-col="1"]):not([data-col="2"])`) rather than listing every column to hide
+- **Dropdown options from spreadsheet** — rather than hardcoding options, they live in a "Dropdowns" tab that users can edit directly. GAS caches them for 5 minutes
+
+### Active context
+- **Repo version:** v11.16r
+- **`inventorymanagement.html`:** v01.53w
+- **`inventorymanagement.gs`:** v01.21g
+- **Data model columns:** ID, Item Name, Quantity, Barcode, Location, Category, Low Stock Threshold, Last User, Last Updated, Image
+- **TODO items:** Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- **No active reminders**
+- **Toggle states:** `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- **CHANGELOG counter:** 92/100 (approaching rotation threshold)
+- **Page changelog counter:** 44/50 (archive rotated this session — 9 sections moved)
+- **`saveRow` signature:** `saveRow(token, valuesJSON, base64Data, fileName, clearImageId)` — matches by ID first, then barcode
+- **Open issues carried forward:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1, existing items without IDs will get IDs on next edit via barcode fallback
+
+## Previous Sessions
+
 **Date:** 2026-04-12 09:53:02 PM EST
 **Repo version:** v11.07r
 **Branch this session:** `claude/consolidate-upload-calls-EsiYO`
 
 ### What was done
-- **Consolidated all image operations into a single `saveRow` GAS call — 3 pushes on branch `claude/consolidate-upload-calls-EsiYO`:**
-  - **v11.05r v01.15g v01.43w — Consolidate addRow + uploadImage** — extended `addRow()` to accept optional `base64Data` and `fileName` params. Image data now travels through the scan queue (`_enqueueScanItem(values, imgData)`). Eliminated the separate background `gasCall('uploadImage', ...)` call. Row index for image placement determined server-side (eliminates client-side race condition)
-  - **v11.06r v01.16g v01.44w — Consolidate image removal** — added `clearImageId` parameter to `addRow()`. When provided, clears the image column and trashes the old Drive file in the same execution. Removed separate `deleteImage` and `updateRowImage` calls from both image removal and edit-mode image change flows. The entire `onConfirm` flow now uses a single `addRow` call for all scenarios
-  - **v11.07r v01.17g v01.45w — Rename addRow → saveRow** — renamed the GAS function from `addRow` to `saveRow` to accurately reflect its expanded role (insert, merge, image upload, image removal). Updated all `gasCall` references, JSDoc, comments, and logging strings. Left UI variable names (`addRowBtn`, `_addRowPending`) unchanged as they refer to the "Add Row" button concept
+- **Consolidated all image operations into a single `saveRow` GAS call — 3 pushes:**
+  - v11.05r — Consolidate addRow + uploadImage
+  - v11.06r — Consolidate image removal
+  - v11.07r — Rename addRow → saveRow
 
 ### Where we left off
-- All 3 pushes merged via auto-merge workflow. The inventory management scan flow now uses a single `saveRow` GAS call for everything:
-  - New row without image → `saveRow(token, valuesJSON)`
-  - New row with image → `saveRow(token, valuesJSON, base64Data, fileName)`
-  - Row with image removal → `saveRow(token, valuesJSON, null, null, clearImageId)`
-  - Duplicate barcode merge (with or without image) → same patterns, GAS determines the correct row
-- `uploadImage()` function still exists in the GAS but is no longer called during the scan-to-add flow — kept for potential future use
-- `updateRowImage()` and `deleteImage()` still exist for standalone use but are no longer called from `onConfirm`
-- Debug `Logger.log` statements from prior session still present in `uploadImage` and `_uploadImageToDrive`
-
-### Key decisions made
-- **`saveRow` is the right name** — user asked about renaming `addRow` since it does everything. I suggested `saveRow` over `modifyRow` because "save" covers both insert and update semantics. User agreed
-- **Previous session's conclusion that "addRow can't handle image data" was wrong** — the prior session tried and failed, concluding it broke optimistic UI. This session successfully passed image data through the scan queue without breaking optimistic UI. The key difference: we kept the queue's optimistic row insertion intact and just added `imgData` as a sidecar on the queue entry
-- **Image removal is also consolidated** — `clearImageId` parameter lets `saveRow` clear the image column and trash the Drive file in the same execution. No more separate `deleteImage` + `updateRowImage` calls
-- **Server-side row index eliminates race condition** — the GAS function knows exactly which row it wrote to (`sheet.getLastRow()` for new rows, `existingRowIndex + 1` for merges). No more client-side guessing of `rowIdx`
-
-### Active context
-- **Repo version:** v11.07r
-- **`inventorymanagement.html`:** v01.45w
-- **`inventorymanagement.gs`:** v01.17g
-- **TODO items:** Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- **No active reminders**
-- **Toggle states:** `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-- **CHANGELOG counter:** 83/100
-- **`saveRow` signature:** `saveRow(token, valuesJSON, base64Data, fileName, clearImageId)` — all params after `valuesJSON` are optional
-- **Open issues carried forward:** stale CacheService data on testauthhtml1, admin panel JS not wired up on testauthhtml1
-
-## Previous Sessions
-
-**Date:** 2026-04-12 09:07:23 PM EST
-**Repo version:** v11.04r
-**Branch this session:** `claude/combine-upload-update-QBE0c`
-
-### What was done
-- **Combined image upload + row update into fewer server calls — 6 commits.** Extracted `_uploadImageToDrive()` and `_trashDriveFile()` reusable helpers. Multiple attempts to consolidate calls, hitting optimistic UI breaks and race conditions. Root cause turned out to be missing Drive OAuth scope (`ACCESS_TOKEN_SCOPE_INSUFFICIENT`). Final result: 2 calls (`addRow` + `uploadImage` with `rowIndex`) down from 3
-
-### Where we left off
-- All commits pushed and merged. Image upload working with 2 calls instead of 3
-- Debug `Logger.log` statements present in `uploadImage` and `_uploadImageToDrive` — can be removed when stable
-
-### Key decisions made
-- Drive OAuth scope (`https://www.googleapis.com/auth/drive`) is mandatory for Drive REST API via `UrlFetchApp`
-- `SpreadsheetApp.flush()` is required between `setNumberFormat('@')` and `setValue()` for barcode leading-zero preservation
-- `appendRow` performs JS-value type coercion BEFORE consulting cell formats — must use empty placeholder + separate `setValue` for digit strings
+- All pushes merged. Single `saveRow` call handles insert, merge, image upload, and image removal
