@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 43/50`
+`Sections: 44/50`
 
 ## [Unreleased]
+
+## [v01.53w] — 2026-04-13 08:52:46 AM EST — v11.16r
+
+### Fixed
+- ID column no longer visible in the table
+- Mobile view now correctly shows only thumbnail, item name, and quantity
 
 ## [v01.52w] — 2026-04-13 08:43:50 AM EST — v11.15r
 

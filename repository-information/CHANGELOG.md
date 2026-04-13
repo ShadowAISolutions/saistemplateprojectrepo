@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v11.16r] — 2026-04-13 08:52:46 AM EST
+
+> **Prompt:** "the mobile view is showing the thumbnail and ID column, when it should be showing the thumbnail, item name and quantity. screenshot is what the desktop version looks like frontend and on spreadsheet"
+
+### Fixed
+- Fixed ID column visible on desktop — `_idColIdx` was declared after the header rendering loop, so the skip condition never matched. Moved ID detection to the same early loop as Image detection (before headers render)
+- Fixed mobile view showing wrong columns — updated `data-col` CSS filter from `"0"/"1"` to `"1"/"2"` to account for ID being column 0 (which is skipped in rendering). Mobile now correctly shows only thumbnail, Item Name, and Quantity
+
+#### `inventorymanagement.html` — v01.53w
+
+##### Fixed
+- ID column no longer visible on desktop or mobile
+- Mobile view now correctly shows only thumbnail, item name, and quantity
 
 ## [v11.15r] — 2026-04-13 08:43:50 AM EST
 

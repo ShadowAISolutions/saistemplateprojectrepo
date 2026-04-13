@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.52w">
+  <meta name="build-version" content="v01.53w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -579,8 +579,9 @@
       /* Hide non-essential columns on mobile — show only Image (1st th), Item Name (2nd), Quantity (3rd) */
       /* All other th columns (4th onward) are hidden. Actions th is excluded via last-child. */
       #ld-data-table th:nth-child(n+4):not(:last-child) { display: none; }
-      /* Hide all data columns except Item Name (0) and Quantity (1) — covers any column order */
-      #ld-data-table td[data-col]:not([data-col="0"]):not([data-col="1"]) { display: none; }
+      /* Hide all data columns except Item Name and Quantity — ID col (0) is skipped in rendering */
+      /* Item Name = data-col 1, Quantity = data-col 2 (indices shifted by ID at position 0) */
+      #ld-data-table td[data-col]:not([data-col="1"]):not([data-col="2"]) { display: none; }
       /* Image column mobile sizing */
       #ld-data-table td.ld-img-cell img { width: 32px; height: 32px; }
       .ld-img-placeholder { width: 32px; height: 32px; font-size: 14px; }
@@ -4718,10 +4719,13 @@
         var thead = ldDataTable.querySelector('thead tr');
         var tbody = ldDataTable.querySelector('tbody');
         thead.innerHTML = '';
-        // Detect Image column index
+        // Detect Image and ID column indices (needed before header rendering)
         var _imgColIdx = -1;
+        var _idColIdx = -1;
         for (var _hi = 0; _hi < _ldHeaders.length; _hi++) {
-          if (_ldHeaders[_hi].toLowerCase().trim() === 'image') { _imgColIdx = _hi; break; }
+          var _hLow = _ldHeaders[_hi].toLowerCase().trim();
+          if (_hLow === 'image') _imgColIdx = _hi;
+          else if (_hLow === 'id') _idColIdx = _hi;
         }
         // Prepend Image column header
         if (_imgColIdx >= 0) {
@@ -4807,13 +4811,12 @@
           tbody.appendChild(noResultTr);
           return;
         }
-        // Detect column indices for stock health and ID hiding
-        var _qtyColIdx = -1, _threshColIdx = -1, _idColIdx = -1;
+        // Detect column indices for stock health indicator
+        var _qtyColIdx = -1, _threshColIdx = -1;
         for (var _qi = 0; _qi < _ldHeaders.length; _qi++) {
           var _qh = _ldHeaders[_qi].toLowerCase().trim();
           if (_qh === 'quantity') _qtyColIdx = _qi;
           else if (_qh === 'low stock threshold') _threshColIdx = _qi;
-          else if (_qh === 'id') _idColIdx = _qi;
         }
         indexedRows.forEach(function(entry) {
           var row = entry.data;
