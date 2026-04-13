@@ -1,4 +1,4 @@
-var VERSION = "v01.20g";
+var VERSION = "v01.21g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -321,19 +321,21 @@ function refreshDataCache() {
     if (!sheet) {
       // Auto-create the sheet with default headers if it was deleted
       sheet = ss.insertSheet(SHEET_NAME);
-      sheet.getRange(1, 1, 1, 9).setValues([['Item Name', 'Quantity', 'Barcode', 'Location', 'Category', 'Low Stock Threshold', 'Last User', 'Last Updated', 'Image']]);
+      sheet.getRange(1, 1, 1, 10).setValues([['ID', 'Item Name', 'Quantity', 'Barcode', 'Location', 'Category', 'Low Stock Threshold', 'Last User', 'Last Updated', 'Image']]);
       // Clear stale cache so old data doesn't persist
       CacheService.getScriptCache().remove('livedata_' + SHEET_NAME);
     }
     // Auto-add Location and Category headers if they don't exist yet
     var existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    var hasLocation = false, hasCategory = false, hasThreshold = false;
+    var hasLocation = false, hasCategory = false, hasThreshold = false, hasId = false;
     for (var dh = 0; dh < existingHeaders.length; dh++) {
       var dhLow = String(existingHeaders[dh]).toLowerCase().trim();
+      if (dhLow === 'id') hasId = true;
       if (dhLow === 'location') hasLocation = true;
       if (dhLow === 'category') hasCategory = true;
       if (dhLow === 'low stock threshold') hasThreshold = true;
     }
+    if (!hasId) { sheet.insertColumnBefore(1); sheet.getRange(1, 1).setValue('ID'); }
     if (!hasLocation) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Location'); }
     if (!hasCategory) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Category'); }
     if (!hasThreshold) { sheet.getRange(1, sheet.getLastColumn() + 1).setValue('Low Stock Threshold'); }
@@ -545,9 +547,11 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
   var lastUpdatedCol = -1;
   var lastUserCol = -1;
   var itemNameCol = -1;
+  var idCol = -1;
   for (var h = 0; h < headers.length; h++) {
     var hLower = String(headers[h]).toLowerCase().trim();
-    if (hLower === 'barcode') barcodeCol = h;
+    if (hLower === 'id') idCol = h;
+    else if (hLower === 'barcode') barcodeCol = h;
     else if (hLower === 'quantity') qtyCol = h;
     else if (hLower === 'last updated') lastUpdatedCol = h;
     else if (hLower === 'last user') lastUserCol = h;
@@ -557,7 +561,14 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
   var scannedBarcode = (barcodeCol >= 0 && values[barcodeCol]) ? String(values[barcodeCol]).trim() : '';
   var existingRowIndex = -1;
 
-  if (scannedBarcode && barcodeCol >= 0) {
+  // Match by ID first (universal — works for all items), then fall back to barcode
+  var itemId = (idCol >= 0 && values[idCol]) ? String(values[idCol]).trim() : '';
+  if (itemId && idCol >= 0) {
+    for (var ri = 1; ri < data.length; ri++) {
+      if (String(data[ri][idCol]).trim() === itemId) { existingRowIndex = ri; break; }
+    }
+  }
+  if (existingRowIndex < 0 && scannedBarcode && barcodeCol >= 0) {
     for (var r = 1; r < data.length; r++) {
       if (String(data[r][barcodeCol]).trim().toLowerCase() === scannedBarcode.toLowerCase()) {
         existingRowIndex = r;
@@ -592,6 +603,10 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     // format change to commit before the value is parsed.
     var rowValsForAppend = values.slice();
     if (barcodeCol >= 0) rowValsForAppend[barcodeCol] = '';
+    // Auto-generate ID for new rows
+    if (idCol >= 0 && !String(rowValsForAppend[idCol] || '').trim()) {
+      rowValsForAppend[idCol] = Utilities.getUuid();
+    }
     sheet.appendRow(rowValsForAppend);
     if (barcodeCol >= 0 && values[barcodeCol] !== undefined && values[barcodeCol] !== null
         && String(values[barcodeCol]).length > 0) {

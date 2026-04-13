@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 20/50`
+`Sections: 21/50`
 
 ## [Unreleased]
+
+## [v01.21g] — 2026-04-13 08:43:50 AM EST — v11.15r
+
+### Added
+- Every item now gets an auto-generated unique ID for reliable identification
+- Editing items works universally — no longer requires a barcode to be assigned
 
 ## [v01.20g] — 2026-04-13 08:15:01 AM EST — v11.13r
 

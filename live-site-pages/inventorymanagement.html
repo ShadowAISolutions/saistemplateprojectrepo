@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.51w">
+  <meta name="build-version" content="v01.52w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4732,6 +4732,7 @@
         }
         _ldHeaders.forEach(function(h, ci) {
           if (ci === _imgColIdx) return; // skip Image from normal headers
+          if (ci === _idColIdx) return; // skip ID from normal headers
           var th = document.createElement('th');
           th.textContent = h;
           var arrow = document.createElement('span');
@@ -4806,12 +4807,13 @@
           tbody.appendChild(noResultTr);
           return;
         }
-        // Detect Quantity and Low Stock Threshold column indices for stock health indicator
-        var _qtyColIdx = -1, _threshColIdx = -1;
+        // Detect column indices for stock health and ID hiding
+        var _qtyColIdx = -1, _threshColIdx = -1, _idColIdx = -1;
         for (var _qi = 0; _qi < _ldHeaders.length; _qi++) {
           var _qh = _ldHeaders[_qi].toLowerCase().trim();
           if (_qh === 'quantity') _qtyColIdx = _qi;
           else if (_qh === 'low stock threshold') _threshColIdx = _qi;
+          else if (_qh === 'id') _idColIdx = _qi;
         }
         indexedRows.forEach(function(entry) {
           var row = entry.data;
@@ -4852,6 +4854,7 @@
           }
           row.forEach(function(val, ci) {
             if (ci === _imgColIdx) return; // skip Image column from normal cells
+            if (ci === _idColIdx) return; // skip ID column — not user-visible
             var td = document.createElement('td');
             // Stock health indicator on Quantity column
             if (ci === _qtyColIdx && _threshColIdx >= 0) {
@@ -5091,11 +5094,9 @@
         for (var i = 0; i < headersSrc.length; i++) {
           if (String(headersSrc[i]).toLowerCase().trim() === 'barcode') { barcodeColIdx = i; break; }
         }
-        if (barcodeColIdx < 0) { console.warn('ldStartRowEdit: no Barcode column found'); return; }
-        var barcode = row[barcodeColIdx] ? String(row[barcodeColIdx]) : '';
-        if (!barcode) { console.warn('ldStartRowEdit: row has no barcode, cannot edit'); return; }
+        var barcode = (barcodeColIdx >= 0 && row[barcodeColIdx]) ? String(row[barcodeColIdx]) : '';
         if (typeof window._showScanConfirmModal === 'function') {
-          window._showScanConfirmModal(barcode, 'EDIT');
+          window._showScanConfirmModal(barcode || '', 'EDIT', rowIndex);
         }
       }
       window.ldStartRowEdit = ldStartRowEdit;
@@ -5334,18 +5335,23 @@
       })();
 
       // ── Scan Queue — allows rapid scanning without waiting for each save ──
-      function _enqueueScanItem(values, imgData) {
+      function _enqueueScanItem(values, imgData, existingDataRowIdx) {
         var entry = {
           id: ++_scanQueueIdCounter,
           values: values.map(function(v) { return String(v); }),
           imgData: imgData || null,
           status: 'queued',
           error: null,
-          optimisticIndex: -1
+          optimisticIndex: -1,
+          existingDataRowIdx: (typeof existingDataRowIdx === 'number' && existingDataRowIdx >= 0) ? existingDataRowIdx : -1
         };
-        // Optimistic UI: add row to _ldRows immediately
-        entry.optimisticIndex = _ldRows.length;
-        _ldRows.push(entry.values);
+        // Optimistic UI: add row to _ldRows immediately (skip for edits of existing rows)
+        if (entry.existingDataRowIdx >= 0) {
+          entry.optimisticIndex = entry.existingDataRowIdx;
+        } else {
+          entry.optimisticIndex = _ldRows.length;
+          _ldRows.push(entry.values);
+        }
         _addRowPendingIndices.add(entry.optimisticIndex);
         _scanQueue.push(entry);
         if (ldEmptyState) ldEmptyState.style.display = 'none';
@@ -5372,6 +5378,7 @@
         _updateQueueBadge();
         ldRenderTableView({});
         // Build saveRow args — include image data if present (consolidated upload/removal)
+        // 6th param: updateSheetRow for editing rows without barcodes (data row index + 2 = sheet row)
         var saveRowArgs = [_sessionToken, JSON.stringify(next.values)];
         if (next.imgData && next.imgData.base64) {
           saveRowArgs.push(next.imgData.base64);
@@ -5381,6 +5388,8 @@
           saveRowArgs.push(null);  // no fileName
           saveRowArgs.push(next.imgData.clearImageId);
         }
+        // ID-based matching: the values array includes the ID, so GAS saveRow
+        // finds the existing row by ID. No extra parameter needed.
         gasCall('saveRow', saveRowArgs, function(result) {
           next.status = 'done';
           _addRowPendingIndices.delete(next.optimisticIndex);
@@ -5610,7 +5619,7 @@
         window._showScanConfirmModal(data, format);
       }
 
-      function _showScanConfirmModal(scannedData, scannedFormat) {
+      function _showScanConfirmModal(scannedData, scannedFormat, editRowIndex) {
         var modal = document.getElementById('ld-scan-confirm-modal');
         var tbody = document.getElementById('ld-scan-confirm-body');
         var formatLabel = document.getElementById('ld-scan-format-label');
@@ -5640,7 +5649,11 @@
         var existingRow = null;
         var existingRowIndex = -1;
         var ldRows = (typeof window._ldGetRows === 'function') ? window._ldGetRows() : [];
-        if (barcodeColIdx >= 0 && scannedData) {
+        // Direct row index lookup (for editing items without barcodes)
+        if (typeof editRowIndex === 'number' && editRowIndex >= 0 && ldRows[editRowIndex]) {
+          existingRow = ldRows[editRowIndex];
+          existingRowIndex = editRowIndex;
+        } else if (barcodeColIdx >= 0 && scannedData) {
           var scannedLower = String(scannedData).trim().toLowerCase();
           for (var ri = 0; ri < ldRows.length; ri++) {
             if (String(ldRows[ri][barcodeColIdx]).trim().toLowerCase() === scannedLower) {
@@ -5694,6 +5707,13 @@
           // Last User and Last Updated are always auto-populated — don't show them in the entry UI,
           // but still create the input and push to editInputs so the positional column mapping stays correct
           var hCurr = (headers[i] || '').toLowerCase();
+          // ID column — hidden, carries the existing ID for updates (empty for new items — GAS auto-generates)
+          if (hCurr === 'id') {
+            var idInp = document.createElement('input'); idInp.type = 'hidden';
+            idInp.value = (existingRow && existingRow[i]) ? String(existingRow[i]) : '';
+            editInputs.push(idInp);
+            continue;
+          }
           // Skip Image column — handled by the image upload/capture UI
           if (hCurr === 'image') {
             var imgInp = document.createElement('input'); imgInp.type = 'hidden'; imgInp.value = '';
@@ -5849,7 +5869,7 @@
               }
             }
             if (typeof window._enqueueScanItem === 'function') {
-              window._enqueueScanItem(values, imgData);
+              window._enqueueScanItem(values, imgData, isEditAction ? existingRowIndex : undefined);
             } else {
               for (var k2 = 0; k2 < editInputs.length; k2++) { var colInput = document.getElementById('ld-add-col' + (k2 + 1)); if (colInput) { colInput.value = editInputs[k2].value; colInput.dispatchEvent(new Event('input')); } }
               var addBtn = document.getElementById('ld-add-row-btn'); if (addBtn && !addBtn.disabled) addBtn.click();

@@ -3,9 +3,32 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v11.15r] — 2026-04-13 08:43:50 AM EST
+
+> **Prompt:** "its not letting me edit items that dont already have a barcode, any suggestions?" + "what if we have an ID column for all entries so that we dont have to rely on the user and we have a universal way to detect which item we are modifying"
+
+### Added
+- Added auto-generated UUID "ID" column to the inventory data model — every new item gets a unique ID assigned server-side via `Utilities.getUuid()`. ID is the first column and auto-inserted into existing spreadsheets
+- GAS `saveRow` now matches rows by ID first (universal), then falls back to barcode matching — eliminates the barcode requirement for editing items
+- `ldStartRowEdit` no longer blocks editing barcode-less items — passes the row index to the modal, which finds the existing row directly
+- Scan entry modal carries the existing item's ID as a hidden field — included in the values array so GAS can identify the row
+- ID column is hidden from both the table view (header and cells skipped during rendering) and the scan entry form (hidden input only)
+
+#### `inventorymanagement.html` — v01.52w
+
+##### Added
+- Items without barcodes can now be edited using the pencil button
+- Item identity is tracked by an internal ID — no longer requires a barcode
+
+#### `inventorymanagement.gs` — v01.21g
+
+##### Added
+- Each item now gets a unique auto-generated ID for reliable identification
+- Editing and updating items works universally regardless of whether a barcode is assigned
 
 ## [v11.14r] — 2026-04-13 08:31:55 AM EST
 
