@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 46/50`
+`Sections: 47/50`
 
 ## [Unreleased]
+
+## [v01.56w] — 2026-04-13 10:17:23 AM EST — v11.20r
+
+### Added
+- Item Name is now required — Add Row button stays disabled until Item Name is filled in
+- Scan confirm modal blocks submission and highlights the field in red if Item Name is empty
 
 ## [v01.55w] — 2026-04-13 10:10:48 AM EST — v11.19r
 

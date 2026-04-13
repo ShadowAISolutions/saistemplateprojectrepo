@@ -1,4 +1,4 @@
-var VERSION = "v01.24g";
+var VERSION = "v01.25g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -597,6 +597,11 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     else if (hLower === 'last updated') lastUpdatedCol = h;
     else if (hLower === 'last user') lastUserCol = h;
     else if (hLower === 'item name') itemNameCol = h;
+  }
+
+  // PROJECT: Item Name is required — reject if empty
+  if (itemNameCol >= 0 && !String(values[itemNameCol] || '').trim()) {
+    return signMessage({ type: 'gas-write-error', error: 'item_name_required' }, user.messageKey || '');
   }
 
   var scannedBarcode = (barcodeCol >= 0 && values[barcodeCol]) ? String(values[barcodeCol]).trim() : '';

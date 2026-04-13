@@ -3,9 +3,14 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 24/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v01.25g] — 2026-04-13 10:17:23 AM EST — v11.20r
+
+### Added
+- Item Name is now a required field — items cannot be added without a name
 
 ## [v01.24g] — 2026-04-13 10:10:48 AM EST — v11.19r
 

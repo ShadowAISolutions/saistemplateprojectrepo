@@ -3,9 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v11.20r] — 2026-04-13 10:17:23 AM EST
+
+> **Prompt:** "make it so that the item name field is required"
+
+### Added
+- Server-side validation in `saveRow()` rejecting rows with empty Item Name (returns `item_name_required` error)
+- Client-side validation in add-row bar: Add Row button only enables when Item Name has text
+- Client-side validation in scan confirm modal: blocks submission and highlights the Item Name field if empty
+
+#### `inventorymanagement.html` — v01.56w
+
+##### Added
+- Item Name is now required — Add Row button stays disabled until Item Name is filled in
+- Scan confirm modal blocks submission and highlights the field in red if Item Name is empty
+
+#### `inventorymanagement.gs` — v01.25g
+
+##### Added
+- Item Name is now a required field — items cannot be added without a name
 
 ## [v11.19r] — 2026-04-13 10:10:48 AM EST
 
