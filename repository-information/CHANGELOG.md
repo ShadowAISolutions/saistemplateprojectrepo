@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v11.14r] — 2026-04-13 08:31:55 AM EST
+
+> **Prompt:** "adding the low stock threshold is working. but when i edit the row, its not auto showing what the current low stock threshold is"
+
+### Fixed
+- Fixed scan entry form not pre-filling existing values for generic columns (Low Stock Threshold, etc.) when editing an existing row — the pre-fill logic only handled Item Name explicitly; added generic pre-fill that populates any column with existing data from the row
+
+#### `inventorymanagement.html` — v01.51w
+
+##### Fixed
+- Editing an existing item now shows the current Low Stock Threshold value in the form
 
 ## [v11.13r] — 2026-04-13 08:15:01 AM EST
 
