@@ -1,4 +1,4 @@
-var VERSION = "v01.12g";
+var VERSION = "v01.13g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -732,7 +732,7 @@ function getOrCreateImageFolder() {
  * Uses Drive REST API v3 multipart upload via UrlFetchApp.
  * Sets sharing to anyone-with-link so thumbnail URLs work without GAS proxy calls.
  */
-function uploadImage(token, base64Data, fileName) {
+function uploadImage(token, base64Data, fileName, rowIndex) {
   var user = validateSessionForData(token, 'uploadImage');
   checkPermission(user, 'write', 'uploadImage');
 
@@ -743,6 +743,33 @@ function uploadImage(token, base64Data, fileName) {
   var fileId = _uploadImageToDrive(base64Data, fileName, user.email);
   if (!fileId) {
     return signMessage({ type: 'gas-write-error', error: 'upload_failed' }, user.messageKey || '');
+  }
+
+  // PROJECT: When rowIndex is provided, also set the image on the row (combines uploadImage + updateRowImage)
+  if (typeof rowIndex === 'number' && rowIndex >= 0) {
+    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = ss.getSheetByName(SHEET_NAME);
+    if (sheet) {
+      var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      var imgCol = -1;
+      for (var h = 0; h < headers.length; h++) {
+        if (String(headers[h]).toLowerCase().trim() === 'image') { imgCol = h; break; }
+      }
+      if (imgCol >= 0) {
+        var sheetRow = rowIndex + 2;
+        if (sheetRow <= sheet.getLastRow()) {
+          // Trash old image if the row had one
+          var oldVal = String(sheet.getRange(sheetRow, imgCol + 1).getValue() || '').trim();
+          if (oldVal && oldVal !== fileId) { _trashDriveFile(oldVal); }
+          sheet.getRange(sheetRow, imgCol + 1).setValue(fileId);
+          refreshDataCache();
+          auditLog('data_write', user.email, 'update_row_image', { row: rowIndex, fileId: fileId });
+          var result = signMessage({ type: 'gas-image-uploaded', fileId: fileId }, user.messageKey || '');
+          result.liveData = getCachedData();
+          return result;
+        }
+      }
+    }
   }
 
   return signMessage({ type: 'gas-image-uploaded', fileId: fileId }, user.messageKey || '');

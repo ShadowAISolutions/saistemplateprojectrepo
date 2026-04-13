@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v01.41w] — 2026-04-12 08:19:09 PM EST — v11.02r
+
+### Fixed
+- Fixed photos not uploading when adding items
 
 ## [v01.40w] — 2026-04-12 08:10:29 PM EST — v11.01r
 

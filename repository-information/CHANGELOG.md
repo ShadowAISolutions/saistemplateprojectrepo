@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v11.02r] — 2026-04-12 08:19:09 PM EST
+
+> **Prompt:** "the quantity and the optimistic is happening when attaching an image, but its still not sending the image."
+
+### Fixed
+- Fixed image not uploading — root cause was a race condition: `updateRowImage` was reaching the server before `addRow` had finished creating the row (`row_out_of_range` error). Restored the original `uploadImage` → `updateRowImage` client flow which uses the Drive upload time (~1-3s) as a natural delay, ensuring the row exists before `updateRowImage` runs
+- Enhanced `uploadImage` GAS function to accept optional `rowIndex` param — when provided, does upload + set-on-row in one execution (for future optimization of existing-row edits)
+
+#### `inventorymanagement.gs` — v01.13g
+
+##### Changed
+- Image upload now supports optional row assignment in a single call
+
+#### `inventorymanagement.html` — v01.41w
+
+##### Fixed
+- Fixed photos not uploading when adding items
 
 ## [v11.01r] — 2026-04-12 08:10:29 PM EST
 
