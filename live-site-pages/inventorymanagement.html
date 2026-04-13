@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.44w">
+  <meta name="build-version" content="v01.45w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -4826,7 +4826,7 @@
 
       // ldStartRowEdit — opens the scan-confirm modal by synthesizing a barcode-scan of the row's
       // existing barcode. This reuses the proven scan-existing path (which finds existingRow via
-      // barcode lookup and routes save through the addRow merge-on-duplicate-barcode logic in GAS),
+      // barcode lookup and routes save through the saveRow merge-on-duplicate-barcode logic in GAS),
       // so editing a row behaves identically to scanning it.
       function ldStartRowEdit(rowIndex) {
         if (typeof rowIndex !== 'number') return;
@@ -5048,7 +5048,7 @@
             addRowBtn.style.opacity = '0.7';
             addRowBtn.style.cursor = 'wait';
             _addRowPending = true;
-            gasCall('addRow', [_sessionToken, JSON.stringify(values)], function(result) {
+            gasCall('saveRow', [_sessionToken, JSON.stringify(values)], function(result) {
               var wasAdd = _addRowPending;
               _addRowPending = false;
               _addRowPendingIndex = undefined;
@@ -5117,17 +5117,17 @@
         next.status = 'sending';
         _updateQueueBadge();
         ldRenderTableView({});
-        // Build addRow args — include image data if present (consolidated upload/removal)
-        var addRowArgs = [_sessionToken, JSON.stringify(next.values)];
+        // Build saveRow args — include image data if present (consolidated upload/removal)
+        var saveRowArgs = [_sessionToken, JSON.stringify(next.values)];
         if (next.imgData && next.imgData.base64) {
-          addRowArgs.push(next.imgData.base64);
-          addRowArgs.push(next.imgData.fileName);
+          saveRowArgs.push(next.imgData.base64);
+          saveRowArgs.push(next.imgData.fileName);
         } else if (next.imgData && next.imgData.clearImageId) {
-          addRowArgs.push(null);  // no base64Data
-          addRowArgs.push(null);  // no fileName
-          addRowArgs.push(next.imgData.clearImageId);
+          saveRowArgs.push(null);  // no base64Data
+          saveRowArgs.push(null);  // no fileName
+          saveRowArgs.push(next.imgData.clearImageId);
         }
-        gasCall('addRow', addRowArgs, function(result) {
+        gasCall('saveRow', saveRowArgs, function(result) {
           next.status = 'done';
           _addRowPendingIndices.delete(next.optimisticIndex);
           if (result && result.liveData) {
@@ -5139,7 +5139,7 @@
           _updateQueueBadge();
           _processQueue();
         }, function(err) {
-          console.error('Scan queue addRow failed:', err);
+          console.error('Scan queue saveRow failed:', err);
           next.status = 'error';
           next.error = String(err);
           _addRowPendingIndices.delete(next.optimisticIndex);
@@ -5554,7 +5554,7 @@
           function proceedWithSave(imgFileId) {
             // Set Image column value
             if (imgColIdx >= 0 && imgColIdx < values.length) values[imgColIdx] = imgFileId || '';
-            // Build image data for consolidated addRow call — handles upload, removal, and edit-mode changes
+            // Build image data for consolidated saveRow call — handles upload, removal, and edit-mode changes
             var imgData = null;
             if (pendingImg) {
               // New image to upload
@@ -5578,7 +5578,7 @@
             qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
           }
 
-          // Save the row — all image operations consolidated into the addRow call via the scan queue
+          // Save the row — all image operations consolidated into the saveRow call via the scan queue
           proceedWithSave(oldFileId);
         }
         function onCancel() { cleanup(); if (typeof window._imgClearPreview === 'function') window._imgClearPreview(); qrSetStatus('active', 'Scanning (native \u00b7 all formats)...'); }
@@ -5733,7 +5733,7 @@
     })();
 
     // Auto-scan interception — wrap _showScanConfirmModal so a real scan in auto mode
-    // bypasses the modal entirely and fires addRow directly with the increment quantity.
+    // bypasses the modal entirely and fires saveRow directly with the increment quantity.
     // Falls through to the modal for EDIT/MANUAL ENTRY contexts and for unknown barcodes.
     (function() {
       if (typeof window._showScanConfirmModal !== 'function') return;
@@ -5762,7 +5762,7 @@
                   if (isNaN(amount) || amount === 0) return _origAutoWrap(raw, fmt);
                   var itemName = String(existing[nameIdx] || '');
                   // Enqueue the scan instead of blocking on the add-row button.
-                  // The GAS addRow merge-on-duplicate-barcode logic adds the increment to the existing row.
+                  // The GAS saveRow merge-on-duplicate-barcode logic adds the increment to the existing row.
                   var colVals = ['', '', '', '', ''];
                   colVals[nameIdx] = itemName;
                   colVals[qtyIdx] = String(amount);

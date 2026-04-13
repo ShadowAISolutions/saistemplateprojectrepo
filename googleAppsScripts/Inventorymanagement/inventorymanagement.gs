@@ -1,4 +1,4 @@
-var VERSION = "v01.16g";
+var VERSION = "v01.17g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -488,7 +488,8 @@ function writeCell(token, row, col, value) {
 }
 
 /**
- * addRow(token, valuesJSON) — appends a new row to the data spreadsheet.
+ * saveRow(token, valuesJSON) — saves a row to the data spreadsheet (insert or merge).
+ * Appends a new row for new barcodes, or merges quantity on duplicate barcodes.
  * valuesJSON is a JSON string of an array of cell values matching the header columns.
  * Accepts JSON string because google.script.run can mangle array parameters.
  * Validates the session first (requires 'write' permission via RBAC).
@@ -498,11 +499,11 @@ function writeCell(token, row, col, value) {
  * Optional image parameters: if base64Data and fileName are provided, uploads
  * the image to Google Drive and sets the fileId on the row's Image column.
  * If clearImageId is provided (without base64Data), clears the image column
- * and trashes the old Drive file — consolidating deleteImage + updateRowImage.
+ * and trashes the old Drive file.
  */
-function addRow(token, valuesJSON, base64Data, fileName, clearImageId) {
-  var user = validateSessionForData(token, 'addRow');
-  checkPermission(user, 'write', 'addRow');
+function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
+  var user = validateSessionForData(token, 'saveRow');
+  checkPermission(user, 'write', 'saveRow');
 
   var values;
   try {
@@ -590,7 +591,7 @@ function addRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     actionType = 'add_row';
   }
 
-  // PROJECT: Optional image upload — consolidates addRow + uploadImage into one call
+  // PROJECT: Optional image upload — consolidated into saveRow
   var uploadedFileId = '';
   if (base64Data && fileName) {
     var fileId = _uploadImageToDrive(base64Data, fileName, user.email);
@@ -612,7 +613,7 @@ function addRow(token, valuesJSON, base64Data, fileName, clearImageId) {
       auditLog('data_write', user.email, 'upload_image_with_row', { row: imgSheetRow, fileId: fileId });
     }
   } else if (clearImageId) {
-    // PROJECT: Image removal — consolidates deleteImage + updateRowImage into addRow
+    // PROJECT: Image removal — consolidated into saveRow
     var clrSheetRow = (actionType === 'update_quantity') ? (existingRowIndex + 1) : sheet.getLastRow();
     var clrImgCol = -1;
     for (var hc = 0; hc < headers.length; hc++) {
@@ -917,7 +918,7 @@ function updateRowImage(token, rowIndex, fileId, imageBase64, imageFileName) {
 /**
  * _uploadImageToDrive(base64Data, fileName, userEmail) — uploads a base64-encoded image to Google Drive.
  * Returns the fileId on success, or empty string on failure.
- * Extracted from uploadImage() for reuse by addRow and updateRowImage.
+ * Extracted from uploadImage() for reuse by saveRow and updateRowImage.
  */
 function _uploadImageToDrive(base64Data, fileName, userEmail) {
   if (!base64Data) { Logger.log('_uploadImageToDrive: no base64Data'); return ''; }
@@ -964,7 +965,7 @@ function _uploadImageToDrive(base64Data, fileName, userEmail) {
 
 /**
  * _trashDriveFile(fileId) — trashes a Drive file (recoverable for 30 days).
- * Extracted from deleteImage() for reuse by addRow and updateRowImage.
+ * Extracted from deleteImage() for reuse by saveRow and updateRowImage.
  */
 function _trashDriveFile(fileId) {
   if (!fileId) return;

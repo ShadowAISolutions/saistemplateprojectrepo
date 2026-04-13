@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v11.07r] — 2026-04-12 09:43:43 PM EST
+
+> **Prompt:** "perfect. the name addRow in the executions, could we give it a more accurate name, like modifyRow , since its literally doing everything, thoughts?"
+
+### Changed
+- Renamed GAS function `addRow` → `saveRow` to accurately reflect its role: insert, merge, image upload, and image removal all in one call
+- Updated all `gasCall('addRow', ...)` references to `gasCall('saveRow', ...)` across the HTML client
+- Updated JSDoc, comments, and internal logging strings to use the new name
+
+#### `inventorymanagement.html` — v01.45w
+
+##### Changed
+- Minor internal improvements
+
+#### `inventorymanagement.gs` — v01.17g
+
+##### Changed
+- Minor internal improvements
 
 ## [v11.06r] — 2026-04-12 09:33:23 PM EST
 
