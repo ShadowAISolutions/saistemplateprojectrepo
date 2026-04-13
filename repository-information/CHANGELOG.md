@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v11.22r] — 2026-04-13 10:30:43 AM EST
+
+> **Prompt:** "from the location/category dropdown, make it so that picking the - Select X - will remove the category, right now its just returning to whatever it was before"
+
+### Fixed
+- `saveRow()` now writes empty strings to the spreadsheet when the user selects "— Select X —" for Location/Category — previously empty values were skipped, leaving the old value intact
+- History logging also captures field clears (empty values no longer skipped in change detection)
+
+#### `inventorymanagement.gs` — v01.26g
+
+##### Fixed
+- Selecting the empty option in Location or Category dropdowns now correctly clears the field
 
 ## [v11.21r] — 2026-04-13 10:24:47 AM EST
 

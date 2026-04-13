@@ -1,4 +1,4 @@
-var VERSION = "v01.25g";
+var VERSION = "v01.26g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -632,9 +632,10 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     var newQty = existingQty + deltaQty;
     sheet.getRange(sheetRow, qtyCol + 1).setValue(newQty);
     // Write all other columns from values (skip barcode — unchanged; skip quantity — handled above)
+    // Empty strings are written intentionally — allows clearing fields like Location/Category
     for (var uc = 0; uc < values.length; uc++) {
       if (uc === barcodeCol || uc === qtyCol) continue;
-      if (values[uc] !== undefined && values[uc] !== null && String(values[uc]) !== '') {
+      if (values[uc] !== undefined && values[uc] !== null) {
         sheet.getRange(sheetRow, uc + 1).setValue(values[uc]);
       }
     }
@@ -725,7 +726,7 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
     var skipFields = { 'last updated': true, 'last user': true, 'image': true };
     for (var fc = 0; fc < values.length; fc++) {
       if (fc === barcodeCol || fc === qtyCol || fc === idCol) continue;
-      if (values[fc] === undefined || values[fc] === null || String(values[fc]) === '') continue;
+      if (values[fc] === undefined || values[fc] === null) continue;
       var hdrName = (fc < headers.length) ? String(headers[fc]) : '';
       if (skipFields[hdrName.toLowerCase().trim()]) continue;
       var oldFieldVal = String(existingRow[fc] || '');
