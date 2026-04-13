@@ -3,9 +3,28 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v11.08r] — 2026-04-13 07:14:34 AM EST
+
+> **Prompt:** "in the inventorymanagement, i want the ability to search by item name. propose what you recommend"
+
+### Added
+- Added search-by-item-name functionality to the inventory management page — real-time client-side filtering with debounced input, result count display, and empty-state message
+
+#### `inventorymanagement.html` — v01.46w
+
+##### Added
+- Search bar between view tabs and data table with magnifying glass icon, text input, and clear button
+- Real-time filtering as user types (150ms debounce) — case-insensitive substring match on Item Name column
+- Result count ("X of Y") shown when filter is active
+- "No items match" empty-state message when no results found
+- Search persists through 15-second polling refresh and works with column sorting
+- Search bar auto-hides on Dashboard tab and during QR fullscreen mode
+- Escape key clears search and unfocuses input
+- Responsive design — full-width on mobile, max 400px on desktop
 
 ## [v11.07r] — 2026-04-12 09:43:43 PM EST
 

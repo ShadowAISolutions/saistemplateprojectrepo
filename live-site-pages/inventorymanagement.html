@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.45w">
+  <meta name="build-version" content="v01.46w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -378,6 +378,25 @@
     }
     .ld-view-tab:hover { color: #e1e4e8; }
     .ld-view-tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+    #ld-search-bar {
+      display: none; align-items: center; padding: 8px 16px;
+      background: #161b22; border-bottom: 1px solid #2a2b3d; gap: 8px; flex-shrink: 0;
+    }
+    #ld-search-wrap { position: relative; flex: 1; display: flex; align-items: center; max-width: 400px; }
+    #ld-search-icon { position: absolute; left: 10px; color: #8b949e; font-size: 13px; pointer-events: none; }
+    #ld-search-input {
+      width: 100%; padding: 8px 32px 8px 32px; font-size: 13px; font-family: inherit;
+      background: #0d1117; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px;
+      outline: none; box-sizing: border-box; transition: border-color 0.2s;
+    }
+    #ld-search-input:focus { border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.2); }
+    #ld-search-input::placeholder { color: #6e7681; }
+    #ld-search-clear {
+      position: absolute; right: 8px; background: none; border: none; color: #8b949e;
+      font-size: 16px; cursor: pointer; padding: 2px 6px; display: none; line-height: 1;
+    }
+    #ld-search-clear:hover { color: #e1e4e8; }
+    #ld-search-count { font-size: 11px; color: #6e7681; white-space: nowrap; }
     #ld-table-view { flex: 1; overflow: auto; padding: 16px; }
     #ld-data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     #ld-data-table th {
@@ -519,6 +538,9 @@
     #ld-scan-confirm-modal .btn-confirm:hover { background: #2ea043; }
     @media (max-width: 600px) {
       #ld-header { padding: 10px 12px; }
+      #ld-search-bar { padding: 6px 12px; }
+      #ld-search-wrap { max-width: none; }
+      #ld-search-input { font-size: 12px; padding: 7px 30px 7px 28px; }
       #ld-dashboard-grid { grid-template-columns: 1fr; }
       .ld-dash-card .card-value { font-size: 22px; }
       #ld-data-table { font-size: 12px; }
@@ -589,6 +611,7 @@
     body.qr-fullscreen-active #ld-table-view,
     body.qr-fullscreen-active #ld-dashboard-view,
     body.qr-fullscreen-active #ld-view-tabs,
+    body.qr-fullscreen-active #ld-search-bar,
     body.qr-fullscreen-active #ld-header { pointer-events: none; }
     /* Expand hint is hidden by default (only shown inside the 600px media query) */
     .qr-expand-hint { display: none; }
@@ -950,6 +973,14 @@
     <div id="ld-view-tabs">
       <button class="ld-view-tab active" data-view="table">Table</button>
       <button class="ld-view-tab" data-view="dashboard">Dashboard</button>
+    </div>
+    <div id="ld-search-bar">
+      <div id="ld-search-wrap">
+        <span id="ld-search-icon">&#128269;</span>
+        <input type="text" id="ld-search-input" placeholder="Search by item name..." autocomplete="off" spellcheck="false">
+        <button type="button" id="ld-search-clear" aria-label="Clear search">&times;</button>
+      </div>
+      <span id="ld-search-count"></span>
     </div>
     <div id="ld-add-row-bar" style="display:none;flex-shrink:0;padding:8px 16px;background:#161b22;border-bottom:1px solid #2a2b3d;gap:8px;align-items:center;flex-wrap:wrap;">
       <input id="ld-add-col1" type="hidden">
@@ -4468,6 +4499,7 @@
       var _ldCurrentView = 'table';
       var _ldSortCol = -1;
       var _ldSortAsc = true;
+      var _ldSearchTerm = '';
       var _ldHeaders = [];
       var _ldRows = [];
       var _ldLastDataTs = 0;
@@ -4493,6 +4525,10 @@
       var ldDashGrid = document.getElementById('ld-dashboard-grid');
       var ldEmptyState = document.getElementById('ld-empty-state');
       var ldApp = document.getElementById('live-data-app');
+      var ldSearchBar = document.getElementById('ld-search-bar');
+      var ldSearchInput = document.getElementById('ld-search-input');
+      var ldSearchClear = document.getElementById('ld-search-clear');
+      var ldSearchCount = document.getElementById('ld-search-count');
 
       function ldSetConnectionStatus(state) {
         if (!ldConnDot) return;
@@ -4530,6 +4566,41 @@
           _ldCurrentView = this.getAttribute('data-view');
           ldTableView.style.display = _ldCurrentView === 'table' ? 'block' : 'none';
           ldDashView.style.display = _ldCurrentView === 'dashboard' ? 'block' : 'none';
+          if (ldSearchBar) ldSearchBar.style.display = _ldCurrentView === 'table' ? 'flex' : 'none';
+        });
+      }
+      // Show search bar on initial load (table tab is active by default)
+      if (ldSearchBar) ldSearchBar.style.display = 'flex';
+
+      // Search input handling
+      var _searchDebounceTimer = null;
+      if (ldSearchInput) {
+        ldSearchInput.addEventListener('input', function() {
+          var val = ldSearchInput.value;
+          if (ldSearchClear) ldSearchClear.style.display = val ? 'block' : 'none';
+          clearTimeout(_searchDebounceTimer);
+          _searchDebounceTimer = setTimeout(function() {
+            _ldSearchTerm = val.trim();
+            ldRenderTableView({});
+          }, 150);
+        });
+        ldSearchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            ldSearchInput.value = '';
+            _ldSearchTerm = '';
+            if (ldSearchClear) ldSearchClear.style.display = 'none';
+            ldRenderTableView({});
+            ldSearchInput.blur();
+          }
+        });
+      }
+      if (ldSearchClear) {
+        ldSearchClear.addEventListener('click', function() {
+          ldSearchInput.value = '';
+          _ldSearchTerm = '';
+          ldSearchClear.style.display = 'none';
+          ldRenderTableView({});
+          ldSearchInput.focus();
         });
       }
 
@@ -4596,7 +4667,40 @@
             return _ldSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
           });
         }
+        // Search filter by item name
+        var _totalBeforeFilter = indexedRows.length;
+        if (_ldSearchTerm) {
+          var _nameColIdx = -1;
+          for (var _ni = 0; _ni < _ldHeaders.length; _ni++) {
+            if (_ldHeaders[_ni].toLowerCase().trim() === 'item name') { _nameColIdx = _ni; break; }
+          }
+          if (_nameColIdx >= 0) {
+            var _searchLower = _ldSearchTerm.toLowerCase();
+            indexedRows = indexedRows.filter(function(entry) {
+              return (entry.data[_nameColIdx] || '').toLowerCase().indexOf(_searchLower) >= 0;
+            });
+          }
+        }
+        if (ldSearchCount) {
+          if (_ldSearchTerm) {
+            ldSearchCount.textContent = indexedRows.length + ' of ' + _totalBeforeFilter;
+            ldSearchCount.style.display = '';
+          } else {
+            ldSearchCount.textContent = '';
+            ldSearchCount.style.display = 'none';
+          }
+        }
         tbody.innerHTML = '';
+        if (_ldSearchTerm && indexedRows.length === 0) {
+          var noResultTr = document.createElement('tr');
+          var noResultTd = document.createElement('td');
+          noResultTd.colSpan = thead.children.length;
+          noResultTd.style.cssText = 'text-align:center;padding:32px 16px;color:#6e7681;font-size:13px;';
+          noResultTd.textContent = 'No items match \u201C' + _ldSearchTerm + '\u201D';
+          noResultTr.appendChild(noResultTd);
+          tbody.appendChild(noResultTr);
+          return;
+        }
         indexedRows.forEach(function(entry) {
           var row = entry.data;
           var origIdx = entry.origIndex;

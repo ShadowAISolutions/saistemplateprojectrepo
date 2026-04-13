@@ -3,9 +3,17 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 45/50`
+`Sections: 46/50`
 
 ## [Unreleased]
+
+## [v01.46w] — 2026-04-13 07:14:34 AM EST — v11.08r
+
+### Added
+- Search bar to filter inventory items by name — type to instantly filter the table
+- Result count showing how many items match your search
+- Clear button and Escape key to reset search
+- Search works alongside column sorting and auto-refreshing data
 
 ## [v01.45w] — 2026-04-12 09:43:43 PM EST — v11.07r
 
