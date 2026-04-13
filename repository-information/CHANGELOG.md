@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 85/100`
+`Sections: 86/100`
 
 ## [Unreleased]
+
+## [v11.10r] — 2026-04-13 07:44:46 AM EST
+
+> **Prompt:** "the dropdowns are showing in the UI, but its not saving the location or category im selecting into the spreadsheet"
+
+### Fixed
+- Fixed Location and Category dropdown values not saving to the spreadsheet when updating existing rows via barcode scan — the GAS `saveRow` merge path only wrote hardcoded columns (quantity, item name, last user, last updated), skipping all other columns including Location and Category. Replaced with a generic loop that writes all columns from the values array (except barcode and quantity which have special handling)
+
+#### `inventorymanagement.gs` — v01.19g
+
+##### Fixed
+- Dropdown selections now save correctly when scanning an existing item's barcode
 
 ## [v11.09r] — 2026-04-13 07:35:37 AM EST
 
