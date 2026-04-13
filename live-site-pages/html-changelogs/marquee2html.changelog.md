@@ -1,8 +1,13 @@
 # marquee2.html Changelog
 
-`Sections: 1/100`
+`Sections: 2/100`
 
 ## [Unreleased]
+
+## [v01.02w] — 2026-04-13 06:02:44 PM EST — v11.31r
+
+### Added
+- Width measuring ruler showing reference sizes below the loading animation
 
 ## [v01.01w] — 2026-04-13 05:47:48 PM EST — v11.30r
 

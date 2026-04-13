@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 68/100`
+`Sections: 69/100`
 
 ## [Unreleased]
+
+## [v11.31r] — 2026-04-13 06:02:44 PM EST
+
+> **Prompt:** "to both marquee, add a measuring line around the center so that i can visually see whwere the different width points are"
+
+### Added
+- Added visual width measuring ruler to both `marquee1.html` and `marquee2.html` — horizontal bar with labeled tick marks at 80, 100, 132 (current, highlighted green), 150, 180, 200, 250, 270, 300, and 372px widths, positioned below the dog sprite for visual reference
+
+#### `marquee1.html` — v01.05w
+
+##### Added
+- Width measuring ruler showing reference sizes below the loading animation
+
+#### `marquee2.html` — v01.02w
+
+##### Added
+- Width measuring ruler showing reference sizes below the loading animation
 
 ## [v11.30r] — 2026-04-13 05:47:48 PM EST
 

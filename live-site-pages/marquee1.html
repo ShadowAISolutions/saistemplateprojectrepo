@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.04w">
+<meta name="build-version" content="v01.05w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -167,6 +167,36 @@
   #version-indicator .dot.found    { background: #66bb6a; }
   #version-indicator .dot.error    { background: #ef5350; }
   @keyframes viPulse { from { opacity: 1; } to { opacity: 0.4; } }
+
+  /* ── Measuring ruler ── */
+  .ruler {
+    position: relative;
+    width: 372px;
+    height: 40px;
+    margin: 0 auto 1rem;
+    border-bottom: 2px solid #ccc;
+  }
+  .ruler .tick {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  .ruler .tick::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 18px;
+    background: #e53935;
+    margin: 0 auto 2px;
+  }
+  .ruler .tick span {
+    font-size: 9px;
+    color: #999;
+    white-space: nowrap;
+  }
+  .ruler .tick.current::before { background: #2e7d32; width: 2px; height: 24px; }
+  .ruler .tick.current span { color: #2e7d32; font-weight: 700; font-size: 10px; }
 </style>
 </head>
 <body>
@@ -176,6 +206,18 @@
   <div class="app-title">Program Portal</div>
   <div class="signin-heading">Signing in…</div>
   <div class="dog-wrap"><div class="dog"></div></div>
+  <div class="ruler">
+    <div class="tick" style="left:80px"><span>80</span></div>
+    <div class="tick" style="left:100px"><span>100</span></div>
+    <div class="tick current" style="left:132px"><span>132 ★</span></div>
+    <div class="tick" style="left:150px"><span>150</span></div>
+    <div class="tick" style="left:180px"><span>180</span></div>
+    <div class="tick" style="left:200px"><span>200</span></div>
+    <div class="tick" style="left:250px"><span>250</span></div>
+    <div class="tick" style="left:270px"><span>270</span></div>
+    <div class="tick" style="left:300px"><span>300</span></div>
+    <div class="tick" style="left:372px"><span>372</span></div>
+  </div>
   <div class="steps">
     <!-- Step 1 -->
     <div class="step" data-step="1">
