@@ -1,8 +1,13 @@
 # marquee2.html Changelog
 
-`Sections: 4/100`
+`Sections: 5/100`
 
 ## [Unreleased]
+
+## [v01.05w] — 2026-04-13 06:17:30 PM EST — v11.34r
+
+### Added
+- Red dashed border around the sprite animation area for visual debugging
 
 ## [v01.04w] — 2026-04-13 06:13:38 PM EST — v11.33r
 

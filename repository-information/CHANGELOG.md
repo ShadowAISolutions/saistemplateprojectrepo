@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 71/100`
+`Sections: 72/100`
 
 ## [Unreleased]
+
+## [v11.34r] — 2026-04-13 06:17:30 PM EST
+
+> **Prompt:** "can you put a border around the animated image so i can visually identify where its supposed to go, because its still not matching the ruler"
+
+### Added
+- Added red dashed debug border around `.dog-wrap` container on both `marquee1.html` and `marquee2.html` to visualize the sprite bounding box for alignment debugging
+
+#### `marquee1.html` — v01.08w
+
+##### Added
+- Red dashed border around the sprite animation area for visual debugging
+
+#### `marquee2.html` — v01.05w
+
+##### Added
+- Red dashed border around the sprite animation area for visual debugging
 
 ## [v11.33r] — 2026-04-13 06:13:38 PM EST
 
