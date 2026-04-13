@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v11.01r] — 2026-04-12 08:10:29 PM EST
+
+> **Prompt:** "nope same issue. keep in mind that all operations were working when they were separate"
+
+### Fixed
+- Reverted client-side `onConfirm`, `_enqueueScanItem`, and `_processQueue` to the exact original structure — the row save flow (`proceedWithSave` → `_enqueueScanItem` → `addRow`) is completely unchanged from the working version
+- Only change: replaced the background 2-call image chain (`uploadImage` → `updateRowImage`) with a single `updateRowImage` call that accepts image base64 and does upload+set server-side
+- This goes from 3 calls to 2 calls while preserving the exact original flow for row adds, optimistic UI, and scan queue processing
+
+#### `inventorymanagement.html` — v01.40w
+
+##### Fixed
+- Fixed items not appearing when adding with a photo
 
 ## [v11.00r] — 2026-04-12 08:04:20 PM EST
 
