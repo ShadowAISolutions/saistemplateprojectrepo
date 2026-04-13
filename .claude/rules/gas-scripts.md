@@ -167,7 +167,8 @@ Apps Script has a hard 200 version limit. The API does NOT support deleting vers
        "https://www.googleapis.com/auth/script.external_request",
        "https://www.googleapis.com/auth/script.deployments",
        "https://www.googleapis.com/auth/spreadsheets",
-       "https://www.googleapis.com/auth/script.send_mail"
+       "https://www.googleapis.com/auth/script.send_mail",
+       "https://www.googleapis.com/auth/drive"
      ]
    }
    ```

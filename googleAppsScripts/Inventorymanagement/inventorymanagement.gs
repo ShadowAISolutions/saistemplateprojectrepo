@@ -1,4 +1,4 @@
-var VERSION = "v01.13g";
+var VERSION = "v01.14g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -736,11 +736,16 @@ function uploadImage(token, base64Data, fileName, rowIndex) {
   var user = validateSessionForData(token, 'uploadImage');
   checkPermission(user, 'write', 'uploadImage');
 
+  Logger.log('uploadImage called — base64 length: ' + (base64Data ? base64Data.length : 'null') + ', fileName: ' + fileName + ', rowIndex: ' + rowIndex);
+
   if (!base64Data) {
+    Logger.log('uploadImage: no base64Data provided');
     return signMessage({ type: 'gas-write-error', error: 'no_image_data' }, user.messageKey || '');
   }
 
+  Logger.log('uploadImage: calling _uploadImageToDrive...');
   var fileId = _uploadImageToDrive(base64Data, fileName, user.email);
+  Logger.log('uploadImage: _uploadImageToDrive returned fileId: ' + (fileId || '(empty)'));
   if (!fileId) {
     return signMessage({ type: 'gas-write-error', error: 'upload_failed' }, user.messageKey || '');
   }
@@ -874,13 +879,16 @@ function updateRowImage(token, rowIndex, fileId, imageBase64, imageFileName) {
  * Extracted from uploadImage() for reuse by addRow and updateRowImage.
  */
 function _uploadImageToDrive(base64Data, fileName, userEmail) {
-  if (!base64Data) return '';
+  if (!base64Data) { Logger.log('_uploadImageToDrive: no base64Data'); return ''; }
 
+  Logger.log('_uploadImageToDrive: base64 length=' + base64Data.length + ', fileName=' + fileName);
   var folderId = getOrCreateImageFolder();
+  Logger.log('_uploadImageToDrive: folderId=' + folderId);
   var boundary = 'img_upload_boundary_' + Date.now();
   var metadata = JSON.stringify({ name: fileName || 'inventory_image.jpg', parents: [folderId] });
   var requestBody = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + metadata + '\r\n--' + boundary + '\r\nContent-Type: image/jpeg\r\nContent-Transfer-Encoding: base64\r\n\r\n' + base64Data + '\r\n--' + boundary + '--';
 
+  Logger.log('_uploadImageToDrive: requestBody length=' + requestBody.length + ', calling UrlFetchApp...');
   var uploadResp = UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', {
     method: 'post',
     headers: _driveApiHeaders(),
@@ -889,6 +897,7 @@ function _uploadImageToDrive(base64Data, fileName, userEmail) {
     muteHttpExceptions: true
   });
 
+  Logger.log('_uploadImageToDrive: response code=' + uploadResp.getResponseCode());
   if (uploadResp.getResponseCode() !== 200) {
     Logger.log('_uploadImageToDrive error: ' + uploadResp.getContentText());
     return '';
