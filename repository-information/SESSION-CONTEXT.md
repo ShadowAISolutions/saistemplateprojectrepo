@@ -4,50 +4,52 @@ Claude writes to this file when the developer says **"Remember Session"** — ca
 
 ## Latest Session
 
+**Date:** 2026-04-12 09:07:23 PM EST
+**Repo version:** v11.04r
+**Branch this session:** `claude/combine-upload-update-QBE0c`
+
+### What was done
+- **Combined image upload + row update into fewer server calls — 6 commits on branch `claude/combine-upload-update-QBE0c`.** Work touched `inventorymanagement.gs`, `inventorymanagement.html`, and `.claude/rules/gas-scripts.md`:
+  - **v10.99r v01.11g v01.38w — Initial combine attempt** — extracted `_uploadImageToDrive()` and `_trashDriveFile()` reusable helpers from `uploadImage`/`deleteImage`, modified `addRow` to accept optional image params, modified `updateRowImage` to accept optional image base64+fileName, modified client scan queue to carry image data. Broke the optimistic row display
+  - **v11.00r v01.12g v01.39w — Fix attempt 1** — reverted `addRow` to original 2-param signature, moved image handling to post-addRow callback in `_processQueue`. Still didn't work
+  - **v11.01r v01.40w — Fix attempt 2** — fully reverted client to original `proceedWithSave` → `_enqueueScanItem` flow, replaced background `uploadImage` → `updateRowImage` chain with single `updateRowImage` with image params. Hit race condition: `updateRowImage` reached server before `addRow` finished creating the row (`row_out_of_range`)
+  - **v11.02r v01.13g v01.41w — Fix attempt 3** — restored original `uploadImage` → `updateRowImage` chain (3 calls), enhanced server `uploadImage` with optional `rowIndex` param
+  - **v11.03r v01.14g — Root cause found** — user's screenshot showed `ACCESS_TOKEN_SCOPE_INSUFFICIENT` on `drive.googleapis.com`. The `https://www.googleapis.com/auth/drive` OAuth scope had been removed from `appsscript.json`. Added Drive scope to documented scopes in `gas-scripts.md`, added extensive `Logger.log` debugging
+  - **v11.04r v01.42w — Final combine** — now that Drive scope was restored by the user, passed `rowIndex` to `uploadImage` so server does upload + set-on-row in one call. Removed separate `updateRowImage` callback. Flow is now 2 calls: `addRow` + `uploadImage(with rowIndex)`
+
+### Where we left off
+- All commits pushed and merged. Image upload working with 2 calls instead of 3
+- The `_uploadImageToDrive` and `_trashDriveFile` server-side helpers are in place and used by `uploadImage`, `updateRowImage`, and `deleteImage`
+- `uploadImage` accepts optional `rowIndex` — when provided, does upload + set on row in one execution
+- `updateRowImage` accepts optional `imageBase64`/`imageFileName` — when provided, does upload first then set (used for edit mode)
+- Debug `Logger.log` statements still present in `uploadImage` and `_uploadImageToDrive` — can be removed when stable
+
+### Key decisions made
+- **Can't pass image base64 through `addRow`** — attempted twice, broke optimistic UI both times. Root cause unclear but likely related to PostMessage RPC payload size or timing
+- **Race condition with direct `updateRowImage`** — calling `updateRowImage` immediately (without `uploadImage` delay) hits the server before `addRow` creates the row → `row_out_of_range`. The Drive upload in `uploadImage` (~1-3s) acts as a natural delay
+- **Drive OAuth scope is mandatory** — `UrlFetchApp` calls to `googleapis.com/drive/v3/` require `https://www.googleapis.com/auth/drive` in `appsscript.json`. The scope was documented as optional but it's required for any Drive operations via REST API
+- **2 calls is the practical minimum** — `addRow` must complete before image can be set on the row, and combining them in one `addRow` call broke the optimistic UI. The `uploadImage` with `rowIndex` approach (2 calls) is the sweet spot
+
+### Active context
+- **Repo version:** v11.04r
+- **`inventorymanagement.html`:** v01.42w
+- **`inventorymanagement.gs`:** v01.14g
+- **TODO items:** Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
+- **No active reminders**
+- **Toggle states:** `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
+- **CHANGELOG counter:** 80/100
+
+## Previous Sessions
+
 **Date:** 2026-04-12 04:51:15 PM EST
 **Repo version:** v10.91r
 **Branch this session:** `claude/item-modal-barcode-quantity-PjfIa`
 
 ### What was done
-- **Inventory management item modal improvements — 8 commits on branch `claude/item-modal-barcode-quantity-PjfIa`.** All work touched `live-site-pages/inventorymanagement.html`, with one commit also touching `googleAppsScripts/Inventorymanagement/inventorymanagement.gs`:
-  - **v10.84r v01.26w — Barcode as text + quantity validation** — Plan-mode flow. Moved barcode from editable table field to static text display under the modal title (new `<div class="modal-barcode-display">` with `:empty` CSS auto-hide for manual entry). Added context-aware quantity validation: new items allow 0 but no negatives; existing items allow negatives but clamp at `-existingQty` so total never goes below 0. Manual entry still gets editable barcode field via fallthrough
-  - **v10.85r v01.27w — Current Qty display + Adjust Quantity label** — Moved "Current qty" from small note text below stepper to a styled display box (`<div class="modal-qty-display">`) above the table, matching the barcode display pattern. Changed quantity label to "Adjust Quantity" for existing items. Removed old qtyNote div
-  - **v10.86r v01.07g v01.28w — Edit row defaults + item name fix** — Default qty to 0 (not 1) when using pencil edit action. Fixed item name not updating when editing: added `itemNameCol` detection and write in GAS `addRow` function's existing-row path
-  - **v10.87r v01.29w — Live New Total preview** — Added `<div class="qty-total-display">` below the Adjust Quantity stepper showing "New Total: X" that updates in real-time on stepper clicks and typed input. Uses `updateTotal()` function in the IIFE closure with `input` + `change` event listeners
-  - **v10.88r v01.30w — Context-aware confirm button** — Changed confirm button from "Add Row" for everything to: "Add Row" for new items, "Update" for scanned duplicates, "Save" for edit-row actions. Moved button text assignment to after `existingRow` is resolved
-  - **v10.89r v01.31w — Unified desktop/mobile layout** — Changed desktop CSS to match mobile's horizontal flex layout: camera on left, controls to the right. Changed `.qr-side-panel` from `display: contents` to `display: flex`. Made torch/stop buttons visible on desktop (`display: flex` instead of `display: none`). Added `.qr-action-btns` and `#ld-manual-entry-btn` default styling
-  - **v10.90r v01.32w — Constrain scanner section width** — Added `max-width: 600px` to `#qr-camera-section`. Changed entry button from `flex: 1 1 auto` to `flex: 0 0 auto` on desktop to prevent it stretching across the page
-  - **v10.91r v01.33w — Center scanner section** — Added `margin: 0 auto` to center the scanner area on desktop. Also performed CHANGELOG archive rotation (34 sections from 2026-04-08 moved to archive, counter 67/100)
+- **Inventory management item modal improvements — 8 commits.** Barcode as text display, quantity validation, adjust quantity with live total preview, context-aware confirm button (Add Row / Update / Save), unified desktop/mobile layout, centered scanner section
 
 ### Where we left off
-- All 8 commits pushed and merged. No outstanding bugs reported
-- The item modal now has: barcode as text under title, current qty display above table, adjust quantity stepper with live new total preview, context-aware confirm button (Add Row / Update / Save)
-- Desktop layout now matches mobile: camera left, controls right, centered with max-width 600px
-
-### Key decisions made
-- **Barcode stays editable for manual entry only** — when `isManual` is true, the barcode field falls through to the normal editable input. For scan/edit, it's a hidden input + static text display
-- **Quantity validation is context-aware** — new items: min 0; existing items: min `-existingQty`. Edit action defaults qty to 0 (no change), scan duplicate defaults to 1 (add one more)
-- **Desktop layout unified with mobile** — `display: contents` on `.qr-side-panel` replaced with `display: flex` at all breakpoints. Mobile media query still overrides sizes (smaller camera, different font sizes) but the structural layout is the same
-
-### Active context
-- **Repo version:** v10.91r
-- **`inventorymanagement.html`:** v01.33w
-- **`inventorymanagement.gs`:** v01.07g
-- **TODO items:** Get mayo, Get lettuce, Get sliced turkey, Get mustard, Get pickles
-- **No active reminders**
-- **Toggle states:** `TEMPLATE_DEPLOY` = `On`, `CHAT_BOOKENDS` = `On`, `END_OF_RESPONSE_BLOCK` = `On`, `MULTI_SESSION_MODE` = `Off`
-- **CHANGELOG counter:** 67/100
-
-## Previous Sessions
-
-**Date:** 2026-04-12 08:20:55 PM EST
-**Repo version:** v10.80r
-**Branch this session:** `claude/fix-mobile-camera-layout-Yjhmb`
-
-### What was done
-- **Inventory management mobile camera + auto-add arc — 8 commits across 7 user requests on branch `claude/fix-mobile-camera-layout-Yjhmb`.** All work touched `live-site-pages/inventorymanagement.html` and (for the leading-zero fix) `googleAppsScripts/Inventorymanagement/inventorymanagement.gs`:
-  - **v10.73r v01.18w — Square mobile camera with side panel** — Plan-mode flow. Reshaped the mobile QR camera scanner so it's a perfect 22vh × 22vh square pinned to the left of `#qr-camera-section`, with the status bar moved to a vertical right-side column. Three CSS rules edited inside `@media (max-width: 600px)`: `#qr-camera-section` becomes `display: flex; flex-direction: row; gap: 10px`, `.qr-viewport-wrapper` gets `aspect-ratio: 1/1; width: 22vh; height: 22vh; max-width: 200px; max-height: 200px; flex: 0 0 auto`, `.qr-status-bar` becomes `flex: 1 1 0; flex-direction: column`. **CSS specificity gotcha**: original mobile rules used bare `.qr-viewport-wrapper` selectors which had specificity (0,1,0) — same as the desktop base rules at lines 618/648, which come LATER in source order and were silently overriding `width`/`max-width` on mobile. Fixed by bumping mobile selectors to `#qr-camera-section .qr-viewport-wrapper` (specificity 1,1,0) so they win over the desktop base rules. Discovered this via Playwright iteration — first iteration had the camera rendering as 360×188 (desktop width: 100% won) instead of the intended 188×188 square
-  - **v10.74r — Calibrate visual verification heuristic** — Follow-up commit. Bumped the Playwright visual-verification heuristic in `.claude/rules/chat-bookends.md` from `~30–60s per run` to `~30–60s per single run, but expect 3–5 iterations totaling 3–6m for layout-sensitive changes` because the v10.73r fix needed 4 visual verification iterations (initial parent-hidden state, CSS specificity bug, layout fix verification, long-status text wrap test). The original 6m post-approval estimate was off by ~5m due to budgeting only 1 visual verification pass
+- All commits pushed and merged. Item modal fully functional with all improvements
   - **v10.75r v01.19w — Auto-add toggle + increment input** — Added a new "Auto add" toggle switch and increment number input (with `−`/`+` buttons) inside a new `.qr-side-panel` wrapper that contains both the existing `.qr-status-bar` and the new `.qr-auto-controls`. Used `display: contents` on `.qr-side-panel` for desktop so the layout is unchanged (children appear as direct children of `#qr-camera-section`), and reactivated the wrapper as a vertical flex column on mobile (`#qr-camera-section .qr-side-panel { display: flex; flex-direction: column; flex: 1 1 0; ... }`). Toggle state and increment value persist in `localStorage` (`inventory_qr_auto_mode`, `inventory_qr_auto_amount`). When the toggle is OFF, scanning behaves as before. When ON, scanning a known barcode is supposed to bypass the modal and fire `addRow` directly with the configured increment quantity. Unknown barcodes always fall through to the modal so the user can name new items
   - **v10.76r v01.20w — Fix Auto-add toggle bypassing modal on real scans** — User reported that the v10.75r toggle didn't actually bypass the modal on real scans. **Root cause**: my v10.75r implementation wrapped `window._showScanConfirmModal` thinking that's what the QR scan path called, but `qrOnFound()` at line 5028 actually called the **local** function reference `_showScanConfirmModal(data, format)` directly via lexical scope — completely bypassing both wrappers (mine + the existing inner `qrCollapse` wrapper at line 5219). The edit-pencil and manual-entry button paths worked because they explicitly use `window._showScanConfirmModal`. **The fix**: 1-character addition — changed line 5028 from `_showScanConfirmModal(data, format)` to `window._showScanConfirmModal(data, format)`. Functionally verified with Playwright (mocked `_ldGetHeaders`/`_ldGetRows`, called `window._showScanConfirmModal` directly across 3 scenarios)
   - **v10.77r v01.21w — Block 0 in all quantity steppers** — User reported "auto add when set to 0 is incrementing by 1, make it so that 0 isnt an option" + follow-up "this applies to all add and subtract's". Found TWO stepper instances: the new auto-add increment (`#qr-amount-dec`/`#qr-amount-inc`) and the existing modal quantity stepper (`.qty-stepper-btn.qty-minus`/`.qty-plus` inside `_showScanConfirmModal`). Applied skip-zero logic to both: `+`/`−` buttons skip 0 when crossing it (1 → -1 down, -1 → 1 up), and a new `change` event handler snaps typed-0 to 1 on blur. Auto-mode scan interception fallback updated: instead of `if (amount === 0) amount = 1` (silent default that was causing the bug), now `if (amount === 0) return _origAutoWrap(raw, fmt)` — falls through to the modal so the user sees what's happening. 12 Playwright scenarios all pass
