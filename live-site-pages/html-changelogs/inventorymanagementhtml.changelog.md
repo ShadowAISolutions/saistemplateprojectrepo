@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v01.49w] — 2026-04-13 08:00:01 AM EST — v11.12r
+
+### Fixed
+- Category filter now correctly shows "All Categories"
+- Mobile view only shows thumbnail, item name, and quantity — no extra columns peeking through
 
 ## [v01.48w] — 2026-04-13 07:53:31 AM EST — v11.11r
 
