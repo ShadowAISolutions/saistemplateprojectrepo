@@ -3,9 +3,15 @@
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementgs.changelog-archive.md](inventorymanagementgs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 22/50`
+`Sections: 23/50`
 
 ## [Unreleased]
+
+## [v01.23g] — 2026-04-13 10:02:09 AM EST — v11.18r
+
+### Fixed
+- Quantity reductions now correctly show as subtractions in history
+- Field changes (name, location, category, etc.) now appear in history when editing existing items
 
 ## [v01.22g] — 2026-04-13 09:53:49 AM EST — v11.17r
 

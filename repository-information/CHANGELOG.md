@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v11.18r] — 2026-04-13 10:02:09 AM EST
+
+> **Prompt:** "its showing all actions even removing quantity as an ADD action. its not showing the changes to item name, location, category, etc in the inventory history tab in the spreadsheet."
+
+### Fixed
+- Fixed `saveRow()` history logging: quantity reductions (negative delta) now correctly log as `SUB` instead of always logging as `ADD`
+- Fixed `saveRow()` missing field-level change tracking: when an existing item is updated via scan/form, non-qty field changes (Item Name, Location, Category, etc.) are now individually logged as `EDIT` entries with old→new detail
+
+#### `inventorymanagement.gs` — v01.23g
+
+##### Fixed
+- Quantity reductions now correctly show as subtractions in history
+- Field changes (name, location, category, etc.) now appear in history when editing existing items
 
 ## [v11.17r] — 2026-04-13 09:53:49 AM EST
 

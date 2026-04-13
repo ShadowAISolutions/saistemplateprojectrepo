@@ -1,4 +1,4 @@
-var VERSION = "v01.22g";
+var VERSION = "v01.23g";
 var TITLE = "Inventory Management";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
@@ -711,10 +711,27 @@ function saveRow(token, valuesJSON, base64Data, fileName, clearImageId) {
   } else if (actionType === 'update_quantity') {
     var existItemId = (idCol >= 0) ? String(data[existingRowIndex][idCol] || '') : '';
     var existItemName = (itemNameCol >= 0) ? String(data[existingRowIndex][itemNameCol] || '') : '';
-    logInventoryHistory(user.email, 'ADD', {
+    // Determine ADD vs SUB based on delta direction
+    var saveRowQtyAction = deltaQty >= 0 ? 'ADD' : 'SUB';
+    logInventoryHistory(user.email, saveRowQtyAction, {
       id: existItemId, barcode: scannedBarcode, itemName: existItemName,
       qtyChange: deltaQty, newQty: newQty
     }, '');
+    // Also log field-level changes for non-qty/non-barcode columns that changed
+    var existingRow = data[existingRowIndex];
+    for (var fc = 0; fc < values.length; fc++) {
+      if (fc === barcodeCol || fc === qtyCol) continue;
+      if (values[fc] === undefined || values[fc] === null || String(values[fc]) === '') continue;
+      var oldFieldVal = String(existingRow[fc] || '');
+      var newFieldVal = String(values[fc]);
+      if (oldFieldVal !== newFieldVal) {
+        var fieldName = (fc < headers.length) ? String(headers[fc]) : 'Column ' + fc;
+        logInventoryHistory(user.email, 'EDIT', {
+          id: existItemId, barcode: scannedBarcode, itemName: existItemName,
+          qtyChange: '', newQty: newQty
+        }, JSON.stringify({ field: fieldName, old: oldFieldVal, new: newFieldVal }));
+      }
+    }
   }
 
   var addResult = signMessage({ type: 'gas-write-ok' }, user.messageKey || '');
