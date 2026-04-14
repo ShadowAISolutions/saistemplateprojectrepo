@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 86/100`
+`Sections: 87/100`
 
 ## [Unreleased]
+
+## [v11.49r] — 2026-04-14 12:51:43 PM EST
+
+> **Prompt:** "ok looks to be working, i see its exactly 6x12 , all frames are filled all 72"
+
+### Fixed
+- Corrected `marquee1.html` dog4 total frame count from 70 to 72 (all 6×12 positions are filled)
+
+#### `marquee1.html` — v01.21w
+
+##### Fixed
+- Fourth dog now animates all 72 frames instead of stopping at 70
 
 ## [v11.48r] — 2026-04-14 12:48:57 PM EST
 

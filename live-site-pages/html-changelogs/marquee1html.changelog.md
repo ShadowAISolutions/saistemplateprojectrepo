@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 20/100`
+`Sections: 21/100`
 
 ## [Unreleased]
+
+## [v01.21w] — 2026-04-14 12:51:43 PM EST — v11.49r
+
+### Fixed
+- Fourth dog now animates all 72 frames instead of stopping at 70
 
 ## [v01.20w] — 2026-04-14 12:48:57 PM EST — v11.48r
 
