@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 80/100`
+`Sections: 81/100`
 
 ## [Unreleased]
+
+## [v11.43r] — 2026-04-13 11:47:14 PM EST
+
+> **Prompt:** "ok, make the left one default to 16fps, middle one default to 20fps, right one default to 24fps"
+
+### Changed
+- Set per-dog default FPS in `marquee1.html`: dog 1 = 16fps (4.0s cycle), dog 2 = 20fps (3.2s cycle), dog 3 = 24fps (1.5s cycle)
+
+#### `marquee1.html` — v01.15w
+
+##### Changed
+- Left dog defaults to 16 fps, middle dog to 20 fps, right dog to 24 fps
 
 ## [v11.42r] — 2026-04-13 11:31:29 PM EST
 

@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 14/100`
+`Sections: 15/100`
 
 ## [Unreleased]
+
+## [v01.15w] — 2026-04-13 11:47:14 PM EST — v11.43r
+
+### Changed
+- Left dog defaults to 16 fps, middle dog to 20 fps, right dog to 24 fps
 
 ## [v01.14w] — 2026-04-13 11:31:29 PM EST — v11.42r
 
