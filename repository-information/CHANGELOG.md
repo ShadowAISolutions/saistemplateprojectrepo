@@ -3,9 +3,22 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 84/100`
+`Sections: 85/100`
 
 ## [Unreleased]
+
+## [v11.47r] — 2026-04-14 12:42:20 PM EST
+
+> **Prompt:** "make another marquee field with the features of the other fields for a different image, this time using dog-logoff-left.png which i just added (attached so you can see it)"
+
+### Added
+- Added 4th dog animation to `marquee1.html` using `dog-logoff-left.png` sprite sheet (6×11 grid, 64 frames) with its own independent speed slider (default 16fps)
+- Widened `.signin-wrapper` and `.ruler` max-width from 540px to 700px to fit 4 dogs
+
+#### `marquee1.html` — v01.19w
+
+##### Added
+- Fourth animated dog using a different sprite sheet, with independent speed control
 
 ## [v11.46r] — 2026-04-14 12:27:26 AM EST
 

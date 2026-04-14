@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 18/100`
+`Sections: 19/100`
 
 ## [Unreleased]
+
+## [v01.19w] — 2026-04-14 12:42:20 PM EST — v11.47r
+
+### Added
+- Fourth animated dog using a different sprite sheet, with independent speed control
 
 ## [v01.18w] — 2026-04-14 12:27:26 AM EST — v11.46r
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.18w">
+<meta name="build-version" content="v01.19w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,7 +20,7 @@
 
   .signin-wrapper {
     text-align: center;
-    max-width: 540px;
+    max-width: 700px;
     width: 100%;
     padding: 2rem 1.5rem;
   }
@@ -140,7 +140,7 @@
   /* ── Measuring ruler (centered bars) ── */
   .ruler {
     width: 100%;
-    max-width: 540px;
+    max-width: 700px;
     margin: 0.5rem auto 1rem;
     overflow: visible;
   }
@@ -235,6 +235,19 @@
         </div>
         <span>Fast</span>
         <span class="speed-val" id="speed-val-3">24 fps (1.5s)</span>
+      </div>
+    </div>
+    <div class="dog-column">
+      <div class="dog-wrap"><div class="dog" id="dog4"></div></div>
+      <div class="speed-control">
+        <span>Slow</span>
+        <div class="slider-wrap">
+          <input type="range" id="speed-slider-4" min="5" max="60" step="1" value="16">
+          <div class="default-tick" id="default-tick-4"></div>
+          <div class="default-label" id="default-label-4">16</div>
+        </div>
+        <span>Fast</span>
+        <span class="speed-val" id="speed-val-4">16 fps (4.0s)</span>
       </div>
     </div>
   </div>
@@ -358,6 +371,40 @@
   };
 })();
 
+// ── Dog 4 sprite setup — separate image (dog-logoff-left.png) ──
+(function() {
+  var COLS = 6, ROWS = 11, TOTAL_FRAMES = 64;
+  var DISPLAY_W = 160, DEFAULT_FPS = 16;
+  var img = new Image();
+  img.src = 'images/dog-logoff-left.png';
+  img.onload = function() {
+    var fw = img.naturalWidth / COLS, fh = img.naturalHeight / ROWS;
+    var scale = DISPLAY_W / fw;
+    var displayH = Math.round(fh * scale);
+    var wrap = document.getElementById('dog4').parentElement;
+    var dog = document.getElementById('dog4');
+    wrap.style.width = DISPLAY_W + 'px';
+    wrap.style.height = displayH + 'px';
+    dog.style.width = fw + 'px';
+    dog.style.height = fh + 'px';
+    dog.style.backgroundImage = 'url(images/dog-logoff-left.png)';
+    dog.style.backgroundSize = img.naturalWidth + 'px ' + img.naturalHeight + 'px';
+    dog.style.transform = 'scale(' + scale + ')';
+    var defaultDur = TOTAL_FRAMES / DEFAULT_FPS;
+    var kf = '@keyframes spriteFramesDog4 {\n';
+    for (var i = 0; i < TOTAL_FRAMES; i++) {
+      var col = i % COLS, row = Math.floor(i / COLS);
+      var pct = ((i / TOTAL_FRAMES) * 100).toFixed(3);
+      kf += '  ' + pct + '% { background-position: -' + (col * fw) + 'px -' + (row * fh) + 'px; }\n';
+    }
+    kf += '}';
+    var style = document.createElement('style');
+    style.textContent = kf;
+    document.head.appendChild(style);
+    dog.style.animation = 'spriteFramesDog4 ' + defaultDur + 's steps(1) infinite';
+  };
+})();
+
 (function() {
   var steps = [
     { id: '1',  delay: 500,  duration: 300  },
@@ -452,9 +499,10 @@
   var dogConfigs = [
     { frames: 64, defaultFps: 16 },
     { frames: 64, defaultFps: 20 },
-    { frames: 36, defaultFps: 24 }
+    { frames: 36, defaultFps: 24 },
+    { frames: 64, defaultFps: 16 }
   ];
-  [1, 2, 3].forEach(function(n) {
+  [1, 2, 3, 4].forEach(function(n) {
     var frames = dogConfigs[n - 1].frames;
     var DEFAULT_FPS = dogConfigs[n - 1].defaultFps;
     var slider = document.getElementById('speed-slider-' + n);
