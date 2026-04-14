@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.15w">
+<meta name="build-version" content="v01.16w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,7 +20,7 @@
 
   .signin-wrapper {
     text-align: center;
-    max-width: 420px;
+    max-width: 540px;
     width: 100%;
     padding: 2rem 1.5rem;
   }
@@ -59,8 +59,8 @@
 
   /* ── Dog sprite (replaces spinner) — sized dynamically by JS ── */
   .dog-wrap {
-    width: 132px;
-    height: 132px;
+    width: 160px;
+    height: 160px;
     overflow: hidden;
     border: 2px dashed #e53935;
   }
@@ -140,7 +140,7 @@
   /* ── Measuring ruler (centered bars) ── */
   .ruler {
     width: 100%;
-    max-width: 420px;
+    max-width: 540px;
     margin: 0.5rem auto 1rem;
     overflow: visible;
   }
@@ -241,8 +241,9 @@
   <div class="ruler">
     <div class="bar-row"><div class="bar" style="width:80px"></div><span class="bar-label">80</span></div>
     <div class="bar-row"><div class="bar" style="width:100px"></div><span class="bar-label">100</span></div>
-    <div class="bar-row current"><div class="bar" style="width:132px"></div><span class="bar-label">132 ★</span></div>
+    <div class="bar-row"><div class="bar" style="width:132px"></div><span class="bar-label">132</span></div>
     <div class="bar-row"><div class="bar" style="width:150px"></div><span class="bar-label">150</span></div>
+    <div class="bar-row current"><div class="bar" style="width:160px"></div><span class="bar-label">160 ★</span></div>
     <div class="bar-row"><div class="bar" style="width:180px"></div><span class="bar-label">180</span></div>
     <div class="bar-row"><div class="bar" style="width:200px"></div><span class="bar-label">200</span></div>
     <div class="bar-row"><div class="bar" style="width:250px"></div><span class="bar-label">250</span></div>
@@ -317,7 +318,7 @@
 // ── Dynamic sprite sheet setup — 3 dogs with different frame ranges ──
 (function() {
   var COLS = 8, ROWS = 21;
-  var DISPLAY_W = 132;
+  var DISPLAY_W = 160;
   var dogs = [
     { id: 'dog1', startFrame: 0,   frameCount: 64, defaultFps: 16 },
     { id: 'dog2', startFrame: 64,  frameCount: 64, defaultFps: 20 },

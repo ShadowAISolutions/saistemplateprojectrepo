@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 81/100`
+`Sections: 82/100`
 
 ## [Unreleased]
+
+## [v11.44r] — 2026-04-13 11:57:44 PM EST
+
+> **Prompt:** "make the display_w 160 for each of the 3 (adjust position of elements accordingly), its currently 132 for each"
+
+### Changed
+- Increased `marquee1.html` DISPLAY_W from 132px to 160px for all 3 dogs
+- Widened `.signin-wrapper` and `.ruler` max-width from 420px to 540px to accommodate 3×160px + gaps
+- Moved ruler ★ marker from 132 to 160
+
+#### `marquee1.html` — v01.16w
+
+##### Changed
+- Dogs display larger (160px wide instead of 132px)
+- Ruler updated to highlight 160px as current size
 
 ## [v11.43r] — 2026-04-13 11:47:14 PM EST
 

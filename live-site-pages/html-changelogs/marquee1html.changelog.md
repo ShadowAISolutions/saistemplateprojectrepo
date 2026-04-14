@@ -1,8 +1,14 @@
 # marquee1.html Changelog
 
-`Sections: 15/100`
+`Sections: 16/100`
 
 ## [Unreleased]
+
+## [v01.16w] — 2026-04-13 11:57:44 PM EST — v11.44r
+
+### Changed
+- Dogs display larger (160px wide instead of 132px)
+- Ruler updated to highlight 160px as current size
 
 ## [v01.15w] — 2026-04-13 11:47:14 PM EST — v11.43r
 
