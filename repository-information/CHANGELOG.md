@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 87/100`
+`Sections: 88/100`
 
 ## [Unreleased]
+
+## [v11.50r] — 2026-04-14 02:25:34 PM EST
+
+> **Prompt:** "i re uploaded the image, it has slightly different dimensions from the last one, ive attached a copy of it so you can see it"
+
+### Changed
+- Bumped `marquee1.html` version to v01.22w to deploy re-uploaded `dog-logoff-left.png` (1806×2328, was 1806×2244 — taller frame height at 194px vs 187px). JS auto-adapts via dynamic sizing
+
+#### `marquee1.html` — v01.22w
+
+##### Changed
+- Updated sprite image with adjusted dimensions
 
 ## [v11.49r] — 2026-04-14 12:51:43 PM EST
 
