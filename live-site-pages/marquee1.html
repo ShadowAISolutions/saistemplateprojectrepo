@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.19w">
+<meta name="build-version" content="v01.20w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -247,7 +247,7 @@
           <div class="default-label" id="default-label-4">16</div>
         </div>
         <span>Fast</span>
-        <span class="speed-val" id="speed-val-4">16 fps (4.0s)</span>
+        <span class="speed-val" id="speed-val-4">16 fps (4.4s)</span>
       </div>
     </div>
   </div>
@@ -373,7 +373,7 @@
 
 // ── Dog 4 sprite setup — separate image (dog-logoff-left.png) ──
 (function() {
-  var COLS = 6, ROWS = 11, TOTAL_FRAMES = 64;
+  var COLS = 6, ROWS = 12, TOTAL_FRAMES = 70;
   var DISPLAY_W = 160, DEFAULT_FPS = 16;
   var img = new Image();
   img.src = 'images/dog-logoff-left.png';
@@ -500,7 +500,7 @@
     { frames: 64, defaultFps: 16 },
     { frames: 64, defaultFps: 20 },
     { frames: 36, defaultFps: 24 },
-    { frames: 64, defaultFps: 16 }
+    { frames: 70, defaultFps: 16 }
   ];
   [1, 2, 3, 4].forEach(function(n) {
     var frames = dogConfigs[n - 1].frames;

@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 19/100`
+`Sections: 20/100`
 
 ## [Unreleased]
+
+## [v01.20w] — 2026-04-14 12:48:57 PM EST — v11.48r
+
+### Fixed
+- Fourth dog animation now shows one dog per frame instead of two stacked
 
 ## [v01.19w] — 2026-04-14 12:42:20 PM EST — v11.47r
 
