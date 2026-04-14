@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.12w">
+<meta name="build-version" content="v01.13w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,12 +44,24 @@
     margin-bottom: 0.5rem;
   }
 
+  /* ── Three-dog row layout ── */
+  .dogs-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 0.5rem auto 1rem;
+  }
+  .dog-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   /* ── Dog sprite (replaces spinner) — sized dynamically by JS ── */
   .dog-wrap {
     width: 132px;
     height: 132px;
     overflow: hidden;
-    margin: 0.5rem auto 1rem;
     border: 2px dashed #e53935;
   }
   .dog {
@@ -160,14 +172,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    margin: 0.25rem auto 0.5rem;
-    font-size: 0.75rem;
+    gap: 4px;
+    margin: 0.15rem auto 0;
+    font-size: 0.65rem;
     color: #999;
   }
-  .speed-control input[type="range"] { width: 140px; cursor: pointer; }
-  .speed-control .speed-val { min-width: 50px; text-align: center; font-weight: 600; color: #555; }
-  .speed-control .slider-wrap { position: relative; width: 140px; }
+  .speed-control input[type="range"] { width: 80px; cursor: pointer; }
+  .speed-control .speed-val { min-width: 80px; text-align: center; font-weight: 600; color: #555; font-size: 0.6rem; }
+  .speed-control .slider-wrap { position: relative; width: 80px; }
   .speed-control .slider-wrap input { width: 100%; }
   .speed-control .default-tick {
     position: absolute; top: -4px; width: 2px; height: 10px;
@@ -185,16 +197,46 @@
   <img class="logo" src="https://www.shadowaisolutions.com/SAIS_Logo.png" alt="Logo">
   <div class="app-title">Program Portal</div>
   <div class="signin-heading">Signing in…</div>
-  <div class="dog-wrap"><div class="dog"></div></div>
-  <div class="speed-control">
-    <span>Slow</span>
-    <div class="slider-wrap">
-      <input type="range" id="speed-slider" min="5" max="60" step="1" value="30">
-      <div class="default-tick" id="default-tick"></div>
-      <div class="default-label" id="default-label">30</div>
+  <div class="dogs-row">
+    <div class="dog-column">
+      <div class="dog-wrap"><div class="dog" id="dog1"></div></div>
+      <div class="speed-control">
+        <span>Slow</span>
+        <div class="slider-wrap">
+          <input type="range" id="speed-slider-1" min="5" max="60" step="1" value="30">
+          <div class="default-tick" id="default-tick-1"></div>
+          <div class="default-label" id="default-label-1">30</div>
+        </div>
+        <span>Fast</span>
+        <span class="speed-val" id="speed-val-1">12 fps (3.0s)</span>
+      </div>
     </div>
-    <span>Fast</span>
-    <span class="speed-val" id="speed-val">30 fps (3.6s)</span>
+    <div class="dog-column">
+      <div class="dog-wrap"><div class="dog" id="dog2"></div></div>
+      <div class="speed-control">
+        <span>Slow</span>
+        <div class="slider-wrap">
+          <input type="range" id="speed-slider-2" min="5" max="60" step="1" value="30">
+          <div class="default-tick" id="default-tick-2"></div>
+          <div class="default-label" id="default-label-2">30</div>
+        </div>
+        <span>Fast</span>
+        <span class="speed-val" id="speed-val-2">12 fps (3.0s)</span>
+      </div>
+    </div>
+    <div class="dog-column">
+      <div class="dog-wrap"><div class="dog" id="dog3"></div></div>
+      <div class="speed-control">
+        <span>Slow</span>
+        <div class="slider-wrap">
+          <input type="range" id="speed-slider-3" min="5" max="60" step="1" value="30">
+          <div class="default-tick" id="default-tick-3"></div>
+          <div class="default-label" id="default-label-3">30</div>
+        </div>
+        <span>Fast</span>
+        <span class="speed-val" id="speed-val-3">12 fps (3.0s)</span>
+      </div>
+    </div>
   </div>
   <div class="ruler">
     <div class="bar-row"><div class="bar" style="width:80px"></div><span class="bar-label">80</span></div>
@@ -272,35 +314,46 @@
 </div>
 
 <script>
-// ── Dynamic sprite sheet setup (5 cols × 16 rows = 80 frames) ──
+// ── Dynamic sprite sheet setup — 3 dogs, each animating 36 frames ──
 (function() {
-  var COLS = 6, ROWS = 18, TOTAL_FRAMES = COLS * ROWS;
-  var DISPLAY_W = 132, ANIM_DURATION = TOTAL_FRAMES / 30; // 108/30 = 3.6s at 30fps
+  var COLS = 6, ROWS = 18;
+  var FRAMES_PER_DOG = 36;
+  var DISPLAY_W = 132, DEFAULT_FPS = 12;
+  var dogs = [
+    { id: 'dog1', startFrame: 0 },
+    { id: 'dog2', startFrame: 36 },
+    { id: 'dog3', startFrame: 72 }
+  ];
   var img = new Image();
   img.src = 'images/dog-marquee3.png';
   img.onload = function() {
     var fw = img.naturalWidth / COLS, fh = img.naturalHeight / ROWS;
     var scale = DISPLAY_W / fw;
     var displayH = Math.round(fh * scale);
-    var wrap = document.querySelector('.dog-wrap');
-    var dog = document.querySelector('.dog');
-    wrap.style.width = DISPLAY_W + 'px';
-    wrap.style.height = displayH + 'px';
-    dog.style.width = fw + 'px';
-    dog.style.height = fh + 'px';
-    dog.style.backgroundSize = img.naturalWidth + 'px ' + img.naturalHeight + 'px';
-    dog.style.transform = 'scale(' + scale + ')';
-    var kf = '@keyframes spriteFrames {\n';
-    for (var i = 0; i < TOTAL_FRAMES; i++) {
-      var col = i % COLS, row = Math.floor(i / COLS);
-      var pct = ((i / TOTAL_FRAMES) * 100).toFixed(3);
-      kf += '  ' + pct + '% { background-position: -' + (col * fw) + 'px -' + (row * fh) + 'px; }\n';
-    }
-    kf += '}';
-    var style = document.createElement('style');
-    style.textContent = kf;
-    document.head.appendChild(style);
-    dog.style.animation = 'spriteFrames ' + ANIM_DURATION + 's steps(1) infinite';
+    var defaultDur = FRAMES_PER_DOG / DEFAULT_FPS;
+    dogs.forEach(function(d) {
+      var wrap = document.getElementById(d.id).parentElement;
+      var dog = document.getElementById(d.id);
+      wrap.style.width = DISPLAY_W + 'px';
+      wrap.style.height = displayH + 'px';
+      dog.style.width = fw + 'px';
+      dog.style.height = fh + 'px';
+      dog.style.backgroundSize = img.naturalWidth + 'px ' + img.naturalHeight + 'px';
+      dog.style.transform = 'scale(' + scale + ')';
+      var kfName = 'spriteFrames' + d.id;
+      var kf = '@keyframes ' + kfName + ' {\n';
+      for (var i = 0; i < FRAMES_PER_DOG; i++) {
+        var frame = d.startFrame + i;
+        var col = frame % COLS, row = Math.floor(frame / COLS);
+        var pct = ((i / FRAMES_PER_DOG) * 100).toFixed(3);
+        kf += '  ' + pct + '% { background-position: -' + (col * fw) + 'px -' + (row * fh) + 'px; }\n';
+      }
+      kf += '}';
+      var style = document.createElement('style');
+      style.textContent = kf;
+      document.head.appendChild(style);
+      dog.style.animation = kfName + ' ' + defaultDur + 's steps(1) infinite';
+    });
   };
 })();
 
@@ -393,22 +446,28 @@
   run(0);
 })();
 
-// ── Speed slider (FPS-based) ──
+// ── Speed sliders (FPS-based) — one per dog ──
 (function() {
-  var TOTAL_FRAMES = 108, DEFAULT_FPS = 30;
-  var slider = document.getElementById('speed-slider');
-  var valEl = document.getElementById('speed-val');
-  var tick = document.getElementById('default-tick');
-  var tickLabel = document.getElementById('default-label');
-  // Position the default tick mark
-  var pct = ((DEFAULT_FPS - 5) / (60 - 5)) * 100;
-  tick.style.left = 'calc(' + pct + '% - 1px)';
-  tickLabel.style.left = pct + '%';
-  slider.addEventListener('input', function() {
-    var fps = parseInt(this.value);
-    var dur = TOTAL_FRAMES / fps;
-    valEl.textContent = fps + ' fps (' + dur.toFixed(1) + 's)';
-    document.querySelector('.dog').style.animationDuration = dur + 's';
+  var FRAMES_PER_DOG = 36, DEFAULT_FPS = 12;
+  [1, 2, 3].forEach(function(n) {
+    var slider = document.getElementById('speed-slider-' + n);
+    var valEl = document.getElementById('speed-val-' + n);
+    var tick = document.getElementById('default-tick-' + n);
+    var tickLabel = document.getElementById('default-label-' + n);
+    var dog = document.getElementById('dog' + n);
+    // Set slider to default FPS
+    slider.value = DEFAULT_FPS;
+    var pct = ((DEFAULT_FPS - 5) / (60 - 5)) * 100;
+    tick.style.left = 'calc(' + pct + '% - 1px)';
+    tickLabel.style.left = pct + '%';
+    var defaultDur = FRAMES_PER_DOG / DEFAULT_FPS;
+    valEl.textContent = DEFAULT_FPS + ' fps (' + defaultDur.toFixed(1) + 's)';
+    slider.addEventListener('input', function() {
+      var fps = parseInt(this.value);
+      var dur = FRAMES_PER_DOG / fps;
+      valEl.textContent = fps + ' fps (' + dur.toFixed(1) + 's)';
+      dog.style.animationDuration = dur + 's';
+    });
   });
 })();
 

@@ -1,8 +1,15 @@
 # marquee1.html Changelog
 
-`Sections: 12/100`
+`Sections: 13/100`
 
 ## [Unreleased]
+
+## [v01.13w] — 2026-04-13 10:24:05 PM EST — v11.41r
+
+### Changed
+- Three animated dogs shown side by side, each with independent speed control
+- Each dog animates a different set of 36 frames from the same sprite sheet
+- Default animation speed set to 12 fps (3.0 second cycle per dog)
 
 ## [v01.12w] — 2026-04-13 10:12:38 PM EST — v11.40r
 

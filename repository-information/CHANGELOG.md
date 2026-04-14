@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 78/100`
+`Sections: 79/100`
 
 ## [Unreleased]
+
+## [v11.41r] — 2026-04-13 10:24:05 PM EST
+
+> **Prompt:** "in marquee1.html , make it so that there are 3 of the same image animated one after the other left to right, each with their own speed slider. the difference between the three is which frames it will animate, the first will animated the first 36 frames, the 2nd the next 36 frames, and the 3rd the last 36 frames"
+
+### Changed
+- Split `marquee1.html` single 108-frame sprite animation into 3 side-by-side dogs, each animating 36 frames from different ranges (0–35, 36–71, 72–107), each with its own independent FPS speed slider
+- Reduced default FPS from 30 to 12 for each dog (36 frames / 12 fps = 3.0s cycle)
+- Made speed sliders more compact (80px wide) to fit 3 in a row
+
+#### `marquee1.html` — v01.13w
+
+##### Changed
+- Three animated dogs shown side by side, each with independent speed control
+- Each dog animates a different set of 36 frames from the same sprite sheet
+- Default animation speed set to 12 fps (3.0 second cycle per dog)
 
 ## [v11.40r] — 2026-04-13 10:12:38 PM EST
 
