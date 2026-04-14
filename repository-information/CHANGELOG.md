@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 82/100`
+`Sections: 83/100`
 
 ## [Unreleased]
+
+## [v11.45r] — 2026-04-14 12:12:45 AM EST
+
+> **Prompt:** "remove some space between the program portal and the signing in/signed in"
+
+### Changed
+- Reduced `.app-title` margin-bottom from 2rem to 0.5rem in `marquee1.html` to tighten gap between "Program Portal" and "Signing in..."
+
+#### `marquee1.html` — v01.17w
+
+##### Changed
+- Reduced spacing between title and status text
 
 ## [v11.44r] — 2026-04-13 11:57:44 PM EST
 

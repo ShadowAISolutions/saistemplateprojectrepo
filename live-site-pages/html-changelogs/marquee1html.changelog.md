@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 16/100`
+`Sections: 17/100`
 
 ## [Unreleased]
+
+## [v01.17w] — 2026-04-14 12:12:45 AM EST — v11.45r
+
+### Changed
+- Reduced spacing between title and status text
 
 ## [v01.16w] — 2026-04-13 11:57:44 PM EST — v11.44r
 
