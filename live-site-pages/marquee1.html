@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.11w">
+<meta name="build-version" content="v01.12w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -194,7 +194,7 @@
       <div class="default-label" id="default-label">30</div>
     </div>
     <span>Fast</span>
-    <span class="speed-val" id="speed-val">30 fps (2.7s)</span>
+    <span class="speed-val" id="speed-val">30 fps (3.6s)</span>
   </div>
   <div class="ruler">
     <div class="bar-row"><div class="bar" style="width:80px"></div><span class="bar-label">80</span></div>
@@ -274,8 +274,8 @@
 <script>
 // ── Dynamic sprite sheet setup (5 cols × 16 rows = 80 frames) ──
 (function() {
-  var COLS = 5, ROWS = 16, TOTAL_FRAMES = COLS * ROWS;
-  var DISPLAY_W = 132, ANIM_DURATION = TOTAL_FRAMES / 30; // 80/30 ≈ 2.67s at 30fps
+  var COLS = 6, ROWS = 18, TOTAL_FRAMES = COLS * ROWS;
+  var DISPLAY_W = 132, ANIM_DURATION = TOTAL_FRAMES / 30; // 108/30 = 3.6s at 30fps
   var img = new Image();
   img.src = 'images/dog-marquee3.png';
   img.onload = function() {
@@ -395,7 +395,7 @@
 
 // ── Speed slider (FPS-based) ──
 (function() {
-  var TOTAL_FRAMES = 80, DEFAULT_FPS = 30;
+  var TOTAL_FRAMES = 108, DEFAULT_FPS = 30;
   var slider = document.getElementById('speed-slider');
   var valEl = document.getElementById('speed-val');
   var tick = document.getElementById('default-tick');

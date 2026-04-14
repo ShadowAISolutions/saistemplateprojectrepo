@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 77/100`
+`Sections: 78/100`
 
 ## [Unreleased]
+
+## [v11.40r] — 2026-04-13 10:12:38 PM EST
+
+> **Prompt:** "nope try again, i think there is a mismatch. look again at the image i had sent you and that is attached"
+
+### Fixed
+- Fixed `marquee1.html` sprite grid from 5×16 to 6×18 — image is 1638×3186 (273×177 per frame, 108 total frames). Previous 5×16 grid didn't divide evenly and showed multiple dogs per frame
+
+#### `marquee1.html` — v01.12w
+
+##### Fixed
+- Sprite animation now shows one dog per frame instead of multiple
 
 ## [v11.39r] — 2026-04-13 10:07:34 PM EST
 

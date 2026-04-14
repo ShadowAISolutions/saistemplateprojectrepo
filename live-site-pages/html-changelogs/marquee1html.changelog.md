@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 11/100`
+`Sections: 12/100`
 
 ## [Unreleased]
+
+## [v01.12w] — 2026-04-13 10:12:38 PM EST — v11.40r
+
+### Fixed
+- Sprite animation now shows one dog per frame instead of multiple
 
 ## [v01.11w] — 2026-04-13 10:07:34 PM EST — v11.39r
 
