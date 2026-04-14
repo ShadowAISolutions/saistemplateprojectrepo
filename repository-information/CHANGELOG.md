@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 79/100`
+`Sections: 80/100`
 
 ## [Unreleased]
+
+## [v11.42r] — 2026-04-13 11:31:29 PM EST
+
+> **Prompt:** "now make it first 64 frames, next 64 frames, and last 36 frames. its now looking at dog-marquee4.png, which i just added, but i attached it so you could see it."
+
+### Changed
+- Switched `marquee1.html` to `dog-marquee4.png` (2216×3717, 8 cols × 21 rows = 164 usable frames) from `dog-marquee3.png`
+- Updated frame distribution: dog 1 gets 64 frames (0–63), dog 2 gets 64 frames (64–127), dog 3 gets 36 frames (128–163)
+- Each dog now has per-dog frame count (no longer assumes equal frame counts)
+- Default slider values corrected to 12 fps for all three sliders
+
+#### `marquee1.html` — v01.14w
+
+##### Changed
+- New sprite sheet with 164 frames across three animation groups
+- First two dogs animate 64 frames each, third animates 36 frames
+- Speed sliders now reflect correct cycle times per dog (5.3s, 5.3s, 3.0s at default speed)
 
 ## [v11.41r] — 2026-04-13 10:24:05 PM EST
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="build-version" content="v01.13w">
+<meta name="build-version" content="v01.14w">
 <title>Police &amp; Fire Clinic — Loading</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -66,7 +66,7 @@
   }
   .dog {
     transform-origin: top left;
-    background: url('images/dog-marquee3.png') 0 0 no-repeat;
+    background: url('images/dog-marquee4.png') 0 0 no-repeat;
   }
 
   /* ── Progress steps ── */
@@ -203,12 +203,12 @@
       <div class="speed-control">
         <span>Slow</span>
         <div class="slider-wrap">
-          <input type="range" id="speed-slider-1" min="5" max="60" step="1" value="30">
+          <input type="range" id="speed-slider-1" min="5" max="60" step="1" value="12">
           <div class="default-tick" id="default-tick-1"></div>
-          <div class="default-label" id="default-label-1">30</div>
+          <div class="default-label" id="default-label-1">12</div>
         </div>
         <span>Fast</span>
-        <span class="speed-val" id="speed-val-1">12 fps (3.0s)</span>
+        <span class="speed-val" id="speed-val-1">12 fps (5.3s)</span>
       </div>
     </div>
     <div class="dog-column">
@@ -216,12 +216,12 @@
       <div class="speed-control">
         <span>Slow</span>
         <div class="slider-wrap">
-          <input type="range" id="speed-slider-2" min="5" max="60" step="1" value="30">
+          <input type="range" id="speed-slider-2" min="5" max="60" step="1" value="12">
           <div class="default-tick" id="default-tick-2"></div>
-          <div class="default-label" id="default-label-2">30</div>
+          <div class="default-label" id="default-label-2">12</div>
         </div>
         <span>Fast</span>
-        <span class="speed-val" id="speed-val-2">12 fps (3.0s)</span>
+        <span class="speed-val" id="speed-val-2">12 fps (5.3s)</span>
       </div>
     </div>
     <div class="dog-column">
@@ -229,9 +229,9 @@
       <div class="speed-control">
         <span>Slow</span>
         <div class="slider-wrap">
-          <input type="range" id="speed-slider-3" min="5" max="60" step="1" value="30">
+          <input type="range" id="speed-slider-3" min="5" max="60" step="1" value="12">
           <div class="default-tick" id="default-tick-3"></div>
-          <div class="default-label" id="default-label-3">30</div>
+          <div class="default-label" id="default-label-3">12</div>
         </div>
         <span>Fast</span>
         <span class="speed-val" id="speed-val-3">12 fps (3.0s)</span>
@@ -314,23 +314,21 @@
 </div>
 
 <script>
-// ── Dynamic sprite sheet setup — 3 dogs, each animating 36 frames ──
+// ── Dynamic sprite sheet setup — 3 dogs with different frame ranges ──
 (function() {
-  var COLS = 6, ROWS = 18;
-  var FRAMES_PER_DOG = 36;
+  var COLS = 8, ROWS = 21;
   var DISPLAY_W = 132, DEFAULT_FPS = 12;
   var dogs = [
-    { id: 'dog1', startFrame: 0 },
-    { id: 'dog2', startFrame: 36 },
-    { id: 'dog3', startFrame: 72 }
+    { id: 'dog1', startFrame: 0,   frameCount: 64 },
+    { id: 'dog2', startFrame: 64,  frameCount: 64 },
+    { id: 'dog3', startFrame: 128, frameCount: 36 }
   ];
   var img = new Image();
-  img.src = 'images/dog-marquee3.png';
+  img.src = 'images/dog-marquee4.png';
   img.onload = function() {
     var fw = img.naturalWidth / COLS, fh = img.naturalHeight / ROWS;
     var scale = DISPLAY_W / fw;
     var displayH = Math.round(fh * scale);
-    var defaultDur = FRAMES_PER_DOG / DEFAULT_FPS;
     dogs.forEach(function(d) {
       var wrap = document.getElementById(d.id).parentElement;
       var dog = document.getElementById(d.id);
@@ -340,12 +338,13 @@
       dog.style.height = fh + 'px';
       dog.style.backgroundSize = img.naturalWidth + 'px ' + img.naturalHeight + 'px';
       dog.style.transform = 'scale(' + scale + ')';
+      var defaultDur = d.frameCount / DEFAULT_FPS;
       var kfName = 'spriteFrames' + d.id;
       var kf = '@keyframes ' + kfName + ' {\n';
-      for (var i = 0; i < FRAMES_PER_DOG; i++) {
+      for (var i = 0; i < d.frameCount; i++) {
         var frame = d.startFrame + i;
         var col = frame % COLS, row = Math.floor(frame / COLS);
-        var pct = ((i / FRAMES_PER_DOG) * 100).toFixed(3);
+        var pct = ((i / d.frameCount) * 100).toFixed(3);
         kf += '  ' + pct + '% { background-position: -' + (col * fw) + 'px -' + (row * fh) + 'px; }\n';
       }
       kf += '}';
@@ -353,6 +352,7 @@
       style.textContent = kf;
       document.head.appendChild(style);
       dog.style.animation = kfName + ' ' + defaultDur + 's steps(1) infinite';
+      dog.setAttribute('data-frames', d.frameCount);
     });
   };
 })();
@@ -446,25 +446,26 @@
   run(0);
 })();
 
-// ── Speed sliders (FPS-based) — one per dog ──
+// ── Speed sliders (FPS-based) — one per dog, per-dog frame counts ──
 (function() {
-  var FRAMES_PER_DOG = 36, DEFAULT_FPS = 12;
+  var DEFAULT_FPS = 12;
+  var frameCounts = [64, 64, 36];
   [1, 2, 3].forEach(function(n) {
+    var frames = frameCounts[n - 1];
     var slider = document.getElementById('speed-slider-' + n);
     var valEl = document.getElementById('speed-val-' + n);
     var tick = document.getElementById('default-tick-' + n);
     var tickLabel = document.getElementById('default-label-' + n);
     var dog = document.getElementById('dog' + n);
-    // Set slider to default FPS
     slider.value = DEFAULT_FPS;
     var pct = ((DEFAULT_FPS - 5) / (60 - 5)) * 100;
     tick.style.left = 'calc(' + pct + '% - 1px)';
     tickLabel.style.left = pct + '%';
-    var defaultDur = FRAMES_PER_DOG / DEFAULT_FPS;
+    var defaultDur = frames / DEFAULT_FPS;
     valEl.textContent = DEFAULT_FPS + ' fps (' + defaultDur.toFixed(1) + 's)';
     slider.addEventListener('input', function() {
       var fps = parseInt(this.value);
-      var dur = FRAMES_PER_DOG / fps;
+      var dur = frames / fps;
       valEl.textContent = fps + ' fps (' + dur.toFixed(1) + 's)';
       dog.style.animationDuration = dur + 's';
     });

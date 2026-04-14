@@ -1,8 +1,15 @@
 # marquee1.html Changelog
 
-`Sections: 13/100`
+`Sections: 14/100`
 
 ## [Unreleased]
+
+## [v01.14w] — 2026-04-13 11:31:29 PM EST — v11.42r
+
+### Changed
+- New sprite sheet with 164 frames across three animation groups
+- First two dogs animate 64 frames each, third animates 36 frames
+- Speed sliders now reflect correct cycle times per dog (5.3s, 5.3s, 3.0s at default speed)
 
 ## [v01.13w] — 2026-04-13 10:24:05 PM EST — v11.41r
 
