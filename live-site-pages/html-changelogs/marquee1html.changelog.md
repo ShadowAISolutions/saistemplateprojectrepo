@@ -1,8 +1,14 @@
 # marquee1.html Changelog
 
-`Sections: 10/100`
+`Sections: 11/100`
 
 ## [Unreleased]
+
+## [v01.11w] — 2026-04-13 10:07:34 PM EST — v11.39r
+
+### Changed
+- New sprite animation with 80 frames of varied dog poses
+- Animation cycle adjusted to 2.7 seconds at default speed
 
 ## [v01.10w] — 2026-04-13 06:55:25 PM EST — v11.38r
 

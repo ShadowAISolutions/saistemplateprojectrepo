@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 76/100`
+`Sections: 77/100`
 
 ## [Unreleased]
+
+## [v11.39r] — 2026-04-13 10:07:34 PM EST
+
+> **Prompt:** "i added a new image dog-marquee3.png (attached) , same location, update the marquee1.html with it, keep in mind it is completely different sizing that whats currently there."
+
+### Changed
+- Switched `marquee1.html` from hardcoded CSS sprite (dog-marquee1.png, 6×6 grid) to dynamic JS sprite (dog-marquee3.png, 5×16 grid = 80 frames) — auto-detects image dimensions on load, generates keyframes dynamically
+- Updated FPS slider total frames from 36 to 80 (default 30fps = 2.7s cycle instead of 1.2s)
+
+#### `marquee1.html` — v01.11w
+
+##### Changed
+- New sprite animation with 80 frames of varied dog poses
+- Animation cycle adjusted to 2.7 seconds at default speed
 
 ## [v11.38r] — 2026-04-13 06:55:25 PM EST
 
