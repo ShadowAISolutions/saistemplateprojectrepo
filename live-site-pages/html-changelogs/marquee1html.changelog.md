@@ -1,8 +1,13 @@
 # marquee1.html Changelog
 
-`Sections: 17/100`
+`Sections: 18/100`
 
 ## [Unreleased]
+
+## [v01.18w] — 2026-04-14 12:27:26 AM EST — v11.46r
+
+### Changed
+- Updated sprite image
 
 ## [v01.17w] — 2026-04-14 12:12:45 AM EST — v11.45r
 

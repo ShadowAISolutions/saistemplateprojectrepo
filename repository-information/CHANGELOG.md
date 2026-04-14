@@ -3,9 +3,21 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 83/100`
+`Sections: 84/100`
 
 ## [Unreleased]
+
+## [v11.46r] — 2026-04-14 12:27:26 AM EST
+
+> **Prompt:** "just update the version number to v01.18w, doing this because i updated the image but i need it pushed out"
+
+### Changed
+- Bumped `marquee1.html` version to v01.18w to trigger auto-refresh for updated sprite image
+
+#### `marquee1.html` — v01.18w
+
+##### Changed
+- Updated sprite image
 
 ## [v11.45r] — 2026-04-14 12:12:45 AM EST
 
