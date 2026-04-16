@@ -3,9 +3,20 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 90/100`
+`Sections: 91/100`
 
 ## [Unreleased]
+
+## [v11.53r] — 2026-04-16 05:13:47 PM EST
+
+> **Prompt:** "Continue the Opus 4.7 rules review implementation — start commit 2: §5 procedural gates per repository-information/opus-4-7-initial-review.md. All four rewrites: [PC-SAFETY] #0 in CLAUDE.md, plus Pushback & Reasoning, Continuous Improvement, and Solution Depth in .claude/rules/behavioral-rules.md. Follow the Response Opener / Incremental Writing pattern — 3-step gate + named failure mode + loophole denial. Keep the session scoped to commit 2 only; we're still saving commit 3 (Q4 cleanup) for a separate session."
+
+### Changed
+- Rewrote `[PC-SAFETY] #0` in `CLAUDE.md` from a descriptive bullet into a Mandatory Safety Gate with 3 numbered steps (remote identity, file provenance, commit-message provenance), named failure mode (cross-repo contamination from inherited context), explicit no-exceptions loophole denial, and an inline self-check — same procedural shape as the Response Opener and Incremental Writing gates
+- Rewrote "Pushback & Reasoning" in `.claude/rules/behavioral-rules.md` into "Pushback & Reasoning — Mandatory Pushback Gate" with 3 numbered steps (tradeoff scan, state-the-case-before-implementing, execute-without-relitigating), named failure mode (skipping pushback rationalized as "efficient execution"), loophole denial, and a pre-first-write self-check
+- Rewrote "Continuous Improvement" in `.claude/rules/behavioral-rules.md` into "Continuous Improvement — Mandatory Fix Proposal Gate" with 3 numbered steps (name root cause, propose concrete structural fix, present in same response), named failure mode ("won't happen again" acknowledgment without a structural fix), loophole denial, and a pre-send self-check. "Conflict cleanup" and the "Recent examples" history are preserved in the body
+- Rewrote "Solution Depth" in `.claude/rules/behavioral-rules.md` into "Solution Depth — Mandatory Depth Gate" with 3 numbered steps (root-cause trace, enumerate at least two structurally different approaches, rank by UX cost and present strongest first), named failure mode (first plausible idea wins by default), loophole denial with explicit "skip the gate ONLY for…" list, and a pre-proposal self-check
+- Addresses finding §5 from `repository-information/opus-4-7-initial-review.md`
 
 ## [v11.52r] — 2026-04-16 04:46:45 PM EST
 
