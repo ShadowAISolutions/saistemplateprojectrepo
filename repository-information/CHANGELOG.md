@@ -3,9 +3,27 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 93/100`
+`Sections: 94/100`
 
 ## [Unreleased]
+
+## [v11.56r] — 2026-04-16 06:58:48 PM EST
+
+> **Prompt:** "option 1 sounds good to me" (after being asked to choose among four stop-hook propagation options — chose "hook under .claude/hooks/ wired via .claude/settings.json so Claude Code picks it up automatically on any machine")
+
+### Added
+- `.claude/hooks/stop-hook-git-check.sh`: new repo-tracked copy of the hardened Stop-event hook script. Checks for uncommitted changes, untracked files, and unpushed commits after every Claude response; runs `git fetch --prune --quiet origin` first so stale remote-tracking refs don't cause false-positive "unpushed commits" reports (the auto-merge workflow deletes `claude/*` branches on the remote after merging, and without the prune the local ref persists and misleads `rev-list`)
+- `.claude/settings.json`: added `hooks.Stop` array wiring the repo-tracked hook via `bash $CLAUDE_PROJECT_DIR/.claude/hooks/stop-hook-git-check.sh`. Every machine that clones the repo now gets the fixed hook automatically — no per-machine setup needed. Existing `permissions.allow` entry for `Bash(git *)` preserved
+- `live-site-pages/archive/` directory: new home for HTML pages that are no longer wired into the versioning/polling system. Keeps their content available at their former URLs while flagging them clearly as out-of-band
+
+### Changed
+- Moved `live-site-pages/qr-scanner5.html` → `live-site-pages/archive/qr-scanner5.html` (no version file, no `build-version` meta tag — out of the polling system). Live URL changes from `.../qr-scanner5.html` to `.../archive/qr-scanner5.html`
+- Moved `live-site-pages/qr-scanner6.html` → `live-site-pages/archive/qr-scanner6.html` — same rationale
+
+### Removed
+- `README.md` Standalone Utilities entries for `qr-scanner5.html` and `qr-scanner6.html` — replaced with an `archive/` entry in Supporting Files listing both archived pages
+- Added `.claude/hooks/` entry to the README tree under `.claude/` with the new `stop-hook-git-check.sh` file listed
+- Updated `.claude/settings.json` tree entry label from `[template]` to `[template · modified]` with description "permissions + Stop hook wiring"
 
 ## [v11.55r] — 2026-04-16 06:09:57 PM EST
 
