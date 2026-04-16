@@ -36,7 +36,7 @@ Every diagram must faithfully represent the actual source code it documents. **D
 When a new embedding page is created (see New Embedding Page Setup Checklist in `.claude/rules/html-pages.md`), add:
 - A page node in the "Environments (Pages)" subgraph: `NEWPAGE["[template] page-name.html\n(Display Name)"]`
 - Connection edges showing how the page relates to shared resources (version polling, iframe embedding, etc.)
-- A per-environment diagram in `repository-information/diagrams/` for the page's internal processes, with an "Open in mermaid.live" link above the code block (see "Mermaid Diagrams — mermaid.live Links" section)
+- **A per-environment diagram in `repository-information/diagrams/` for GAS-backed pages only** — required when the page has a Google Apps Script backend (entry in the GAS Projects table in `.claude/rules/gas-scripts.md`). The diagram documents the HTML ↔ GAS interaction flow (auth, polling, data fetch, iframe embedding, deployment webhook, etc.). Include an "Open in mermaid.live" link above the code block (see "Mermaid Diagrams — mermaid.live Links" section). **Optional for standalone client-side utilities** — pages with no GAS backend (e.g. splash/animation pages, self-contained client-side tools) may omit the per-environment diagram, since a diagram for such a page would reduce to "page loads → user interacts → client-side JS runs" with no meaningful structure to document. If you later add GAS functionality to a standalone utility, the diagram becomes required at that point. *Currently exempt pages: `marquee1`, `marquee2`, `text-compare` — each is a client-side-only standalone utility.*
 
 ## Mermaid Diagram Compatibility Reference
 

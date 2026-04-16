@@ -3,9 +3,18 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 95/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v11.58r] — 2026-04-16 07:33:23 PM EST
+
+> **Prompt:** "option 1" (after being presented with 3 options for resolving a per-environment-diagram coverage gap surfaced in the final follow-up check of the opus-4-7 review — chose "exempt standalone utilities via rule clarification")
+
+### Changed
+- `.claude/rules/repo-docs.md` "Adding new pages" section: clarified that per-environment diagrams in `repository-information/diagrams/` are **required for GAS-backed pages only** and **optional for standalone client-side utilities**. The prior wording ("add a per-environment diagram for every new embedding page") didn't distinguish between pages with GAS backends (where the diagram meaningfully documents the HTML ↔ GAS interaction flow) and simple standalone utilities (where it would reduce to "page loads → user interacts → client-side JS runs" with no structure to document). The updated rule encodes the actual intent
+- Listed the three currently-exempt standalone utilities inline in the rule: `marquee1`, `marquee2`, `text-compare` — so a future contributor (or future Claude session) can see at a glance which pages are intentionally excluded vs. missing by oversight
+- Notes the rule's escape hatch: if a standalone utility later gains GAS functionality, the per-environment diagram becomes required at that point
 
 ## [v11.57r] — 2026-04-16 07:16:58 PM EST
 
