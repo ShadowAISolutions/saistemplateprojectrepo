@@ -1,3 +1,8 @@
+---
+paths: []
+# always-loaded (no path scope)
+---
+
 # Output Formatting & Styling
 
 *Always-loaded rules (no path scope). Covers CLI styling, agent attribution, and reminder system format.*

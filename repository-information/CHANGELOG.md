@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 91/100`
+`Sections: 92/100`
 
 ## [Unreleased]
+
+## [v11.54r] — 2026-04-16 05:34:03 PM EST
+
+> **Prompt:** "go ahead and do the next one" (after the prior session established the "Q4 cleanup bundle" scope covering review findings §6 + §7 + §8 + §9)
+
+### Added
+- `repository-information/IMPROVEMENTS.md`: new top section "When to use which tracking file" — a table + decision tree disambiguating `TODO.md` / `REMINDERS.md` / `SESSION-CONTEXT.md` / `IMPROVEMENTS.md` / `FUTURE-CONSIDERATIONS.md` / `DEFERRED-GAS-IFRAME-PLAN.md` / the Opus 4.7 review doc by purpose, timescale, and author. Addresses review finding §9 (file-purpose drift)
+- `repository-information/SESSION-CONTEXT.md`: added a top-of-file note describing the new local-only semantics of stale-context auto-reconstruction and why it is not pushed on its own
+
+### Changed
+- `.claude/rules/behavioral-rules.md`, `.claude/rules/chat-bookends.md`, `.claude/rules/chat-bookends-reference.md`, `.claude/rules/output-formatting.md`: added explicit `paths: []` YAML frontmatter with an inline `# always-loaded (no path scope)` comment to the four always-loaded rules files. Converts the implicit convention (absence of frontmatter = always-loaded) into an explicit marker that a contributor or future model version cannot misread. Addresses review finding §6
+- `CLAUDE.md` Session Start "Auto-reconstruct stale session context" step 2: changed the push step from "Push to the `claude/*` branch so the recovery persists even if the session ends unexpectedly" to a commit-only behavior — the reconstruction commit rides along with the session's first user-task push. Resolves the push-once collision where a dedicated reconstruction push forced user-task pushes to wait for the auto-merge workflow. Addresses review finding §8
+- `.claude/rules/html-pages.md` "Template vs Project Code Separation": promoted this section to the **canonical reference** for shared TEMPLATE/PROJECT marker semantics, inline-marker rules, override behavior, and propagation semantics. Replaced the opening pointer to `gas-scripts.md` with a short note that GAS files have their own file-structure specifics referenced in `gas-scripts.md`. Addresses review finding §7 (template separation consolidation)
+- `.claude/rules/gas-scripts.md` "Template vs Project Code Separation": collapsed the near-duplicate "Project code inside template territory" and "Project override markers" subsections (~35 lines of duplicate examples) into a single short block that points to `html-pages.md` as the canonical reference. Retained the GAS-specific "Divider format", "File structure (top to bottom)", and "Rules for new code" subsections. Addresses review finding §7
+- `.claude/rules/gas-scripts.md` "Visual Verification After GAS UI Changes": shrunk from a 5-line section with partial duplication of triggers/primary-trigger prose into a 2-line pointer to `html-pages.md` — the HTML section already enumerates `.gs` triggers and explains looking up the embedding page. Addresses review finding §7 (visual verification consolidation)
 
 ## [v11.53r] — 2026-04-16 05:13:47 PM EST
 

@@ -1,3 +1,8 @@
+---
+paths: []
+# always-loaded (no path scope)
+---
+
 # Chat Bookends (MANDATORY — EVERY PROMPT)
 
 *Actionable rules for every response. Examples and summary tables in `chat-bookends-reference.md`.*

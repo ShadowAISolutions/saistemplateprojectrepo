@@ -1,3 +1,8 @@
+---
+paths: []
+# always-loaded (no path scope)
+---
+
 # Chat Bookends — Summary Tables & Flow Examples
 
 *Reference companion to `chat-bookends.md`. Both files are always-loaded (no path scope).*

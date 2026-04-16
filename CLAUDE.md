@@ -95,7 +95,7 @@ These rules apply universally — they are **NOT** skipped by the template repo 
      - **Where we left off:** `All changes committed and merged to main` (safe default — pushed changes merge via the auto-merge workflow)
      - **Active context:** current TODO items, active reminders, and key template variable states (`TEMPLATE_DEPLOY`, `CHAT_BOOKENDS`, `END_OF_RESPONSE_BLOCK`, `MULTI_SESSION_MODE`)
    - Commit with message `Session start: reconstruct stale session context` (no version bump — housekeeping)
-   - Push to the `claude/*` branch so the recovery persists even if the session ends unexpectedly
+   - **Do NOT push this commit on its own** — the reconstruction is bundled with the session's first user-task commit and pushed alongside that work. If the session ends before any user-task push happens, the reconstructed entry stays local-only; the next session will just re-reconstruct from CHANGELOG if context is still stale. This avoids the push-once collision where a dedicated reconstruction push would force the user's actual work to wait for the auto-merge workflow to finish before it could push too. (Addresses review finding §8 — trading a small persistence risk for reliable push-once enforcement)
    - Output `⚠️ Session context was stale (vOLD → vNEW) — auto-recovered from CHANGELOG.` before the normal session context summary
 3. **Display** — output `📎 Previous Session Context:` followed by a brief summary of the Latest Session entry (whether fresh or just reconstructed), then output: `💡 *Type **"remember session"** before ending this session to save context for next time.*`
 

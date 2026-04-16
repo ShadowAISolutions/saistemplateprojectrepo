@@ -2,6 +2,29 @@
 
 Ideas and optimizations to explore — no commitment, investigated when time allows.
 
+## When to use which tracking file
+
+Several files in `repository-information/` hold forward-looking notes. They look similar on first read but serve different timescales and audiences. Use this table to decide where a new note belongs:
+
+| File | Purpose | Timescale | Who writes |
+|------|---------|-----------|-----------|
+| `TODO.md` | Active, actionable items that show in every response's `📋📋TODO📋📋` section. **Max 10 items.** | Days to weeks | Developer or Claude, as direct outputs of a session |
+| `REMINDERS.md` | Developer's own notes to self — "remind me next time X". Surfaced at session start as `📌 Reminders For Developer`. | Session-to-session | Developer (Claude surfaces but does not modify without approval) |
+| `SESSION-CONTEXT.md` | Snapshot of the most recent 1–2 sessions — what was done, where we left off, active context. Auto-reconstructs from CHANGELOG if stale. | Last 1–2 sessions | Claude on "Remember Session"; auto-reconstructed if missing |
+| `IMPROVEMENTS.md` | Backlog-sized ideas — specific, scoped, investigated-when-time-allows items. Each has a clear scope and rough cost. | Weeks to months | Developer or Claude when a concrete improvement is identified |
+| `FUTURE-CONSIDERATIONS.md` | Long-horizon strategic thinking — open-ended directions, architectural moves, speculative ideas. Not scoped. | Months to never | Developer primarily |
+| `DEFERRED-GAS-IFRAME-PLAN.md` | A **single** deferred technical plan (GAS iframe rework) preserved in detail. Named for its specific subject. | Paused until resumed | Created once when the plan is deferred |
+| `opus-4-7-initial-review.md` | First-pass rules & documentation review from Opus 4.7. One-off document; findings are acted on via commits. | One-off | Claude (Opus 4.7 first session) |
+
+**Quick decision tree** when you're about to add a note:
+- "I need to do this soon and want it visible in every response" → `TODO.md`
+- "I want to remember this next session starts" → `REMINDERS.md`
+- "This is an idea worth exploring, not urgent" → `IMPROVEMENTS.md`
+- "This is a direction or philosophy we might take someday" → `FUTURE-CONSIDERATIONS.md`
+- "I'm closing a session" → `SESSION-CONTEXT.md` (via "Remember Session" command)
+
+Addresses review finding §9 — file-purpose drift between TODO / IMPROVEMENTS / FUTURE-CONSIDERATIONS.
+
 ## GAS Auto-Update: Switch from CacheService to PropertiesService
 
 **Current approach:** When a new GAS version is deployed, `pullAndDeployFromGitHub()` writes the version string to `CacheService.getScriptCache()` with key `"pushed_version"`. Client-side JS polls `readPushedVersionFromCache()` every 15 seconds. If the version differs, it triggers the "Code Ready" blue splash reload.

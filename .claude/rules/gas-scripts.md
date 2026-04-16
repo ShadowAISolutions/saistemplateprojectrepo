@@ -239,43 +239,9 @@ Dividers use 14 `═` characters. Each marker is a 3-line block (divider, label,
 3. **TEMPLATE block** — all template functions (`doGet`, `doPost`, `getAppData`, `getSoundBase64`, `writeVersionToSheet`, `readB1FromCacheOrSheet`, `onEditWriteB1ToCache`, `fetchGitHubQuotaAndLimits`, `pullAndDeployFromGitHub`)
 4. `// Developed by:` branding line — always last
 
-### Project code inside template territory
-Project-specific code sometimes **must** live inside a template function (e.g. a cache write after a deploy, a custom UI within `doGet()`). This is explicitly allowed but must be clearly marked using **inline project markers** — a distinct notation from the block dividers so there is no confusion between structural boundaries and inline annotations.
+### Inline markers and override markers — canonical reference
 
-**Single-line additions** — append `// PROJECT: description` to the end of the line:
-```javascript
-CacheService.getScriptCache().put("pushed_version", value, 3600); // PROJECT: auto-update cache
-```
-
-**Multi-line additions or whole-function divergence** — place `// PROJECT: description` on its own line before the block:
-```javascript
-// PROJECT: custom UI (entire doGet diverged from template)
-function doGet() {
-```
-
-**Key distinction**: block dividers (`// ═══...` (14 chars) + `// TEMPLATE START/END` + `// PROJECT START/END`) mark **structural boundaries** between large code regions. Inline `// PROJECT:` markers flag **individual lines or sections embedded within template territory**. Never use block dividers inside a template function — always use inline markers there.
-
-### Project override markers
-When a project **modifies existing template code** (not adding new code, but changing template behavior — e.g. different return values, altered logic flow, changed constants), the modified lines must be marked with `PROJECT OVERRIDE` so template propagation can detect them and stop before overwriting.
-
-**Single-line overrides** — append `// PROJECT OVERRIDE: reason` to the end of the line:
-```javascript
-const MAX_RETRIES = 10; // PROJECT OVERRIDE: more retries for slow API
-```
-
-**Multi-line overrides** — wrap the modified block with start/end markers:
-```javascript
-// PROJECT OVERRIDE START: custom doGet response
-function doGet(e) {
-  // entirely different response logic for this project
-  return HtmlService.createHtmlOutput('<h1>Custom</h1>');
-}
-// PROJECT OVERRIDE END
-```
-
-**Key distinction from inline `// PROJECT:` markers**: `// PROJECT:` marks **additions** (new code inserted into template territory). `// PROJECT OVERRIDE:` marks **modifications** (existing template code that was changed). Both live inside TEMPLATE regions, but they signal different things to the propagation system:
-- `// PROJECT:` lines are preserved as-is — template propagation works around them
-- `// PROJECT OVERRIDE:` lines trigger a **hard stop** — template propagation must halt for that file and ask the user what to do, because the template change may conflict with the override
+Marker semantics (inline `// PROJECT:` additions, `// PROJECT OVERRIDE:` modifications, single-line vs multi-line forms, and the propagation-stop behavior triggered by `PROJECT OVERRIDE`) are identical across `.html` and `.gs` files. **The canonical reference lives in `.claude/rules/html-pages.md` — "Template vs Project Code Separation"** — see that section for full examples, marker distinctions, and propagation rules. GAS-specific note: `.gs` files use JavaScript syntax only, so only the `//` comment form applies — HTML and CSS comment forms (`<!-- -->`, `/* */`) are not used.
 
 ### Rules for new code
 - **New project-specific features** should go in the PROJECT block when possible — standalone functions, new variables, and self-contained logic belong there
@@ -295,10 +261,6 @@ GAS UI elements (iframe panels, toggle buttons, status indicators, overlays) are
 
 ## Visual Verification After GAS UI Changes
 
-GAS scripts are a **primary trigger** for visual verification because `doGet()` serves the HTML shell and most user-facing UI is written inside `.gs` files. When a `.gs` file change includes HTML, CSS, or any visible UI output, run a Playwright visual test on the **embedding page** before committing.
-
-*Full rule and procedure: see `.claude/rules/html-pages.md` — section "Visual Verification After UI Changes". The rule applies equally to `.html` and `.gs` file changes.*
-
-*On-demand command: see CLAUDE.md — "Visual Test Command"*
+*See `.claude/rules/html-pages.md` — section "Visual Verification After UI Changes" — for the full rule and procedure. The rule already covers `.gs` file triggers and explains how to find the embedding page for a GAS change. On-demand command: see CLAUDE.md — "Visual Test Command".*
 
 Developed by: ShadowAISolutions

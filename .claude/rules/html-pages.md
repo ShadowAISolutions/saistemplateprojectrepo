@@ -167,9 +167,9 @@ When a conflict is detected:
 - **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
 - **GAS propagation**: all `.gs` files in `googleAppsScripts/` that were originally created from a GAS template. The GAS templates (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`) use `.js.txt` extension but the deployed files use `.gs` — the propagation maps the change from the template's JS structure to each `.gs` file's equivalent location
 
-## Template vs Project Code Separation (HTML)
+## Template vs Project Code Separation
 
-HTML pages use the same TEMPLATE/PROJECT divider system as GAS files (see `.claude/rules/gas-scripts.md` — "Template vs Project Code Separation"). The divider format adapts to the file context:
+All framework files — both HTML pages and GAS scripts — use the same TEMPLATE/PROJECT divider system to distinguish **template code** (shared across all projects, propagated via [PC-TEMPLATE-PROP] #19) from **project-specific code** (unique to one project, never overwritten during propagation). This section is the **canonical reference** for marker semantics, inline-marker rules, override behavior, and propagation semantics. GAS files have their own file structure specifics — see `.claude/rules/gas-scripts.md` — "Template vs Project Code Separation" — for the GAS-specific parts (file layout order, JS-only comment syntax). The divider format adapts to the file context:
 
 ### Divider format by context
 Dividers use 14 `═` characters. Both TEMPLATE and PROJECT markers use the same 3-line format.

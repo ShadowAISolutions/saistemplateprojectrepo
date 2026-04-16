@@ -1,3 +1,8 @@
+---
+paths: []
+# always-loaded (no path scope)
+---
+
 # Behavioral Rules
 
 *Always-loaded rules (no path scope). These shape how Claude Code reasons, communicates, and makes decisions across all tasks.*
