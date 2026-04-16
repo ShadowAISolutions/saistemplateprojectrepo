@@ -3,9 +3,17 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 88/100`
+`Sections: 89/100`
 
 ## [Unreleased]
+
+## [v11.51r] — 2026-04-16 03:48:32 PM EST
+
+> **Prompt:** "Hey, this is the first time we are using this Opus 4.7 model on the repo. go ahead and review everything meticulously and first come up with a report of improvements you possibly see to make to the rules and documentation everywhere since i assume you think much differently than the 4.6 model, these should be repo improvements not specific project improvements. create a new document for this, and make sure you write the document in small chunks. create the file with the first few sections, then use Edit to add subsequent sections one at a time. Do not attempt to write the entire document in a single Write call — large writes can stall or fail silently. Build it up incrementally: skeleton first, then flesh out each section."
+
+### Added
+- Added `repository-information/opus-4-7-initial-review.md` — Opus 4.7 first-session review of repo-level rules and documentation, with 11 sections of findings, concrete proposed fixes, and a priority ranking (proposals only; no rule changes applied in this commit)
+- Added tree entry for the new review file in `README.md`
 
 ## [v11.50r] — 2026-04-14 02:25:34 PM EST
 
