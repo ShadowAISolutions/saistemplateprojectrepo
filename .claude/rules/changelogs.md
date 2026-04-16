@@ -85,6 +85,27 @@ The changelog popup can be independently enabled or disabled per page using the 
 - When `SHOW_CHANGELOG = true` (default): current behavior — clicking the version indicator opens the changelog popup, clicking the GAS pill opens the GAS changelog popup
 - **Recommended for clinic/healthcare apps**: set `SHOW_CHANGELOG = false` to minimize public information exposure. The changelog files still exist in the repo for developer reference but are not surfaced to end users
 
+### Edit Boundary When Inserting a New Version Section
+
+When inserting a new `## [vXX.XXr]` version section above an existing one (the normal push-commit pattern — the new version is prepended so latest-first order is preserved), the Edit tool's `old_string` and `new_string` boundaries matter more than they look.
+
+**The pattern:**
+- `old_string` anchors on the **blank line before the next existing `## [vXX.XXr]` header** and ends there — do NOT include the next header line itself
+- `new_string` contains the new version section (header + prompt blockquote + categories + entries) followed by a single trailing blank line, ending at the same boundary
+
+**The failure pattern:** if `old_string` includes the next `## [vXX.XXr]` header line and `new_string` rebuilds it, a one-character drift (missing blank line, wrong header timestamp, rewritten prompt blockquote) silently corrupts the next version section. This has happened mid-rotation and mid-push — the new section lands correctly but the section immediately below it loses its prompt blockquote or its category headings.
+
+**Why the blank-line boundary works:** version sections are separated by a single blank line. Anchoring `old_string` on that blank line (and including only content **above** the next header) means the Edit cannot touch the next section's content. The new section is inserted into the gap; nothing below the insertion point changes.
+
+**Example — correct:**
+- `old_string`: `## [Unreleased]\n\n` — just the `[Unreleased]` heading and its trailing blank line
+- `new_string`: `## [Unreleased]\n\n## [v11.55r] — TIMESTAMP\n\n> **Prompt:** "..."\n\n### Changed\n- Entry\n\n` — prepends the new version section, preserves `[Unreleased]`, stops at the blank line before the next existing section
+
+**Example — incorrect (corrupts the next section):**
+- `old_string` that includes the next `## [v11.54r]` line and rebuilds it in `new_string` — any drift in the rebuilt content silently overwrites the real v11.54r section
+
+**When archive rotation is involved:** the same boundary rule applies — the Edit that moves old sections into the archive stops at the blank line before the oldest section that stays in the active file.
+
 ### Archive Rotation Summary
 - **Quick rule**: 100 triggers, date groups move. A date group is ALL sections sharing the same date — could be 1 section or 500. Never split a date group. Today's sections (EST) are always exempt. Repeat until ≤100 non-exempt sections remain
 - Full rotation logic is documented in `repository-information/CHANGELOG-archive.md` (see "Rotation Logic" section)
