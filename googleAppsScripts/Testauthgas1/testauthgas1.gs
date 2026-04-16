@@ -1,5 +1,5 @@
-var VERSION = "v02.61g";
-var TITLE = "testauthgas1title";
+var VERSION = "v02.62g";
+var TITLE = "Testauthgas1 Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";

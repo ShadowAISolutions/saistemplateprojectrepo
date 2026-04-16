@@ -1,11 +1,16 @@
-# Changelog — testauthgas1title (Google Apps Script)
+# Changelog — Testauthgas1 Title (Google Apps Script)
 
 All notable user-facing changes to this script are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [testauthgas1gs.changelog-archive.md](testauthgas1gs.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 24/50`
+`Sections: 25/50`
 
 ## [Unreleased]
+
+## [v02.62g] — 2026-04-16 07:16:03 PM EST — v11.57r
+
+### Changed
+- Updated the page title to proper title-case formatting
 
 ## [v02.61g] — 2026-04-09 10:48:40 AM EST — v10.29r
 

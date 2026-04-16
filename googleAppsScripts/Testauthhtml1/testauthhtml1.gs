@@ -1,5 +1,5 @@
-var VERSION = "v01.03g";
-var TITLE = "testauthhtml1title";
+var VERSION = "v01.04g";
+var TITLE = "Testauthhtml1 Title";
 var GITHUB_OWNER  = "ShadowAISolutions";
 var GITHUB_REPO   = "saistemplateprojectrepo";
 var GITHUB_BRANCH = "main";

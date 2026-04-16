@@ -3,9 +3,33 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 94/100`
+`Sections: 95/100`
 
 ## [Unreleased]
+
+## [v11.57r] — 2026-04-16 07:16:58 PM EST
+
+> **Prompt:** "yes apply both fixes please, and the suggestion also, they can be normalized" (after a repo audit surfaced two drift issues and one suggestion — approved all three)
+
+### Fixed
+- `.claude/rules/html-pages.md:80`: changed stale `[PC-REPO-VERSION] #15 syncs these values to <page-name>.gs and the embedding HTML` to the correct `[PC-GAS-CONFIG] #14 syncs these values...`. The reference was a drift artifact from pre-v11.52r numbering where the tag and the number pointed to different rules — the global find-replace that updated number references during that commit missed this one because the number `#15` happened to still exist, just on a different rule
+- `README.md:40`: updated the stale `v08.70r` in the Repository Root tree header link to `v11.57r`. The `Last updated` / `Repo version` line on line 5 is updated every push by [PC-README-TIMESTAMP] #10, but the tree-header repo version link was a separate occurrence that had drifted undetected since v08.70r
+
+### Changed
+- `googleAppsScripts/Testauthgas1/testauthgas1.config.json`: normalized `TITLE` from `"testauthgas1title"` (lowercase placeholder) to `"Testauthgas1 Title"` (title-cased) to match the page's HTML `<title>` and align with the formatting convention used by the other three non-test GAS projects (globalacl, inventorymanagement, programportal)
+- `googleAppsScripts/Testauthhtml1/testauthhtml1.config.json`: same normalization — `"testauthhtml1title"` → `"Testauthhtml1 Title"`
+- `googleAppsScripts/Testauthgas1/testauthgas1.gs`: `var TITLE` synced from config (`"Testauthgas1 Title"`)
+- `googleAppsScripts/Testauthhtml1/testauthhtml1.gs`: `var TITLE` synced from config (`"Testauthhtml1 Title"`)
+- `live-site-pages/gs-changelogs/testauthgas1gs.changelog.md` header: renamed from `testauthgas1title (Google Apps Script)` to `Testauthgas1 Title (Google Apps Script)` to match the new TITLE
+- `live-site-pages/gs-changelogs/testauthhtml1gs.changelog.md` header: same rename for `Testauthhtml1 Title`
+
+#### `testauthgas1.gs` — v02.62g
+##### Changed
+- Updated the page title to proper title-case formatting
+
+#### `testauthhtml1.gs` — v01.04g
+##### Changed
+- Updated the page title to proper title-case formatting
 
 ## [v11.56r] — 2026-04-16 06:58:48 PM EST
 
