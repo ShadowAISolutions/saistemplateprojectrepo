@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 89/100`
+`Sections: 90/100`
 
 ## [Unreleased]
+
+## [v11.52r] — 2026-04-16 04:46:45 PM EST
+
+> **Prompt:** "ok lets start tackling them. if you have specific clarifications you can ask as many as you need"
+
+### Changed
+- Renumbered Pre-Commit Checklist items in `CLAUDE.md` to a strict monotonic sequence (0–19). Fixed a duplicate `#5` / missing `#6` defect: the CHANGELOG.md rule is now unambiguously `#6` (previously the literal source had two consecutive items numbered `5`, with references elsewhere using inconsistent numbers for the same rule)
+- Added stable `[PC-XXX]` ID tags to every Pre-Commit item (e.g. `[PC-CHANGELOG]`, `[PC-REPO-VERSION]`, `[PC-TEMPLATE-PROP]`). ID tags are the stable contract; future insertions/reorderings no longer silently break pointers. Number + tag are cited together throughout the repo (e.g. `[PC-CHANGELOG] #6`)
+- Broke the mega-rule `[PC-CHANGELOG] #6` (formerly a single ~7.5 KB paragraph) into seven labeled sub-steps: `6a` categories & format, `6b` per-file subheadings, `6c` push-commit versioning, `6d` prompt quote, `6e` capacity counter, `6f` archive rotation (incl. shallow-clone fix + SHA enrichment + post-rotation verification), `6g` template-deploy reset & multi-session deferral
+- Shrank the near-duplicate rule `[PC-PAGE-CHANGELOG] #16` from a full restatement of the CHANGELOG rule into a short pointer to `#6` plus seven bullets of page/GAS-specific deltas (user-facing writing style, section header format, "every bump gets an entry" requirement, archive destinations, public-deployment safety, template-deploy reset, multi-session deferral)
+- Updated every "Pre-Commit #N" cross-reference across `CLAUDE.md`, `.claude/rules/changelogs.md`, `.claude/rules/chat-bookends.md`, `.claude/rules/gas-scripts.md`, `.claude/rules/html-pages.md`, `.claude/rules/repo-docs.md` to use the new numbering and ID tags. Fixed specifically-broken references that previously pointed at the wrong rule: several `#7` refs now point to `[PC-CHANGELOG] #6`, `#17` refs to `[PC-PAGE-CHANGELOG] #16`, `#20` refs to `[PC-TEMPLATE-PROP] #19`, `#6 command` refs to `[PC-REPO-ARCH] #5`, `#12` for internal-link rule to `[PC-LINKS] #11`, `#9` for commit-message-naming to `[PC-COMMIT-MSG] #8`, and the Developer Branding section pointer from `#10` to `[PC-DEV-BRANDING] #9`
+- Fixed the Reference Files table in `CLAUDE.md` — corrected four wrong rule numbers and added ID tags to every row
+- Fixed an in-rule typo inside `[PC-README-TIMESTAMP] #10` that referenced `(#16)` when describing the repo version bump; now correctly cites `[PC-REPO-VERSION] #15`
+- Extended the "Maintaining these checklists" guidance in `CLAUDE.md` with a new rule documenting the `[PC-XXX]` ID tag convention (stable contract; cite tag + number together; never reuse a retired tag)
+- Addresses findings §3 and §4 from `repository-information/opus-4-7-initial-review.md`
 
 ## [v11.51r] — 2026-04-16 03:48:32 PM EST
 

@@ -9,7 +9,7 @@ paths:
 
 # Repository Documentation Rules
 
-*Actionable rules: see Pre-Commit Checklist items #6, #8, #11, #12, #13 in CLAUDE.md.*
+*Actionable rules: see Pre-Commit Checklist items [PC-REPO-ARCH] #5, [PC-CHANGELOG] #6, [PC-README-TREE] #7, [PC-COMMIT-MSG] #8, [PC-LINKS] #11, [PC-README-TIPS] #12, [PC-QR-CODE] #13 in CLAUDE.md.*
 
 ## REPO-ARCHITECTURE.md Structural Updates
 
@@ -144,7 +144,7 @@ These must be installed in `/tmp` before any URL generation. They persist across
 
 #### The generation command (per diagram)
 
-The CLAUDE.md Pre-Commit #6 command only handles the **first** `` ```mermaid `` block in the file. For multiple diagrams, the extraction must target the specific diagram by searching for its unique content or link label.
+The CLAUDE.md [PC-REPO-ARCH] #5 command only handles the **first** `` ```mermaid `` block in the file. For multiple diagrams, the extraction must target the specific diagram by searching for its unique content or link label.
 
 **Generic approach for any diagram** — extract the mermaid code between `` ```mermaid\n `` and `` \n``` `` for a specific section:
 
@@ -243,7 +243,7 @@ When adding a new diagram to REPO-ARCHITECTURE.md:
 
 ## Keeping Documentation Files in Sync
 
-*Mandatory rules: see Pre-Commit Checklist items #5, #6, #7, #8 in CLAUDE.md. Reference table below for additional files to consider.*
+*Mandatory rules: see Pre-Commit Checklist items [PC-REPO-ARCH] #5, [PC-CHANGELOG] #6, [PC-README-TREE] #7, [PC-COMMIT-MSG] #8 in CLAUDE.md. Reference table below for additional files to consider.*
 
 | File | Update when... |
 |------|---------------|
@@ -259,7 +259,7 @@ Update these only when the change is genuinely relevant — don't force unnecess
 
 ## Internal Link Reference
 
-*Rule: see Pre-Commit Checklist item #12 in CLAUDE.md.*
+*Rule: see Pre-Commit Checklist item [PC-LINKS] #11 in CLAUDE.md.*
 
 Files live in three locations: repo root, `.github/`, and `repository-information/`. Cross-directory links must use `../` to traverse up before descending into the target directory.
 
@@ -349,7 +349,7 @@ Plain markdown collapses consecutive indented lines into one paragraph — `<br>
 
 Every Mermaid diagram in the repo — whether in `REPO-ARCHITECTURE.md`, `repository-information/diagrams/`, or any other file — must include an "Open in mermaid.live" link above the ```` ```mermaid ```` code block. This gives the reader one-click access to an interactive editor with pan, zoom, and export.
 
-**When to generate:** whenever a new Mermaid diagram is created or an existing diagram's code is modified, generate (or regenerate) the mermaid.live URL using the pako + js-base64 compression method documented in Pre-Commit Checklist item #6. After generating, verify the URL decompresses correctly.
+**When to generate:** whenever a new Mermaid diagram is created or an existing diagram's code is modified, generate (or regenerate) the mermaid.live URL using the pako + js-base64 compression method documented in Pre-Commit Checklist item [PC-REPO-ARCH] #5. After generating, verify the URL decompresses correctly.
 
 **Format:** place the link on its own line before the mermaid code block, with a blank line between:
 ```

@@ -8,11 +8,11 @@ paths:
 
 # Changelog Rules
 
-*Actionable rules: see Pre-Commit Checklist items #7 and #17 in CLAUDE.md.*
+*Actionable rules: see Pre-Commit Checklist items [PC-CHANGELOG] #6 and [PC-PAGE-CHANGELOG] #16 in CLAUDE.md.*
 
 ## Quick Reference
 
-### Repo CHANGELOG (Pre-Commit #7)
+### Repo CHANGELOG ([PC-CHANGELOG] #6)
 - Entries go under `## [Unreleased]` during intermediate commits
 - On the **push commit**, entries move from `[Unreleased]` into a new version section
 - Version section header format: `## [vXX.XXr] — YYYY-MM-DD HH:MM:SS AM/PM EST`
@@ -25,7 +25,7 @@ paths:
 - Capacity counter (`Sections: X/100`) must be updated on every push commit
 - **Archive rotation** triggers when counter exceeds 100 — see `repository-information/CHANGELOG-archive.md` for the full rotation logic
 
-### Page & GAS Changelogs (Pre-Commit #17)
+### Page & GAS Changelogs ([PC-PAGE-CHANGELOG] #16)
 - **User-facing** — describe what a visitor/user would notice, not internal details
 - Writing style: "Faster page loading" not "Optimized database queries"
 - Never mention file names, function names, commit SHAs, deployment IDs, or internal architecture

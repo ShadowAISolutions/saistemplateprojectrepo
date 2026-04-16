@@ -7,7 +7,7 @@ paths:
 
 # HTML Pages Rules
 
-*Actionable rules: see Pre-Commit Checklist items #2, #3, #4 in CLAUDE.md.*
+*Actionable rules: see Pre-Commit Checklist items [PC-HTML-VERSION] #2, [PC-HTML-SOURCE] #3, [PC-TEMPLATE-FREEZE] #4 in CLAUDE.md.*
 
 ## Build Version (Auto-Refresh for embedding pages)
 
@@ -34,7 +34,7 @@ The html.version.txt polling system supports a **maintenance mode** that display
 - The overlay stays visible as long as the html.version.txt content starts with `maintenance` — it does not auto-dismiss
 - The version indicator pill remains visible on top of the maintenance overlay (the maintenance overlay uses `z-index: 9998`, below the version indicator's `z-index: 9999`)
 - When the `maintenance` prefix is removed: if the underlying version also changed, the page auto-reloads; if the version is unchanged, the overlay fades out gracefully
-- **No version bump for standalone maintenance activation** — if the user's request is solely to activate (or deactivate) maintenance mode and nothing else, do NOT bump the version in html.version.txt or the HTML meta tag. Only edit the first and third fields of html.version.txt (the `maintenance` prefix and the timestamp/message). The version field (middle) stays unchanged. If the user requests maintenance mode **combined** with other changes that would normally trigger a version bump (e.g. editing the HTML page, updating a `.gs` file), then bump the version as usual per Pre-Commit Checklist item #2
+- **No version bump for standalone maintenance activation** — if the user's request is solely to activate (or deactivate) maintenance mode and nothing else, do NOT bump the version in html.version.txt or the HTML meta tag. Only edit the first and third fields of html.version.txt (the `maintenance` prefix and the timestamp/message). The version field (middle) stays unchanged. If the user requests maintenance mode **combined** with other changes that would normally trigger a version bump (e.g. editing the HTML page, updating a `.gs` file), then bump the version as usual per Pre-Commit Checklist item [PC-HTML-VERSION] #2
 
 ### Inactive Mode via html.version.txt
 The html.version.txt polling system also supports an **inactive mode** using the same first-field mechanism as maintenance mode. Inactive mode signals that a page is intentionally taken offline or disabled — distinct from maintenance (temporary, coming back) or active (normal operation).
@@ -77,7 +77,7 @@ When creating a **new** HTML embedding page, follow every step below:
 6. **Set the initial version** — set `<page-name>html.version.txt` to `|v01.00w|`
 7. **Update the page title** — replace `YOUR_PROJECT_TITLE` in `<title>` with the actual project name
 8. **Register in GAS Projects table** — if this page embeds a GAS iframe, add a row to the GAS Projects table in `.claude/rules/gas-scripts.md`
-9. **Create GAS config file** — if this page embeds a GAS iframe, copy an existing config file (e.g. `googleAppsScripts/Testauthgas1/testauthgas1.config.json`) into the new GAS project directory, renaming it to `<page-name>.config.json` (e.g. `googleAppsScripts/MyProject/my-project.config.json`). Fill in the project-specific values. This is the single source of truth for `TITLE`, `DEPLOYMENT_ID`, `SPREADSHEET_ID`, `SHEET_NAME` — Pre-Commit item #15 syncs these values to `<page-name>.gs` and the embedding HTML
+9. **Create GAS config file** — if this page embeds a GAS iframe, copy an existing config file (e.g. `googleAppsScripts/Testauthgas1/testauthgas1.config.json`) into the new GAS project directory, renaming it to `<page-name>.config.json` (e.g. `googleAppsScripts/MyProject/my-project.config.json`). Fill in the project-specific values. This is the single source of truth for `TITLE`, `DEPLOYMENT_ID`, `SPREADSHEET_ID`, `SHEET_NAME` — [PC-REPO-VERSION] #15 syncs these values to `<page-name>.gs` and the embedding HTML
 10. **Create GAS version file and changelog** — if this page has a GAS project, create `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` (initial value `|v01.00g|`). Also create `<page-name>gs.changelog.md` and `<page-name>gs.changelog-archive.md` in `live-site-pages/gs-changelogs/`, replacing `YOUR_PROJECT_TITLE` with the project name
 11. **Add developer branding** — ensure `<!-- Developed by: DEVELOPER_NAME -->` is the last line of the HTML file
 12. **Create page changelog** — create `<page-name>html.changelog.md` in `live-site-pages/html-changelogs/`. Replace `YOUR_PROJECT_TITLE` with the page's human-readable title and update the archive link filename. Also create `<page-name>html.changelog-archive.md` in the same directory and update its title and changelog link filename
@@ -126,13 +126,13 @@ live-site-pages/
     ├── <page-name>gs.changelog.md           # GAS changelog (source of truth + deployed)
     └── <page-name>gs.changelog-archive.md   # Older changelog sections (rotated)
 ```
-Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-versions/`. Changelogs and their archives live in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/` — these are both the source of truth and the deployed files fetched by the changelog popup. See Pre-Commit item #17.
+Version files live in `live-site-pages/html-versions/` and `live-site-pages/gs-versions/`. Changelogs and their archives live in `live-site-pages/html-changelogs/` and `live-site-pages/gs-changelogs/` — these are both the source of truth and the deployed files fetched by the changelog popup. See Pre-Commit item [PC-PAGE-CHANGELOG] #16.
 
 **Note:** The `live-site-pages/.nojekyll` file must already exist in the repo (see "Changelog Files" section above). New pages inherit it automatically since it applies to the entire deployment directory.
 
 ## Template Source Propagation
 
-*Rule: see Pre-Commit Checklist item #20 in CLAUDE.md.*
+*Rule: see Pre-Commit Checklist item [PC-TEMPLATE-PROP] #19 in CLAUDE.md.*
 
 When any template source file is modified, **propagate the same changes to all existing pages/GAS scripts** in the repo. The template sources are:
 - **HTML templates**: `live-site-pages/templates/HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt` → propagate to all `.html` pages in `live-site-pages/`. Changes to shared template logic in either variant must be applied to both variants and to all existing pages
@@ -160,8 +160,8 @@ When a conflict is detected:
 - Page-specific content (custom HTML sections, extra features unique to one page) that does not overlap with the template change — leave these untouched
 
 ### Version bumps
-- Each propagated page/script gets its own version bump per Pre-Commit items #1 and #2 — the template change counts as a modification to each file
-- Templates don't have their own version files — Pre-Commit item #4 confirms templates are exempt from version tracking
+- Each propagated page/script gets its own version bump per Pre-Commit items [PC-GS-VERSION] #1 and [PC-HTML-VERSION] #2 — the template change counts as a modification to each file
+- Templates don't have their own version files — [PC-TEMPLATE-FREEZE] #4 confirms templates are exempt from version tracking
 
 ### Propagation scope
 - **HTML propagation**: all `.html` files in `live-site-pages/` (including subdirectories) that were originally created from the template. Exclude any HTML files that are not embedding pages (e.g. static content pages that don't use the template structure)
@@ -296,7 +296,7 @@ function showSplash() {
 - Inline `// PROJECT:` markers for project-specific additions that must live inside template territory (same as GAS files)
 - `PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
 - **The HTML template sources** (`HtmlAndGasTemplateAutoUpdate-noauth.html.txt` and `HtmlAndGasTemplateAutoUpdate-auth.html.txt`) have empty PROJECT blocks — placeholders for page-specific content
-- **Template propagation** (Pre-Commit #20) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched. When `PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
+- **Template propagation** ([PC-TEMPLATE-PROP] #19) respects TEMPLATE/PROJECT boundaries — changes are applied to TEMPLATE regions only, PROJECT blocks are never touched. When `PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **New pages** must include all 6 marker pairs (TEMPLATE START/END + PROJECT START/END in CSS, body HTML, and JS). The `setup-gas-project.sh` script creates pages from the template which already contains these markers
 
 ## Test Quality — No Fake or Trivial Tests

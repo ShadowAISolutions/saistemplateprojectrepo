@@ -9,13 +9,13 @@ paths:
 
 # Google Apps Script Rules
 
-*Actionable rules: see Pre-Commit Checklist items #1, #15 in CLAUDE.md.*
+*Actionable rules: see Pre-Commit Checklist items [PC-GS-VERSION] #1, [PC-REPO-VERSION] #15 in CLAUDE.md.*
 
 ## Version Bumping
 
 - The `VERSION` variable is near the top of each `.gs` file (look for `var VERSION = "..."`)
 - Format includes a `g` suffix with a `v` prefix: e.g. `"v01.13g"` → `"v01.14g"`
-- Each GAS project also has a `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` that stores the version in pipe-delimited format (e.g. `|v01.00g|`), matching the `html.version.txt` format. The `.gs` `VERSION` variable uses no pipes (e.g. `"v01.00g"`) — when writing to `gs.version.txt`, wrap the version in pipes. This file is bumped alongside `VERSION` by Pre-Commit #1. There is no copy in `googleAppsScripts/` — the `live-site-pages/gs-versions/` file is the single location, polled by the HTML layer for GAS version display
+- Each GAS project also has a `<page-name>gs.version.txt` in `live-site-pages/gs-versions/` that stores the version in pipe-delimited format (e.g. `|v01.00g|`), matching the `html.version.txt` format. The `.gs` `VERSION` variable uses no pipes (e.g. `"v01.00g"`) — when writing to `gs.version.txt`, wrap the version in pipes. This file is bumped alongside `VERSION` by [PC-GS-VERSION] #1. There is no copy in `googleAppsScripts/` — the `live-site-pages/gs-versions/` file is the single location, polled by the HTML layer for GAS version display
 - Do NOT bump VERSION if the commit doesn't touch the `.gs` file
 
 ### GAS Projects
@@ -48,7 +48,7 @@ The `.config.json` double extension ensures the config file sorts **after** the 
 | `SHEET_NAME` | Sheet tab name | `<page-name>.gs` `var SHEET_NAME` |
 
 ### What is NOT in config.json
-- `VERSION` — auto-bumped by Pre-Commit item #1, lives only in `<page-name>.gs`
+- `VERSION` — auto-bumped by [PC-GS-VERSION] #1, lives only in `<page-name>.gs`
 - `GITHUB_OWNER`, `GITHUB_REPO`, `FILE_PATH` — derived from repo structure, managed by init script
 - `EMBED_PAGE_URL` — repo-wide setting, managed by init script
 - `GITHUB_BRANCH` — always `main`
@@ -70,7 +70,7 @@ The inline decode reverses this: `atob()` then string-reverse. The iframe is cre
 The setup script (`scripts/setup-gas-project.sh`) generates config.json files inline with placeholder values when creating new projects — there is no separate template config file to maintain.
 
 ## Commit Message Naming
-*Rule: see Pre-Commit Checklist item #9 in CLAUDE.md.*
+*Rule: see Pre-Commit Checklist item [PC-COMMIT-MSG] #8 in CLAUDE.md.*
 - All version types use the `v` prefix — suffix indicates type: `r` = repository, `g` = Google Apps Script, `w` = website
 - The **push commit** (final commit before `git push`) starts with the repo version prefix (`v01.XXr`) since repo version bumps on the push commit
 - When `.gs` or HTML versions are also bumped on the push commit, append them in order: `r`, `g`, `w`
@@ -83,7 +83,7 @@ The setup script (`scripts/setup-gas-project.sh`) generates config.json files in
   - `v01.14g Fix sign-in popup timing` (GAS change, no repo version)
   - `v01.02w Update page layout` (HTML change, no repo version)
   - `Fix typo in CLAUDE.md` (no version bumps at all)
-- SHA backfill commit: always uses `Backfill CHANGELOG SHA` — no version prefix, exempt from all push commit rules (see Pre-Commit #7)
+- SHA backfill commit: always uses `Backfill CHANGELOG SHA` — no version prefix, exempt from all push commit rules (see [PC-COMMIT-MSG] #8)
 
 ## Coding Guidelines Reference
 
@@ -207,11 +207,11 @@ Each template contains placeholder values (`YOUR_DEPLOYMENT_ID`, `YOUR_ORG_NAME`
 
 The templates live in `live-site-pages/templates/` because they must be accessible via GitHub Pages `fetch()`, and the setup script can read them from any location in the repo.
 
-*Template source propagation: when this file is modified, changes must be propagated to all existing `.gs` files — see `.claude/rules/html-pages.md` — section "Template Source Propagation" (Pre-Commit #20)*
+*Template source propagation: when this file is modified, changes must be propagated to all existing `.gs` files — see `.claude/rules/html-pages.md` — section "Template Source Propagation" ([PC-TEMPLATE-PROP] #19)*
 
 ## Template vs Project Code Separation
 
-All GAS code files (`.gs` and the GAS template `.js.txt` files) use section dividers to distinguish **template code** (shared across all projects, propagated via Pre-Commit #20) from **project-specific code** (unique to one project, never overwritten during propagation).
+All GAS code files (`.gs` and the GAS template `.js.txt` files) use section dividers to distinguish **template code** (shared across all projects, propagated via [PC-TEMPLATE-PROP] #19) from **project-specific code** (unique to one project, never overwritten during propagation).
 
 ### Divider format
 Dividers use 14 `═` characters. Each marker is a 3-line block (divider, label, divider):
@@ -281,7 +281,7 @@ function doGet(e) {
 - **New project-specific features** should go in the PROJECT block when possible — standalone functions, new variables, and self-contained logic belong there
 - **Project code inside template functions** is allowed when required (e.g. the feature needs to hook into a specific point in a template function's flow). It must be marked with inline `// PROJECT:` markers — never mixed unmarked into template functions
 - `// PROJECT OVERRIDE:` markers for project-specific modifications to existing template code — these trigger a propagation halt (see "Project override markers" above)
-- **Template updates** (Pre-Commit #20) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is. When `// PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
+- **Template updates** ([PC-TEMPLATE-PROP] #19) propagate changes only within TEMPLATE markers — PROJECT blocks and inline `// PROJECT:` lines are preserved as-is. When `// PROJECT OVERRIDE` markers are found in a TEMPLATE region that a template change touches, propagation **stops for that file** and alerts the user
 - **Keep clusters large** — prefer grouping related project-specific code together rather than scattering small project additions throughout the file. When practical, extract project logic into standalone functions in the PROJECT block and call them from template functions with an inline `// PROJECT:` marker
 - **The template source files** (`gas-minimal-noauth-template-code.js.txt`, `gas-minimal-auth-template-code.js.txt`) have empty PROJECT blocks — they define the insertion point but contain no project code themselves
 
