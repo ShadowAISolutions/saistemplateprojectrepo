@@ -3,11 +3,29 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
 
-## [v11.58r] — 2026-04-16 07:33:23 PM EST
+## [v11.59r] — 2026-04-19 07:21:50 PM EST
+
+> **Prompt:** "remember session. make a huge note somewhere in this version that this is the first version which will diverge from the pfc repo, because right before this prompt i have initialized the pfc repo, so moving forward everythign will diverge from this repo compared to that repo"
+
+> # 🚨🚨🚨 DIVERGENCE POINT — FIRST VERSION TO DIVERGE FROM `pfc` REPO 🚨🚨🚨
+>
+> **v11.59r is the divergence boundary.** Immediately before this version was cut, the `pfc` repo was initialized as a fresh fork of this template. All versions v11.58r and earlier exist on both repos; v11.59r onward exists only here. Changes on either side of the divergence must be manually backported/forward-ported — see `repository-information/DIVERGENCE-NOTE.md` for the full sync-workflow documentation and the README banner for the short-form reminder.
+
+### Added
+- `repository-information/DIVERGENCE-NOTE.md` — permanent historical marker documenting the divergence event, what each side owns after the split, the last common version (v11.58r), and the manual sync workflow for moving changes across the boundary
+- Prominent divergence banner near the top of `README.md` (directly under the `Last updated` line) — high-visibility reminder that this repo and the `pfc` fork are no longer in lockstep
+- Session-context entry capturing the Remember-session handoff for the divergence commit
+
+### Changed
+- `README.md` `Last updated` line refreshed to 2026-04-19 07:21:50 PM EST, repo version pinned at v11.59r
+- `repository-information/SESSION-CONTEXT.md` — Latest Session entry moved to Previous Sessions (2-session cap respected), new Latest Session documents the divergence boundary and the sync discipline going forward
+- `repository-information/repository.version.txt` → `v11.59r`
+
+## [v11.58r] — 2026-04-16 07:33:23 PM EST## [v11.58r] — 2026-04-16 07:33:23 PM EST
 
 > **Prompt:** "option 1" (after being presented with 3 options for resolving a per-environment-diagram coverage gap surfaced in the final follow-up check of the opus-4-7 review — chose "exempt standalone utilities via rule clarification")
 

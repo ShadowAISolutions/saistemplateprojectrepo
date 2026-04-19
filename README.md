@@ -2,7 +2,21 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-16 07:33:23 PM EST` · Repo version: `v11.58r`
+Last updated: `2026-04-19 07:21:50 PM EST` · Repo version: `v11.59r`
+
+> # 🚨🚨🚨 DIVERGENCE POINT — v11.59r 🚨🚨🚨
+>
+> **This is the first version of this repo that will diverge from the `pfc` repo.**
+>
+> Immediately before this version was cut, the `pfc` repo was initialized as a fresh fork of this template. From **v11.59r onward**, any changes in this repo should be considered **template-side changes** that will NOT automatically propagate to the `pfc` repo. Similarly, any changes made on the `pfc` repo after its initialization are fork-side changes that do NOT flow back here.
+>
+> **What this means in practice:**
+> - The two repos share history up through **v11.58r** (the last pre-divergence version)
+> - v11.59r is the first commit on this repo that the `pfc` repo does NOT have
+> - Fork-specific changes on `pfc` (new GAS projects, custom pages, branding overrides, etc.) live only on `pfc`
+> - Template-side improvements in this repo (rule refinements, new utilities, template file updates) must be **manually backported** to `pfc` when desired — see the `Diff Rules Command` in CLAUDE.md for the sync workflow
+>
+> **Reference this banner** before assuming a feature exists on both repos.
 
 You are currently using the **saistemplateprojectrepo** developed by **ShadowAISolutions**<br>
 Initialize your repository and Claude will update the live site link and QR code here
