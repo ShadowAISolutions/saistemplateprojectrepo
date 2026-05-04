@@ -8,6 +8,25 @@ Same rotation logic as the repository changelog archive — see [CHANGELOG-archi
 
 ---
 
+## [v01.12w] — 2026-04-10 01:06:37 PM EST — v10.67r — [23241a45](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/23241a45)
+
+### Changed
+- Mobile view now shows only Item Name and Quantity columns — Barcode, Last User, and Last Updated are hidden below 600px screen width for easier scanning on phones
+
+## [v01.11w] — 2026-04-10 12:08:01 PM EST — v10.65r — [782d27e4](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/782d27e4)
+
+### Changed
+- Inventory table now shows 5 columns in this order: Item Name, Quantity, Barcode, Last User, Last Updated
+- Removed the Timestamp column from the inventory table and the scan entry form
+
+## [v01.10w] — 2026-04-10 11:28:11 AM EST — v10.63r — [2ee0555d](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/2ee0555d)
+
+### Changed
+- Redesigned the scanner for phone screens — the camera now shows as a compact strip at the top, leaving room for the inventory list below
+- Tap the scanner strip to expand it to fullscreen for tougher scans; tap the × button to collapse it back
+- When a scan is detected, the scanner automatically collapses so the inventory list is visible behind the confirmation dialog
+- Desktop view is unchanged
+
 ## [v01.09w] — 2026-04-09 10:27:54 PM EST — v10.62r — [e3cacef6](https://github.com/ShadowAISolutions/saistemplateprojectrepo/commit/e3cacef6)
 
 ### Removed

@@ -3,9 +3,23 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v11.60r] — 2026-05-04 10:40:55 AM EST
+
+> **Prompt:** "in our inventory management, right now when i scan an already existing item, it defaults to adding +1 when the UI shows up, but the update button is not visible until i change it from 1 to something else. also when i do a minus, its showing 0 which should be skipped in this scenario"
+
+### Fixed
+- Scan-on-existing modal: the Update button now appears immediately when the modal opens with the default `+1` quantity delta (no longer requires changing the value first). Implemented by extending the change-detection helper in `_showScanConfirmModal` to treat a non-zero quantity delta as a meaningful change for existing items in scan mode (`!isEditAction`)
+- Scan-on-existing quantity stepper: minus from `1` now jumps to `-1` and plus from `-1` now jumps to `1`, skipping the `0` no-op state. Edit-action mode (where `0` is the legitimate default delta) is unaffected. Implemented in the `btnMinus`/`btnPlus` click handlers inside the stepper IIFE
+
+#### `inventorymanagement.html` — v01.60w
+
+##### Fixed
+- Update button is visible immediately after scanning an existing item — no longer hidden until the quantity is changed
+- Minus and plus buttons skip 0 when stepping past it, so `1 → −1` and `−1 → 1` happen in one click instead of stopping at the no-change value
 
 ## [v11.59r] — 2026-04-19 07:21:50 PM EST
 

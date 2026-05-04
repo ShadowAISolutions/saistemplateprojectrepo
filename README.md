@@ -2,7 +2,7 @@
 
 A GitHub Pages deployment framework with automatic version polling, auto-refresh, and Google Apps Script (GAS) embedding support.
 
-Last updated: `2026-04-19 07:21:50 PM EST` · Repo version: `v11.59r`
+Last updated: `2026-05-04 10:40:55 AM EST` · Repo version: `v11.60r`
 
 > # 🚨🚨🚨 DIVERGENCE POINT — v11.59r 🚨🚨🚨
 >

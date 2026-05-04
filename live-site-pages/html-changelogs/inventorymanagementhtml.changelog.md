@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 48/50`
 
 ## [Unreleased]
+
+## [v01.60w] — 2026-05-04 10:40:55 AM EST — v11.60r
+
+### Fixed
+- The Update button is now visible right away when you scan an existing item — no need to change the quantity first
+- The − and + buttons skip 0 when stepping across it: from +1 the next minus goes to −1, and from −1 the next plus goes to +1 (the no-change value is skipped automatically)
 
 ## [v01.59w] — 2026-04-13 11:00:42 AM EST — v11.24r
 
@@ -275,24 +281,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 
 ### Changed
 - Manual entry form now has the same − / + quantity adjustment buttons as the scan entry form — both entry screens now look identical, with the only difference being whether the barcode is filled in automatically (scan) or typed in manually
-
-## [v01.12w] — 2026-04-10 01:06:37 PM EST — v10.67r
-
-### Changed
-- Mobile view now shows only Item Name and Quantity columns — Barcode, Last User, and Last Updated are hidden below 600px screen width for easier scanning on phones
-
-## [v01.11w] — 2026-04-10 12:08:01 PM EST — v10.65r
-
-### Changed
-- Inventory table now shows 5 columns in this order: Item Name, Quantity, Barcode, Last User, Last Updated
-- Removed the Timestamp column from the inventory table and the scan entry form
-
-## [v01.10w] — 2026-04-10 11:28:11 AM EST — v10.63r
-
-### Changed
-- Redesigned the scanner for phone screens — the camera now shows as a compact strip at the top, leaving room for the inventory list below
-- Tap the scanner strip to expand it to fullscreen for tougher scans; tap the × button to collapse it back
-- When a scan is detected, the scanner automatically collapses so the inventory list is visible behind the confirmation dialog
-- Desktop view is unchanged
 
 Developed by: ShadowAISolutions
