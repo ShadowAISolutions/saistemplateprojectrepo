@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 40/50`
+`Sections: 41/50`
 
 ## [Unreleased]
+
+## [v01.65w] — 2026-05-28 01:39:18 PM EST — v11.65r
+
+### Added
+- The scanner now picks a rear-facing camera by default on your first use, if your device has one with "Rear" in its name (for example "Surface Camera Rear"). If your device has no rear-labeled camera, the default the browser would otherwise pick is used
+- The same default applies the first time you open the photo-capture overlay to attach an image to an item
+- Your manual selection always wins — once you change the camera in the dropdown, that choice is remembered and the auto-default stops applying
 
 ## [v01.64w] — 2026-05-28 01:32:48 PM EST — v11.64r
 

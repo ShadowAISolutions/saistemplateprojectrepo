@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 97/100`
+`Sections: 98/100`
 
 ## [Unreleased]
+
+## [v11.65r] — 2026-05-28 01:39:18 PM EST
+
+> **Prompt:** "ok great. can you make it automatically see if one of the camera names has "Rear" somewhere in the name, i.e. "Surface Camera Rear (redirected)" and make that the default selected camera, if not then whatever is default is fine"
+
+### Added
+- First-run auto-pick of a rear-facing camera on the Inventory Management scanner. On page parse, a one-shot `qrHadSavedCameraOnLoad` flag is captured from `localStorage.getItem('ld_qr_last_camera_id_v1')`. After the first `enumerateDevices()` call succeeds and labels are available, if the flag is `false` (i.e. no previous selection saved) and any camera's label matches `/rear/i`, the scanner invokes `qrSelectCamera(rearDeviceId)` to switch to it. The flag is set to `true` before the async switch so the re-enumeration triggered by `qrStartCamera` doesn't re-fire the logic. Once switched, the rear deviceId is persisted by the existing `qrStartCamera` → `track.getSettings().deviceId` → localStorage write path, so subsequent loads use it directly without going through the auto-pick
+- Same first-run auto-pick for the photo-capture overlay (`#ld-camera-capture-overlay`). A `captureHadSavedCamera` flag is captured each time the overlay opens; if no `ld_capture_last_camera_id_v1` is stored and a `/rear/i`-labeled camera is enumerated, the overlay restarts with that deviceId pinned and persists it
+- Both auto-picks fail gracefully — if no camera label matches the regex, the existing default (whatever the browser picked via `facingMode: 'environment'` chain) stays active. The user's manual selection in the dropdown always overrides — once they pick a different camera, that choice persists and the auto-pick stays out of the way
+
+#### `inventorymanagement.html` — v01.65w
+
+##### Added
+- The scanner now auto-selects a rear-facing camera on first use, if your device reports one with "Rear" in its name (e.g. "Surface Camera Rear (redirected)"). If your device has no rear-labeled camera, whatever the browser picks by default is used
+- The same auto-pick applies the first time you open the photo-capture overlay to attach an image to an item
+- Your manual choice from the dropdown always wins — once you pick a camera, that selection is remembered and the auto-pick stops trying to override
 
 ## [v11.64r] — 2026-05-28 01:32:48 PM EST
 

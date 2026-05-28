@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdn.jsdelivr.net; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.64w">
+  <meta name="build-version" content="v01.65w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5896,6 +5896,11 @@
       var qrAvailableCameras = [];          // [{deviceId, label}] populated after first stream
       var qrCurrentDeviceId = null;         // deviceId of the active stream (null = let browser pick)
       var QR_LAST_CAMERA_KEY = 'ld_qr_last_camera_id_v1';
+      // True iff the user (or a previous auto-pick) had already saved a camera before this load.
+      // When false, the first successful enumerate may switch to a "Rear"-labeled camera if present —
+      // captured once at parse time so a re-entry of enumerate after that switch doesn't re-fire.
+      var qrHadSavedCameraOnLoad = false;
+      try { qrHadSavedCameraOnLoad = !!localStorage.getItem(QR_LAST_CAMERA_KEY); } catch(e) {}
 
       function qrEngineReady() { return !!qrBarcodeDetector || !!qrZxingReader; }
 
@@ -6055,6 +6060,18 @@
               qrCameraSelect.style.display = '';
             } else {
               qrCameraSelect.style.display = 'none';
+            }
+          }
+          // First-run auto-pick: if no camera was previously saved and a "Rear"-labeled
+          // camera is available, switch to it. Once switched, the new deviceId persists,
+          // so subsequent loads use it directly without re-running this logic.
+          if (!qrHadSavedCameraOnLoad && qrAvailableCameras.length > 1) {
+            var rearCam = qrAvailableCameras.find(function(c) { return /rear/i.test(c.label); });
+            if (rearCam && rearCam.deviceId !== qrCurrentDeviceId) {
+              qrHadSavedCameraOnLoad = true;  // mark before async call so re-enum doesn't re-fire
+              qrSelectCamera(rearCam.deviceId);
+            } else {
+              qrHadSavedCameraOnLoad = true;
             }
           }
         } catch(e) {
@@ -6807,6 +6824,10 @@
           if (!overlay || !video) return;
           var captureStream = null;
           var CAPTURE_CAM_KEY = 'ld_capture_last_camera_id_v1';
+          // Capture once per overlay open: if no camera was previously saved, the first
+          // successful enumerate may auto-switch to a "Rear"-labeled camera if present.
+          var captureHadSavedCamera = false;
+          try { captureHadSavedCamera = !!localStorage.getItem(CAPTURE_CAM_KEY); } catch(e) {}
 
           function stopCaptureStream() {
             if (captureStream) { captureStream.getTracks().forEach(function(t) { t.stop(); }); captureStream = null; }
@@ -6866,6 +6887,16 @@
                 var picked = cams.find(function(c) { return c.deviceId === camSelect.value; });
                 camSelect.title = picked ? (picked.label || 'Camera') : 'Choose camera';
                 camSelect.style.display = '';
+                // First-run auto-pick: if no camera was previously saved and a "Rear"-labeled
+                // camera is available, switch to it (and persist so future opens use it directly).
+                if (!captureHadSavedCamera) {
+                  captureHadSavedCamera = true;  // mark before re-entry so we don't loop
+                  var rearCam = cams.find(function(c) { return /rear/i.test(c.label || ''); });
+                  if (rearCam && rearCam.deviceId !== activeId) {
+                    try { localStorage.setItem(CAPTURE_CAM_KEY, rearCam.deviceId); } catch(e) {}
+                    startCaptureStream(rearCam.deviceId);
+                  }
+                }
               } else {
                 camSelect.style.display = 'none';
               }
