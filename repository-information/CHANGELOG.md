@@ -3,9 +3,25 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v11.66r] — 2026-05-28 01:54:36 PM EST
+
+> **Prompt:** "ok great. now a redesign of layout. since its going to be used on a desktop also, i need the webcam portion to be adjusted so that we can still see the table without needing to reduce the page size, it should adjust based on the users current size. right now my desktop is 1280x720"
+
+### Changed
+- Desktop scanner viewport on `live-site-pages/inventorymanagement.html` now scales with viewport height instead of taking a fixed 400px square. Replaced `.qr-viewport-wrapper { width: 100%; max-width: 400px; aspect-ratio: 1/1 }` with `.qr-viewport-wrapper { width: clamp(180px, 32vh, 260px); height: clamp(180px, 32vh, 260px); aspect-ratio: 1/1 }`. On 1280×720 this resolves to ~230px square (32vh = 230.4), down from 400px — freeing ~170px of vertical space so the inventory table is visible without scrolling. On 1920×1080 it caps at 260px. On very short windows (<565px tall) it floors at 180px so the start screen content stays readable
+- `#qr-camera-section` vertical padding reduced from `12px` to `8px` and `max-width` widened from `600px` to `min(96vw, 720px)` so the larger horizontal real estate on desktops can host the side panel comfortably alongside a smaller scanner
+- Mobile rules in the `@media (max-width: 600px)` block are unchanged — the compact `22vh` strip with tap-to-expand fullscreen still applies on phones. The new `clamp()` lives in the base/desktop rule that mobile overrides
+
+#### `inventorymanagement.html` — v01.66w
+
+##### Changed
+- On desktop, the scanner viewport now scales to your window height instead of always being a large fixed square — the inventory table is visible right below the scanner without zooming or resizing the browser
+- On a 1280×720 desktop the scanner shrinks to roughly 230px square; on larger monitors it caps at 260px; on very short windows it stays at least 180px so the start screen stays readable
+- Mobile layout is unchanged — the existing compact strip with tap-to-expand fullscreen still applies on phones
 
 ## [v11.65r] — 2026-05-28 01:39:18 PM EST
 

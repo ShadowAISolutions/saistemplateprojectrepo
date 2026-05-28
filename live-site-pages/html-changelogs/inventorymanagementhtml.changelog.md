@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 41/50`
+`Sections: 42/50`
 
 ## [Unreleased]
+
+## [v01.66w] — 2026-05-28 01:54:36 PM EST — v11.66r
+
+### Changed
+- On desktop the scanner now scales to your browser window — the inventory table is visible right below it without having to zoom out or resize the window. On a 1280×720 desktop the scanner shrinks to roughly 230px square; on bigger monitors it caps at 260px
+- Mobile layout is unchanged — the compact strip with tap-to-expand is still there on phones
 
 ## [v01.65w] — 2026-05-28 01:39:18 PM EST — v11.65r
 
