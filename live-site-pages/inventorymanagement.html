@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.60w">
+  <meta name="build-version" content="v01.61w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -5873,9 +5873,14 @@
       var qrScanning = false;
       var qrCooldown = false;
       var qrBarcodeDetector = null;
+      var qrZxingReader = null;
+      var qrZxingLoading = false;
+      var qrZxingHints = null;
       var qrNativeLoopActive = false;
       var qrTorchOn = false;
       var qrTorchSupported = false;
+
+      function qrEngineReady() { return !!qrBarcodeDetector || !!qrZxingReader; }
 
       function qrSetStatus(state, text) {
         if (qrStatusDot) qrStatusDot.className = 'qr-status-dot' + (state ? ' ' + state : '');
@@ -5890,32 +5895,69 @@
               var supported = desired.filter(function(f) { return fmts.indexOf(f) !== -1; });
               qrBarcodeDetector = new BarcodeDetector({formats: supported});
               if (qrEngineBadge) { qrEngineBadge.textContent = 'NATIVE \u00b7 QR+BARCODE'; qrEngineBadge.classList.add('native'); }
-            } else { qrShowUnsupported(); }
-          }).catch(function() { qrShowUnsupported(); });
-        } else { qrShowUnsupported(); }
+            } else { qrLoadZxing(); }
+          }).catch(function() { qrLoadZxing(); });
+        } else { qrLoadZxing(); }
+      }
+
+      // Fallback decoder for browsers without native BarcodeDetector (Chrome desktop,
+      // Firefox, Safari, etc.). Loads the ZXing UMD bundle from a public CDN; the repo
+      // can stay private without breaking this fetch (jsDelivr is not GitHub-authed).
+      function qrLoadZxing() {
+        if (qrZxingLoading || qrZxingReader) return;
+        qrZxingLoading = true;
+        if (qrEngineBadge) qrEngineBadge.textContent = 'LOADING DECODER\u2026';
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+        script.async = true;
+        script.onload = function() {
+          if (typeof ZXing === 'undefined' || !ZXing.MultiFormatReader) { qrShowUnsupported(); return; }
+          try {
+            qrZxingHints = new Map();
+            var fmt = ZXing.BarcodeFormat;
+            var formats = [fmt.AZTEC, fmt.CODABAR, fmt.CODE_128, fmt.CODE_39, fmt.CODE_93,
+              fmt.DATA_MATRIX, fmt.EAN_13, fmt.EAN_8, fmt.ITF, fmt.PDF_417, fmt.QR_CODE,
+              fmt.UPC_A, fmt.UPC_E];
+            qrZxingHints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
+            qrZxingHints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+            qrZxingReader = new ZXing.MultiFormatReader();
+            qrZxingReader.setHints(qrZxingHints);
+            if (qrEngineBadge) { qrEngineBadge.textContent = 'ZXING \u00b7 QR+BARCODE'; qrEngineBadge.classList.add('native'); }
+            qrZxingLoading = false;
+          } catch (e) { qrZxingLoading = false; qrShowUnsupported(); }
+        };
+        script.onerror = function() { qrZxingLoading = false; qrShowUnsupported(); };
+        document.head.appendChild(script);
       }
 
       function qrShowUnsupported() {
         if (qrEngineBadge) qrEngineBadge.textContent = 'NOT SUPPORTED';
         var startScreenP = qrStartScreen ? qrStartScreen.querySelector('p') : null;
-        if (startScreenP) startScreenP.textContent = 'QR scanning requires Chrome on Android';
+        if (startScreenP) startScreenP.textContent = 'QR scanning needs camera access (HTTPS) and a modern browser';
         if (qrStartBtn) { qrStartBtn.disabled = true; qrStartBtn.textContent = 'Not available on this device'; qrStartBtn.style.background = '#555570'; }
-        qrSetStatus('error', 'Open this page on your phone to scan');
+        qrSetStatus('error', 'Decoder unavailable \u2014 check connection or try another browser');
       }
 
       async function qrStartCamera() {
-        if (!qrBarcodeDetector) return;
+        if (!qrEngineReady()) return;
         try {
           var stream;
+          // Try rear camera first (mobile), then any environment-tagged camera,
+          // then any camera at all (desktops, laptops with only a front webcam).
           try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: {exact: 'environment'}, width: {ideal: 1280}, height: {ideal: 720} } });
-          } catch(e) {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} } });
+          } catch(e1) {
+            try {
+              stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} } });
+            } catch(e2) {
+              stream = await navigator.mediaDevices.getUserMedia({ video: { width: {ideal: 1280}, height: {ideal: 720} } });
+            }
           }
           qrVideo.srcObject = stream;
           await new Promise(function(res) { qrVideo.onloadedmetadata = function() { qrVideo.play().then(res).catch(res); }; });
           if (qrStartScreen) qrStartScreen.style.display = 'none';
-          qrSetStatus('active', 'Scanning (native \u00b7 all formats)...');
+          var engineLabel = qrBarcodeDetector ? 'native' : 'zxing';
+          qrSetStatus('active', 'Scanning (' + engineLabel + ' \u00b7 all formats)...');
           qrScanning = true;
           try {
             var track = stream.getVideoTracks()[0];
@@ -5924,7 +5966,7 @@
           } catch(e) {}
           if (qrStopBtn) qrStopBtn.style.display = 'flex';
           qrStartNativeLoop();
-        } catch(e) { qrSetStatus('error', 'Camera error: ' + e.message); }
+        } catch(e) { qrSetStatus('error', 'Camera error: ' + (e && e.message ? e.message : 'access denied')); }
       }
 
       function qrStopCamera() {
@@ -5942,10 +5984,35 @@
       async function qrNativeTick() {
         if (!qrScanning) { qrNativeLoopActive = false; return; }
         if (!qrCooldown && qrVideo.readyState >= 2) {
-          try {
-            var barcodes = await qrBarcodeDetector.detect(qrVideo);
-            if (barcodes.length > 0 && barcodes[0].rawValue) qrOnFound(barcodes[0].rawValue, barcodes[0].format);
-          } catch(e) {}
+          if (qrBarcodeDetector) {
+            try {
+              var barcodes = await qrBarcodeDetector.detect(qrVideo);
+              if (barcodes.length > 0 && barcodes[0].rawValue) qrOnFound(barcodes[0].rawValue, barcodes[0].format);
+            } catch(e) {}
+          } else if (qrZxingReader && typeof ZXing !== 'undefined') {
+            try {
+              var vw = qrVideo.videoWidth, vh = qrVideo.videoHeight;
+              if (vw && vh && qrProcCanvas) {
+                qrProcCanvas.width = vw; qrProcCanvas.height = vh;
+                var ctx = qrProcCanvas.getContext('2d');
+                ctx.drawImage(qrVideo, 0, 0, vw, vh);
+                var lumSrc = new ZXing.HTMLCanvasElementLuminanceSource(qrProcCanvas);
+                var binBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(lumSrc));
+                try {
+                  var result = qrZxingReader.decode(binBitmap);
+                  if (result && result.getText) {
+                    var fmtName = '';
+                    try { fmtName = ZXing.BarcodeFormat[result.getBarcodeFormat()].toLowerCase(); } catch(e) {}
+                    qrOnFound(result.getText(), fmtName);
+                  }
+                } catch (decodeErr) {
+                  // NotFoundException is expected when no code is in the current frame
+                } finally {
+                  qrZxingReader.reset();
+                }
+              }
+            } catch(e) {}
+          }
         }
         setTimeout(qrNativeTick, 200);
       }
@@ -6310,10 +6377,11 @@
       qrDetectEngine();
       if (navigator.permissions && navigator.permissions.query) {
         navigator.permissions.query({ name: 'camera' }).then(function(result) {
-          if (result.state === 'granted' && qrBarcodeDetector) { qrStartCamera(); }
+          if (result.state === 'granted' && qrEngineReady()) { qrStartCamera(); }
           else if (result.state === 'granted') {
-            var checkReady = setInterval(function() { if (qrBarcodeDetector) { clearInterval(checkReady); qrStartCamera(); } }, 200);
-            setTimeout(function() { clearInterval(checkReady); }, 3000);
+            // ZXing CDN load can take a couple seconds — give it more time than native
+            var checkReady = setInterval(function() { if (qrEngineReady()) { clearInterval(checkReady); qrStartCamera(); } }, 200);
+            setTimeout(function() { clearInterval(checkReady); }, 8000);
           }
         }).catch(function() {});
       }

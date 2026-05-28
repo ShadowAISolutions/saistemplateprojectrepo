@@ -3,9 +3,16 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 48/50`
+`Sections: 49/50`
 
 ## [Unreleased]
+
+## [v01.61w] — 2026-05-28 12:43:06 PM EST — v11.61r
+
+### Changed
+- The QR/barcode scanner now works in any modern browser — Chrome and Edge on Windows and macOS, Firefox, Safari, and iOS Safari are all supported (previously the page said scanning required Chrome on Android)
+- On laptops and desktops without a rear camera, the scanner now uses the default webcam instead of refusing to start
+- A small badge above the scanner shows whether your browser is using its built-in scanner or the fallback decoder loaded for this page
 
 ## [v01.60w] — 2026-05-04 10:40:55 AM EST — v11.60r
 

@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 98/100`
+`Sections: 99/100`
 
 ## [Unreleased]
+
+## [v11.61r] — 2026-05-28 12:43:06 PM EST
+
+> **Prompt:** "in our inventorymanagement.html scanner, make it work on any browser, not just on android, in particular make it work for windows using chrome"
+
+### Changed
+- Inventory Management scanner is no longer Android-only. The QR/barcode scanner in `live-site-pages/inventorymanagement.html` now works in any modern browser (Chrome/Edge on Windows + macOS, Firefox, Safari, iOS Safari) by lazy-loading the ZXing UMD bundle from jsDelivr (`@zxing/library@0.21.3`) when the native `BarcodeDetector` Web API is unavailable. The detect loop dispatches to either the native detector or the ZXing decoder per tick, sharing the same camera stream, cooldown, scan-line, and confirmation modal logic
+- Camera acquisition gained a third fallback (`{video: true}` with no `facingMode` constraint) so the scanner works on laptops and desktops that only have a front-facing webcam — previously the two-step `facingMode: {exact: 'environment'}` → `facingMode: 'environment'` chain failed on those devices with an OverconstrainedError
+- Removed the "QR scanning requires Chrome on Android" copy from the start screen and "Open this page on your phone to scan" copy from the status message. The unsupported messaging now only fires when the CDN load actually fails (no network / blocked CDN)
+- Engine badge displays `ZXING · QR+BARCODE` while the fallback decoder is active (and `LOADING DECODER…` during the script fetch), matching the existing `NATIVE · QR+BARCODE` label for native detection. The "found" status message reflects which engine produced the result
+
+#### `inventorymanagement.html` — v01.61w
+
+##### Changed
+- QR/barcode scanner now works in any modern browser — no longer limited to Chrome on Android
+- Scanner works on Windows/macOS desktops with only a front-facing webcam (uses the default camera when no rear camera is available)
+- Engine badge shows whether the page is using your browser's built-in scanner or the loaded fallback decoder
 
 ## [v11.60r] — 2026-05-04 10:40:55 AM EST
 
