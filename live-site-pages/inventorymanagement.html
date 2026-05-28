@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdn.jsdelivr.net; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.63w">
+  <meta name="build-version" content="v01.64w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -661,8 +661,8 @@
       #qr-camera-section .qr-side-panel { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; gap: 8px; align-self: stretch; padding: 0; }
       #qr-camera-section .qr-action-btns { display: flex; flex-direction: row; gap: 6px; margin-top: auto; }
       #qr-camera-section .qr-action-btns .qr-torch-btn,
-      #qr-camera-section .qr-action-btns .qr-stop-btn,
-      #qr-camera-section .qr-action-btns .qr-switch-cam-btn { position: static; width: 36px; height: 36px; flex: 0 0 36px; }
+      #qr-camera-section .qr-action-btns .qr-stop-btn { position: static; width: 36px; height: 36px; flex: 0 0 36px; }
+      #qr-camera-section .qr-action-btns .qr-camera-select { height: 36px; max-width: 110px; min-width: 80px; font-size: 10px; padding-left: 8px; padding-right: 22px; }
       #qr-camera-section .qr-action-btns #ld-manual-entry-btn { padding: 6px 10px; background: #1f6feb; color: #fff; border: none; border-radius: 6px; font: 600 11px/1.2 sans-serif; cursor: pointer; white-space: nowrap; flex: 1 1 auto; min-width: 0; }
       #qr-camera-section .qr-status-bar { display: flex; flex-direction: row; align-items: center; gap: 6px; max-width: none; padding: 0; margin: 0; font-size: 0.62rem; }
       #qr-camera-section .qr-auto-controls { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 0; margin: 0; max-width: none; font-size: 0.66rem; }
@@ -687,8 +687,8 @@
       /* In expanded mode, action buttons overlay the fullscreen viewport */
       body.qr-fullscreen-active .qr-action-btns { position: fixed; bottom: 32px; left: 24px; right: 24px; z-index: 9510; justify-content: center; gap: 12px; }
       body.qr-fullscreen-active .qr-action-btns .qr-torch-btn,
-      body.qr-fullscreen-active .qr-action-btns .qr-stop-btn,
-      body.qr-fullscreen-active .qr-action-btns .qr-switch-cam-btn { width: 48px; height: 48px; flex: 0 0 48px; }
+      body.qr-fullscreen-active .qr-action-btns .qr-stop-btn { width: 48px; height: 48px; flex: 0 0 48px; }
+      body.qr-fullscreen-active .qr-action-btns .qr-camera-select { height: 48px; max-width: 180px; font-size: 13px; padding-left: 14px; padding-right: 28px; }
       body.qr-fullscreen-active .qr-action-btns #ld-manual-entry-btn { flex: 0 0 auto; padding: 8px 16px; font-size: 13px; }
       .qr-viewport-wrapper.qr-expanded .qr-engine-badge { bottom: 32px; left: 24px; font-size: 0.62rem; }
       .qr-viewport-wrapper.qr-expanded .qr-expand-hint { display: none; }
@@ -787,11 +787,11 @@
     .qr-torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
     .qr-stop-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #ff6b6b; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; }
     .qr-stop-btn:active { transform: scale(0.9); }
-    .qr-switch-cam-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #58a6ff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; position: relative; }
-    .qr-switch-cam-btn:active { transform: scale(0.9); }
-    .qr-switch-cam-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .qr-cam-label-flash { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #c9d1d9; font: 600 11px/1.3 sans-serif; padding: 4px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.25s; z-index: 30; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
-    .qr-cam-label-flash.visible { opacity: 1; }
+    .qr-camera-select { height: 36px; max-width: 160px; min-width: 100px; flex: 0 1 auto; border-radius: 18px; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path fill='%2358a6ff' d='M6 8L0 0h12z'/></svg>") no-repeat right 10px center / 8px 6px; color: #c9d1d9; font: 600 12px/1.2 sans-serif; padding: 0 28px 0 12px; cursor: pointer; transition: all 0.2s; appearance: none; -webkit-appearance: none; -moz-appearance: none; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .qr-camera-select:hover { background-color: rgba(0,0,0,0.8); border-color: #58a6ff; }
+    .qr-camera-select:focus { outline: none; border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.25); }
+    .qr-camera-select:disabled { opacity: 0.5; cursor: not-allowed; }
+    .qr-camera-select option { background: #161b22; color: #c9d1d9; }
     .qr-status-bar { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 0.68rem; color: #555570; padding: 0; }
     .qr-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555570; flex-shrink: 0; transition: background 0.3s; }
     .qr-status-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; animation: qrPulse 1.5s ease-in-out infinite; }
@@ -846,6 +846,10 @@
     #ld-camera-capture-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10006; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
     #ld-camera-capture-overlay.active { display: flex; }
     #ld-camera-capture-video { max-width: 90vw; max-height: 70vh; border-radius: 8px; border: 2px solid #30363d; }
+    #ld-camera-capture-select { height: 38px; max-width: 90vw; min-width: 200px; border-radius: 19px; border: 1px solid #30363d; background: rgba(20,22,30,0.95) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path fill='%2358a6ff' d='M6 8L0 0h12z'/></svg>") no-repeat right 14px center / 9px 7px; color: #c9d1d9; font: 600 13px/1.2 sans-serif; padding: 0 36px 0 16px; cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; transition: all 0.2s; }
+    #ld-camera-capture-select:hover { border-color: #58a6ff; background-color: rgba(28,32,42,0.95); }
+    #ld-camera-capture-select:focus { outline: none; border-color: #58a6ff; box-shadow: 0 0 0 3px rgba(88,166,255,0.25); }
+    #ld-camera-capture-select option { background: #161b22; color: #c9d1d9; }
     .camera-capture-btns { display: flex; gap: 12px; }
     .camera-capture-btn { padding: 10px 24px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; touch-action: manipulation; }
     .camera-capture-snap { background: #238636; color: #fff; }
@@ -1059,7 +1063,7 @@
           </div>
         </div>
         <div class="qr-action-btns">
-          <button class="qr-switch-cam-btn" id="qr-switch-cam-btn" type="button" aria-label="Switch camera" title="Switch camera" style="display:none;">&#128247;</button>
+          <select class="qr-camera-select" id="qr-camera-select" aria-label="Choose camera" title="Choose camera" style="display:none;"></select>
           <button class="qr-torch-btn" id="qr-torch-btn">&#128294;</button>
           <button class="qr-stop-btn" id="qr-stop-btn">&#x2716;</button>
           <button id="ld-manual-entry-btn">&#10133; Entry</button>
@@ -1202,6 +1206,7 @@
 
   <!-- Camera capture overlay (desktop) -->
   <div id="ld-camera-capture-overlay">
+    <select id="ld-camera-capture-select" aria-label="Choose camera" title="Choose camera" style="display:none;"></select>
     <video id="ld-camera-capture-video" autoplay playsinline></video>
     <div class="camera-capture-btns">
       <button class="camera-capture-btn camera-capture-snap" id="ld-camera-snap">📷 Take Photo</button>
@@ -5878,7 +5883,7 @@
       var qrStartBtn = document.getElementById('qr-start-btn');
       var qrStartScreen = document.getElementById('qr-start-screen');
       var qrStopBtn = document.getElementById('qr-stop-btn');
-      var qrSwitchCamBtn = document.getElementById('qr-switch-cam-btn');
+      var qrCameraSelect = document.getElementById('qr-camera-select');
       var qrScanning = false;
       var qrCooldown = false;
       var qrBarcodeDetector = null;
@@ -6031,54 +6036,51 @@
           qrAvailableCameras = devices.filter(function(d) { return d.kind === 'videoinput'; }).map(function(d, i) {
             return { deviceId: d.deviceId, label: d.label || ('Camera ' + (i + 1)) };
           });
-          if (qrSwitchCamBtn) {
-            qrSwitchCamBtn.style.display = (qrAvailableCameras.length > 1) ? 'flex' : 'none';
+          // Populate the camera select; hide it if there's only one (or none) to choose from
+          if (qrCameraSelect) {
+            if (qrAvailableCameras.length > 1) {
+              qrCameraSelect.innerHTML = '';
+              for (var i = 0; i < qrAvailableCameras.length; i++) {
+                var cam = qrAvailableCameras[i];
+                var opt = document.createElement('option');
+                opt.value = cam.deviceId;
+                opt.textContent = cam.label;
+                if (cam.deviceId === qrCurrentDeviceId) opt.selected = true;
+                qrCameraSelect.appendChild(opt);
+              }
+              // Reflect the active camera in the select's value + tooltip
+              if (qrCurrentDeviceId) qrCameraSelect.value = qrCurrentDeviceId;
+              var activeCam = qrAvailableCameras.find(function(c) { return c.deviceId === qrCameraSelect.value; });
+              qrCameraSelect.title = activeCam ? activeCam.label : 'Choose camera';
+              qrCameraSelect.style.display = '';
+            } else {
+              qrCameraSelect.style.display = 'none';
+            }
           }
         } catch(e) {
-          if (qrSwitchCamBtn) qrSwitchCamBtn.style.display = 'none';
+          if (qrCameraSelect) qrCameraSelect.style.display = 'none';
         }
       }
 
-      async function qrSwitchCamera() {
-        if (!qrAvailableCameras || qrAvailableCameras.length < 2) return;
-        // Find current camera position; cycle to next
-        var currentIdx = -1;
-        for (var i = 0; i < qrAvailableCameras.length; i++) {
-          if (qrAvailableCameras[i].deviceId === qrCurrentDeviceId) { currentIdx = i; break; }
-        }
-        var nextIdx = (currentIdx + 1) % qrAvailableCameras.length;
-        var next = qrAvailableCameras[nextIdx];
-        if (!next || !next.deviceId) return;
+      async function qrSelectCamera(deviceId) {
+        if (!deviceId || deviceId === qrCurrentDeviceId) return;
         // Stop loop while we swap streams so detect calls don't race the swap
         qrScanning = false; qrNativeLoopActive = false;
         // Reset torch state \u2014 capabilities are per-track and won't carry over
         qrTorchOn = false; qrTorchSupported = false;
         if (qrTorchBtn) { qrTorchBtn.classList.remove('on'); qrTorchBtn.style.display = 'none'; }
-        try { qrSwitchCamBtn.disabled = true; } catch(e) {}
+        if (qrCameraSelect) qrCameraSelect.disabled = true;
         try {
-          await qrStartCamera(next.deviceId);
-          qrShowCameraLabel(next.label);
+          await qrStartCamera(deviceId);
+          if (qrCameraSelect) {
+            var picked = qrAvailableCameras.find(function(c) { return c.deviceId === deviceId; });
+            qrCameraSelect.title = picked ? picked.label : 'Choose camera';
+          }
         } catch(e) {
           qrSetStatus('error', 'Switch failed: ' + (e && e.message ? e.message : 'unknown'));
         } finally {
-          try { qrSwitchCamBtn.disabled = false; } catch(e) {}
+          if (qrCameraSelect) qrCameraSelect.disabled = false;
         }
-      }
-
-      function qrShowCameraLabel(label) {
-        if (!qrSwitchCamBtn || !label) return;
-        var flash = qrSwitchCamBtn.querySelector('.qr-cam-label-flash');
-        if (!flash) {
-          flash = document.createElement('div');
-          flash.className = 'qr-cam-label-flash';
-          qrSwitchCamBtn.appendChild(flash);
-        }
-        flash.textContent = label;
-        // Force a reflow so the transition fires reliably on subsequent toggles
-        void flash.offsetWidth;
-        flash.classList.add('visible');
-        clearTimeout(qrShowCameraLabel._t);
-        qrShowCameraLabel._t = setTimeout(function() { flash.classList.remove('visible'); }, 1800);
       }
 
       function qrStopCamera() {
@@ -6086,7 +6088,7 @@
         if (qrVideo && qrVideo.srcObject) { qrVideo.srcObject.getTracks().forEach(function(t) { t.stop(); }); qrVideo.srcObject = null; }
         if (qrTorchBtn) { qrTorchBtn.style.display = 'none'; qrTorchBtn.classList.remove('on'); }
         if (qrStopBtn) qrStopBtn.style.display = 'none';
-        if (qrSwitchCamBtn) qrSwitchCamBtn.style.display = 'none';
+        if (qrCameraSelect) qrCameraSelect.style.display = 'none';
         qrTorchOn = false; qrTorchSupported = false;
         if (qrStartScreen) qrStartScreen.style.display = '';
         qrSetStatus('', 'Camera inactive');
@@ -6487,7 +6489,12 @@
       if (qrStartBtn) qrStartBtn.addEventListener('click', function() { qrStartCamera(); });
       if (qrTorchBtn) qrTorchBtn.addEventListener('click', qrToggleTorch);
       if (qrStopBtn) qrStopBtn.addEventListener('click', qrStopCamera);
-      if (qrSwitchCamBtn) qrSwitchCamBtn.addEventListener('click', function(e) { e.stopPropagation(); qrSwitchCamera(); });
+      if (qrCameraSelect) {
+        // 'change' handles keyboard navigation, mobile native pickers, and desktop dropdown clicks.
+        // stopPropagation prevents the tap-to-expand wrapper handler from interpreting select interaction as a wrapper tap.
+        qrCameraSelect.addEventListener('change', function(e) { e.stopPropagation(); qrSelectCamera(this.value); });
+        qrCameraSelect.addEventListener('click', function(e) { e.stopPropagation(); });
+      }
       qrDetectEngine();
       if (navigator.permissions && navigator.permissions.query) {
         navigator.permissions.query({ name: 'camera' }).then(function(result) {
@@ -6523,7 +6530,7 @@
         if (e && e.target && (
             e.target.closest('.qr-torch-btn') ||
             e.target.closest('.qr-stop-btn') ||
-            e.target.closest('.qr-switch-cam-btn') ||
+            e.target.closest('.qr-camera-select') ||
             e.target.closest('.qr-collapse-btn') ||
             e.target.closest('#qr-start-screen'))) return;
         if (qrWrapper.classList.contains('qr-expanded')) qrCollapse();
@@ -6791,36 +6798,84 @@
             captureInput.click();
             return;
           }
-          // Desktop: use getUserMedia overlay
+          // Desktop: use getUserMedia overlay with name-based camera selection
           var overlay = document.getElementById('ld-camera-capture-overlay');
           var video = document.getElementById('ld-camera-capture-video');
           var snapBtn = document.getElementById('ld-camera-snap');
           var cancelBtn = document.getElementById('ld-camera-cancel');
+          var camSelect = document.getElementById('ld-camera-capture-select');
           if (!overlay || !video) return;
           var captureStream = null;
-          navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } })
-            .then(function(stream) {
-              captureStream = stream;
-              video.srcObject = stream;
-              overlay.classList.add('active');
-            })
-            .catch(function() {
-              // Fallback: try without exact facingMode
-              return navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } });
-            })
-            .then(function(stream) {
-              if (!captureStream && stream) {
+          var CAPTURE_CAM_KEY = 'ld_capture_last_camera_id_v1';
+
+          function stopCaptureStream() {
+            if (captureStream) { captureStream.getTracks().forEach(function(t) { t.stop(); }); captureStream = null; }
+            video.srcObject = null;
+          }
+
+          function startCaptureStream(preferredDeviceId) {
+            stopCaptureStream();
+            var rememberedId = preferredDeviceId;
+            if (!rememberedId) { try { rememberedId = localStorage.getItem(CAPTURE_CAM_KEY) || null; } catch(e) {} }
+            var chain;
+            if (rememberedId) {
+              chain = navigator.mediaDevices.getUserMedia({ video: { deviceId: {exact: rememberedId}, width: {ideal: 1280}, height: {ideal: 720} } })
+                .catch(function() {
+                  // Remembered device gone — fall back to facingMode chain
+                  return navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} } });
+                });
+            } else {
+              chain = navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} } });
+            }
+            return chain
+              .catch(function() {
+                return navigator.mediaDevices.getUserMedia({ video: { width: {ideal: 1280}, height: {ideal: 720} } });
+              })
+              .then(function(stream) {
                 captureStream = stream;
                 video.srcObject = stream;
                 overlay.classList.add('active');
+                // Persist whichever device the browser actually granted
+                try {
+                  var settings = stream.getVideoTracks()[0].getSettings();
+                  if (settings.deviceId) { try { localStorage.setItem(CAPTURE_CAM_KEY, settings.deviceId); } catch(e) {} }
+                  if (camSelect && settings.deviceId) camSelect.value = settings.deviceId;
+                } catch(e) {}
+                return populateCaptureCameraSelect();
+              })
+              .catch(function(err) { console.warn('Camera error:', err); });
+          }
+
+          async function populateCaptureCameraSelect() {
+            if (!camSelect || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+            try {
+              var devices = await navigator.mediaDevices.enumerateDevices();
+              var cams = devices.filter(function(d) { return d.kind === 'videoinput'; });
+              if (cams.length > 1) {
+                camSelect.innerHTML = '';
+                var activeId = '';
+                try { activeId = captureStream ? captureStream.getVideoTracks()[0].getSettings().deviceId : ''; } catch(e) {}
+                cams.forEach(function(d, i) {
+                  var opt = document.createElement('option');
+                  opt.value = d.deviceId;
+                  opt.textContent = d.label || ('Camera ' + (i + 1));
+                  if (d.deviceId === activeId) opt.selected = true;
+                  camSelect.appendChild(opt);
+                });
+                if (activeId) camSelect.value = activeId;
+                var picked = cams.find(function(c) { return c.deviceId === camSelect.value; });
+                camSelect.title = picked ? (picked.label || 'Camera') : 'Choose camera';
+                camSelect.style.display = '';
+              } else {
+                camSelect.style.display = 'none';
               }
-            })
-            .catch(function(err) { console.warn('Camera error:', err); });
+            } catch(e) { camSelect.style.display = 'none'; }
+          }
 
           function stopCapture() {
-            if (captureStream) { captureStream.getTracks().forEach(function(t) { t.stop(); }); captureStream = null; }
-            video.srcObject = null;
+            stopCaptureStream();
             overlay.classList.remove('active');
+            if (camSelect) camSelect.style.display = 'none';
           }
           var snapHandler = function() {
             var canvas = document.createElement('canvas');
@@ -6838,9 +6893,20 @@
             }, 'image/jpeg', 0.9);
           };
           var cancelHandler = function() { stopCapture(); };
-          // Clone buttons to prevent stacking listeners
+          var selectChangeHandler = function() {
+            try { localStorage.setItem(CAPTURE_CAM_KEY, camSelect.value); } catch(e) {}
+            startCaptureStream(camSelect.value);
+          };
+          // Clone elements to prevent stacking listeners across re-opens
           if (snapBtn) { var ns = snapBtn.cloneNode(true); snapBtn.parentNode.replaceChild(ns, snapBtn); ns.addEventListener('click', snapHandler); }
           if (cancelBtn) { var nc = cancelBtn.cloneNode(true); cancelBtn.parentNode.replaceChild(nc, cancelBtn); nc.addEventListener('click', cancelHandler); }
+          if (camSelect) {
+            var newSel = camSelect.cloneNode(false);
+            camSelect.parentNode.replaceChild(newSel, camSelect);
+            camSelect = newSel;
+            camSelect.addEventListener('change', selectChangeHandler);
+          }
+          startCaptureStream();
         });
       }
 

@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 96/100`
+`Sections: 97/100`
 
 ## [Unreleased]
+
+## [v11.64r] — 2026-05-28 01:32:48 PM EST
+
+> **Prompt:** "ok that works, but i want it to be able to select the camera by name rather than cycle through them. this should also apply to when we are taking a picture to assign to the item."
+
+### Changed
+- Replaced the cycle-style 📷 camera-switch button on the Inventory Management scanner with a name-based `<select>` dropdown (`#qr-camera-select`). `qrEnumerateCameras()` now populates the select with one `<option value="deviceId">label</option>` per video input; a `change` event handler calls `qrSelectCamera(deviceId)` which stops the active stream and acquires a new one pinned to the chosen device. Cycle helpers (`qrSwitchCamera`, `qrShowCameraLabel`, `qr-cam-label-flash`) and their button + flash CSS are removed
+- Photo-capture overlay (`#ld-camera-capture-overlay`) gained the same name-based selector (`#ld-camera-capture-select`). The desktop branch of the image-capture handler now stops the existing stream before acquiring a new one on selection change, persists the chosen deviceId in `localStorage` under a separate key (`ld_capture_last_camera_id_v1`) so it doesn't collide with the scanner's selection, and uses `track.getSettings().deviceId` to capture the actually-granted device for persistence
+- The capture-overlay handler was restructured into `startCaptureStream(preferredDeviceId)` + `stopCaptureStream()` + `populateCaptureCameraSelect()` so the change-camera flow can re-enter cleanly without leaking tracks. Element listeners are cloned on each open to prevent stacking
+- Scanner camera-select element uses an SVG-rendered chevron, `appearance: none`, and `text-overflow: ellipsis` so long camera labels truncate cleanly without breaking the button-row layout. Responsive sizes match the existing torch/stop button sizing (36px compact, 48px fullscreen)
+
+#### `inventorymanagement.html` — v01.64w
+
+##### Changed
+- Pick your scanner camera by name from a dropdown — previously you tapped a button that cycled through cameras
+- The same camera-by-name picker now appears in the photo-capture overlay used to attach an image to an item
+- Each picker remembers its own last selection, so the camera you use for scanning doesn't override the camera you use for taking item photos (and vice versa)
 
 ## [v11.63r] — 2026-05-28 01:21:39 PM EST
 

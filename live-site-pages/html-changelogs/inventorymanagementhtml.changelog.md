@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 39/50`
+`Sections: 40/50`
 
 ## [Unreleased]
+
+## [v01.64w] — 2026-05-28 01:32:48 PM EST — v11.64r
+
+### Changed
+- Pick your scanner camera by name from a dropdown — replaces the cycle button. The dropdown remembers your last choice across reloads
+- The same name-based camera picker now appears in the photo-capture overlay used to attach an image to an item. The two pickers remember their selections independently so scanning and photo-taking can use different cameras
 
 ## [v01.63w] — 2026-05-28 01:21:39 PM EST — v11.63r
 
