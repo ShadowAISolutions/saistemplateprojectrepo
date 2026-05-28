@@ -3,9 +3,15 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 50/50`
+`Sections: 39/50`
 
 ## [Unreleased]
+
+## [v01.63w] — 2026-05-28 01:21:39 PM EST — v11.63r
+
+### Added
+- Camera-switch button on the scanner — when your device has more than one camera, a 📷 button appears next to the torch and stop controls. Tap it to cycle to the next camera; a small label briefly shows the camera's name so you know which one is active
+- The scanner now remembers your last-selected camera across page reloads
 
 ## [v01.62w] — 2026-05-28 01:00:17 PM EST — v11.62r
 
@@ -221,77 +227,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older s
 - When adding a new item, quantity can be set to 0 but not below zero
 - When editing an existing item, the minus button and typed values stop when the total quantity would go below 0
 
-## [v01.25w] — 2026-04-11 11:43:01 PM EST — v10.83r
-
-### Fixed
-- Tapping the camera to expand it to full screen now works correctly — previously the camera stayed small when tapped
-
-## [v01.24w] — 2026-04-11 11:32:19 PM EST — v10.82r
-
-### Changed
-- The flashlight, stop camera, and manual entry buttons now appear next to the camera instead of overlaying it — easier to reach and always visible
-
-## [v01.23w] — 2026-04-11 11:11:17 PM EST — v10.81r
-
-### Added
-- You can now scan items rapidly without waiting for each save to complete — scanned items are queued and saved in the background one at a time
-- A blue "queued" badge appears showing how many items are waiting to be saved
-- Each queued item appears in the table immediately with a "Queued" or "Sending" indicator
-- If a save fails, a red notification appears with the item details — remaining items continue saving
-
-### Changed
-- Auto-scan mode now queues items instantly instead of waiting for the previous save to finish
-
 ## [v01.22w] — 2026-04-12 08:16:30 PM EST — v10.80r
 
 ### Changed
 - The Quantity field in the entry form now defaults to `1` for new items (previously it was blank). For existing items it already defaulted to `1` as the delta to add — both contexts are now consistent. You can still type any value or use the − / + buttons to adjust before saving
-
-## [v01.21w] — 2026-04-11 07:49:46 PM EST — v10.77r
-
-### Changed
-- 0 is no longer an option in any of the quantity steppers (the new "Auto add" increment input next to the camera, and the existing − / + buttons in the scan/manual entry form). Pressing − when the value is 1 now jumps straight to -1 (skipping 0), and pressing + when the value is -1 now jumps straight to 1. Typing 0 directly into the field and tabbing away snaps the value back to 1. The previous Auto add behavior where setting 0 silently incremented by 1 is fixed — if the value is somehow 0 when a scan fires, the entry form now opens instead so you can see what's happening
-
-## [v01.20w] — 2026-04-11 07:40:08 PM EST — v10.76r
-
-### Fixed
-- Fixed the new "Auto add" toggle: turning it on now actually bypasses the entry form and immediately adds the configured amount when you scan a known item. The previous version had the toggle and increment input visible but the auto-add path wasn't being reached on real scans, so the entry form kept opening regardless of the toggle state
-
-## [v01.19w] — 2026-04-11 06:53:17 PM EST — v10.75r
-
-### Added
-- New "Auto add" toggle next to the camera scanner on phones (and below the camera on desktop). When the toggle is off, scanning a barcode opens the entry form as before so you can review and confirm the quantity. When the toggle is on, scanning a known item silently adds the configured amount to that item's quantity without opening the form — useful for fast bulk-counting
-- New increment input next to the Auto add toggle, with − and + buttons. Set the increment to any positive or negative number (e.g. +1, +2, -1, -2) to control how much each scan adds or subtracts. The value persists across page reloads
-- Scanning an unknown barcode (one not yet in the inventory) while Auto add is on will still open the entry form, so you can name the new item before saving it
-
-## [v01.18w] — 2026-04-11 06:04:15 PM EST — v10.73r
-
-### Changed
-- On phones, the camera scanner is now a square preview with the status display sitting beside it instead of stacked underneath, making the layout more compact and leaving room next to the camera for additional controls
-
-## [v01.17w] — 2026-04-11 05:44:20 PM EST — v10.72r
-
-### Fixed
-- Fixed the pencil edit button so it now works the same way as scanning an existing item to change the quantity. Tap the pencil on any row, enter the amount to add or subtract (or use − / +), click Save, and the row's quantity updates correctly
-
-## [v01.16w] — 2026-04-11 05:31:18 PM EST — v10.71r
-
-### Fixed
-- Fixed an issue where editing a row via the pencil button and clicking Save did not update the values in the table. Changes now reflect immediately in the table after clicking Save, and the sheet gets updated in the background
-
-## [v01.15w] — 2026-04-11 05:19:50 PM EST — v10.70r
-
-### Added
-- Each row in the inventory table now has an edit button (✏️) next to the delete button. Tapping it opens the same entry form used for scanning/manual entry, pre-filled with that row's current values. The + / − buttons let you adjust the quantity directly, and Save writes the changes back to the sheet. Last User and Last Updated are refreshed automatically when you save
-
-## [v01.14w] — 2026-04-11 05:03:25 PM EST — v10.69r
-
-### Changed
-- Entry form (both manual and scan) no longer shows the Last User and Last Updated fields — these are always filled in automatically, so hiding them removes noise and makes the form quicker to scan. The table still displays both columns as before
-
-## [v01.13w] — 2026-04-11 04:40:42 PM EST — v10.68r
-
-### Changed
-- Manual entry form now has the same − / + quantity adjustment buttons as the scan entry form — both entry screens now look identical, with the only difference being whether the barcode is filled in automatically (scan) or typed in manually
 
 Developed by: ShadowAISolutions

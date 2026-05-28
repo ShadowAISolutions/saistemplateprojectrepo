@@ -3,9 +3,26 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 100/100`
+`Sections: 96/100`
 
 ## [Unreleased]
+
+## [v11.63r] — 2026-05-28 01:21:39 PM EST
+
+> **Prompt:** "ok it seems to be working, but i have both a front and back camera, i want the user to be able to switch between available cameras"
+
+### Added
+- Camera-switch button on the Inventory Management scanner. When `navigator.mediaDevices.enumerateDevices()` reports 2+ video input devices after the first stream acquires (browsers only populate device labels and stable IDs after the user grants camera permission, so enumeration is deferred until then), a 📷 button appears in the scanner action row next to the torch/stop controls. Clicking it cycles to the next camera, stops the current `MediaStream`'s tracks, and starts a new one pinned to the next device's `deviceId` via `getUserMedia({video: {deviceId: {exact: ...}}})`. A small label flashes above the button for ~1.8s showing the new camera's label so the user knows which one is active
+- Last-selected camera persistence via `localStorage` key `ld_qr_last_camera_id_v1`. On every successful `qrStartCamera()`, the active track's `getSettings().deviceId` is stored. On subsequent loads (and on auto-start via the `permissions.query({name:'camera'})` granted-state path), the saved deviceId is tried first via `getUserMedia({video: {deviceId: {exact: id}}})` — if that throws `OverconstrainedError` (device unplugged/missing), the existing `facingMode` chain takes over so the scanner still starts
+
+### Changed
+- `qrStartCamera(preferredDeviceId)` in `live-site-pages/inventorymanagement.html` now accepts an optional preferred deviceId, stops any existing stream before acquiring a new one (so the function is re-entrant from the switch path without orphaning tracks), and resets the torch state on each entry (torch capability is per-track and does not survive a device swap). The auto-start permission-poll path was updated to wait up to 8 seconds (previously 3) so that the ZXing CDN fallback has time to load on slower connections before the engine-readiness check fires
+- The `qr-action-btns` action row now includes the camera-switch button in the same flex layout as the existing torch and stop buttons — same 36px/48px responsive sizing, same fullscreen-overlay positioning, same tap-to-expand click-isolation guard
+
+#### `inventorymanagement.html` — v01.63w
+
+##### Added
+- 📷 camera-switch button on the scanner — appears automatically when the device has more than one camera. Tap to cycle to the next camera; a small label briefly shows the camera name. Your last-selected camera is remembered across reloads
 
 ## [v11.62r] — 2026-05-28 01:00:17 PM EST
 
@@ -1538,60 +1555,5 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with pr
 #### `inventorymanagement.html` — v01.13w
 ##### Changed
 - Manual entry form now has the same − / + quantity adjustment buttons as the scan entry form — both entry screens now look identical, with the only difference being whether the barcode is filled in automatically (scan) or typed in manually
-
-## [v10.67r] — 2026-04-10 01:06:37 PM EST
-
-> **Prompt:** "for the inventorymanagement, have the mobile view only show the item name and quantity column"
-
-### Changed
-- Added a mobile-only CSS rule to `live-site-pages/inventorymanagement.html` inside the existing `@media (max-width: 600px)` block that hides the Barcode, Last User, and Last Updated columns (`th:nth-child(3|4|5)` and `td[data-col="2"|"3"|"4"]`) so the mobile view shows only Item Name and Quantity. The delete action column is automatically preserved because its `<th>` lives at `nth-child(6)` (outside the selector range) and its `<td>` has no `data-col` attribute. Rendering logic in `ldRenderTableView()` is untouched — this is a pure CSS visibility change, so hidden cells still exist in the DOM and sorting/editing/data attributes work unchanged when the viewport is resized back to desktop. Verified via Playwright at 390×844 mobile (only Item Name + Quantity + delete visible), 1280×800 desktop (all 5 columns + delete visible), and 601×844 boundary (above breakpoint — all columns visible)
-
-#### `inventorymanagement.html` — v01.12w
-##### Changed
-- Mobile view now shows only Item Name and Quantity columns — Barcode, Last User, and Last Updated are hidden below 600px screen width for easier scanning on phones
-
-## [v10.66r] — 2026-04-10 12:16:52 PM EST
-
-> **Prompt:** *(hook-triggered cleanup — follow-up to v10.65r)*
-
-### Changed
-- Calibrated the time-estimate heuristics in `.claude/rules/chat-bookends.md` after v10.65r's ACTUAL TOTAL COMPLETION TIME (18m 34s) missed the original estimate (4m) by 14m 34s. Root cause: the original estimate only covered the plan-mode research/planning phase and did not project the anticipated post-approval execution phase, so when the plan was approved and execution began, the estimate was structurally blind to the second half of the response. Added a new **Plan-mode flows** clause to the "Time estimate" bullet that explicitly requires the original overall estimate to include BOTH phases — research/planning AND anticipated post-approval execution (file reads, edits, commit cycle, push cycle, visual verification, calibration overhead). The clause states: "A plan-mode response is not 'done' when `ExitPlanMode` is called — it continues through approval and execution until `✅✅CODING COMPLETE✅✅`, and the estimate must cover that full wall-clock span." The per-phase heuristic values (`~10s per tool call`, `~30s per commit/push cycle`, etc.) are unchanged — they were accurate for this response (the post-approval estimate of 8m vs. actual 9m 10s was within the 2-minute tolerance). The miss was framing, not numbers
-
-## [v10.65r] — 2026-04-10 12:08:01 PM EST
-
-> **Prompt:** "in the inventory management, i want to remove the timestamp column, and rearrange the others order: Item Name, Quantity, Barcode, Last User, Last Updated"
-
-### Changed
-- Removed the Timestamp column from the inventory management page and reordered the remaining columns to `Item Name | Quantity | Barcode | Last User | Last Updated`. The display is data-driven via `_ldHeaders`/`_ldRows` in the render loops at `live-site-pages/inventorymanagement.html` lines 4407 and 4446 — the actual column shape comes from the Google Sheet, which the user manually restructured from 6 columns to 5 in the new order. The only code-side changes were the hardcoded fallback defaults that describe the sheet shape: updated `sheet.getRange(1, 1, 1, 5).setValues(...)` in `googleAppsScripts/Inventorymanagement/inventorymanagement.gs` line 323 (auto-create fallback — triggers if the sheet tab is deleted), and updated the scan-confirm modal's fallback array at `live-site-pages/inventorymanagement.html` line 4964 (used when `_ldHeaders` is empty). Also cleaned up dead code in the scan-confirm modal — removed the `timestampColIdx` tracking variable and the `else if (hLow === 'timestamp')` branch (lines 4968–4975) plus the Timestamp pre-fill line (previously 5011) since Timestamp is no longer a column, making the lookup permanently `-1` and the pre-fill unreachable (per behavioral-rules.md "Dead Code Detection Methodology"). Visually verified via Playwright at 390×844 mobile viewport: table renders 5 columns in the new order, scan-confirm modal for a new barcode shows 5 fields in the new order, and scan-confirm modal for an existing barcode correctly pre-fills `Item Name` from `itemNameColIdx` (proves the dead-code cleanup didn't break the remaining header lookups)
-
-#### `inventorymanagement.html` — v01.11w
-##### Changed
-- Inventory table now shows 5 columns in this order: Item Name, Quantity, Barcode, Last User, Last Updated
-- Removed the Timestamp column from the inventory table and the scan entry form
-
-#### `inventorymanagement.gs` — v01.04g
-##### Changed
-- Default sheet layout now uses 5 columns (Item Name, Quantity, Barcode, Last User, Last Updated) — Timestamp column removed
-
-## [v10.64r] — 2026-04-10 11:36:58 AM EST
-
-> **Prompt:** *(hook-triggered cleanup — follow-up to v10.63r)*
-
-### Changed
-- Calibrated the time-estimate heuristics in `.claude/rules/chat-bookends.md` after v10.63r missed its 5m estimate by ~18 minutes. Split `~1–2m per subagent spawn` into `~1–2m per Explore subagent` and `~3–5m per Plan subagent` (Plan agents do deeper multi-section analysis). Added two new heuristics: `~60–90s for first-time Playwright install` (pip install + chromium download ~110MB) and `~30–60s per Playwright visual-verification run`. These are observed from the v10.63r response and should produce tighter estimates on future multi-phase plan-and-execute responses that include visual verification
-
-## [v10.63r] — 2026-04-10 11:28:11 AM EST
-
-> **Prompt:** "the screenshot is of  inventorymanagement on the phone. while it looks nice, the camera portion is encompassing so much of the screen that seeing the inventory list itself and adding more features is difficult. come up with a UI design to accomodate for a user friendly experience."
-
-### Changed
-- Redesigned the inventory management scanner for mobile viewports (≤600px) — released the `aspect-ratio: 1/1` lock on `.qr-viewport-wrapper` and replaced it with a compact `height: 22vh; max-height: 200px` strip so the inventory table becomes the primary focus. On mobile, tapping the strip adds a `.qr-expanded` class that toggles the wrapper to `position: fixed; inset: 0` fullscreen — reusing the same `<video>` element so the camera stream is never restarted (no re-permission, no warm-up lag). Added a "TAP TO EXPAND" hint chip in compact state and a 44×44 × collapse button in expanded state. All overlays (corners, scan-line, torch, engine-badge, start-screen, found-flash) reposition proportionally via scoped selectors inside the existing `@media (max-width: 600px)` block. Added `body.qr-fullscreen-active` guard that disables pointer events on the header/tabs/table/dashboard beneath the fullscreen scanner. Wrapped `window._showScanConfirmModal` to auto-collapse the scanner when a scan fires the confirmation modal (so the table is visible behind it). Added Escape key handler for keyboard tablets. Desktop behavior is unchanged — every new CSS rule is inside the 600px media query, base `.qr-expand-hint { display: none }` hides it on desktop, and the `qrIsMobile()` gate makes the wrapper click a no-op at wider viewports. Introduced a scoped `qrScanMoveMobile` keyframe to avoid cross-media `@keyframes` override quirks
-
-#### `inventorymanagement.html` — v01.10w
-##### Changed
-- Redesigned the inventory scanner for phone screens — the camera now shows as a compact strip at the top of the page, leaving plenty of room for the inventory list
-- Tap the scanner strip to expand it to fullscreen for tougher scans; tap the × button to collapse it back
-- When a scan is detected, the scanner automatically collapses so the inventory list is visible behind the confirmation dialog
-- Desktop view is unchanged
 
 Developed by: ShadowAISolutions

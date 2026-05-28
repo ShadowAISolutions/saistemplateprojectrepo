@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-HASH_HERE' 'strict-dynamic' https://accounts.google.com/gsi/client https://apis.google.com https://cdn.jsdelivr.net; connect-src 'self' https://accounts.google.com/gsi/ https://www.googleapis.com https://script.google.com https://script.googleusercontent.com; frame-src https://accounts.google.com/gsi/ https://script.google.com https://*.googleusercontent.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.shadowaisolutions.com https://logoipsum.com https://drive.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; media-src 'self'; worker-src 'none'; manifest-src 'none'; upgrade-insecure-requests;">
   -->
   <meta name="template-id" content="sais-aut-7f3e9b2d">
-  <meta name="build-version" content="v01.62w">
+  <meta name="build-version" content="v01.63w">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <title>Inventory Management</title>
 <!-- ══════════════ -->
@@ -661,7 +661,8 @@
       #qr-camera-section .qr-side-panel { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; gap: 8px; align-self: stretch; padding: 0; }
       #qr-camera-section .qr-action-btns { display: flex; flex-direction: row; gap: 6px; margin-top: auto; }
       #qr-camera-section .qr-action-btns .qr-torch-btn,
-      #qr-camera-section .qr-action-btns .qr-stop-btn { position: static; width: 36px; height: 36px; flex: 0 0 36px; }
+      #qr-camera-section .qr-action-btns .qr-stop-btn,
+      #qr-camera-section .qr-action-btns .qr-switch-cam-btn { position: static; width: 36px; height: 36px; flex: 0 0 36px; }
       #qr-camera-section .qr-action-btns #ld-manual-entry-btn { padding: 6px 10px; background: #1f6feb; color: #fff; border: none; border-radius: 6px; font: 600 11px/1.2 sans-serif; cursor: pointer; white-space: nowrap; flex: 1 1 auto; min-width: 0; }
       #qr-camera-section .qr-status-bar { display: flex; flex-direction: row; align-items: center; gap: 6px; max-width: none; padding: 0; margin: 0; font-size: 0.62rem; }
       #qr-camera-section .qr-auto-controls { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 0; margin: 0; max-width: none; font-size: 0.66rem; }
@@ -686,7 +687,8 @@
       /* In expanded mode, action buttons overlay the fullscreen viewport */
       body.qr-fullscreen-active .qr-action-btns { position: fixed; bottom: 32px; left: 24px; right: 24px; z-index: 9510; justify-content: center; gap: 12px; }
       body.qr-fullscreen-active .qr-action-btns .qr-torch-btn,
-      body.qr-fullscreen-active .qr-action-btns .qr-stop-btn { width: 48px; height: 48px; flex: 0 0 48px; }
+      body.qr-fullscreen-active .qr-action-btns .qr-stop-btn,
+      body.qr-fullscreen-active .qr-action-btns .qr-switch-cam-btn { width: 48px; height: 48px; flex: 0 0 48px; }
       body.qr-fullscreen-active .qr-action-btns #ld-manual-entry-btn { flex: 0 0 auto; padding: 8px 16px; font-size: 13px; }
       .qr-viewport-wrapper.qr-expanded .qr-engine-badge { bottom: 32px; left: 24px; font-size: 0.62rem; }
       .qr-viewport-wrapper.qr-expanded .qr-expand-hint { display: none; }
@@ -785,6 +787,11 @@
     .qr-torch-btn.on { background: rgba(255,204,0,0.25); border-color: #ffcc00; color: #ffcc00; box-shadow: 0 0 8px rgba(255,204,0,0.4); }
     .qr-stop-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #ff6b6b; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; }
     .qr-stop-btn:active { transform: scale(0.9); }
+    .qr-switch-cam-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #1e1e2e; background: rgba(0,0,0,0.6); color: #58a6ff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; padding: 0; line-height: 1; position: relative; }
+    .qr-switch-cam-btn:active { transform: scale(0.9); }
+    .qr-switch-cam-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .qr-cam-label-flash { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #c9d1d9; font: 600 11px/1.3 sans-serif; padding: 4px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.25s; z-index: 30; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+    .qr-cam-label-flash.visible { opacity: 1; }
     .qr-status-bar { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 0.68rem; color: #555570; padding: 0; }
     .qr-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555570; flex-shrink: 0; transition: background 0.3s; }
     .qr-status-dot.active { background: #00ffcc; box-shadow: 0 0 6px #00ffcc; animation: qrPulse 1.5s ease-in-out infinite; }
@@ -1052,6 +1059,7 @@
           </div>
         </div>
         <div class="qr-action-btns">
+          <button class="qr-switch-cam-btn" id="qr-switch-cam-btn" type="button" aria-label="Switch camera" title="Switch camera" style="display:none;">&#128247;</button>
           <button class="qr-torch-btn" id="qr-torch-btn">&#128294;</button>
           <button class="qr-stop-btn" id="qr-stop-btn">&#x2716;</button>
           <button id="ld-manual-entry-btn">&#10133; Entry</button>
@@ -5870,6 +5878,7 @@
       var qrStartBtn = document.getElementById('qr-start-btn');
       var qrStartScreen = document.getElementById('qr-start-screen');
       var qrStopBtn = document.getElementById('qr-stop-btn');
+      var qrSwitchCamBtn = document.getElementById('qr-switch-cam-btn');
       var qrScanning = false;
       var qrCooldown = false;
       var qrBarcodeDetector = null;
@@ -5879,6 +5888,9 @@
       var qrNativeLoopActive = false;
       var qrTorchOn = false;
       var qrTorchSupported = false;
+      var qrAvailableCameras = [];          // [{deviceId, label}] populated after first stream
+      var qrCurrentDeviceId = null;         // deviceId of the active stream (null = let browser pick)
+      var QR_LAST_CAMERA_KEY = 'ld_qr_last_camera_id_v1';
 
       function qrEngineReady() { return !!qrBarcodeDetector || !!qrZxingReader; }
 
@@ -5949,19 +5961,39 @@
         qrSetStatus('error', 'Decoder unavailable \u2014 check connection or try another browser');
       }
 
-      async function qrStartCamera() {
+      async function qrStartCamera(preferredDeviceId) {
         if (!qrEngineReady()) return;
+        // Stop any existing stream first (covers the switch-camera path that re-enters qrStartCamera)
+        if (qrVideo && qrVideo.srcObject) {
+          try { qrVideo.srcObject.getTracks().forEach(function(t) { t.stop(); }); } catch(e) {}
+          qrVideo.srcObject = null;
+        }
         try {
           var stream;
-          // Try rear camera first (mobile), then any environment-tagged camera,
-          // then any camera at all (desktops, laptops with only a front webcam).
-          try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: {exact: 'environment'}, width: {ideal: 1280}, height: {ideal: 720} } });
-          } catch(e1) {
+          // Pick a device:
+          //   1. If a specific deviceId was passed (user clicked switch), pin to it.
+          //   2. Else if we previously remembered one, try that first.
+          //   3. Else try rear camera first, then any environment-tagged camera,
+          //      then any camera at all (desktops with only a front webcam).
+          var rememberedId = preferredDeviceId || qrCurrentDeviceId;
+          if (!rememberedId) { try { rememberedId = localStorage.getItem(QR_LAST_CAMERA_KEY) || null; } catch(e) {} }
+          if (rememberedId) {
             try {
-              stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} } });
-            } catch(e2) {
-              stream = await navigator.mediaDevices.getUserMedia({ video: { width: {ideal: 1280}, height: {ideal: 720} } });
+              stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: {exact: rememberedId}, width: {ideal: 1280}, height: {ideal: 720} } });
+            } catch(eDev) {
+              // Remembered device no longer available \u2014 fall through to facingMode chain
+              rememberedId = null;
+            }
+          }
+          if (!stream) {
+            try {
+              stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: {exact: 'environment'}, width: {ideal: 1280}, height: {ideal: 720} } });
+            } catch(e1) {
+              try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: {ideal: 1280}, height: {ideal: 720} } });
+              } catch(e2) {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { width: {ideal: 1280}, height: {ideal: 720} } });
+              }
             }
           }
           qrVideo.srcObject = stream;
@@ -5970,14 +6002,83 @@
           var engineLabel = qrBarcodeDetector ? 'native' : 'zxing';
           qrSetStatus('active', 'Scanning (' + engineLabel + ' \u00b7 all formats)...');
           qrScanning = true;
+          // Capture the active device id and persist it for next session
+          try {
+            var trackForId = stream.getVideoTracks()[0];
+            var settings = trackForId && trackForId.getSettings ? trackForId.getSettings() : {};
+            if (settings.deviceId) {
+              qrCurrentDeviceId = settings.deviceId;
+              try { localStorage.setItem(QR_LAST_CAMERA_KEY, settings.deviceId); } catch(e) {}
+            }
+          } catch(e) {}
           try {
             var track = stream.getVideoTracks()[0];
             var caps = track.getCapabilities ? track.getCapabilities() : {};
             if (caps.torch) { qrTorchSupported = true; if (qrTorchBtn) qrTorchBtn.style.display = 'flex'; }
           } catch(e) {}
           if (qrStopBtn) qrStopBtn.style.display = 'flex';
+          // Enumerate available cameras now that permission has been granted (labels are populated).
+          // If 2+ video inputs exist, surface the switch button.
+          qrEnumerateCameras();
           qrStartNativeLoop();
         } catch(e) { qrSetStatus('error', 'Camera error: ' + (e && e.message ? e.message : 'access denied')); }
+      }
+
+      async function qrEnumerateCameras() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+        try {
+          var devices = await navigator.mediaDevices.enumerateDevices();
+          qrAvailableCameras = devices.filter(function(d) { return d.kind === 'videoinput'; }).map(function(d, i) {
+            return { deviceId: d.deviceId, label: d.label || ('Camera ' + (i + 1)) };
+          });
+          if (qrSwitchCamBtn) {
+            qrSwitchCamBtn.style.display = (qrAvailableCameras.length > 1) ? 'flex' : 'none';
+          }
+        } catch(e) {
+          if (qrSwitchCamBtn) qrSwitchCamBtn.style.display = 'none';
+        }
+      }
+
+      async function qrSwitchCamera() {
+        if (!qrAvailableCameras || qrAvailableCameras.length < 2) return;
+        // Find current camera position; cycle to next
+        var currentIdx = -1;
+        for (var i = 0; i < qrAvailableCameras.length; i++) {
+          if (qrAvailableCameras[i].deviceId === qrCurrentDeviceId) { currentIdx = i; break; }
+        }
+        var nextIdx = (currentIdx + 1) % qrAvailableCameras.length;
+        var next = qrAvailableCameras[nextIdx];
+        if (!next || !next.deviceId) return;
+        // Stop loop while we swap streams so detect calls don't race the swap
+        qrScanning = false; qrNativeLoopActive = false;
+        // Reset torch state \u2014 capabilities are per-track and won't carry over
+        qrTorchOn = false; qrTorchSupported = false;
+        if (qrTorchBtn) { qrTorchBtn.classList.remove('on'); qrTorchBtn.style.display = 'none'; }
+        try { qrSwitchCamBtn.disabled = true; } catch(e) {}
+        try {
+          await qrStartCamera(next.deviceId);
+          qrShowCameraLabel(next.label);
+        } catch(e) {
+          qrSetStatus('error', 'Switch failed: ' + (e && e.message ? e.message : 'unknown'));
+        } finally {
+          try { qrSwitchCamBtn.disabled = false; } catch(e) {}
+        }
+      }
+
+      function qrShowCameraLabel(label) {
+        if (!qrSwitchCamBtn || !label) return;
+        var flash = qrSwitchCamBtn.querySelector('.qr-cam-label-flash');
+        if (!flash) {
+          flash = document.createElement('div');
+          flash.className = 'qr-cam-label-flash';
+          qrSwitchCamBtn.appendChild(flash);
+        }
+        flash.textContent = label;
+        // Force a reflow so the transition fires reliably on subsequent toggles
+        void flash.offsetWidth;
+        flash.classList.add('visible');
+        clearTimeout(qrShowCameraLabel._t);
+        qrShowCameraLabel._t = setTimeout(function() { flash.classList.remove('visible'); }, 1800);
       }
 
       function qrStopCamera() {
@@ -5985,6 +6086,7 @@
         if (qrVideo && qrVideo.srcObject) { qrVideo.srcObject.getTracks().forEach(function(t) { t.stop(); }); qrVideo.srcObject = null; }
         if (qrTorchBtn) { qrTorchBtn.style.display = 'none'; qrTorchBtn.classList.remove('on'); }
         if (qrStopBtn) qrStopBtn.style.display = 'none';
+        if (qrSwitchCamBtn) qrSwitchCamBtn.style.display = 'none';
         qrTorchOn = false; qrTorchSupported = false;
         if (qrStartScreen) qrStartScreen.style.display = '';
         qrSetStatus('', 'Camera inactive');
@@ -6382,9 +6484,10 @@
           .catch(function() { qrTorchOn = false; if (qrTorchBtn) qrTorchBtn.classList.remove('on'); });
       }
 
-      if (qrStartBtn) qrStartBtn.addEventListener('click', qrStartCamera);
+      if (qrStartBtn) qrStartBtn.addEventListener('click', function() { qrStartCamera(); });
       if (qrTorchBtn) qrTorchBtn.addEventListener('click', qrToggleTorch);
       if (qrStopBtn) qrStopBtn.addEventListener('click', qrStopCamera);
+      if (qrSwitchCamBtn) qrSwitchCamBtn.addEventListener('click', function(e) { e.stopPropagation(); qrSwitchCamera(); });
       qrDetectEngine();
       if (navigator.permissions && navigator.permissions.query) {
         navigator.permissions.query({ name: 'camera' }).then(function(result) {
@@ -6420,6 +6523,7 @@
         if (e && e.target && (
             e.target.closest('.qr-torch-btn') ||
             e.target.closest('.qr-stop-btn') ||
+            e.target.closest('.qr-switch-cam-btn') ||
             e.target.closest('.qr-collapse-btn') ||
             e.target.closest('#qr-start-screen'))) return;
         if (qrWrapper.classList.contains('qr-expanded')) qrCollapse();
