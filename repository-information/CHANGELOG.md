@@ -3,9 +3,24 @@
 All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), with project-specific versioning (`w` = website, `g` = Google Apps Script, `r` = repository). Older sections are rotated to [CHANGELOG-archive.md](CHANGELOG-archive.md) when this file exceeds 100 version sections.
 
-`Sections: 99/100`
+`Sections: 100/100`
 
 ## [Unreleased]
+
+## [v11.62r] — 2026-05-28 01:00:17 PM EST
+
+> **Prompt:** "on my pc which has built in camera, geting this result, it did not prompt me to do anything with the camera permissions"
+
+### Fixed
+- Followup to v11.61r: the cross-browser scanner fallback was being silently denied by the page's strict Content-Security-Policy. The `<meta http-equiv="Content-Security-Policy">` tag in `live-site-pages/inventorymanagement.html` listed `script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com` — `cdn.jsdelivr.net` was not in the allowlist, so the dynamic ZXing script tag failed before `script.onerror` even fired, and the page showed "Not available on this device" on every non-Android browser. Added `https://cdn.jsdelivr.net` to the `script-src` directive of both the current (unsafe-inline) CSP and the Phase 8 hardened (hash-based) CSP placeholder so the two stay in sync
+
+### Changed
+- `qrLoadZxing` in `inventorymanagement.html` now logs a descriptive `console.warn` on `script.onerror` and on missing-globals fallback, naming the most likely cause (CSP `script-src` denial) so future regressions are diagnosable from DevTools without re-reading source
+
+#### `inventorymanagement.html` — v01.62w
+
+##### Fixed
+- The scanner now actually starts on Windows + macOS desktop browsers — the page was silently blocking the helper that makes scanning work outside Android because of a stricter security policy
 
 ## [v11.61r] — 2026-05-28 12:43:06 PM EST
 

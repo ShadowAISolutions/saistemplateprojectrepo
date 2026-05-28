@@ -3,9 +3,14 @@
 All notable user-facing changes to this page are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Older sections are rotated to [inventorymanagementhtml.changelog-archive.md](inventorymanagementhtml.changelog-archive.md) when this file exceeds 50 version sections.
 
-`Sections: 49/50`
+`Sections: 50/50`
 
 ## [Unreleased]
+
+## [v01.62w] — 2026-05-28 01:00:17 PM EST — v11.62r
+
+### Fixed
+- The scanner now starts correctly on Windows and macOS desktop browsers — the previous attempt was being silently blocked by the page's security policy before the fallback could load
 
 ## [v01.61w] — 2026-05-28 12:43:06 PM EST — v11.61r
 
